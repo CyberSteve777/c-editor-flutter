@@ -50,19 +50,20 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
   List<RenaiStatueInfoData> get _currentList =>
       _isDayStatues ? _data.statueInfos : _data.statueNightInfos;
 
-  List<RenaiStatueInfoData> get _selectedCellStatues =>
-      _currentList
-          .where((p) => p.gridX == _selectedX && p.gridY == _selectedY)
-          .toList();
+  List<RenaiStatueInfoData> get _selectedCellStatues => _currentList
+      .where((p) => p.gridX == _selectedX && p.gridY == _selectedY)
+      .toList();
 
   List<RenaiStatueInfoData> get _statuesOutsideLawn {
     final all = [..._data.statueInfos, ..._data.statueNightInfos];
     return all
-        .where((p) =>
-            p.gridX < 0 ||
-            p.gridY < 0 ||
-            p.gridX >= _gridCols ||
-            p.gridY >= _gridRows)
+        .where(
+          (p) =>
+              p.gridX < 0 ||
+              p.gridY < 0 ||
+              p.gridX >= _gridCols ||
+              p.gridY >= _gridRows,
+        )
         .toList();
   }
 
@@ -95,9 +96,7 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
     } catch (_) {
       _data = RenaiModulePropertiesData();
     }
-    _nightStartCtrl = TextEditingController(
-      text: '${_data.nightStartWaveNum + 1}',
-    );
+    _nightStartCtrl = TextEditingController(text: '${_data.nightStartWaveNum}');
   }
 
   void _sync() {
@@ -155,8 +154,9 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
         nightEnabled: _data.nightEnabled,
         nightStartWaveNum: _data.nightStartWaveNum,
         statueInfos: _data.statueInfos,
-        statueNightInfos:
-            _data.statueNightInfos.where((e) => e != target).toList(),
+        statueNightInfos: _data.statueNightInfos
+            .where((e) => e != target)
+            .toList(),
       );
     }
     _sync();
@@ -228,13 +228,15 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
               sections: [
                 HelpSectionData(
                   title: l10n?.renaiModuleHelpOverview ?? 'Overview',
-                  body: l10n?.renaiModuleHelpOverviewBody ??
+                  body:
+                      l10n?.renaiModuleHelpOverviewBody ??
                       'Enables Renai roller and tiles. Night start wave (0-based) switches to night mode. Day and night statues carve at their configured wave.',
                 ),
                 HelpSectionData(
                   title: l10n?.renaiModuleHelpStatues ?? 'Statues',
-                  body: l10n?.renaiModuleHelpStatuesBody ??
-                      'Day statues: appear in day phase. Night statues: appear after night start. WaveNumber is 0-based.',
+                  body:
+                      l10n?.renaiModuleHelpStatuesBody ??
+                      'Day statues: day phase. Night statues: after night start. Night start wave and carve wave use 0-based indices (0 = first wave).',
                 ),
               ],
             ),
@@ -271,7 +273,7 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                         statueNightInfos: v ? _data.statueNightInfos : [],
                       );
                       if (!v) {
-                        _nightStartCtrl.text = '1';
+                        _nightStartCtrl.text = '0';
                         _isDayStatues = true;
                       }
                       _sync();
@@ -287,8 +289,7 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            l10n?.renaiModuleNightStart ??
-                                'Night start wave',
+                            l10n?.renaiModuleNightStart ?? 'Night start wave',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: theme.colorScheme.primary,
@@ -302,14 +303,15 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: l10n?.waveLabel ?? 'Wave',
+                                helperText: l10n?.moduleWaveIndexZeroBasedHint,
                                 border: const OutlineInputBorder(),
                               ),
                               onChanged: (v) {
                                 final n = int.tryParse(v);
-                                if (n != null && n >= 1) {
+                                if (n != null && n >= 0) {
                                   _data = RenaiModulePropertiesData(
                                     nightEnabled: _data.nightEnabled,
-                                    nightStartWaveNum: n - 1,
+                                    nightStartWaveNum: n,
                                     statueInfos: _data.statueInfos,
                                     statueNightInfos: _data.statueNightInfos,
                                   );
@@ -328,8 +330,7 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                   segments: [
                     ButtonSegment(
                       value: true,
-                      label: Text(
-                          l10n?.renaiModuleDayStatues ?? 'Day statues'),
+                      label: Text(l10n?.renaiModuleDayStatues ?? 'Day statues'),
                       icon: const Icon(Icons.wb_sunny),
                     ),
                     ButtonSegment(
@@ -337,7 +338,8 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                       label: Opacity(
                         opacity: _canShowNightStatues ? 1 : 0.5,
                         child: Text(
-                            l10n?.renaiModuleNightStatues ?? 'Night statues'),
+                          l10n?.renaiModuleNightStatues ?? 'Night statues',
+                        ),
                       ),
                       icon: Opacity(
                         opacity: _canShowNightStatues ? 1 : 0.5,
@@ -354,8 +356,11 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                           content: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.info_outline,
-                                  color: Color(0xFF01579B), size: 20),
+                              const Icon(
+                                Icons.info_outline,
+                                color: Color(0xFF01579B),
+                                size: 20,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -396,11 +401,10 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                                 ),
                                 Text(
                                   'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style:
-                                      theme.textTheme.titleLarge?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: theme.colorScheme.primary,
-                                      ),
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
                                 ),
                               ],
                             ),
@@ -425,19 +429,21 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                                   ),
                                 ),
                                 child: Column(
-                                  children:
-                                      List.generate(_gridRows, (row) {
+                                  children: List.generate(_gridRows, (row) {
                                     return Expanded(
                                       child: Row(
-                                        children: List.generate(
-                                          _gridCols, (col) {
+                                        children: List.generate(_gridCols, (
+                                          col,
+                                        ) {
                                           final isSelected =
                                               row == _selectedY &&
-                                                  col == _selectedX;
+                                              col == _selectedX;
                                           final cellItems = _currentList
-                                              .where((p) =>
-                                                  p.gridX == col &&
-                                                  p.gridY == row)
+                                              .where(
+                                                (p) =>
+                                                    p.gridX == col &&
+                                                    p.gridY == row,
+                                              )
                                               .toList();
                                           final firstItem =
                                               cellItems.firstOrNull;
@@ -449,28 +455,31 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                                                 _selectedY = row;
                                               }),
                                               child: Container(
-                                                margin:
-                                                    const EdgeInsets.all(0.5),
+                                                margin: const EdgeInsets.all(
+                                                  0.5,
+                                                ),
                                                 decoration: BoxDecoration(
                                                   color: isSelected
                                                       ? theme
-                                                          .colorScheme
-                                                          .primary
-                                                          .withValues(
-                                                            alpha: 0.2,
-                                                          )
+                                                            .colorScheme
+                                                            .primary
+                                                            .withValues(
+                                                              alpha: 0.2,
+                                                            )
                                                       : Colors.transparent,
                                                   border: Border.all(
                                                     color: isSelected
-                                                        ? theme.colorScheme
-                                                            .primary
+                                                        ? theme
+                                                              .colorScheme
+                                                              .primary
                                                         : const Color(
                                                             0xFF6B899A,
                                                           ),
                                                     width: 0.5,
                                                   ),
                                                 ),
-                                                child: count > 0 &&
+                                                child:
+                                                    count > 0 &&
                                                         firstItem != null
                                                     ? Stack(
                                                         fit: StackFit.expand,
@@ -478,10 +487,10 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                                                           Positioned.fill(
                                                             child: Padding(
                                                               padding:
-                                                                  const EdgeInsets
-                                                                      .all(2),
-                                                              child:
-                                                                  FittedBox(
+                                                                  const EdgeInsets.all(
+                                                                    2,
+                                                                  ),
+                                                              child: FittedBox(
                                                                 fit: BoxFit
                                                                     .contain,
                                                                 child: RenaiStatueIcon(
@@ -497,28 +506,25 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                                                             Positioned(
                                                               top: 3,
                                                               right: 3,
-                                                              child:
-                                                                  Container(
+                                                              child: Container(
                                                                 padding:
-                                                                    const EdgeInsets
-                                                                        .symmetric(
-                                                                  horizontal: 6,
-                                                                  vertical: 3,
-                                                                ),
-                                                                decoration:
-                                                                    BoxDecoration(
+                                                                    const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          6,
+                                                                      vertical:
+                                                                          3,
+                                                                    ),
+                                                                decoration: BoxDecoration(
                                                                   color: theme
                                                                       .colorScheme
                                                                       .onSurfaceVariant,
                                                                   borderRadius:
-                                                                      const BorderRadius
-                                                                          .only(
-                                                                    bottomLeft:
-                                                                        Radius
-                                                                            .circular(
-                                                                      6,
-                                                                    ),
-                                                                  ),
+                                                                      const BorderRadius.only(
+                                                                        bottomLeft:
+                                                                            Radius.circular(
+                                                                              6,
+                                                                            ),
+                                                                      ),
                                                                 ),
                                                                 child: Text(
                                                                   '+${count - 1}',
@@ -596,15 +602,17 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                             spacing: 8,
                             runSpacing: 8,
                             children: _statuesOutsideLawn
-                                .map((item) => _StatueCard(
-                                      item: item,
-                                      showCoordinates: true,
-                                      onDelete: () =>
-                                          setState(() => _itemToDelete = item),
-                                      onWaveChanged: (w) =>
-                                          _updateStatueWave(item, w),
-                                      deleteTooltip: l10n?.delete ?? 'Delete',
-                                    ))
+                                .map(
+                                  (item) => _StatueCard(
+                                    item: item,
+                                    showCoordinates: true,
+                                    onDelete: () =>
+                                        setState(() => _itemToDelete = item),
+                                    onWaveChanged: (w) =>
+                                        _updateStatueWave(item, w),
+                                    deleteTooltip: l10n?.delete ?? 'Delete',
+                                  ),
+                                )
                                 .toList(),
                           ),
                         ],
@@ -633,11 +641,9 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
         : item.typeName;
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
-        content: Text(
-        l10n?.removeItemConfirm(
-              'W${item.waveNumber + 1} $name',
-            ) ??
-            'Remove W${item.waveNumber + 1} $name?',
+      content: Text(
+        l10n?.removeItemConfirm('W${item.waveNumber} $name') ??
+            'Remove W${item.waveNumber} $name?',
       ),
       actions: [
         TextButton(
@@ -684,14 +690,14 @@ class _StatueCardState extends State<_StatueCard> {
   @override
   void initState() {
     super.initState();
-    _waveCtrl = TextEditingController(text: '${widget.item.waveNumber + 1}');
+    _waveCtrl = TextEditingController(text: '${widget.item.waveNumber}');
   }
 
   @override
   void didUpdateWidget(covariant _StatueCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.item.waveNumber != widget.item.waveNumber) {
-      _waveCtrl.text = '${widget.item.waveNumber + 1}';
+      _waveCtrl.text = '${widget.item.waveNumber}';
     }
   }
 
@@ -705,10 +711,13 @@ class _StatueCardState extends State<_StatueCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final item = widget.item;
-    final displayName =
-        ResourceNames.lookup(context, 'griditem_${item.typeName}');
-    final name =
-        displayName != 'griditem_${item.typeName}' ? displayName : item.typeName;
+    final displayName = ResourceNames.lookup(
+      context,
+      'griditem_${item.typeName}',
+    );
+    final name = displayName != 'griditem_${item.typeName}'
+        ? displayName
+        : item.typeName;
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
@@ -725,8 +734,8 @@ class _StatueCardState extends State<_StatueCard> {
                     child: GridItemIcon(
                       typeName: item.typeName,
                       size: 64,
-                      iconScaleFactor: GridItemRepository.isRenaiStatueNonHalf(
-                              item.typeName)
+                      iconScaleFactor:
+                          GridItemRepository.isRenaiStatueNonHalf(item.typeName)
                           ? 3.65
                           : 2.0,
                       badgeScaleFactor: 2.0,
@@ -787,15 +796,20 @@ class _StatueCardState extends State<_StatueCard> {
                       controller: _waveCtrl,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)
-                                ?.renaiModuleCarveWave ??
+                        labelText:
+                            AppLocalizations.of(
+                              context,
+                            )?.renaiModuleCarveWave ??
                             'Carve wave',
+                        helperText: AppLocalizations.of(
+                          context,
+                        )?.moduleWaveIndexZeroBasedHint,
                         border: const OutlineInputBorder(),
                       ),
                       onChanged: (v) {
                         final n = int.tryParse(v);
-                        if (n != null && n >= 1) {
-                          widget.onWaveChanged(n - 1);
+                        if (n != null && n >= 0) {
+                          widget.onWaveChanged(n);
                         }
                       },
                     ),

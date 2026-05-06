@@ -91,8 +91,9 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     );
     _sync();
     if (_selectedWaveIndex >= _data.waveWindInfos.length) {
-      _selectedWaveIndex =
-          _data.waveWindInfos.isEmpty ? -1 : _data.waveWindInfos.length - 1;
+      _selectedWaveIndex = _data.waveWindInfos.isEmpty
+          ? -1
+          : _data.waveWindInfos.length - 1;
     }
   }
 
@@ -108,22 +109,29 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     if (waveIndex < 0 || waveIndex >= _data.waveWindInfos.length) return;
     final wave = _data.waveWindInfos[waveIndex];
     final winds = [...wave.windInfos, HeianWindInfoData()];
-    _updateWave(waveIndex, HeianWindWaveWindInfoData(
-      waveNumber: wave.waveNumber,
-      windDelay: wave.windDelay,
-      windInfos: winds,
-    ));
+    _updateWave(
+      waveIndex,
+      HeianWindWaveWindInfoData(
+        waveNumber: wave.waveNumber,
+        windDelay: wave.windDelay,
+        windInfos: winds,
+      ),
+    );
   }
 
   void _removeWind(int waveIndex, int windIndex) {
     if (waveIndex < 0 || waveIndex >= _data.waveWindInfos.length) return;
     final wave = _data.waveWindInfos[waveIndex];
-    final winds = List<HeianWindInfoData>.from(wave.windInfos)..removeAt(windIndex);
-    _updateWave(waveIndex, HeianWindWaveWindInfoData(
-      waveNumber: wave.waveNumber,
-      windDelay: wave.windDelay,
-      windInfos: winds,
-    ));
+    final winds = List<HeianWindInfoData>.from(wave.windInfos)
+      ..removeAt(windIndex);
+    _updateWave(
+      waveIndex,
+      HeianWindWaveWindInfoData(
+        waveNumber: wave.waveNumber,
+        windDelay: wave.windDelay,
+        windInfos: winds,
+      ),
+    );
   }
 
   void _updateWind(int waveIndex, int windIndex, HeianWindInfoData updated) {
@@ -132,11 +140,14 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     final winds = List<HeianWindInfoData>.from(wave.windInfos);
     if (windIndex < 0 || windIndex >= winds.length) return;
     winds[windIndex] = updated;
-    _updateWave(waveIndex, HeianWindWaveWindInfoData(
-      waveNumber: wave.waveNumber,
-      windDelay: wave.windDelay,
-      windInfos: winds,
-    ));
+    _updateWave(
+      waveIndex,
+      HeianWindWaveWindInfoData(
+        waveNumber: wave.waveNumber,
+        windDelay: wave.windDelay,
+        windInfos: winds,
+      ),
+    );
   }
 
   @override
@@ -145,7 +156,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     final l10n = AppLocalizations.of(context);
     final title = l10n?.heianWindModuleTitle ?? 'Heian Wind';
     final helpTitle = l10n?.heianWindModuleHelpTitle ?? 'Heian Wind help';
-    final selectedWave = _selectedWaveIndex >= 0 &&
+    final selectedWave =
+        _selectedWaveIndex >= 0 &&
             _selectedWaveIndex < _data.waveWindInfos.length
         ? _data.waveWindInfos[_selectedWaveIndex]
         : null;
@@ -168,17 +180,20 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
               sections: [
                 HelpSectionData(
                   title: l10n?.heianWindModuleHelpOverview ?? 'Overview',
-                  body: l10n?.heianWindModuleHelpOverviewBody ??
+                  body:
+                      l10n?.heianWindModuleHelpOverviewBody ??
                       'Configures winds on specific waves. Winds push zombies and can summon tornados on single rows that carry zombies forward and blow away plants.',
                 ),
                 HelpSectionData(
                   title: l10n?.heianWindModuleHelpDistance ?? 'Distance',
-                  body: l10n?.heianWindModuleHelpDistanceBody ??
+                  body:
+                      l10n?.heianWindModuleHelpDistanceBody ??
                       'Distance of 50 equals one grid cell. Negative values move zombies to the left; positive values move them to the right.',
                 ),
                 HelpSectionData(
                   title: l10n?.heianWindModuleHelpRow ?? 'Row',
-                  body: l10n?.heianWindModuleHelpRowBody ??
+                  body:
+                      l10n?.heianWindModuleHelpRowBody ??
                       'You can specify any row or all rows at once. Winds on single rows also summon a tornado that carries zombies forward and blows away a plant.',
                 ),
               ],
@@ -233,14 +248,17 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.waveLabel ?? "W"} ${w.waveNumber + 1}',
+                                '${l10n?.waveLabel ?? "W"} ${w.waveNumber}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               IconButton(
-                                icon: const Icon(Icons.delete_outline, size: 18),
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                ),
                                 onPressed: () =>
                                     setState(() => _waveToDelete = w),
                                 padding: EdgeInsets.zero,
@@ -277,7 +295,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.waveLabel ?? "Wave"} ${selectedWave.waveNumber + 1}',
+                            '${l10n?.waveLabel ?? "Wave"} ${selectedWave.waveNumber}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -290,7 +308,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                                 child: TextFormField(
                                   initialValue: '${selectedWave.windDelay}',
                                   decoration: InputDecoration(
-                                    labelText: l10n?.heianWindModuleWindDelay ??
+                                    labelText:
+                                        l10n?.heianWindModuleWindDelay ??
                                         'Wind delay',
                                     border: const OutlineInputBorder(),
                                   ),
@@ -327,8 +346,11 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                               theme,
                               l10n,
                               wind,
-                              (updated) =>
-                                  _updateWind(_selectedWaveIndex, windIdx, updated),
+                              (updated) => _updateWind(
+                                _selectedWaveIndex,
+                                windIdx,
+                                updated,
+                              ),
                               () => _removeWind(_selectedWaveIndex, windIdx),
                             );
                           }),
@@ -337,7 +359,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             onPressed: () => _addWind(_selectedWaveIndex),
                             icon: const Icon(Icons.add, size: 18),
                             label: Text(
-                                l10n?.heianWindModuleAddWind ?? 'Add wind'),
+                              l10n?.heianWindModuleAddWind ?? 'Add wind',
+                            ),
                           ),
                         ],
                       ),
@@ -383,22 +406,26 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                     items: [
                       DropdownMenuItem(
                         value: -1,
-                        child: Text(
-                            l10n?.heianWindModuleAllRows ?? 'All rows'),
+                        child: Text(l10n?.heianWindModuleAllRows ?? 'All rows'),
                       ),
-                      ...List.generate(_gridRows, (i) => DropdownMenuItem(
-                            value: i,
-                            child: Text('${l10n?.row ?? "Row"} ${i + 1}'),
-                          )),
+                      ...List.generate(
+                        _gridRows,
+                        (i) => DropdownMenuItem(
+                          value: i,
+                          child: Text('${l10n?.row ?? "Row"} ${i + 1}'),
+                        ),
+                      ),
                     ],
                     onChanged: (v) {
                       if (v != null) {
-                        onUpdate(HeianWindInfoData(
-                          row: v,
-                          affectZombies: wind.affectZombies,
-                          distance: wind.distance,
-                          moveTime: wind.moveTime,
-                        ));
+                        onUpdate(
+                          HeianWindInfoData(
+                            row: v,
+                            affectZombies: wind.affectZombies,
+                            distance: wind.distance,
+                            moveTime: wind.moveTime,
+                          ),
+                        );
                       }
                     },
                   ),
@@ -408,7 +435,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                   child: TextFormField(
                     initialValue: '${wind.affectZombies}',
                     decoration: InputDecoration(
-                      labelText: l10n?.heianWindModuleAffectZombies ??
+                      labelText:
+                          l10n?.heianWindModuleAffectZombies ??
                           'Affect zombies',
                       border: const OutlineInputBorder(),
                       isDense: true,
@@ -417,12 +445,14 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                     onChanged: (v) {
                       final n = int.tryParse(v);
                       if (n != null && n >= 0) {
-                        onUpdate(HeianWindInfoData(
-                          row: wind.row,
-                          affectZombies: n,
-                          distance: wind.distance,
-                          moveTime: wind.moveTime,
-                        ));
+                        onUpdate(
+                          HeianWindInfoData(
+                            row: wind.row,
+                            affectZombies: n,
+                            distance: wind.distance,
+                            moveTime: wind.moveTime,
+                          ),
+                        );
                       }
                     },
                   ),
@@ -446,16 +476,20 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                       isDense: true,
                     ),
                     keyboardType: const TextInputType.numberWithOptions(
-                        signed: true, decimal: true),
+                      signed: true,
+                      decimal: true,
+                    ),
                     onChanged: (v) {
                       final n = double.tryParse(v);
                       if (n != null) {
-                        onUpdate(HeianWindInfoData(
-                          row: wind.row,
-                          affectZombies: wind.affectZombies,
-                          distance: n,
-                          moveTime: wind.moveTime,
-                        ));
+                        onUpdate(
+                          HeianWindInfoData(
+                            row: wind.row,
+                            affectZombies: wind.affectZombies,
+                            distance: n,
+                            moveTime: wind.moveTime,
+                          ),
+                        );
                       }
                     },
                   ),
@@ -470,16 +504,19 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                       isDense: true,
                     ),
                     keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true),
+                      decimal: true,
+                    ),
                     onChanged: (v) {
                       final n = double.tryParse(v);
                       if (n != null && n > 0) {
-                        onUpdate(HeianWindInfoData(
-                          row: wind.row,
-                          affectZombies: wind.affectZombies,
-                          distance: wind.distance,
-                          moveTime: n,
-                        ));
+                        onUpdate(
+                          HeianWindInfoData(
+                            row: wind.row,
+                            affectZombies: wind.affectZombies,
+                            distance: wind.distance,
+                            moveTime: n,
+                          ),
+                        );
                       }
                     },
                   ),
@@ -498,10 +535,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
-        (l10n?.removeItemConfirm(
-                    '${l10n.waveLabel} ${wave.waveNumber + 1}',
-                  )) ??
-            'Remove wave ${wave.waveNumber + 1}?',
+        (l10n?.removeItemConfirm('${l10n.waveLabel} ${wave.waveNumber}')) ??
+            'Remove wave ${wave.waveNumber}?',
       ),
       actions: [
         TextButton(

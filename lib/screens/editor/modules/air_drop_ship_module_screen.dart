@@ -104,7 +104,9 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
     );
     _sync();
     if (_selectedIndex >= _data.appearWaves.length) {
-      _selectedIndex = _data.appearWaves.isEmpty ? -1 : _data.appearWaves.length - 1;
+      _selectedIndex = _data.appearWaves.isEmpty
+          ? -1
+          : _data.appearWaves.length - 1;
     }
   }
 
@@ -122,7 +124,8 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
     final l10n = AppLocalizations.of(context);
     final title = l10n?.airDropShipModuleTitle ?? 'Air Drop Ship';
     final helpTitle = l10n?.airDropShipModuleHelpTitle ?? 'Air Drop Ship help';
-    final selectedWave = _selectedIndex >= 0 && _selectedIndex < _data.appearWaves.length
+    final selectedWave =
+        _selectedIndex >= 0 && _selectedIndex < _data.appearWaves.length
         ? _data.appearWaves[_selectedIndex]
         : null;
 
@@ -144,12 +147,14 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
               sections: [
                 HelpSectionData(
                   title: l10n?.airDropShipModuleHelpOverview ?? 'Overview',
-                  body: l10n?.airDropShipModuleHelpOverviewBody ??
+                  body:
+                      l10n?.airDropShipModuleHelpOverviewBody ??
                       'Configures waves when imps are dropped from the air. Each entry defines wave, extra imp count, imp level, and drop area (row/column range).',
                 ),
                 HelpSectionData(
                   title: l10n?.airDropShipModuleHelpImps ?? 'Imps',
-                  body: l10n?.airDropShipModuleHelpImpsBody ??
+                  body:
+                      l10n?.airDropShipModuleHelpImpsBody ??
                       'Extra imp count is the number of additional imps. At least one imp is always dropped.',
                 ),
               ],
@@ -204,14 +209,17 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.waveLabel ?? "W"} ${w.wave + 1}',
+                                '${l10n?.waveLabel ?? "W"} ${w.wave}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               IconButton(
-                                icon: const Icon(Icons.delete_outline, size: 18),
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                ),
                                 onPressed: () =>
                                     setState(() => _itemToDelete = w),
                                 padding: EdgeInsets.zero,
@@ -248,7 +256,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.waveLabel ?? "Wave"} ${selectedWave.wave + 1} - ${l10n?.airDropShipModuleDropArea ?? "Drop area"}',
+                            '${l10n?.waveLabel ?? "Wave"} ${selectedWave.wave} - ${l10n?.airDropShipModuleDropArea ?? "Drop area"}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -258,20 +266,21 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                             children: [
                               Expanded(
                                 child: TextFormField(
-                                  initialValue:
-                                      '${selectedWave.wave + 1}',
+                                  initialValue: '${selectedWave.wave}',
                                   decoration: InputDecoration(
                                     labelText: l10n?.waveLabel ?? 'Wave',
+                                    helperText:
+                                        l10n?.moduleWaveIndexZeroBasedHint,
                                     border: const OutlineInputBorder(),
                                   ),
                                   keyboardType: TextInputType.number,
                                   onChanged: (v) {
                                     final n = int.tryParse(v);
-                                    if (n != null && n >= 1) {
+                                    if (n != null && n >= 0) {
                                       _updateWave(
                                         _selectedIndex,
                                         DropShipAppearWaveData(
-                                          wave: n - 1,
+                                          wave: n,
                                           imp: selectedWave.imp,
                                           impLv: selectedWave.impLv,
                                           rowRange: selectedWave.rowRange,
@@ -285,10 +294,10 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: TextFormField(
-                                  initialValue:
-                                      '${selectedWave.imp}',
+                                  initialValue: '${selectedWave.imp}',
                                   decoration: InputDecoration(
-                                    labelText: l10n?.airDropShipModuleExtraImpCount ??
+                                    labelText:
+                                        l10n?.airDropShipModuleExtraImpCount ??
                                         'Extra imp count',
                                     border: const OutlineInputBorder(),
                                   ),
@@ -313,10 +322,11 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: TextFormField(
-                                  initialValue:
-                                      '${selectedWave.impLv}',
+                                  initialValue: '${selectedWave.impLv}',
                                   decoration: InputDecoration(
-                                    labelText: l10n?.airDropShipModuleImpLevel ?? 'Imp level',
+                                    labelText:
+                                        l10n?.airDropShipModuleImpLevel ??
+                                        'Imp level',
                                     border: const OutlineInputBorder(),
                                   ),
                                   keyboardType: TextInputType.number,
@@ -347,7 +357,8 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                                   initialValue:
                                       '${selectedWave.rowRange.min + 1}',
                                   decoration: InputDecoration(
-                                    labelText: l10n?.airDropShipModuleRowMin ??
+                                    labelText:
+                                        l10n?.airDropShipModuleRowMin ??
                                         'Minimal row',
                                     border: const OutlineInputBorder(),
                                   ),
@@ -378,7 +389,8 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                                   initialValue:
                                       '${selectedWave.rowRange.max + 1}',
                                   decoration: InputDecoration(
-                                    labelText: l10n?.airDropShipModuleRowMax ??
+                                    labelText:
+                                        l10n?.airDropShipModuleRowMax ??
                                         'Maximal row',
                                     border: const OutlineInputBorder(),
                                   ),
@@ -413,7 +425,8 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                                   initialValue:
                                       '${selectedWave.colRange.min + 1}',
                                   decoration: InputDecoration(
-                                    labelText: l10n?.airDropShipModuleColMin ??
+                                    labelText:
+                                        l10n?.airDropShipModuleColMin ??
                                         'Minimal column',
                                     border: const OutlineInputBorder(),
                                   ),
@@ -444,7 +457,8 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                                   initialValue:
                                       '${selectedWave.colRange.max + 1}',
                                   decoration: InputDecoration(
-                                    labelText: l10n?.airDropShipModuleColMax ??
+                                    labelText:
+                                        l10n?.airDropShipModuleColMax ??
                                         'Maximal column',
                                     border: const OutlineInputBorder(),
                                   ),
@@ -487,30 +501,33 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                               child: AspectRatio(
                                 aspectRatio: _gridCols / _gridRows,
                                 child: GridView.builder(
-                                  physics:
-                                      const NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: _gridCols,
-                                    childAspectRatio: 1,
-                                  ),
+                                        crossAxisCount: _gridCols,
+                                        childAspectRatio: 1,
+                                      ),
                                   itemCount: _gridCols * _gridRows,
                                   itemBuilder: (context, i) {
                                     final col = i % _gridCols;
                                     final row = i ~/ _gridCols;
-                                    final inRange =
-                                        _isCellInDropRange(
-                                            col, row, selectedWave);
+                                    final inRange = _isCellInDropRange(
+                                      col,
+                                      row,
+                                      selectedWave,
+                                    );
                                     return Container(
                                       decoration: BoxDecoration(
                                         color: inRange
-                                            ? Colors.orange
-                                                .withValues(alpha: 0.5)
-                                            : theme.colorScheme
-                                                .surfaceContainerHighest,
+                                            ? Colors.orange.withValues(
+                                                alpha: 0.5,
+                                              )
+                                            : theme
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
                                         border: Border.all(
-                                          color: theme
-                                              .colorScheme.outlineVariant,
+                                          color:
+                                              theme.colorScheme.outlineVariant,
                                         ),
                                       ),
                                     );
