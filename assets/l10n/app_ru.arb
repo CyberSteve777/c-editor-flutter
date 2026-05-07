@@ -302,6 +302,7 @@
   "conflictDesc_EvilDaveZombieDrop": "В режиме I, Zombie нельзя использовать модуль Zombie Drop.",
   "conflictDesc_EvilDaveVictory": "В режиме I, Zombie нельзя использовать условие победы зомби.",
   "conflictDesc_ZombossDeathDrop": "Смертельные капли в режиме Zomboss Battle помешают корректному завершению уровня.",
+  "conflictDesc_WinConditionExclusive": "В LevelModules должно быть только одно условие победы/поражения из: смертельные капли, победа за бронзу или стандартное «съели мозги». Удалите лишние модули.",
   "conflictDesc_ZombossTwoIntros": "Две вступительные заставки не могут сосуществовать, иначе шкала здоровья Zomboss отображается неверно.",
   "conflictDesc_InitialPlantEntryRoof": "Предустановленные растения на крыше вызовут сбой.",
   "conflictDesc_InitialPlantRoof": "Легаси-растения на крыше вызовут сбой.",
@@ -576,6 +577,28 @@
   "moduleDesc_ZombiesAteYourBrainsProperties": "Зомби дошёл до дома",
   "moduleTitle_ZombiesDeadWinConProperties": "Смертельная капля",
   "moduleDesc_ZombiesDeadWinConProperties": "Нужно для стабильности уровня",
+  "moduleTitle_BronzeDeadWinConProperties": "Победа: бронза очищена",
+  "moduleDesc_BronzeDeadWinConProperties": "Победа при уничтожении всех бронзовых статуй и бронзовых гаргантюар (стиль Kongfu). Несовместимо с «Смертельная капля» и другими модулями условия победы — оставьте один.",
+  "moduleTitle_SpermWhaleModuleProperties": "Кит (спермакит)",
+  "moduleDesc_SpermWhaleModuleProperties": "Параметры глотания кита в Атлантиде; в игре нужны криль и др.",
+  "spermWhaleModuleTitle": "Модуль кита",
+  "spermWhaleModuleHelpTitle": "Модуль кита",
+  "spermWhaleModuleParameters": "Параметры",
+  "spermWhaleModuleHelpOverview": "Обзор",
+  "spermWhaleModuleHelpOverviewBody": "Настройка глотания растений китом: интервалы в обычном и отравленном режиме, длительность фазы, порог срабатывания яда. Обычно для глубоководной сцены с крилем (часто нужно ≥3).",
+  "spermWhaleModuleHelpFieldsTitle": "Поля",
+  "spermWhaleModuleHelpFieldsBody": "SwallowInterval — пауза между глотаниями. PoisonSwallowInterval — при активном яде. SwallowDuration — длительность фазы глотания. PoisonTriggerCount — сколько раз должен сработать дебафф яда, чтобы использовать отравленный интервал.",
+  "spermWhaleModuleSwallowInterval": "Интервал глотания (SwallowInterval)",
+  "spermWhaleModuleHelpSwallowInterval": "Секунды между глотаниями в обычном режиме.",
+  "spermWhaleModulePoisonSwallowInterval": "Интервал при яде (PoisonSwallowInterval)",
+  "spermWhaleModuleHelpPoisonSwallowInterval": "Секунды между глотаниями, пока действует яд.",
+  "spermWhaleModuleSwallowDuration": "Длительность глотания (SwallowDuration)",
+  "spermWhaleModuleHelpSwallowDuration": "Длительность фазы глотания в секундах.",
+  "spermWhaleModulePoisonTriggerCount": "Счётчик яда (PoisonTriggerCount)",
+  "spermWhaleModuleHelpPoisonTriggerCount": "Сколько срабатываний негативного эффекта яда нужно, чтобы перейти на интервалы при яде.",
+  "spermWhaleModuleNotDeepSeaWarning": "Модуль рассчитан на глубоководную сцену (Deep Sea / Deep Sea Land). Сетка ниже соответствует текущему уровню; на обычном газоне это не Атлантида.",
+  "spermWhaleModuleLawnPreview": "Сетка газона (ориентир)",
+  "spermWhaleModuleLawnPreviewHint": "Глубоководный газон 6×10; обычный 5×9.",
   "moduleTitle_PennyClassroomModuleProperties": "Уровень растений",
   "moduleDesc_PennyClassroomModuleProperties": "Глобальные уровни растений",
   "moduleTitle_SeedBankProperties": "Банк семян",
@@ -1415,6 +1438,8 @@
   "deleteChallengeConfirmRef": "Удалить ссылку на «{name}»? Испытание останется в LevelModules.",
   "@deleteChallengeConfirmRef": {"placeholders": {"name": {"type": "String"}}},
   "missingModulesRecommended": "Уровень может работать некорректно. Рекомендуется добавить:",
+  "recommendedTunnelDefendTitle": "Рекомендуется модуль защиты тоннелей",
+  "recommendedTunnelDefendBody": "Арены Подземного дворца рассчитаны на визуал тоннелей. Настоятельно рекомендуется добавить модуль защиты тоннелей — иначе газон в игре может выглядеть пустым.",
   "selectedPosition": "Выбранная позиция",
   "addItem": "Добавить препятствие",
   "itemListRowFirst": "Список препятствий (по строкам)",
@@ -1452,6 +1477,9 @@
   "tunnelDefendDeleteOutside": "Удалить элементы путей вне газона",
   "tunnelDefendDeleteOutsideConfirmTitle": "Удалить элементы путей вне газона?",
   "tunnelDefendDeleteOutsideConfirmMessage": "Удалить элементы путей за пределами сетки газона 5×9. Действие нельзя отменить.",
+  "tunnelDefendTileStylePreset": "Пресет стиля плитки",
+  "tunnelDefendTileStylePart1": "часть 1",
+  "tunnelDefendTileStylePart2": "часть 2",
   "moduleTitle_LawnMowerProperties": "Газонокосилки",
   "moduleDesc_LawnMowerProperties": "Стиль газонокосилок для уровня",
   "moduleTitle_TunnelDefendModuleProperties": "Защита тоннелей",
@@ -1490,13 +1518,46 @@
   "pvz1PassageFieldPassageAmount": "Порталов в группе (PassageAmount)",
   "pvz1PassageHelpPassageAmount": "Сколько порталов в каждой группе.",
   "pvz1PassageFieldGridXMin": "Минимальная колонка появления (GridXMin)",
-  "pvz1PassageHelpGridXMin": "Самая левая колонка газона, где могут появляться порталы.",
+  "pvz1PassageHelpGridXMin": "Самая левая колонка газона, где могут появляться порталы. На этом газоне индексы колонок от 0 до {maxIndex}.",
+  "@pvz1PassageHelpGridXMin": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
   "pvz1PassageFieldGridXMax": "Максимальная колонка появления (GridXMax)",
-  "pvz1PassageHelpGridXMax": "Самая правая колонка газона, где могут появляться порталы.",
+  "pvz1PassageHelpGridXMax": "Самая правая колонка газона, где могут появляться порталы. На этом газоне индексы колонок от 0 до {maxIndex}.",
+  "@pvz1PassageHelpGridXMax": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
+  "pvz1PassageGridColumnRange": "0–{maxIndex}",
+  "@pvz1PassageGridColumnRange": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
   "pvz1PassageFieldTransferCooldown": "Перезарядка телепорта на зомби (transferCooldown)",
   "pvz1PassageHelpTransferCooldown": "Минимальное время между телепортами одного и того же зомби.",
   "pvz1PassageFieldRefreshTime": "Интервал смены позиций порталов (refreshTime)",
   "pvz1PassageHelpRefreshTime": "Как часто заново выбираются позиции порталов.",
+  "pvz1PassagePortalSpawnPreview": "Предпросмотр колонок появления",
+  "pvz1PassageHelpPreview": "Предпросмотр",
+  "pvz1PassageHelpPreviewBody": "Оранжевым выделены колонки в диапазоне GridXMin–GridXMax включительно. На этом газоне допустимы индексы колонок 0–{maxIndex}. Строки в этом модуле не ограничивают появление.",
+  "@pvz1PassageHelpPreviewBody": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
+  "moduleWaveIndexZeroBasedHint": "Индекс волны: 0 = первая волна, 1 = вторая и т.д.",
   "moduleTitle_RenaiModuleProperties": "Ренессанс",
   "moduleDesc_RenaiModuleProperties": "Включает функционал ролика и плиток Ренессанса, позволяет настраивать статуи",
   "renaiModuleTitle": "Модуль Ренессанса",
@@ -1504,7 +1565,7 @@
   "renaiModuleHelpOverview": "Обзор",
   "renaiModuleHelpOverviewBody": "Включает ролик и плитки. Волна начала ночи (0-базовый индекс) переключает на ночной режим. Дневные и ночные статуи оживают на своей волне.",
   "renaiModuleHelpStatues": "Статуи",
-  "renaiModuleHelpStatuesBody": "Дневные статуи: днём. Ночные статуи: после начала ночи. WaveNumber — 0-базовый.",
+  "renaiModuleHelpStatuesBody": "Дневные статуи: днём. Ночные — после начала ночи. Волна начала ночи и волна «оживления» статуи задаются индексом с 0 (0 = первая волна).",
   "renaiModuleEnableNight": "Включить ночь",
   "renaiModuleEnableNightSubtitle": "Разрешить волну начала ночи и ночные статуи",
   "renaiModuleNightStart": "Волна начала ночи",
@@ -1522,9 +1583,9 @@
   "airDropShipModuleTitle": "Воздушный сброс",
   "airDropShipModuleHelpTitle": "Справка по воздушному сбросу",
   "airDropShipModuleHelpOverview": "Обзор",
-  "airDropShipModuleHelpOverviewBody": "Настройка волн, когда импы сбрасываются с воздуха. Каждая запись задаёт волну, доп. количество импов, уровень импов и зону сброса (диапазон строк/столбцов).",
+  "airDropShipModuleHelpOverviewBody": "Настройка волн, когда импы сбрасываются с воздуха. Номер волны — индекс с 0 (0 = первая волна). Каждая запись задаёт волну, доп. количество импов, уровень импов и зону сброса.",
   "airDropShipModuleHelpImps": "Импы",
-  "airDropShipModuleHelpImpsBody": "Доп. количество импов — число дополнительных импов. Всегда сбрасывается минимум один имп.",
+  "airDropShipModuleHelpImpsBody": "Индекс волны с 0. Доп. количество импов — число дополнительных импов поверх минимум одного.",
   "airDropShipModuleAppearWaves": "Волны появления",
   "airDropShipModuleExtraImpCount": "Доп. количество импов",
   "airDropShipModuleDropArea": "Зона сброса",
@@ -1541,7 +1602,7 @@
   "heianWindModuleTitle": "Ветер Хэйан",
   "heianWindModuleHelpTitle": "Справка по ветру Хэйан",
   "heianWindModuleHelpOverview": "Обзор",
-  "heianWindModuleHelpOverviewBody": "Настройка ветров на конкретных волнах. Ветер толкает зомби; на отдельных рядах может вызвать торнадо, которое несёт зомби вперёд и сдувает растения.",
+  "heianWindModuleHelpOverviewBody": "Настройка ветров на конкретных волнах. Индекс волны с 0 (0 = первая волна). Ветер толкает зомби; на отдельных рядах может вызвать торнадо, которое несёт зомби вперёд и сдувает растения.",
   "heianWindModuleHelpDistance": "Дистанция",
   "heianWindModuleHelpDistanceBody": "Дистанция 50 равна одной клетке сетки. Отрицательные значения двигают зомби влево; положительные — вправо.",
   "heianWindModuleHelpRow": "Ряд",
@@ -1615,5 +1676,11 @@
   "invalidRtonEnd": "Неверный файл RTON: должен заканчиваться на «DONE».",
   "invalidRtonArrayEnd": "Неверный разделитель массива RTON.",
   "invalidRtid": "Недопустимое значение RTID.",
-  "invalidValueType": "Недопустимый тип значения для RTON."
+  "invalidValueType": "Недопустимый тип значения для RTON.",
+  "musicSuffix": "Суффикс музыки",
+  "ambientAudioSuffix": "Суффикс фонового звука",
+  "selectMusicSuffix": "Выбор суффикса музыки",
+  "searchMusicSuffix": "Поиск по названию или коду",
+  "noMusicSuffixFound": "Суффикс не найден",
+  "jsonViewerLineContinuation": "↳"
 }

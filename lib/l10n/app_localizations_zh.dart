@@ -1029,6 +1029,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conflictDesc_ZombossDeathDrop => '僵王战中死亡掉落会阻止关卡正常完成。';
 
   @override
+  String get conflictDesc_WinConditionExclusive =>
+      '死亡掉落、铜人阵胜利与默认脑子被吃等胜利/失败规则应只选其一，请移除多余的胜利条件模块。';
+
+  @override
   String get conflictDesc_ZombossTwoIntros => '两个开场动画不能共存，否则僵王的血条会显示异常。';
 
   @override
@@ -1196,6 +1200,79 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moduleDesc_ZombiesDeadWinConProperties => '关卡稳定运行必需模块';
+
+  @override
+  String get moduleTitle_BronzeDeadWinConProperties => '铜人阵胜利';
+
+  @override
+  String get moduleDesc_BronzeDeadWinConProperties =>
+      '清除场上全部铜人像与铜人巨人后胜利（功夫玩法）。与死亡掉落互斥，关卡应只保留一种胜利条件模块。';
+
+  @override
+  String get moduleTitle_SpermWhaleModuleProperties => '鲸鱼模块';
+
+  @override
+  String get moduleDesc_SpermWhaleModuleProperties => '海底鲸鱼吞噬参数，需配合关卡内磷虾等出场。';
+
+  @override
+  String get spermWhaleModuleTitle => '鲸鱼模块';
+
+  @override
+  String get spermWhaleModuleHelpTitle => '鲸鱼模块';
+
+  @override
+  String get spermWhaleModuleParameters => '参数';
+
+  @override
+  String get spermWhaleModuleHelpOverview => '概述';
+
+  @override
+  String get spermWhaleModuleHelpOverviewBody =>
+      '配置海底鲸鱼的吞噬间隔、中毒时的吞噬间隔、吞噬持续时间，以及噗噗鱼藤中毒触发次数。通常用于深海/深海陆地地图，并需要关卡内搭配磷虾（一般至少三只）才有完整效果。';
+
+  @override
+  String get spermWhaleModuleHelpFieldsTitle => '字段说明';
+
+  @override
+  String get spermWhaleModuleHelpFieldsBody =>
+      'SwallowInterval：正常情况下吞噬植物的间隔。PoisonSwallowInterval：中毒状态下吞噬间隔。SwallowDuration：吞噬阶段持续时间。PoisonTriggerCount：受噗噗鱼藤中毒负面影响次数阈值，用于切换到中毒吞噬节奏。';
+
+  @override
+  String get spermWhaleModuleSwallowInterval => '吞噬间隔 (SwallowInterval)';
+
+  @override
+  String get spermWhaleModuleHelpSwallowInterval => '正常情况下，两次吞噬植物之间的秒数。';
+
+  @override
+  String get spermWhaleModulePoisonSwallowInterval =>
+      '中毒吞噬间隔 (PoisonSwallowInterval)';
+
+  @override
+  String get spermWhaleModuleHelpPoisonSwallowInterval => '中毒状态下吞噬植物的间隔（秒）。';
+
+  @override
+  String get spermWhaleModuleSwallowDuration => '吞噬持续时间 (SwallowDuration)';
+
+  @override
+  String get spermWhaleModuleHelpSwallowDuration => '单次吞噬阶段持续时长（秒）。';
+
+  @override
+  String get spermWhaleModulePoisonTriggerCount =>
+      '中毒触发次数 (PoisonTriggerCount)';
+
+  @override
+  String get spermWhaleModuleHelpPoisonTriggerCount =>
+      '噗噗鱼藤中毒负面影响累计触发多少次后，采用中毒吞噬间隔。';
+
+  @override
+  String get spermWhaleModuleNotDeepSeaWarning =>
+      '该模块主要面向深海或深海陆地草坪。以下网格仅反映当前关卡舞台尺寸；非深海地图与游戏内亚特兰蒂斯布局可能不一致。';
+
+  @override
+  String get spermWhaleModuleLawnPreview => '草坪网格（布局参考）';
+
+  @override
+  String get spermWhaleModuleLawnPreviewHint => '深海草坪为 6×10；普通草坪为 5×9。';
 
   @override
   String get moduleTitle_PennyClassroomModuleProperties => '阶级定义';
@@ -4212,6 +4289,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get missingModulesRecommended => '关卡可能无法正常运行。建议添加以下模块：';
 
   @override
+  String get recommendedTunnelDefendTitle => '强烈建议添加地宫坑道模块';
+
+  @override
+  String get recommendedTunnelDefendBody =>
+      '地宫遗迹类场地依赖坑道路径表现。强烈建议添加「地宫坑道」模块，否则游戏中场地可能显得空旷。';
+
+  @override
   String get itemListRowFirst => '当前格子中的物品';
 
   @override
@@ -4318,6 +4402,15 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get tunnelDefendDeleteOutsideConfirmMessage =>
       '将移除 5×9 场地之外的路径组件，此操作不可撤销。';
+
+  @override
+  String get tunnelDefendTileStylePreset => '地砖样式预设';
+
+  @override
+  String get tunnelDefendTileStylePart1 => '款式一';
+
+  @override
+  String get tunnelDefendTileStylePart2 => '款式二';
 
   @override
   String get moduleTitle_LawnMowerProperties => '小推车';
@@ -4439,18 +4532,25 @@ class AppLocalizationsZh extends AppLocalizations {
       '每一组内传送门的数量。例如，设为2时，每种类型各有2个传送门。传送门的总数不能超过生成区域内的格子数。如果同一类型中存在多个可传送的传送门，僵尸会始终传送到指定的那个传送门。';
 
   @override
-  String get pvz1PassageFieldGridXMin => '最小生成列数 (GridXMin，范围0-9或0-10)';
+  String get pvz1PassageFieldGridXMin => '最小生成列数 (GridXMin)';
 
   @override
-  String get pvz1PassageHelpGridXMin =>
-      '传送门可出现的最左列。场地左边界为0列，右边界为9列（海底世界地图为10列）。最小生成列数必须小于最大生成列数。';
+  String pvz1PassageHelpGridXMin(int maxIndex) {
+    return '传送门可出现的最左列。在当前场地上，列索引范围为 0–$maxIndex。最小生成列数必须小于最大生成列数。';
+  }
 
   @override
-  String get pvz1PassageFieldGridXMax => '最大生成列数 (GridXMax，范围0-9或10列)';
+  String get pvz1PassageFieldGridXMax => '最大生成列数 (GridXMax)';
 
   @override
-  String get pvz1PassageHelpGridXMax =>
-      '传送门可出现的最右列。场地左边界为0列，右边界为9列（海底世界地图为10列）。最大生成列数必须大于最小生成列数。';
+  String pvz1PassageHelpGridXMax(int maxIndex) {
+    return '传送门可出现的最右列。在当前场地上，列索引范围为 0–$maxIndex。最大生成列数必须大于最小生成列数。';
+  }
+
+  @override
+  String pvz1PassageGridColumnRange(int maxIndex) {
+    return '0–$maxIndex';
+  }
 
   @override
   String get pvz1PassageFieldTransferCooldown =>
@@ -4466,6 +4566,20 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get pvz1PassageHelpRefreshTime =>
       '传送门重新生成位置的间隔。位置生成是逐个进行的，即每次刷新只会改变同一类型中的一个传送门的位置。';
+
+  @override
+  String get pvz1PassagePortalSpawnPreview => '传送门生成列预览';
+
+  @override
+  String get pvz1PassageHelpPreview => '预览';
+
+  @override
+  String pvz1PassageHelpPreviewBody(int maxIndex) {
+    return '橙色高亮列为传送门可出现的最小–最大列范围（GridXMin–GridXMax，含边界）。在当前场地上，有效列索引为 0–$maxIndex。本模块不以行限制传送门。';
+  }
+
+  @override
+  String get moduleWaveIndexZeroBasedHint => '波次索引：0 表示第 1 波，1 表示第 2 波，以此类推。';
 
   @override
   String get moduleTitle_RenaiModuleProperties => '复兴时代模块';
@@ -4491,7 +4605,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get renaiModuleHelpStatuesBody =>
-      '初始障碍物指关卡开始时场上已存在的雕像和原石像，会在指定波次复活成为僵尸。夜间障碍物指黑夜开始后生成的障碍物，生成时若目标格上已有植物，则不会生成。黑夜开始的波次在代码中从0开始计数（如第1波入夜为0，第2波入夜为1），但在编辑器界面中请照常从1开始填写。';
+      '初始障碍物指关卡开始时场上已存在的雕像和原石像，会在指定波次复活成为僵尸。夜间障碍物指黑夜开始后生成的障碍物，生成时若目标格上已有植物，则不会生成。黑夜开始波次与雕像复活波次均使用从 0 起的波次索引（0=第1波，1=第2波）。';
 
   @override
   String get renaiModuleEnableNight => '启用昼夜更替功能';
@@ -4546,14 +4660,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get airDropShipModuleHelpOverviewBody =>
-      '此模块用于配置关卡中随波次出现的运兵艇，常见于天空之城关卡。运兵艇不会受到攻击，指定数量的飞行小鬼僵尸会从中依次降落到指定投放区域内的位置。';
+      '此模块用于配置关卡中随波次出现的运兵艇，常见于天空之城关卡。运兵艇不会受到攻击，指定数量的飞行小鬼僵尸会从中依次降落到指定投放区域内的位置。波次编号为从 0 开始的索引（0 表示第 1 波）。';
 
   @override
   String get airDropShipModuleHelpImps => '参数介绍';
 
   @override
   String get airDropShipModuleHelpImpsBody =>
-      '运兵艇的出现波次从0开始计数，如第1波登场填0，第2波登场填1。运兵艇至少会投放1只飞行小鬼僵尸，因此额外小鬼数量填写的是在这1只的基础上，该波次额外投放的小鬼数量。';
+      '每条记录的波次索引从 0 开始（0=第1波）。运兵艇至少会投放 1 只飞行小鬼僵尸；额外小鬼数量指在该 1 只之外再投放的数量。';
 
   @override
   String get airDropShipModuleAppearWaves => '出现波次（Wave, 从0开始）';
@@ -4605,7 +4719,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get heianWindModuleHelpOverviewBody =>
-      '此模块用于在指定波次召唤神风，常见于平安时代关卡。神风会推动覆盖范围内指定数量的中小体型僵尸平移一段距离。一个波次内所有神风结束后，该波次中被单行神风作用过的行会生成旋风，一行最多只会生成一道旋风。旋风会裹挟遇到的僵尸前进，并在接触植物时将其击飞，随后消失。';
+      '此模块用于在指定波次召唤神风，常见于平安时代关卡。神风会推动覆盖范围内指定数量的中小体型僵尸平移一段距离。一个波次内所有神风结束后，该波次中被单行神风作用过的行会生成旋风，一行最多只会生成一道旋风。旋风会裹挟遇到的僵尸前进，并在接触植物时将其击飞，随后消失。每条配置的波次编号为从 0 起的索引（0=第1波）。';
 
   @override
   String get heianWindModuleHelpDistance => '平移距离';
@@ -4836,4 +4950,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get invalidValueType => 'RTON 不支持该值类型。';
+
+  @override
+  String get musicSuffix => '音乐后缀';
+
+  @override
+  String get ambientAudioSuffix => '环境音后缀';
+
+  @override
+  String get selectMusicSuffix => '选择音乐后缀';
+
+  @override
+  String get searchMusicSuffix => '搜索名称或代码名';
+
+  @override
+  String get noMusicSuffixFound => '未找到音乐后缀';
+
+  @override
+  String get jsonViewerLineContinuation => '↳';
 }

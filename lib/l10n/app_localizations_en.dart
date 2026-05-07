@@ -1059,6 +1059,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Loot Drop in Zomboss Battle mode will prevent proper level completion.';
 
   @override
+  String get conflictDesc_WinConditionExclusive =>
+      'Only one of Loot Drop, Bronze clear win, or default brain-eaten behavior should be in LevelModules. Remove the extra win-condition modules.';
+
+  @override
   String get conflictDesc_ZombossTwoIntros =>
       'Two level opening intros cannot coexist, otherwise Zomboss health bar will not display correctly.';
 
@@ -1245,6 +1249,86 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_ZombiesDeadWinConProperties =>
       'Required module for level stability';
+
+  @override
+  String get moduleTitle_BronzeDeadWinConProperties => 'Bronze clear win';
+
+  @override
+  String get moduleDesc_BronzeDeadWinConProperties =>
+      'Victory when all bronze statues and bronze gargantuars are cleared (Kongfu-style). Use instead of Loot Drop when you need this win rule; only one win-condition module should be active.';
+
+  @override
+  String get moduleTitle_SpermWhaleModuleProperties => 'Sperm whale';
+
+  @override
+  String get moduleDesc_SpermWhaleModuleProperties =>
+      'Atlantis whale swallow behavior (intervals and poison). Pair with krill spawns in-game.';
+
+  @override
+  String get spermWhaleModuleTitle => 'Sperm whale module';
+
+  @override
+  String get spermWhaleModuleHelpTitle => 'Sperm whale module';
+
+  @override
+  String get spermWhaleModuleParameters => 'Parameters';
+
+  @override
+  String get spermWhaleModuleHelpOverview => 'Overview';
+
+  @override
+  String get spermWhaleModuleHelpOverviewBody =>
+      'Configures the underwater whale behavior: normal and poisoned swallow timing, swallow phase duration, and when poison timing kicks in. Typically used on Deep Sea stages with krill; at least 3 krill are usually required for full behavior.';
+
+  @override
+  String get spermWhaleModuleHelpFieldsTitle => 'Fields';
+
+  @override
+  String get spermWhaleModuleHelpFieldsBody =>
+      'SwallowInterval: seconds between plant swallows normally. PoisonSwallowInterval: seconds between swallows while the poison debuff from pufferfish stacks is active. SwallowDuration: duration of a swallow phase. PoisonTriggerCount: how many poison stack triggers before poison timing applies.';
+
+  @override
+  String get spermWhaleModuleSwallowInterval =>
+      'Swallow interval (SwallowInterval)';
+
+  @override
+  String get spermWhaleModuleHelpSwallowInterval =>
+      'Seconds between plant swallows under normal conditions.';
+
+  @override
+  String get spermWhaleModulePoisonSwallowInterval =>
+      'Poison swallow interval (PoisonSwallowInterval)';
+
+  @override
+  String get spermWhaleModuleHelpPoisonSwallowInterval =>
+      'Seconds between swallows while poison debuff applies.';
+
+  @override
+  String get spermWhaleModuleSwallowDuration =>
+      'Swallow duration (SwallowDuration)';
+
+  @override
+  String get spermWhaleModuleHelpSwallowDuration =>
+      'How long a swallow phase lasts (seconds).';
+
+  @override
+  String get spermWhaleModulePoisonTriggerCount =>
+      'Poison trigger count (PoisonTriggerCount)';
+
+  @override
+  String get spermWhaleModuleHelpPoisonTriggerCount =>
+      'How many pufferfish poison negative triggers before poison swallow timing is used.';
+
+  @override
+  String get spermWhaleModuleNotDeepSeaWarning =>
+      'This module is intended for Deep Sea or Deep Sea Land stages. The preview grid follows your level’s stage; on non–Deep Sea lawns it will not match Atlantis layout.';
+
+  @override
+  String get spermWhaleModuleLawnPreview => 'Lawn grid (layout reference)';
+
+  @override
+  String get spermWhaleModuleLawnPreviewHint =>
+      'Deep Sea lawns use 6×10 cells; standard lawns use 5×9.';
 
   @override
   String get moduleTitle_PennyClassroomModuleProperties => 'Tier Definition';
@@ -4428,6 +4512,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'The level might not function correctly. Recommended to add the following modules:';
 
   @override
+  String get recommendedTunnelDefendTitle =>
+      'Tunnel pathways strongly recommended';
+
+  @override
+  String get recommendedTunnelDefendBody =>
+      'Underground Palace stages are built around tunnel pathway visuals. Adding the Tunnel Defend module is highly recommended—without it the lawn may look empty in-game.';
+
+  @override
   String get itemListRowFirst => 'Item(s) in selected tile';
 
   @override
@@ -4542,6 +4634,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tunnelDefendDeleteOutsideConfirmMessage =>
       'This will remove all pathway components outside the 5×9 lawn. This action cannot be undone.';
+
+  @override
+  String get tunnelDefendTileStylePreset => 'Tile style preset';
+
+  @override
+  String get tunnelDefendTileStylePart1 => 'part 1';
+
+  @override
+  String get tunnelDefendTileStylePart2 => 'part 2';
 
   @override
   String get moduleTitle_LawnMowerProperties => 'Lawn Mowers';
@@ -4675,20 +4776,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'The number of portals within each type. For example, if set to 2, each type will have 2 portals. The total number of portals cannot exceed the number of tiles in the spawn area. If multiple valid destination portals exist within the same type, zombies will always teleport to the designated one.';
 
   @override
-  String get pvz1PassageFieldGridXMin =>
-      'Minimum spawn column (GridXMin, range 0-9 or 0-10)';
+  String get pvz1PassageFieldGridXMin => 'Minimum spawn column (GridXMin)';
 
   @override
-  String get pvz1PassageHelpGridXMin =>
-      'The leftmost column where portals may spawn. The left boundary of the field is column 0, and the right boundary is column 9 (or column 10 in Underwater World). This value must be less than the maximum column value.';
+  String pvz1PassageHelpGridXMin(int maxIndex) {
+    return 'The leftmost column where portals may spawn. On this lawn, column indices run from 0 through $maxIndex. This value must be less than the maximum column value.';
+  }
 
   @override
-  String get pvz1PassageFieldGridXMax =>
-      'Maximum spawn column (GridXMax, range 0-9 or 0-10)';
+  String get pvz1PassageFieldGridXMax => 'Maximum spawn column (GridXMax)';
 
   @override
-  String get pvz1PassageHelpGridXMax =>
-      'The rightmost column where portals may spawn. The left boundary of the field is column 0, and the right boundary is column 9 (or column 10 in Underwater World). This value must be greater than the minimum column value.';
+  String pvz1PassageHelpGridXMax(int maxIndex) {
+    return 'The rightmost column where portals may spawn. On this lawn, column indices run from 0 through $maxIndex. This value must be greater than the minimum column value.';
+  }
+
+  @override
+  String pvz1PassageGridColumnRange(int maxIndex) {
+    return '0–$maxIndex';
+  }
 
   @override
   String get pvz1PassageFieldTransferCooldown =>
@@ -4705,6 +4811,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pvz1PassageHelpRefreshTime =>
       'The interval at which portal positions are regenerated. Portals are refreshed one at a time, meaning each refresh only changes the position of one portal within the same type.';
+
+  @override
+  String get pvz1PassagePortalSpawnPreview => 'Portal spawn column preview';
+
+  @override
+  String get pvz1PassageHelpPreview => 'Preview';
+
+  @override
+  String pvz1PassageHelpPreviewBody(int maxIndex) {
+    return 'Tiles highlighted in orange are within the portal spawn column range (GridXMin–GridXMax, inclusive). On this lawn, valid column indices are 0–$maxIndex. Row does not restrict portals in this module.';
+  }
+
+  @override
+  String get moduleWaveIndexZeroBasedHint =>
+      'Wave index: 0 = wave 1, 1 = wave 2, …';
 
   @override
   String get moduleTitle_RenaiModuleProperties => 'Renaissance Module';
@@ -4731,7 +4852,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get renaiModuleHelpStatuesBody =>
-      'Initial grid items refer to statues and Marble Mounds present at the start of the level, which revive into zombies at specified waves. Night grid items are generated after night begins; if a plant occupies the target tile, they will not spawn. Night start waves are counted from 0 in the code (e.g., wave 1 → 0, wave 2 → 1); however, when entering the value in the editor interface, you should start from 1 as usual.';
+      'Initial grid items refer to statues and Marble Mounds present at the start of the level, which revive into zombies at specified waves. Night grid items are generated after night begins; if a plant occupies the target tile, they will not spawn. Night start wave and statue revival wave use a 0-based index (0 = first wave, 1 = second wave).';
 
   @override
   String get renaiModuleEnableNight => 'Enable Day–Night Cycle';
@@ -4789,14 +4910,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get airDropShipModuleHelpOverviewBody =>
-      'Used to configure Transport Boats that appear during waves in a level, commonly seen in Sky City levels. Transport Boats cannot be damaged. A set number of Flying Imp Zombies will drop sequentially into the designated drop area.';
+      'Used to configure Transport Boats that appear during waves in a level, commonly seen in Sky City levels. Transport Boats cannot be damaged. A set number of Flying Imp Zombies will drop sequentially into the designated drop area. Wave numbers use a 0-based index (0 = first wave).';
 
   @override
   String get airDropShipModuleHelpImps => 'Parameters';
 
   @override
   String get airDropShipModuleHelpImpsBody =>
-      'Transport Boat waves are counted from 0 (e.g. wave 1 → 0, wave 2 → 1). Each Transport Boat drops at least one Flying Imp Zombie. The extra imp count specifies how many additional imps are dropped on top of the initial one for that wave.';
+      'Each entry’s wave index is 0-based (0 = first wave). Each Transport Boat drops at least one Flying Imp Zombie. The extra imp count specifies how many additional imps are dropped on top of the initial one for that wave.';
 
   @override
   String get airDropShipModuleAppearWaves =>
@@ -4850,7 +4971,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get heianWindModuleHelpOverviewBody =>
-      'Used to summon Divine Wind at specified waves, commonly seen in Heian Ages levels. The wind pushes a set number of small and medium zombies within its range horizontally. After all winds in a wave finish, rows affected by single-row winds will generate a whirlwind (one per row). The whirlwind carries zombies forward and knocks plants into the air on contact before disappearing.';
+      'Used to summon Divine Wind at specified waves, commonly seen in Heian Ages levels. The wind pushes a set number of small and medium zombies within its range horizontally. After all winds in a wave finish, rows affected by single-row winds will generate a whirlwind (one per row). The whirlwind carries zombies forward and knocks plants into the air on contact before disappearing. Each entry’s wave index is 0-based (0 = first wave).';
 
   @override
   String get heianWindModuleHelpDistance => 'Distance';
@@ -5093,4 +5214,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidValueType => 'Invalid value type for RTON.';
+
+  @override
+  String get musicSuffix => 'Music suffix';
+
+  @override
+  String get ambientAudioSuffix => 'Ambient audio suffix';
+
+  @override
+  String get selectMusicSuffix => 'Select music suffix';
+
+  @override
+  String get searchMusicSuffix => 'Search name or codename';
+
+  @override
+  String get noMusicSuffixFound => 'No music suffix found';
+
+  @override
+  String get jsonViewerLineContinuation => '↳';
 }

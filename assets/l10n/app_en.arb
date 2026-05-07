@@ -335,6 +335,7 @@
   "conflictDesc_EvilDaveZombieDrop": "I, Zombie mode cannot have Zombie Drop module.",
   "conflictDesc_EvilDaveVictory": "I, Zombie mode cannot have Zombie Victory Condition.",
   "conflictDesc_ZombossDeathDrop": "Loot Drop in Zomboss Battle mode will prevent proper level completion.",
+  "conflictDesc_WinConditionExclusive": "Only one of Loot Drop, Bronze clear win, or default brain-eaten behavior should be in LevelModules. Remove the extra win-condition modules.",
   "conflictDesc_ZombossTwoIntros": "Two level opening intros cannot coexist, otherwise Zomboss health bar will not display correctly.",
   "conflictDesc_InitialPlantEntryRoof": "Pre-place plants on the roof will cause a crash.",
   "conflictDesc_InitialPlantRoof": "Legacy preset plants on the roof will cause a crash.",
@@ -391,6 +392,28 @@
   "moduleDesc_ZombiesAteYourBrainsProperties": "Position where zombies entering the house triggers defeat",
   "moduleTitle_ZombiesDeadWinConProperties": "Loot Drop",
   "moduleDesc_ZombiesDeadWinConProperties": "Required module for level stability",
+  "moduleTitle_BronzeDeadWinConProperties": "Bronze clear win",
+  "moduleDesc_BronzeDeadWinConProperties": "Victory when all bronze statues and bronze gargantuars are cleared (Kongfu-style). Use instead of Loot Drop when you need this win rule; only one win-condition module should be active.",
+  "moduleTitle_SpermWhaleModuleProperties": "Sperm whale",
+  "moduleDesc_SpermWhaleModuleProperties": "Atlantis whale swallow behavior (intervals and poison). Pair with krill spawns in-game.",
+  "spermWhaleModuleTitle": "Sperm whale module",
+  "spermWhaleModuleHelpTitle": "Sperm whale module",
+  "spermWhaleModuleParameters": "Parameters",
+  "spermWhaleModuleHelpOverview": "Overview",
+  "spermWhaleModuleHelpOverviewBody": "Configures the underwater whale behavior: normal and poisoned swallow timing, swallow phase duration, and when poison timing kicks in. Typically used on Deep Sea stages with krill; at least 3 krill are usually required for full behavior.",
+  "spermWhaleModuleHelpFieldsTitle": "Fields",
+  "spermWhaleModuleHelpFieldsBody": "SwallowInterval: seconds between plant swallows normally. PoisonSwallowInterval: seconds between swallows while the poison debuff from pufferfish stacks is active. SwallowDuration: duration of a swallow phase. PoisonTriggerCount: how many poison stack triggers before poison timing applies.",
+  "spermWhaleModuleSwallowInterval": "Swallow interval (SwallowInterval)",
+  "spermWhaleModuleHelpSwallowInterval": "Seconds between plant swallows under normal conditions.",
+  "spermWhaleModulePoisonSwallowInterval": "Poison swallow interval (PoisonSwallowInterval)",
+  "spermWhaleModuleHelpPoisonSwallowInterval": "Seconds between swallows while poison debuff applies.",
+  "spermWhaleModuleSwallowDuration": "Swallow duration (SwallowDuration)",
+  "spermWhaleModuleHelpSwallowDuration": "How long a swallow phase lasts (seconds).",
+  "spermWhaleModulePoisonTriggerCount": "Poison trigger count (PoisonTriggerCount)",
+  "spermWhaleModuleHelpPoisonTriggerCount": "How many pufferfish poison negative triggers before poison swallow timing is used.",
+  "spermWhaleModuleNotDeepSeaWarning": "This module is intended for Deep Sea or Deep Sea Land stages. The preview grid follows your level’s stage; on non–Deep Sea lawns it will not match Atlantis layout.",
+  "spermWhaleModuleLawnPreview": "Lawn grid (layout reference)",
+  "spermWhaleModuleLawnPreviewHint": "Deep Sea lawns use 6×10 cells; standard lawns use 5×9.",
   "moduleTitle_PennyClassroomModuleProperties": "Tier Definition",
   "moduleDesc_PennyClassroomModuleProperties": "Globally defines plant tiers, overrides other modules",
   "moduleTitle_SeedBankProperties": "Seed Bank",
@@ -1386,6 +1409,8 @@
   "deleteChallengeConfirmRef": "Remove reference to \"{name}\"? The challenge will remain in LevelModules.",
   "@deleteChallengeConfirmRef": {"placeholders": {"name": {"type": "String"}}},
   "missingModulesRecommended": "The level might not function correctly. Recommended to add the following modules:",
+  "recommendedTunnelDefendTitle": "Tunnel pathways strongly recommended",
+  "recommendedTunnelDefendBody": "Underground Palace stages are built around tunnel pathway visuals. Adding the Tunnel Defend module is highly recommended—without it the lawn may look empty in-game.",
   "selectedPosition": "Selected position",
   "addItem": "Add item",
   "itemListRowFirst": "Item(s) in selected tile",
@@ -1423,6 +1448,9 @@
   "tunnelDefendDeleteOutside": "Remove pathway components outside the lawn",
   "tunnelDefendDeleteOutsideConfirmTitle": "Remove pathway components outside the lawn?",
   "tunnelDefendDeleteOutsideConfirmMessage": "This will remove all pathway components outside the 5×9 lawn. This action cannot be undone.",
+  "tunnelDefendTileStylePreset": "Tile style preset",
+  "tunnelDefendTileStylePart1": "part 1",
+  "tunnelDefendTileStylePart2": "part 2",
   "moduleTitle_LawnMowerProperties": "Lawn Mowers",
   "moduleDesc_LawnMowerProperties": "Sets mower styles (may not work in custom lawns)",
   "moduleTitle_TunnelDefendModuleProperties": "Underground Palace Pathways",
@@ -1460,14 +1488,47 @@
   "pvz1PassageHelpGroupAmount": "The number of portal types that appear in the level. PvZ1-style portals have two types: square and circular. If set to 1, only square portals will appear. If set to 2, both square and circular portals will appear. If set to 3 or higher, the extra portal types will display as sun textures; these portals do not change position, but can still teleport zombies.",
   "pvz1PassageFieldPassageAmount": "Portals per type (PassageAmount)",
   "pvz1PassageHelpPassageAmount": "The number of portals within each type. For example, if set to 2, each type will have 2 portals. The total number of portals cannot exceed the number of tiles in the spawn area. If multiple valid destination portals exist within the same type, zombies will always teleport to the designated one.",
-  "pvz1PassageFieldGridXMin": "Minimum spawn column (GridXMin, range 0-9 or 0-10)",
-  "pvz1PassageHelpGridXMin": "The leftmost column where portals may spawn. The left boundary of the field is column 0, and the right boundary is column 9 (or column 10 in Underwater World). This value must be less than the maximum column value.",
-  "pvz1PassageFieldGridXMax": "Maximum spawn column (GridXMax, range 0-9 or 0-10)",
-  "pvz1PassageHelpGridXMax": "The rightmost column where portals may spawn. The left boundary of the field is column 0, and the right boundary is column 9 (or column 10 in Underwater World). This value must be greater than the minimum column value.",
+  "pvz1PassageFieldGridXMin": "Minimum spawn column (GridXMin)",
+  "pvz1PassageHelpGridXMin": "The leftmost column where portals may spawn. On this lawn, column indices run from 0 through {maxIndex}. This value must be less than the maximum column value.",
+  "@pvz1PassageHelpGridXMin": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
+  "pvz1PassageFieldGridXMax": "Maximum spawn column (GridXMax)",
+  "pvz1PassageHelpGridXMax": "The rightmost column where portals may spawn. On this lawn, column indices run from 0 through {maxIndex}. This value must be greater than the minimum column value.",
+  "@pvz1PassageHelpGridXMax": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
+  "pvz1PassageGridColumnRange": "0–{maxIndex}",
+  "@pvz1PassageGridColumnRange": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
   "pvz1PassageFieldTransferCooldown": "Same-zombie teleport cooldown (transferCooldown, seconds)",
   "pvz1PassageHelpTransferCooldown": "The minimum time between two teleports of the same zombie. If set too low, a zombie that fails to leave the portal tile within the interval may be teleported back to the original portal again once the cooldown ends.",
   "pvz1PassageFieldRefreshTime": "Portal reposition interval (refreshTime, seconds)",
   "pvz1PassageHelpRefreshTime": "The interval at which portal positions are regenerated. Portals are refreshed one at a time, meaning each refresh only changes the position of one portal within the same type.",
+  "pvz1PassagePortalSpawnPreview": "Portal spawn column preview",
+  "pvz1PassageHelpPreview": "Preview",
+  "pvz1PassageHelpPreviewBody": "Tiles highlighted in orange are within the portal spawn column range (GridXMin–GridXMax, inclusive). On this lawn, valid column indices are 0–{maxIndex}. Row does not restrict portals in this module.",
+  "@pvz1PassageHelpPreviewBody": {
+    "placeholders": {
+      "maxIndex": {
+        "type": "int"
+      }
+    }
+  },
+  "moduleWaveIndexZeroBasedHint": "Wave index: 0 = wave 1, 1 = wave 2, …",
   "moduleTitle_RenaiModuleProperties": "Renaissance Module",
   "moduleDesc_RenaiModuleProperties": "Enables the Vitruvian Wheel and day–night cycle, configures Renaissance Statues and Marble Mounds",
   "renaiModuleTitle": "Renaissance Module Settings",
@@ -1475,7 +1536,7 @@
   "renaiModuleHelpOverview": "Overview",
   "renaiModuleHelpOverviewBody": "Used to make the Vitruvian Wheel respond to Floor-de-Lis tiles; configure day–night cycle waves; and, at night, revive Renaissance Statues and Marble Mounds, and spawn grid items based on settings. Typically used in Renaissance Ages levels.",
   "renaiModuleHelpStatues": "Notes",
-  "renaiModuleHelpStatuesBody": "Initial grid items refer to statues and Marble Mounds present at the start of the level, which revive into zombies at specified waves. Night grid items are generated after night begins; if a plant occupies the target tile, they will not spawn. Night start waves are counted from 0 in the code (e.g., wave 1 → 0, wave 2 → 1); however, when entering the value in the editor interface, you should start from 1 as usual.",
+  "renaiModuleHelpStatuesBody": "Initial grid items refer to statues and Marble Mounds present at the start of the level, which revive into zombies at specified waves. Night grid items are generated after night begins; if a plant occupies the target tile, they will not spawn. Night start wave and statue revival wave use a 0-based index (0 = first wave, 1 = second wave).",
   "renaiModuleEnableNight": "Enable Day–Night Cycle",
   "renaiModuleEnableNightSubtitle": "Allows setting the wave when night begins and configuring night grid items",
   "renaiModuleNightStart": "Night Start Wave",
@@ -1493,9 +1554,9 @@
   "airDropShipModuleTitle": "Transport Boat Assault",
   "airDropShipModuleHelpTitle": "Transport Boat Assault module",
   "airDropShipModuleHelpOverview": "Overview",
-  "airDropShipModuleHelpOverviewBody": "Used to configure Transport Boats that appear during waves in a level, commonly seen in Sky City levels. Transport Boats cannot be damaged. A set number of Flying Imp Zombies will drop sequentially into the designated drop area.",
+  "airDropShipModuleHelpOverviewBody": "Used to configure Transport Boats that appear during waves in a level, commonly seen in Sky City levels. Transport Boats cannot be damaged. A set number of Flying Imp Zombies will drop sequentially into the designated drop area. Wave numbers use a 0-based index (0 = first wave).",
   "airDropShipModuleHelpImps": "Parameters",
-  "airDropShipModuleHelpImpsBody": "Transport Boat waves are counted from 0 (e.g. wave 1 → 0, wave 2 → 1). Each Transport Boat drops at least one Flying Imp Zombie. The extra imp count specifies how many additional imps are dropped on top of the initial one for that wave.",
+  "airDropShipModuleHelpImpsBody": "Each entry’s wave index is 0-based (0 = first wave). Each Transport Boat drops at least one Flying Imp Zombie. The extra imp count specifies how many additional imps are dropped on top of the initial one for that wave.",
   "airDropShipModuleAppearWaves": "Appear waves (Wave; starts from 0)",
   "airDropShipModuleExtraImpCount": "Extra imp count (Imp)",
   "airDropShipModuleDropArea": "Drop area",
@@ -1512,7 +1573,7 @@
   "heianWindModuleTitle": "Heian Divine Wind Settings",
   "heianWindModuleHelpTitle": "Heian Divine Wind module",
   "heianWindModuleHelpOverview": "Overview",
-  "heianWindModuleHelpOverviewBody": "Used to summon Divine Wind at specified waves, commonly seen in Heian Ages levels. The wind pushes a set number of small and medium zombies within its range horizontally. After all winds in a wave finish, rows affected by single-row winds will generate a whirlwind (one per row). The whirlwind carries zombies forward and knocks plants into the air on contact before disappearing.",
+  "heianWindModuleHelpOverviewBody": "Used to summon Divine Wind at specified waves, commonly seen in Heian Ages levels. The wind pushes a set number of small and medium zombies within its range horizontally. After all winds in a wave finish, rows affected by single-row winds will generate a whirlwind (one per row). The whirlwind carries zombies forward and knocks plants into the air on contact before disappearing. Each entry’s wave index is 0-based (0 = first wave).",
   "heianWindModuleHelpDistance": "Distance",
   "heianWindModuleHelpDistanceBody": "1 tile = 50 distance units. Negative values push zombies to the left, while positive values push them to the right.",
   "heianWindModuleHelpRow": "Coverage",
@@ -1586,5 +1647,11 @@
   "invalidRtonEnd": "Invalid RTON file: must end with \"DONE\".",
   "invalidRtonArrayEnd": "Invalid RTON array delimiter.",
   "invalidRtid": "Invalid RTID value.",
-  "invalidValueType": "Invalid value type for RTON."
+  "invalidValueType": "Invalid value type for RTON.",
+  "musicSuffix": "Music suffix",
+  "ambientAudioSuffix": "Ambient audio suffix",
+  "selectMusicSuffix": "Select music suffix",
+  "searchMusicSuffix": "Search name or codename",
+  "noMusicSuffixFound": "No music suffix found",
+  "jsonViewerLineContinuation": "↳"
 }

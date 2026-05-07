@@ -1062,6 +1062,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Смертельные капли в режиме Zomboss Battle помешают корректному завершению уровня.';
 
   @override
+  String get conflictDesc_WinConditionExclusive =>
+      'В LevelModules должно быть только одно условие победы/поражения из: смертельные капли, победа за бронзу или стандартное «съели мозги». Удалите лишние модули.';
+
+  @override
   String get conflictDesc_ZombossTwoIntros =>
       'Две вступительные заставки не могут сосуществовать, иначе шкала здоровья Zomboss отображается неверно.';
 
@@ -1243,6 +1247,86 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get moduleDesc_ZombiesDeadWinConProperties =>
       'Нужно для стабильности уровня';
+
+  @override
+  String get moduleTitle_BronzeDeadWinConProperties => 'Победа: бронза очищена';
+
+  @override
+  String get moduleDesc_BronzeDeadWinConProperties =>
+      'Победа при уничтожении всех бронзовых статуй и бронзовых гаргантюар (стиль Kongfu). Несовместимо с «Смертельная капля» и другими модулями условия победы — оставьте один.';
+
+  @override
+  String get moduleTitle_SpermWhaleModuleProperties => 'Кит (спермакит)';
+
+  @override
+  String get moduleDesc_SpermWhaleModuleProperties =>
+      'Параметры глотания кита в Атлантиде; в игре нужны криль и др.';
+
+  @override
+  String get spermWhaleModuleTitle => 'Модуль кита';
+
+  @override
+  String get spermWhaleModuleHelpTitle => 'Модуль кита';
+
+  @override
+  String get spermWhaleModuleParameters => 'Параметры';
+
+  @override
+  String get spermWhaleModuleHelpOverview => 'Обзор';
+
+  @override
+  String get spermWhaleModuleHelpOverviewBody =>
+      'Настройка глотания растений китом: интервалы в обычном и отравленном режиме, длительность фазы, порог срабатывания яда. Обычно для глубоководной сцены с крилем (часто нужно ≥3).';
+
+  @override
+  String get spermWhaleModuleHelpFieldsTitle => 'Поля';
+
+  @override
+  String get spermWhaleModuleHelpFieldsBody =>
+      'SwallowInterval — пауза между глотаниями. PoisonSwallowInterval — при активном яде. SwallowDuration — длительность фазы глотания. PoisonTriggerCount — сколько раз должен сработать дебафф яда, чтобы использовать отравленный интервал.';
+
+  @override
+  String get spermWhaleModuleSwallowInterval =>
+      'Интервал глотания (SwallowInterval)';
+
+  @override
+  String get spermWhaleModuleHelpSwallowInterval =>
+      'Секунды между глотаниями в обычном режиме.';
+
+  @override
+  String get spermWhaleModulePoisonSwallowInterval =>
+      'Интервал при яде (PoisonSwallowInterval)';
+
+  @override
+  String get spermWhaleModuleHelpPoisonSwallowInterval =>
+      'Секунды между глотаниями, пока действует яд.';
+
+  @override
+  String get spermWhaleModuleSwallowDuration =>
+      'Длительность глотания (SwallowDuration)';
+
+  @override
+  String get spermWhaleModuleHelpSwallowDuration =>
+      'Длительность фазы глотания в секундах.';
+
+  @override
+  String get spermWhaleModulePoisonTriggerCount =>
+      'Счётчик яда (PoisonTriggerCount)';
+
+  @override
+  String get spermWhaleModuleHelpPoisonTriggerCount =>
+      'Сколько срабатываний негативного эффекта яда нужно, чтобы перейти на интервалы при яде.';
+
+  @override
+  String get spermWhaleModuleNotDeepSeaWarning =>
+      'Модуль рассчитан на глубоководную сцену (Deep Sea / Deep Sea Land). Сетка ниже соответствует текущему уровню; на обычном газоне это не Атлантида.';
+
+  @override
+  String get spermWhaleModuleLawnPreview => 'Сетка газона (ориентир)';
+
+  @override
+  String get spermWhaleModuleLawnPreviewHint =>
+      'Глубоководный газон 6×10; обычный 5×9.';
 
   @override
   String get moduleTitle_PennyClassroomModuleProperties => 'Уровень растений';
@@ -4366,6 +4450,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Уровень может работать некорректно. Рекомендуется добавить:';
 
   @override
+  String get recommendedTunnelDefendTitle =>
+      'Рекомендуется модуль защиты тоннелей';
+
+  @override
+  String get recommendedTunnelDefendBody =>
+      'Арены Подземного дворца рассчитаны на визуал тоннелей. Настоятельно рекомендуется добавить модуль защиты тоннелей — иначе газон в игре может выглядеть пустым.';
+
+  @override
   String get itemListRowFirst => 'Список препятствий (по строкам)';
 
   @override
@@ -4479,6 +4571,15 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get tunnelDefendDeleteOutsideConfirmMessage =>
       'Удалить элементы путей за пределами сетки газона 5×9. Действие нельзя отменить.';
+
+  @override
+  String get tunnelDefendTileStylePreset => 'Пресет стиля плитки';
+
+  @override
+  String get tunnelDefendTileStylePart1 => 'часть 1';
+
+  @override
+  String get tunnelDefendTileStylePart2 => 'часть 2';
 
   @override
   String get moduleTitle_LawnMowerProperties => 'Газонокосилки';
@@ -4613,16 +4714,23 @@ class AppLocalizationsRu extends AppLocalizations {
       'Минимальная колонка появления (GridXMin)';
 
   @override
-  String get pvz1PassageHelpGridXMin =>
-      'Самая левая колонка газона, где могут появляться порталы.';
+  String pvz1PassageHelpGridXMin(int maxIndex) {
+    return 'Самая левая колонка газона, где могут появляться порталы. На этом газоне индексы колонок от 0 до $maxIndex.';
+  }
 
   @override
   String get pvz1PassageFieldGridXMax =>
       'Максимальная колонка появления (GridXMax)';
 
   @override
-  String get pvz1PassageHelpGridXMax =>
-      'Самая правая колонка газона, где могут появляться порталы.';
+  String pvz1PassageHelpGridXMax(int maxIndex) {
+    return 'Самая правая колонка газона, где могут появляться порталы. На этом газоне индексы колонок от 0 до $maxIndex.';
+  }
+
+  @override
+  String pvz1PassageGridColumnRange(int maxIndex) {
+    return '0–$maxIndex';
+  }
 
   @override
   String get pvz1PassageFieldTransferCooldown =>
@@ -4639,6 +4747,21 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get pvz1PassageHelpRefreshTime =>
       'Как часто заново выбираются позиции порталов.';
+
+  @override
+  String get pvz1PassagePortalSpawnPreview => 'Предпросмотр колонок появления';
+
+  @override
+  String get pvz1PassageHelpPreview => 'Предпросмотр';
+
+  @override
+  String pvz1PassageHelpPreviewBody(int maxIndex) {
+    return 'Оранжевым выделены колонки в диапазоне GridXMin–GridXMax включительно. На этом газоне допустимы индексы колонок 0–$maxIndex. Строки в этом модуле не ограничивают появление.';
+  }
+
+  @override
+  String get moduleWaveIndexZeroBasedHint =>
+      'Индекс волны: 0 = первая волна, 1 = вторая и т.д.';
 
   @override
   String get moduleTitle_RenaiModuleProperties => 'Ренессанс';
@@ -4665,7 +4788,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get renaiModuleHelpStatuesBody =>
-      'Дневные статуи: днём. Ночные статуи: после начала ночи. WaveNumber — 0-базовый.';
+      'Дневные статуи: днём. Ночные — после начала ночи. Волна начала ночи и волна «оживления» статуи задаются индексом с 0 (0 = первая волна).';
 
   @override
   String get renaiModuleEnableNight => 'Включить ночь';
@@ -4723,14 +4846,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get airDropShipModuleHelpOverviewBody =>
-      'Настройка волн, когда импы сбрасываются с воздуха. Каждая запись задаёт волну, доп. количество импов, уровень импов и зону сброса (диапазон строк/столбцов).';
+      'Настройка волн, когда импы сбрасываются с воздуха. Номер волны — индекс с 0 (0 = первая волна). Каждая запись задаёт волну, доп. количество импов, уровень импов и зону сброса.';
 
   @override
   String get airDropShipModuleHelpImps => 'Импы';
 
   @override
   String get airDropShipModuleHelpImpsBody =>
-      'Доп. количество импов — число дополнительных импов. Всегда сбрасывается минимум один имп.';
+      'Индекс волны с 0. Доп. количество импов — число дополнительных импов поверх минимум одного.';
 
   @override
   String get airDropShipModuleAppearWaves => 'Волны появления';
@@ -4783,7 +4906,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get heianWindModuleHelpOverviewBody =>
-      'Настройка ветров на конкретных волнах. Ветер толкает зомби; на отдельных рядах может вызвать торнадо, которое несёт зомби вперёд и сдувает растения.';
+      'Настройка ветров на конкретных волнах. Индекс волны с 0 (0 = первая волна). Ветер толкает зомби; на отдельных рядах может вызвать торнадо, которое несёт зомби вперёд и сдувает растения.';
 
   @override
   String get heianWindModuleHelpDistance => 'Дистанция';
@@ -5023,4 +5146,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get invalidValueType => 'Недопустимый тип значения для RTON.';
+
+  @override
+  String get musicSuffix => 'Суффикс музыки';
+
+  @override
+  String get ambientAudioSuffix => 'Суффикс фонового звука';
+
+  @override
+  String get selectMusicSuffix => 'Выбор суффикса музыки';
+
+  @override
+  String get searchMusicSuffix => 'Поиск по названию или коду';
+
+  @override
+  String get noMusicSuffixFound => 'Суффикс не найден';
+
+  @override
+  String get jsonViewerLineContinuation => '↳';
 }
