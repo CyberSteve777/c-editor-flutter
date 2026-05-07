@@ -44,6 +44,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
   String _newLevelNameInput = '';
   bool _showUiScaleDialog = false;
 
+  bool get _canGoBack => _pathStack.length > 1;
+
   /// Extension to use when the user omits one (matches [LevelRepository] level files).
   String _levelExtensionFromFileName(String fileName) {
     final lower = fileName.toLowerCase();
@@ -195,6 +197,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   void _breadcrumbTap(int index) {
     setState(() => _pathStack = _pathStack.take(index + 1).toList());
+    _loadCurrentDirectory();
+  }
+
+  void _goToParentDirectory() {
+    if (!_canGoBack) return;
+    setState(() => _pathStack = _pathStack.take(_pathStack.length - 1).toList());
     _loadCurrentDirectory();
   }
 
@@ -644,6 +652,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
+    final fabBgColor =
+        theme.floatingActionButtonTheme.backgroundColor ??
+        theme.colorScheme.primaryContainer;
+    final fabFgColor =
+        theme.floatingActionButtonTheme.foregroundColor ??
+        theme.colorScheme.onPrimaryContainer;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -775,6 +790,46 @@ class _LevelListScreenState extends State<LevelListScreen> {
               pathStack: _pathStack,
               onBreadcrumbClick: _breadcrumbTap,
             ),
+            if (_canGoBack)
+              Card(
+                margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: InkWell(
+                  onTap: _goToParentDirectory,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            Icons.arrow_back,
+                            size: 30,
+                            color: Color(0xFFFFC107),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            l10n.returnUp,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             if (_itemToMove != null)
               Container(
                 width: double.infinity,
@@ -843,65 +898,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
-                      itemCount:
-                          (_pathStack.length > 1 ? 1 : 0) +
-                          _fileItems.length +
-                          1,
+                      itemCount: _fileItems.length + 1,
                       itemBuilder: (context, index) {
-                        if (_pathStack.length > 1 && index == 0) {
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                setState(
-                                  () => _pathStack = _pathStack
-                                      .take(_pathStack.length - 1)
-                                      .toList(),
-                                );
-                                _loadCurrentDirectory();
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      alignment: Alignment.center,
-                                      child: const Icon(
-                                        Icons.folder,
-                                        size: 40,
-                                        color: Color(0xFFFFC107),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Text(
-                                        l10n.returnUp,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                        final itemIndex =
-                            index - (_pathStack.length > 1 ? 1 : 0);
+                        final itemIndex = index;
                         if (itemIndex >= _fileItems.length) {
                           return const SizedBox(height: 80);
                         }
@@ -1072,18 +1071,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      if (!kIsWeb)
-                        FloatingActionButton(
-                          heroTag: 'folder',
-                          onPressed: () {
-                            setState(() => _showNewFolderDialog = true);
-                            WidgetsBinding.instance.addPostFrameCallback(
-                              (_) => _showNewFolderDialogImpl(),
-                            );
-                          },
-                          child: const Icon(Icons.create_new_folder),
-                        ),
-                      if (!kIsWeb) const SizedBox(height: 12),
                       if (kIsWeb)
                         FloatingActionButton(
                           heroTag: 'addFile',
@@ -1091,14 +1078,62 @@ class _LevelListScreenState extends State<LevelListScreen> {
                           child: const Icon(Icons.file_open),
                         ),
                       if (kIsWeb) const SizedBox(height: 12),
-                      FloatingActionButton(
-                        heroTag: 'level',
-                        onPressed: _openTemplateSelector,
-                        child: const Icon(Icons.add),
-                      ),
                     ],
                   )
           : null,
+      bottomNavigationBar: _rootFolderPath == null || _itemToMove != null
+          ? null
+          : SafeArea(
+              top: false,
+              child: Container(
+                color: fabBgColor,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: _canGoBack ? _goToParentDirectory : null,
+                        icon: const Icon(Icons.arrow_upward),
+                        label: Text(l10n.back),
+                        style: TextButton.styleFrom(
+                          foregroundColor: fabFgColor,
+                          disabledForegroundColor: fabFgColor.withValues(
+                            alpha: 0.45,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: _openTemplateSelector,
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.newLevel),
+                        style: TextButton.styleFrom(
+                          foregroundColor: fabFgColor,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: kIsWeb
+                            ? null
+                            : () {
+                                setState(() => _showNewFolderDialog = true);
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) => _showNewFolderDialogImpl(),
+                                );
+                              },
+                        icon: const Icon(Icons.create_new_folder),
+                        label: Text(l10n.newFolder),
+                        style: TextButton.styleFrom(
+                          foregroundColor: fabFgColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
