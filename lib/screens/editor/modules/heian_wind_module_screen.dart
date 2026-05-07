@@ -209,7 +209,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n?.heianWindModuleWaves ?? 'Waves with wind',
+                  l10n?.heianWindModuleAppearances ?? 'Appearances',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
@@ -248,7 +248,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.waveLabel ?? "W"} ${w.waveNumber}',
+                                '${l10n?.appearanceLabel ?? "Appearance"} ${idx + 1}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -295,7 +295,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.waveLabel ?? "Wave"} ${selectedWave.waveNumber}',
+                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedWaveIndex + 1}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -303,6 +303,33 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                           const SizedBox(height: 16),
                           Row(
                             children: [
+                              Expanded(
+                                flex: 2,
+                                child: TextFormField(
+                                  initialValue: '${selectedWave.waveNumber}',
+                                  decoration: InputDecoration(
+                                    labelText:
+                                        l10n?.moduleWaveFieldZeroBased ??
+                                        'Wave (0 = wave 1, 1 = wave 2, ...)',
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (v) {
+                                    final n = int.tryParse(v);
+                                    if (n != null && n >= 0) {
+                                      _updateWave(
+                                        _selectedWaveIndex,
+                                        HeianWindWaveWindInfoData(
+                                          waveNumber: n,
+                                          windDelay: selectedWave.windDelay,
+                                          windInfos: selectedWave.windInfos,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
                               Expanded(
                                 flex: 2,
                                 child: TextFormField(
@@ -345,6 +372,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             return _buildWindEntry(
                               theme,
                               l10n,
+                              windIdx,
                               wind,
                               (updated) => _updateWind(
                                 _selectedWaveIndex,
@@ -355,12 +383,22 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             );
                           }),
                           const SizedBox(height: 8),
-                          OutlinedButton.icon(
-                            onPressed: () => _addWind(_selectedWaveIndex),
-                            icon: const Icon(Icons.add, size: 18),
-                            label: Text(
-                              l10n?.heianWindModuleAddWind ?? 'Add wind',
-                            ),
+                          Row(
+                            children: [
+                              const SizedBox(width: 52),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () => _addWind(_selectedWaveIndex),
+                                  icon: const Icon(Icons.add, size: 18),
+                                  label: Text(
+                                    l10n?.heianWindModuleAddWind ?? 'Add wind',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const SizedBox(width: 40),
+                            ],
                           ),
                         ],
                       ),
@@ -379,6 +417,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
   Widget _buildWindEntry(
     ThemeData theme,
     AppLocalizations? l10n,
+    int index,
     HeianWindInfoData wind,
     void Function(HeianWindInfoData) onUpdate,
     VoidCallback onRemove,
@@ -390,138 +429,167 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    initialValue: dropdownValue,
-                    decoration: InputDecoration(
-                      labelText: l10n?.heianWindModuleRow ?? 'Row',
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                        value: -1,
-                        child: Text(l10n?.heianWindModuleAllRows ?? 'All rows'),
+            SizedBox(
+              width: 52,
+              child: Center(
+                child: Text(
+                  '${index + 1})',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<int>(
+                          initialValue: dropdownValue,
+                          decoration: InputDecoration(
+                            labelText: l10n?.heianWindModuleRow ?? 'Row',
+                            border: const OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          items: [
+                            DropdownMenuItem(
+                              value: -1,
+                              child: Text(
+                                l10n?.heianWindModuleAllRows ?? 'All rows',
+                              ),
+                            ),
+                            ...List.generate(
+                              _gridRows,
+                              (i) => DropdownMenuItem(
+                                value: i,
+                                child: Text('${l10n?.row ?? "Row"} ${i + 1}'),
+                              ),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) {
+                              onUpdate(
+                                HeianWindInfoData(
+                                  row: v,
+                                  affectZombies: wind.affectZombies,
+                                  distance: wind.distance,
+                                  moveTime: wind.moveTime,
+                                ),
+                              );
+                            }
+                          },
+                        ),
                       ),
-                      ...List.generate(
-                        _gridRows,
-                        (i) => DropdownMenuItem(
-                          value: i,
-                          child: Text('${l10n?.row ?? "Row"} ${i + 1}'),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextFormField(
+                          initialValue: '${wind.affectZombies}',
+                          decoration: InputDecoration(
+                            labelText:
+                                l10n?.heianWindModuleAffectZombies ??
+                                'Affect zombies',
+                            border: const OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null && n >= 0) {
+                              onUpdate(
+                                HeianWindInfoData(
+                                  row: wind.row,
+                                  affectZombies: n,
+                                  distance: wind.distance,
+                                  moveTime: wind.moveTime,
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ],
-                    onChanged: (v) {
-                      if (v != null) {
-                        onUpdate(
-                          HeianWindInfoData(
-                            row: v,
-                            affectZombies: wind.affectZombies,
-                            distance: wind.distance,
-                            moveTime: wind.moveTime,
-                          ),
-                        );
-                      }
-                    },
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: '${wind.affectZombies}',
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.heianWindModuleAffectZombies ??
-                          'Affect zombies',
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n != null && n >= 0) {
-                        onUpdate(
-                          HeianWindInfoData(
-                            row: wind.row,
-                            affectZombies: n,
-                            distance: wind.distance,
-                            moveTime: wind.moveTime,
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          initialValue: '${wind.distance}',
+                          decoration: InputDecoration(
+                            labelText: l10n?.heianWindModuleDistance ?? 'Distance',
+                            hintText: '50 = 1 cell',
+                            border: const OutlineInputBorder(),
+                            isDense: true,
                           ),
-                        );
-                      }
-                    },
+                          keyboardType: const TextInputType.numberWithOptions(
+                            signed: true,
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final n = double.tryParse(v);
+                            if (n != null) {
+                              onUpdate(
+                                HeianWindInfoData(
+                                  row: wind.row,
+                                  affectZombies: wind.affectZombies,
+                                  distance: n,
+                                  moveTime: wind.moveTime,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextFormField(
+                          initialValue: '${wind.moveTime}',
+                          decoration: InputDecoration(
+                            labelText:
+                                l10n?.heianWindModuleMoveTime ?? 'Move time',
+                            border: const OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final n = double.tryParse(v);
+                            if (n != null && n > 0) {
+                              onUpdate(
+                                HeianWindInfoData(
+                                  row: wind.row,
+                                  affectZombies: wind.affectZombies,
+                                  distance: wind.distance,
+                                  moveTime: n,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                IconButton(
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 40,
+              child: Center(
+                child: IconButton(
                   icon: const Icon(Icons.delete_outline, size: 20),
                   onPressed: onRemove,
+                  tooltip: l10n?.delete ?? 'Delete',
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: '${wind.distance}',
-                    decoration: InputDecoration(
-                      labelText: l10n?.heianWindModuleDistance ?? 'Distance',
-                      hintText: '50 = 1 cell',
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      signed: true,
-                      decimal: true,
-                    ),
-                    onChanged: (v) {
-                      final n = double.tryParse(v);
-                      if (n != null) {
-                        onUpdate(
-                          HeianWindInfoData(
-                            row: wind.row,
-                            affectZombies: wind.affectZombies,
-                            distance: n,
-                            moveTime: wind.moveTime,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: '${wind.moveTime}',
-                    decoration: InputDecoration(
-                      labelText: l10n?.heianWindModuleMoveTime ?? 'Move time',
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    onChanged: (v) {
-                      final n = double.tryParse(v);
-                      if (n != null && n > 0) {
-                        onUpdate(
-                          HeianWindInfoData(
-                            row: wind.row,
-                            affectZombies: wind.affectZombies,
-                            distance: wind.distance,
-                            moveTime: n,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -535,8 +603,10 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
-        (l10n?.removeItemConfirm('${l10n.waveLabel} ${wave.waveNumber}')) ??
-            'Remove wave ${wave.waveNumber}?',
+        (l10n?.removeItemConfirm(
+              '${l10n.appearanceLabel} ${_data.waveWindInfos.indexOf(wave) + 1}',
+            )) ??
+            'Remove appearance ${_data.waveWindInfos.indexOf(wave) + 1}?',
       ),
       actions: [
         TextButton(

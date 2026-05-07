@@ -16,9 +16,9 @@ class HeianWindWaveWindInfoData extends PvzModel {
 
   factory HeianWindWaveWindInfoData.fromJson(Map<String, dynamic> json) {
     final windList = json['WindInfos'] as List<dynamic>?;
-    final gameWave = (json['WaveNumber'] as num?)?.toInt() ?? 1;
+    final gameWave = (json['WaveNumber'] as num?)?.toInt() ?? 0;
     return HeianWindWaveWindInfoData(
-      waveNumber: gameWave < 1 ? 0 : gameWave - 1,
+      waveNumber: gameWave < 0 ? 0 : gameWave,
       windDelay: (json['WindDelay'] as num?)?.toInt() ?? 0,
       windInfos:
           windList
@@ -31,7 +31,7 @@ class HeianWindWaveWindInfoData extends PvzModel {
   }
 
   Map<String, dynamic> toJson() => {
-    'WaveNumber': waveNumber + 1,
+    'WaveNumber': waveNumber,
     'WindDelay': windDelay,
     'WindInfos': windInfos.map((e) => e.toJson()).toList(),
   };
