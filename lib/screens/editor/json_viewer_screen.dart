@@ -45,7 +45,6 @@ class JsonViewerScreen extends StatefulWidget {
 class _JsonViewerScreenState extends State<JsonViewerScreen> {
   double _fontSize = _cachedFontSize ?? 12;
   final _verticalController = ScrollController();
-  final _horizontalController = ScrollController();
   bool _isEditing = false;
   final _editController = TextEditingController();
   String? _syntaxError;
@@ -82,7 +81,6 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   void dispose() {
     EscapeOverride.tryHandle = null;
     _verticalController.dispose();
-    _horizontalController.dispose();
     _editController.dispose();
     super.dispose();
   }
@@ -337,7 +335,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                 ? _buildEditView()
                 : _viewMode == _JsonViewMode.structured
                     ? _buildObjectMode(isDesktop, l10n)
-                    : _buildViewMode(pretty, isDesktop),
+                    : _buildViewMode(pretty, isDesktop, l10n),
           ),
         ],
       ),
@@ -438,9 +436,9 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     );
   }
 
-  Widget _buildViewMode(String pretty, bool isDesktop) {
+  Widget _buildViewMode(String pretty, bool isDesktop, AppLocalizations? l10n) {
     return SelectionArea(
-      child: _buildScrollLayout(pretty, isDesktop),
+      child: _buildScrollLayout(pretty, isDesktop, l10n),
     );
   }
 
@@ -647,76 +645,156 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     }
   }
 
-  /// Scrollable JSON view. On desktop, vertical scrollbar stays visible on right.
-  Widget _buildScrollLayout(String pretty, bool isDesktop) {
+  /// Scrollable JSON view: wraps long logical lines; gutter shows a line number
+  /// only on the first visual row, and a continuation glyph on wrapped rows.
+  Widget _buildScrollLayout(String pretty, bool isDesktop, AppLocalizations? l10n) {
     final baseStyle = TextStyle(
       fontFamily: _codeFontFamily,
       fontSize: _fontSize,
       height: 1.3,
     );
-    final lines = pretty.split('\n');
-    final lineCount = lines.isEmpty ? 1 : lines.length;
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.5);
+    final logicalLines = pretty.split('\n');
+    final logicalLineCount = logicalLines.isEmpty ? 1 : logicalLines.length;
+    final digitCount = '$logicalLineCount'.length;
+    final gutterW = _fontSize * (digitCount * 0.62 + 0.6);
+    final contSymbol = l10n?.jsonViewerLineContinuation ?? '↳';
+
     return Scrollbar(
       controller: _verticalController,
       thumbVisibility: true,
       trackVisibility: isDesktop,
       interactive: isDesktop,
-      child: SingleChildScrollView(
-        controller: _verticalController,
-        scrollDirection: Axis.vertical,
-        child: Scrollbar(
-          controller: _horizontalController,
-          thumbVisibility: true,
-          trackVisibility: isDesktop,
-          notificationPredicate: (n) => n.depth == 1,
-          child: SingleChildScrollView(
-            controller: _horizontalController,
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const pad = 16.0;
+          const gutterTextGap = 12.0;
+          final maxTextW = constraints.maxWidth - pad * 2 - gutterW - gutterTextGap;
+          final safeMaxTextW = maxTextW.clamp(32.0, double.maxFinite);
+
+          final visualRows = _wrapJsonLogicalLines(
+            logicalLines,
+            safeMaxTextW,
+            baseStyle,
+          );
+
+          return SingleChildScrollView(
+            controller: _verticalController,
+            padding: const EdgeInsets.all(pad),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final row in visualRows)
                   Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(
-                        lineCount,
-                        (i) => Text(
-                          '${i + 1}',
-                          style: baseStyle.copyWith(
-                            fontFamily: _codeFontFamily,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.5),
+                    padding: const EdgeInsets.only(bottom: 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: gutterW,
+                          child: row.isContinuation
+                              ? Text(
+                                  contSymbol,
+                                  textAlign: TextAlign.right,
+                                  style: baseStyle.copyWith(
+                                    fontFamily: _codeFontFamily,
+                                    color: muted,
+                                    fontSize: _fontSize * 0.92,
+                                  ),
+                                )
+                              : Text(
+                                  '${row.logicalLineOneBased}',
+                                  textAlign: TextAlign.right,
+                                  style: baseStyle.copyWith(
+                                    fontFamily: _codeFontFamily,
+                                    color: muted,
+                                  ),
+                                ),
+                        ),
+                        SizedBox(width: gutterTextGap),
+                        Expanded(
+                          child: Text(
+                            row.text,
+                            style: baseStyle,
+                            softWrap: false,
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  Text.rich(
-                      TextSpan(
-                        style: baseStyle,
-                        children: [
-                          for (var i = 0; i < lines.length; i++)
-                            TextSpan(
-                              text: lines[i] +
-                                  (i < lines.length - 1 ? '\n' : ''),
-                            ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
+              ],
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
+}
+
+class _WrappedJsonRow {
+  const _WrappedJsonRow({
+    required this.logicalLineOneBased,
+    required this.isContinuation,
+    required this.text,
+  });
+
+  final int logicalLineOneBased;
+  final bool isContinuation;
+  final String text;
+}
+
+List<_WrappedJsonRow> _wrapJsonLogicalLines(
+  List<String> logicalLines,
+  double maxWidth,
+  TextStyle style,
+) {
+  final rows = <_WrappedJsonRow>[];
+  final w = maxWidth <= 8 ? 8.0 : maxWidth;
+  for (var i = 0; i < logicalLines.length; i++) {
+    final line = logicalLines[i];
+    final n = i + 1;
+    if (line.isEmpty) {
+      rows.add(_WrappedJsonRow(logicalLineOneBased: n, isContinuation: false, text: ''));
+      continue;
+    }
+    final tp = TextPainter(
+      text: TextSpan(text: line, style: style),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: w);
+    final metrics = tp.computeLineMetrics();
+    if (metrics.isEmpty) {
+      rows.add(_WrappedJsonRow(logicalLineOneBased: n, isContinuation: false, text: line));
+      continue;
+    }
+    for (var j = 0; j < metrics.length; j++) {
+      final m = metrics[j];
+      final dy = m.baseline - m.ascent;
+      final yMid = dy + m.height / 2;
+      final start = tp.getPositionForOffset(Offset(0, yMid)).offset;
+      final end = tp.getPositionForOffset(Offset(w, yMid)).offset;
+      var a = start;
+      var b = end;
+      if (a < 0) a = 0;
+      if (a > line.length) a = line.length;
+      if (b < 0) b = 0;
+      if (b > line.length) b = line.length;
+      if (b < a) {
+        final t = a;
+        a = b;
+        b = t;
+      }
+      rows.add(
+        _WrappedJsonRow(
+          logicalLineOneBased: n,
+          isContinuation: j > 0,
+          text: line.substring(a, b),
+        ),
+      );
+    }
+  }
+  return rows;
 }
 
 class _ObjectCodeCard extends StatelessWidget {
