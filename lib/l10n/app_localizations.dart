@@ -8668,6 +8668,18 @@ abstract class AppLocalizations {
   /// **'Wave index: 0 = wave 1, 1 = wave 2, …'**
   String get moduleWaveIndexZeroBasedHint;
 
+  /// No description provided for @moduleWaveFieldZeroBased.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave (0 = wave 1, 1 = wave 2, ...)'**
+  String get moduleWaveFieldZeroBased;
+
+  /// No description provided for @appearanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearanceLabel;
+
   /// No description provided for @moduleTitle_RenaiModuleProperties.
   ///
   /// In en, this message translates to:
@@ -8842,6 +8854,12 @@ abstract class AppLocalizations {
   /// **'Appear waves (Wave; starts from 0)'**
   String get airDropShipModuleAppearWaves;
 
+  /// No description provided for @airDropShipModuleAppearances.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearances'**
+  String get airDropShipModuleAppearances;
+
   /// No description provided for @airDropShipModuleExtraImpCount.
   ///
   /// In en, this message translates to:
@@ -8967,6 +8985,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Appear waves (WaveNumber; starts from 0)'**
   String get heianWindModuleWaves;
+
+  /// No description provided for @heianWindModuleAppearances.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearances'**
+  String get heianWindModuleAppearances;
 
   /// No description provided for @heianWindModuleWindDelay.
   ///

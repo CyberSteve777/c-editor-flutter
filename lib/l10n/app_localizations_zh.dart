@@ -4582,6 +4582,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleWaveIndexZeroBasedHint => '波次索引：0 表示第 1 波，1 表示第 2 波，以此类推。';
 
   @override
+  String get moduleWaveFieldZeroBased => '波次 (0 = 第1波, 1 = 第2波, ...)';
+
+  @override
+  String get appearanceLabel => '出场';
+
+  @override
   String get moduleTitle_RenaiModuleProperties => '复兴时代模块';
 
   @override
@@ -4673,6 +4679,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get airDropShipModuleAppearWaves => '出现波次（Wave, 从0开始）';
 
   @override
+  String get airDropShipModuleAppearances => '出场列表';
+
+  @override
   String get airDropShipModuleExtraImpCount => '额外小鬼数量 (Imp)';
 
   @override
@@ -4737,6 +4746,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get heianWindModuleWaves => '神风的出现波次 (WaveNumber，从0开始)';
+
+  @override
+  String get heianWindModuleAppearances => '出场列表';
 
   @override
   String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay, 单位：秒)';

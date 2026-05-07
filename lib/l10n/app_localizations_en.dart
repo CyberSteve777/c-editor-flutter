@@ -4828,6 +4828,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Wave index: 0 = wave 1, 1 = wave 2, …';
 
   @override
+  String get moduleWaveFieldZeroBased => 'Wave (0 = wave 1, 1 = wave 2, ...)';
+
+  @override
+  String get appearanceLabel => 'Appearance';
+
+  @override
   String get moduleTitle_RenaiModuleProperties => 'Renaissance Module';
 
   @override
@@ -4924,6 +4930,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Appear waves (Wave; starts from 0)';
 
   @override
+  String get airDropShipModuleAppearances => 'Appearances';
+
+  @override
   String get airDropShipModuleExtraImpCount => 'Extra imp count (Imp)';
 
   @override
@@ -4989,6 +4998,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get heianWindModuleWaves => 'Appear waves (WaveNumber; starts from 0)';
+
+  @override
+  String get heianWindModuleAppearances => 'Appearances';
 
   @override
   String get heianWindModuleWindDelay => 'Wind Delay (seconds)';

@@ -4764,6 +4764,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Индекс волны: 0 = первая волна, 1 = вторая и т.д.';
 
   @override
+  String get moduleWaveFieldZeroBased =>
+      'Волна (0 = волна 1, 1 = волна 2, ...)';
+
+  @override
+  String get appearanceLabel => 'Появление';
+
+  @override
   String get moduleTitle_RenaiModuleProperties => 'Ренессанс';
 
   @override
@@ -4859,6 +4866,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get airDropShipModuleAppearWaves => 'Волны появления';
 
   @override
+  String get airDropShipModuleAppearances => 'Появления';
+
+  @override
   String get airDropShipModuleExtraImpCount => 'Доп. количество импов';
 
   @override
@@ -4924,6 +4934,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get heianWindModuleWaves => 'Волны с ветром';
+
+  @override
+  String get heianWindModuleAppearances => 'Появления';
 
   @override
   String get heianWindModuleWindDelay => 'Задержка ветра';
