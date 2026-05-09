@@ -289,6 +289,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                 if (selectedWave != null) ...[
                   const SizedBox(height: 24),
                   Card(
+                    key: ValueKey('heian_wave_panel_$_selectedWaveIndex'),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -372,6 +373,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             return _buildWindEntry(
                               theme,
                               l10n,
+                              _selectedWaveIndex,
                               windIdx,
                               wind,
                               (updated) => _updateWind(
@@ -417,7 +419,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
   Widget _buildWindEntry(
     ThemeData theme,
     AppLocalizations? l10n,
-    int index,
+    int appearanceIndex,
+    int windIndex,
     HeianWindInfoData wind,
     void Function(HeianWindInfoData) onUpdate,
     VoidCallback onRemove,
@@ -426,6 +429,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
         ? wind.row
         : -1;
     return Card(
+      key: ValueKey('heian_wind_${appearanceIndex}_$windIndex'),
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -436,7 +440,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
               width: 52,
               child: Center(
                 child: Text(
-                  '${index + 1})',
+                  '${windIndex + 1})',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

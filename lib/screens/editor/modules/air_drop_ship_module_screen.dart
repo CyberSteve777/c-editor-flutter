@@ -209,7 +209,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.appearanceLabel ?? "Appearance"} ${idx + 1}',
+                                '${l10n?.airDropShipGroupLabel ?? "Group"} ${idx + 1}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -250,6 +250,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                 if (selectedWave != null) ...[
                   const SizedBox(height: 24),
                   Card(
+                    key: ValueKey('dropship_panel_$_selectedIndex'),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -557,9 +558,9 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
         l10n?.removeItemConfirm(
-              '${l10n.appearanceLabel} ${_data.appearWaves.indexOf(item) + 1}',
+              '${l10n.airDropShipGroupLabel} ${_data.appearWaves.indexOf(item) + 1}',
             ) ??
-            'Remove appearance ${_data.appearWaves.indexOf(item) + 1}?',
+            'Remove group ${_data.appearWaves.indexOf(item) + 1}?',
       ),
       actions: [
         TextButton(

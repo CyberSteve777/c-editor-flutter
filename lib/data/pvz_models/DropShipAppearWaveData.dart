@@ -24,9 +24,9 @@ class DropShipAppearWaveData extends PvzModel {
   factory DropShipAppearWaveData.fromJson(Map<String, dynamic> json) {
     final row = json['RowRange'] as Map<String, dynamic>?;
     final col = json['ColRange'] as Map<String, dynamic>?;
-    final gameWave = (json['Wave'] as num?)?.toInt() ?? 1;
+    final rawWave = (json['Wave'] as num?)?.toInt() ?? 0;
     return DropShipAppearWaveData(
-      wave: gameWave < 1 ? 0 : gameWave - 1,
+      wave: rawWave < 0 ? 0 : rawWave,
       imp: (json['Imp'] as num?)?.toInt() ?? 0,
       impLv: (json['ImpLv'] as num?)?.toInt() ?? 1,
       rowRange: row != null ? MinMaxRange.fromJson(row) : MinMaxRange(),
@@ -35,7 +35,7 @@ class DropShipAppearWaveData extends PvzModel {
   }
 
   Map<String, dynamic> toJson() => {
-    'Wave': wave + 1,
+    'Wave': wave,
     'Imp': imp,
     'ImpLv': impLv,
     'RowRange': rowRange.toJson(),
