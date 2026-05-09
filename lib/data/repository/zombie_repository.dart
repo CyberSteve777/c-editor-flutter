@@ -48,6 +48,7 @@ enum ZombieTag {
   strong,
   gargantuar,
   elite,
+  custom,
   evildave,
 }
 
@@ -105,6 +106,8 @@ extension ZombieTagExtension on ZombieTag {
         return s.zombieTagGargantuar;
       case ZombieTag.elite:
         return s.zombieTagElite;
+      case ZombieTag.custom:
+        return s.zombieTagCustom;
       case ZombieTag.evildave:
         return s.zombieTagEvildave;
     }
@@ -140,6 +143,7 @@ extension ZombieTagExtension on ZombieTag {
       case ZombieTag.elite:
         return ZombieCategory.size;
       case ZombieTag.evildave:
+      case ZombieTag.custom:
         return ZombieCategory.other;
     }
   }
