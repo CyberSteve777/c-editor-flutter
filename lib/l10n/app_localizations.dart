@@ -1891,7 +1891,7 @@ abstract class AppLocalizations {
   /// No description provided for @description.
   ///
   /// In en, this message translates to:
-  /// **'Description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)'**
+  /// **'Trip Description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)'**
   String get description;
 
   /// No description provided for @levelNumber.
@@ -1939,7 +1939,7 @@ abstract class AppLocalizations {
   /// No description provided for @sceneSettingsSection.
   ///
   /// In en, this message translates to:
-  /// **'Scene settings'**
+  /// **'Scene Settings'**
   String get sceneSettingsSection;
 
   /// No description provided for @restrictionsSection.
@@ -2041,7 +2041,7 @@ abstract class AppLocalizations {
   /// No description provided for @conflictDesc_WinConditionExclusive.
   ///
   /// In en, this message translates to:
-  /// **'Only one of Loot Drop, Bronze clear win, or default brain-eaten behavior should be in LevelModules. Remove the extra win-condition modules.'**
+  /// **'Loot Drop and Bronze Matrix Loot Drop do not need to be used together. It is recommended to remove one of them.'**
   String get conflictDesc_WinConditionExclusive;
 
   /// No description provided for @conflictDesc_ZombossTwoIntros.
@@ -2107,7 +2107,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchStage.
   ///
   /// In en, this message translates to:
-  /// **'Search lawn name or codename'**
+  /// **'Search by lawn name or codename'**
   String get searchStage;
 
   /// No description provided for @noStageFound.
@@ -2365,37 +2365,37 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_BronzeDeadWinConProperties.
   ///
   /// In en, this message translates to:
-  /// **'Bronze clear win'**
+  /// **'Bronze Matrix Loot Drop'**
   String get moduleTitle_BronzeDeadWinConProperties;
 
   /// No description provided for @moduleDesc_BronzeDeadWinConProperties.
   ///
   /// In en, this message translates to:
-  /// **'Victory when all bronze statues and bronze gargantuars are cleared (Kongfu-style). Use instead of Loot Drop when you need this win rule; only one win-condition module should be active.'**
+  /// **'Instantly eliminate all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated'**
   String get moduleDesc_BronzeDeadWinConProperties;
 
   /// No description provided for @moduleTitle_SpermWhaleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Sperm whale'**
+  /// **'Whale Approaching'**
   String get moduleTitle_SpermWhaleModuleProperties;
 
   /// No description provided for @moduleDesc_SpermWhaleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Atlantis whale swallow behavior (intervals and poison). Pair with krill spawns in-game.'**
+  /// **'Configure whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect'**
   String get moduleDesc_SpermWhaleModuleProperties;
 
   /// No description provided for @spermWhaleModuleTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sperm whale module'**
+  /// **'Whale Approaching Settings'**
   String get spermWhaleModuleTitle;
 
   /// No description provided for @spermWhaleModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sperm whale module'**
+  /// **'Whale Approaching'**
   String get spermWhaleModuleHelpTitle;
 
   /// No description provided for @spermWhaleModuleParameters.
@@ -2413,85 +2413,85 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Configures the underwater whale behavior: normal and poisoned swallow timing, swallow phase duration, and when poison timing kicks in. Typically used on Deep Sea stages with krill; at least 3 krill are usually required for full behavior.'**
+  /// **'This module is used to configure parameters related to the special marine creature \"Whale\", and is typically used in Underwater World levels. As krill begin appearing, the whale will circle above the lawn and trigger the corresponding red subtitle warning. Once at least 3 krill are present on the lawn, the whale will officially appear in the upper-left corner of the lawn. The whale will prioritize swallowing existing krill before continuously sucking up and swallowing plants on the lawn. The rotenone released by Puffy Derris can be inhaled by the whale; after the first inhalation, the whale’s swallowing speed will decrease. Once the number of inhalations reaches the configured rotenone trigger count, the whale will be forced to retreat. Note that the whale can only appear once per level.'**
   String get spermWhaleModuleHelpOverviewBody;
 
   /// No description provided for @spermWhaleModuleHelpFieldsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Fields'**
+  /// **'Parameter Overview'**
   String get spermWhaleModuleHelpFieldsTitle;
 
   /// No description provided for @spermWhaleModuleHelpFieldsBody.
   ///
   /// In en, this message translates to:
-  /// **'SwallowInterval: seconds between plant swallows normally. PoisonSwallowInterval: seconds between swallows while the poison debuff from pufferfish stacks is active. SwallowDuration: duration of a swallow phase. PoisonTriggerCount: how many poison stack triggers before poison timing applies.'**
+  /// **'Swallow Interval (SwallowInterval) refers to the interval between the whale’s swallowing actions under normal conditions./nPoisoned Swallow Interval (PoisonSwallowInterval) refers to the interval between swallowing actions after the whale inhales rotenone once./nSwallow Duration (SwallowDuration) refers to the total amount of time the whale remains on the lawn sucking up and swallowing plants./nPoison Trigger Count (PoisonTriggerCount) refers to the number of rotenone inhalations required to force the whale to retreat.'**
   String get spermWhaleModuleHelpFieldsBody;
 
   /// No description provided for @spermWhaleModuleSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Swallow interval (SwallowInterval)'**
+  /// **'Swallow Interval (SwallowInterval, unit: seconds)'**
   String get spermWhaleModuleSwallowInterval;
 
   /// No description provided for @spermWhaleModuleHelpSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Seconds between plant swallows under normal conditions.'**
+  /// **'The interval between two swallowing actions under normal conditions.'**
   String get spermWhaleModuleHelpSwallowInterval;
 
   /// No description provided for @spermWhaleModulePoisonSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Poison swallow interval (PoisonSwallowInterval)'**
+  /// **'Rotenone Swallow Interval (PoisonSwallowInterval, unit: seconds)'**
   String get spermWhaleModulePoisonSwallowInterval;
 
   /// No description provided for @spermWhaleModuleHelpPoisonSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Seconds between swallows while poison debuff applies.'**
+  /// **'The interval between two swallowing actions after the whale inhales rotenone.'**
   String get spermWhaleModuleHelpPoisonSwallowInterval;
 
   /// No description provided for @spermWhaleModuleSwallowDuration.
   ///
   /// In en, this message translates to:
-  /// **'Swallow duration (SwallowDuration)'**
+  /// **'Swallow Duration (SwallowDuration, unit: seconds)'**
   String get spermWhaleModuleSwallowDuration;
 
   /// No description provided for @spermWhaleModuleHelpSwallowDuration.
   ///
   /// In en, this message translates to:
-  /// **'How long a swallow phase lasts (seconds).'**
+  /// **'The total duration the whale remains on the lawn sucking up and swallowing plants.'**
   String get spermWhaleModuleHelpSwallowDuration;
 
   /// No description provided for @spermWhaleModulePoisonTriggerCount.
   ///
   /// In en, this message translates to:
-  /// **'Poison trigger count (PoisonTriggerCount)'**
+  /// **'Rotenone trigger count (PoisonTriggerCount)'**
   String get spermWhaleModulePoisonTriggerCount;
 
   /// No description provided for @spermWhaleModuleHelpPoisonTriggerCount.
   ///
   /// In en, this message translates to:
-  /// **'How many pufferfish poison negative triggers before poison swallow timing is used.'**
+  /// **'The cumulative number of rotenone inhalations required to force the whale to retreat.'**
   String get spermWhaleModuleHelpPoisonTriggerCount;
 
   /// No description provided for @spermWhaleModuleNotDeepSeaWarning.
   ///
   /// In en, this message translates to:
-  /// **'This module is intended for Deep Sea or Deep Sea Land stages. The preview grid follows your level’s stage; on non–Deep Sea lawns it will not match Atlantis layout.'**
+  /// **'This module is recommended for use in Underwater World lawns. The grid belows only reflects the current lawn configuration; using this module on non-20,000 Leagues Under the Sea/Atlantis lawns may cause compatibility issues.'**
   String get spermWhaleModuleNotDeepSeaWarning;
 
   /// No description provided for @spermWhaleModuleLawnPreview.
   ///
   /// In en, this message translates to:
-  /// **'Lawn grid (layout reference)'**
+  /// **'Lawn Preview'**
   String get spermWhaleModuleLawnPreview;
 
   /// No description provided for @spermWhaleModuleLawnPreviewHint.
   ///
   /// In en, this message translates to:
-  /// **'Deep Sea lawns use 6×10 cells; standard lawns use 5×9.'**
+  /// **'Underwater World levels use a 6×10 lawn layout, while other levels use a 5×9 layout'**
   String get spermWhaleModuleLawnPreviewHint;
 
   /// No description provided for @moduleTitle_PennyClassroomModuleProperties.
@@ -3115,7 +3115,7 @@ abstract class AppLocalizations {
   /// No description provided for @bronzeModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'This module is used to place bronze statue grid items on the lawn that exist at the start of the level, commonly used in the Kongfu World brain buster \"Bronze Matrix\". Bronze statues gradually lose their copper coating over time and will revive as gargantuar bronzes when the specified countdown ends. The HP of a bronze statue is the same as the corresponding Tier 1 Gargantuar Bronze.\nShake offset (shakeOffset) indicates the center offset of the revive animation’s shaking; adjusting this value has no practical effect.\nNote: This module itself does not include the effect of instantly eliminating remaining zombies after all bronze statues and gargantuar bronzes on the lawn are destroyed. To achieve that effect, replace the loot drop module with BronzeDeadWinCon@LevelModules.'**
+  /// **'This module is used to place bronze statue grid items on the lawn that exist at the start of the level, commonly used in the Kongfu World brain buster \"Bronze Matrix\". Bronze statues gradually lose their copper coating over time and will revive as gargantuar bronzes when the specified countdown ends. The HP of a bronze statue is the same as the corresponding Tier 1 Gargantuar Bronze.\nShake offset (shakeOffset) indicates the center offset of the revive animation’s shaking; adjusting this value has no practical effect.\nNote: This module itself does not include the effect of instantly eliminating remaining zombies after all bronze statues and gargantuar bronzes on the lawn are destroyed. To achieve that effect, the Bronze Matrix Loot Drop module must be added.'**
   String get bronzeModuleHelpOverviewBody;
 
   /// No description provided for @bronzeModuleHelpBatches.
@@ -3777,6 +3777,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scene Config'**
   String get moduleCategoryScene;
+
+  /// No description provided for @moduleCategoryGimmick.
+  ///
+  /// In en, this message translates to:
+  /// **'Gimmick Config'**
+  String get moduleCategoryGimmick;
 
   /// No description provided for @moduleTitle_RocketZombieFlickModuleProperties.
   ///
@@ -8107,7 +8113,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchChallengeNameOrCode.
   ///
   /// In en, this message translates to:
-  /// **'Search challenge name or codename'**
+  /// **'Search by challenge name or codename'**
   String get searchChallengeNameOrCode;
 
   /// No description provided for @deleteChallengeTitle.
@@ -8137,13 +8143,13 @@ abstract class AppLocalizations {
   /// No description provided for @recommendedTunnelDefendTitle.
   ///
   /// In en, this message translates to:
-  /// **'Tunnel pathways strongly recommended'**
+  /// **'Underground Palace Pathways module strongly recommended'**
   String get recommendedTunnelDefendTitle;
 
   /// No description provided for @recommendedTunnelDefendBody.
   ///
   /// In en, this message translates to:
-  /// **'Underground Palace stages are built around tunnel pathway visuals. Adding the Tunnel Defend module is highly recommended—without it the lawn may look empty in-game.'**
+  /// **'The tiles in Underground Palace Secret Realm lawns must be placed through the \"Underground Palace Pathways\" module. If this module is not added, the lawns may appear overly empty in-game.'**
   String get recommendedTunnelDefendBody;
 
   /// No description provided for @itemListRowFirst.
@@ -8359,13 +8365,13 @@ abstract class AppLocalizations {
   /// No description provided for @tunnelDefendTileStylePart1.
   ///
   /// In en, this message translates to:
-  /// **'part 1'**
+  /// **'Underground Palace Ruins (Chapter 1)'**
   String get tunnelDefendTileStylePart1;
 
   /// No description provided for @tunnelDefendTileStylePart2.
   ///
   /// In en, this message translates to:
-  /// **'part 2'**
+  /// **'Underground Palace Spirit Supression (Chapter 2)'**
   String get tunnelDefendTileStylePart2;
 
   /// No description provided for @moduleTitle_LawnMowerProperties.
@@ -8389,7 +8395,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_TunnelDefendModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configures pathways in the Underground Palace secret realm'**
+  /// **'Configures pathways and tile styles for Underground Palace secret realm levels'**
   String get moduleDesc_TunnelDefendModuleProperties;
 
   /// No description provided for @moduleTitle_ZombieRushModuleProperties.
@@ -8599,7 +8605,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageHelpGridXMin.
   ///
   /// In en, this message translates to:
-  /// **'The leftmost column where portals may spawn. On this lawn, column indices run from 0 through {maxIndex}. This value must be less than the maximum column value.'**
+  /// **'The leftmost column where portals may spawn. The left boundary of this lawn is column 0, and the right boundary is column {maxIndex}. This value must be less than the maximum column value.'**
   String pvz1PassageHelpGridXMin(int maxIndex);
 
   /// No description provided for @pvz1PassageFieldGridXMax.
@@ -8611,7 +8617,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageHelpGridXMax.
   ///
   /// In en, this message translates to:
-  /// **'The rightmost column where portals may spawn. On this lawn, column indices run from 0 through {maxIndex}. This value must be greater than the minimum column value.'**
+  /// **'The rightmost column where portals may spawn. The left boundary of this lawn is column 0, and the right boundary is column {maxIndex}. This value must be greater than the minimum column value.'**
   String pvz1PassageHelpGridXMax(int maxIndex);
 
   /// No description provided for @pvz1PassageGridColumnRange.
@@ -8623,7 +8629,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageFieldTransferCooldown.
   ///
   /// In en, this message translates to:
-  /// **'Same-zombie teleport cooldown (transferCooldown, seconds)'**
+  /// **'Same-zombie teleport cooldown (transferCooldown, unit: seconds)'**
   String get pvz1PassageFieldTransferCooldown;
 
   /// No description provided for @pvz1PassageHelpTransferCooldown.
@@ -8635,7 +8641,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageFieldRefreshTime.
   ///
   /// In en, this message translates to:
-  /// **'Portal reposition interval (refreshTime, seconds)'**
+  /// **'Portal reposition interval (refreshTime, unit: seconds)'**
   String get pvz1PassageFieldRefreshTime;
 
   /// No description provided for @pvz1PassageHelpRefreshTime.
@@ -8653,31 +8659,31 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageHelpPreview.
   ///
   /// In en, this message translates to:
-  /// **'Preview'**
+  /// **'Spawn Range Preview'**
   String get pvz1PassageHelpPreview;
 
   /// No description provided for @pvz1PassageHelpPreviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Tiles highlighted in orange are within the portal spawn column range (GridXMin–GridXMax, inclusive). On this lawn, valid column indices are 0–{maxIndex}. Row does not restrict portals in this module.'**
+  /// **'The orange highlighted area indicates which columns portals may appear in. The column range of the current lawn is 0–{maxIndex} (including both lawn boundaries). This module cannot restrict the row range where portals spawn.'**
   String pvz1PassageHelpPreviewBody(int maxIndex);
 
   /// No description provided for @moduleWaveIndexZeroBasedHint.
   ///
   /// In en, this message translates to:
-  /// **'Wave index: 0 = wave 1, 1 = wave 2, …'**
+  /// **'0 = Wave 1, 1 = Wave 2, ...'**
   String get moduleWaveIndexZeroBasedHint;
 
   /// No description provided for @moduleWaveFieldZeroBased.
   ///
   /// In en, this message translates to:
-  /// **'Wave (0 = wave 1, 1 = wave 2, ...)'**
+  /// **'Wave (0 = Wave 1, 1 = Wave 2, ...)'**
   String get moduleWaveFieldZeroBased;
 
   /// No description provided for @appearanceLabel.
   ///
   /// In en, this message translates to:
-  /// **'Appearance'**
+  /// **'Batch'**
   String get appearanceLabel;
 
   /// No description provided for @moduleTitle_RenaiModuleProperties.
@@ -8713,7 +8719,7 @@ abstract class AppLocalizations {
   /// No description provided for @renaiModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Used to make the Vitruvian Wheel respond to Floor-de-Lis tiles; configure day–night cycle waves; and, at night, revive Renaissance Statues and Marble Mounds, and spawn grid items based on settings. Typically used in Renaissance Ages levels.'**
+  /// **'This module is used to make the Vitruvian Wheel respond to Floor-de-Lis tiles; configure day–night cycle waves; and, at night, revive Renaissance Statues and Marble Mounds, and spawn grid items based on settings. Typically used in Renaissance Ages levels.'**
   String get renaiModuleHelpOverviewBody;
 
   /// No description provided for @renaiModuleHelpStatues.
@@ -8725,7 +8731,7 @@ abstract class AppLocalizations {
   /// No description provided for @renaiModuleHelpStatuesBody.
   ///
   /// In en, this message translates to:
-  /// **'Initial grid items refer to statues and Marble Mounds present at the start of the level, which revive into zombies at specified waves. Night grid items are generated after night begins; if a plant occupies the target tile, they will not spawn. Night start wave and statue revival wave use a 0-based index (0 = first wave, 1 = second wave).'**
+  /// **'Initial grid items refer to statues and Marble Mounds present at the start of the level, which revive into zombies at specified waves. Night grid items are generated after night begins; if a plant occupies the target tile, they will not spawn. Night start wave uses a 0-based index (e.g., 0 = first wave, 1 = second wave).'**
   String get renaiModuleHelpStatuesBody;
 
   /// No description provided for @renaiModuleEnableNight.
@@ -8779,7 +8785,7 @@ abstract class AppLocalizations {
   /// No description provided for @renaiModuleStatuesInCell.
   ///
   /// In en, this message translates to:
-  /// **'Statue(s) in selected tile'**
+  /// **'Item(s) in selected tile'**
   String get renaiModuleStatuesInCell;
 
   /// No description provided for @renaiModuleExpectationLabel.
@@ -8833,7 +8839,7 @@ abstract class AppLocalizations {
   /// No description provided for @airDropShipModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Used to configure Transport Boats that appear during waves in a level, commonly seen in Sky City levels. Transport Boats cannot be damaged. A set number of Flying Imp Zombies will drop sequentially into the designated drop area. Wave numbers use a 0-based index (0 = first wave).'**
+  /// **'This module is used to configure Transport Boats that appear during waves in a level, commonly seen in Sky City levels. Transport Boats cannot be damaged. A set number of Flying Imp Zombies will drop sequentially into the designated drop area.'**
   String get airDropShipModuleHelpOverviewBody;
 
   /// No description provided for @airDropShipModuleHelpImps.
@@ -8845,7 +8851,7 @@ abstract class AppLocalizations {
   /// No description provided for @airDropShipModuleHelpImpsBody.
   ///
   /// In en, this message translates to:
-  /// **'Each entry’s wave index is 0-based (0 = first wave). Each Transport Boat drops at least one Flying Imp Zombie. The extra imp count specifies how many additional imps are dropped on top of the initial one for that wave.'**
+  /// **'Each entry’s wave index is 0-based (e.g., 0 = first wave, 1 = second wave). Each Transport Boat drops at least one Flying Imp Zombie. The extra imp count specifies how many additional imps are dropped on top of the initial one for that wave.'**
   String get airDropShipModuleHelpImpsBody;
 
   /// No description provided for @airDropShipModuleAppearWaves.
@@ -8857,7 +8863,7 @@ abstract class AppLocalizations {
   /// No description provided for @airDropShipModuleAppearances.
   ///
   /// In en, this message translates to:
-  /// **'Appearances'**
+  /// **'Assault Batches'**
   String get airDropShipModuleAppearances;
 
   /// No description provided for @airDropShipModuleExtraImpCount.
@@ -8953,7 +8959,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Used to summon Divine Wind at specified waves, commonly seen in Heian Ages levels. The wind pushes a set number of small and medium zombies within its range horizontally. After all winds in a wave finish, rows affected by single-row winds will generate a whirlwind (one per row). The whirlwind carries zombies forward and knocks plants into the air on contact before disappearing. Each entry’s wave index is 0-based (0 = first wave).'**
+  /// **'This module is used to summon Divine Wind at specified waves, commonly seen in Heian Ages levels. The wind pushes a set number of small and medium zombies within its range horizontally. After all winds in a wave finish, rows affected by single-row winds will generate a whirlwind (one per row). The whirlwind carries zombies forward and knocks plants into the air on contact before disappearing.'**
   String get heianWindModuleHelpOverviewBody;
 
   /// No description provided for @heianWindModuleHelpDistance.
@@ -8977,7 +8983,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleHelpRowBody.
   ///
   /// In en, this message translates to:
-  /// **'Wind waves are counted from 0 (e.g. wave 1 → 0, wave 2 → 1). Target rows are also indexed from 0. You can specify a single row or set it to -1 to affect all rows; in this case, no whirlwind will be generated.'**
+  /// **'Each entry’s wave index is 0-based (e.g., 0 = first wave, 1 = second wave). Target rows are also indexed from 0. You can specify a single row or set it to -1 to affect all rows; in this case, no whirlwind will be generated.'**
   String get heianWindModuleHelpRowBody;
 
   /// No description provided for @heianWindModuleWaves.
@@ -8989,13 +8995,13 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleAppearances.
   ///
   /// In en, this message translates to:
-  /// **'Appearances'**
+  /// **'Summon Batches'**
   String get heianWindModuleAppearances;
 
   /// No description provided for @heianWindModuleWindDelay.
   ///
   /// In en, this message translates to:
-  /// **'Wind Delay (seconds)'**
+  /// **'Wind Delay (unit: seconds)'**
   String get heianWindModuleWindDelay;
 
   /// No description provided for @heianWindModuleWindEntries.
@@ -9037,7 +9043,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleMoveTime.
   ///
   /// In en, this message translates to:
-  /// **'Move Duration (MoveTime; seconds)'**
+  /// **'Move Duration (MoveTime; unit: seconds)'**
   String get heianWindModuleMoveTime;
 
   /// No description provided for @heianWindModuleExpectationLabel.
@@ -9223,7 +9229,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieSunDropHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'Used to configure how much sun specific zombies drop in a level, mainly for Penny\'s Pursuit Level 5. As a side effect, the Sun Shovel becomes ineffective.'**
+  /// **'This module is used to configure how much sun specific zombies drop in a level, mainly for Penny\'s Pursuit Level 5. As a side effect, the Sun Shovel becomes ineffective.'**
   String get zombieSunDropHelpOverview;
 
   /// No description provided for @zombieSunDropHelpValues.
@@ -9409,31 +9415,31 @@ abstract class AppLocalizations {
   /// No description provided for @musicSuffix.
   ///
   /// In en, this message translates to:
-  /// **'Music suffix'**
+  /// **'Music settings'**
   String get musicSuffix;
 
   /// No description provided for @ambientAudioSuffix.
   ///
   /// In en, this message translates to:
-  /// **'Ambient audio suffix'**
+  /// **'Ambient audio settings'**
   String get ambientAudioSuffix;
 
   /// No description provided for @selectMusicSuffix.
   ///
   /// In en, this message translates to:
-  /// **'Select music suffix'**
+  /// **'Select music settings'**
   String get selectMusicSuffix;
 
   /// No description provided for @searchMusicSuffix.
   ///
   /// In en, this message translates to:
-  /// **'Search name or codename'**
+  /// **'Search by name or codename'**
   String get searchMusicSuffix;
 
   /// No description provided for @noMusicSuffixFound.
   ///
   /// In en, this message translates to:
-  /// **'No music suffix found'**
+  /// **'No music settings found'**
   String get noMusicSuffixFound;
 
   /// No description provided for @jsonViewerLineContinuation.

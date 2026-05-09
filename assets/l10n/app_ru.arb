@@ -490,6 +490,7 @@
   "moduleCategoryBase": "Базовые",
   "moduleCategoryMode": "Режимы",
   "moduleCategoryScene": "Сцена",
+  "moduleCategoryGimmick": "Gimmick",
   "moduleTitle_RocketZombieFlickModuleProperties": "Смахивание ракетного зомби",
   "moduleDesc_RocketZombieFlickModuleProperties": "Позволяет смахивать импов с ракетницей с газона (шаблон).",
   "kongfuRocketFlickDialogTitle": "Ракетный зомби",

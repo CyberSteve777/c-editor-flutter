@@ -130,12 +130,14 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
         case ModuleCategory.base: return 'Base';
         case ModuleCategory.mode: return 'Game Modes';
         case ModuleCategory.scene: return 'Scene';
+        case ModuleCategory.gimmick: return 'Gimmick';
       }
     }
     switch (cat) {
       case ModuleCategory.base: return l10n.moduleCategoryBase;
       case ModuleCategory.mode: return l10n.moduleCategoryMode;
       case ModuleCategory.scene: return l10n.moduleCategoryScene;
+      case ModuleCategory.gimmick: return l10n.moduleCategoryGimmick;
     }
   }
 }

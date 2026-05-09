@@ -950,7 +950,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get description =>
-      '提示正文 (Description)，支持显示中文，多行文字需直接输入回车，无需使用转义序列\n，注意iOS端庭院内无法查看提示内容';
+      '提示正文 (支持显示中文，多行文字需直接输入回车，无需使用转义序列，注意iOS端庭院内无法查看提示内容)';
 
   @override
   String get levelNumber => '关卡序号';
@@ -990,7 +990,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get beatTheLevelDialogHint =>
-      '支持显示中文，多行文字需直接输入回车，无需使用转义序列\n，注意iOS端庭院内无法查看提示内容。';
+      '支持显示中文，多行文字需直接输入回车，无需使用转义序列，注意iOS端庭院内无法查看提示内容。';
 
   @override
   String get levelHintText => '关卡提示文字';
@@ -1006,7 +1006,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String conflictDefaultDescription(String module1, String module2) {
-    return '「$module1」与「$module2」逻辑冲突，建议只保留其一。';
+    return '「$module1」与「$module2」逻辑冲突，建议只保留其中一个。';
   }
 
   @override
@@ -1030,7 +1030,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get conflictDesc_WinConditionExclusive =>
-      '死亡掉落、铜人阵胜利与默认脑子被吃等胜利/失败规则应只选其一，请移除多余的胜利条件模块。';
+      '「死亡掉落」与「铜人阵死亡结算」不需要同时添加，建议移除其中一个。';
 
   @override
   String get conflictDesc_ZombossTwoIntros => '两个开场动画不能共存，否则僵王的血条会显示异常。';
@@ -1048,7 +1048,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conflictDesc_LawnMowerYard => '庭院模块中小推车无效。';
 
   @override
-  String get missingPlantModuleWarningTitle => '缺少平行植物所需模块。';
+  String get missingPlantModuleWarningTitle => '缺少平行宇宙植物所需模块';
 
   @override
   String get editableModules => '可用编辑模块';
@@ -1202,23 +1202,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_ZombiesDeadWinConProperties => '关卡稳定运行必需模块';
 
   @override
-  String get moduleTitle_BronzeDeadWinConProperties => '铜人阵胜利';
+  String get moduleTitle_BronzeDeadWinConProperties => '铜人阵死亡结算';
 
   @override
   String get moduleDesc_BronzeDeadWinConProperties =>
-      '清除场上全部铜人像与铜人巨人后胜利（功夫玩法）。与死亡掉落互斥，关卡应只保留一种胜利条件模块。';
+      '当所有铜人像和铜人僵尸被消灭后，立即消灭场上的其他僵尸';
 
   @override
-  String get moduleTitle_SpermWhaleModuleProperties => '鲸鱼模块';
+  String get moduleTitle_SpermWhaleModuleProperties => '蓝鲸出没';
 
   @override
-  String get moduleDesc_SpermWhaleModuleProperties => '海底鲸鱼吞噬参数，需配合关卡内磷虾等出场。';
+  String get moduleDesc_SpermWhaleModuleProperties =>
+      '配置海底世界鲸鱼相关参数，需要场上有磷虾才有效果';
 
   @override
-  String get spermWhaleModuleTitle => '鲸鱼模块';
+  String get spermWhaleModuleTitle => '蓝鲸出没设置';
 
   @override
-  String get spermWhaleModuleHelpTitle => '鲸鱼模块';
+  String get spermWhaleModuleHelpTitle => '蓝鲸出没模块说明';
 
   @override
   String get spermWhaleModuleParameters => '参数';
@@ -1228,33 +1229,33 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get spermWhaleModuleHelpOverviewBody =>
-      '配置海底鲸鱼的吞噬间隔、中毒时的吞噬间隔、吞噬持续时间，以及噗噗鱼藤中毒触发次数。通常用于深海/深海陆地地图，并需要关卡内搭配磷虾（一般至少三只）才有完整效果。';
+      '本模块用于配置特殊海洋生物“鲸鱼”的相关参数，通常用于海底世界关卡。随着磷虾出现，鲸鱼会在场地上方盘旋，并触发对应的红色字幕提示。当场上至少存在三只磷虾时，鲸鱼将正式出现在场地左上角。鲸鱼会优先吞食当前场上的磷虾，随后持续吸取并吞噬植物。噗噗鱼藤释放的鱼藤酮可被鲸鱼吸入，首次吸入后会降低其吞噬速度；当吸入次数达到设定的中毒触发次数后，鲸鱼将强制退场。注意鲸鱼在一关中只会登场一次。';
 
   @override
-  String get spermWhaleModuleHelpFieldsTitle => '字段说明';
+  String get spermWhaleModuleHelpFieldsTitle => '参数介绍';
 
   @override
   String get spermWhaleModuleHelpFieldsBody =>
-      'SwallowInterval：正常情况下吞噬植物的间隔。PoisonSwallowInterval：中毒状态下吞噬间隔。SwallowDuration：吞噬阶段持续时间。PoisonTriggerCount：受噗噗鱼藤中毒负面影响次数阈值，用于切换到中毒吞噬节奏。';
+      '\n吞噬间隔 (SwallowInterval) 指鲸鱼在正常状态下吞噬植物的间隔。\n中毒时吞噬间隔 (PoisonSwallowInterval) 指鲸鱼在吸入一次鱼藤酮后吞噬植物的间隔。\n吞噬持续时间 (SwallowDuration) 指鲸鱼在场上驻留并吸取植物的总时长。\n中毒触发次数 (PoisonTriggerCount) 指迫使鲸鱼退场所需的鱼藤酮吸入次数。';
 
   @override
-  String get spermWhaleModuleSwallowInterval => '吞噬间隔 (SwallowInterval)';
+  String get spermWhaleModuleSwallowInterval => '吞噬间隔 (SwallowInterval，单位：秒)';
 
   @override
-  String get spermWhaleModuleHelpSwallowInterval => '正常情况下，两次吞噬植物之间的秒数。';
+  String get spermWhaleModuleHelpSwallowInterval => '正常状态下，两次吞噬之间间隔的时间。';
 
   @override
   String get spermWhaleModulePoisonSwallowInterval =>
-      '中毒吞噬间隔 (PoisonSwallowInterval)';
+      '中毒时吞噬间隔 (PoisonSwallowInterval，单位：秒)';
 
   @override
-  String get spermWhaleModuleHelpPoisonSwallowInterval => '中毒状态下吞噬植物的间隔（秒）。';
+  String get spermWhaleModuleHelpPoisonSwallowInterval => '中毒状态下，两次吞噬之间间隔的时间。';
 
   @override
-  String get spermWhaleModuleSwallowDuration => '吞噬持续时间 (SwallowDuration)';
+  String get spermWhaleModuleSwallowDuration => '吞噬持续时间 (SwallowDuration，单位：秒)';
 
   @override
-  String get spermWhaleModuleHelpSwallowDuration => '单次吞噬阶段持续时长（秒）。';
+  String get spermWhaleModuleHelpSwallowDuration => '鲸鱼在场上驻留并吸取植物的总时长。';
 
   @override
   String get spermWhaleModulePoisonTriggerCount =>
@@ -1262,17 +1263,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get spermWhaleModuleHelpPoisonTriggerCount =>
-      '噗噗鱼藤中毒负面影响累计触发多少次后，采用中毒吞噬间隔。';
+      '噗噗鱼藤的鱼藤酮使鲸鱼强制退场所需的累计吸入次数。';
 
   @override
   String get spermWhaleModuleNotDeepSeaWarning =>
-      '该模块主要面向深海或深海陆地草坪。以下网格仅反映当前关卡舞台尺寸；非深海地图与游戏内亚特兰蒂斯布局可能不一致。';
+      '推荐在海底世界地图中使用该模块。以下网格仅反映当前关卡地图的配置情况；在非海底两万里/亚特兰蒂斯地图使用该模块可能会出现不兼容的情况。';
 
   @override
-  String get spermWhaleModuleLawnPreview => '草坪网格（布局参考）';
+  String get spermWhaleModuleLawnPreview => '场地预览';
 
   @override
-  String get spermWhaleModuleLawnPreviewHint => '深海草坪为 6×10；普通草坪为 5×9。';
+  String get spermWhaleModuleLawnPreviewHint => '海底世界关卡为6×10，其他关卡为5×9。';
 
   @override
   String get moduleTitle_PennyClassroomModuleProperties => '阶级定义';
@@ -1594,7 +1595,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get bronzeModuleHelpOverviewBody =>
-      '该模块用于在草坪上放置关卡开始时已存在的铜人像障碍物，常用于功夫世界小游戏“铜人阵”关卡。铜人像会随时间逐渐褪去铜皮，并在设定的倒计时结束后复活为铜人。铜人像的生命值与其对应的一阶铜人相同。\n抖动距离 (shakeOffset) 指复活动画中抖动中心的偏移量，调整该数值无实际意义。\n注意：此模块本身不包含在场上全部铜人像和铜人僵尸被消灭后立即消灭其余僵尸的效果。若需实现该效果，需要将死亡掉落模块替换为BronzeDeadWinCon@LevelModules。';
+      '该模块用于在草坪上放置关卡开始时已存在的铜人像障碍物，常用于功夫世界小游戏“铜人阵”关卡。铜人像会随时间逐渐褪去铜皮，并在设定的倒计时结束后复活为铜人。铜人像的生命值与其对应的一阶铜人相同。\n抖动距离 (shakeOffset) 指复活动画中抖动中心的偏移量，调整该数值无实际意义。\n注意：此模块本身不包含在场上全部铜人像和铜人僵尸被消灭后立即消灭其余僵尸的效果。若需实现该效果，需要添加「铜人阵死亡结算」模块。';
 
   @override
   String get bronzeModuleHelpBatches => '复活逻辑';
@@ -1929,6 +1930,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moduleCategoryScene => '场地配置';
+
+  @override
+  String get moduleCategoryGimmick => '特殊机制';
 
   @override
   String get moduleTitle_RocketZombieFlickModuleProperties => '划走火箭筒';
@@ -2702,7 +2706,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpDinoTreadRowCol =>
-      'GridY 表示行，GridXMin/GridXMax 表示列范围，行和列均从 0 开始计数。海底世界地图的范围为：行 0–5，列 0–9。';
+      'GridY 表示行，GridXMin/GridXMax 表示列范围，行和列均从0开始计数。海底世界地图的范围为：行0–5，列0–9。';
 
   @override
   String get dinoTreadRowLabel => '行 (GridY)';
@@ -2724,10 +2728,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpDinoRunBody =>
-      '触发该事件时，会在 2－3 行的范围内聚集起恐龙。这些恐龙不会发动能力，而是直接向场内发起冲锋，踩死植物或僵尸。不同的恐龙可以踩死的植物或僵尸数目不同。';
+      '触发该事件时，会在2－3行的范围内聚集起恐龙。这些恐龙不会发动能力，而是直接向场内发起冲锋，踩死植物或僵尸。不同的恐龙可以踩死的植物或僵尸数目不同。';
 
   @override
-  String get eventHelpDinoRunRow => 'DinoRow表示龙潮中心的行数，从0开始计数。海底世界地图支持设置为5。';
+  String get eventHelpDinoRunRow => 'DinoRow表示龙潮中心的行数，从0开始计数。在海底世界地图中，该值可设置为5。';
 
   @override
   String get positionAndArea => '位置与区域';
@@ -2736,7 +2740,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get positionAndDuration => '位置与持续时间';
 
   @override
-  String get rowCol0Index => '行/列（从0开始）';
+  String get rowCol0Index => '行/列（从0开始计数）';
 
   @override
   String get timeInterval => '时间间隔';
@@ -2754,7 +2758,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpShellUsage =>
-      '选中格子后，点击“+”放置贝壳。场地大小因关卡地图而异，共有 5×9 和 6×10 两种规格。';
+      '选中格子后，点击“+”放置贝壳。场地大小因关卡地图而异，共有5×9和6×10两种规格。';
 
   @override
   String get eventHelpFairyFogBody =>
@@ -2769,7 +2773,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpFairyWindVelocity =>
-      '该事件作用时可以改变抛射物的速度。1.0 表示原速，数值越大子弹运动越快。';
+      '该事件作用时可以改变抛射物的速度。1.0表示原速，数值越大子弹运动越快。';
 
   @override
   String get eventHelpRaidingPartyBody =>
@@ -2808,7 +2812,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpBarrelWaveRows =>
-      '行数从1开始计，地图最上面一行为1，最下面一行为5（或 6）。标准地图共有5行，海底世界地图共有6行。';
+      '行数从1开始计，地图最上面一行为1，最下面一行为5（或6）。标准地图共有5行，海底世界地图共有6行。';
 
   @override
   String get eventHelpThunderWaveBody =>
@@ -2859,7 +2863,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get barrelWaveTypeExplosive => '炸药桶 (barrelpowder)';
 
   @override
-  String get barrelWaveRowsHint => '行数从1开始计，地图最上面一行为1，最下面一行为5（或 6）。';
+  String get barrelWaveRowsHint => '行数从1开始计，地图最上面一行为1，最下面一行为5（或6）。';
 
   @override
   String get barrelWaveAddBarrel => '添加滚桶';
@@ -4289,11 +4293,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get missingModulesRecommended => '关卡可能无法正常运行。建议添加以下模块：';
 
   @override
-  String get recommendedTunnelDefendTitle => '强烈建议添加地宫坑道模块';
+  String get recommendedTunnelDefendTitle => '强烈建议添加「地宫坑道」模块';
 
   @override
   String get recommendedTunnelDefendBody =>
-      '地宫遗迹类场地依赖坑道路径表现。强烈建议添加「地宫坑道」模块，否则游戏中场地可能显得空旷。';
+      '地宫秘境场地中的地砖需通过「地宫坑道」模块铺设。若未添加该模块，场地可能会显得较为空旷。';
 
   @override
   String get itemListRowFirst => '当前格子中的物品';
@@ -4407,10 +4411,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tunnelDefendTileStylePreset => '地砖样式预设';
 
   @override
-  String get tunnelDefendTileStylePart1 => '款式一';
+  String get tunnelDefendTileStylePart1 => '地宫遗迹（第一章）';
 
   @override
-  String get tunnelDefendTileStylePart2 => '款式二';
+  String get tunnelDefendTileStylePart2 => '地宫镇魂（第二章）';
 
   @override
   String get moduleTitle_LawnMowerProperties => '小推车';
@@ -4422,7 +4426,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleTitle_TunnelDefendModuleProperties => '地宫坑道';
 
   @override
-  String get moduleDesc_TunnelDefendModuleProperties => '设置地宫秘境的坑道';
+  String get moduleDesc_TunnelDefendModuleProperties => '设置地宫秘境的坑道及地砖样式';
 
   @override
   String get moduleTitle_ZombieRushModuleProperties => '关卡倒计时';
@@ -4536,7 +4540,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String pvz1PassageHelpGridXMin(int maxIndex) {
-    return '传送门可出现的最左列。在当前场地上，列索引范围为 0–$maxIndex。最小生成列数必须小于最大生成列数。';
+    return '传送门可出现的最左列。场地左边界为0列，右边界为$maxIndex列。最小生成列数必须小于最大生成列数。';
   }
 
   @override
@@ -4544,7 +4548,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String pvz1PassageHelpGridXMax(int maxIndex) {
-    return '传送门可出现的最右列。在当前场地上，列索引范围为 0–$maxIndex。最大生成列数必须大于最小生成列数。';
+    return '传送门可出现的最右列。场地左边界为0列，右边界为$maxIndex列。最大生成列数必须大于最小生成列数。';
   }
 
   @override
@@ -4571,21 +4575,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pvz1PassagePortalSpawnPreview => '传送门生成列预览';
 
   @override
-  String get pvz1PassageHelpPreview => '预览';
+  String get pvz1PassageHelpPreview => '生成范围预览预览';
 
   @override
   String pvz1PassageHelpPreviewBody(int maxIndex) {
-    return '橙色高亮列为传送门可出现的最小–最大列范围（GridXMin–GridXMax，含边界）。在当前场地上，有效列索引为 0–$maxIndex。本模块不以行限制传送门。';
+    return '橙色高亮区域表示传送门可能出现在哪些列。当前场地的列范围为 0–$maxIndex（包含场地两侧的边界）。本模块无法限制传送门生成行的范围。';
   }
 
   @override
-  String get moduleWaveIndexZeroBasedHint => '波次索引：0 表示第 1 波，1 表示第 2 波，以此类推。';
+  String get moduleWaveIndexZeroBasedHint => '这里0是第1波，以此类推';
 
   @override
-  String get moduleWaveFieldZeroBased => '波次 (0 = 第1波, 1 = 第2波, ...)';
+  String get moduleWaveFieldZeroBased => '波次 (从0开始计数)';
 
   @override
-  String get appearanceLabel => '出场';
+  String get appearanceLabel => '批次';
 
   @override
   String get moduleTitle_RenaiModuleProperties => '复兴时代模块';
@@ -4611,7 +4615,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get renaiModuleHelpStatuesBody =>
-      '初始障碍物指关卡开始时场上已存在的雕像和原石像，会在指定波次复活成为僵尸。夜间障碍物指黑夜开始后生成的障碍物，生成时若目标格上已有植物，则不会生成。黑夜开始波次与雕像复活波次均使用从 0 起的波次索引（0=第1波，1=第2波）。';
+      '初始障碍物指关卡开始时场上已存在的雕像和原石像，会在指定波次复活成为僵尸。夜间障碍物指黑夜开始后生成的障碍物，生成时若目标格上已有植物，则不会生成。黑夜开始的波次在代码中从0开始计数（如第1波入夜为0，第2波入夜为1）。';
 
   @override
   String get renaiModuleEnableNight => '启用昼夜更替功能';
@@ -4638,7 +4642,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get renaiModuleCarveWave => '雕像复活波次';
 
   @override
-  String get renaiModuleStatuesInCell => '所选格内雕像';
+  String get renaiModuleStatuesInCell => '当前格子中的物品';
 
   @override
   String get renaiModuleExpectationLabel => '夜幕降临事件';
@@ -4666,20 +4670,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get airDropShipModuleHelpOverviewBody =>
-      '此模块用于配置关卡中随波次出现的运兵艇，常见于天空之城关卡。运兵艇不会受到攻击，指定数量的飞行小鬼僵尸会从中依次降落到指定投放区域内的位置。波次编号为从 0 开始的索引（0 表示第 1 波）。';
+      '此模块用于配置关卡中随波次出现的运兵艇，常见于天空之城关卡。运兵艇不会受到攻击，指定数量的飞行小鬼僵尸会从中依次降落到指定投放区域内的位置。';
 
   @override
   String get airDropShipModuleHelpImps => '参数介绍';
 
   @override
   String get airDropShipModuleHelpImpsBody =>
-      '每条记录的波次索引从 0 开始（0=第1波）。运兵艇至少会投放 1 只飞行小鬼僵尸；额外小鬼数量指在该 1 只之外再投放的数量。';
+      '运兵艇的出现波次从0开始计数，如第1波登场填0，第2波登场填1。运兵艇至少会投放1只飞行小鬼僵尸，因此额外小鬼数量填写的是在这1只的基础上，该波次额外投放的小鬼数量。';
 
   @override
-  String get airDropShipModuleAppearWaves => '出现波次（Wave, 从0开始）';
+  String get airDropShipModuleAppearWaves => '出现波次（Wave, 从0开始计数）';
 
   @override
-  String get airDropShipModuleAppearances => '出场列表';
+  String get airDropShipModuleAppearances => '投放批次';
 
   @override
   String get airDropShipModuleExtraImpCount => '额外小鬼数量 (Imp)';
@@ -4728,7 +4732,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get heianWindModuleHelpOverviewBody =>
-      '此模块用于在指定波次召唤神风，常见于平安时代关卡。神风会推动覆盖范围内指定数量的中小体型僵尸平移一段距离。一个波次内所有神风结束后，该波次中被单行神风作用过的行会生成旋风，一行最多只会生成一道旋风。旋风会裹挟遇到的僵尸前进，并在接触植物时将其击飞，随后消失。每条配置的波次编号为从 0 起的索引（0=第1波）。';
+      '此模块用于在指定波次召唤神风，常见于平安时代关卡。神风会推动覆盖范围内指定数量的中小体型僵尸平移一段距离。一个波次内所有神风结束后，该波次中被单行神风作用过的行会生成旋风，一行最多只会生成一道旋风。旋风会裹挟遇到的僵尸前进，并在接触植物时将其击飞，随后消失。';
 
   @override
   String get heianWindModuleHelpDistance => '平移距离';
@@ -4745,10 +4749,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '神风的出现波次从0开始计数，如第1波降临填0，第2波降临填1。神风的作用行也从0开始计数，除了可以指定作用在单独一行外，也可以设为-1，使神风作用于全屏；此时不会生成旋风。';
 
   @override
-  String get heianWindModuleWaves => '神风的出现波次 (WaveNumber，从0开始)';
+  String get heianWindModuleWaves => '神风的出现波次 (WaveNumber，从0开始计数)';
 
   @override
-  String get heianWindModuleAppearances => '出场列表';
+  String get heianWindModuleAppearances => '召唤批次';
 
   @override
   String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay, 单位：秒)';
@@ -4760,7 +4764,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heianWindModuleAddWind => '添加神风';
 
   @override
-  String get heianWindModuleRow => '单行神风 (从0开始)';
+  String get heianWindModuleRow => '单行神风 (从0开始计数)';
 
   @override
   String get heianWindModuleAllRows => '全屏大风 (-1)';
@@ -4964,19 +4968,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get invalidValueType => 'RTON 不支持该值类型。';
 
   @override
-  String get musicSuffix => '音乐后缀';
+  String get musicSuffix => '音乐模块';
 
   @override
-  String get ambientAudioSuffix => '环境音后缀';
+  String get ambientAudioSuffix => '背景环境白噪音';
 
   @override
-  String get selectMusicSuffix => '选择音乐后缀';
+  String get selectMusicSuffix => '选择音乐模块';
 
   @override
   String get searchMusicSuffix => '搜索名称或代码名';
 
   @override
-  String get noMusicSuffixFound => '未找到音乐后缀';
+  String get noMusicSuffixFound => '未找到音乐模块';
 
   @override
   String get jsonViewerLineContinuation => '↳';

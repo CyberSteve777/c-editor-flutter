@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:z_editor/l10n/app_localizations.dart';
 import 'package:z_editor/data/pvz_models.dart';
 
-enum ModuleCategory { base, mode, scene }
+enum ModuleCategory { base, mode, scene, gimmick }
 
 class ModuleMetadata {
   final String titleKey;
@@ -365,6 +365,7 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_UnchartedModeNo42UniverseModule',
       icon: Icons.science,
       isCore: false,
+      allowMultiple: false,
       category: ModuleCategory.base,
       defaultAlias: 'UnchartedModeNo42UniverseModule',
       defaultSource: 'LevelModules',
@@ -375,6 +376,7 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_PVZ2MausoleumModuleUnchartedMode',
       icon: Icons.landscape,
       isCore: false,
+      allowMultiple: false,
       category: ModuleCategory.base,
       defaultAlias: 'PVZ2MausoleumModuleUnchartedMode',
       defaultSource: 'LevelModules',
@@ -900,7 +902,7 @@ class ModuleRegistry {
       icon: Icons.flight_land,
       isCore: true,
       allowMultiple: false,
-      category: ModuleCategory.base,
+      category: ModuleCategory.gimmick,
       defaultAlias: 'DropShip',
       initialDataFactory: () => DropShipPropertiesData(),
       routeId: 'DropShip',
@@ -911,7 +913,7 @@ class ModuleRegistry {
       icon: Icons.air,
       isCore: true,
       allowMultiple: false,
-      category: ModuleCategory.base,
+      category: ModuleCategory.gimmick,
       defaultAlias: 'HeianWindModule',
       initialDataFactory: () => HeianWindModulePropertiesData(),
       routeId: 'HeianWindModule',
@@ -922,7 +924,7 @@ class ModuleRegistry {
       icon: Icons.water,
       isCore: true,
       allowMultiple: false,
-      category: ModuleCategory.base,
+      category: ModuleCategory.gimmick,
       defaultAlias: 'SpermWhaleModule',
       initialDataFactory: () => SpermWhaleModulePropertiesData(),
       routeId: 'SpermWhaleModule',
@@ -933,7 +935,7 @@ class ModuleRegistry {
       icon: Icons.swipe_vertical,
       isCore: false,
       allowMultiple: false,
-      category: ModuleCategory.base,
+      category: ModuleCategory.gimmick,
       defaultAlias: 'RocketZombieFlick',
       routeId: 'UnknownDetail',
     ),
@@ -1007,6 +1009,8 @@ extension ModuleCategoryTitle on ModuleCategory {
         return 'Mode';
       case ModuleCategory.scene:
         return 'Scene';
+      case ModuleCategory.gimmick:
+        return 'Gimmick';
     }
   }
 }

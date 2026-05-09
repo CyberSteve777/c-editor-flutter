@@ -10,35 +10,35 @@ class MusicSuffixCatalog {
     'Egypt',
     'Pirate',
     'WildWest',
+    'Kongfu',
     'Future',
     'DarkAges',
     'Beach',
     'IceAge',
+    'SkyCity',
     'LostCity',
     'Eighties',
     'Dino',
     'Modern',
-    'Atlantis',
-    'Kongfu',
+    'Steam',
     'Renai',
     'Heian',
-    'SkyCity',
-    'Steam',
+    'Atlantis',
     'Twister',
-    'BGMb',
-    'BGMa',
-    'BGMc',
-    'BGMd',
-    'Roman',
-    'ZCorp',
     'Uncharted',
-    'rift',
+    'BGMa',
+    'BGMb',
+    'BGMd',
+    'mausoleum',
+    'ghostdom',
+    'BGMc',
     'retro',
     'SilkRoad',
     'BGMe',
-    'mausoleum',
+    'Roman',
+    'ZCorp',
+    'rift',
     'circus',
-    'ghostdom',
   ];
 
   static String resourceKey(String code) =>
@@ -90,22 +90,21 @@ class MusicSuffixCatalog {
         return 'SteamStage';
       case 'Twister':
         return 'TwisterStage';
-      case 'ZCorp':
-        return 'ZCorpStage';
       case 'Uncharted':
         return 'UnchartedAnniversaryStage';
-      case 'rift':
-        return 'RiftStage';
       case 'SilkRoad':
         return 'JourneyToTheWestStage';
-      case 'BGMb':
       case 'BGMa':
-      case 'BGMc':
+      case 'BGMb':
       case 'BGMd':
-      case 'BGMe':
         return 'ModernStage';
-      case 'Roman':
+      case 'BGMc':
+        return 'BowlingStage';
       case 'retro':
+      case 'BGMe':
+      case 'Roman':
+      case 'ZCorp':
+      case 'rift':
       case 'circus':
         return null;
       default:
