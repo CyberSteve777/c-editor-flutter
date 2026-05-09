@@ -1,12 +1,12 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:z_editor/data/music_suffix_catalog.dart';
-import 'package:z_editor/data/repository/stage_repository.dart';
 import 'package:z_editor/l10n/app_localizations.dart';
 import 'package:z_editor/l10n/resource_names.dart';
 import 'package:z_editor/widgets/asset_image.dart' show AssetImageWidget, imageAltCandidates;
 
 /// Picker for `MusicSuffix` (codename + icon + localized title).
+///
+/// Loads codenames/icons from `assets/resources/MusicSuffixes.json`; icons live under `MusicSuffixCatalog` folder.
 class MusicSuffixSelectionScreen extends StatefulWidget {
   const MusicSuffixSelectionScreen({
     super.key,
@@ -38,14 +38,17 @@ class _MusicSuffixSelectionScreenState extends State<MusicSuffixSelectionScreen>
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase();
       items = allCodes.where((code) {
-        final name = ResourceNames.lookup(context, MusicSuffixCatalog.resourceKey(code));
-        return name.toLowerCase().contains(q) || code.toLowerCase().contains(q);
+        final name =
+            ResourceNames.lookup(context, MusicSuffixCatalog.resourceKey(code));
+        return name.toLowerCase().contains(q) ||
+            code.toLowerCase().contains(q);
       }).toList();
     }
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack),
+        leading:
+            IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack),
         title: Text(l10n?.selectMusicSuffix ?? 'Select music suffix'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(64),
@@ -63,7 +66,9 @@ class _MusicSuffixSelectionScreenState extends State<MusicSuffixSelectionScreen>
                       )
                     : null,
                 filled: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
             ),
           ),
@@ -97,7 +102,10 @@ class _MusicSuffixSelectionScreenState extends State<MusicSuffixSelectionScreen>
                 final isSelected = code == widget.currentCodename;
                 return _MusicSuffixTile(
                   codename: code,
-                  displayName: ResourceNames.lookup(context, MusicSuffixCatalog.resourceKey(code)),
+                  displayName: ResourceNames.lookup(
+                    context,
+                    MusicSuffixCatalog.resourceKey(code),
+                  ),
                   iconSize: _iconLogicalSize,
                   isSelected: isSelected,
                   onTap: () => widget.onCodenameSelected(code),
@@ -126,20 +134,8 @@ class _MusicSuffixTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    String assetPath;
-    if (codename.isEmpty) {
-      assetPath = MusicSuffixCatalog.unknownIconAsset;
-    } else {
-      final alias = MusicSuffixCatalog.stageAliasForIcon(codename);
-      final iconName = alias == null
-          ? null
-          : StageRepository.allItems
-              .firstWhereOrNull((s) => s.alias == alias)
-              ?.iconName;
-      assetPath = iconName != null
-          ? 'assets/images/stages/$iconName'
-          : MusicSuffixCatalog.unknownIconAsset;
-    }
+    final assetPath = MusicSuffixCatalog.iconAsset(codename);
+    final isUnknown = assetPath == MusicSuffixCatalog.unknownIconAsset;
 
     return Card(
       color: isSelected ? theme.colorScheme.primaryContainer : null,
@@ -156,26 +152,21 @@ class _MusicSuffixTile extends StatelessWidget {
                 child: SizedBox(
                   width: iconSize,
                   height: iconSize,
-                  child: assetPath == MusicSuffixCatalog.unknownIconAsset
-                      ? AssetImageWidget(
-                          assetPath: assetPath,
-                          width: iconSize,
-                          height: iconSize,
-                          fit: BoxFit.cover,
-                        )
-                      : AssetImageWidget(
-                          assetPath: assetPath,
-                          altCandidates: imageAltCandidates(assetPath),
-                          width: iconSize,
-                          height: iconSize,
-                          fit: BoxFit.cover,
-                        ),
+                  child: AssetImageWidget(
+                    assetPath: assetPath,
+                    altCandidates:
+                        isUnknown ? [] : imageAltCandidates(assetPath),
+                    width: iconSize,
+                    height: iconSize,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 displayName,
-                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

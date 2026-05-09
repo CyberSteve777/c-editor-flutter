@@ -1,114 +1,58 @@
-/// PVZ2 `MusicSuffix` codenames and stage icon mapping for the editor UI.
+import 'dart:convert';
+
+import 'package:flutter/widgets.dart';
+import 'package:z_editor/data/asset_loader.dart';
+
+/// PVZ2 `MusicSuffix` codenames and icons for picker UI (`assets/resources/MusicSuffixes.json`).
 class MusicSuffixCatalog {
   MusicSuffixCatalog._();
 
   static const String unknownIconAsset = 'assets/images/others/unknown.webp';
+  static const String _resourcePath = 'assets/resources/MusicSuffixes.json';
 
-  /// Display order (excluding default empty suffix).
-  static const List<String> orderedCodes = [
-    'Tutorial',
-    'Egypt',
-    'Pirate',
-    'WildWest',
-    'Kongfu',
-    'Future',
-    'DarkAges',
-    'Beach',
-    'IceAge',
-    'SkyCity',
-    'LostCity',
-    'Eighties',
-    'Dino',
-    'Modern',
-    'Steam',
-    'Renai',
-    'Heian',
-    'Atlantis',
-    'Twister',
-    'Uncharted',
-    'BGMa',
-    'BGMb',
-    'BGMd',
-    'mausoleum',
-    'ghostdom',
-    'BGMc',
-    'retro',
-    'SilkRoad',
-    'BGMe',
-    'Roman',
-    'ZCorp',
-    'rift',
-    'circus',
-  ];
+  static final List<String> _orderedCodenames = [];
+  static final Map<String, String> _iconFilenameByCodename = {};
+  static String _iconFolder = 'assets/images/music_suffixes/';
+  static bool _isLoaded = false;
+
+  /// Display order (excluding default empty suffix in JSON list).
+  static List<String> get orderedCodes => List.unmodifiable(_orderedCodenames);
+
+  static Future<void> init() async {
+    if (_isLoaded) return;
+    try {
+      final raw = json.decode(await loadJsonString(_resourcePath)) as Map<String, dynamic>;
+      final folder = raw['iconFolder'] as String?;
+      if (folder != null && folder.isNotEmpty) {
+        final f = folder.endsWith('/') ? folder : '$folder/';
+        _iconFolder = f;
+      }
+      final order = raw['orderedCodenames'] as List<dynamic>? ?? [];
+      final icons = raw['iconFiles'] as Map<String, dynamic>? ?? {};
+      _orderedCodenames
+        ..clear()
+        ..addAll(order.map((e) => '$e'));
+      _iconFilenameByCodename.clear();
+      icons.forEach((k, v) {
+        _iconFilenameByCodename[k] = '$v';
+      });
+      _isLoaded = true;
+    } catch (e) {
+      debugPrint('MusicSuffixCatalog: failed to load $e — using empty catalog');
+      _orderedCodenames.clear();
+      _iconFilenameByCodename.clear();
+      _isLoaded = true;
+    }
+  }
 
   static String resourceKey(String code) =>
       code.isEmpty ? 'musicSuffix_default' : 'musicSuffix_$code';
 
-  /// Stage alias to borrow an icon from (`Stage_Underground.webp` for mausoleum / ghostdom).
-  static String? stageAliasForIcon(String code) {
-    switch (code) {
-      case '':
-        return null;
-      case 'ghostdom':
-      case 'mausoleum':
-        return 'UnchartedMausoleumStage';
-      case 'Tutorial':
-        return 'TutorialStage';
-      case 'Egypt':
-        return 'EgyptStage';
-      case 'Pirate':
-        return 'PirateStage';
-      case 'WildWest':
-        return 'WestStage';
-      case 'Future':
-        return 'FutureStage';
-      case 'DarkAges':
-        return 'DarkStage';
-      case 'Beach':
-        return 'BeachStage';
-      case 'IceAge':
-        return 'IceageStage';
-      case 'LostCity':
-        return 'LostCityStage';
-      case 'Eighties':
-        return 'EightiesStage';
-      case 'Dino':
-        return 'DinoStage';
-      case 'Modern':
-        return 'ModernStage';
-      case 'Atlantis':
-        return 'DeepseaLandStage';
-      case 'Kongfu':
-        return 'KongfuStage';
-      case 'Renai':
-        return 'RenaiStage';
-      case 'Heian':
-        return 'HeianStage';
-      case 'SkyCity':
-        return 'SkycityStage';
-      case 'Steam':
-        return 'SteamStage';
-      case 'Twister':
-        return 'TwisterStage';
-      case 'Uncharted':
-        return 'UnchartedAnniversaryStage';
-      case 'SilkRoad':
-        return 'JourneyToTheWestStage';
-      case 'BGMa':
-      case 'BGMb':
-      case 'BGMd':
-        return 'ModernStage';
-      case 'BGMc':
-        return 'BowlingStage';
-      case 'retro':
-      case 'BGMe':
-      case 'Roman':
-      case 'ZCorp':
-      case 'rift':
-      case 'circus':
-        return null;
-      default:
-        return null;
-    }
+  /// Full asset path for tile icon (`unknown` uses [unknownIconAsset]).
+  static String iconAsset(String codename) {
+    if (codename.isEmpty) return unknownIconAsset;
+    final file = _iconFilenameByCodename[codename];
+    if (file == null || file.isEmpty) return unknownIconAsset;
+    return '$_iconFolder$file';
   }
 }
