@@ -2377,7 +2377,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_BronzeDeadWinConProperties.
   ///
   /// In en, this message translates to:
-  /// **'Instantly eliminate all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated'**
+  /// **'Instantly eliminates all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated'**
   String get moduleDesc_BronzeDeadWinConProperties;
 
   /// No description provided for @moduleTitle_SpermWhaleModuleProperties.
@@ -2389,7 +2389,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_SpermWhaleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configure whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect'**
+  /// **'Configures whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect'**
   String get moduleDesc_SpermWhaleModuleProperties;
 
   /// No description provided for @spermWhaleModuleTitle.

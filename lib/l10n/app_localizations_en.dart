@@ -1259,14 +1259,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_BronzeDeadWinConProperties =>
-      'Instantly eliminate all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated';
+      'Instantly eliminates all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated';
 
   @override
   String get moduleTitle_SpermWhaleModuleProperties => 'Whale Approaching';
 
   @override
   String get moduleDesc_SpermWhaleModuleProperties =>
-      'Configure whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect';
+      'Configures whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect';
 
   @override
   String get spermWhaleModuleTitle => 'Whale Approaching Settings';
