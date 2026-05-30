@@ -3111,6 +3111,16 @@
         "icon": "icon_doombell.webp"
     },
     {
+        "id": "solarsage",
+        "name": "plant_solarsage",
+        "tags": [
+            "Orange",
+            "Productor",
+            "Magic"
+        ],
+        "icon": "icon_solarsage.webp"
+    },
+    {
         "id": "moonflower_iz",
         "name": "plant_moonflower_iz",
         "tags": [

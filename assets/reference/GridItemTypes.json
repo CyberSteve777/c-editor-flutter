@@ -3468,6 +3468,21 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"gingle_toycar"
+			],
+			"objdata": {
+				"TypeName": "gingle_toycar",
+				"GridItemClass": "PVZ2GingleBumpercarGridItem",
+				"Properties": "RTID(PVZ2GingleBumpercarGridItemDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieWestChickenFarmerGroup",
+					"ZombieMausoleumDrunkGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"zombieportal_dino"
 			],
 			"objdata": {
@@ -6447,6 +6462,62 @@
 				"Properties": "RTID(GridItemGoldmagnetLevel5CoinDefault@PropertySheets)",
 				"ResourceGroups": [
 					"PlantGoldMagnet"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"sunflower_plushie"
+			],
+			"objdata": {
+				"TypeName": "sunflower_plushie",
+				"GridItemClass": "GridItem_SunflowerPlushie",
+				"Properties": "RTID(GridItemSunflowerPlushieDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombiePlushieCartGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"hard_candy"
+			],
+			"objdata": {
+				"TypeName": "hard_candy",
+				"GridItemClass": "GridItemHardCandy",
+				"Properties": "RTID(GridItemHardCandyDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieBubbleMachineImpGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"gulliver_tunnel"
+			],
+			"objdata": {
+				"TypeName": "gulliver_tunnel",
+				"GridItemClass": "GridItemGulliverTunnel",
+				"Properties": "RTID(GridItemGulliverTunnelDefault@PropertySheets)",
+				"ResourceGroups": [
+					"GulliverTunnelGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"sportzball"
+			],
+			"objdata": {
+				"TypeName": "sportzball",
+				"GridItemClass": "GridItemSportzball",
+				"Properties": "RTID(GridItemSportzballDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSportzballImpGroup"
 				]
 			}
 		}

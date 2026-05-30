@@ -1652,7 +1652,7 @@
 					"FreezonEffectGroup"
 				],
 				"Properties": "RTID(RepeaterDefault@PropertySheets)",
-				"AnimRigClass": "PlantAnimRig",
+				"AnimRigClass": "PlantAnimRig_Repeater",
 				"PopAnim": "POPANIM_PLANT_REPEATER",
 				"HomeWorld": "egypt",
 				"PlantPieceImageName": "IMAGE_UI_FRAGMENT_PIECES_PACKETS_REPEATER",
@@ -1660,6 +1660,9 @@
 				"AdventureFlags": [
 					"green",
 					"pea"
+				],
+				"SecondPopAnimRare": [
+					"rare1"
 				],
 				"Avatars": [
 					{
@@ -1685,6 +1688,10 @@
 						"AvatarLayers": [
 							"custom_06"
 						]
+					},
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": []
 					}
 				]
 			}
@@ -2630,6 +2637,12 @@
 						"AvatarType": "normal",
 						"AvatarLayers": [
 							"custom_03"
+						]
+					},
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": [
+							"custom_04"
 						]
 					}
 				]
@@ -5420,6 +5433,13 @@
 						"AvatarType": "normal",
 						"AvatarLayers": [
 							"custom_03"
+						]
+					},
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": [
+							"custom_04a",
+							"custom_04b"
 						]
 					}
 				]
@@ -13485,6 +13505,13 @@
 						"AvatarLayers": [
 							"custom_01"
 						]
+					},
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": [
+							"custom_02a",
+							"custom_02b"
+						]
 					}
 				],
 				"HomeWorld": "heian"
@@ -13732,6 +13759,12 @@
 						"AvatarLayers": [
 							"custom_01f",
 							"custom_01b"
+						]
+					},
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": [
+							"custom_02"
 						]
 					}
 				]
@@ -16065,6 +16098,96 @@
 							"custom_03b"
 						]
 					}
+				]
+			}
+		},
+		{
+			"objclass": "PlantType",
+			"aliases": [
+				"solarsage"
+			],
+			"objdata": {
+				"Profession": "sunmaker",
+				"Attribute": {
+					"Attributes": [
+						{
+							"Type": "hp",
+							"Rank": "C"
+						},
+						{
+							"Type": "plant",
+							"Rank": "B"
+						},
+						{
+							"Type": "attack",
+							"Rank": "B"
+						},
+						{
+							"Type": "range",
+							"Rank": "C"
+						},
+						{
+							"Type": "support",
+							"Rank": "A"
+						},
+						{
+							"Type": "control",
+							"Rank": "none"
+						}
+					],
+					"Tags": [
+						"sun_produce",
+						"control"
+					]
+				},
+				"TypeName": "solarsage",
+				"PlantFramework": "PlantSolarSage",
+				"PlantResourceGroups": [
+					"PlantSolarSage",
+					"PlantSolarSageAudio",
+					"ZombieSolarSage"
+				],
+				"PlantPreviewResourceGroups": [
+					"PlantSolarSage"
+				],
+				"Properties": "RTID(SolarSageDefault@PropertySheets)",
+				"AnimRigClass": "PlantAnimRig_SolarSage",
+				"PopAnim": "POPANIM_PLANT_SOLARSAGE",
+				"MasteryType": "piercing",
+				"AlmanacBackdropName": "warp",
+				"PromoID": "SolarSage",
+				"Premium": true,
+				"IntegerID": 177,
+				"AvatarEnabled": true,
+				"HomeWorld": "gacha",
+				"Rare": 4,
+				"PlantPieceImageName": "IMAGE_UI_FRAGMENT_PIECES_PACKETS_SOLARSAGE",
+				"AvatarPieceImageName": "IMAGE_UI_FRAGMENT_AVATAR_AVATAR_SOLARSAGE",
+				"AdventureFlags": [
+					"yellow"
+				],
+				"Avatars": [
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": [
+							"custom_01"
+						]
+					}
+				],
+				"RAPSlots": [
+					3,
+					3,
+					3,
+					3
+				],
+				"Families": [
+					"Enlightenmint"
+				],
+				"SunProducer": true,
+				"Rarity": "mythical",
+				"PlantArchetypes": [
+					"transform",
+					"sunmaker"
 				]
 			}
 		},
@@ -22722,6 +22845,12 @@
 							"custom_02a",
 							"custom_02b"
 						]
+					},
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": [
+							"custom_03"
+						]
 					}
 				]
 			}
@@ -25383,6 +25512,12 @@
 							"custom_03h",
 							"custom_03i"
 						]
+					},
+					{
+						"AvatarType": "normal",
+						"AvatarLayers": [
+							"custom_04"
+						]
 					}
 				]
 			}
@@ -27654,8 +27789,8 @@
 				"AlmanacBackdropName": "beach_water",
 				"PlantPieceImageName": "IMAGE_UI_FRAGMENT_PIECES_PACKETS_UNCHARTED_HAYSTACK",
 				"AdventureFlags": [
-					"short",
-					"brown"
+					"green",
+					"short"
 				],
 				"Avatars": [
 					{

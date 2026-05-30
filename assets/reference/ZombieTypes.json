@@ -3322,7 +3322,7 @@
 				"RecommendPlants": [
 					"cherry_bomb"
 				],
-				"HomeWorld": "uncharted_childrensday",
+				"HomeWorld": "childrensday",
 				"Placeable": true
 			}
 		},
@@ -3356,7 +3356,7 @@
 				"RecommendPlants": [
 					"cherry_bomb"
 				],
-				"HomeWorld": "uncharted_childrensday",
+				"HomeWorld": "childrensday",
 				"Placeable": true
 			}
 		},
@@ -5562,6 +5562,32 @@
 				],
 				"HomeWorld": "beach",
 				"IsBasicZombie": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"dolphin_rider_zombie"
+			],
+			"objdata": {
+				"TypeName": "dolphin_rider_zombie",
+				"ZombieClass": "ZombieDolphinRider",
+				"Properties": "RTID(ZombieDolphinRiderDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieDolphinRiderGroup"
+				],
+				"AudioGroups": [
+					"ZombieDolphinRiderAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_DolphinRider",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_PVZ1_DOLPHINRIDER",
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"tallnut",
+					"tanglekelp"
+				],
+				"HomeWorld": "beach",
+				"Placeable": true
 			}
 		},
 		{
@@ -9485,7 +9511,7 @@
 				"RecommendPlants": [
 					"cherry_bomb"
 				],
-				"HomeWorld": "rift1a",
+				"HomeWorld": "childrensday",
 				"Placeable": true
 			}
 		},
@@ -17585,7 +17611,7 @@
 			"objdata": {
 				"TypeName": "new_pvp_fairy_tale_witch",
 				"ZombieClass": "ZombieFairyTaleWitch",
-				"Properties": "RTID(ZombieFairyTaleWitchDefault@PropertySheets)",
+				"Properties": "RTID(ZombieNewPvPFairyTaleWitchDefault@PropertySheets)",
 				"ResourceGroups": [
 					"ZombieFairyTaleWitchGroup",
 					"PlantWitchHazel"
@@ -17640,7 +17666,7 @@
 				"AnimRigClass": "ZombieAnimRig_ChildrensdayBasic",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_CHILDRENSDAY_BASIC",
 				"BoardAlmanac": true,
-				"HomeWorld": "uncharted_childrensday"
+				"HomeWorld": "childrensday"
 			}
 		},
 		{
@@ -17658,7 +17684,7 @@
 				"AnimRigClass": "ZombieAnimRig_ChildrensdayBucket",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_CHILDRENSDAY_BASIC",
 				"BoardAlmanac": true,
-				"HomeWorld": "uncharted_childrensday"
+				"HomeWorld": "childrensday"
 			}
 		},
 		{
@@ -17676,7 +17702,7 @@
 				"AnimRigClass": "ZombieAnimRig_ChildrensdayCone",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_CHILDRENSDAY_BASIC",
 				"BoardAlmanac": true,
-				"HomeWorld": "uncharted_childrensday"
+				"HomeWorld": "childrensday"
 			}
 		},
 		{
@@ -17694,7 +17720,7 @@
 				"AnimRigClass": "ZombieAnimRig_ChildrensdayFlag",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_CHILDRENSDAY_FLAG",
 				"BoardAlmanac": true,
-				"HomeWorld": "uncharted_childrensday"
+				"HomeWorld": "childrensday"
 			}
 		},
 		{
@@ -17718,7 +17744,7 @@
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_CHILDRENSDAY_GARGANTUAR",
 				"BoardAlmanac": true,
 				"AlmanacBackdropName": "warp",
-				"HomeWorld": "uncharted_childrensday"
+				"HomeWorld": "childrensday"
 			}
 		},
 		{
@@ -17740,7 +17766,7 @@
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_CHILDRENSDAY_IMP",
 				"BoardAlmanac": true,
 				"AlmanacBackdropName": "warp",
-				"HomeWorld": "uncharted_childrensday"
+				"HomeWorld": "childrensday"
 			}
 		},
 		{
@@ -17761,7 +17787,7 @@
 				],
 				"AnimRigClass": "ZombieAnimRig_BumperCar",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_BUMPERCAR",
-				"HomeWorld": "uncharted_childrensday",
+				"HomeWorld": "childrensday",
 				"BoardAlmanac": true
 			}
 		},
@@ -17783,7 +17809,7 @@
 				],
 				"AnimRigClass": "ZombieAnimRig_BumperCar",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_BUMPERCAR_ELITE",
-				"HomeWorld": "uncharted_childrensday",
+				"HomeWorld": "childrensday",
 				"BoardAlmanac": true,
 				"Resistences": [
 					1.0,
@@ -19010,7 +19036,7 @@
 				],
 				"AnimRigClass": "ZombieAnimRig_BumperCar",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_BUMPERCAR_ELITE",
-				"HomeWorld": "uncharted_childrensday",
+				"HomeWorld": "childrensday",
 				"BoardAlmanac": true,
 				"Resistences": [
 					1.0,
@@ -21254,6 +21280,84 @@
 		{
 			"objclass": "ZombieType",
 			"aliases": [
+				"SwimmingRing"
+			],
+			"objdata": {
+				"TypeName": "SwimmingRing",
+				"ZombieClass": "ZombieSwimmingRing",
+				"Properties": "RTID(ZombieSwimmingRing_Normal@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSwimmingRingGroup"
+				],
+				"AudioGroups": [
+					"ZombieSwimmingRingAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_SwimmingRing",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_PVZ1_DUCKYTUBE",
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"cherry_bomb"
+				],
+				"HomeWorld": "beach",
+				"IsBasicZombie": true,
+				"Placeable": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"SwimmingRingCone"
+			],
+			"objdata": {
+				"TypeName": "SwimmingRingCone",
+				"ZombieClass": "ZombieSwimmingRing",
+				"Properties": "RTID(ZombieSwimmingRing_Cone@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSwimmingRingGroup"
+				],
+				"AudioGroups": [
+					"ZombieSwimmingRingAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_SwimmingRing",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_PVZ1_DUCKYTUBE",
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"cherry_bomb"
+				],
+				"HomeWorld": "beach",
+				"IsBasicZombie": true,
+				"Placeable": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"SwimmingRingBucket"
+			],
+			"objdata": {
+				"TypeName": "SwimmingRingBucket",
+				"ZombieClass": "ZombieSwimmingRing",
+				"Properties": "RTID(ZombieSwimmingRing_Bucket@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSwimmingRingGroup"
+				],
+				"AudioGroups": [
+					"ZombieSwimmingRingAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_SwimmingRing",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_PVZ1_DUCKYTUBE",
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"cherry_bomb"
+				],
+				"HomeWorld": "beach",
+				"IsBasicZombie": true,
+				"Placeable": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
 				"ScreenDoor"
 			],
 			"objdata": {
@@ -21274,6 +21378,206 @@
 				],
 				"HomeWorld": "modern",
 				"IsBasicZombie": false
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"sportzball_buckethead"
+			],
+			"objdata": {
+				"TypeName": "sportzball_buckethead",
+				"IntegerID": 441,
+				"DisplayTypeName": "sportzball_buckethead",
+				"ZombieClass": "ZombieBasic",
+				"Properties": "RTID(ZombieSportzballBucketheadDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSportzballBasicGroup",
+					"ZombieLNYBasicGroup"
+				],
+				"AudioGroups": [],
+				"AnimRigClass": "ZombieAnimRig_Tutorial",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_SPORTZBALL_BUCKETHEAD",
+				"HomeWorld": "rift149",
+				"IsBasicZombie": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"sportzball_wizard"
+			],
+			"objdata": {
+				"TypeName": "sportzball_wizard",
+				"IntegerID": 443,
+				"DisplayTypeName": "sportzball_wizard",
+				"ZombieClass": "ZombieDarkWizard",
+				"Properties": "RTID(ZombieSportzballWizardDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSportzballWizardGroup",
+					"ZombieDarkWizardGroup",
+					"ZombieSportzballImpGroup"
+				],
+				"AudioGroups": [
+					"ZombieDarkAgesWizardAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_DarkWizard",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_SPORTZBALL_WIZARD",
+				"HomeWorld": "rift149"
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"sportzball_imp"
+			],
+			"objdata": {
+				"TypeName": "sportzball_imp",
+				"IntegerID": 444,
+				"ZombieClass": "ZombieSportzballImp",
+				"Properties": "RTID(ZombieSportzballImpDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSportzballImpGroup"
+				],
+				"AudioGroups": [
+					"ZombieGlobalGargantuarAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_Imp",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_SPORTZBALL_IMP",
+				"HomeWorld": "rift149",
+				"Placeable": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"sportzball_gargantuar"
+			],
+			"objdata": {
+				"TypeName": "sportzball_gargantuar",
+				"IntegerID": 445,
+				"ZombieClass": "ZombieSportzballGargantuar",
+				"Properties": "RTID(ZombieSportzballGargantuar@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSportzballGargantuarGroup",
+					"ZombieSportzballImpGroup",
+					"ZombieGargantuarEffects"
+				],
+				"AudioGroups": [
+					"ZombieGlobalGargantuarAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_Gargantuar",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_SPORTZBALL_GARGANTUAR",
+				"HomeWorld": "rift149"
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"general_treadmill_phase1"
+			],
+			"objdata": {
+				"TypeName": "general_treadmill_phase1",
+				"IntegerID": 341,
+				"ZombieClass": "ZombieGeneralTreadmill",
+				"Properties": "RTID(ZombieGeneralTreadmillDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieTreadmillBrainGroup",
+					"ZombieTreadmillGroup"
+				],
+				"AudioGroups": [
+					"ZombieTreadmillAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_GeneralTreadmill",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_TREADMILL",
+				"HomeWorld": "rift149",
+				"Placeable": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"general_treadmill_phase2"
+			],
+			"objdata": {
+				"TypeName": "general_treadmill_phase2",
+				"IntegerID": 342,
+				"ZombieClass": "ZombieGeneralTreadmill",
+				"Properties": "RTID(ZombieGeneralTreadmillPhase2@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieTreadmillBrainGroup",
+					"ZombieTreadmillGroup"
+				],
+				"AudioGroups": [
+					"ZombieTreadmillAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_GeneralTreadmill",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_TREADMILL",
+				"HomeWorld": "rift149",
+				"Placeable": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"general_treadmill_phase3"
+			],
+			"objdata": {
+				"TypeName": "general_treadmill_phase3",
+				"IntegerID": 343,
+				"ZombieClass": "ZombieGeneralTreadmill",
+				"Properties": "RTID(ZombieGeneralTreadmillPhase3@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieTreadmillBrainGroup",
+					"ZombieTreadmillGroup"
+				],
+				"AudioGroups": [
+					"ZombieTreadmillAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_GeneralTreadmill",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_TREADMILL",
+				"HomeWorld": "rift149",
+				"Placeable": true
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"solarsage_enlightened"
+			],
+			"objdata": {
+				"TypeName": "solarsage_enlightened",
+				"IntegerID": 406,
+				"ZombieClass": "ZombieSolarSageEnlightened",
+				"Properties": "RTID(ZombieSolarSageEnlightenedDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSolarSage"
+				],
+				"AudioGroups": [],
+				"AnimRigClass": "ZombieAnimRig_Tutorial",
+				"PopAnim": "POPANIM_ZOMBIE_SOLARSAGE_ENLIGHTENED",
+				"HomeWorld": "egypt",
+				"AlmanacBackdropName": "warp"
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"solarsage_enlightened_advanced"
+			],
+			"objdata": {
+				"TypeName": "solarsage_enlightened_advanced",
+				"IntegerID": 410,
+				"ZombieClass": "ZombieSolarSageEnlightenedAdvanced",
+				"Properties": "RTID(ZombieSolarSageEnlightenedAdvancedDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSolarSageEnlightenedAdvanced"
+				],
+				"AudioGroups": [],
+				"AnimRigClass": "ZombieAnimRig_Tutorial",
+				"PopAnim": "POPANIM_ZOMBIE_SOLARSAGE_ENLIGHTENED02",
+				"HomeWorld": "egypt",
+				"AlmanacBackdropName": "warp"
 			}
 		},
 		{
@@ -21829,7 +22133,7 @@
 				],
 				"AnimRigClass": "ZombieAnimRig_Gargantuar",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_MAUSOLEUM_GARGANTUAR",
-				"BoardAlmanac": false,
+				"BoardAlmanac": true,
 				"HomeWorld": "mausoleum"
 			}
 		},
@@ -21878,7 +22182,7 @@
 				],
 				"AnimRigClass": "ZombieAnimRig_Gargantuar",
 				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_FRISTKING_GARGANTUAR",
-				"BoardAlmanac": true,
+				"BoardAlmanac": false,
 				"HomeWorld": "mausoleum"
 			}
 		},
@@ -22509,6 +22813,107 @@
 					"cherry_bomb"
 				],
 				"HomeWorld": "tutorial"
+			}
+		},
+		{
+			"uid": "1.246.1",
+			"objclass": "ZombieType",
+			"aliases": [
+				"trench_coat_imps"
+			],
+			"objdata": {
+				"TypeName": "trench_coat_imps",
+				"ZombieClass": "ZombieTrenchCoatImps",
+				"Properties": "RTID(ZombieTrenchCoatImpsDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieTrenchCoatImpsGroup",
+					"ZombieTutorialImpGroup"
+				],
+				"AnimRigClass": "ZombieAnimRig_Basic",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_TRENCHCOATIMPS",
+				"Placeable": true,
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"cherry_bomb"
+				],
+				"HomeWorld": "childrensday"
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"plushie_cart"
+			],
+			"objdata": {
+				"TypeName": "plushie_cart",
+				"ZombieClass": "ZombiePlushieCart",
+				"Properties": "RTID(ZombiePlushieCartDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombiePlushieCartGroup"
+				],
+				"AudioGroups": [
+					"ZombiePlushieCartAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_PlushieCart",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_PLUSHIE_CART",
+				"Placeable": true,
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"spikeweed",
+					"spikerock"
+				],
+				"HomeWorld": "childrensday"
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"Goalkeeper_Zombie"
+			],
+			"objdata": {
+				"TypeName": "Goalkeeper_Zombie",
+				"ZombieClass": "ZombieGoalkeeper",
+				"Properties": "RTID(ZombieGoalkeeperDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieGoalkeeperGroup"
+				],
+				"AudioGroups": [
+					"ZombieGoalkeeperAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_Goalkeeper",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_SPORTZBALL_GOALIE",
+				"Placeable": true,
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"cherry_bomb"
+				],
+				"HomeWorld": "rift149"
+			}
+		},
+		{
+			"objclass": "ZombieType",
+			"aliases": [
+				"bubble_machine_imp"
+			],
+			"objdata": {
+				"TypeName": "bubble_machine_imp",
+				"ZombieClass": "ZombieBubbleMachineImp",
+				"Properties": "RTID(ZombieBubbleMachineImpDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieBubbleMachineImpGroup",
+					"ZombieChildrenAirbubbleGroup"
+				],
+				"AudioGroups": [
+					"ZombieBubbleMachineImpAudio"
+				],
+				"AnimRigClass": "ZombieAnimRig_BubbleMachineImp",
+				"PopAnim": "POPANIM_ZOMBIE_ZOMBIE_BUBBLE_MACHINE_IMP",
+				"Placeable": true,
+				"BoardAlmanac": true,
+				"RecommendPlants": [
+					"cherry_bomb"
+				],
+				"HomeWorld": "childrensday"
 			}
 		}
 	]
