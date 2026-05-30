@@ -889,7 +889,7 @@ abstract class AppLocalizations {
   /// No description provided for @levelBasicInfoSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Name, Index, Description, Background'**
+  /// **'Name, Index, Description, Lawn'**
   String get levelBasicInfoSubtitle;
 
   /// No description provided for @removeModule.
@@ -1033,7 +1033,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieTagCustom.
   ///
   /// In en, this message translates to:
-  /// **'Pre-made custom'**
+  /// **'Memory Lane Variants'**
   String get zombieTagCustom;
 
   /// No description provided for @zombieTagPet.
@@ -1891,13 +1891,13 @@ abstract class AppLocalizations {
   /// No description provided for @name.
   ///
   /// In en, this message translates to:
-  /// **'Name'**
+  /// **'Level name'**
   String get name;
 
   /// No description provided for @description.
   ///
   /// In en, this message translates to:
-  /// **'Trip Description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)'**
+  /// **'Level description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)'**
   String get description;
 
   /// No description provided for @levelNumber.
@@ -2377,7 +2377,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_BronzeDeadWinConProperties.
   ///
   /// In en, this message translates to:
-  /// **'Instantly eliminate all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated'**
+  /// **'Instantly eliminates all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated'**
   String get moduleDesc_BronzeDeadWinConProperties;
 
   /// No description provided for @moduleTitle_SpermWhaleModuleProperties.
@@ -2389,7 +2389,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_SpermWhaleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configure whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect'**
+  /// **'Configures whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect'**
   String get moduleDesc_SpermWhaleModuleProperties;
 
   /// No description provided for @spermWhaleModuleTitle.
@@ -2431,7 +2431,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleHelpFieldsBody.
   ///
   /// In en, this message translates to:
-  /// **'Swallow Interval (SwallowInterval) refers to the interval between the whale’s swallowing actions under normal conditions./nPoisoned Swallow Interval (PoisonSwallowInterval) refers to the interval between swallowing actions after the whale inhales rotenone once./nSwallow Duration (SwallowDuration) refers to the total amount of time the whale remains on the lawn sucking up and swallowing plants./nPoison Trigger Count (PoisonTriggerCount) refers to the number of rotenone inhalations required to force the whale to retreat.'**
+  /// **'Swallow Interval (SwallowInterval) refers to the interval between the whale’s swallowing actions under normal conditions.\nPoisoned Swallow Interval (PoisonSwallowInterval) refers to the interval between swallowing actions after the whale inhales rotenone once.\nSwallow Duration (SwallowDuration) refers to the total amount of time the whale remains on the lawn sucking up and swallowing plants.\nPoison Trigger Count (PoisonTriggerCount) refers to the number of rotenone inhalations required to force the whale to retreat.'**
   String get spermWhaleModuleHelpFieldsBody;
 
   /// No description provided for @spermWhaleModuleSwallowInterval.
@@ -5125,7 +5125,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpParachuteRainLogic.
   ///
   /// In en, this message translates to:
-  /// **'Zombies drop in batches. You can control the total number and the interval between each batch. Zombies will land randomly within the selected columns. If the total pre-drop delay is reached, any remaining zombies will spawn immediately./nA red warning message will appear before the event starts. Entering Chinese text in the message may result in garbled characters. You can leave the zombie type empty to use this event purely for message display.'**
+  /// **'Zombies drop in batches. You can control the total number and the interval between each batch. Zombies will land randomly within the selected columns. If the total pre-drop delay is reached, any remaining zombies will spawn immediately.\nA red warning message will appear before the event starts. Entering Chinese text in the message may result in garbled characters. You can leave the zombie type empty to use this event purely for message display.'**
   String get eventHelpParachuteRainLogic;
 
   /// No description provided for @eventHelpModernPortalsBody.
@@ -5293,7 +5293,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpZombiePotionUsage.
   ///
   /// In en, this message translates to:
-  /// **'Unlike the preset pools used for grid item spawning, this event forces grid items to spawn on specific tiles and displaces plants. /nNote that on lawns without tombstone spawn effects, sun textures may appear incorrectly. Use with caution.'**
+  /// **'Unlike the preset pools used for grid item spawning, this event forces grid items to spawn on specific tiles and displaces plants. \nNote that on lawns without tombstone spawn effects, sun textures may appear incorrectly. Use with caution.'**
   String get eventHelpZombiePotionUsage;
 
   /// No description provided for @eventHelpShellBody.

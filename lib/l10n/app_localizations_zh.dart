@@ -497,7 +497,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieTagRoman => '罗马世界';
 
   @override
-  String get zombieTagCustom => '预置创意';
+  String get zombieTagCustom => '回忆自定义';
 
   @override
   String get zombieTagPet => '宠物';
@@ -1239,7 +1239,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get spermWhaleModuleHelpFieldsBody =>
-      '\n吞噬间隔 (SwallowInterval) 指鲸鱼在正常状态下吞噬植物的间隔。\n中毒时吞噬间隔 (PoisonSwallowInterval) 指鲸鱼在吸入一次鱼藤酮后吞噬植物的间隔。\n吞噬持续时间 (SwallowDuration) 指鲸鱼在场上驻留并吸取植物的总时长。\n中毒触发次数 (PoisonTriggerCount) 指迫使鲸鱼退场所需的鱼藤酮吸入次数。';
+      '吞噬间隔 (SwallowInterval) 指鲸鱼在正常状态下吞噬植物的间隔。\n中毒时吞噬间隔 (PoisonSwallowInterval) 指鲸鱼在吸入一次鱼藤酮后吞噬植物的间隔。\n吞噬持续时间 (SwallowDuration) 指鲸鱼在场上驻留并吸取植物的总时长。\n中毒触发次数 (PoisonTriggerCount) 指迫使鲸鱼退场所需的鱼藤酮吸入次数。';
 
   @override
   String get spermWhaleModuleSwallowInterval => '吞噬间隔 (SwallowInterval，单位：秒)';
@@ -2928,7 +2928,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpGroundSpawnBody =>
-      '从设定的区间范围直接从地下生成僵尸。参数配置和自然出怪基本一致。0阶表示随地图阶级，庭院模式下即为1阶。/n掉落物默认情况下配置的是携带能量豆的僵尸个数，启用掉落植物功能后会随机从配置的植物库里掉落植物卡片。 ';
+      '从设定的区间范围直接从地下生成僵尸。参数配置和自然出怪基本一致。0阶表示随地图阶级，庭院模式下即为1阶。\n掉落物默认情况下配置的是携带能量豆的僵尸个数，启用掉落植物功能后会随机从配置的植物库里掉落植物卡片。 ';
 
   @override
   String get moduleHelpTideBody =>
@@ -3731,7 +3731,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpStandardOverview =>
-      '最基础的生成僵尸事件。可以配置每一只僵尸的阶级和行号，0阶表示随地图阶级，庭院模式下即为1阶。/n掉落物默认情况下配置的是携带能量豆的僵尸个数，启用掉落植物功能后会随机从配置的植物库里掉落植物卡片。';
+      '最基础的生成僵尸事件。可以配置每一只僵尸的阶级和行号，0阶表示随地图阶级，庭院模式下即为1阶。\n掉落物默认情况下配置的是携带能量豆的僵尸个数，启用掉落植物功能后会随机从配置的植物库里掉落植物卡片。';
 
   @override
   String get eventHelpStandardRow => '僵尸可出现在第 1–5 行中的任意一行，或随机选择一行出现。';

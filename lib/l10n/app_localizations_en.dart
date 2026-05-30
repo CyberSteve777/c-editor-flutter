@@ -433,7 +433,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelBasicInfo => 'Basic Information';
 
   @override
-  String get levelBasicInfoSubtitle => 'Name, Index, Description, Background';
+  String get levelBasicInfoSubtitle => 'Name, Index, Description, Lawn';
 
   @override
   String get removeModule => 'Remove module';
@@ -505,7 +505,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagRoman => 'Ancient Rome';
 
   @override
-  String get zombieTagCustom => 'Pre-made custom';
+  String get zombieTagCustom => 'Memory Lane Variants';
 
   @override
   String get zombieTagPet => 'Pet';
@@ -972,11 +972,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get code => 'Code';
 
   @override
-  String get name => 'Name';
+  String get name => 'Level name';
 
   @override
   String get description =>
-      'Trip Description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)';
+      'Level description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)';
 
   @override
   String get levelNumber => 'Level number';
@@ -1259,14 +1259,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_BronzeDeadWinConProperties =>
-      'Instantly eliminate all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated';
+      'Instantly eliminates all other zombies on the lawn once all bronze statues and gargantuar bronzes are defeated';
 
   @override
   String get moduleTitle_SpermWhaleModuleProperties => 'Whale Approaching';
 
   @override
   String get moduleDesc_SpermWhaleModuleProperties =>
-      'Configure whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect';
+      'Configures whale-related parameters for Underwater World levels, requires krill to be present on the lawn to take effect';
 
   @override
   String get spermWhaleModuleTitle => 'Whale Approaching Settings';
@@ -1289,7 +1289,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModuleHelpFieldsBody =>
-      'Swallow Interval (SwallowInterval) refers to the interval between the whale’s swallowing actions under normal conditions./nPoisoned Swallow Interval (PoisonSwallowInterval) refers to the interval between swallowing actions after the whale inhales rotenone once./nSwallow Duration (SwallowDuration) refers to the total amount of time the whale remains on the lawn sucking up and swallowing plants./nPoison Trigger Count (PoisonTriggerCount) refers to the number of rotenone inhalations required to force the whale to retreat.';
+      'Swallow Interval (SwallowInterval) refers to the interval between the whale’s swallowing actions under normal conditions.\nPoisoned Swallow Interval (PoisonSwallowInterval) refers to the interval between swallowing actions after the whale inhales rotenone once.\nSwallow Duration (SwallowDuration) refers to the total amount of time the whale remains on the lawn sucking up and swallowing plants.\nPoison Trigger Count (PoisonTriggerCount) refers to the number of rotenone inhalations required to force the whale to retreat.';
 
   @override
   String get spermWhaleModuleSwallowInterval =>
@@ -2818,7 +2818,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpParachuteRainLogic =>
-      'Zombies drop in batches. You can control the total number and the interval between each batch. Zombies will land randomly within the selected columns. If the total pre-drop delay is reached, any remaining zombies will spawn immediately./nA red warning message will appear before the event starts. Entering Chinese text in the message may result in garbled characters. You can leave the zombie type empty to use this event purely for message display.';
+      'Zombies drop in batches. You can control the total number and the interval between each batch. Zombies will land randomly within the selected columns. If the total pre-drop delay is reached, any remaining zombies will spawn immediately.\nA red warning message will appear before the event starts. Entering Chinese text in the message may result in garbled characters. You can leave the zombie type empty to use this event purely for message display.';
 
   @override
   String get eventHelpModernPortalsBody =>
@@ -2918,7 +2918,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpZombiePotionUsage =>
-      'Unlike the preset pools used for grid item spawning, this event forces grid items to spawn on specific tiles and displaces plants. /nNote that on lawns without tombstone spawn effects, sun textures may appear incorrectly. Use with caution.';
+      'Unlike the preset pools used for grid item spawning, this event forces grid items to spawn on specific tiles and displaces plants. \nNote that on lawns without tombstone spawn effects, sun textures may appear incorrectly. Use with caution.';
 
   @override
   String get eventHelpShellBody =>

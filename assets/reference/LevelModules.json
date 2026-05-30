@@ -16870,6 +16870,39 @@
 		{
 			"objclass": "PVZ2UnchartedModeOutroProperties",
 			"aliases": [
+				"PVZ2UnchartedModeOutroGulliver"
+			],
+			"objdata": {
+				"Modes": [
+					"GULLIVER"
+				]
+			}
+		},
+		{
+			"objclass": "PVZ2UnchartedModeOutroProperties",
+			"aliases": [
+				"PVZ2UnchartedModeOutroPlushie"
+			],
+			"objdata": {
+				"Modes": [
+					"PLUSHIE"
+				]
+			}
+		},
+		{
+			"objclass": "PVZ2UnchartedModeOutroProperties",
+			"aliases": [
+				"PVZ2UnchartedModeOutroBMIelite"
+			],
+			"objdata": {
+				"Modes": [
+					"BMIELITE"
+				]
+			}
+		},
+		{
+			"objclass": "PVZ2UnchartedModeOutroProperties",
+			"aliases": [
 				"PVZ2UnchartedModeOutroNEEDFORSPEED1"
 			],
 			"objdata": {
@@ -18261,6 +18294,31 @@
 			],
 			"objdata": {
 				"ZombossTimeLimit": 20.0
+			}
+		},
+		{
+			"objclass": "DaveCupConvergenceProperties",
+			"aliases": [
+				"DaveCupConvergence"
+			],
+			"objdata": {
+				"DaveCupConvergenceStageData": [
+					{
+						"TimeCondition": 20,
+						"ZombieMoveSpeedUp": 0.5,
+						"PlantAttackSpeedUp": 0.5
+					},
+					{
+						"TimeCondition": 60,
+						"ZombieMoveSpeedUp": 1.0,
+						"PlantAttackSpeedUp": 1.0
+					},
+					{
+						"TimeCondition": 60,
+						"ZombieMoveSpeedUp": 1.0,
+						"PlantAttackSpeedUp": 1.0
+					}
+				]
 			}
 		},
 		{
@@ -21296,6 +21354,253 @@
 					{
 						"mX": 8,
 						"mY": 7
+					}
+				]
+			}
+		},
+		{
+			"objclass": "StageModuleProperties",
+			"aliases": [
+				"DaveCupStage"
+			],
+			"objdata": {
+				"ResourceGroupNames": [
+					"Egypt_Gravestone",
+					"Game_Tombstones_Dynamic",
+					"DelayLoad_Background_DaveCup",
+					"AudioTutorial"
+				],
+				"BelongsToWorld": "davecup",
+				"StagePrefix": "davecup",
+				"BackgroundImagePrefix": "IMAGE_BACKGROUNDS_DAVECUP",
+				"BackgroundImageLeft": "TEXTURE_LEFT",
+				"BackgroundImageMiddle": "TEXTURE",
+				"BackgroundImageRight": "TEXTURE_RIGHT",
+				"BasicZombieTypeName": "tutorial",
+				"FlagZombieTypeName": "tutorial_flag",
+				"Armor1ZombieTypeName": "tutorial_armor1",
+				"Armor2ZombieTypeName": "tutorial_armor2",
+				"MusicSuffix": "Egypt",
+				"AmbientAudioSuffix": "Egypt_Wind_BG",
+				"RailcartDefaultTypeName": "railcart_tutotial",
+				"GravestoneDefaultTypeName": "gravestone_tutorial",
+				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+				"DisabledStreetCells": [
+					{
+						"mX": 0,
+						"mY": 0
+					},
+					{
+						"mX": 0,
+						"mY": 1
+					},
+					{
+						"mX": 0,
+						"mY": 2
+					},
+					{
+						"mX": 0,
+						"mY": 3
+					},
+					{
+						"mX": 0,
+						"mY": 4
+					},
+					{
+						"mX": 0,
+						"mY": 5
+					},
+					{
+						"mX": 0,
+						"mY": 6
+					},
+					{
+						"mX": 0,
+						"mY": 7
+					},
+					{
+						"mX": 0,
+						"mY": 8
+					},
+					{
+						"mX": 0,
+						"mY": 9
+					},
+					{
+						"mX": 1,
+						"mY": 0
+					},
+					{
+						"mX": 1,
+						"mY": 1
+					},
+					{
+						"mX": 1,
+						"mY": 2
+					},
+					{
+						"mX": 1,
+						"mY": 3
+					},
+					{
+						"mX": 1,
+						"mY": 4
+					},
+					{
+						"mX": 1,
+						"mY": 5
+					},
+					{
+						"mX": 1,
+						"mY": 6
+					},
+					{
+						"mX": 1,
+						"mY": 7
+					},
+					{
+						"mX": 1,
+						"mY": 8
+					},
+					{
+						"mX": 1,
+						"mY": 9
+					},
+					{
+						"mX": 2,
+						"mY": 0
+					},
+					{
+						"mX": 2,
+						"mY": 1
+					},
+					{
+						"mX": 2,
+						"mY": 2
+					},
+					{
+						"mX": 2,
+						"mY": 3
+					},
+					{
+						"mX": 2,
+						"mY": 4
+					},
+					{
+						"mX": 2,
+						"mY": 5
+					},
+					{
+						"mX": 2,
+						"mY": 6
+					},
+					{
+						"mX": 2,
+						"mY": 7
+					},
+					{
+						"mX": 2,
+						"mY": 8
+					},
+					{
+						"mX": 2,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 8
+					},
+					{
+						"mX": 3,
+						"mY": 7
+					},
+					{
+						"mX": 4,
+						"mY": 9
+					},
+					{
+						"mX": 4,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 9
+					},
+					{
+						"mX": 5,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 7
+					},
+					{
+						"mX": 6,
+						"mY": 9
+					},
+					{
+						"mX": 6,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 9
+					},
+					{
+						"mX": 7,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 7
+					},
+					{
+						"mX": 7,
+						"mY": 6
+					},
+					{
+						"mX": 7,
+						"mY": 0
+					},
+					{
+						"mX": 7,
+						"mY": 1
+					},
+					{
+						"mX": 7,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 9
+					},
+					{
+						"mX": 8,
+						"mY": 8
+					},
+					{
+						"mX": 8,
+						"mY": 7
+					},
+					{
+						"mX": 8,
+						"mY": 6
+					},
+					{
+						"mX": 8,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 1
+					},
+					{
+						"mX": 8,
+						"mY": 0
 					}
 				]
 			}

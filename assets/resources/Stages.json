@@ -34,6 +34,7 @@
   { "alias": "JourneyToTheWestStage", "type": "extra", "iconName": "Stage_JTTW.webp" },
   { "alias": "RiftStage", "type": "extra", "iconName": "Stage_Rift.webp" },
   { "alias": "JoustStage", "type": "extra", "iconName": "Stage_Joust.webp" },
+  { "alias": "DaveCupStage", "type": "extra", "iconName": "Stage_DaveCup.webp" },
   { "alias": "TwisterStage", "type": "seasons", "iconName": "Stage_Twister.webp" },
   { "alias": "NightStage", "type": "seasons", "iconName": "Stage_Night.webp" },
   { "alias": "PoolDaylightStage", "type": "seasons", "iconName": "Stage_PoolDaylight.webp" },
