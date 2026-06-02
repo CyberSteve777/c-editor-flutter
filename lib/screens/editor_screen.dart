@@ -159,8 +159,6 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   static const _internalTagToModule = <String, String>{
-    '_internal_no42': 'UnchartedModeNo42UniverseModule',
-    '_internal_mausoleum': 'PVZ2MausoleumModuleUnchartedMode',
     '_internal_copycats': 'PVZ1CopycatsModuleProperties',
   };
 
@@ -2297,13 +2295,21 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
-            onRequestPlantSelection: (onSelected, {excludeIds}) {
+            onRequestPlantSelection: (
+              onSelected, {
+              excludeIds,
+              blockRealmExclusiveInChooser = false,
+              allowDuplicateSelection = false,
+            }) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
                     isMultiSelect: true,
                     excludeIds: excludeIds ?? const [],
+                    blockRealmExclusiveInChooser:
+                        blockRealmExclusiveInChooser,
+                    allowDuplicateSelection: allowDuplicateSelection,
                     onPlantSelected: (_) {},
                     onMultiPlantSelected: (ids) {
                       Navigator.pop(context);

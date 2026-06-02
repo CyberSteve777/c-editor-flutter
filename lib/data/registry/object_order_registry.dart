@@ -6,8 +6,6 @@ class ObjectOrderRegistry {
 
   static const _orderList = [
     'LevelDefinition',
-    'UnchartedModeNo42UniverseModule',
-    'PVZ2MausoleumModuleUnchartedMode',
     'SeedBankProperties',
     'ConveyorSeedBankProperties',
     'PennyClassroomModuleProperties',
