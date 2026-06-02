@@ -16,11 +16,13 @@ import 'package:z_editor/widgets/editor_components.dart'
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
 
 /// Internal tag → module objClass required to enable those plants.
-const Map<String, String> _internalTagToModule = {
-  '_internal_no42': 'UnchartedModeNo42UniverseModule',
-  '_internal_mausoleum': 'PVZ2MausoleumModuleUnchartedMode',
+const Map<String, String> _moduleGatedPlantTags = {
   '_internal_copycats': 'PVZ1CopycatsModuleProperties',
 };
+
+bool _isRealmExclusivePlant(PlantInfo plant) =>
+    plant.hasInternalTag('_internal_no42') ||
+    plant.hasInternalTag('_internal_mausoleum');
 
 /// Plant selection. Ported from Z-Editor-master PlantSelectionScreen.kt
 class PlantSelectionScreen extends StatefulWidget {
@@ -33,6 +35,8 @@ class PlantSelectionScreen extends StatefulWidget {
     this.excludeIds = const [],
     this.levelFile,
     this.onAddModule,
+    this.blockRealmExclusiveInChooser = false,
+    this.allowDuplicateSelection = false,
   });
 
   final bool isMultiSelect;
@@ -49,6 +53,12 @@ class PlantSelectionScreen extends StatefulWidget {
   /// Called when user taps "Add" in the "module required" dialog. Must add the module to the level and sync.
   final void Function(String objClass)? onAddModule;
 
+  /// When true, realm-exclusive plants cannot be picked (seed bank chooser white/black lists).
+  final bool blockRealmExclusiveInChooser;
+
+  /// When true, each tap in multi-select adds another entry (preset seed bank list).
+  final bool allowDuplicateSelection;
+
   @override
   State<PlantSelectionScreen> createState() => _PlantSelectionScreenState();
 }
@@ -56,6 +66,7 @@ class PlantSelectionScreen extends StatefulWidget {
 class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   String _searchQuery = '';
   final Set<String> _selectedIds = {};
+  final List<String> _selectedIdsWithDuplicates = [];
   bool _isLoaded = false;
   PlantCategory _selectedCategory = PlantCategory.quality;
   PlantTag _selectedTag = PlantTag.all;
@@ -127,7 +138,10 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   }
 
   bool _isPlantEnabled(PlantInfo plant, Set<String> levelModules) {
-    for (final entry in _internalTagToModule.entries) {
+    if (widget.blockRealmExclusiveInChooser && _isRealmExclusivePlant(plant)) {
+      return false;
+    }
+    for (final entry in _moduleGatedPlantTags.entries) {
       if (plant.hasInternalTag(entry.key)) {
         if (!levelModules.contains(entry.value)) return false;
       }
@@ -136,10 +150,34 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   }
 
   String? _requiredModuleForPlant(PlantInfo plant) {
-    for (final entry in _internalTagToModule.entries) {
+    for (final entry in _moduleGatedPlantTags.entries) {
       if (plant.hasInternalTag(entry.key)) return entry.value;
     }
     return null;
+  }
+
+  Future<void> _showRealmExclusiveChooserBlockedDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          l10n?.realmExclusivePlantChooserBlockedTitle ?? 'Cannot select plant',
+        ),
+        content: Text(
+          l10n?.realmExclusivePlantChooserBlockedMessage ??
+              'Realm-exclusive plants cannot be selected in Chooser Mode. '
+                  'To use them, please refer to other methods such as Preset Mode, '
+                  'Conveyor Belt, or Packet Drops.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n?.ok ?? 'OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _onPlantTap(
@@ -148,10 +186,16 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     bool isEnabled,
     Set<String> levelModules,
   ) async {
+    if (widget.blockRealmExclusiveInChooser && _isRealmExclusivePlant(plant)) {
+      await _showRealmExclusiveChooserBlockedDialog(context);
+      return;
+    }
     if (isEnabled) {
       if (widget.isMultiSelect) {
         setState(() {
-          if (_selectedIds.contains(plant.id)) {
+          if (widget.allowDuplicateSelection) {
+            _selectedIdsWithDuplicates.add(plant.id);
+          } else if (_selectedIds.contains(plant.id)) {
             _selectedIds.remove(plant.id);
           } else {
             _selectedIds.add(plant.id);
@@ -258,7 +302,9 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
       floatingActionButton: widget.isMultiSelect
           ? FloatingActionButton(
               onPressed: () {
-                final ids = _selectedIds.toList();
+                final ids = widget.allowDuplicateSelection
+                    ? List<String>.from(_selectedIdsWithDuplicates)
+                    : _selectedIds.toList();
                 widget.onMultiPlantSelected?.call(ids);
               },
               child: const Icon(Icons.check),
@@ -284,9 +330,11 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                         decoration: InputDecoration(
                           hintText: widget.isMultiSelect
                               ? (l10n?.selectedCountTapToSearch(
-                                      _selectedIds.length,
-                                    ) ??
-                                    'Selected ${_selectedIds.length}, tap to search')
+                                    widget.allowDuplicateSelection
+                                        ? _selectedIdsWithDuplicates.length
+                                        : _selectedIds.length,
+                                  ) ??
+                                  'Selected ${widget.allowDuplicateSelection ? _selectedIdsWithDuplicates.length : _selectedIds.length}, tap to search')
                               : (l10n?.searchPlant ?? 'Search plant'),
                           prefixIcon: const Icon(Icons.search),
                           suffixIcon: _searchQuery.isNotEmpty
@@ -446,7 +494,12 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                         itemCount: plants.length,
                         itemBuilder: (_, i) {
                           final plant = plants[i];
-                          final isSelected = _selectedIds.contains(plant.id);
+                          final selectionCount = widget.allowDuplicateSelection
+                              ? _selectedIdsWithDuplicates
+                                  .where((id) => id == plant.id)
+                                  .length
+                              : (_selectedIds.contains(plant.id) ? 1 : 0);
+                          final isSelected = selectionCount > 0;
                           final isFavorite = repo.isFavorite(plant.id);
                           final isEnabled = _isPlantEnabled(
                             plant,
