@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:z_editor/data/zomboss_mech_action_utils.dart';
+import 'package:z_editor/data/models/zomboss_mech_catalog.dart';
+import 'package:z_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:z_editor/data/zomboss_mech_l10n.dart';
 import 'package:z_editor/l10n/app_localizations.dart';
 import 'package:z_editor/theme/app_theme.dart';
 
@@ -36,6 +38,9 @@ const double kZombossMechActionRowHeight = 62;
 class ZombossMechActionListTile extends StatelessWidget {
   const ZombossMechActionListTile({
     super.key,
+    required this.mechId,
+    required this.catalog,
+    required this.levelFile,
     required this.rtid,
     required this.tag,
     required this.reorderIndex,
@@ -43,6 +48,9 @@ class ZombossMechActionListTile extends StatelessWidget {
     this.onEdit,
   });
 
+  final String mechId;
+  final ZombossMechCatalogEntry catalog;
+  final PvzLevelFile levelFile;
   final String rtid;
   final String tag;
   final int reorderIndex;
@@ -54,7 +62,13 @@ class ZombossMechActionListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: ZombossMechActionRow(
-        rtid: rtid,
+        label: ZombossMechL10n.labelForStageRtid(
+          context: context,
+          mechId: mechId,
+          catalog: catalog,
+          levelFile: levelFile,
+          rtid: rtid,
+        ),
         tag: tag,
         onRemove: onRemove,
         onEdit: onEdit,
@@ -68,12 +82,18 @@ class ZombossMechActionListTile extends StatelessWidget {
 class ZombossMechRetreatActionTile extends StatelessWidget {
   const ZombossMechRetreatActionTile({
     super.key,
+    required this.mechId,
+    required this.catalog,
+    required this.levelFile,
     required this.rtid,
     required this.tag,
     required this.onSwap,
     this.onEdit,
   });
 
+  final String mechId;
+  final ZombossMechCatalogEntry catalog;
+  final PvzLevelFile levelFile;
   final String rtid;
   final String tag;
   final VoidCallback onSwap;
@@ -83,7 +103,13 @@ class ZombossMechRetreatActionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return ZombossMechActionRow(
-      rtid: rtid,
+      label: ZombossMechL10n.labelForStageRtid(
+        context: context,
+        mechId: mechId,
+        catalog: catalog,
+        levelFile: levelFile,
+        rtid: rtid,
+      ),
       tag: tag,
       onRemove: () {},
       onEdit: onEdit,
@@ -102,7 +128,7 @@ class ZombossMechRetreatActionTile extends StatelessWidget {
 class ZombossMechActionRow extends StatelessWidget {
   const ZombossMechActionRow({
     super.key,
-    required this.rtid,
+    required this.label,
     required this.tag,
     required this.onRemove,
     this.onEdit,
@@ -112,7 +138,7 @@ class ZombossMechActionRow extends StatelessWidget {
     this.mutedLabel = false,
   });
 
-  final String rtid;
+  final String label;
   final String tag;
   final VoidCallback onRemove;
   final VoidCallback? onEdit;
@@ -153,9 +179,7 @@ class ZombossMechActionRow extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                 child: Text(
-                  mutedLabel
-                      ? rtid
-                      : ZombossMechActionUtils.displayLabel(rtid),
+                  label,
                   style: mutedLabel
                       ? theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,

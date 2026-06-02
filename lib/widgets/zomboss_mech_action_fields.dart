@@ -3,6 +3,7 @@ import 'package:z_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:z_editor/data/models/zomboss_robot_spawn_entry.dart';
 import 'package:z_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:z_editor/data/zomboss_mech_action_utils.dart';
+import 'package:z_editor/data/zomboss_mech_l10n.dart';
 import 'package:z_editor/widgets/editor_components.dart';
 import 'package:z_editor/widgets/zomboss_mech_robot_spawn_list.dart';
 import 'package:z_editor/widgets/zomboss_mech_zombie_type_list.dart';
@@ -11,20 +12,40 @@ import 'package:z_editor/widgets/zomboss_mech_zombie_type_list.dart';
 class ZombossMechActionFieldsEditor extends StatelessWidget {
   const ZombossMechActionFieldsEditor({
     super.key,
+    required this.mechId,
     required this.fields,
     required this.data,
     required this.onChanged,
     this.objclass = '',
     this.levelFile,
     this.depth = 0,
+    this.fieldNamePrefix = '',
   });
 
+  final String mechId;
   final List<ZombossMechFieldSpec> fields;
   final Map<String, dynamic> data;
   final VoidCallback onChanged;
   final String objclass;
   final PvzLevelFile? levelFile;
   final int depth;
+  final String fieldNamePrefix;
+
+  String _fullFieldName(ZombossMechFieldSpec field) {
+    if (fieldNamePrefix.isEmpty) return field.name;
+    return '${fieldNamePrefix}_${field.name}';
+  }
+
+  String _fieldLabel(BuildContext context, ZombossMechFieldSpec field) {
+    if (mechId.isEmpty || objclass.isEmpty) return field.name;
+    return ZombossMechL10n.fieldLabel(
+      context,
+      mechId,
+      objclass,
+      _fullFieldName(field),
+      fallback: field.name,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +66,8 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
       top: 8,
       bottom: 4,
     );
+    final label = _fieldLabel(context, field);
+
     if (ZombossMechActionUtils.isZombieTypeField(field)) {
       final raw = data[field.name];
       if (field.name == 'SpawnZombieTypes' &&
@@ -54,7 +77,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
         return Padding(
           padding: padding,
           child: ZombossMechRobotSpawnListEditor(
-            fieldLabel: field.name,
+            fieldLabel: label,
             entries: entries,
             levelFile: levelFile,
             onChanged: (next) {
@@ -73,7 +96,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
       return Padding(
         padding: padding,
         child: ZombossMechZombieTypeListEditor(
-          fieldLabel: field.name,
+          fieldLabel: label,
           zombieIds: ids,
           editable: true,
           isList: field.type == 'List<zombieType>',
@@ -103,14 +126,18 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              field.name,
+              label,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             ZombossMechActionFieldsEditor(
+              mechId: mechId,
               fields: field.objectFields,
               data: nestedMap,
               onChanged: onChanged,
+              objclass: objclass,
+              levelFile: levelFile,
               depth: depth + 1,
+              fieldNamePrefix: _fullFieldName(field),
             ),
           ],
         ),
@@ -121,6 +148,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
       padding: padding,
       child: _ScalarField(
         field: field,
+        label: label,
         value: data[field.name],
         onChanged: (v) {
           data[field.name] = v;
@@ -134,11 +162,13 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
 class _ScalarField extends StatefulWidget {
   const _ScalarField({
     required this.field,
+    required this.label,
     required this.value,
     required this.onChanged,
   });
 
   final ZombossMechFieldSpec field;
+  final String label;
   final dynamic value;
   final ValueChanged<dynamic> onChanged;
 
@@ -186,12 +216,13 @@ class _ScalarFieldState extends State<_ScalarField> {
   @override
   Widget build(BuildContext context) {
     final field = widget.field;
+    final label = widget.label;
     switch (field.type) {
       case 'bool':
         final checked = widget.value == true;
         return SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text(field.name),
+          title: Text(label),
           value: checked,
           onChanged: (v) => widget.onChanged(v),
         );
@@ -202,7 +233,7 @@ class _ScalarFieldState extends State<_ScalarField> {
             focusNode: _focusNode,
             decoration: editorInputDecoration(
               context,
-              labelText: field.name,
+              labelText: label,
             ),
             keyboardType: TextInputType.number,
             onChanged: (v) {
@@ -246,14 +277,14 @@ class _ScalarFieldState extends State<_ScalarField> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(field.name),
+                  Text(label),
                   stepper,
                 ],
               );
             }
             return Row(
               children: [
-                Expanded(child: Text(field.name)),
+                Expanded(child: Text(label)),
                 stepper,
               ],
             );
@@ -265,7 +296,7 @@ class _ScalarFieldState extends State<_ScalarField> {
           focusNode: _focusNode,
           decoration: editorInputDecoration(
             context,
-            labelText: field.name,
+            labelText: label,
           ),
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           onChanged: (v) {
@@ -279,7 +310,7 @@ class _ScalarFieldState extends State<_ScalarField> {
           focusNode: _focusNode,
           decoration: editorInputDecoration(
             context,
-            labelText: field.name,
+            labelText: label,
           ),
           onChanged: (v) => widget.onChanged(v),
         );

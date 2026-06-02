@@ -4,6 +4,7 @@ import 'package:z_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:z_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:z_editor/data/rtid_parser.dart';
 import 'package:z_editor/data/zomboss_mech_action_utils.dart';
+import 'package:z_editor/data/zomboss_mech_l10n.dart';
 import 'package:z_editor/l10n/app_localizations.dart';
 import 'package:z_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
 
@@ -37,8 +38,13 @@ class _ZombossMechActionSelectionScreenState
       for (final action in widget.catalog.retreatCatalogActions) {
         items.add(
           _ActionListItem.catalog(
-            action,
-            RtidParser.build(action.alias, ZombossMechActionUtils.catalogSource),
+            catalog: widget.catalog,
+            levelFile: widget.levelFile,
+            action: action,
+            rtid: RtidParser.build(
+              action.alias,
+              ZombossMechActionUtils.catalogSource,
+            ),
           ),
         );
       }
@@ -47,8 +53,13 @@ class _ZombossMechActionSelectionScreenState
       for (final action in widget.catalog.actionsByTag(tag)) {
         items.add(
           _ActionListItem.catalog(
-            action,
-            RtidParser.build(action.alias, ZombossMechActionUtils.catalogSource),
+            catalog: widget.catalog,
+            levelFile: widget.levelFile,
+            action: action,
+            rtid: RtidParser.build(
+              action.alias,
+              ZombossMechActionUtils.catalogSource,
+            ),
           ),
         );
       }
@@ -69,6 +80,8 @@ class _ZombossMechActionSelectionScreenState
       }
       items.add(
         _ActionListItem.custom(
+          catalog: widget.catalog,
+          levelFile: widget.levelFile,
           alias: alias,
           objclass: obj.objClass,
           tag: group.tag,
@@ -79,18 +92,16 @@ class _ZombossMechActionSelectionScreenState
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return items;
     return items
-        .where((e) => e.label.toLowerCase().contains(q))
+        .where((e) => e.label(context).toLowerCase().contains(q))
         .toList();
   }
 
-  String _categoryLabel(AppLocalizations? l10n, String key) {
-    return switch (key) {
-      'all' => l10n?.zombossMechActionCategoryAll ?? 'All',
-      'movement' => l10n?.zombossMechActionCategoryMovement ?? 'Movement',
-      'attack' => l10n?.zombossMechActionCategoryAttack ?? 'Attack',
-      'special' => l10n?.zombossMechActionCategorySpecial ?? 'Special',
-      _ => key,
-    };
+  String _categoryLabel(BuildContext context, String key) {
+    if (key == 'all') {
+      return AppLocalizations.of(context)?.zombossMechActionCategoryAll ??
+          'All';
+    }
+    return ZombossMechL10n.tagLabel(context, key);
   }
 
   Future<void> _openCreateCustom() async {
@@ -138,7 +149,7 @@ class _ZombossMechActionSelectionScreenState
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: ChoiceChip(
-                        label: Text(_categoryLabel(l10n, cat)),
+                        label: Text(_categoryLabel(context, cat)),
                         selected: _category == cat,
                         onSelected: (_) => setState(() => _category = cat),
                       ),
@@ -172,13 +183,18 @@ class _ZombossMechActionSelectionScreenState
                     itemBuilder: (context, index) {
                       final item = items[index];
                       return ListTile(
-                        title: Text(item.label),
+                        title: Text(item.label(context)),
                         subtitle: item.isCustom
                             ? Text(
                                 l10n?.zombossMechCustomActionLabel ??
                                     'Custom (CurrentLevel)',
                               )
-                            : null,
+                            : Text(
+                                '${item.alias}@${ZombossMechActionUtils.catalogSource}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
                         trailing: item.isCustom
                             ? IconButton(
                                 icon: const Icon(Icons.edit_outlined),
@@ -215,20 +231,29 @@ class _ZombossMechActionSelectionScreenState
 }
 
 class _ActionListItem {
-  _ActionListItem.catalog(this.catalogAction, this.rtid)
-      : isCustom = false,
-        alias = catalogAction!.alias,
-        objclass = catalogAction.objclass,
-        tag = catalogAction.tag;
+  _ActionListItem.catalog({
+    required this.catalog,
+    required this.levelFile,
+    required ZombossMechCatalogAction action,
+    required this.rtid,
+  })  : isCustom = false,
+        catalogAction = action,
+        alias = action.alias,
+        objclass = action.objclass,
+        tag = action.tag;
 
   _ActionListItem.custom({
+    required this.catalog,
+    required this.levelFile,
     required this.alias,
     required this.objclass,
     required this.tag,
     required this.rtid,
-  }) : isCustom = true,
-       catalogAction = null;
+  })  : isCustom = true,
+        catalogAction = null;
 
+  final ZombossMechCatalogEntry catalog;
+  final PvzLevelFile levelFile;
   final ZombossMechCatalogAction? catalogAction;
   final String rtid;
   final bool isCustom;
@@ -236,5 +261,22 @@ class _ActionListItem {
   final String objclass;
   final String tag;
 
-  String get label => ZombossMechActionUtils.displayLabel(rtid);
+  String label(BuildContext context) {
+    if (isCustom) {
+      return ZombossMechL10n.labelForStageRtid(
+        context: context,
+        mechId: catalog.id,
+        catalog: catalog,
+        levelFile: levelFile,
+        rtid: rtid,
+      );
+    }
+    return ZombossMechL10n.actionRtidLabel(
+      context,
+      catalog.id,
+      rtid,
+      objclass: objclass,
+      implementationAlias: alias,
+    );
+  }
 }

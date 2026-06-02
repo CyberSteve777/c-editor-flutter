@@ -3,6 +3,7 @@ import 'package:z_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:z_editor/data/pvz_models.dart';
 import 'package:z_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:z_editor/l10n/app_localizations.dart';
+import 'package:z_editor/data/zomboss_mech_l10n.dart';
 import 'package:z_editor/l10n/resource_names.dart';
 import 'package:z_editor/screens/editor/others/custom_zomboss_mech_properties_screen.dart';
 import 'package:z_editor/widgets/asset_image.dart';
@@ -203,7 +204,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
         );
 
     String pickVariation() {
-      if (keepCustom && catalog != null && catalog.hasCustomInstance) {
+      if (keepCustom && catalog.hasCustomInstance) {
         return catalog.editableInstance;
       }
       if (base.variations.contains(_battleData.zombossMechType)) {
@@ -276,6 +277,20 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
   String _displayName(BuildContext context, String key) {
     final name = ResourceNames.lookup(context, key);
     return name == key ? key : name;
+  }
+
+  String _variationLabel(BuildContext context, String variation) {
+    final baseId = ZombossMechRepository.resolveBaseId(
+      _selectedBaseId,
+      variation,
+    );
+    if (baseId.isEmpty) return _displayName(context, variation);
+    return ZombossMechL10n.variationLabel(
+      context,
+      baseId,
+      variation,
+      fallback: variation,
+    );
   }
 
   @override
@@ -477,7 +492,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
               for (final v in variations)
                 DropdownMenuItem(
                   value: v,
-                  child: Text(_displayName(context, v)),
+                  child: Text(_variationLabel(context, v)),
                 ),
               if (showCustomOption)
                 DropdownMenuItem(

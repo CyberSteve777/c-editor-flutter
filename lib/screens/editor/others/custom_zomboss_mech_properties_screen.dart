@@ -624,6 +624,9 @@ class _StageCard extends StatelessWidget {
 
                           return ZombossMechActionListTile(
                             key: ValueKey('$index-$actionIndex-$rtid'),
+                            mechId: catalog.id,
+                            catalog: catalog,
+                            levelFile: levelFile,
                             rtid: rtid,
                             tag: tag,
                             reorderIndex: actionIndex,
@@ -662,6 +665,9 @@ class _StageCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     ZombossMechRetreatActionTile(
+                      mechId: catalog.id,
+                      catalog: catalog,
+                      levelFile: levelFile,
                       rtid: retreatRtid,
                       tag: ZombossMechActionUtils.resolveAction(
                             rtid: retreatRtid,

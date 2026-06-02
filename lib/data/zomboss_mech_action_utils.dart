@@ -48,6 +48,7 @@ abstract class ZombossMechActionUtils {
   static const catalogSource = 'ZombieActions';
   static const customSource = 'CurrentLevel';
 
+  /// Legacy helper; prefer [ZombossMechL10n.labelForStageRtid] when context is available.
   static String displayLabel(String rtid) {
     final info = RtidParser.parse(rtid);
     if (info == null) return rtid;

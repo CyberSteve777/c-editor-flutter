@@ -5,6 +5,7 @@ import 'package:z_editor/data/pvz_models/PvzObject.dart';
 import 'package:z_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:z_editor/data/rtid_parser.dart';
 import 'package:z_editor/data/zomboss_mech_action_utils.dart';
+import 'package:z_editor/data/zomboss_mech_l10n.dart';
 import 'package:z_editor/l10n/app_localizations.dart';
 import 'package:z_editor/widgets/editor_components.dart';
 import 'package:z_editor/widgets/zomboss_mech_action_fields.dart';
@@ -205,7 +206,15 @@ class _CustomZombossMechActionEditorScreenState
               for (final g in _groups)
                 DropdownMenuItem(
                   value: g.objclass,
-                  child: Text(g.objclass, overflow: TextOverflow.ellipsis),
+                  child: Text(
+                    ZombossMechL10n.actionLabel(
+                      context,
+                      widget.catalog.id,
+                      g.objclass,
+                      fallback: g.objclass,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
             ],
             onChanged: widget.existingRtid == null ? _onObjclassChanged : null,
@@ -213,6 +222,7 @@ class _CustomZombossMechActionEditorScreenState
           const SizedBox(height: 16),
           if (group != null)
             ZombossMechActionFieldsEditor(
+              mechId: widget.catalog.id,
               fields: group.fields,
               data: _data,
               objclass: _objclass,
