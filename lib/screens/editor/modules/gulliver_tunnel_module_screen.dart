@@ -36,7 +36,12 @@ class _GulliverTunnelModuleScreenState extends State<GulliverTunnelModuleScreen>
       'GULLIVERTUNNEL_ORIENTATION_BIG_ON_RIGHT';
 
   static const _orientations = [_orientationLeft, _orientationRight];
-  static const _tunnelImageScale = 1.55;
+  static const _assetWidth = 128.0;
+  static const _assetHeight = 152.0;
+  static const _selectionButtonWidth = 176.0;
+  static const _selectionPreviewWidth = 80.0;
+  static const _selectionPreviewHeight =
+      _selectionPreviewWidth * _assetHeight / _assetWidth;
 
   bool get _isDeepSeaLawn {
     final parsed = LevelParser.parseLevel(widget.levelFile);
@@ -45,7 +50,8 @@ class _GulliverTunnelModuleScreenState extends State<GulliverTunnelModuleScreen>
 
   int get _gridCols => _isDeepSeaLawn ? 10 : 9;
   int get _gridRows => _isDeepSeaLawn ? 6 : 5;
-  double get _gridAspectRatio => _gridCols / _gridRows;
+  double get _gridAspectRatio =>
+      (_gridCols * _assetWidth) / (_gridRows * _assetHeight);
 
   late PvzObject _moduleObj;
   late InitialGridItemGulliverTunnelPropertiesData _data;
@@ -134,25 +140,14 @@ class _GulliverTunnelModuleScreenState extends State<GulliverTunnelModuleScreen>
   }
 
   String _assetPath(String orientation) =>
-      'assets/images/tunnels/$orientation.png';
+      'assets/images/tunnels/$orientation.webp';
 
-  Widget _buildTunnelImage(
-    String orientation, {
-    double translateX = 0,
-    double translateY = 0,
-    Alignment scaleAlignment = Alignment.center,
-  }) {
-    return Transform.translate(
-      offset: Offset(translateX, translateY),
-      child: Transform.scale(
-        scale: _tunnelImageScale,
-        alignment: scaleAlignment,
-        child: AssetImageWidget(
-          assetPath: _assetPath(orientation),
-          altCandidates: imageAltCandidates(_assetPath(orientation)),
-          fit: BoxFit.contain,
-        ),
-      ),
+  Widget _buildTunnelImage(String orientation) {
+    final path = _assetPath(orientation);
+    return AssetImageWidget(
+      assetPath: path,
+      altCandidates: imageAltCandidates(path),
+      fit: BoxFit.contain,
     );
   }
 
@@ -278,8 +273,6 @@ class _GulliverTunnelModuleScreenState extends State<GulliverTunnelModuleScreen>
     final accentColor = isDark ? pvzPinkDark : pvzPinkLight;
     final lawnBg = isDark ? const Color(0xFF31383B) : const Color(0xFFD7ECF1);
     const gridBorder = Color(0xFF6B899A);
-    const orientationPreviewHeight = 120.0;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -355,17 +348,7 @@ class _GulliverTunnelModuleScreenState extends State<GulliverTunnelModuleScreen>
                                       ),
                                       clipBehavior: Clip.hardEdge,
                                       child: orientation != null
-                                          ? SizedBox.expand(
-                                              child: _buildTunnelImage(
-                                                orientation,
-                                                translateX: 4,
-                                                translateY: 10,
-                                                scaleAlignment: const Alignment(
-                                                  0,
-                                                  -0.12,
-                                                ),
-                                              ),
-                                            )
+                                          ? _buildTunnelImage(orientation)
                                           : null,
                                     ),
                                   ),
@@ -458,58 +441,56 @@ class _GulliverTunnelModuleScreenState extends State<GulliverTunnelModuleScreen>
                     ),
                     const SizedBox(height: 12),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: _orientations.map((orientation) {
                         final isSelected = _selectedOrientation == orientation;
-                        return Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6),
-                            child: GestureDetector(
-                              onTap: () {
-                                HapticFeedback.selectionClick();
-                                setState(() => _selectedOrientation = orientation);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: GestureDetector(
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              setState(() => _selectedOrientation = orientation);
+                            },
+                            child: Container(
+                              width: _selectionButtonWidth,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? accentColor.withValues(alpha: 0.15)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
                                   color: isSelected
-                                      ? accentColor.withValues(alpha: 0.15)
+                                      ? accentColor
                                       : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? accentColor
-                                        : Colors.transparent,
-                                    width: 2,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: _selectionPreviewWidth,
+                                    height: _selectionPreviewHeight,
+                                    child: Center(
+                                      child: _buildTunnelImage(orientation),
+                                    ),
                                   ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: orientationPreviewHeight,
-                                      width: double.infinity,
-                                      child: _buildTunnelImage(
-                                        orientation,
-                                        translateY: 18,
-                                      ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    _orientationLabel(l10n, orientation),
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: isSelected
+                                          ? accentColor
+                                          : theme.colorScheme.onSurface,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      _orientationLabel(l10n, orientation),
-                                      style:
-                                          theme.textTheme.labelMedium?.copyWith(
-                                        color: isSelected
-                                            ? accentColor
-                                            : theme.colorScheme.onSurface,
-                                        fontWeight: isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
