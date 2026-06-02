@@ -1240,6 +1240,14 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get realmExclusivePlantChooserBlockedTitle =>
+      'Нельзя выбрать растение';
+
+  @override
+  String get realmExclusivePlantChooserBlockedMessage =>
+      'Растения тайных миров нельзя выбрать в режиме выбора. Используйте предустановку, конвейер, выпадение карт и другие способы.';
+
+  @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
     return 'Отсутствует модуль «$moduleName» для растений: $plantList';
   }
@@ -4562,6 +4570,27 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get izombieCardSlotsHint =>
       'Только некоторые зомби имеют слоты карт IZ. Проверьте категорию «Другое» в выборе зомби.';
+
+  @override
+  String get seedBankPresetModeHint =>
+      'Режим предустановки запускает игру сразу, независимо от числа карт.';
+
+  @override
+  String get seedBankPlantLevelLabel => 'Уровень растений (0–5)';
+
+  @override
+  String get seedBankSlotCountLabel => 'Число слотов (0–9)';
+
+  @override
+  String get seedBankCourtyardSlotsHint =>
+      'В режиме двора число слотов не учитывается. При выборе фиксируется 8 слотов.';
+
+  @override
+  String get seedBankAddGridItemsTitle => 'Добавить предметы сетки';
+
+  @override
+  String get seedBankAddGridItemsSubtitle =>
+      'Добавляет мини-игровые предметы сетки в предустановленный банк семян.';
 
   @override
   String get selectToolCard => 'Выбрать карту инструмента';

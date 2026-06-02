@@ -1194,6 +1194,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get realmExclusivePlantChooserBlockedTitle => '无法选择植物';
+
+  @override
+  String get realmExclusivePlantChooserBlockedMessage =>
+      '秘境专属植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。';
+
+  @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
     return '缺少模块「$moduleName」，涉及植物：$plantList';
   }
@@ -4387,6 +4394,24 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get izombieCardSlotsHint =>
       '只有部分僵尸在我是僵尸模式 (IZ) 中有对应的卡槽和阳光消耗，这些僵尸可以在僵尸选择界面的「其他分类」中找到。';
+
+  @override
+  String get seedBankPresetModeHint => '预选模式会立刻进入游戏，与卡片数量无关。';
+
+  @override
+  String get seedBankPlantLevelLabel => '植物阶级 (0-5)';
+
+  @override
+  String get seedBankSlotCountLabel => '卡槽数量 (0-9)';
+
+  @override
+  String get seedBankCourtyardSlotsHint => '庭院模式忽略卡槽数量。选卡模式固定 8 个卡槽。';
+
+  @override
+  String get seedBankAddGridItemsTitle => '添加网格物品';
+
+  @override
+  String get seedBankAddGridItemsSubtitle => '将冰冻小游戏网格物品加入预选种子库。';
 
   @override
   String get selectToolCard => '选择工具卡';

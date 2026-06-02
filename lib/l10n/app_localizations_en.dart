@@ -1241,6 +1241,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get realmExclusivePlantChooserBlockedTitle => 'Cannot select plant';
+
+  @override
+  String get realmExclusivePlantChooserBlockedMessage =>
+      'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.';
+
+  @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
     return 'Missing module $moduleName for plants: $plantList';
   }
@@ -4626,6 +4633,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get izombieCardSlotsHint =>
       'Only certain zombies have dedicate seed packets and sun costs in I, Zombie (IZ) Mode. These zombies can be found under the \"Other\" category in the zombie selection screen.';
+
+  @override
+  String get seedBankPresetModeHint =>
+      'Preset mode enters game immediately regardless of card count.';
+
+  @override
+  String get seedBankPlantLevelLabel => 'Plant level (0-5)';
+
+  @override
+  String get seedBankSlotCountLabel => 'Slot count (0-9)';
+
+  @override
+  String get seedBankCourtyardSlotsHint =>
+      'Courtyard mode ignores slot count. Chooser locks 8 slots.';
+
+  @override
+  String get seedBankAddGridItemsTitle => 'Add grid items';
+
+  @override
+  String get seedBankAddGridItemsSubtitle =>
+      'Adds frozen mini-game grid items to the preset seed bank.';
 
   @override
   String get selectToolCard => 'Select tool packets';

@@ -2350,6 +2350,18 @@ abstract class AppLocalizations {
   /// **'In order to select this plant, {moduleName} needs to be added.'**
   String plantModuleRequiredMessage(String moduleName);
 
+  /// No description provided for @realmExclusivePlantChooserBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select plant'**
+  String get realmExclusivePlantChooserBlockedTitle;
+
+  /// No description provided for @realmExclusivePlantChooserBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.'**
+  String get realmExclusivePlantChooserBlockedMessage;
+
   /// No description provided for @missingModuleForPlantsWarning.
   ///
   /// In en, this message translates to:
@@ -8319,6 +8331,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only certain zombies have dedicate seed packets and sun costs in I, Zombie (IZ) Mode. These zombies can be found under the \"Other\" category in the zombie selection screen.'**
   String get izombieCardSlotsHint;
+
+  /// No description provided for @seedBankPresetModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset mode enters game immediately regardless of card count.'**
+  String get seedBankPresetModeHint;
+
+  /// No description provided for @seedBankPlantLevelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant level (0-5)'**
+  String get seedBankPlantLevelLabel;
+
+  /// No description provided for @seedBankSlotCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot count (0-9)'**
+  String get seedBankSlotCountLabel;
+
+  /// No description provided for @seedBankCourtyardSlotsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Courtyard mode ignores slot count. Chooser locks 8 slots.'**
+  String get seedBankCourtyardSlotsHint;
+
+  /// No description provided for @seedBankAddGridItemsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add grid items'**
+  String get seedBankAddGridItemsTitle;
+
+  /// No description provided for @seedBankAddGridItemsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds frozen mini-game grid items to the preset seed bank.'**
+  String get seedBankAddGridItemsSubtitle;
 
   /// No description provided for @selectToolCard.
   ///
