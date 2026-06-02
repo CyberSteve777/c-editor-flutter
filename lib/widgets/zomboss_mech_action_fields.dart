@@ -1,0 +1,297 @@
+import 'package:flutter/material.dart';
+import 'package:z_editor/data/models/zomboss_mech_catalog.dart';
+import 'package:z_editor/data/models/zomboss_robot_spawn_entry.dart';
+import 'package:z_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:z_editor/data/zomboss_mech_action_utils.dart';
+import 'package:z_editor/widgets/editor_components.dart';
+import 'package:z_editor/widgets/zomboss_mech_robot_spawn_list.dart';
+import 'package:z_editor/widgets/zomboss_mech_zombie_type_list.dart';
+
+/// Dynamic editors for zomboss action objdata from catalog field specs.
+class ZombossMechActionFieldsEditor extends StatelessWidget {
+  const ZombossMechActionFieldsEditor({
+    super.key,
+    required this.fields,
+    required this.data,
+    required this.onChanged,
+    this.objclass = '',
+    this.levelFile,
+    this.depth = 0,
+  });
+
+  final List<ZombossMechFieldSpec> fields;
+  final Map<String, dynamic> data;
+  final VoidCallback onChanged;
+  final String objclass;
+  final PvzLevelFile? levelFile;
+  final int depth;
+
+  @override
+  Widget build(BuildContext context) {
+    final children = <Widget>[];
+    for (final field in fields) {
+      if (field.name.isEmpty || field.name.startsWith('#')) continue;
+      children.add(_buildField(context, field));
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
+    );
+  }
+
+  Widget _buildField(BuildContext context, ZombossMechFieldSpec field) {
+    final padding = EdgeInsets.only(
+      left: depth * 12.0,
+      top: 8,
+      bottom: 4,
+    );
+    if (ZombossMechActionUtils.isZombieTypeField(field)) {
+      final raw = data[field.name];
+      if (field.name == 'SpawnZombieTypes' &&
+          (zombossActionUsesRobotSpawnList(objclass) ||
+              ZombossRobotSpawnEntry.isRobotSpawnList(raw))) {
+        final entries = ZombossRobotSpawnEntry.parseList(raw);
+        return Padding(
+          padding: padding,
+          child: ZombossMechRobotSpawnListEditor(
+            fieldLabel: field.name,
+            entries: entries,
+            levelFile: levelFile,
+            onChanged: (next) {
+              data[field.name] = ZombossRobotSpawnEntry.toJsonList(next);
+              onChanged();
+            },
+          ),
+        );
+      }
+
+      final ids = field.type == 'List<zombieType>'
+          ? ZombossMechActionUtils.parseZombieTypeList(raw)
+          : [
+              if (raw != null && raw.toString().isNotEmpty) raw.toString(),
+            ];
+      return Padding(
+        padding: padding,
+        child: ZombossMechZombieTypeListEditor(
+          fieldLabel: field.name,
+          zombieIds: ids,
+          editable: true,
+          isList: field.type == 'List<zombieType>',
+          onChanged: (next) {
+            if (field.type == 'List<zombieType>') {
+              data[field.name] = next;
+            } else {
+              data[field.name] = next.isNotEmpty ? next.first : '';
+            }
+            onChanged();
+          },
+        ),
+      );
+    }
+
+    if (field.type == 'object' && field.objectFields.isNotEmpty) {
+      final nested = data[field.name];
+      final nestedMap = nested is Map<String, dynamic>
+          ? nested
+          : nested is Map
+              ? Map<String, dynamic>.from(nested)
+              : ZombossMechActionUtils.defaultsFromFields(field.objectFields);
+      if (nested is! Map) data[field.name] = nestedMap;
+      return Padding(
+        padding: padding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              field.name,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            ZombossMechActionFieldsEditor(
+              fields: field.objectFields,
+              data: nestedMap,
+              onChanged: onChanged,
+              depth: depth + 1,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: padding,
+      child: _ScalarField(
+        field: field,
+        value: data[field.name],
+        onChanged: (v) {
+          data[field.name] = v;
+          onChanged();
+        },
+      ),
+    );
+  }
+}
+
+class _ScalarField extends StatefulWidget {
+  const _ScalarField({
+    required this.field,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final ZombossMechFieldSpec field;
+  final dynamic value;
+  final ValueChanged<dynamic> onChanged;
+
+  @override
+  State<_ScalarField> createState() => _ScalarFieldState();
+}
+
+class _ScalarFieldState extends State<_ScalarField> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _textValue);
+    _focusNode = FocusNode()..addListener(_onFocus);
+  }
+
+  void _onFocus() {
+    final f = _focusNode.hasFocus;
+    if (_focused != f) setState(() => _focused = f);
+  }
+
+  String get _textValue {
+    final v = widget.value ?? widget.field.defaultValue ?? '';
+    return v.toString();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ScalarField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_focused && oldWidget.value != widget.value) {
+      _controller.text = _textValue;
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final field = widget.field;
+    switch (field.type) {
+      case 'bool':
+        final checked = widget.value == true;
+        return SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(field.name),
+          value: checked,
+          onChanged: (v) => widget.onChanged(v),
+        );
+      case 'int':
+        if (ZombossMechActionUtils.usesLabeledIntInput(field)) {
+          return TextFormField(
+            controller: _controller,
+            focusNode: _focusNode,
+            decoration: editorInputDecoration(
+              context,
+              labelText: field.name,
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: (v) {
+              final parsed = int.tryParse(v);
+              if (parsed != null) widget.onChanged(parsed);
+            },
+          );
+        }
+        final intVal = _asInt(widget.value, field);
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < 280;
+            final stepper = Row(
+              mainAxisSize: compact ? MainAxisSize.max : MainAxisSize.min,
+              mainAxisAlignment:
+                  compact ? MainAxisAlignment.center : MainAxisAlignment.start,
+              children: [
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  onPressed: intVal > -999999
+                      ? () => widget.onChanged(intVal - 1)
+                      : null,
+                  icon: const Icon(Icons.remove_circle_outline),
+                ),
+                SizedBox(
+                  width: 48,
+                  child: Text(
+                    '$intVal',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => widget.onChanged(intVal + 1),
+                  icon: const Icon(Icons.add_circle_outline),
+                ),
+              ],
+            );
+            if (compact) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(field.name),
+                  stepper,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: Text(field.name)),
+                stepper,
+              ],
+            );
+          },
+        );
+      case 'float':
+        return TextFormField(
+          controller: _controller,
+          focusNode: _focusNode,
+          decoration: editorInputDecoration(
+            context,
+            labelText: field.name,
+          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          onChanged: (v) {
+            final parsed = double.tryParse(v);
+            if (parsed != null) widget.onChanged(parsed);
+          },
+        );
+      default:
+        return TextFormField(
+          controller: _controller,
+          focusNode: _focusNode,
+          decoration: editorInputDecoration(
+            context,
+            labelText: field.name,
+          ),
+          onChanged: (v) => widget.onChanged(v),
+        );
+    }
+  }
+
+  int _asInt(dynamic value, ZombossMechFieldSpec field) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    if (field.defaultValue is int) return field.defaultValue as int;
+    if (field.defaultValue is num) return (field.defaultValue as num).toInt();
+    return 0;
+  }
+}
