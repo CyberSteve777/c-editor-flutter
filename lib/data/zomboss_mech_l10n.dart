@@ -93,7 +93,7 @@ abstract class ZombossMechL10n {
     return '${info.alias}@${info.source}';
   }
 
-  /// Resolves a stage action RTID to a display label (localized catalog / raw custom).
+  /// Phase / retreat list label: always ``alias@source`` (catalog and custom).
   static String labelForStageRtid({
     required BuildContext context,
     required String mechId,
@@ -101,18 +101,6 @@ abstract class ZombossMechL10n {
     required PvzLevelFile levelFile,
     required String rtid,
   }) {
-    final info = RtidParser.parse(rtid);
-    if (info == null) return rtid;
-    if (info.source == ZombossMechActionUtils.customSource) {
-      return '${info.alias}@${info.source}';
-    }
-    final catalogAction = catalog.catalogActionForAlias(info.alias);
-    return actionRtidLabel(
-      context,
-      mechId,
-      rtid,
-      objclass: catalogAction?.objclass,
-      implementationAlias: info.alias,
-    );
+    return ZombossMechActionUtils.displayLabel(rtid);
   }
 }
