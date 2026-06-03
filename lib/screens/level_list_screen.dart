@@ -436,20 +436,21 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _uploadLevel() async {
+    final l10n = AppLocalizations.of(context)!;
     final url = Uri.parse('https://pvz2.hrgame.com.cn/diy');
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('l10n.uploadLevel'),
-        content: const Text('l10n.uploadLevelConfirm'),
+        title: Text(l10n.uploadLevel),
+        content: Text(l10n.uploadLevelConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('l10n.return'),
+            child: Text(l10n.back),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('l10n.proceed'),
+            child: Text(l10n.proceed),
           ),
         ],
       ),
@@ -2006,11 +2007,11 @@ class _FileItemRow extends StatelessWidget {
                     ),
                   ),
                 if (onConvert != null)
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'convert',
                     child: ListTile(
                       leading: Icon(Icons.swap_horiz),
-                      title: Text('l10n.convert'),
+                      title: Text(l10n.convert),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),

@@ -15,7 +15,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get about => 'О программе';
 
   @override
-  String get back => 'Назад';
+  String get back => 'Back';
 
   @override
   String get refresh => 'Обновить';
@@ -87,7 +87,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get move => 'Переместить';
 
   @override
-  String get cancel => 'Back';
+  String get cancel => 'Отмена';
 
   @override
   String get confirm => 'Подтвердить';

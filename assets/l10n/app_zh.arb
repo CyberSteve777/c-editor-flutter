@@ -39,7 +39,7 @@
   "renameFail": "重命名失败，已有同名文件",
   "uploadLevel": "上传至创意庭院",
   "uploadLevelConfirm": "即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将编辑器中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？",
-  "return": "返回",
+  "back": "返回",
   "proceed": "继续",
   "copyReferenceOrDeep": "复制事件引用，还是创建独立副本？",
   "copyReference": "复制事件引用",

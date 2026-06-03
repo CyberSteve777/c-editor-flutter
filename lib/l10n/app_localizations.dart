@@ -253,7 +253,7 @@ abstract class AppLocalizations {
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
-  /// **'Back'**
+  /// **'Cancel'**
   String get cancel;
 
   /// No description provided for @confirm.

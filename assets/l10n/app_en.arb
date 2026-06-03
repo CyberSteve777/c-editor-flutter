@@ -39,7 +39,7 @@
   "renameFail": "Rename failed, file already exists",
   "uploadLevel": "Upload to Creative Courtyard",
   "uploadLevelConfirm": "You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?",
-  "cancel": "Back",
+  "back": "Back",
   "proceed": "Continue",
   "copyReferenceOrDeep": "Copy reference or make a deep copy?",
   "copyReference": "Copy reference",
