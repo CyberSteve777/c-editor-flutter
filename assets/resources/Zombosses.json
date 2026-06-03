@@ -1,7 +1,7 @@
 [
   {
     "id": "ZombieZombossBlade",
-    "icon": "unknown.webp",
+    "icon": "kongfu_zomboss_blade.webp",
     "variations": [
       "kongfu_zomboss_blade",
       "kongfu_zomboss_blade_vacation"
@@ -13,7 +13,7 @@
   },
   {
     "id": "ZombieZombossExplosive",
-    "icon": "unknown.webp",
+    "icon": "kongfu_zomboss_explosive.webp",
     "variations": [
       "kongfu_zomboss_explosive",
       "kongfu_zomboss_explosive_vacation"
@@ -26,7 +26,7 @@
   },
   {
     "id": "ZombieZombossQigong",
-    "icon": "unknown.webp",
+    "icon": "kongfu_zomboss_qigong.webp",
     "variations": [
       "kongfu_zomboss_qigong",
       "kongfu_zomboss_qigong_12TH",
@@ -40,7 +40,7 @@
   },
   {
     "id": "ZombieZombossQinShiHuang",
-    "icon": "unknown.webp",
+    "icon": "zomboss_qinshihuang.webp",
     "variations": [
       "zomboss_qinshihuang",
       "zomboss_qinshihuang_hard"
@@ -58,7 +58,7 @@
   },
   {
     "id": "ZombieZombossQinShiHuangGhost",
-    "icon": "unknown.webp",
+    "icon": "zomboss_qinshihuang_ghost.webp",
     "variations": [
       "zomboss_qinshihuang_ghost"
     ],

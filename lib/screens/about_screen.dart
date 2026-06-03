@@ -102,11 +102,11 @@ class _AboutScreenState extends State<AboutScreen> {
                         _usageTextForPlatform(context, l10n),
                         style: TextStyle(height: 1.5, color: theme.colorScheme.onSurface),
                       ),
-                      if (links != null && l10n.usageLevelUploadLabel.isNotEmpty) ...[
+                      if (links != null && l10n.usageRecommendedLevelsLabel.isNotEmpty) ...[
                         const SizedBox(height: 8),
                         _LinkRow(
-                          label: l10n.usageLevelUploadLabel,
-                          url: links.levelUpload,
+                          label: l10n.usageRecommendedLevelsLabel,
+                          url: links.recommendedLevels,
                           onSurface: theme.colorScheme.onSurface,
                           linkColor: theme.colorScheme.primary,
                         ),
