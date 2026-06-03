@@ -49,7 +49,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: c-editor-windows-x64
+          name: c_editor-windows-x64
           path: artifact
           if-no-files-found: error
 
@@ -93,7 +93,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: c-editor-linux-x64
+          name: c_editor-linux-x64
           path: artifact
           if-no-files-found: error
 
@@ -158,10 +158,10 @@ jobs:
       - name: Stage APK artifact
         run: |
           mkdir -p artifacts
-          cp build/app/outputs/flutter-apk/app-release.apk artifacts/c-editor-release.apk
+          cp build/app/outputs/flutter-apk/app-release.apk artifacts/c_editor-release.apk
 
       - uses: actions/upload-artifact@v7
         with:
-          name: c-editor-android-apk
-          path: artifacts/c-editor-release.apk
+          name: c_editor-android-apk
+          path: artifacts/c_editor-release.apk
           if-no-files-found: error

@@ -253,7 +253,7 @@ abstract class AppLocalizations {
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
-  /// **'Cancel'**
+  /// **'Back'**
   String get cancel;
 
   /// No description provided for @confirm.
@@ -261,6 +261,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm'**
   String get confirm;
+
+  /// No description provided for @convert.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert'**
+  String get convert;
 
   /// No description provided for @create.
   ///
@@ -316,11 +322,29 @@ abstract class AppLocalizations {
   /// **'Successfully renamed'**
   String get renameSuccess;
 
-  /// No description provided for @renameFail.
+  /// No description provided for @renamingFailed.
   ///
   /// In en, this message translates to:
-  /// **'Rename failed, file already exists'**
-  String get renameFail;
+  /// **'Renaming failed'**
+  String get renamingFailed;
+
+  /// No description provided for @uploadLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload to Creative Courtyard'**
+  String get uploadLevel;
+
+  /// No description provided for @uploadLevelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
+  String get uploadLevelConfirm;
+
+  /// No description provided for @proceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get proceed;
 
   /// No description provided for @copyReferenceOrDeep.
   ///
@@ -363,12 +387,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid wave number'**
   String get invalidWaveIndex;
-
-  /// No description provided for @renamingFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Renaming failed'**
-  String get renamingFailed;
 
   /// No description provided for @deleted.
   ///
@@ -697,31 +715,31 @@ abstract class AppLocalizations {
   /// No description provided for @usageText.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Upload JSON levels on the official Plants vs. Zombies 2 Advanced Creation Courtyard author hub (login required).\n6. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n7. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, click the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageText;
 
   /// No description provided for @usageTextDesktop.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Upload JSON levels on the official Plants vs. Zombies 2 Advanced Creation Courtyard author hub (login required).\n6. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n7. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, click the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageTextDesktop;
 
   /// No description provided for @usageTextMobile.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Upload JSON levels on the official Plants vs. Zombies 2 Advanced Creation Courtyard author hub (login required).\n6. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n7. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageTextMobile;
 
-  /// No description provided for @usageLevelUploadLabel.
+  /// No description provided for @usageRecommendedLevelsLabel.
   ///
   /// In en, this message translates to:
-  /// **'Creator hub:'**
-  String get usageLevelUploadLabel;
+  /// **'Creative Courtyard · Recommended Levels Showcase:'**
+  String get usageRecommendedLevelsLabel;
 
   /// No description provided for @discordInviteLabel.
   ///
   /// In en, this message translates to:
-  /// **'Server invite link:'**
+  /// **'Discord server invite link:'**
   String get discordInviteLabel;
 
   /// No description provided for @creditsSection.
@@ -751,7 +769,7 @@ abstract class AppLocalizations {
   /// No description provided for @thanksNames.
   ///
   /// In en, this message translates to:
-  /// **'Devourdoom, Evilhack28, Chara, Haruma, nineteendo, vi_i_guess'**
+  /// **'Devourdoom, Evilhack28, Chara, KL12, Haruma, nineteendo, vi_i_guess'**
   String get thanksNames;
 
   /// No description provided for @sourceLabel.
@@ -763,7 +781,7 @@ abstract class AppLocalizations {
   /// No description provided for @issuesLabel.
   ///
   /// In en, this message translates to:
-  /// **'Issues:'**
+  /// **'Report Issues:'**
   String get issuesLabel;
 
   /// No description provided for @zEditorAcknowledgment.
@@ -793,7 +811,7 @@ abstract class AppLocalizations {
   /// No description provided for @zEditorThanksLabel.
   ///
   /// In en, this message translates to:
-  /// **'Thanks:'**
+  /// **'Special thanks:'**
   String get zEditorThanksLabel;
 
   /// No description provided for @zEditorThanksNames.
@@ -805,7 +823,7 @@ abstract class AppLocalizations {
   /// No description provided for @zEditorQqGroupLabel.
   ///
   /// In en, this message translates to:
-  /// **'QQ group:'**
+  /// **'Z-Editor QQ group:'**
   String get zEditorQqGroupLabel;
 
   /// No description provided for @zEditorQqGroupNumber.

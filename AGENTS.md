@@ -4,7 +4,7 @@
 
 ### Project overview
 
-**C-Editor** is a cross-platform **Flutter** desktop/mobile/web app — a Level Editor for Plants vs. Zombies 2 Chinese. Package name: `c_editor`. It is a purely client-side application with no backend services, databases, or Docker containers.
+**c_editor** is a cross-platform **Flutter** desktop/mobile/web app — a Level Editor for Plants vs. Zombies 2 Chinese. Package name: `C-Editor`. It is a purely client-side application with no backend services, databases, or Docker containers.
 
 Source: https://github.com/CyberSteve777/c-editor-flutter
 

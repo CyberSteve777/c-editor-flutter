@@ -87,10 +87,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get move => 'Переместить';
 
   @override
-  String get cancel => 'Отмена';
+  String get cancel => 'Back';
 
   @override
   String get confirm => 'Подтвердить';
+
+  @override
+  String get convert => 'Convert';
 
   @override
   String get create => 'Создать';
@@ -123,7 +126,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get renameSuccess => 'Успешно переименовано';
 
   @override
-  String get renameFail => 'Ошибка переименования, файл уже существует';
+  String get renamingFailed => 'Ошибка переименования';
+
+  @override
+  String get uploadLevel => 'Upload to Creative Courtyard';
+
+  @override
+  String get uploadLevelConfirm =>
+      'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
+
+  @override
+  String get proceed => 'Continue';
 
   @override
   String get copyReferenceOrDeep =>
@@ -146,9 +159,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get invalidWaveIndex => 'Неверный номер волны';
-
-  @override
-  String get renamingFailed => 'Ошибка переименования';
 
   @override
   String get deleted => 'Удалено';
@@ -333,18 +343,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n6. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n7. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageTextDesktop =>
-      '1. Папка: щёлкните по иконке папки для выбора каталога уровней.\n2. Открыть/Создать: щёлкните по уровню для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: щёлкните «Сохранить» для записи в JSON.\n5. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n6. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n7. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: щёлкните по иконке папки для выбора каталога уровней.\n2. Открыть/Создать: щёлкните по уровню для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: щёлкните «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageTextMobile =>
-      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n6. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n7. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
-  String get usageLevelUploadLabel => 'Портал авторов:';
+  String get usageRecommendedLevelsLabel =>
+      'Creative Courtyard · Recommended Levels Showcase:';
 
   @override
   String get discordInviteLabel => 'Ссылка-приглашение на сервер:';
@@ -363,7 +374,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get thanksNames =>
-      'Devourdoom, Evilhack28, Chara, Haruma, nineteendo, vi_i_guess';
+      'Devourdoom, Evilhack28, Chara, KL12, Haruma, nineteendo, vi_i_guess';
 
   @override
   String get sourceLabel => 'Исходный код:';
@@ -392,10 +403,10 @@ class AppLocalizationsRu extends AppLocalizations {
       '星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名';
 
   @override
-  String get zEditorQqGroupLabel => 'QQ-группа:';
+  String get zEditorQqGroupLabel => 'Z-Editor QQ-группа:';
 
   @override
-  String get zEditorQqGroupNumber => '562251204';
+  String get zEditorQqGroupNumber => '960722092';
 
   @override
   String get tagline => 'Создавайте бесконечные возможности';

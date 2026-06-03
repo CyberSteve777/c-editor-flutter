@@ -91,6 +91,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirm => '确定';
 
   @override
+  String get convert => '格式转换';
+
+  @override
   String get create => '创建';
 
   @override
@@ -120,7 +123,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get renameSuccess => '重命名成功';
 
   @override
-  String get renameFail => '重命名失败，已有同名文件';
+  String get renamingFailed => '重命名失败';
+
+  @override
+  String get uploadLevel => '上传至创意庭院';
+
+  @override
+  String get uploadLevelConfirm =>
+      '即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将编辑器中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？';
+
+  @override
+  String get proceed => '继续';
 
   @override
   String get copyReferenceOrDeep => '复制事件引用，还是创建独立副本？';
@@ -142,9 +155,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get invalidWaveIndex => '无效波次序号';
-
-  @override
-  String get renamingFailed => '重命名失败';
 
   @override
   String get deleted => '已删除';
@@ -277,7 +287,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conversionRequiredMessage => '该文件需要先转换为 JSON 才能在编辑器中打开。';
 
   @override
-  String get convertAction => '转换';
+  String get convertAction => '格式转换';
 
   @override
   String get conversionFailed => '转换失败';
@@ -323,21 +333,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. 目录设置：首次进入请选择存放 JSON 关卡文件的目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 可在官方《植物大战僵尸2》高级创作庭院作者中心上传 JSON 关卡（需登录）。\n6. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n7. 如有疑问或需要高级关卡制作帮助，欢迎加入 Plants vs. Zombies Discord 服务器，在 PvZ2C-Modding 频道主题中提问。';
+      '1. 目录设置：首次进入请选择存放 JSON 关卡文件的目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，可点击主页面底部导航栏中的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。使用邮箱登录后，即可将关卡上传至游戏内创意庭院。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持创作者，也有助于提升自己的关卡设计水平。\n8.如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageTextDesktop =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：点击保存将修改写回 JSON 文件。\n5. 可在官方《植物大战僵尸2》高级创作庭院作者中心上传 JSON 关卡（需登录）。\n6. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n7. 如有疑问或需要高级关卡制作帮助，欢迎加入 Plants vs. Zombies Discord 服务器，在 PvZ2C-Modding 频道主题中提问。';
+      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，可点击主页面底部导航栏中的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。使用邮箱登录后，即可将关卡上传至游戏内创意庭院。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageTextMobile =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 可在官方《植物大战僵尸2》高级创作庭院作者中心上传 JSON 关卡（需登录）。\n6. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n7. 如有疑问或需要高级关卡制作帮助，欢迎加入 Plants vs. Zombies Discord 服务器，在 PvZ2C-Modding 频道主题中提问。';
+      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，可点击主页面底部导航栏中的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。使用邮箱登录后，即可将关卡上传至游戏内创意庭院。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
-  String get usageLevelUploadLabel => '作者中心：';
+  String get usageRecommendedLevelsLabel => '创意庭院·推荐关卡展示：';
 
   @override
-  String get discordInviteLabel => '服务器邀请链接：';
+  String get discordInviteLabel => 'Discord服务器链接：';
 
   @override
   String get creditsSection => '致谢名单';
@@ -353,7 +363,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get thanksNames =>
-      'Devourdoom、Evilhack28、Chara、Haruma、nineteendo、vi_i_guess';
+      'Devourdoom、Evilhack28、Chara、KL12、Haruma、nineteendo、vi_i_guess';
 
   @override
   String get sourceLabel => '源码：';
@@ -362,7 +372,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get issuesLabel => '问题反馈：';
 
   @override
-  String get zEditorAcknowledgment => '若没有 Z-Editor 的创作者，就不可能创造出本工具。';
+  String get zEditorAcknowledgment => '若没有Z-Editor的创作者，就不可能创造出本工具。';
 
   @override
   String get zEditorCreditsSubsection => 'Z-Editor 致谢';
@@ -381,10 +391,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名';
 
   @override
-  String get zEditorQqGroupLabel => 'QQ 群：';
+  String get zEditorQqGroupLabel => 'Z-Editor QQ群：';
 
   @override
-  String get zEditorQqGroupNumber => '562251204';
+  String get zEditorQqGroupNumber => '960722092';
 
   @override
   String get tagline => '穿越时空 创造无穷可能';

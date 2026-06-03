@@ -5,7 +5,7 @@
     <!-- Android 11+ (API 30+): needed when READ_EXTERNAL_STORAGE is insufficient (e.g. Android 13+) -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <application
-        android:label="c_editor"
+        android:label="C-Editor"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">

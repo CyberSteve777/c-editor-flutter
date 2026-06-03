@@ -87,10 +87,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get move => 'Move';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'Back';
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get convert => 'Convert';
 
   @override
   String get create => 'Create';
@@ -123,7 +126,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get renameSuccess => 'Successfully renamed';
 
   @override
-  String get renameFail => 'Rename failed, file already exists';
+  String get renamingFailed => 'Renaming failed';
+
+  @override
+  String get uploadLevel => 'Upload to Creative Courtyard';
+
+  @override
+  String get uploadLevelConfirm =>
+      'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
+
+  @override
+  String get proceed => 'Continue';
 
   @override
   String get copyReferenceOrDeep => 'Copy reference or make a deep copy?';
@@ -145,9 +158,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidWaveIndex => 'Invalid wave number';
-
-  @override
-  String get renamingFailed => 'Renaming failed';
 
   @override
   String get deleted => 'Deleted';
@@ -331,21 +341,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Upload JSON levels on the official Plants vs. Zombies 2 Advanced Creation Courtyard author hub (login required).\n6. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n7. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, click the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextDesktop =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Upload JSON levels on the official Plants vs. Zombies 2 Advanced Creation Courtyard author hub (login required).\n6. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n7. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, click the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextMobile =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Upload JSON levels on the official Plants vs. Zombies 2 Advanced Creation Courtyard author hub (login required).\n6. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n7. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
-  String get usageLevelUploadLabel => 'Creator hub:';
+  String get usageRecommendedLevelsLabel =>
+      'Creative Courtyard · Recommended Levels Showcase:';
 
   @override
-  String get discordInviteLabel => 'Server invite link:';
+  String get discordInviteLabel => 'Discord server invite link:';
 
   @override
   String get creditsSection => 'Credits';
@@ -361,13 +372,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thanksNames =>
-      'Devourdoom, Evilhack28, Chara, Haruma, nineteendo, vi_i_guess';
+      'Devourdoom, Evilhack28, Chara, KL12, Haruma, nineteendo, vi_i_guess';
 
   @override
   String get sourceLabel => 'Source:';
 
   @override
-  String get issuesLabel => 'Issues:';
+  String get issuesLabel => 'Report Issues:';
 
   @override
   String get zEditorAcknowledgment =>
@@ -383,14 +394,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zEditorAuthorName => '降维打击';
 
   @override
-  String get zEditorThanksLabel => 'Thanks:';
+  String get zEditorThanksLabel => 'Special thanks:';
 
   @override
   String get zEditorThanksNames =>
       '星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名';
 
   @override
-  String get zEditorQqGroupLabel => 'QQ group:';
+  String get zEditorQqGroupLabel => 'Z-Editor QQ group:';
 
   @override
   String get zEditorQqGroupNumber => '960722092';
