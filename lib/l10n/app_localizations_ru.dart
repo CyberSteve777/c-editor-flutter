@@ -93,6 +93,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get confirm => 'Подтвердить';
 
   @override
+  String get convert => 'Convert';
+
+  @override
   String get convertHelpTooltip =>
       'Преобразование между JSON, HUJSON и зашифрованным RTON для импорта через хот-апдейт.';
 

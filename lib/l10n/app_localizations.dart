@@ -262,6 +262,12 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirm;
 
+  /// No description provided for @convert.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert'**
+  String get convert;
+
   /// No description provided for @convertHelpTooltip.
   ///
   /// In en, this message translates to:

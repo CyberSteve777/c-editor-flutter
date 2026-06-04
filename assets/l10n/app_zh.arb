@@ -26,6 +26,7 @@
   "move": "移动",
   "cancel": "取消",
   "confirm": "确定",
+  "convert": "格式转换",
   "convertHelpTooltip": "格式转换",
   "create": "创建",
   "newName": "新名称",

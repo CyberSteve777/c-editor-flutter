@@ -91,6 +91,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirm => '确定';
 
   @override
+  String get convert => '格式转换';
+
+  @override
   String get convertHelpTooltip => '格式转换';
 
   @override

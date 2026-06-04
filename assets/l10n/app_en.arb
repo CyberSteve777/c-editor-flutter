@@ -26,6 +26,7 @@
   "move": "Move",
   "cancel": "Cancel",
   "confirm": "Confirm",
+  "convert": "Convert",
   "convertHelpTooltip": "Convert",
   "create": "Create",
   "newName": "New name",

@@ -93,6 +93,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
+  String get convert => 'Convert';
+
+  @override
   String get convertHelpTooltip => 'Convert';
 
   @override
