@@ -84,6 +84,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get copy => 'Копировать';
 
   @override
+  String get download => 'Скачать';
+
+  @override
   String get move => 'Переместить';
 
   @override
@@ -1757,6 +1760,20 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get moduleDesc_BronzeProperties =>
       'Мини-игра бронзовых статуй мира Кунфу: размещение статуй и времени возрождения (не привязано к волнам)';
+
+  @override
+  String get moduleTitle_ArmrackProperties => 'Оружейные стойки';
+
+  @override
+  String get moduleDesc_ArmrackProperties =>
+      'Настройка отображения оружейных стоек на газоне (только волна 1)';
+
+  @override
+  String get moduleTitle_EnergyGridProperties => 'Плитки Тайцзи';
+
+  @override
+  String get moduleDesc_EnergyGridProperties =>
+      'Настройка отображения плиток Тайцзи на газоне (только волна 1)';
 
   @override
   String get bronzeModuleTitle => 'Бронзовые статуи';
@@ -4907,6 +4924,48 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tunnelDefendTileStylePart2 => 'часть 2';
 
   @override
+  String get tunnelDefendSequenceInterval =>
+      'Интервал последовательности тоннелей (TunnelSequenceInterval, сек.)';
+
+  @override
+  String get tunnelDefendHelpSequenceInterval => 'Интервал последовательности';
+
+  @override
+  String get tunnelDefendHelpSequenceIntervalBody =>
+      'Задержка между шагами последовательности тоннелей. Меньшие значения ускоряют появление путей.';
+
+  @override
+  String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
+      'Лимит времени финальной фазы';
+
+  @override
+  String get moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties =>
+      'Ограничение по времени на финальной фазе боя с Zomboss';
+
+  @override
+  String get finalStageTimeLimitedChallengeTitle =>
+      'Лимит времени финальной фазы';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpTitle =>
+      'Модуль лимита времени финальной фазы';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpIntro =>
+      'Добавляет ограничение по времени на финальной фазе боя с Zomboss (часто используется в боях с Цинь Шihuang).';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpParams => 'Параметры';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpParamsBody =>
+      'По умолчанию используется определение из LevelModules (RTID(FinalStageTimeLimitedChallenge@LevelModules)). Включите локальные параметры для настройки объекта в @CurrentLevel.';
+
+  @override
+  String get finalStageTimeLimitedChallengeTimeLimit =>
+      'Лимит времени Zomboss (ZombossTimeLimit, сек.)';
+
+  @override
   String get moduleTitle_LawnMowerProperties => 'Газонокосилки';
 
   @override
@@ -5892,4 +5951,102 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossMechHitPoints => 'Очки здоровья';
+
+  @override
+  String get continueAnyway => 'Всё равно продолжить';
+
+  @override
+  String get armrackModuleTitle => 'Оружейные стойки';
+
+  @override
+  String get armrackModuleHelpTitle => 'Модуль оружейных стоек';
+
+  @override
+  String get armrackModuleHelpOverview => 'Обзор';
+
+  @override
+  String get armrackModuleHelpOverviewBody =>
+      'Размещает оружейные стойки на газоне в волне 1. Этот модуль нужен для корректного отображения стоек в редакторе и в игре без неправильных текстур солнца.';
+
+  @override
+  String get armrackModuleHelpPlacement => 'Размещение';
+
+  @override
+  String get armrackModuleHelpPlacementBody =>
+      'Выберите тип стойки и нажмите на клетку (одна на клетку). ПКМ или долгое нажатие удаляет стойку с клетки.';
+
+  @override
+  String get armrackModuleHelpWaveLimit => 'Ограничение по волнам';
+
+  @override
+  String get armrackModuleHelpWaveLimitBody =>
+      'Из-за ограничения игры в игре действуют только записи волны 1. Другие группы волн можно редактировать здесь и сохранять в файл уровня, но на временной шкале отображается только волна 1.';
+
+  @override
+  String get armrackModuleTypePalette => 'Тип стойки';
+
+  @override
+  String get armrackModuleExpectationLabel => 'Оружейные стойки';
+
+  @override
+  String get armrackModuleIgnoredWaveOverridesWarning =>
+      'В уровне есть переопределения оружейных стоек для волн, отличных от 1. Они сохраняются, но не отображаются на временной шкале, так как игра применяет только волну 1.';
+
+  @override
+  String armrackModuleRequiredMessage(String moduleName) {
+    return 'Чтобы оружейные стойки отображались правильно и без текстур солнца, нужно добавить модуль «$moduleName».';
+  }
+
+  @override
+  String get energyGridModuleTitle => 'Плитки Тайцзи';
+
+  @override
+  String get energyGridModuleHelpTitle => 'Модуль плиток Тайцзи';
+
+  @override
+  String get energyGridModuleHelpOverview => 'Обзор';
+
+  @override
+  String get energyGridModuleHelpOverviewBody =>
+      'Размещает плитки Тайцзи на газоне в волне 1. Этот модуль нужен для корректного отображения плиток в редакторе и в игре.';
+
+  @override
+  String get energyGridModuleHelpPlacement => 'Размещение';
+
+  @override
+  String get energyGridModuleHelpPlacementBody =>
+      'Нажмите пустую клетку, чтобы поставить плитку (одна на клетку). ПКМ или долгое нажатие удаляет плитку.';
+
+  @override
+  String get energyGridModuleHelpWaveLimit => 'Ограничение по волнам';
+
+  @override
+  String get energyGridModuleHelpWaveLimitBody =>
+      'Из-за ограничения игры в игре действуют только записи волны 1. Другие группы волн можно редактировать здесь и сохранять в файл уровня, но на временной шкале отображается только волна 1.';
+
+  @override
+  String get energyGridModuleTapToPlace =>
+      'Нажмите пустую клетку, чтобы поставить плитку Тайцзи.';
+
+  @override
+  String get energyGridModuleExpectationLabel => 'Плитки Тайцзи';
+
+  @override
+  String get energyGridModuleIgnoredWaveOverridesWarning =>
+      'В уровне есть переопределения плиток Тайцзи для волн, отличных от 1. Они сохраняются, но не отображаются на временной шкале, так как игра применяет только волну 1.';
+
+  @override
+  String get energyGridModuleWarningMessage =>
+      'Из-за ошибки игры сгенерированные плитки Тайцзи могут отображаться как фиолетовые маркеры X. На функциональность это не влияет. Для корректного отображения рекомендуется перезапустить игру. Также нужен модуль плиток Тайцзи. Всё равно продолжить?';
+
+  @override
+  String get gridOverrideModuleAppearances => 'Группы волн';
+
+  @override
+  String get gridOverrideModuleWaveFieldOneBased =>
+      'Волна (1 = первая волна, 2 = вторая, …)';
+
+  @override
+  String get gridOverrideModuleTimelineNote =>
+      'На временной шкале отображаются только записи волны 1.';
 }

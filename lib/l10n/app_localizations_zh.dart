@@ -82,6 +82,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copy => '复制';
 
   @override
+  String get download => '下载';
+
+  @override
   String get move => '移动';
 
   @override
@@ -339,15 +342,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. 目录设置：首次进入请选择存放 JSON 关卡文件的目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，可点击主页面底部导航栏中的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。使用邮箱登录后，即可将关卡上传至游戏内创意庭院。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8.如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
+      '1. 目录设置：首次进入请选择存放 JSON 关卡文件的目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，在关卡列表滚动到顶部时，可点击右下角的“上传至创意庭院”浮动按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8.如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageTextDesktop =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，可点击主页面底部导航栏中的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。使用邮箱登录后，即可将关卡上传至游戏内创意庭院。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
+      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，在关卡列表滚动到顶部时，可点击右下角的“上传至创意庭院”浮动按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageTextMobile =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，可点击主页面底部导航栏中的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。使用邮箱登录后，即可将关卡上传至游戏内创意庭院。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
+      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON 或加密后的 RTON，随后通过其他工具导入游戏内进行测试（记得在导入前手动将文件扩展名从 .hujson 改回 .json）。\n6. 关卡创作完成后，在关卡列表滚动到顶部时，可点击右下角的“上传至创意庭院”浮动按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 你可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageRecommendedLevelsLabel => '创意庭院·推荐关卡展示：';
@@ -1665,6 +1668,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moduleDesc_BronzeProperties => '配置功夫世界的铜人像';
+
+  @override
+  String get moduleTitle_ArmrackProperties => '兵器架';
+
+  @override
+  String get moduleDesc_ArmrackProperties => '配置场上兵器架显示（仅第一波有效）';
+
+  @override
+  String get moduleTitle_EnergyGridProperties => '太极瓷砖';
+
+  @override
+  String get moduleDesc_EnergyGridProperties => '配置场上太极瓷砖显示（仅第一波有效）';
 
   @override
   String get bronzeModuleTitle => '铜人像';
@@ -4711,6 +4726,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tunnelDefendTileStylePart2 => '地宫镇魂（第二章）';
 
   @override
+  String get tunnelDefendSequenceInterval =>
+      '坑道序列间隔 (TunnelSequenceInterval，秒)';
+
+  @override
+  String get tunnelDefendHelpSequenceInterval => '序列间隔';
+
+  @override
+  String get tunnelDefendHelpSequenceIntervalBody => '坑道序列步骤之间的延迟。数值越小，路径出现越快。';
+
+  @override
+  String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
+      '最终阶段限时挑战';
+
+  @override
+  String get moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties =>
+      '僵王最终阶段的限时击杀挑战';
+
+  @override
+  String get finalStageTimeLimitedChallengeTitle => '最终阶段限时挑战';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpTitle => '最终阶段限时挑战模块说明';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpIntro =>
+      '为僵王最终阶段添加限时击杀挑战（常用于秦始皇僵王战）。';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpParams => '参数配置';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpParamsBody =>
+      '默认使用 LevelModules 中的定义（RTID(FinalStageTimeLimitedChallenge@LevelModules)）。可启用自定义本地参数，在 @CurrentLevel 下编写独立配置。';
+
+  @override
+  String get finalStageTimeLimitedChallengeTimeLimit =>
+      '僵王限时 (ZombossTimeLimit，秒)';
+
+  @override
   String get moduleTitle_LawnMowerProperties => '小推车';
 
   @override
@@ -5645,4 +5699,99 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechHitPoints => '生命值';
+
+  @override
+  String get continueAnyway => '仍然继续';
+
+  @override
+  String get armrackModuleTitle => '兵器架';
+
+  @override
+  String get armrackModuleHelpTitle => '兵器架模块说明';
+
+  @override
+  String get armrackModuleHelpOverview => '简要介绍';
+
+  @override
+  String get armrackModuleHelpOverviewBody =>
+      '在第一波于场上放置兵器架。此模块用于让兵器架在编辑器和游戏中正常显示，避免出现错误的阳光贴图。';
+
+  @override
+  String get armrackModuleHelpPlacement => '放置方式';
+
+  @override
+  String get armrackModuleHelpPlacementBody =>
+      '选择兵器架类型后点击格子放置（每格仅一个）。桌面端右键或移动端长按可删除该格兵器架。';
+
+  @override
+  String get armrackModuleHelpWaveLimit => '波次限制';
+
+  @override
+  String get armrackModuleHelpWaveLimitBody =>
+      '由于游戏限制，仅第一波配置在游戏中生效。仍可在此编辑其他波次组并保存到关卡文件，但只有第一波会显示在波次时间轴。';
+
+  @override
+  String get armrackModuleTypePalette => '兵器架类型';
+
+  @override
+  String get armrackModuleExpectationLabel => '兵器架';
+
+  @override
+  String get armrackModuleIgnoredWaveOverridesWarning =>
+      '此关卡包含第一波以外的兵器架配置。这些配置会保留，但不会显示在波次时间轴中，因为游戏仅应用第一波。';
+
+  @override
+  String armrackModuleRequiredMessage(String moduleName) {
+    return '为使兵器架正常显示且不出现阳光贴图，需要添加「$moduleName」模块。';
+  }
+
+  @override
+  String get energyGridModuleTitle => '太极瓷砖';
+
+  @override
+  String get energyGridModuleHelpTitle => '太极瓷砖模块说明';
+
+  @override
+  String get energyGridModuleHelpOverview => '简要介绍';
+
+  @override
+  String get energyGridModuleHelpOverviewBody =>
+      '在第一波于场上放置太极瓷砖。此模块用于让太极瓷砖在编辑器和游戏中正常显示。';
+
+  @override
+  String get energyGridModuleHelpPlacement => '放置方式';
+
+  @override
+  String get energyGridModuleHelpPlacementBody =>
+      '点击空格放置太极瓷砖（每格仅一个）。桌面端右键或移动端长按可删除。';
+
+  @override
+  String get energyGridModuleHelpWaveLimit => '波次限制';
+
+  @override
+  String get energyGridModuleHelpWaveLimitBody =>
+      '由于游戏限制，仅第一波配置在游戏中生效。仍可在此编辑其他波次组并保存到关卡文件，但只有第一波会显示在波次时间轴。';
+
+  @override
+  String get energyGridModuleTapToPlace => '点击空格放置太极瓷砖。';
+
+  @override
+  String get energyGridModuleExpectationLabel => '太极瓷砖';
+
+  @override
+  String get energyGridModuleIgnoredWaveOverridesWarning =>
+      '此关卡包含第一波以外的太极瓷砖配置。这些配置会保留，但不会显示在波次时间轴中，因为游戏仅应用第一波。';
+
+  @override
+  String get energyGridModuleWarningMessage =>
+      '由于游戏端问题，生成的太极瓷砖可能显示为紫色 X 标记，这不影响实际功能。若希望正常显示，建议重启游戏。同时需要太极瓷砖模块才能正确显示。仍然继续？';
+
+  @override
+  String get gridOverrideModuleAppearances => '波次组';
+
+  @override
+  String get gridOverrideModuleWaveFieldOneBased => '波次（1 = 第一波，2 = 第二波，…）';
+
+  @override
+  String get gridOverrideModuleTimelineNote => '仅第一波条目会显示在波次时间轴中。';
 }

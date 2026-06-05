@@ -84,6 +84,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copy => 'Copy';
 
   @override
+  String get download => 'Download';
+
+  @override
   String get move => 'Move';
 
   @override
@@ -347,15 +350,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, click the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" floating button at the bottom-right of the level list (visible when scrolled to the top) to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextDesktop =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, click the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" floating button at the bottom-right of the level list (visible when scrolled to the top) to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextMobile =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" button in the bottom navigation bar of the main page to go to the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. Sign in with your email account to upload the level to the in-game Creative Courtyard.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" floating button at the bottom-right of the level list (visible when scrolled to the top) to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageRecommendedLevelsLabel =>
@@ -1765,6 +1768,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_BronzeProperties =>
       'Configures Kongfu World bronze statues';
+
+  @override
+  String get moduleTitle_ArmrackProperties => 'Weapon Stands';
+
+  @override
+  String get moduleDesc_ArmrackProperties =>
+      'Configures weapon stand display on the lawn (wave 1 only)';
+
+  @override
+  String get moduleTitle_EnergyGridProperties => 'Taiji Tiles';
+
+  @override
+  String get moduleDesc_EnergyGridProperties =>
+      'Configures Taiji Tile display on the lawn (wave 1 only)';
 
   @override
   String get bronzeModuleTitle => 'Bronze Matrix Statues';
@@ -4972,6 +4989,48 @@ class AppLocalizationsEn extends AppLocalizations {
       'Underground Palace Spirit Supression (Chapter 2)';
 
   @override
+  String get tunnelDefendSequenceInterval =>
+      'Tunnel sequence interval (TunnelSequenceInterval, seconds)';
+
+  @override
+  String get tunnelDefendHelpSequenceInterval => 'Sequence interval';
+
+  @override
+  String get tunnelDefendHelpSequenceIntervalBody =>
+      'Delay between tunnel sequence steps. Lower values make pathways appear faster.';
+
+  @override
+  String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
+      'Final stage time limit';
+
+  @override
+  String get moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties =>
+      'Timed kill challenge for the final zomboss stage';
+
+  @override
+  String get finalStageTimeLimitedChallengeTitle => 'Final stage time limit';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpTitle =>
+      'Final stage time limit challenge';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpIntro =>
+      'Adds a timed kill challenge during the final zomboss stage (commonly used in Qin Shi Huang boss fights).';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpParams =>
+      'Parameter configuration';
+
+  @override
+  String get finalStageTimeLimitedChallengeHelpParamsBody =>
+      'By default this module uses the game definition from LevelModules (RTID(FinalStageTimeLimitedChallenge@LevelModules)). Enable custom local parameters to define your own object under @CurrentLevel.';
+
+  @override
+  String get finalStageTimeLimitedChallengeTimeLimit =>
+      'Zomboss time limit (ZombossTimeLimit, seconds)';
+
+  @override
   String get moduleTitle_LawnMowerProperties => 'Lawn Mowers';
 
   @override
@@ -5960,4 +6019,102 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechHitPoints => 'Hit points';
+
+  @override
+  String get continueAnyway => 'Continue anyway';
+
+  @override
+  String get armrackModuleTitle => 'Weapon Stands';
+
+  @override
+  String get armrackModuleHelpTitle => 'Weapon Stands module';
+
+  @override
+  String get armrackModuleHelpOverview => 'Overview';
+
+  @override
+  String get armrackModuleHelpOverviewBody =>
+      'Places weapon stands on the lawn for wave 1. This module is required for weapon stands to display properly in the editor and in-game without showing incorrect sun textures.';
+
+  @override
+  String get armrackModuleHelpPlacement => 'Placement';
+
+  @override
+  String get armrackModuleHelpPlacementBody =>
+      'Choose a stand type, then tap a tile to place it (one per tile). Right-click or long-press a tile to remove its stand.';
+
+  @override
+  String get armrackModuleHelpWaveLimit => 'Wave limit';
+
+  @override
+  String get armrackModuleHelpWaveLimitBody =>
+      'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.';
+
+  @override
+  String get armrackModuleTypePalette => 'Stand type';
+
+  @override
+  String get armrackModuleExpectationLabel => 'Weapon stands';
+
+  @override
+  String get armrackModuleIgnoredWaveOverridesWarning =>
+      'This level contains weapon stand overrides for waves other than wave 1. They are saved but not shown in the wave timeline because the game only applies wave 1.';
+
+  @override
+  String armrackModuleRequiredMessage(String moduleName) {
+    return 'For weapon stands to display properly without showing sun textures, $moduleName needs to be added.';
+  }
+
+  @override
+  String get energyGridModuleTitle => 'Taiji Tiles';
+
+  @override
+  String get energyGridModuleHelpTitle => 'Taiji Tiles module';
+
+  @override
+  String get energyGridModuleHelpOverview => 'Overview';
+
+  @override
+  String get energyGridModuleHelpOverviewBody =>
+      'Places Taiji Tiles on the lawn for wave 1. This module is required for Taiji Tiles to display properly in the editor and in-game.';
+
+  @override
+  String get energyGridModuleHelpPlacement => 'Placement';
+
+  @override
+  String get energyGridModuleHelpPlacementBody =>
+      'Tap an empty tile to place a Taiji Tile (one per tile). Right-click or long-press a tile to remove it.';
+
+  @override
+  String get energyGridModuleHelpWaveLimit => 'Wave limit';
+
+  @override
+  String get energyGridModuleHelpWaveLimitBody =>
+      'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.';
+
+  @override
+  String get energyGridModuleTapToPlace =>
+      'Tap an empty tile to place a Taiji Tile.';
+
+  @override
+  String get energyGridModuleExpectationLabel => 'Taiji tiles';
+
+  @override
+  String get energyGridModuleIgnoredWaveOverridesWarning =>
+      'This level contains Taiji Tile overrides for waves other than wave 1. They are saved but not shown in the wave timeline because the game only applies wave 1.';
+
+  @override
+  String get energyGridModuleWarningMessage =>
+      'Due to a game-side issue, generated Taiji Tiles may appear as purple X markers. This does not affect their actual functionality. If you want them to display properly, restarting the game is recommended. The Taiji Tiles module is also required for proper display. Continue anyway?';
+
+  @override
+  String get gridOverrideModuleAppearances => 'Wave groups';
+
+  @override
+  String get gridOverrideModuleWaveFieldOneBased =>
+      'Wave (1 = first wave, 2 = second wave, ...)';
+
+  @override
+  String get gridOverrideModuleTimelineNote =>
+      'Only wave 1 entries appear in the wave timeline tab.';
 }
