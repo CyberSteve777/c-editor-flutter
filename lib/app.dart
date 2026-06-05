@@ -93,7 +93,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, settings) {
         return MaterialApp(
-          title: 'Z-Editor',
+          title: 'C-Editor',
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
           darkTheme: darkTheme,
