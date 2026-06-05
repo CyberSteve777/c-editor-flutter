@@ -39,7 +39,6 @@ class _ZombossMechActionSelectionScreenState
         items.add(
           _ActionListItem.catalog(
             catalog: widget.catalog,
-            levelFile: widget.levelFile,
             action: action,
             rtid: RtidParser.build(
               action.alias,
@@ -54,7 +53,6 @@ class _ZombossMechActionSelectionScreenState
         items.add(
           _ActionListItem.catalog(
             catalog: widget.catalog,
-            levelFile: widget.levelFile,
             action: action,
             rtid: RtidParser.build(
               action.alias,
@@ -81,7 +79,6 @@ class _ZombossMechActionSelectionScreenState
       items.add(
         _ActionListItem.custom(
           catalog: widget.catalog,
-          levelFile: widget.levelFile,
           alias: alias,
           objclass: obj.objClass,
           tag: group.tag,
@@ -92,7 +89,11 @@ class _ZombossMechActionSelectionScreenState
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return items;
     return items
-        .where((e) => e.label(context).toLowerCase().contains(q))
+        .where(
+          (e) =>
+              e.primaryLabel(context).toLowerCase().contains(q) ||
+              e.secondaryLabel(context).toLowerCase().contains(q),
+        )
         .toList();
   }
 
@@ -183,18 +184,13 @@ class _ZombossMechActionSelectionScreenState
                     itemBuilder: (context, index) {
                       final item = items[index];
                       return ListTile(
-                        title: Text(item.label(context)),
-                        subtitle: item.isCustom
-                            ? Text(
-                                l10n?.zombossMechCustomActionLabel ??
-                                    'Custom (CurrentLevel)',
-                              )
-                            : Text(
-                                '${item.alias}@${ZombossMechActionUtils.catalogSource}',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
+                        title: Text(item.primaryLabel(context)),
+                        subtitle: Text(
+                          item.secondaryLabel(context),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                         trailing: item.isCustom
                             ? IconButton(
                                 icon: const Icon(Icons.edit_outlined),
@@ -233,7 +229,6 @@ class _ZombossMechActionSelectionScreenState
 class _ActionListItem {
   _ActionListItem.catalog({
     required this.catalog,
-    required this.levelFile,
     required ZombossMechCatalogAction action,
     required this.rtid,
   })  : isCustom = false,
@@ -244,7 +239,6 @@ class _ActionListItem {
 
   _ActionListItem.custom({
     required this.catalog,
-    required this.levelFile,
     required this.alias,
     required this.objclass,
     required this.tag,
@@ -253,7 +247,6 @@ class _ActionListItem {
         catalogAction = null;
 
   final ZombossMechCatalogEntry catalog;
-  final PvzLevelFile levelFile;
   final ZombossMechCatalogAction? catalogAction;
   final String rtid;
   final bool isCustom;
@@ -261,22 +254,20 @@ class _ActionListItem {
   final String objclass;
   final String tag;
 
-  String label(BuildContext context) {
-    if (isCustom) {
-      return ZombossMechL10n.labelForStageRtid(
-        context: context,
-        mechId: catalog.id,
-        catalog: catalog,
-        levelFile: levelFile,
-        rtid: rtid,
-      );
+  String primaryLabel(BuildContext context) {
+    final info = RtidParser.parse(rtid);
+    if (info != null) {
+      return '${info.alias}@${info.source}';
     }
-    return ZombossMechL10n.actionRtidLabel(
+    return rtid;
+  }
+
+  String secondaryLabel(BuildContext context) {
+    return ZombossMechL10n.actionLabel(
       context,
       catalog.id,
-      rtid,
-      objclass: objclass,
-      implementationAlias: alias,
+      objclass,
+      fallback: objclass,
     );
   }
 }

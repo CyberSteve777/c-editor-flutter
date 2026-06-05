@@ -24,6 +24,7 @@ class ZombossBattleTab extends StatefulWidget {
 
 class _ZombossBattleTabState extends State<ZombossBattleTab> {
   PvzObject? _moduleObj;
+  LevelDefinitionData? _levelDef;
   late ZombossLastStandMinigameData _data;
   String _selectedBaseId = '';
   late TextEditingController _startingSunController;
@@ -63,6 +64,8 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
       _data = ZombossLastStandMinigameData();
     }
 
+    _levelDef = LevelParser.parseLevel(widget.levelFile).levelDef;
+
     _data.zombossStartStageIndex = 0;
     if (_data.reservedColumnCount == 0) {
       _data.reservedColumnCount = 3;
@@ -85,6 +88,14 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
           base.variations.isNotEmpty) {
         _data.zombossTypeName = base.variations.first;
       }
+    }
+
+    if (_levelDef != null && _selectedBaseId.isNotEmpty) {
+      ZombossBattleRepository.ensureAutoModules(
+        levelFile: widget.levelFile,
+        levelDef: _levelDef!,
+        baseId: _selectedBaseId,
+      );
     }
   }
 
@@ -116,11 +127,20 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
     if (baseId == null || baseId == _selectedBaseId) return;
     final base = ZombossBattleRepository.getBase(baseId);
     if (base == null) return;
+    final previousBaseId = _selectedBaseId;
     _sync(extra: () {
       _selectedBaseId = baseId;
       _data.resourceGroupNames = List<String>.from(base.resourceGroups);
       if (!base.variations.contains(_data.zombossTypeName)) {
         _data.zombossTypeName = base.variations.first;
+      }
+      if (_levelDef != null) {
+        ZombossBattleRepository.syncAutoModules(
+          levelFile: widget.levelFile,
+          levelDef: _levelDef!,
+          previousBaseId: previousBaseId,
+          newBaseId: baseId,
+        );
       }
     });
   }

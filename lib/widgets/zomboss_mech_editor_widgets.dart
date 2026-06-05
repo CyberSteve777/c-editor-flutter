@@ -154,6 +154,7 @@ class ZombossMechActionRow extends StatelessWidget {
     final theme = Theme.of(context);
     final accent = zombossMechActionTagColor(tag, context);
     final l10n = AppLocalizations.of(context);
+    final compact = MediaQuery.sizeOf(context).width < 400;
 
     return Container(
       decoration: BoxDecoration(
@@ -174,22 +175,28 @@ class ZombossMechActionRow extends StatelessWidget {
                 ),
               ),
             ),
-            if (reorderIndex != null) _buildReorderHandle(accent),
+            if (reorderIndex != null) _buildReorderHandle(accent, compact),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                padding: EdgeInsets.symmetric(
+                  horizontal: compact ? 8 : 10,
+                  vertical: compact ? 10 : 12,
+                ),
                 child: Text(
                   label,
-                  style: mutedLabel
-                      ? theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        )
-                      : zombossMechActionTitleStyle(context),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: (mutedLabel
+                          ? theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            )
+                          : zombossMechActionTitleStyle(context))
+                      ?.copyWith(fontSize: compact ? 13 : 15),
                 ),
               ),
             ),
             SizedBox(
-              height: _controlHeight,
+              height: compact ? 44 : _controlHeight,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -197,6 +204,10 @@ class ZombossMechActionRow extends StatelessWidget {
                   if (onEdit != null)
                     IconButton(
                       visualDensity: VisualDensity.compact,
+                      padding: compact ? EdgeInsets.zero : null,
+                      constraints: compact
+                          ? const BoxConstraints(minWidth: 36, minHeight: 36)
+                          : null,
                       icon: const Icon(Icons.edit_outlined, size: 22),
                       tooltip: l10n?.edit ?? 'Edit',
                       onPressed: onEdit,
@@ -206,6 +217,10 @@ class ZombossMechActionRow extends StatelessWidget {
                   else if (showRemoveButton)
                     IconButton(
                       visualDensity: VisualDensity.compact,
+                      padding: compact ? EdgeInsets.zero : null,
+                      constraints: compact
+                          ? const BoxConstraints(minWidth: 36, minHeight: 36)
+                          : null,
                       icon: const Icon(Icons.close, size: 22),
                       tooltip: l10n?.remove ?? 'Remove',
                       onPressed: onRemove,
@@ -219,17 +234,17 @@ class ZombossMechActionRow extends StatelessWidget {
     );
   }
 
-  Widget _buildReorderHandle(Color accent) {
+  Widget _buildReorderHandle(Color accent, bool compact) {
     return SizedBox(
-      width: 48,
-      height: _controlHeight,
+      width: compact ? 36 : 48,
+      height: compact ? 44 : _controlHeight,
       child: Center(
         child: ReorderableDragStartListener(
           index: reorderIndex!,
           child: Icon(
             Icons.drag_indicator,
             color: accent.withValues(alpha: 0.9),
-            size: 28,
+            size: compact ? 24 : 28,
           ),
         ),
       ),
