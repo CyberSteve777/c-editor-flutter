@@ -984,19 +984,17 @@ class ModuleRegistry {
       defaultSource: 'LevelModules',
       routeId: 'WitchModule',
     ),
-    'ZombossFinalStageTimeLimitedChallengeProperties': ModuleMetadata(
+    'ZombossFinalStageTimeLimitedChallengeProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties',
       descriptionKey:
           'moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties',
       icon: Icons.timer,
-      isCore: true,
+      isCore: false,
       allowMultiple: false,
       category: ModuleCategory.gimmick,
       defaultAlias: 'FinalStageTimeLimitedChallenge',
       defaultSource: 'LevelModules',
-      initialDataFactory: () =>
-          ZombossFinalStageTimeLimitedChallengePropertiesData(),
-      routeId: 'FinalStageTimeLimitedChallenge',
+      routeId: 'UnknownDetail',
     ),
     'InitialGridItemGulliverTunnelProperties': ModuleMetadata(
       titleKey: 'moduleTitle_InitialGridItemGulliverTunnelProperties',

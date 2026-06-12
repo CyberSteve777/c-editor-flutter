@@ -12,6 +12,7 @@ import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
+import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/bloc/editor/editor_tab_type.dart';
 
@@ -57,6 +58,7 @@ class EditorCubit extends Cubit<EditorState> {
     }
     if (isClosed) return;
     if (level != null) {
+      FinalStageTimeLimitedModuleUtils.normalizeForLevelModulesOnly(level);
       final parsed = LevelParser.parseLevel(level);
       final tabs = _computeAvailableTabs(level, parsed);
       if (isClosed) return;

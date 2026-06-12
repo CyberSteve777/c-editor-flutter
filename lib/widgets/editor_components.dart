@@ -127,6 +127,74 @@ class AddItemCard extends StatelessWidget {
   }
 }
 
+/// Tab label colors for category rows on saturated accent headers.
+abstract class AccentBarTabBarStyle {
+  AccentBarTabBarStyle._();
+
+  static ({Color label, Color unselectedLabel, Color indicator}) colors(
+    BuildContext context,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final indicator = isDark ? const Color(0xFFEEEEEE) : Colors.white;
+    return (
+      label: Colors.white,
+      unselectedLabel: Colors.white.withValues(alpha: isDark ? 0.72 : 0.88),
+      indicator: indicator,
+    );
+  }
+}
+
+/// Choice chip with explicit selected/unselected colors for accent header bars.
+class AccentBarChoiceChip extends StatelessWidget {
+  const AccentBarChoiceChip({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+    this.padding = const EdgeInsets.only(right: 8),
+  });
+
+  final String label;
+  final bool selected;
+  final ValueChanged<bool> onSelected;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedBg = isDark ? const Color(0xFFEEEEEE) : Colors.white;
+    final selectedFg = isDark ? const Color(0xFF1B1B1B) : const Color(0xFF212121);
+    final unselectedBg = Colors.black.withValues(alpha: isDark ? 0.32 : 0.24);
+    const unselectedFg = Colors.white;
+
+    return Padding(
+      padding: padding,
+      child: ChoiceChip(
+        label: Text(
+          label,
+          style: TextStyle(
+            color: selected ? selectedFg : unselectedFg,
+            fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+          ),
+        ),
+        selected: selected,
+        onSelected: onSelected,
+        showCheckmark: false,
+        selectedColor: selectedBg,
+        backgroundColor: unselectedBg,
+        side: BorderSide(
+          color: selected
+              ? (isDark ? const Color(0xFFBDBDBD) : const Color(0xFF9E9E9E))
+              : Colors.white.withValues(alpha: isDark ? 0.45 : 0.55),
+          width: selected ? 1.5 : 1,
+        ),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+      ),
+    );
+  }
+}
+
 /// Event chip for wave timeline. Ported from EventChip in EditorComponents.kt
 class EventChipWidget extends StatelessWidget {
   const EventChipWidget({
@@ -659,6 +727,160 @@ class RenaiStatueIcon extends StatelessWidget {
 
 /// Default [MaterialScrollBehavior] omits [PointerDeviceKind.mouse], so horizontal
 /// [TabBar]s and nested scroll views do not respond to click-drag on desktop.
+/// Vertically centered search field for colored app bar titles (light text).
+class AppBarSearchField extends StatelessWidget {
+  const AppBarSearchField({
+    super.key,
+    required this.hintText,
+    required this.onChanged,
+    this.query = '',
+    this.onClear,
+    this.foregroundColor = Colors.white,
+    this.borderRadius = 0,
+  });
+
+  final String hintText;
+  final ValueChanged<String> onChanged;
+  final String query;
+  final VoidCallback? onClear;
+  final Color foregroundColor;
+  final double borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    final iconColor = foregroundColor.withValues(alpha: 0.9);
+    final hintColor = foregroundColor.withValues(alpha: 0.75);
+    final border = borderRadius > 0
+        ? OutlineInputBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+            borderSide: BorderSide.none,
+          )
+        : InputBorder.none;
+
+    return TextField(
+      onChanged: onChanged,
+      textAlignVertical: TextAlignVertical.center,
+      style: TextStyle(color: foregroundColor, height: 1.2),
+      cursorColor: foregroundColor,
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(color: hintColor, height: 1.2),
+        prefixIcon: Icon(Icons.search, color: iconColor),
+        suffixIcon: query.isNotEmpty
+            ? IconButton(
+                icon: Icon(Icons.clear, color: iconColor),
+                onPressed: onClear,
+              )
+            : null,
+        border: border,
+        enabledBorder: border,
+        focusedBorder: border,
+        filled: true,
+        fillColor: foregroundColor.withValues(alpha: 0.18),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        isDense: true,
+      ),
+    );
+  }
+}
+
+/// Search field for selection screens (module, plant, zombie, dialogs, etc.).
+class SelectionSearchField extends StatelessWidget {
+  const SelectionSearchField({
+    super.key,
+    required this.hintText,
+    required this.onChanged,
+    this.query = '',
+    this.onClear,
+    this.controller,
+    this.fillColor,
+    this.foregroundColor,
+    this.borderRadius = 24,
+    this.useOutlineBorder = false,
+  });
+
+  final String hintText;
+  final ValueChanged<String> onChanged;
+  final String query;
+  final VoidCallback? onClear;
+  final TextEditingController? controller;
+  final Color? fillColor;
+  final Color? foregroundColor;
+  final double borderRadius;
+  final bool useOutlineBorder;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = foregroundColor ?? theme.colorScheme.onSurface;
+    final hintColor = foregroundColor != null
+        ? foregroundColor!.withValues(alpha: 0.75)
+        : (isDark
+            ? theme.colorScheme.onSurface.withValues(alpha: 0.65)
+            : theme.colorScheme.onSurface.withValues(alpha: 0.55));
+    final iconColor = foregroundColor != null
+        ? foregroundColor!.withValues(alpha: 0.9)
+        : theme.colorScheme.onSurface.withValues(alpha: 0.7);
+    final bg = fillColor ??
+        (foregroundColor != null
+            ? foregroundColor!.withValues(alpha: 0.18)
+            : theme.colorScheme.surfaceContainerHighest);
+
+    InputBorder border;
+    if (useOutlineBorder) {
+      border = OutlineInputBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        borderSide: BorderSide(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+        ),
+      );
+    } else {
+      border = OutlineInputBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        borderSide: BorderSide.none,
+      );
+    }
+
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      textAlignVertical: TextAlignVertical.center,
+      style: TextStyle(color: textColor, height: 1.2),
+      cursorColor: textColor,
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(color: hintColor, height: 1.2),
+        prefixIcon: Icon(Icons.search, color: iconColor),
+        suffixIcon: query.isNotEmpty && onClear != null
+            ? IconButton(
+                icon: Icon(Icons.clear, color: iconColor),
+                onPressed: onClear,
+              )
+            : null,
+        filled: true,
+        fillColor: bg,
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        isDense: true,
+        border: border,
+        enabledBorder: border,
+        focusedBorder: useOutlineBorder
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.5),
+              )
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: BorderSide(
+                  color: foregroundColor ?? theme.colorScheme.primary,
+                  width: 1.5,
+                ),
+              ),
+      ),
+    );
+  }
+}
+
 class MouseDragScrollBehavior extends MaterialScrollBehavior {
   const MouseDragScrollBehavior();
 

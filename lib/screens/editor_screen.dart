@@ -29,7 +29,7 @@ import 'package:c_editor/screens/editor/modules/conveyor_seedbank_properties_scr
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/sun_dropper_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/witch_module_properties_screen.dart';
-import 'package:c_editor/screens/editor/modules/final_stage_time_limited_challenge_properties_screen.dart';
+import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/screens/editor/modules/starting_plantfood_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/tide_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/zombie_move_fast_module_screen.dart';
@@ -690,6 +690,11 @@ class _EditorScreenState extends State<EditorScreen> {
     if (info != null && info.source == 'CurrentLevel') {
       _ec.state.levelFile!.objects.removeWhere(
         (o) => o.aliases?.contains(info.alias) == true,
+      );
+    }
+    if (info?.alias == FinalStageTimeLimitedModuleUtils.alias) {
+      _ec.state.levelFile!.objects.removeWhere(
+        (o) => o.objClass == FinalStageTimeLimitedModuleUtils.objClass,
       );
     }
 
@@ -2199,31 +2204,8 @@ class _EditorScreenState extends State<EditorScreen> {
       openWitchModule(rtid);
       return;
     }
-    if (objClass == 'ZombossFinalStageTimeLimitedChallengeProperties' &&
-        _ec.state.parsedData?.levelDef != null) {
-      void openFinalStageChallenge(String rt) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FinalStageTimeLimitedChallengePropertiesScreen(
-              rtid: rt,
-              levelFile: _ec.state.levelFile!,
-              levelDef: _ec.state.parsedData!.levelDef!,
-              onChanged: _markDirty,
-              onBack: () => Navigator.pop(context),
-              onModeToggled: (newRtid) {
-                _markDirty();
-                Navigator.pop(context);
-                openFinalStageChallenge(newRtid);
-              },
-            ),
-          ),
-        );
-      }
-
-      openFinalStageChallenge(rtid);
-      return;
-    }
+    // FinalStageTimeLimitedChallenge: unwired — see
+    // FinalStageTimeLimitedChallengePropertiesScreen (kept for future use).
     if (info.source == 'CurrentLevel' && objClass == 'PiratePlankProperties') {
       if (_ec.state.parsedData!.levelDef != null) {
         Navigator.push(

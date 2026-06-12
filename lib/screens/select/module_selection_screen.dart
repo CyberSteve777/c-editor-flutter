@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 /// Module selection. Ported from Z-Editor-master ModuleSelectionScreen.kt
 class ModuleSelectionScreen extends StatefulWidget {
@@ -68,15 +69,11 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 child: Row(
                   children: ModuleCategory.values.map((cat) {
-                    final isSelected = _selectedCategory == cat;
-                    final label = _categoryLabel(cat, l10n);
-                    return Padding(
+                    return AccentBarChoiceChip(
+                      label: _categoryLabel(cat, l10n),
+                      selected: _selectedCategory == cat,
+                      onSelected: (_) => setState(() => _selectedCategory = cat),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: ChoiceChip(
-                        label: Text(label),
-                        selected: isSelected,
-                        onSelected: (_) => setState(() => _selectedCategory = cat),
-                      ),
                     );
                   }).toList(),
                 ),
