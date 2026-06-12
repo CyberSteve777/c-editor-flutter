@@ -1418,7 +1418,7 @@
   "dropConfigPlantFood": "掉落物配置（能量豆）",
   "zombiesCarryingPlants": "携带植物卡片的僵尸数量",
   "zombiesCarryingPlantFood": "携带能量豆的僵尸数量",
-  "description": "提示正文 (支持显示中文，多行文字需直接输入回车，无需使用转义序列，注意iOS端庭院内无法查看提示内容)",
+  "description": "关卡描述 (Description)",
   "descriptiveName": "提示名称 (DescriptiveName)",
   "count": "数量 (Count)",
   "targetDistance": "花坛距离 (TargetDistance)，数值代表从左边线起的列数，数值越大离房屋越远，可输入小数",
