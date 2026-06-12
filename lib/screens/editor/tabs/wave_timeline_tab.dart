@@ -30,6 +30,39 @@ String _waveGuideBodyForPlatform(BuildContext context, AppLocalizations? l10n) {
       : l10n.waveTimelineGuideBodyMobile;
 }
 
+String _zombieIdForBronzeKind(BronzeStatueKind kind) {
+  switch (kind) {
+    case BronzeStatueKind.strength:
+      return 'kongfu_strong_bronze';
+    case BronzeStatueKind.mage:
+      return 'kongfu_magic_bronze';
+    case BronzeStatueKind.agile:
+      return 'kongfu_agile_bronze';
+  }
+}
+
+String _bronzeStatueLabel(AppLocalizations? l10n, BronzeStatueKind kind) {
+  return switch (kind) {
+    BronzeStatueKind.strength =>
+      l10n?.bronzeKindStrengthShort ?? 'Han Bronze',
+    BronzeStatueKind.mage => l10n?.bronzeKindMageShort ?? 'Qigong Bronze',
+    BronzeStatueKind.agile => l10n?.bronzeKindAgileShort ?? 'Xiake Bronze',
+  };
+}
+
+Widget _bronzeStatueTimelineIcon(BronzeStatueKind kind) {
+  final id = _zombieIdForBronzeKind(kind);
+  final path = ZombieRepository().getZombieById(id)?.iconAssetPath;
+  if (path == null || path.isEmpty) {
+    return Icon(Icons.person, size: 28);
+  }
+  return AssetImageWidget(
+    assetPath: path,
+    altCandidates: imageAltCandidates(path),
+    fit: BoxFit.cover,
+  );
+}
+
 String _waveEmptyRowHintForPlatform(
   BuildContext context,
   AppLocalizations? l10n,
@@ -2303,6 +2336,12 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 onTap: () => _showEnergyGridInfoDialog(context, waveIndex),
               ));
             }
+            if (_waveHasBronzeActivity(waveIndex)) {
+              actionButtons.add((
+                label: l10n?.bronzeModuleExpectationLabel ?? 'Bronze statues',
+                onTap: () => _showBronzeInfoDialog(context, waveIndex),
+              ));
+            }
             if (_waveHasHeianWindActivity(waveIndex)) {
               actionButtons.add((
                 label: l10n?.heianWindModuleExpectationLabel ?? 'Heian wind',
@@ -2478,6 +2517,29 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     if (data == null) return false;
     return data.overrides.any(
       (o) => o.wave == 1 && o.itemList.isNotEmpty,
+    );
+  }
+
+  BronzePropertiesData? _getBronzeModuleData() {
+    final obj = widget.levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'BronzeProperties',
+    );
+    if (obj?.objData is Map<String, dynamic>) {
+      try {
+        return BronzePropertiesData.fromJson(
+          obj!.objData as Map<String, dynamic>,
+        );
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  bool _waveHasBronzeActivity(int waveIndex) {
+    if (waveIndex != 1) return false;
+    final data = _getBronzeModuleData();
+    if (data == null) return false;
+    return data.data.any(
+      (batch) => batch.wave == 1 && batch.itemList.isNotEmpty,
     );
   }
 
@@ -2770,6 +2832,77 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               ),
               onPressed: () {
                 final rtid = _getModuleRtid('EnergyGridProperties');
+                if (rtid != null) {
+                  Navigator.pop(ctx);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    widget.onOpenModule!(rtid);
+                  });
+                }
+              },
+              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n?.close ?? 'Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showBronzeInfoDialog(BuildContext context, int waveIndex) {
+    final l10n = AppLocalizations.of(context);
+    final data = _getBronzeModuleData();
+    if (data == null) return;
+    final waveBatches = data.data
+        .where((batch) => batch.wave == waveIndex && batch.itemList.isNotEmpty)
+        .toList();
+    if (waveBatches.isEmpty) return;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          '${l10n?.waveLabel ?? "Wave"} $waveIndex - ${l10n?.bronzeModuleExpectationLabel ?? "Bronze statues"}',
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final batch in waveBatches)
+                for (final item in batch.itemList)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: _bronzeStatueTimelineIcon(item.kind),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${_bronzeStatueLabel(l10n, item.kind)} — '
+                            'R${item.mY + 1}:C${item.mX + 1} — '
+                            '${item.spawnTime}s',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+            ],
+          ),
+        ),
+        actions: [
+          if (widget.onOpenModule != null)
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () {
+                final rtid = _getModuleRtid('BronzeProperties');
                 if (rtid != null) {
                   Navigator.pop(ctx);
                   WidgetsBinding.instance.addPostFrameCallback((_) {
