@@ -195,6 +195,7 @@ class _CustomZombossMechActionEditorScreenState
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
+            isExpanded: true,
             initialValue: _groups.any((g) => g.objclass == _objclass)
                 ? _objclass
                 : _groups.firstOrNull?.objclass,
@@ -202,6 +203,19 @@ class _CustomZombossMechActionEditorScreenState
               context,
               labelText: l10n?.zombossMechActionBaseObjclass ?? 'Base objclass',
             ),
+            selectedItemBuilder: (context) => [
+              for (final g in _groups)
+                Text(
+                  ZombossMechL10n.actionLabel(
+                    context,
+                    widget.catalog.id,
+                    g.objclass,
+                    fallback: g.objclass,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
             items: [
               for (final g in _groups)
                 DropdownMenuItem(
@@ -213,6 +227,7 @@ class _CustomZombossMechActionEditorScreenState
                       g.objclass,
                       fallback: g.objclass,
                     ),
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),

@@ -6,7 +6,6 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/grid_override_placement_grid.dart';
-import 'package:c_editor/widgets/grid_override_wave_groups_bar.dart';
 
 class EnergyGridModuleScreen extends StatefulWidget {
   const EnergyGridModuleScreen({
@@ -31,10 +30,9 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
 
   late PvzObject _moduleObj;
   late EnergyGridPropertiesData _data;
-  int _selectedIndex = -1;
+  int _selectedIndex = 0;
   int _selectedX = 0;
   int _selectedY = 0;
-  EnergyGridOverrideWaveData? _overrideToDelete;
 
   int get _gridRows {
     final (rows, _) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
@@ -57,9 +55,7 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
   void initState() {
     super.initState();
     _loadData();
-    if (_data.overrides.isNotEmpty) {
-      _selectedIndex = 0;
-    }
+    _normalizeOverrides();
   }
 
   void _loadData() {
@@ -85,6 +81,27 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
     }
   }
 
+  void _normalizeOverrides() {
+    final itemsByPosition = <String, EnergyGridOverrideItemData>{};
+
+    for (final override in _data.overrides) {
+      for (final item in override.itemList) {
+        itemsByPosition['${item.mX}:${item.mY}'] = item;
+      }
+    }
+
+    _data = EnergyGridPropertiesData(
+      overrides: [
+        EnergyGridOverrideWaveData(
+          wave: gridOverrideFirstWave,
+          itemList: itemsByPosition.values.toList(),
+        ),
+      ],
+    );
+    _selectedIndex = 0;
+    _moduleObj.objData = _data.toJson();
+  }
+
   void _sync() {
     _moduleObj.objData = _data.toJson();
     widget.onChanged();
@@ -94,25 +111,6 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
   void _syncOverrides(List<EnergyGridOverrideWaveData> overrides) {
     _data = EnergyGridPropertiesData(overrides: overrides);
     _sync();
-  }
-
-  void _addOverride() {
-    final newOverride = EnergyGridOverrideWaveData(
-      wave: _data.overrides.isEmpty
-          ? gridOverrideFirstWave
-          : _data.overrides.last.wave + 1,
-    );
-    _syncOverrides([..._data.overrides, newOverride]);
-    setState(() => _selectedIndex = _data.overrides.length - 1);
-  }
-
-  void _deleteOverride(EnergyGridOverrideWaveData target) {
-    _syncOverrides(_data.overrides.where((e) => e != target).toList());
-    if (_selectedIndex >= _data.overrides.length) {
-      _selectedIndex = _data.overrides.isEmpty
-          ? -1
-          : _data.overrides.length - 1;
-    }
   }
 
   void _updateSelectedOverride(EnergyGridOverrideWaveData updated) {
@@ -126,7 +124,10 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
     final current = _selectedOverride;
     if (current == null) return;
     _updateSelectedOverride(
-      EnergyGridOverrideWaveData(wave: current.wave, itemList: items),
+      EnergyGridOverrideWaveData(
+        wave: gridOverrideFirstWave,
+        itemList: items,
+      ),
     );
   }
 
@@ -170,7 +171,6 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
     final l10n = AppLocalizations.of(context);
     final title = l10n?.energyGridModuleTitle ?? 'Taiji Tiles';
     final helpTitle = l10n?.energyGridModuleHelpTitle ?? 'Taiji Tiles module';
-    final selected = _selectedOverride;
 
     return Scaffold(
       appBar: AppBar(
@@ -207,155 +207,53 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
                   body:
                       l10n?.energyGridModuleHelpWaveLimitBody ??
                       'Due to a game limitation, only wave 1 entries take effect in-game. '
-                          'Other wave groups can still be edited and are saved to the level file, '
-                          'but only wave 1 appears in the wave timeline tab.',
+                          'This module now stores all Taiji Tile positions in a single wave 1 layout.',
                 ),
               ],
             ),
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n?.gridOverrideModuleAppearances ?? 'Wave groups',
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  '${l10n?.selectedPosition ?? "Selected position"}: R${_selectedY + 1} : C${_selectedX + 1}',
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                GridOverrideWaveGroupsBar(
-                  itemCount: _data.overrides.length,
-                  selectedIndex: _selectedIndex,
-                  onSelected: (idx) => setState(() => _selectedIndex = idx),
-                  onDeleteAt: (idx) => setState(
-                    () => _overrideToDelete = _data.overrides[idx],
+                Text(
+                  l10n?.energyGridModuleTapToPlace ??
+                      'Tap an empty tile to place a Taiji Tile.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  onAdd: _addOverride,
-                  groupLabel: (idx) =>
-                      '${l10n?.airDropShipGroupLabel ?? "Group"} ${idx + 1}',
                 ),
-                if (selected != null) ...[
-                  const SizedBox(height: 24),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    key: ValueKey('energy_grid_panel_$_selectedIndex'),
-                    child: Padding(
-                      padding: kGridOverrideModuleSectionPadding,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedIndex + 1}',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            initialValue: '${selected.wave}',
-                            decoration: InputDecoration(
-                              labelText:
-                                  l10n?.gridOverrideModuleWaveFieldOneBased ??
-                                  'Wave (1 = first wave)',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (v) {
-                              final n = int.tryParse(v);
-                              if (n != null && n >= 1) {
-                                _updateSelectedOverride(
-                                  EnergyGridOverrideWaveData(
-                                    wave: n,
-                                    itemList: selected.itemList,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                          if (selected.wave != gridOverrideFirstWave) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              l10n?.gridOverrideModuleTimelineNote ??
-                                  'Only wave 1 entries appear in the wave timeline tab.',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.tertiary,
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 16),
-                          Text(
-                            '${l10n?.selectedPosition ?? "Selected position"}: R${_selectedY + 1} : C${_selectedX + 1}',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n?.energyGridModuleTapToPlace ??
-                                'Tap an empty tile to place a Taiji Tile.',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          GridOverridePlacementGrid(
-                            gridRows: _gridRows,
-                            gridCols: _gridCols,
-                            selectedCol: _selectedX,
-                            selectedRow: _selectedY,
-                            onPrimaryTap: _handlePrimaryTap,
-                            onRemoveAt: _removeAt,
-                            cellImageAt: (col, row) =>
-                                _hasTileAt(col, row) ? _tileAsset : null,
-                            cellImageScaleAt: (_, __) => 0.92,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                const SizedBox(height: 12),
+                GridOverridePlacementGrid(
+                  gridRows: _gridRows,
+                  gridCols: _gridCols,
+                  selectedCol: _selectedX,
+                  selectedRow: _selectedY,
+                  onPrimaryTap: _handlePrimaryTap,
+                  onRemoveAt: _removeAt,
+                  cellImageAt: (col, row) =>
+                      _hasTileAt(col, row) ? _tileAsset : null,
+                  cellImageScaleAt: (_, __) => 0.92,
+                ),
               ],
             ),
           ),
-          if (_overrideToDelete != null) _buildDeleteDialog(l10n),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDeleteDialog(AppLocalizations? l10n) {
-    final target = _overrideToDelete!;
-    final index = _data.overrides.indexOf(target);
-    return AlertDialog(
-      title: Text(l10n?.removeItem ?? 'Remove item'),
-      content: Text(
-        l10n?.removeItemConfirm(
-              '${l10n?.airDropShipGroupLabel ?? "Group"} ${index + 1}',
-            ) ??
-            'Remove group ${index + 1}?',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => setState(() => _overrideToDelete = null),
-          child: Text(l10n?.cancel ?? 'Cancel'),
         ),
-        TextButton(
-          onPressed: () {
-            _deleteOverride(target);
-            setState(() => _overrideToDelete = null);
-          },
-          style: TextButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.error,
-          ),
-          child: Text(l10n?.remove ?? 'Remove'),
-        ),
-      ],
+      ),
     );
   }
 }

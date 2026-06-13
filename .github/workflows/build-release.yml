@@ -36,7 +36,10 @@ jobs:
           cache: true
 
       - run: flutter pub get
-      - run: flutter build windows --release
+      - name: Build Windows release
+        env:
+          CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
+        run: flutter build windows --release
 
       # upload-artifact strips the path root you upload; use artifact/c_editor so the
       # downloaded zip has c_editor/ at the top, not loose exe/dll/data.

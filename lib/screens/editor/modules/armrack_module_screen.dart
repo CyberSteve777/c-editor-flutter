@@ -9,7 +9,6 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/grid_override_placement_grid.dart';
-import 'package:c_editor/widgets/grid_override_wave_groups_bar.dart';
 
 class ArmrackModuleScreen extends StatefulWidget {
   const ArmrackModuleScreen({
@@ -32,11 +31,9 @@ class ArmrackModuleScreen extends StatefulWidget {
 class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
   late PvzObject _moduleObj;
   late ArmrackPropertiesData _data;
-  int _selectedIndex = -1;
   int _selectedX = 0;
   int _selectedY = 0;
   String _selectedType = kArmrackTypes.first.type;
-  ArmrackOverrideWaveData? _overrideToDelete;
 
   int get _gridRows {
     final (rows, _) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
@@ -48,20 +45,13 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
     return cols;
   }
 
-  ArmrackOverrideWaveData? get _selectedOverride {
-    if (_selectedIndex < 0 || _selectedIndex >= _data.overrides.length) {
-      return null;
-    }
-    return _data.overrides[_selectedIndex];
-  }
+  ArmrackOverrideWaveData get _selectedOverride => _data.overrides.first;
 
   @override
   void initState() {
     super.initState();
     _loadData();
-    if (_data.overrides.isNotEmpty) {
-      _selectedIndex = 0;
-    }
+    _ensureSingleWaveOneOverride();
   }
 
   void _loadData() {
@@ -87,53 +77,45 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
     }
   }
 
+  void _ensureSingleWaveOneOverride() {
+    final source = _data.overrides.firstWhere(
+      (e) => e.wave == gridOverrideFirstWave,
+      orElse: () => _data.overrides.isNotEmpty
+          ? _data.overrides.first
+          : ArmrackOverrideWaveData(wave: gridOverrideFirstWave),
+    );
+    _data = ArmrackPropertiesData(
+      overrides: [
+        ArmrackOverrideWaveData(
+          wave: gridOverrideFirstWave,
+          itemList: source.itemList,
+        ),
+      ],
+    );
+    _moduleObj.objData = _data.toJson();
+  }
+
   void _sync() {
+    _ensureSingleWaveOneOverride();
     _moduleObj.objData = _data.toJson();
     widget.onChanged();
     setState(() {});
   }
 
-  void _syncOverrides(List<ArmrackOverrideWaveData> overrides) {
-    _data = ArmrackPropertiesData(overrides: overrides);
+  void _writeSelectedItems(List<ArmrackOverrideItemData> items) {
+    _data = ArmrackPropertiesData(
+      overrides: [
+        ArmrackOverrideWaveData(
+          wave: gridOverrideFirstWave,
+          itemList: items,
+        ),
+      ],
+    );
     _sync();
   }
 
-  void _addOverride() {
-    final newOverride = ArmrackOverrideWaveData(
-      wave: _data.overrides.isEmpty
-          ? gridOverrideFirstWave
-          : _data.overrides.last.wave + 1,
-    );
-    _syncOverrides([..._data.overrides, newOverride]);
-    setState(() => _selectedIndex = _data.overrides.length - 1);
-  }
-
-  void _deleteOverride(ArmrackOverrideWaveData target) {
-    _syncOverrides(_data.overrides.where((e) => e != target).toList());
-    if (_selectedIndex >= _data.overrides.length) {
-      _selectedIndex = _data.overrides.isEmpty
-          ? -1
-          : _data.overrides.length - 1;
-    }
-  }
-
-  void _updateSelectedOverride(ArmrackOverrideWaveData updated) {
-    if (_selectedIndex < 0 || _selectedIndex >= _data.overrides.length) return;
-    final list = List<ArmrackOverrideWaveData>.from(_data.overrides);
-    list[_selectedIndex] = updated;
-    _syncOverrides(list);
-  }
-
-  void _writeSelectedItems(List<ArmrackOverrideItemData> items) {
-    final current = _selectedOverride;
-    if (current == null) return;
-    _updateSelectedOverride(
-      ArmrackOverrideWaveData(wave: current.wave, itemList: items),
-    );
-  }
-
   ArmrackOverrideItemData? _itemAt(int col, int row) {
-    final items = _selectedOverride?.itemList ?? [];
+    final items = _selectedOverride.itemList;
     for (final item in items) {
       if (item.mX == col && item.mY == row) return item;
     }
@@ -141,7 +123,7 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
   }
 
   void _placeAt(int col, int row) {
-    final items = _selectedOverride?.itemList ?? [];
+    final items = _selectedOverride.itemList;
     _selectedX = col;
     _selectedY = row;
     final next = List<ArmrackOverrideItemData>.from(items)
@@ -159,9 +141,8 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
   void _removeAt(int col, int row) {
     final item = _itemAt(col, row);
     if (item == null) return;
-    final items = List<ArmrackOverrideItemData>.from(
-      _selectedOverride?.itemList ?? [],
-    )..remove(item);
+    final items = List<ArmrackOverrideItemData>.from(_selectedOverride.itemList)
+      ..remove(item);
     _writeSelectedItems(items);
   }
 
@@ -183,7 +164,6 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
     final l10n = AppLocalizations.of(context);
     final title = l10n?.armrackModuleTitle ?? 'Weapon Stands';
     final helpTitle = l10n?.armrackModuleHelpTitle ?? 'Weapon Stands module';
-    final selected = _selectedOverride;
 
     return Scaffold(
       appBar: AppBar(
@@ -220,219 +200,122 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                   body:
                       l10n?.armrackModuleHelpWaveLimitBody ??
                       'Due to a game limitation, only wave 1 entries take effect in-game. '
-                          'Other wave groups can still be edited and are saved to the level file, '
-                          'but only wave 1 appears in the wave timeline tab.',
+                          'This editor saves weapon stands as wave 1 entries automatically.',
                 ),
               ],
             ),
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n?.gridOverrideModuleAppearances ?? 'Wave groups',
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  l10n?.armrackModuleTypePalette ?? 'Stand type',
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                GridOverrideWaveGroupsBar(
-                  itemCount: _data.overrides.length,
-                  selectedIndex: _selectedIndex,
-                  onSelected: (idx) => setState(() => _selectedIndex = idx),
-                  onDeleteAt: (idx) => setState(
-                    () => _overrideToDelete = _data.overrides[idx],
-                  ),
-                  onAdd: _addOverride,
-                  groupLabel: (idx) =>
-                      '${l10n?.airDropShipGroupLabel ?? "Group"} ${idx + 1}',
-                ),
-                if (selected != null) ...[
-                  const SizedBox(height: 24),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    key: ValueKey('armrack_panel_$_selectedIndex'),
-                    child: Padding(
-                      padding: kGridOverrideModuleSectionPadding,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedIndex + 1}',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: kArmrackTypes.map((info) {
+                    final typeSelected = _selectedType == info.type;
+                    final resourceKey = 'armrack_${info.type}';
+                    final label = ResourceNames.lookup(context, resourceKey);
+                    final displayLabel = label != resourceKey ? label : info.type;
+                    return InkWell(
+                      onTap: () => setState(() => _selectedType = info.type),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: 112,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: typeSelected
+                              ? theme.colorScheme.primaryContainer
+                              : theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: typeSelected
+                                ? theme.colorScheme.primary
+                                : Colors.transparent,
+                            width: 2,
                           ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            initialValue: '${selected.wave}',
-                            decoration: InputDecoration(
-                              labelText:
-                                  l10n?.gridOverrideModuleWaveFieldOneBased ??
-                                  'Wave (1 = first wave)',
-                              border: const OutlineInputBorder(),
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 48,
+                              child: AssetImageWidget(
+                                assetPath:
+                                    'assets/images/griditems/${info.iconFile}',
+                                fit: BoxFit.contain,
+                              ),
                             ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (v) {
-                              final n = int.tryParse(v);
-                              if (n != null && n >= 1) {
-                                _updateSelectedOverride(
-                                  ArmrackOverrideWaveData(
-                                    wave: n,
-                                    itemList: selected.itemList,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                          if (selected.wave != gridOverrideFirstWave) ...[
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 4),
                             Text(
-                              l10n?.gridOverrideModuleTimelineNote ??
-                                  'Only wave 1 entries appear in the wave timeline tab.',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.tertiary,
+                              displayLabel,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              info.type,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n?.armrackModuleTypePalette ?? 'Stand type',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: kArmrackTypes.map((info) {
-                              final typeSelected = _selectedType == info.type;
-                              final label = ResourceNames.lookup(
-                                context,
-                                'armrack_${info.type}',
-                              );
-                              final displayLabel = label != 'armrack_${info.type}'
-                                  ? label
-                                  : info.type;
-                              return InkWell(
-                                onTap: () =>
-                                    setState(() => _selectedType = info.type),
-                                borderRadius: BorderRadius.circular(8),
-                                child: Container(
-                                  width: 88,
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: typeSelected
-                                        ? theme.colorScheme.primaryContainer
-                                        : theme
-                                              .colorScheme
-                                              .surfaceContainerHighest,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: typeSelected
-                                          ? theme.colorScheme.primary
-                                          : Colors.transparent,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 48,
-                                        child: AssetImageWidget(
-                                          assetPath:
-                                              'assets/images/griditems/${info.iconFile}',
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        displayLabel,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.labelSmall,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            '${l10n?.selectedPosition ?? "Selected position"}: R${_selectedY + 1} : C${_selectedX + 1}',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          GridOverridePlacementGrid(
-                            gridRows: _gridRows,
-                            gridCols: _gridCols,
-                            selectedCol: _selectedX,
-                            selectedRow: _selectedY,
-                            onPrimaryTap: _handlePrimaryTap,
-                            onRemoveAt: _removeAt,
-                            cellImageAt: (col, row) {
-                              final item = _itemAt(col, row);
-                              if (item == null) return null;
-                              return armrackIconAsset(item.type);
-                            },
-                            cellImageScaleAt: (col, row) {
-                              final item = _itemAt(col, row);
-                              if (item == null) return 1.0;
-                              return armrackGridScale(item.type);
-                            },
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  '${l10n?.selectedPosition ?? "Selected position"}: R${_selectedY + 1} : C${_selectedX + 1}',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                ),
+                const SizedBox(height: 12),
+                GridOverridePlacementGrid(
+                  gridRows: _gridRows,
+                  gridCols: _gridCols,
+                  selectedCol: _selectedX,
+                  selectedRow: _selectedY,
+                  onPrimaryTap: _handlePrimaryTap,
+                  onRemoveAt: _removeAt,
+                  cellImageAt: (col, row) {
+                    final item = _itemAt(col, row);
+                    if (item == null) return null;
+                    return armrackIconAsset(item.type);
+                  },
+                  cellImageScaleAt: (col, row) {
+                    final item = _itemAt(col, row);
+                    if (item == null) return 1.0;
+                    return armrackGridScale(item.type);
+                  },
+                ),
               ],
             ),
           ),
-          if (_overrideToDelete != null) _buildDeleteDialog(l10n),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDeleteDialog(AppLocalizations? l10n) {
-    final target = _overrideToDelete!;
-    final index = _data.overrides.indexOf(target);
-    return AlertDialog(
-      title: Text(l10n?.removeItem ?? 'Remove item'),
-      content: Text(
-        l10n?.removeItemConfirm(
-              '${l10n?.airDropShipGroupLabel ?? "Group"} ${index + 1}',
-            ) ??
-            'Remove group ${index + 1}?',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => setState(() => _overrideToDelete = null),
-          child: Text(l10n?.cancel ?? 'Cancel'),
         ),
-        TextButton(
-          onPressed: () {
-            _deleteOverride(target);
-            setState(() => _overrideToDelete = null);
-          },
-          style: TextButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.error,
-          ),
-          child: Text(l10n?.remove ?? 'Remove'),
-        ),
-      ],
+      ),
     );
   }
 }

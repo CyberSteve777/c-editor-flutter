@@ -556,7 +556,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieTagRoman => '罗马世界';
 
   @override
-  String get zombieTagCustom => '回忆自定义';
+  String get zombieTagCustom => '回忆变体';
 
   @override
   String get zombieTagPet => '宠物';
