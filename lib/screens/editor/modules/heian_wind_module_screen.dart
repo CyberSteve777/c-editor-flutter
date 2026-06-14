@@ -313,7 +313,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                                         l10n?.heianWindModuleWaves ??
                                         'Wave',
                                     hintText:
-                                        l10n?.heianWindModuleWaveHint ??
+                                        l10n?.heianWindModuleWavesHint ??
                                         '0-based',
                                     border: const OutlineInputBorder(),
                                   ),
