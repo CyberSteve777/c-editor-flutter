@@ -2,19 +2,14 @@ import 'package:c_editor/data/pvz_models/BronzeStatueItemData.dart';
 import 'package:c_editor/data/pvz_models/PvzModel.dart';
 
 class BronzeStatueBatchData extends PvzModel {
-  BronzeStatueBatchData({
-    this.wave = 1,
-    List<BronzeStatueItemData>? itemList,
-  }) : itemList = itemList ?? [];
+  BronzeStatueBatchData({List<BronzeStatueItemData>? itemList})
+      : itemList = itemList ?? [];
 
-  /// 1-based wave index (same convention as Armrack / EnergyGrid overrides).
-  int wave;
   List<BronzeStatueItemData> itemList;
 
   factory BronzeStatueBatchData.fromJson(Map<String, dynamic> json) {
     final list = json['itemList'] as List<dynamic>?;
     return BronzeStatueBatchData(
-      wave: (json['wave'] as num?)?.toInt() ?? 1,
       itemList:
           list
               ?.map(
@@ -27,6 +22,5 @@ class BronzeStatueBatchData extends PvzModel {
 
   Map<String, dynamic> toJson() => {
     'itemList': itemList.map((e) => e.toJson()).toList(),
-    'wave': wave,
   };
 }
