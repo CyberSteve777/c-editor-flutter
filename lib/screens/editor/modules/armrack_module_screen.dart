@@ -314,11 +314,12 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                             runSpacing: 8,
                             children: kArmrackTypes.map((info) {
                               final typeSelected = _selectedType == info.type;
+                              final resourceKey = 'armrack_${info.type}';
                               final label = ResourceNames.lookup(
                                 context,
-                                'armrack_${info.type}',
+                                resourceKey,
                               );
-                              final displayLabel = label != 'armrack_${info.type}'
+                              final displayLabel = label != resourceKey
                                   ? label
                                   : info.type;
                               return InkWell(
@@ -326,7 +327,7 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                                     setState(() => _selectedType = info.type),
                                 borderRadius: BorderRadius.circular(8),
                                 child: Container(
-                                  width: 88,
+                                  width: 112,
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
                                     color: typeSelected
@@ -356,9 +357,25 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                                       Text(
                                         displayLabel,
                                         textAlign: TextAlign.center,
-                                        maxLines: 2,
+                                        maxLines: 3,
                                         overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.labelSmall,
+                                        style:
+                                            theme.textTheme.labelMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        info.type,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            theme.textTheme.labelSmall?.copyWith(
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
                                       ),
                                     ],
                                   ),

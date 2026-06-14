@@ -24,6 +24,7 @@ import 'package:c_editor/screens/editor/modules/death_hole_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/increased_cost_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/pirate_plank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/railcart_properties_screen.dart';
+import 'package:c_editor/screens/editor/modules/mechanism_plank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_rain_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/conveyor_seedbank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
@@ -2038,6 +2039,20 @@ class _EditorScreenState extends State<EditorScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => RailcartPropertiesScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&objClass == 'MechanismPlankProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MechanismPlankPropertiesScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,

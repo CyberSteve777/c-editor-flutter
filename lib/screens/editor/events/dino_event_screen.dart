@@ -185,6 +185,34 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
                           }
                         },
                       ),
+
+                      const SizedBox(height: 16),
+
+                      Center(
+                        child: Container(
+                          width: 220,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Image.asset(
+                              'assets/images/others/dino_${_data.dinoType}.webp',
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => const Center(
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: 48,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

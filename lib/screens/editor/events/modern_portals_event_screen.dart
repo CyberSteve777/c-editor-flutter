@@ -84,6 +84,93 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
     );
   }
 
+  String _portalDisplayName(AppLocalizations? l10n, PortalWorldDef def) {
+    switch (def.typeCode) {
+      case 'egypt':
+        return l10n?.portalTypeEgypt ?? def.name;
+      case 'egypt_2':
+        return l10n?.portalTypeEgypt2 ?? def.name;
+      case 'pirate':
+        return l10n?.portalTypePirate ?? def.name;
+      case 'west':
+        return l10n?.portalTypeWest ?? def.name;
+      case 'future':
+        return l10n?.portalTypeFuture ?? def.name;
+      case 'future_2':
+        return l10n?.portalTypeFuture2 ?? def.name;
+      case 'dark':
+        return l10n?.portalTypeDark ?? def.name;
+      case 'beach':
+        return l10n?.portalTypeBeach ?? def.name;
+      case 'iceage':
+        return l10n?.portalTypeIceAge ?? def.name;
+      case 'lostcity':
+        return l10n?.portalTypeLostCity ?? def.name;
+      case 'eighties':
+        return l10n?.portalTypeEighties ?? def.name;
+      case 'dino':
+        return l10n?.portalTypeDino ?? def.name;
+      case 'dangerroom_egypt':
+        return l10n?.portalTypeEndlessEgypt ?? def.name;
+      case 'dangerroom_pirate':
+        return l10n?.portalTypeEndlessPirate ?? def.name;
+      case 'dangerroom_west':
+        return l10n?.portalTypeEndlessWest ?? def.name;
+      case 'dangerroom_future':
+        return l10n?.portalTypeEndlessFuture ?? def.name;
+      case 'dangerroom_dark':
+        return l10n?.portalTypeEndlessDark ?? def.name;
+      case 'dangerroom_beach':
+        return l10n?.portalTypeEndlessBeach ?? def.name;
+      case 'dangerroom_iceage':
+        return l10n?.portalTypeEndlessIceAge ?? def.name;
+      case 'dangerroom_lostcity':
+        return l10n?.portalTypeEndlessLostCity ?? def.name;
+      case 'dangerroom_eighties':
+        return l10n?.portalTypeEndlessEighties ?? def.name;
+      case 'dangerroom_dino':
+        return l10n?.portalTypeEndlessDino ?? def.name;
+      case 'pvz1_Zombotany':
+        return l10n?.portalTypeZombotany ?? def.name;
+      case 'pvz1_Slime':
+        return l10n?.portalTypeSlimeZombies ?? def.name;
+      case 'pvz1_Universe':
+        return l10n?.portalTypeUniverse42 ?? def.name;
+      case 'pvz1_Uncharted':
+        return l10n?.portalTypeUniverse41 ?? def.name;
+      case 'pvz1_elite_roman_healer_normal':
+        return l10n?.portalTypeEliteHealerNormal ?? def.name;
+      case 'pvz1_elite_skycity_electric_normal':
+        return l10n?.portalTypeEliteElectricNormal ?? def.name;
+      case 'pvz1_elite_roman_ballista_normal':
+        return l10n?.portalTypeEliteBallistaNormal ?? def.name;
+      case 'pvz1_elite_heian_onmyoji_normal':
+        return l10n?.portalTypeEliteOnmyojiNormal ?? def.name;
+      case 'pvz1_elite_roman_healer_hard':
+        return l10n?.portalTypeEliteHealerHard ?? def.name;
+      case 'pvz1_elite_skycity_electric_hard':
+        return l10n?.portalTypeEliteElectricHard ?? def.name;
+      case 'pvz1_elite_roman_ballista_hard':
+        return l10n?.portalTypeEliteBallistaHard ?? def.name;
+      case 'pvz1_elite_heian_onmyoji_hard':
+        return l10n?.portalTypeEliteOnmyojiHard ?? def.name;
+      case 'iceage_hunter_elite':
+        return l10n?.portalTypeEliteHunter ?? def.name;
+      case 'iceage_chief_elite':
+        return l10n?.portalTypeEliteChief ?? def.name;
+      case 'iceage_weaselhoarder_elite':
+        return l10n?.portalTypeEliteWeasel ?? def.name;
+      case 'bumpercar_elite':
+        return l10n?.portalTypeEliteBumperCar ?? def.name;
+      case 'dark_wizard_elite':
+        return l10n?.portalTypeEliteWizard ?? def.name;
+      case 'dark_king_elite':
+        return l10n?.portalTypeEliteKing ?? def.name;
+      default:
+        return def.name;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -144,19 +231,24 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            l10n?.position ?? 'Position',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'R${_data.portalRow + 1} : C${_data.portalColumn + 1}',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n?.selectedPosition ?? 'Selected position',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Text(
+                                'R${_data.portalRow + 1} : C${_data.portalColumn + 1}',
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -240,7 +332,7 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
                           final isSelected =
                               def.typeCode == _data.portalType;
                           return SizedBox(
-                            width: 120,
+                            width: 130,
                             child: Card(
                               color: isSelected
                                   ? theme.colorScheme.primaryContainer
@@ -263,7 +355,7 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          def.name,
+                                          _portalDisplayName(l10n, def),
                                           style: theme.textTheme.bodySmall,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -319,9 +411,10 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
   Widget _buildPreviewDialog(BuildContext context, AppLocalizations? l10n, PortalWorldDef def) {
     final theme = Theme.of(context);
     final zombieRepo = ZombieRepository();
+    final portalName = _portalDisplayName(l10n, def);
 
     return AlertDialog(
-      title: Text(l10n?.zombiePreview(def.name) ?? '${def.name} - Zombie preview'),
+      title: Text(l10n?.zombiePreview(portalName) ?? '$portalName - Zombie preview'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,

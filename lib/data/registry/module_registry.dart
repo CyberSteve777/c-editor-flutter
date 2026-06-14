@@ -159,6 +159,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_PiratePlankProperties;
       case 'moduleTitle_RailcartProperties':
         return l10n.moduleTitle_RailcartProperties;
+      case 'moduleTitle_MechanismPlankProperties':
+        return l10n.moduleTitle_MechanismPlankProperties;
       case 'moduleTitle_PowerTileProperties':
         return l10n.moduleTitle_PowerTileProperties;
       case 'moduleTitle_ManholePipelineModuleProperties':
@@ -299,6 +301,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_PiratePlankProperties;
       case 'moduleDesc_RailcartProperties':
         return l10n.moduleDesc_RailcartProperties;
+      case 'moduleDesc_MechanismPlankProperties':
+        return l10n.moduleDesc_MechanismPlankProperties;
       case 'moduleDesc_PowerTileProperties':
         return l10n.moduleDesc_PowerTileProperties;
       case 'moduleDesc_ManholePipelineModuleProperties':
@@ -491,7 +495,7 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_RiftThemeDemoModuleProperties',
       icon: Icons.theater_comedy,
       isCore: true,
-      category: ModuleCategory.base,
+      category: ModuleCategory.mode,
       defaultAlias: 'RiftTheme',
       initialDataFactory: () => RiftThemeDemoModulePropertiesData(),
       routeId: 'RiftThemeModule',
@@ -794,6 +798,27 @@ class ModuleRegistry {
       defaultAlias: 'Railcarts',
       initialDataFactory: () => RailcartPropertiesData(),
       routeId: 'Railcart',
+    ),
+    'MechanismPlankProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_MechanismPlankProperties',
+      descriptionKey: 'moduleDesc_MechanismPlankProperties',
+      icon: Icons.edit_road,
+      isCore: true,
+      category: ModuleCategory.scene,
+      defaultAlias: 'MechanismPlank',
+      initialDataFactory: () => {
+        'MechanismGearsRect': {
+        'mHeight': 5,
+        'mWidth': 4,
+        'mX': 0,
+        'mY': 0,
+        },
+        'MechanismPlankRows': [
+          '0',
+          '4',
+        ],
+      },
+      routeId: 'MechanismPlank',
     ),
     'PowerTileProperties': ModuleMetadata(
       titleKey: 'moduleTitle_PowerTileProperties',

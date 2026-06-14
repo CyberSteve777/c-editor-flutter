@@ -350,15 +350,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" floating button at the bottom-right of the level list (visible when scrolled to the top) to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextDesktop =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" floating button at the bottom-right of the level list (visible when scrolled to the top) to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextMobile =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Once your level is complete, tap the \"Upload to Creative Courtyard\" floating button at the bottom-right of the level list (visible when scrolled to the top) to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageRecommendedLevelsLabel =>
@@ -384,14 +384,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Devourdoom, Evilhack28, Chara, KL12, Haruma, nineteendo, vi_i_guess';
 
   @override
-  String get sourceLabel => 'Source:';
+  String get sourceLabel => 'GitHub Repository:';
 
   @override
   String get issuesLabel => 'Report Issues:';
 
   @override
   String get zEditorAcknowledgment =>
-      'Creating this tool would be impossible without the creators of Z-Editor.';
+      'We would also like to express our sincere gratitude to the creators of Z-Editor. The development of this tool would not have been possible without the foundation they established.';
 
   @override
   String get zEditorCreditsSubsection => 'Z-Editor credits';
@@ -1050,8 +1050,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get name => 'Level name';
 
   @override
-  String get description =>
-      'Level description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)';
+  String get description => 'Level description';
 
   @override
   String get levelNumber => 'Level number';
@@ -1741,6 +1740,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configures the initial layout of minecarts and rails';
 
   @override
+  String get moduleTitle_MechanismPlankProperties => 'Connected Minecart';
+
+  @override
+  String get moduleDesc_MechanismPlankProperties =>
+      'Configures the initial layout of Kongfu World minecarts and rails';
+
+  @override
   String get moduleTitle_PowerTileProperties => 'Power Tiles';
 
   @override
@@ -2322,7 +2328,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get canTriggerZombieWin =>
-      'Triggers game over when reaching the house (CanTriggerZombieWin)';
+      'Can trigger game over when reaching the house (CanTriggerZombieWin)';
 
   @override
   String get resilience => 'Resistances (Resistences)';
@@ -2974,7 +2980,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpModernPortalsBody =>
-      'Spawns fixed types of spacetime portals on the lawn, commonly seen in Modern Day and Memory Lane';
+      'Spawns a fixed type of spacetime portal on the lawn, commonly seen in Modern Day and Memory Lane.\nOnly one spacetime portal can be configured per event. To have multiple portals appear simultaneously, add multiple Spacetime Portal events within the wave.';
 
   @override
   String get eventHelpModernPortalsType =>
@@ -3368,7 +3374,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Keeping this invalid entry in the level will prevent it from being read correctly and may cause a crash. It should be removed manually.';
 
   @override
-  String get position => 'Initial tide position';
+  String get position => 'Selected position';
 
   @override
   String get editing => 'Editing';
@@ -5643,13 +5649,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Each entry’s wave index is 0-based (e.g., 0 = first wave, 1 = second wave). Target rows are also indexed from 0. You can specify a single row or set it to -1 to affect all rows; in this case, no whirlwind will be generated.';
 
   @override
-  String get heianWindModuleWaves => 'Appear waves (WaveNumber; starts from 0)';
+  String get heianWindModuleWaves => 'Appear waves (WaveNumber)';
+
+  @override
+  String get heianWindModuleWavesHint => 'starts from 0';
 
   @override
   String get heianWindModuleAppearances => 'Summon Batches';
 
   @override
-  String get heianWindModuleWindDelay => 'Wind Delay (unit: seconds)';
+  String get heianWindModuleWindDelay => 'Time between wind spawns (WindDelay)';
+
+  @override
+  String get heianWindModuleWindDelayHint => 'unit: seconds';
 
   @override
   String get heianWindModuleWindEntries => 'Wind configurations';
@@ -5658,7 +5670,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleAddWind => 'Add wind';
 
   @override
-  String get heianWindModuleRow => 'Single Row (starts from 0)';
+  String get heianWindModuleRow => 'Affected row (Row)';
 
   @override
   String get heianWindModuleAllRows => 'All rows (-1)';
@@ -5668,12 +5680,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Affected zombie count (AffectZombies)';
 
   @override
-  String get heianWindModuleDistance =>
-      'Push Distance (Distance; 1 tile = 50 units)';
+  String get heianWindModuleDistance => 'Push Distance (Distance)';
 
   @override
-  String get heianWindModuleMoveTime =>
-      'Move Duration (MoveTime; unit: seconds)';
+  String get heianWindModuleDistanceHint => '1 tile = 50 units';
+
+  @override
+  String get heianWindModuleMoveTime => 'Move Duration (MoveTime)';
+
+  @override
+  String get heianWindModuleMoveTimeHint => 'unit: seconds';
 
   @override
   String get heianWindModuleExpectationLabel => 'Divine Wind Settings';
@@ -5741,7 +5757,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bungeeWaveCurrentTarget => 'Current target';
 
   @override
-  String get bungeeWaveCol => 'Col';
+  String get bungeeWaveCol => 'Column';
 
   @override
   String get bungeeWaveRow => 'Row';
@@ -6141,7 +6157,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get energyGridModuleWarningMessage =>
-      'Due to a game-side issue, generated Taiji Tiles may appear as purple X markers. This does not affect their actual functionality.';
+      'Due to a game-side issue, generated Taiji Tiles may appear as purple X markers. This does not affect their actual functionality. If you want them to display properly, restarting the game is recommended.';
 
   @override
   String get gridOverrideModuleAppearances => 'Wave groups';
@@ -6153,4 +6169,141 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get gridOverrideModuleTimelineNote =>
       'Only wave 1 entries appear in the wave timeline tab.';
+
+  @override
+  String get mechanismPlankSettings => 'Connected Minecart settings';
+
+  @override
+  String get mechanismPlankStartColumn => 'Starting column (mx)';
+
+  @override
+  String get mechanismPlankTrackLength => 'Track length (mWidth)';
+
+  @override
+  String get mechanismPlankEditNotice =>
+      'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.\nAdditionally, Connected Minecarts are not recommended outside of Kongfu World, as they will appear as purple X markers. This does not affect their actual functionality, but it may impact the level\'s visual presentation.';
+
+  @override
+  String get mechanismPlankOutOfAreaWarning =>
+      'The current rail range may go outside the lawn.';
+
+  @override
+  String get portalTypeEgypt => 'Ancient Egypt';
+
+  @override
+  String get portalTypeEgypt2 => 'Ancient Egypt 2';
+
+  @override
+  String get portalTypePirate => 'Pirate Seas';
+
+  @override
+  String get portalTypeWest => 'Wild West';
+
+  @override
+  String get portalTypeFuture => 'Far Future';
+
+  @override
+  String get portalTypeFuture2 => 'Far Future 2';
+
+  @override
+  String get portalTypeDark => 'Dark Ages';
+
+  @override
+  String get portalTypeBeach => 'Big Wave Beach';
+
+  @override
+  String get portalTypeIceAge => 'Frostbite Caves';
+
+  @override
+  String get portalTypeLostCity => 'Lost City';
+
+  @override
+  String get portalTypeEighties => 'Neon Mixtape Tour';
+
+  @override
+  String get portalTypeDino => 'Jurassic Marsh';
+
+  @override
+  String get portalTypeEndlessEgypt => 'Ancient Egypt (Endless)';
+
+  @override
+  String get portalTypeEndlessPirate => 'Pirate Seas (Endless)';
+
+  @override
+  String get portalTypeEndlessWest => 'Wild West (Endless)';
+
+  @override
+  String get portalTypeEndlessFuture => 'Far Future (Endless)';
+
+  @override
+  String get portalTypeEndlessDark => 'Dark Ages (Endless)';
+
+  @override
+  String get portalTypeEndlessBeach => 'Big Wave Beach (Endless)';
+
+  @override
+  String get portalTypeEndlessIceAge => 'Frostbite Caves (Endless)';
+
+  @override
+  String get portalTypeEndlessLostCity => 'Lost City (Endless)';
+
+  @override
+  String get portalTypeEndlessEighties => 'Neon Mixtape Tour (Endless)';
+
+  @override
+  String get portalTypeEndlessDino => 'Jurassic Marsh (Endless)';
+
+  @override
+  String get portalTypeZombotany => 'Zombotany';
+
+  @override
+  String get portalTypeSlimeZombies => 'Zom-Blob';
+
+  @override
+  String get portalTypeUniverse42 => 'Parallel Universe No. 42';
+
+  @override
+  String get portalTypeUniverse41 => 'Parallel Universe No. 41';
+
+  @override
+  String get portalTypeEliteHealerNormal => 'Elite Healer (Normal)';
+
+  @override
+  String get portalTypeEliteElectricNormal => 'Elite Lightning Gun (Normal)';
+
+  @override
+  String get portalTypeEliteBallistaNormal => 'Elite Zcorpion (Normal)';
+
+  @override
+  String get portalTypeEliteOnmyojiNormal => 'Elite Onmyoji (Normal)';
+
+  @override
+  String get portalTypeEliteHealerHard => 'Elite Healer (Hard)';
+
+  @override
+  String get portalTypeEliteElectricHard => 'Elite Lightning Gun (Hard)';
+
+  @override
+  String get portalTypeEliteBallistaHard => 'Elite Zcorpion (Hard)';
+
+  @override
+  String get portalTypeEliteOnmyojiHard => 'Elite Onmyoji (Hard)';
+
+  @override
+  String get portalTypeEliteHunter => 'Elite Hunter';
+
+  @override
+  String get portalTypeEliteChief => 'Elite Chief';
+
+  @override
+  String get portalTypeEliteWeasel => 'Elite Weasel Hoarder';
+
+  @override
+  String get portalTypeEliteBumperCar => 'Elite Bumper Car';
+
+  @override
+  String get portalTypeEliteWizard => 'Elite Wizard';
+
+  @override
+  String get portalTypeEliteKing => 'Elite King';
 }

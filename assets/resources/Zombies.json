@@ -2409,6 +2409,15 @@
     "icon": "zombie_renai_ballet_mid.webp"
   },
   {
+    "id": "renai_ballet_imp",
+    "name": "zombie_renai_ballet_imp",
+    "tags": [
+      "Steam_Renai",
+      "Imp"
+    ],
+    "icon": "zombie_renai_ballet_imp.webp"
+  },
+  {
     "id": "renai_sherlock",
     "name": "zombie_renai_sherlock",
     "tags": [
@@ -4579,6 +4588,7 @@
     "name": "zombie_izombie_sunflower",
     "tags": [
       "Memory",
+      "Evildave",
       "Basic"
     ],
     "icon": "zombie_izombie_sunflower.webp"
@@ -4589,6 +4599,7 @@
     "tags": [
       "Modern_Pvz1",
       "Memory",
+      "Evildave",
       "Basic"
     ],
     "icon": "zombie_izombie_zombie_gatlingpea.webp"
@@ -4599,6 +4610,7 @@
     "tags": [
       "Modern_Pvz1",
       "Memory",
+      "Evildave",
       "Basic"
     ],
     "icon": "zombie_izombie_zombie_wallnut.webp"
@@ -4608,6 +4620,7 @@
     "name": "zombie_izombie_chicken_farmer",
     "tags": [
       "Memory",
+      "Evildave",
       "Basic"
     ],
     "icon": "zombie_izombie_chicken_farmer.webp"
@@ -4617,6 +4630,7 @@
     "name": "zombie_izombie_tutorial_gargantuar",
     "tags": [
       "Memory",
+      "Evildave",
       "Gargantuar"
     ],
     "icon": "zombie_izombie_tutorial_gargantuar.webp"
@@ -4626,6 +4640,7 @@
     "name": "zombie_izombie_lostcity_doctor",
     "tags": [
       "Memory",
+      "Evildave",
       "Basic"
     ],
     "icon": "zombie_izombie_lostcity_doctor.webp"
