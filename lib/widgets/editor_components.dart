@@ -69,6 +69,96 @@ class PvzAddButton extends StatelessWidget {
   }
 }
 
+/// Layout metrics for editor item cards and placement grids on narrow screens.
+abstract final class EditorItemCardLayout {
+  static bool compact(BuildContext context) =>
+      MediaQuery.sizeOf(context).width < 400;
+
+  static double cardWidth(BuildContext context, {double base = 100}) =>
+      compact(context) ? base * 0.92 : base;
+
+  static double iconSlotSize(BuildContext context, {double base = 64}) =>
+      compact(context) ? base * 0.875 : base;
+
+  static double gridPreviewMaxWidth(BuildContext context) =>
+      compact(context) ? 360 : 480;
+
+  /// Scales overlay badges (+N count, zomboss Z) in lawn preview cells.
+  static double gridCellBadgeScale(BuildContext context) =>
+      compact(context) ? 0.72 : 1.0;
+}
+
+/// Icon header for editor item cards: artwork in a fixed slot, delete control
+/// in its own top-right column so it never overlaps scaled icons or badges.
+class EditorDeletableIconHeader extends StatelessWidget {
+  const EditorDeletableIconHeader({
+    super.key,
+    required this.icon,
+    required this.onDelete,
+    required this.deleteTooltip,
+    this.iconSize = 64,
+    this.height,
+  });
+
+  final Widget icon;
+  final VoidCallback onDelete;
+  final String deleteTooltip;
+  final double iconSize;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final compact = EditorItemCardLayout.compact(context);
+    final slotSize = EditorItemCardLayout.iconSlotSize(context, base: iconSize);
+    final headerHeight = height ?? (slotSize + (compact ? 14 : 16));
+    final deleteSize = compact ? 24.0 : 28.0;
+
+    return SizedBox(
+      height: headerHeight,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(8, 8, compact ? 2 : 4, 0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Center(
+                child: SizedBox(
+                  width: slotSize,
+                  height: slotSize,
+                  child: icon,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: deleteSize,
+              height: deleteSize,
+              child: IconButton(
+                onPressed: onDelete,
+                icon: Icon(Icons.delete_outline, size: compact ? 16 : 18),
+                tooltip: deleteTooltip,
+                color: theme.colorScheme.onSurfaceVariant,
+                padding: EdgeInsets.zero,
+                visualDensity: VisualDensity.compact,
+                constraints: BoxConstraints(
+                  minWidth: deleteSize,
+                  minHeight: deleteSize,
+                  maxWidth: deleteSize,
+                  maxHeight: deleteSize,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  padding: const EdgeInsets.all(2),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Card-sized add button that matches item card dimensions.
 /// Used in initial plant/zombie/grid entry screens.
 class AddItemCard extends StatelessWidget {
@@ -88,6 +178,7 @@ class AddItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cardWidth = EditorItemCardLayout.cardWidth(context, base: width);
     final button = PvzAddButton(onPressed: onPressed, size: 56);
     final content = minHeight != null
         ? Center(
@@ -119,7 +210,7 @@ class AddItemCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
-        width: width,
+        width: cardWidth,
         height: minHeight,
         child: content,
       ),
@@ -671,7 +762,9 @@ class GridItemIcon extends StatelessWidget {
         altCandidates: imageAltCandidates(path),
       ),
     );
-    if (!showBadge) return image;
+    if (!showBadge) {
+      return _fitToSlot(baseW, baseH, w, h, image);
+    }
     var badgeScale = (baseW < 48 || baseH < 48) ? 0.5 : 0.65;
     badgeScale *= badgeScaleFactor;
     final padH = (4.0 * badgeScale).clamp(2.0, 8.0);
@@ -679,7 +772,7 @@ class GridItemIcon extends StatelessWidget {
     final fSize = (10.0 * badgeScale).clamp(6.0, 20.0);
     final radius = (4.0 * badgeScale).clamp(2.0, 8.0);
     final offset = (2.0 * badgeScale).clamp(1.0, 4.0);
-    return Stack(
+    final badged = Stack(
       clipBehavior: Clip.none,
       children: [
         image,
@@ -703,6 +796,27 @@ class GridItemIcon extends StatelessWidget {
           ),
         ),
       ],
+    );
+    return _fitToSlot(baseW, baseH, w, h, badged);
+  }
+
+  static Widget _fitToSlot(
+    double baseW,
+    double baseH,
+    double contentW,
+    double contentH,
+    Widget child,
+  ) {
+    if (contentW == baseW && contentH == baseH) {
+      return SizedBox(width: baseW, height: baseH, child: child);
+    }
+    return SizedBox(
+      width: baseW,
+      height: baseH,
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: SizedBox(width: contentW, height: contentH, child: child),
+      ),
     );
   }
 }
