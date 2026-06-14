@@ -5577,10 +5577,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get heianWindModuleWaves => 'Волны с ветром';
 
   @override
+  String get heianWindModuleWavesHint => 'starts from 0';
+
+  @override
   String get heianWindModuleAppearances => 'Появления';
 
   @override
   String get heianWindModuleWindDelay => 'Задержка ветра';
+
+  @override
+  String get heianWindModuleWindDelayHint => 'unit: seconds';
 
   @override
   String get heianWindModuleWindEntries => 'Записи ветра';
@@ -5601,7 +5607,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get heianWindModuleDistance => 'Дистанция';
 
   @override
+  String get heianWindModuleDistanceHint => '1 tile = 50 units';
+
+  @override
   String get heianWindModuleMoveTime => 'Время движения';
+
+  @override
+  String get heianWindModuleMoveTimeHint => 'unit: seconds';
 
   @override
   String get heianWindModuleExpectationLabel => 'Ветер Хэйан';

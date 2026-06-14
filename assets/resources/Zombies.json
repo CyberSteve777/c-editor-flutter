@@ -2409,6 +2409,15 @@
     "icon": "zombie_renai_ballet_mid.webp"
   },
   {
+    "id": "renai_ballet_imp",
+    "name": "zombie_renai_ballet_imp",
+    "tags": [
+      "Steam_Renai",
+      "Imp"
+    ],
+    "icon": "zombie_renai_ballet_imp.webp"
+  },
+  {
     "id": "renai_sherlock",
     "name": "zombie_renai_sherlock",
     "tags": [

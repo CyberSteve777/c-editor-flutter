@@ -310,8 +310,11 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                                   initialValue: '${selectedWave.waveNumber}',
                                   decoration: InputDecoration(
                                     labelText:
-                                        l10n?.moduleWaveFieldZeroBased ??
-                                        'Wave (0 = wave 1, 1 = wave 2, ...)',
+                                        l10n?.heianWindModuleWaves ??
+                                        'Wave',
+                                    hintText:
+                                        l10n?.heianWindModuleWaveHint ??
+                                        '0-based',
                                     border: const OutlineInputBorder(),
                                   ),
                                   keyboardType: TextInputType.number,
@@ -339,6 +342,9 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                                     labelText:
                                         l10n?.heianWindModuleWindDelay ??
                                         'Wind delay',
+                                    hintText:
+                                        l10n?.heianWindModuleWindDelayHint ??
+                                        'Unit: seconds',
                                     border: const OutlineInputBorder(),
                                   ),
                                   keyboardType: TextInputType.number,
@@ -528,7 +534,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                           initialValue: '${wind.distance}',
                           decoration: InputDecoration(
                             labelText: l10n?.heianWindModuleDistance ?? 'Distance',
-                            hintText: '50 = 1 cell',
+                            hintText: l10n?.heianWindModuleDistanceHint ?? '50 = 1 cell',
                             border: const OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -558,6 +564,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                           decoration: InputDecoration(
                             labelText:
                                 l10n?.heianWindModuleMoveTime ?? 'Move time',
+                            hintText:
+                                l10n?.heianWindModuleMoveTimeHint ?? 'Unit: seconds',
                             border: const OutlineInputBorder(),
                             isDense: true,
                           ),

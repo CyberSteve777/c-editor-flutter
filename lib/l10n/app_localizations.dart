@@ -2023,7 +2023,7 @@ abstract class AppLocalizations {
   /// No description provided for @description.
   ///
   /// In en, this message translates to:
-  /// **'Level description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)'**
+  /// **'Level description'**
   String get description;
 
   /// No description provided for @levelNumber.
@@ -10069,8 +10069,14 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleWaves.
   ///
   /// In en, this message translates to:
-  /// **'Appear waves (WaveNumber; starts from 0)'**
+  /// **'Appear waves (WaveNumber)'**
   String get heianWindModuleWaves;
+
+  /// No description provided for @heianWindModuleWavesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'starts from 0'**
+  String get heianWindModuleWavesHint;
 
   /// No description provided for @heianWindModuleAppearances.
   ///
@@ -10081,8 +10087,14 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleWindDelay.
   ///
   /// In en, this message translates to:
-  /// **'Wind Delay (unit: seconds)'**
+  /// **'Time between wind spawns (WindDelay)'**
   String get heianWindModuleWindDelay;
+
+  /// No description provided for @heianWindModuleWindDelayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'unit: seconds'**
+  String get heianWindModuleWindDelayHint;
 
   /// No description provided for @heianWindModuleWindEntries.
   ///
@@ -10099,7 +10111,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleRow.
   ///
   /// In en, this message translates to:
-  /// **'Single Row (starts from 0)'**
+  /// **'Affected Row (Row)'**
   String get heianWindModuleRow;
 
   /// No description provided for @heianWindModuleAllRows.
@@ -10117,14 +10129,26 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleDistance.
   ///
   /// In en, this message translates to:
-  /// **'Push Distance (Distance; 1 tile = 50 units)'**
+  /// **'Push Distance (Distance)'**
   String get heianWindModuleDistance;
+
+  /// No description provided for @heianWindModuleDistanceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'1 tile = 50 units'**
+  String get heianWindModuleDistanceHint;
 
   /// No description provided for @heianWindModuleMoveTime.
   ///
   /// In en, this message translates to:
-  /// **'Move Duration (MoveTime; unit: seconds)'**
+  /// **'Move Duration (MoveTime)'**
   String get heianWindModuleMoveTime;
+
+  /// No description provided for @heianWindModuleMoveTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'unit: seconds'**
+  String get heianWindModuleMoveTimeHint;
 
   /// No description provided for @heianWindModuleExpectationLabel.
   ///

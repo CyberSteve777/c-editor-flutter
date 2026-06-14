@@ -1042,8 +1042,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get name => 'Level name';
 
   @override
-  String get description =>
-      'Level description (supports Chinese; press Enter for line breaks, no escape sequences needed. Note: not visible in Creative Courtyard on iOS)';
+  String get description => 'Level description';
 
   @override
   String get levelNumber => 'Level number';
@@ -5639,13 +5638,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Each entry’s wave index is 0-based (e.g., 0 = first wave, 1 = second wave). Target rows are also indexed from 0. You can specify a single row or set it to -1 to affect all rows; in this case, no whirlwind will be generated.';
 
   @override
-  String get heianWindModuleWaves => 'Appear waves (WaveNumber; starts from 0)';
+  String get heianWindModuleWaves => 'Appear waves (WaveNumber)';
+
+  @override
+  String get heianWindModuleWavesHint => 'starts from 0';
 
   @override
   String get heianWindModuleAppearances => 'Summon Batches';
 
   @override
-  String get heianWindModuleWindDelay => 'Wind Delay (unit: seconds)';
+  String get heianWindModuleWindDelay => 'Time between wind spawns (WindDelay)';
+
+  @override
+  String get heianWindModuleWindDelayHint => 'unit: seconds';
 
   @override
   String get heianWindModuleWindEntries => 'Wind configurations';
@@ -5654,7 +5659,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleAddWind => 'Add wind';
 
   @override
-  String get heianWindModuleRow => 'Single Row (starts from 0)';
+  String get heianWindModuleRow => 'Affected Row (Row)';
 
   @override
   String get heianWindModuleAllRows => 'All rows (-1)';
@@ -5664,12 +5669,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Affected zombie count (AffectZombies)';
 
   @override
-  String get heianWindModuleDistance =>
-      'Push Distance (Distance; 1 tile = 50 units)';
+  String get heianWindModuleDistance => 'Push Distance (Distance)';
 
   @override
-  String get heianWindModuleMoveTime =>
-      'Move Duration (MoveTime; unit: seconds)';
+  String get heianWindModuleDistanceHint => '1 tile = 50 units';
+
+  @override
+  String get heianWindModuleMoveTime => 'Move Duration (MoveTime)';
+
+  @override
+  String get heianWindModuleMoveTimeHint => 'unit: seconds';
 
   @override
   String get heianWindModuleExpectationLabel => 'Divine Wind Settings';

@@ -1017,7 +1017,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get name => '名称';
 
   @override
-  String get description => '关卡描述 (Description)';
+  String get description => '关卡描述';
 
   @override
   String get levelNumber => '关卡序号';
@@ -5334,13 +5334,19 @@ class AppLocalizationsZh extends AppLocalizations {
       '神风的出现波次从0开始计数，如第1波降临填0，第2波降临填1。神风的作用行也从0开始计数，除了可以指定作用在单独一行外，也可以设为-1，使神风作用于全屏；此时不会生成旋风。';
 
   @override
-  String get heianWindModuleWaves => '神风的出现波次 (WaveNumber，从0开始计数)';
+  String get heianWindModuleWaves => '神风的出现波次 (WaveNumber)';
+
+  @override
+  String get heianWindModuleWavesHint => '从0开始计数';
 
   @override
   String get heianWindModuleAppearances => '召唤批次';
 
   @override
-  String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay, 单位：秒)';
+  String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay)';
+
+  @override
+  String get heianWindModuleWindDelayHint => '单位：秒';
 
   @override
   String get heianWindModuleWindEntries => '神风具体配置';
@@ -5349,7 +5355,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heianWindModuleAddWind => '添加神风';
 
   @override
-  String get heianWindModuleRow => '单行神风 (从0开始计数)';
+  String get heianWindModuleRow => '神风作用行 (Row)';
 
   @override
   String get heianWindModuleAllRows => '全屏大风 (-1)';
@@ -5358,10 +5364,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heianWindModuleAffectZombies => '影响僵尸数量 (AffectZombies)';
 
   @override
-  String get heianWindModuleDistance => '僵尸平移距离 (Distance，1格=50距离)';
+  String get heianWindModuleDistance => '僵尸平移距离 (Distance)';
 
   @override
-  String get heianWindModuleMoveTime => '僵尸平移时间 (MoveTime，单位：秒)';
+  String get heianWindModuleDistanceHint => '1格=50距离';
+
+  @override
+  String get heianWindModuleMoveTime => '僵尸平移时间 (MoveTime)';
+
+  @override
+  String get heianWindModuleMoveTimeHint => '单位：秒';
 
   @override
   String get heianWindModuleExpectationLabel => '神风配置';
