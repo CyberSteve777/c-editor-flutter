@@ -1671,7 +1671,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleTitle_BronzeProperties => '铜人像';
 
   @override
-  String get moduleDesc_BronzeProperties => '配置功夫世界的铜人像（仅第一波有效）';
+  String get moduleDesc_BronzeProperties => '配置功夫世界的铜人像';
 
   @override
   String get moduleTitle_ArmrackProperties => '兵器架';
@@ -1703,17 +1703,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get bronzeModuleHelpBatchesBody =>
-      '每个波次组对应关卡文件 data 数组中的一条记录。将铜人像分配到组中并设置波次（仅第一波在游戏中生效）。复活使用 spawnTime（秒）。同一组内复活时间相同的铜人会同时复活。\n后续组的复活倒计时承接第一组（例如：第一组 30 秒、第二组 45 秒、第三组 50 秒，则第二组在第一组复活后 15 秒复活，第三组在第二组复活后 5 秒复活）。';
-
-  @override
-  String get bronzeModuleHelpWaveLimit => '波次限制';
-
-  @override
-  String get bronzeModuleHelpWaveLimitBody =>
-      '由于游戏限制，仅第一波配置在游戏中生效。仍可在此编辑其他波次组并保存到关卡文件，但只有第一波会显示在波次时间轴。';
-
-  @override
-  String get bronzeModuleExpectationLabel => '铜人像';
+      '每添加一个铜人像，关卡文件中就会对应生成一组条目。复活使用条目中填写的复活时间 (spawnTime)，以秒为单位，与关卡波次无关。复活时间相同的铜人会同时复活。后续批次铜人的复活倒计时承接第一批铜人（例如：第一批为30秒，第二批为45秒，第三批为50秒，则第二批会在第一批复活后的15秒复活，第三批会在第二批复活后的5秒复活）。';
 
   @override
   String get bronzeModuleShakeOffset => '动画效果';
@@ -4019,6 +4009,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossBattleSelection => '僵王选择';
+
+  @override
+  String get zombossBattleSelectBaseTitle => '选择基础僵王';
+
+  @override
+  String get zombossBattleChangeBase => '更换基础僵王';
 
   @override
   String get zombossBattleBaseLabel => '基础僵王';

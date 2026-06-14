@@ -3259,7 +3259,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_BronzeProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configures Kongfu World bronze statues (wave 1 only)'**
+  /// **'Configures Kongfu World bronze statues'**
   String get moduleDesc_BronzeProperties;
 
   /// No description provided for @moduleTitle_ArmrackProperties.
@@ -3319,26 +3319,8 @@ abstract class AppLocalizations {
   /// No description provided for @bronzeModuleHelpBatchesBody.
   ///
   /// In en, this message translates to:
-  /// **'Each wave group is one entry in the level file\'s data array. Assign statues to a group and set its wave index (only wave 1 takes effect in-game). Revival timing uses spawn time (spawnTime), in seconds. Statues in the same group with the same spawn time revive together.\nThe revival countdown for subsequent groups is offset from the first group. For example, if the first group is set to 30s, the second to 45s, and the third to 50s, then the second group will revive 15s after the first, and the third group 5s after the second.'**
+  /// **'Each bronze statue added generates a corresponding entry in the level file. Revival timing is determined by the spawn time (spawnTime), in seconds, and is independent of waves. Bronze statues with the same spawn time will revive simultaneously.\nThe revival countdown for subsequent batches is offset from the first batch. For example, if the first batch is set to 30s, the second to 45s, and the third to 50s, then the second batch will revive 15s after the first, and the third batch 5s after the second.'**
   String get bronzeModuleHelpBatchesBody;
-
-  /// No description provided for @bronzeModuleHelpWaveLimit.
-  ///
-  /// In en, this message translates to:
-  /// **'Wave limit'**
-  String get bronzeModuleHelpWaveLimit;
-
-  /// No description provided for @bronzeModuleHelpWaveLimitBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.'**
-  String get bronzeModuleHelpWaveLimitBody;
-
-  /// No description provided for @bronzeModuleExpectationLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Bronze statues'**
-  String get bronzeModuleExpectationLabel;
 
   /// No description provided for @bronzeModuleShakeOffset.
   ///
@@ -7623,6 +7605,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Zomboss selection'**
   String get zombossBattleSelection;
+
+  /// No description provided for @zombossBattleSelectBaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select base Zomboss'**
+  String get zombossBattleSelectBaseTitle;
+
+  /// No description provided for @zombossBattleChangeBase.
+  ///
+  /// In en, this message translates to:
+  /// **'Change base Zomboss'**
+  String get zombossBattleChangeBase;
 
   /// No description provided for @zombossBattleBaseLabel.
   ///

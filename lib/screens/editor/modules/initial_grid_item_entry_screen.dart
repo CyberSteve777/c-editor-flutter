@@ -254,7 +254,9 @@ class _InitialGridItemEntryScreenState extends State<InitialGridItemEntryScreen>
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: BoxConstraints(
+          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(context),
+        ),
         child: AspectRatio(
           aspectRatio: _gridCols / _gridRows,
           child: Container(
@@ -276,6 +278,8 @@ class _InitialGridItemEntryScreenState extends State<InitialGridItemEntryScreen>
                           .toList();
                       final firstItem = cellItems.firstOrNull;
                       final count = cellItems.length;
+                      final cellBadgeScale =
+                          EditorItemCardLayout.gridCellBadgeScale(context);
                       return Expanded(
                         child: GestureDetector(
                           onTap: () => setState(() {
@@ -311,15 +315,19 @@ class _InitialGridItemEntryScreenState extends State<InitialGridItemEntryScreen>
                                                 size: 32,
                                                 fit: BoxFit.contain,
                                                 borderRadius: 4,
-                                                badgeScaleFactor: 1.25),
+                                                badgeScaleFactor:
+                                                    1.25 * cellBadgeScale),
                                           ),
                                         ),
                                       ),
                                       if (count > 1)
                                         Positioned(
-                                          top: 3,
-                                          right: 3,
-                                          child: Container(
+                                          top: 2,
+                                          right: 2,
+                                          child: Transform.scale(
+                                            scale: cellBadgeScale,
+                                            alignment: Alignment.topRight,
+                                            child: Container(
                                             padding:
                                                 const EdgeInsets.symmetric(
                                               horizontal: 6,
@@ -343,6 +351,7 @@ class _InitialGridItemEntryScreenState extends State<InitialGridItemEntryScreen>
                                             ),
                                           ),
                                         ),
+                                      ),
                                     ],
                                   )
                                 : null,
@@ -418,41 +427,24 @@ class _GridItemCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
-        width: 100,
+        width: EditorItemCardLayout.cardWidth(context),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
-                  child: Center(
-                    child: GridItemIcon(
-                      typeName: item.typeName,
-                      size: 64,
-                      fit: BoxFit.contain,
-                      iconScaleFactor:
-                          GridItemRepository.isRenaiStatueNonHalf(item.typeName)
-                              ? 3.0
-                              : 1.5,
-                      badgeScaleFactor: 1.25,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: IconButton(
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    tooltip: deleteTooltip,
-                    color: Colors.grey,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                  ),
-                ),
-              ],
+            EditorDeletableIconHeader(
+              onDelete: onDelete,
+              deleteTooltip: deleteTooltip,
+              icon: GridItemIcon(
+                typeName: item.typeName,
+                size: 64,
+                fit: BoxFit.contain,
+                iconScaleFactor:
+                    GridItemRepository.isRenaiStatueNonHalf(item.typeName)
+                        ? 3.0
+                        : 1.5,
+                badgeScaleFactor: 1.25,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),

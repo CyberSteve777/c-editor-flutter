@@ -84,6 +84,33 @@ class _CustomZombiePropertiesScreenState
     _loadResilienceState();
   }
 
+  ZombieResilienceData _resilienceDataFromEntry(ResilienceConfigEntry entry) {
+    final d = entry.data;
+    return ZombieResilienceData(
+      amount: d.amount,
+      weakType: d.weakType,
+      recoverSpeed: d.recoverSpeed,
+      damageThresholdPerSecond: d.damageThresholdPerSecond,
+      resilienceBaseDamageThreshold: d.resilienceBaseDamageThreshold,
+      resilienceExtraDamageThreshold: d.resilienceExtraDamageThreshold,
+      animLabels: List<String>.from(d.animLabels),
+    );
+  }
+
+  void _removeCustomResilienceFromLevel() {
+    if (_customResilienceObj != null) {
+      widget.levelFile.objects.remove(_customResilienceObj!);
+    } else if (_customResilienceCodename.isNotEmpty) {
+      widget.levelFile.objects.removeWhere(
+        (o) =>
+            o.objClass == 'ZombieResilience' &&
+            o.aliases?.contains(_customResilienceCodename) == true,
+      );
+    }
+    _customResilienceObj = null;
+    _customResilienceCodename = '';
+  }
+
   void _loadResilienceState() {
     final r = _propsData.resilience;
     if (r == null) {
@@ -103,6 +130,7 @@ class _CustomZombiePropertiesScreenState
         damageThresholdPerSecond: r.damageThresholdPerSecond,
         resilienceBaseDamageThreshold: r.resilienceBaseDamageThreshold,
         resilienceExtraDamageThreshold: r.resilienceExtraDamageThreshold,
+        animLabels: List<String>.from(r.animLabels),
       );
       _customResilienceCodename = _nextCustomResilienceCodename();
       final rtid = _ensureCustomResilienceInLevel();
@@ -124,16 +152,7 @@ class _CustomZombiePropertiesScreenState
       _customResilienceCodename = '';
       final entry = ResilienceConfigRepository.getByAlias(info.alias);
       _customResilienceData = entry != null
-          ? ZombieResilienceData(
-              amount: entry.data.amount,
-              weakType: entry.data.weakType,
-              recoverSpeed: entry.data.recoverSpeed,
-              damageThresholdPerSecond: entry.data.damageThresholdPerSecond,
-              resilienceBaseDamageThreshold:
-                  entry.data.resilienceBaseDamageThreshold,
-              resilienceExtraDamageThreshold:
-                  entry.data.resilienceExtraDamageThreshold,
-            )
+          ? _resilienceDataFromEntry(entry)
           : ZombieResilienceData();
     } else {
       _resilienceUsePreset = false;
@@ -146,6 +165,11 @@ class _CustomZombiePropertiesScreenState
         _customResilienceData = ZombieResilienceData.fromJson(
           Map<String, dynamic>.from(_customResilienceObj!.objData as Map),
         );
+        final raw = _customResilienceObj!.objData as Map;
+        if (raw['AnimLabels'] == null) {
+          _customResilienceObj!.objData = _customResilienceData.toLevelJson();
+          WidgetsBinding.instance.addPostFrameCallback((_) => widget.onChanged());
+        }
       }
     }
   }
@@ -172,14 +196,14 @@ class _CustomZombiePropertiesScreenState
 
     if (_customResilienceObj != null) {
       _customResilienceObj!.aliases = [codename];
-      _customResilienceObj!.objData = _customResilienceData.toJson();
+      _customResilienceObj!.objData = _customResilienceData.toLevelJson();
       return RtidParser.build(codename, 'CurrentLevel');
     }
     final existing = widget.levelFile.objects
         .firstWhereOrNull((o) => o.aliases?.contains(codename) == true);
     if (existing != null && existing.objClass == 'ZombieResilience') {
       _customResilienceObj = existing;
-      _customResilienceObj!.objData = _customResilienceData.toJson();
+      _customResilienceObj!.objData = _customResilienceData.toLevelJson();
       return RtidParser.build(codename, 'CurrentLevel');
     }
     var finalCodename = codename;
@@ -190,7 +214,7 @@ class _CustomZombiePropertiesScreenState
     final obj = PvzObject(
       aliases: [finalCodename],
       objClass: 'ZombieResilience',
-      objData: _customResilienceData.toJson(),
+      objData: _customResilienceData.toLevelJson(),
     );
     widget.levelFile.objects.add(obj);
     _customResilienceObj = obj;
@@ -983,6 +1007,7 @@ class _CustomZombiePropertiesScreenState
                                 }
                                 _loadResilienceState();
                               } else {
+                                _removeCustomResilienceFromLevel();
                                 _propsData.resilience = null;
                               }
                               _sync();
@@ -1011,6 +1036,7 @@ class _CustomZombiePropertiesScreenState
                                             setState(() {
                                               _resilienceUsePreset = v;
                                               if (v) {
+                                                _removeCustomResilienceFromLevel();
                                                 final presets =
                                                     ResilienceConfigRepository
                                                         .getAll();
@@ -1023,6 +1049,20 @@ class _CustomZombiePropertiesScreenState
                                                         ? presets.first.alias
                                                         : null;
                                               } else {
+                                                if (_resiliencePresetAlias !=
+                                                    null) {
+                                                  final entry =
+                                                      ResilienceConfigRepository
+                                                          .getByAlias(
+                                                    _resiliencePresetAlias!,
+                                                  );
+                                                  if (entry != null) {
+                                                    _customResilienceData =
+                                                        _resilienceDataFromEntry(
+                                                      entry,
+                                                    );
+                                                  }
+                                                }
                                                 _propsData.resilience =
                                                     _ensureCustomResilienceInLevel();
                                               }
@@ -1093,6 +1133,14 @@ class _CustomZombiePropertiesScreenState
                                         v,
                                         'ResilienceConfig',
                                       );
+                                      final entry =
+                                          ResilienceConfigRepository.getByAlias(
+                                        v,
+                                      );
+                                      if (entry != null) {
+                                        _customResilienceData =
+                                            _resilienceDataFromEntry(entry);
+                                      }
                                     });
                                     _sync();
                                   }

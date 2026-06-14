@@ -1764,7 +1764,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_BronzeProperties =>
-      'Бронзовые статуи мира Кунфу: размещение и время возрождения (только волна 1)';
+      'Мини-игра бронзовых статуй мира Кунфу: размещение статуй и времени возрождения (не привязано к волнам)';
 
   @override
   String get moduleTitle_ArmrackProperties => 'Оружейные стойки';
@@ -1798,17 +1798,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get bronzeModuleHelpBatchesBody =>
-      'Каждая группа волн — одна запись в data. Назначьте статуи группе и укажите номер волны (в игре действует только волна 1). Время возрождения — spawnTime в секундах. Статуи в одной группе с одинаковым spawnTime возрождаются вместе.\nОтсчёт последующих групп продолжается от первой (например: 30 с, 45 с, 50 с — вторая через 15 с после первой, третья через 5 с после второй).';
-
-  @override
-  String get bronzeModuleHelpWaveLimit => 'Ограничение по волнам';
-
-  @override
-  String get bronzeModuleHelpWaveLimitBody =>
-      'Из-за ограничения игры в игре действуют только записи волны 1. Другие группы волн можно редактировать здесь и сохранять в файл уровня, но на временной шкале отображается только волна 1.';
-
-  @override
-  String get bronzeModuleExpectationLabel => 'Бронзовые статуи';
+      'Статуи с одинаковым временем возрождения появляются вместе. Последующие пакеты могут продолжать отсчёт. Выберите клетку, тип и секунды до возрождения.';
 
   @override
   String get bronzeModuleShakeOffset => 'Анимация';
@@ -4174,6 +4164,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossBattleSelection => 'Выбор Зомбосса';
+
+  @override
+  String get zombossBattleSelectBaseTitle => 'Выбор базового Зомбосса';
+
+  @override
+  String get zombossBattleChangeBase => 'Сменить базового Зомбосса';
 
   @override
   String get zombossBattleBaseLabel => 'Базовый Зомбосс';

@@ -414,7 +414,11 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
                         scaleTableForDesktop(
                           context: context,
                           child: Container(
-                            constraints: const BoxConstraints(maxWidth: 480),
+                            constraints: BoxConstraints(
+                              maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(
+                                context,
+                              ),
+                            ),
                             child: AspectRatio(
                               aspectRatio: _gridCols / _gridRows,
                               child: Container(
@@ -721,42 +725,23 @@ class _StatueCardState extends State<_StatueCard> {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
-        width: 140,
+        width: EditorItemCardLayout.cardWidth(context, base: 140),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
-                  child: Center(
-                    child: GridItemIcon(
-                      typeName: item.typeName,
-                      size: 64,
-                      iconScaleFactor:
-                          GridItemRepository.isRenaiStatueNonHalf(item.typeName)
-                          ? 3.65
-                          : 2.0,
-                      badgeScaleFactor: 2.0,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    tooltip: widget.deleteTooltip,
-                    onPressed: widget.onDelete,
-                    style: IconButton.styleFrom(
-                      backgroundColor:
-                          theme.colorScheme.surfaceContainerHighest,
-                      padding: const EdgeInsets.all(4),
-                    ),
-                  ),
-                ),
-              ],
+            EditorDeletableIconHeader(
+              onDelete: widget.onDelete,
+              deleteTooltip: widget.deleteTooltip,
+              icon: GridItemIcon(
+                typeName: item.typeName,
+                size: 64,
+                iconScaleFactor:
+                    GridItemRepository.isRenaiStatueNonHalf(item.typeName)
+                        ? 3.65
+                        : 2.0,
+                badgeScaleFactor: 2.0,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),

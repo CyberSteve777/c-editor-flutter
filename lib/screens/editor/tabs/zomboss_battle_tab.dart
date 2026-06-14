@@ -5,8 +5,9 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
-import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/screens/editor/others/zomboss_battle_base_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossBattleTab extends StatefulWidget {
   const ZombossBattleTab({
@@ -123,8 +124,22 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
     setState(() {});
   }
 
-  void _onBaseChanged(String? baseId) {
-    if (baseId == null || baseId == _selectedBaseId) return;
+  Future<void> _openBaseSelection() async {
+    final baseId = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZombossBattleBaseSelectionScreen(
+          selectedBaseId: _selectedBaseId,
+        ),
+      ),
+    );
+    if (baseId != null && mounted) {
+      _onBaseChanged(baseId);
+    }
+  }
+
+  void _onBaseChanged(String baseId) {
+    if (baseId == _selectedBaseId) return;
     final base = ZombossBattleRepository.getBase(baseId);
     if (base == null) return;
     final previousBaseId = _selectedBaseId;
@@ -191,58 +206,19 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
         ),
         const SizedBox(height: 8),
         if (currentBase != null)
-          Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: AssetImageWidget(
-                        assetPath:
-                            'assets/images/zombies/${currentBase.icon}',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      _displayName(context, currentBase.id),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: ZombossMechBaseCard(
+              baseId: currentBase.id,
+              icon: currentBase.icon,
+              compact: true,
+              trailing: IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: l10n?.zombossBattleChangeBase ?? 'Change base Zomboss',
+                onPressed: _openBaseSelection,
               ),
             ),
           ),
-        Tooltip(
-          message: l10n?.zombossBattleBaseHint ?? '',
-          child: DropdownButtonFormField<String>(
-            value: _selectedBaseId.isEmpty ? null : _selectedBaseId,
-            decoration: editorInputDecoration(
-              context,
-              labelText: l10n?.zombossBattleBaseLabel ?? 'Base zomboss',
-            ),
-            items: bases
-                .map(
-                  (b) => DropdownMenuItem(
-                    value: b.id,
-                    child: Text(_displayName(context, b.id)),
-                  ),
-                )
-                .toList(),
-            onChanged: _onBaseChanged,
-          ),
-        ),
         const SizedBox(height: 12),
         Tooltip(
           message: l10n?.zombossBattleVariationHint ?? '',

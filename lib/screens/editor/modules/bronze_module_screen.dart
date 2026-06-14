@@ -302,7 +302,11 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
                         scaleTableForDesktop(
                           context: context,
                           child: Container(
-                            constraints: const BoxConstraints(maxWidth: 480),
+                            constraints: BoxConstraints(
+                              maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(
+                                context,
+                              ),
+                            ),
                             child: AspectRatio(
                               aspectRatio: _gridCols / _gridRows,
                               child: Container(
@@ -783,37 +787,17 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
-        width: 140,
+        width: EditorItemCardLayout.cardWidth(context, base: 140),
         height: _kBronzeStatueCardHeight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
+            EditorDeletableIconHeader(
+              onDelete: widget.onDelete,
+              deleteTooltip: widget.deleteTooltip,
+              iconSize: 77,
               height: 88,
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
-                    child: Center(
-                      child: _BronzeZombieIcon(kind: item.kind, size: 77),
-                    ),
-                  ),
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: IconButton(
-                      icon: const Icon(Icons.delete_outline, size: 18),
-                      tooltip: widget.deleteTooltip,
-                      onPressed: widget.onDelete,
-                      style: IconButton.styleFrom(
-                        backgroundColor:
-                            theme.colorScheme.surfaceContainerHighest,
-                        padding: const EdgeInsets.all(4),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              icon: _BronzeZombieIcon(kind: item.kind, size: 77),
             ),
             Expanded(
               child: Padding(

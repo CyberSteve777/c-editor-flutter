@@ -1771,7 +1771,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_BronzeProperties =>
-      'Configures Kongfu World bronze statues (wave 1 only)';
+      'Configures Kongfu World bronze statues';
 
   @override
   String get moduleTitle_ArmrackProperties => 'Weapon Stands';
@@ -1805,17 +1805,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bronzeModuleHelpBatchesBody =>
-      'Each wave group is one entry in the level file\'s data array. Assign statues to a group and set its wave index (only wave 1 takes effect in-game). Revival timing uses spawn time (spawnTime), in seconds. Statues in the same group with the same spawn time revive together.\nThe revival countdown for subsequent groups is offset from the first group. For example, if the first group is set to 30s, the second to 45s, and the third to 50s, then the second group will revive 15s after the first, and the third group 5s after the second.';
-
-  @override
-  String get bronzeModuleHelpWaveLimit => 'Wave limit';
-
-  @override
-  String get bronzeModuleHelpWaveLimitBody =>
-      'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.';
-
-  @override
-  String get bronzeModuleExpectationLabel => 'Bronze statues';
+      'Each bronze statue added generates a corresponding entry in the level file. Revival timing is determined by the spawn time (spawnTime), in seconds, and is independent of waves. Bronze statues with the same spawn time will revive simultaneously.\nThe revival countdown for subsequent batches is offset from the first batch. For example, if the first batch is set to 30s, the second to 45s, and the third to 50s, then the second batch will revive 15s after the first, and the third batch 5s after the second.';
 
   @override
   String get bronzeModuleShakeOffset => 'Animation';
@@ -4225,6 +4215,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossBattleSelection => 'Zomboss selection';
+
+  @override
+  String get zombossBattleSelectBaseTitle => 'Select base Zomboss';
+
+  @override
+  String get zombossBattleChangeBase => 'Change base Zomboss';
 
   @override
   String get zombossBattleBaseLabel => 'Base zomboss';

@@ -279,7 +279,9 @@ class _ProtectGridItemChallengeScreenState
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: BoxConstraints(
+          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(context),
+        ),
         child: AspectRatio(
           aspectRatio: _gridCols / _gridRows,
           child: Container(
@@ -299,6 +301,8 @@ class _ProtectGridItemChallengeScreenState
                       final item = _data.gridItems.firstWhereOrNull(
                         (p) => p.gridX == col && p.gridY == row,
                       );
+                      final cellBadgeScale =
+                          EditorItemCardLayout.gridCellBadgeScale(context);
                       return Expanded(
                         child: GestureDetector(
                           onTap: () => setState(() {
@@ -333,7 +337,8 @@ class _ProtectGridItemChallengeScreenState
                                                 size: 32,
                                                 fit: BoxFit.contain,
                                                 borderRadius: 4,
-                                                badgeScaleFactor: 1.25),
+                                                badgeScaleFactor:
+                                                    1.25 * cellBadgeScale),
                                           ),
                                         ),
                                       ),
