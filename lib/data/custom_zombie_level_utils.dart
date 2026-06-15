@@ -1,8 +1,21 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/theme/app_theme.dart';
+
+/// A level-local custom zombie variant sharing the same base [TypeName].
+class CustomZombieVariation {
+  const CustomZombieVariation({
+    required this.alias,
+    required this.rtid,
+  });
+
+  final String alias;
+  final String rtid;
+}
 
 /// Helpers for level-local custom [ZombieType] objects and their references.
 abstract final class CustomZombieLevelUtils {
@@ -12,6 +25,39 @@ abstract final class CustomZombieLevelUtils {
     if (rtid == null || rtid.isEmpty) return false;
     final info = RtidParser.parse(rtid);
     return info?.source == _currentLevel;
+  }
+
+  static String defaultRtid(String baseType) {
+    final aliases = ZombieRepository().buildZombieAliases(baseType);
+    return RtidParser.build(aliases, 'ZombieTypes');
+  }
+
+  static String? aliasFromRtid(String? rtid) {
+    if (rtid == null || rtid.isEmpty) return null;
+    return RtidParser.parse(rtid)?.alias;
+  }
+
+  static List<CustomZombieVariation> listVariations(
+    PvzLevelFile levelFile,
+    String baseType,
+  ) {
+    final items = <CustomZombieVariation>[];
+    for (final obj in levelFile.objects) {
+      if (obj.objClass != 'ZombieType') continue;
+      final alias = obj.aliases?.firstOrNull;
+      if (alias == null) continue;
+      final data = obj.objData;
+      if (data is! Map<String, dynamic>) continue;
+      if (data['TypeName'] != baseType) continue;
+      items.add(
+        CustomZombieVariation(
+          alias: alias,
+          rtid: RtidParser.build(alias, _currentLevel),
+        ),
+      );
+    }
+    items.sort((a, b) => a.alias.compareTo(b.alias));
+    return items;
   }
 
   /// Resolves a custom zombie alias from an RTID or a bare level-local alias.
@@ -77,6 +123,81 @@ abstract final class CustomZombieLevelUtils {
     levelFile.objects.remove(typeObj);
   }
 
+  /// Whether removing one more reference would leave [alias] unused.
+  static bool willBeOrphanAfterRemove(PvzLevelFile levelFile, String alias) {
+    return countReferences(levelFile, alias) <= 1;
+  }
+
+  /// Asks whether orphan type/property objects should be erased from the level.
+  /// Returns `true` to erase, `false` to keep them in the level file.
+  static Future<bool?> promptDeleteOrphanProperties(
+    BuildContext context, {
+    required String alias,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final okGreen = isDark ? pvzGreenLight : pvzGreenDark;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          l10n?.customZombieOrphanDeleteTitle ??
+              'Erase custom properties from level?',
+        ),
+        content: Text(
+          l10n?.customZombieOrphanDeleteMessage(alias) ??
+              'This is the last use of "$alias" in this level. '
+                  'Remove its zombie type and property objects from the level file? '
+                  'This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.error,
+            ),
+            child: Text(l10n?.customZombieOrphanDeleteKeep ?? 'Keep in level'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: okGreen,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n?.customZombieOrphanDeleteErase ?? 'Erase from level'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Deletes a zombie from a modal bottom sheet: prompts for orphan cleanup,
+  /// closes the sheet, then runs [onRemove].
+  static Future<void> handleDeleteFromBottomSheet({
+    required BuildContext sheetContext,
+    required BuildContext parentContext,
+    required PvzLevelFile levelFile,
+    required String zombieTypeRtid,
+    required Future<void> Function(bool eraseOrphanProperties) onRemove,
+  }) async {
+    final alias = aliasFromRtid(zombieTypeRtid);
+    var eraseOrphan = false;
+    if (alias != null && willBeOrphanAfterRemove(levelFile, alias)) {
+      final choice = await promptDeleteOrphanProperties(
+        parentContext,
+        alias: alias,
+      );
+      if (choice == null) return;
+      eraseOrphan = choice;
+    }
+    if (sheetContext.mounted) {
+      Navigator.pop(sheetContext);
+    }
+    await onRemove(eraseOrphan);
+  }
+
   /// After removing the last in-level reference, optionally delete the orphan type.
   static Future<void> maybePromptDeleteOrphan({
     required BuildContext context,
@@ -86,30 +207,8 @@ abstract final class CustomZombieLevelUtils {
   }) async {
     if (countReferences(levelFile, alias) > 0) return;
 
-    final l10n = AppLocalizations.of(context);
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          l10n?.customZombieOrphanDeleteTitle ?? 'Remove custom zombie data?',
-        ),
-        content: Text(
-          l10n?.customZombieOrphanDeleteMessage(alias) ??
-              '“$alias” is no longer used in this level. Remove its zombie type and property objects from the level file?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n?.ok ?? 'OK'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) {
+    final erase = await promptDeleteOrphanProperties(context, alias: alias);
+    if (erase == true) {
       removeTypeAndProperties(levelFile, alias);
       onChanged();
     }

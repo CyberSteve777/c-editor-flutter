@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:c_editor/data/level_rtid_utils.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
@@ -243,19 +244,35 @@ abstract class ZombossMechActionUtils {
     if (oldAlias == newAlias) return;
     final oldRtid = RtidParser.build(oldAlias, customSource);
     final newRtid = RtidParser.build(newAlias, customSource);
-    final stages = propsData['Stages'];
-    if (stages is! List) return;
-    for (final stage in stages) {
-      if (stage is! Map) continue;
-      final actions = stage['Actions'];
-      if (actions is List) {
-        for (var i = 0; i < actions.length; i++) {
-          if (actions[i] == oldRtid) actions[i] = newRtid;
-        }
-      }
-      if (stage['RetreatAction'] == oldRtid) {
-        stage['RetreatAction'] = newRtid;
-      }
+    propsData['Stages'] = LevelRtidUtils.replaceInValue(
+      propsData['Stages'],
+      oldRtid,
+      newRtid,
+    );
+  }
+
+  static bool isAliasAvailable(
+    PvzLevelFile levelFile,
+    String alias, {
+    PvzObject? except,
+  }) {
+    return !levelFile.objects.any(
+      (o) => o != except && o.aliases?.contains(alias) == true,
+    );
+  }
+
+  static void renameCustomActionInLevel({
+    required PvzLevelFile levelFile,
+    required String oldAlias,
+    required String newAlias,
+    PvzObject? obj,
+  }) {
+    if (oldAlias == newAlias) return;
+    final oldRtid = RtidParser.build(oldAlias, customSource);
+    final newRtid = RtidParser.build(newAlias, customSource);
+    LevelRtidUtils.replaceReferences(levelFile, oldRtid, newRtid);
+    if (obj != null) {
+      obj.aliases = [newAlias];
     }
   }
 

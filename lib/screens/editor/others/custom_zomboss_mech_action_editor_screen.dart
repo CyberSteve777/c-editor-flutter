@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
@@ -7,6 +9,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/alias_rename_dialog.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/zomboss_mech_action_fields.dart';
 
@@ -109,28 +112,56 @@ class _CustomZombossMechActionEditorScreenState
     widget.onPropsSync?.call();
   }
 
-  void _applyAlias(String newAlias) {
+  Future<bool> _tryApplyAlias(String newAlias) async {
     final trimmed = newAlias.trim();
-    if (trimmed.isEmpty) return;
-    final oldAlias = _alias;
-    if (trimmed != oldAlias &&
-        widget.levelFile.objects.any(
-          (o) =>
-              o != _obj && o.aliases?.contains(trimmed) == true,
-        )) {
-      return;
+    if (trimmed.isEmpty) return false;
+    if (trimmed == _alias) return true;
+
+    if (!ZombossMechActionUtils.isAliasAvailable(
+      widget.levelFile,
+      trimmed,
+      except: _obj,
+    )) {
+      await showAliasAlreadyTakenDialog(context);
+      _aliasCtrl.text = _alias;
+      return false;
     }
-    setState(() {
-      _alias = trimmed;
-      if (widget.propsData != null && oldAlias != trimmed) {
+
+    if (widget.existingRtid != null || _obj != null) {
+      final confirmed = await showAliasRenameConfirmDialog(
+        context,
+        oldAlias: _alias,
+        newAlias: trimmed,
+      );
+      if (!confirmed) {
+        _aliasCtrl.text = _alias;
+        return false;
+      }
+      ZombossMechActionUtils.renameCustomActionInLevel(
+        levelFile: widget.levelFile,
+        oldAlias: _alias,
+        newAlias: trimmed,
+        obj: _obj,
+      );
+      if (widget.propsData != null) {
         ZombossMechActionUtils.renameCustomActionReferences(
           propsData: widget.propsData!,
-          oldAlias: oldAlias,
+          oldAlias: _alias,
           newAlias: trimmed,
         );
       }
+      widget.onPropsSync?.call();
+    }
+
+    setState(() {
+      _alias = trimmed;
       _syncObject();
     });
+    return true;
+  }
+
+  void _applyAlias(String newAlias) {
+    unawaited(_tryApplyAlias(newAlias));
   }
 
   void _onObjclassChanged(String? value) {
@@ -150,9 +181,21 @@ class _CustomZombossMechActionEditorScreenState
     });
   }
 
-  void _saveAndPop() {
-    _applyAlias(_aliasCtrl.text);
+  Future<void> _saveAndPop() async {
+    if (widget.existingRtid == null && _obj == null) {
+      final trimmed = _aliasCtrl.text.trim();
+      if (trimmed.isEmpty) return;
+      if (!ZombossMechActionUtils.isAliasAvailable(widget.levelFile, trimmed)) {
+        await showAliasAlreadyTakenDialog(context);
+        return;
+      }
+      _alias = trimmed;
+    } else {
+      final aliasOk = await _tryApplyAlias(_aliasCtrl.text);
+      if (!aliasOk || !mounted) return;
+    }
     _syncObject();
+    if (!mounted) return;
     Navigator.pop(
       context,
       RtidParser.build(_alias, ZombossMechActionUtils.customSource),

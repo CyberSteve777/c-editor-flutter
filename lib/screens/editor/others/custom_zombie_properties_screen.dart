@@ -1,13 +1,16 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/resilience_shield_utils.dart';
 import 'package:c_editor/data/repository/resilience_config_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/screens/editor/others/resilience_shield_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/resilience_shield_widgets.dart';
 
 /// Custom zombie properties. Ported from CustomZombiePropertiesEP.kt
 class CustomZombiePropertiesScreen extends StatefulWidget {
@@ -38,7 +41,6 @@ class _CustomZombiePropertiesScreenState
   late ZombiePropertySheetData _propsData;
   final List<double> _resistances = List<double>.filled(7, 0.0);
   ZombieResilienceData _customResilienceData = ZombieResilienceData();
-  bool _resilienceUsePreset = true;
   String? _selectedResilienceRtid;
   String _customResilienceCodename = '';
 
@@ -156,7 +158,6 @@ class _CustomZombiePropertiesScreenState
   void _loadResilienceState() {
     final r = _propsData.resilience;
     if (r == null) {
-      _resilienceUsePreset = true;
       _selectedResilienceRtid = null;
       _customResilienceObj = null;
       _customResilienceData = ZombieResilienceData();
@@ -164,7 +165,6 @@ class _CustomZombiePropertiesScreenState
       return;
     }
     if (r is ZombieResilienceData) {
-      _resilienceUsePreset = false;
       _customResilienceData = ZombieResilienceData(
         amount: r.amount,
         weakType: r.weakType,
@@ -180,6 +180,7 @@ class _CustomZombiePropertiesScreenState
       _customResilienceObj = widget.levelFile.objects.firstWhereOrNull(
         (o) => o.aliases?.contains(RtidParser.parse(rtid)?.alias ?? '') == true,
       );
+      _selectedResilienceRtid = rtid;
       _propsObj?.objData = _propsData.toJson();
       WidgetsBinding.instance.addPostFrameCallback((_) => widget.onChanged());
       return;
@@ -188,17 +189,8 @@ class _CustomZombiePropertiesScreenState
     final info = RtidParser.parse(r);
     if (info == null) return;
     if (info.source == 'ResilienceConfig' || info.source == 'CurrentLevel') {
-      _resilienceUsePreset = true;
       _selectedResilienceRtid = r;
       _applySelectedResilienceRtid(r);
-      if (info.source == 'CurrentLevel' &&
-          _customResilienceObj?.objData is Map) {
-        final raw = _customResilienceObj!.objData as Map;
-        if (raw['AnimLabels'] == null) {
-          _customResilienceObj!.objData = _customResilienceData.toLevelJson();
-          WidgetsBinding.instance.addPostFrameCallback((_) => widget.onChanged());
-        }
-      }
     }
   }
 
@@ -264,12 +256,122 @@ class _CustomZombiePropertiesScreenState
     final r = _propsData.resilience;
     if (r == null) return;
     _propsData.resilience = null;
-    _resilienceUsePreset = true;
     _selectedResilienceRtid = null;
     _customResilienceObj = null;
     _customResilienceData = ZombieResilienceData();
     _customResilienceCodename = '';
     _propsObj?.objData = _propsData.toJson();
+  }
+
+  ResilienceConfigEntry? _currentResilienceEntry() {
+    final rtid = _selectedResilienceRtid ??
+        (_propsData.resilience is String ? _propsData.resilience as String : null);
+    return ResilienceShieldUtils.resolveEntry(rtid, widget.levelFile);
+  }
+
+  Future<void> _pickResilienceShield() async {
+    final rtid = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResilienceShieldSelectionScreen(
+          levelFile: widget.levelFile,
+          currentRtid: _selectedResilienceRtid ??
+              (_propsData.resilience is String
+                  ? _propsData.resilience as String
+                  : null),
+          onChanged: widget.onChanged,
+        ),
+      ),
+    );
+    if (!mounted || rtid == null) return;
+    setState(() => _applySelectedResilienceRtid(rtid));
+    _sync();
+  }
+
+  Widget _buildResilienceShieldCard(
+    ThemeData theme,
+    AppLocalizations? l10n,
+  ) {
+    final entry = _currentResilienceEntry();
+    final alias = entry?.alias ??
+        RtidParser.parse(_selectedResilienceRtid ?? '')?.alias ??
+        '';
+    final source =
+        RtidParser.parse(_selectedResilienceRtid ?? '')?.source ?? '';
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: _pickResilienceShield,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n?.resilienceSelectedShieldLabel ??
+                      'Selected Resilience Shield:',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Text(
+                alias.isNotEmpty && source.isNotEmpty
+                    ? '$alias@$source'
+                    : (l10n?.resiliencePresetSelect ??
+                        'Selected resilience shield'),
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResilienceParametersSummary(AppLocalizations? l10n) {
+    final entry = _currentResilienceEntry();
+    final data = entry?.data ?? _customResilienceData;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ResilienceShieldParameterRow(
+          label: l10n?.resilienceAmount ?? 'Resilience value (Amount)',
+          value: '${data.amount}',
+        ),
+        ResilienceShieldParameterRow(
+          label: l10n?.resilienceWeakType ?? 'Resilience type (WeakType)',
+          value: resilienceWeakTypeLabel(l10n, data.weakType),
+          weakType: data.weakType,
+        ),
+        ResilienceShieldParameterRow(
+          label: l10n?.resilienceRecoverSpeed ??
+              'Resilience bar recovery speed (RecoverSpeed)',
+          value: '${data.recoverSpeed}',
+        ),
+        ResilienceShieldParameterRow(
+          label: l10n?.resilienceDamageThresholdPerSecond ??
+              'Zombie damage threshold per second (DamageThresholdPerSecond)',
+          value: '${data.damageThresholdPerSecond}',
+        ),
+        ResilienceShieldParameterRow(
+          label: l10n?.resilienceBaseDamageThreshold ??
+              'Resilience base damage threshold (ResilienceBaseDamageThreshold)',
+          value: '${data.resilienceBaseDamageThreshold}',
+        ),
+        ResilienceShieldParameterRow(
+          label: l10n?.resilienceExtraDamageThreshold ??
+              'Resilience extra damage threshold (ResilienceExtraDamageThreshold)',
+          value: '${data.resilienceExtraDamageThreshold}',
+        ),
+      ],
+    );
   }
 
   void _sync() {
@@ -512,6 +614,29 @@ class _CustomZombiePropertiesScreenState
   Color get _themeColor =>
       Theme.of(context).brightness == Brightness.dark ? pvzOrangeDark : pvzOrangeLight;
 
+  ThemeData _inputTheme(ThemeData theme) {
+    final accent = _themeColor;
+    return theme.copyWith(
+      colorScheme: theme.colorScheme.copyWith(primary: accent),
+      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: accent, width: 2),
+        ),
+        floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
+          if (states.contains(WidgetState.focused)) {
+            return TextStyle(color: accent);
+          }
+          return TextStyle(color: theme.colorScheme.onSurface);
+        }),
+        focusColor: accent,
+      ),
+      textSelectionTheme: theme.textSelectionTheme.copyWith(
+        cursorColor: accent,
+        selectionHandleColor: accent,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -612,58 +737,48 @@ class _CustomZombiePropertiesScreenState
           ),
         ],
       ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.deferToChild,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n?.aliasLabel ?? 'Alias',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: themeColor,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TextFormField(
-                    initialValue: _typeObj!.aliases?.isNotEmpty == true
-                        ? _typeObj!.aliases!.first
-                        : '',
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                      hintText: l10n?.aliasLabel ?? 'Alias',
-                    ),
-                    onChanged: (v) {
-                      final trimmed = v.trim();
-                      if (trimmed.isNotEmpty && _typeObj != null) {
-                        _typeObj!.aliases = [trimmed];
-                        widget.onChanged();
-                        setState(() {});
-                      }
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(l10n?.baseStats ?? 'Base stats',
+      body: Theme(
+        data: _inputTheme(theme),
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.deferToChild,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n?.baseStats ?? 'Base stats',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: themeColor,
-                  )),
-              const SizedBox(height: 8),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _doubleInput(
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          initialValue: _typeObj!.aliases?.isNotEmpty == true
+                              ? _typeObj!.aliases!.first
+                              : '',
+                          decoration: InputDecoration(
+                            labelText: l10n?.aliasLabel ?? 'Alias',
+                            border: const OutlineInputBorder(),
+                          ),
+                          onChanged: (v) {
+                            final trimmed = v.trim();
+                            if (trimmed.isNotEmpty && _typeObj != null) {
+                              _typeObj!.aliases = [trimmed];
+                              widget.onChanged();
+                              setState(() {});
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        _doubleInput(
                         label: l10n?.hitpoints ?? 'Hitpoints',
                         value: _propsData.hitpoints,
                         onChanged: (v) {
@@ -1012,164 +1127,29 @@ class _CustomZombiePropertiesScreenState
                             title:
                                 l10n?.enableResilience ?? 'Enable resilience',
                             checked: _isResilienceEnabled,
-                            onChanged: (checked) {
+                            onChanged: (checked) async {
                               if (checked) {
                                 final options = _resilienceShieldOptions();
                                 if (options.isNotEmpty) {
-                                  _applySelectedResilienceRtid(options.first.rtid);
+                                  _applySelectedResilienceRtid(
+                                    options.first.rtid,
+                                  );
+                                  _sync();
                                 } else {
-                                  _resilienceUsePreset = false;
-                                  _propsData.resilience =
-                                      _ensureCustomResilienceInLevel();
+                                  await _pickResilienceShield();
                                 }
-                                _loadResilienceState();
                               } else {
                                 _propsData.resilience = null;
+                                _sync();
                               }
-                              _sync();
+                              setState(() {});
                             },
                           ),
                           if (_isResilienceEnabled) ...[
                             const Divider(height: 24),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        l10n?.resilienceSource ?? 'Source',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      RadioGroup<bool>(
-                                        groupValue: _resilienceUsePreset,
-                                        onChanged: (v) {
-                                          if (v != null) {
-                                            setState(() {
-                                              _resilienceUsePreset = v;
-                                              if (v) {
-                                                final options =
-                                                    _resilienceShieldOptions();
-                                                if (_selectedResilienceRtid !=
-                                                        null &&
-                                                    options.any(
-                                                      (o) =>
-                                                          o.rtid ==
-                                                          _selectedResilienceRtid,
-                                                    )) {
-                                                  _propsData.resilience =
-                                                      _selectedResilienceRtid;
-                                                } else if (options.isNotEmpty) {
-                                                  _applySelectedResilienceRtid(
-                                                    options.first.rtid,
-                                                  );
-                                                }
-                                              } else {
-                                                if (_selectedResilienceRtid !=
-                                                    null) {
-                                                  _applySelectedResilienceRtid(
-                                                    _selectedResilienceRtid!,
-                                                  );
-                                                }
-                                                _resilienceUsePreset = false;
-                                                _propsData.resilience =
-                                                    _ensureCustomResilienceInLevel();
-                                              }
-                                            });
-                                            _sync();
-                                          }
-                                        },
-                                        child: Theme(
-                                          data: theme.copyWith(
-                                            radioTheme: RadioThemeData(
-                                              fillColor:
-                                                  WidgetStateProperty.resolveWith(
-                                                (states) {
-                                                  if (states.contains(
-                                                    WidgetState.selected,
-                                                  )) {
-                                                    return themeColor;
-                                                  }
-                                                  return null;
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Flexible(
-                                                child: RadioListTile<bool>(
-                                                  value: true,
-                                                  title: Text(
-                                                    l10n?.resiliencePreset ??
-                                                        'Existing',
-                                                  ),
-                                                ),
-                                              ),
-                                              Flexible(
-                                                child: RadioListTile<bool>(
-                                                  value: false,
-                                                  title: Text(
-                                                    l10n?.resilienceCustom ??
-                                                        'Custom',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                            _buildResilienceShieldCard(theme, l10n),
                             const SizedBox(height: 16),
-                            if (_resilienceUsePreset)
-                              Builder(
-                                builder: (context) {
-                                  final options = _resilienceShieldOptions();
-                                  final selected = _selectedResilienceRtid ??
-                                      options.firstOrNull?.rtid;
-                                  return DropdownButtonFormField<String>(
-                                    isExpanded: true,
-                                    initialValue: selected,
-                                    decoration: InputDecoration(
-                                      labelText:
-                                          l10n?.resiliencePresetSelect ??
-                                              'Selected resilience shield',
-                                      border: const OutlineInputBorder(),
-                                    ),
-                                    items: options
-                                        .map(
-                                          (e) => DropdownMenuItem<String>(
-                                            value: e.rtid,
-                                            child: _WeakTypeDropdownRow(
-                                              weakType: e.weakType,
-                                              label: '${e.alias}@${e.source}',
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChanged: options.isEmpty
-                                        ? null
-                                        : (v) {
-                                            if (v != null) {
-                                              setState(() {
-                                                _applySelectedResilienceRtid(v);
-                                              });
-                                              _sync();
-                                            }
-                                          },
-                                  );
-                                },
-                              )
-                            else
-                              _buildCustomResilienceFields(theme, l10n),
+                            _buildResilienceParametersSummary(l10n),
                           ],
                         ],
                       ),
@@ -1249,134 +1229,7 @@ class _CustomZombiePropertiesScreenState
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCustomResilienceFields(ThemeData theme, AppLocalizations? l10n) {
-    void onCustomResilienceChanged() {
-      _propsData.resilience = _ensureCustomResilienceInLevel();
-      setState(() {});
-      _sync();
-    }
-
-    void onCodenameChanged(String v) {
-      _customResilienceCodename = v;
-      onCustomResilienceChanged();
-    }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _CodenameInputField(
-          key: const ValueKey('resilience_codename'),
-          label: l10n?.resilienceCodename ?? 'Codename',
-          hint: l10n?.resilienceCodenameHint ?? 'e.g. CustomResilience0',
-          value: _customResilienceCodename,
-          onChanged: onCodenameChanged,
-        ),
-        const SizedBox(height: 12),
-        _intInput(
-          label: l10n?.resilienceAmount ?? 'Amount',
-          value: _customResilienceData.amount,
-          onChanged: (v) {
-            _customResilienceData.amount = v;
-            onCustomResilienceChanged();
-          },
-        ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: DropdownButtonFormField<int>(
-            isExpanded: true,
-            initialValue: _customResilienceData.weakType.clamp(1, 6),
-            decoration: InputDecoration(
-              labelText: l10n?.resilienceWeakType ?? 'Weak type',
-              border: const OutlineInputBorder(),
-            ),
-            items: [1, 2, 3, 4, 5, 6].map((wt) {
-              return DropdownMenuItem<int>(
-                value: wt,
-                child: _WeakTypeDropdownRow(
-                  weakType: wt,
-                  label: _weakTypeLabel(wt, l10n),
-                ),
-              );
-            }).toList(),
-            onChanged: (v) {
-              if (v != null) {
-                setState(() {
-                  _customResilienceData.weakType = v;
-                });
-                onCustomResilienceChanged();
-              }
-            },
-          ),
-        ),
-        _doubleInput(
-          label: l10n?.resilienceRecoverSpeed ?? 'RecoverSpeed',
-          value: _customResilienceData.recoverSpeed,
-          onChanged: (v) {
-            _customResilienceData.recoverSpeed = v;
-            onCustomResilienceChanged();
-          },
-        ),
-        const SizedBox(height: 12),
-        _doubleInput(
-          label: l10n?.resilienceDamageThresholdPerSecond ??
-              'DamageThresholdPerSecond',
-          value: _customResilienceData.damageThresholdPerSecond,
-          onChanged: (v) {
-            _customResilienceData.damageThresholdPerSecond = v;
-            onCustomResilienceChanged();
-          },
-        ),
-        const SizedBox(height: 12),
-        _intInput(
-          label: l10n?.resilienceBaseDamageThreshold ??
-              'ResilienceBaseDamageThreshold',
-          value: _customResilienceData.resilienceBaseDamageThreshold,
-          onChanged: (v) {
-            _customResilienceData.resilienceBaseDamageThreshold = v;
-            onCustomResilienceChanged();
-          },
-        ),
-        const SizedBox(height: 12),
-        _intInput(
-          label: l10n?.resilienceExtraDamageThreshold ??
-              'ResilienceExtraDamageThreshold',
-          value: _customResilienceData.resilienceExtraDamageThreshold,
-          onChanged: (v) {
-            _customResilienceData.resilienceExtraDamageThreshold = v;
-            onCustomResilienceChanged();
-          },
-        ),
-      ],
-    );
-  }
-
-  String _weakTypeLabel(int weakType, AppLocalizations? l10n) {
-    switch (weakType) {
-      case 1: return l10n?.resiliencePhysics ?? 'Physics';
-      case 2: return l10n?.resiliencePoison ?? 'Poison';
-      case 3: return l10n?.resilienceElectric ?? 'Electric';
-      case 4: return l10n?.resilienceMagic ?? 'Magic';
-      case 5: return l10n?.resilienceIce ?? 'Ice';
-      case 6: return l10n?.resilienceFire ?? 'Fire';
-      default: return '$weakType';
-    }
-  }
-
-  Widget _intInput({
-    required String label,
-    required int value,
-    required ValueChanged<int> onChanged,
-  }) {
-    return _IntInputField(
-      key: ValueKey('int_$label'),
-      label: label,
-      value: value,
-      onChanged: onChanged,
+      ),
     );
   }
 
@@ -1553,143 +1406,6 @@ class _DoubleInputFieldState extends State<_DoubleInputField> {
   }
 }
 
-class _CodenameInputField extends StatefulWidget {
-  const _CodenameInputField({
-    super.key,
-    required this.label,
-    required this.hint,
-    required this.value,
-    required this.onChanged,
-  });
-  final String label;
-  final String hint;
-  final String value;
-  final ValueChanged<String> onChanged;
-
-  @override
-  State<_CodenameInputField> createState() => _CodenameInputFieldState();
-}
-
-class _CodenameInputFieldState extends State<_CodenameInputField> {
-  late TextEditingController _controller;
-  late FocusNode _focusNode;
-  bool _isFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.value);
-    _focusNode = FocusNode();
-    _focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    final focused = _focusNode.hasFocus;
-    if (_isFocused != focused) {
-      setState(() => _isFocused = focused);
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant _CodenameInputField oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!_isFocused && oldWidget.value != widget.value) {
-      _controller.text = widget.value;
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      focusNode: _focusNode,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: widget.hint,
-        border: const OutlineInputBorder(),
-      ),
-      onChanged: widget.onChanged,
-    );
-  }
-}
-
-class _IntInputField extends StatefulWidget {
-  const _IntInputField({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
-  final String label;
-  final int value;
-  final ValueChanged<int> onChanged;
-
-  @override
-  State<_IntInputField> createState() => _IntInputFieldState();
-}
-
-class _IntInputFieldState extends State<_IntInputField> {
-  late TextEditingController _controller;
-  late FocusNode _focusNode;
-  bool _isFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.value.toString());
-    _focusNode = FocusNode();
-    _focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    final focused = _focusNode.hasFocus;
-    if (_isFocused != focused) {
-      setState(() => _isFocused = focused);
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant _IntInputField oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!_isFocused && oldWidget.value != widget.value) {
-      _controller.text = widget.value.toString();
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      focusNode: _focusNode,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        border: const OutlineInputBorder(),
-      ),
-      onChanged: (v) {
-        final n = int.tryParse(v);
-        if (n != null) widget.onChanged(n);
-      },
-    );
-  }
-}
-
 /// Resilience input field with same styling as base stats (_DoubleInputField).
 class _ResilienceInputField extends StatefulWidget {
   const _ResilienceInputField({
@@ -1789,38 +1505,4 @@ class _ResilienceShieldOption {
   final String alias;
   final String source;
   final int weakType;
-}
-
-class _WeakTypeDropdownRow extends StatelessWidget {
-  const _WeakTypeDropdownRow({
-    required this.weakType,
-    required this.label,
-  });
-
-  final int weakType;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final iconPath = weakType >= 1 && weakType < weakTypeIcons.length
-        ? weakTypeIcons[weakType]
-        : null;
-    return Row(
-      children: [
-        if (iconPath != null) ...[
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: AssetImageWidget(
-              assetPath: iconPath,
-              width: 20,
-              height: 20,
-              fit: BoxFit.contain,
-              altCandidates: imageAltCandidates(iconPath),
-            ),
-          ),
-        ],
-        Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
-      ],
-    );
-  }
 }
