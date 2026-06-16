@@ -5506,10 +5506,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get renaiModuleStatuesInCell => 'Статуи в выбранной ячейке';
 
   @override
-  String get renaiModuleExpectationLabel => 'События Ренессанса';
+  String get renaiModuleExpectationLabel => 'Превью события Ренессанса';
 
   @override
   String get renaiModuleNightStarts => 'Начало ночи';
+
+  @override
+  String get renaiModulePreviewNightStatues => 'Ночные статуи:';
+
+  @override
+  String get renaiModulePreviewRevivingStatues => 'Воскрешаемые статуи:';
 
   @override
   String get renaiModuleStatueCarve => 'Оживление статуи';
@@ -5555,6 +5561,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get airDropShipModuleDropAreaPreview => 'Предпросмотр зоны сброса';
+
+  @override
+  String get airDropShipModuleAreaDropPreviewLabel =>
+      'Предпросмотр зоны сброса:';
 
   @override
   String get airDropShipModuleExpectationLabel => 'Сброс импов';
@@ -6132,7 +6142,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get armrackModuleHelpOverviewBody =>
-      'Размещает оружейные стойки на газоне в волне 1. Этот модуль нужен для корректного отображения стоек в редакторе и в игре без неправильных текстур солнца.';
+      'Размещает оружейные стойки на газоне. Волна 1 — начальный пресет (до старта уровня); последующие группы появляются в волнах генератора по правилу N−1.';
 
   @override
   String get armrackModuleHelpPlacement => 'Размещение';
@@ -6174,7 +6184,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      'Размещает плитки Тайцзи на газоне в волне 1. Модуль задаёт позиции плиток в файле уровня.';
+      'Размещает плитки Тайцзи на газоне. Волна 1 — начальный пресет (до старта уровня); последующие группы появляются в волнах генератора по правилу N−1.';
 
   @override
   String get energyGridModuleHelpPlacement => 'Размещение';
@@ -6210,11 +6220,54 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gridOverrideModuleWaveFieldOneBased =>
-      'Волна (1 = первая волна, 2 = вторая, …)';
+      'Волна модуля (1 = начальный пресет, 2+ = появление в волне генератора N−1)';
 
   @override
   String get gridOverrideModuleTimelineNote =>
       'На временной шкале отображаются только записи волны 1.';
+
+  @override
+  String get gridOverrideModuleInitialWaveNote =>
+      'Это начальный пресет: объекты появляются на газоне до старта уровня.';
+
+  @override
+  String gridOverrideModuleWaveSpawnNote(int waveGeneratorWave) {
+    return 'Эта группа появляется, когда начинается волна генератора $waveGeneratorWave.';
+  }
+
+  @override
+  String get gridOverrideModuleWaveSpawnTimelineNote =>
+      'Эти записи не действуют во вкладке менеджера волн.';
+
+  @override
+  String get gridOverrideModuleHelpWaveNumbering => 'Нумерация волн';
+
+  @override
+  String get gridOverrideModuleHelpWaveNumberingBody =>
+      'Волна 1 — начальный пресет: объекты на газоне до старта уровня. С волны 2 правило N−1: волна модуля N появляется при волне генератора N−1 (волна 2 → волна генератора 1, волна 3 → волна генератора 2 и т. д.).';
+
+  @override
+  String get gridOverridePreviewArmrackTitle => 'Размещение оружейных стоек';
+
+  @override
+  String get gridOverridePreviewEnergyGridTitle => 'Размещение плиток Тайцзи';
+
+  @override
+  String get waveGeneratorInitialGridOverridesTitle =>
+      'Начальные объекты сетки кунфу';
+
+  @override
+  String get waveGeneratorPreviewInitialArmrack =>
+      'Предпросмотр начального размещения оружейных стоек';
+
+  @override
+  String get waveGeneratorPreviewInitialEnergyGrid =>
+      'Предпросмотр начального размещения плиток Тайцзи';
+
+  @override
+  String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label) {
+    return 'Волна $wave — $label';
+  }
 
   @override
   String get mechanismPlankSettings => 'Connected Minecart settings';

@@ -5273,10 +5273,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get renaiModuleStatuesInCell => '当前格子中的物品';
 
   @override
-  String get renaiModuleExpectationLabel => '夜幕降临事件';
+  String get renaiModuleExpectationLabel => '文艺复兴事件预览';
 
   @override
   String get renaiModuleNightStarts => '黑夜开始';
+
+  @override
+  String get renaiModulePreviewNightStatues => '黑夜雕像：';
+
+  @override
+  String get renaiModulePreviewRevivingStatues => '复活雕像：';
 
   @override
   String get renaiModuleStatueCarve => '雕像复活';
@@ -5321,6 +5327,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get airDropShipModuleDropAreaPreview => '投放区域预览';
+
+  @override
+  String get airDropShipModuleAreaDropPreviewLabel => '投放区域预览：';
 
   @override
   String get airDropShipModuleExpectationLabel => '空投小鬼';
@@ -5873,7 +5882,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get armrackModuleHelpOverviewBody =>
-      '在第一波于场上放置兵器架。此模块用于让兵器架在编辑器和游戏中正常显示，避免出现错误的阳光贴图。';
+      '在场地上放置兵器架。第1波为初始预设（关卡开始前）；后续波次组按 N−1 规则在波次生成器的对应波次出现。';
 
   @override
   String get armrackModuleHelpPlacement => '放置方式';
@@ -5915,7 +5924,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      '在第一波于场上放置太极瓷砖。使用此模块配置关卡文件中的瓷砖位置。';
+      '在场地上放置太极瓷砖。第1波为初始预设（关卡开始前）；后续波次组按 N−1 规则在波次生成器的对应波次出现。';
 
   @override
   String get energyGridModuleHelpPlacement => '放置方式';
@@ -5949,10 +5958,49 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gridOverrideModuleAppearances => '波次组';
 
   @override
-  String get gridOverrideModuleWaveFieldOneBased => '波次（1 = 第一波，2 = 第二波，…）';
+  String get gridOverrideModuleWaveFieldOneBased =>
+      '模块波次（1 = 初始预设，2+ = 在生成器第 N−1 波出现）';
 
   @override
   String get gridOverrideModuleTimelineNote => '仅第一波条目会显示在波次时间轴中。';
+
+  @override
+  String get gridOverrideModuleInitialWaveNote => '此为初始预设，对象会在关卡开始前出现在场地上。';
+
+  @override
+  String gridOverrideModuleWaveSpawnNote(int waveGeneratorWave) {
+    return '此组在波次生成器第 $waveGeneratorWave 波开始时出现。';
+  }
+
+  @override
+  String get gridOverrideModuleWaveSpawnTimelineNote => '这些条目在波次管理器标签页中不生效。';
+
+  @override
+  String get gridOverrideModuleHelpWaveNumbering => '波次编号';
+
+  @override
+  String get gridOverrideModuleHelpWaveNumberingBody =>
+      '第1波为初始预设：对象在关卡开始前出现在场地上。从第2波起按 N−1 规则：模块第 N 波在波次生成器第 N−1 波时出现（模块第2波 → 生成器第1波，模块第3波 → 生成器第2波，依此类推）。';
+
+  @override
+  String get gridOverridePreviewArmrackTitle => '兵器架布局';
+
+  @override
+  String get gridOverridePreviewEnergyGridTitle => '太极瓷砖布局';
+
+  @override
+  String get waveGeneratorInitialGridOverridesTitle => '初始功夫网格物品';
+
+  @override
+  String get waveGeneratorPreviewInitialArmrack => '预览初始兵器架布局';
+
+  @override
+  String get waveGeneratorPreviewInitialEnergyGrid => '预览初始太极瓷砖布局';
+
+  @override
+  String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label) {
+    return '第 $wave 波 — $label';
+  }
 
   @override
   String get mechanismPlankSettings => '连体矿车设置';

@@ -5570,10 +5570,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get renaiModuleStatuesInCell => 'Item(s) in selected tile';
 
   @override
-  String get renaiModuleExpectationLabel => 'Night event';
+  String get renaiModuleExpectationLabel => 'Renaissance event preview';
 
   @override
   String get renaiModuleNightStarts => 'Night begins';
+
+  @override
+  String get renaiModulePreviewNightStatues => 'Night statues:';
+
+  @override
+  String get renaiModulePreviewRevivingStatues => 'Reviving statues:';
 
   @override
   String get renaiModuleStatueCarve => 'Statue revival';
@@ -5620,6 +5626,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get airDropShipModuleDropAreaPreview => 'Drop area preview';
+
+  @override
+  String get airDropShipModuleAreaDropPreviewLabel => 'Area drop preview:';
 
   @override
   String get airDropShipModuleExpectationLabel => 'Airdropped Imps';
@@ -6195,7 +6204,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get armrackModuleHelpOverviewBody =>
-      'Places weapon stands on the lawn for wave 1. This module is required for weapon stands to display properly in the editor and in-game without showing incorrect sun textures.';
+      'Places weapon stands on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.';
 
   @override
   String get armrackModuleHelpPlacement => 'Placement';
@@ -6237,7 +6246,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      'Places Taiji Tiles on the lawn for wave 1. Use this module to configure tile positions in the level file.';
+      'Places Taiji Tiles on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.';
 
   @override
   String get energyGridModuleHelpPlacement => 'Placement';
@@ -6273,11 +6282,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gridOverrideModuleWaveFieldOneBased =>
-      'Wave (1 = first wave, 2 = second wave, ...)';
+      'Module wave (1 = initial preset, 2+ = spawns on generator wave N−1)';
 
   @override
   String get gridOverrideModuleTimelineNote =>
       'Only wave 1 entries appear in the wave timeline tab.';
+
+  @override
+  String get gridOverrideModuleInitialWaveNote =>
+      'These objects are the initial preset and appear on the lawn before the level starts.';
+
+  @override
+  String gridOverrideModuleWaveSpawnNote(int waveGeneratorWave) {
+    return 'This group spawns when wave-generator wave $waveGeneratorWave begins.';
+  }
+
+  @override
+  String get gridOverrideModuleWaveSpawnTimelineNote =>
+      'These entries do not take effect in the wave manager tab.';
+
+  @override
+  String get gridOverrideModuleHelpWaveNumbering => 'Wave numbering';
+
+  @override
+  String get gridOverrideModuleHelpWaveNumberingBody =>
+      'Wave 1 is the initial preset: objects appear on the lawn before the level starts. From wave 2 onward, module wave N spawns when wave-generator wave N−1 begins (wave 2 → generator wave 1, wave 3 → generator wave 2, and so on).';
+
+  @override
+  String get gridOverridePreviewArmrackTitle => 'Weapon stand placement';
+
+  @override
+  String get gridOverridePreviewEnergyGridTitle => 'Taiji tile placement';
+
+  @override
+  String get waveGeneratorInitialGridOverridesTitle =>
+      'Initial kongfu grid items';
+
+  @override
+  String get waveGeneratorPreviewInitialArmrack =>
+      'Preview initial weapon stands placement';
+
+  @override
+  String get waveGeneratorPreviewInitialEnergyGrid =>
+      'Preview initial Taiji tiles placement';
+
+  @override
+  String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label) {
+    return 'Wave $wave — $label';
+  }
 
   @override
   String get mechanismPlankSettings => 'Connected Minecart settings';

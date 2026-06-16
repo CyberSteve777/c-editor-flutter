@@ -9955,7 +9955,7 @@ abstract class AppLocalizations {
   /// No description provided for @renaiModuleExpectationLabel.
   ///
   /// In en, this message translates to:
-  /// **'Night event'**
+  /// **'Renaissance event preview'**
   String get renaiModuleExpectationLabel;
 
   /// No description provided for @renaiModuleNightStarts.
@@ -9963,6 +9963,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Night begins'**
   String get renaiModuleNightStarts;
+
+  /// No description provided for @renaiModulePreviewNightStatues.
+  ///
+  /// In en, this message translates to:
+  /// **'Night statues:'**
+  String get renaiModulePreviewNightStatues;
+
+  /// No description provided for @renaiModulePreviewRevivingStatues.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviving statues:'**
+  String get renaiModulePreviewRevivingStatues;
 
   /// No description provided for @renaiModuleStatueCarve.
   ///
@@ -10047,6 +10059,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drop area preview'**
   String get airDropShipModuleDropAreaPreview;
+
+  /// No description provided for @airDropShipModuleAreaDropPreviewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Area drop preview:'**
+  String get airDropShipModuleAreaDropPreviewLabel;
 
   /// No description provided for @airDropShipModuleExpectationLabel.
   ///
@@ -11095,7 +11113,7 @@ abstract class AppLocalizations {
   /// No description provided for @armrackModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Places weapon stands on the lawn for wave 1. This module is required for weapon stands to display properly in the editor and in-game without showing incorrect sun textures.'**
+  /// **'Places weapon stands on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.'**
   String get armrackModuleHelpOverviewBody;
 
   /// No description provided for @armrackModuleHelpPlacement.
@@ -11167,7 +11185,7 @@ abstract class AppLocalizations {
   /// No description provided for @energyGridModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Places Taiji Tiles on the lawn for wave 1. Use this module to configure tile positions in the level file.'**
+  /// **'Places Taiji Tiles on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.'**
   String get energyGridModuleHelpOverviewBody;
 
   /// No description provided for @energyGridModuleHelpPlacement.
@@ -11227,7 +11245,7 @@ abstract class AppLocalizations {
   /// No description provided for @gridOverrideModuleWaveFieldOneBased.
   ///
   /// In en, this message translates to:
-  /// **'Wave (1 = first wave, 2 = second wave, ...)'**
+  /// **'Module wave (1 = initial preset, 2+ = spawns on generator wave N−1)'**
   String get gridOverrideModuleWaveFieldOneBased;
 
   /// No description provided for @gridOverrideModuleTimelineNote.
@@ -11235,6 +11253,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only wave 1 entries appear in the wave timeline tab.'**
   String get gridOverrideModuleTimelineNote;
+
+  /// No description provided for @gridOverrideModuleInitialWaveNote.
+  ///
+  /// In en, this message translates to:
+  /// **'These objects are the initial preset and appear on the lawn before the level starts.'**
+  String get gridOverrideModuleInitialWaveNote;
+
+  /// No description provided for @gridOverrideModuleWaveSpawnNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This group spawns when wave-generator wave {waveGeneratorWave} begins.'**
+  String gridOverrideModuleWaveSpawnNote(int waveGeneratorWave);
+
+  /// No description provided for @gridOverrideModuleWaveSpawnTimelineNote.
+  ///
+  /// In en, this message translates to:
+  /// **'These entries do not take effect in the wave manager tab.'**
+  String get gridOverrideModuleWaveSpawnTimelineNote;
+
+  /// No description provided for @gridOverrideModuleHelpWaveNumbering.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave numbering'**
+  String get gridOverrideModuleHelpWaveNumbering;
+
+  /// No description provided for @gridOverrideModuleHelpWaveNumberingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave 1 is the initial preset: objects appear on the lawn before the level starts. From wave 2 onward, module wave N spawns when wave-generator wave N−1 begins (wave 2 → generator wave 1, wave 3 → generator wave 2, and so on).'**
+  String get gridOverrideModuleHelpWaveNumberingBody;
+
+  /// No description provided for @gridOverridePreviewArmrackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weapon stand placement'**
+  String get gridOverridePreviewArmrackTitle;
+
+  /// No description provided for @gridOverridePreviewEnergyGridTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Taiji tile placement'**
+  String get gridOverridePreviewEnergyGridTitle;
+
+  /// No description provided for @waveGeneratorInitialGridOverridesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial kongfu grid items'**
+  String get waveGeneratorInitialGridOverridesTitle;
+
+  /// No description provided for @waveGeneratorPreviewInitialArmrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview initial weapon stands placement'**
+  String get waveGeneratorPreviewInitialArmrack;
+
+  /// No description provided for @waveGeneratorPreviewInitialEnergyGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview initial Taiji tiles placement'**
+  String get waveGeneratorPreviewInitialEnergyGrid;
+
+  /// No description provided for @waveGeneratorGridOverrideWavePreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave {wave} — {label}'**
+  String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label);
 
   /// No description provided for @mechanismPlankSettings.
   ///
