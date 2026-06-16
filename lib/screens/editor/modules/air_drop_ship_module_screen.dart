@@ -13,12 +13,14 @@ class AirDropShipModuleScreen extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     required this.onBack,
+    this.initialDropShipWave,
   });
 
   final String rtid;
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback onBack;
+  final int? initialDropShipWave;
 
   @override
   State<AirDropShipModuleScreen> createState() =>
@@ -52,6 +54,17 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
   void initState() {
     super.initState();
     _loadData();
+    _selectedIndex = _resolveInitialIndex();
+  }
+
+  int _resolveInitialIndex() {
+    if (widget.initialDropShipWave != null) {
+      final idx = _data.appearWaves.indexWhere(
+        (w) => w.wave == widget.initialDropShipWave,
+      );
+      if (idx >= 0) return idx;
+    }
+    return _data.appearWaves.isEmpty ? -1 : 0;
   }
 
   void _loadData() {

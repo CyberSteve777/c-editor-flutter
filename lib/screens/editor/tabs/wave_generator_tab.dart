@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/grid_override_module_utils.dart';
+import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/wave_generator_level_utils.dart';
@@ -7,8 +9,11 @@ import 'package:c_editor/data/wave_generator_point_analysis.dart';
 import 'package:c_editor/data/zombie_display_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart' show isDesktopPlatform;
+import 'package:c_editor/widgets/grid_override_preview_dialog.dart';
+import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
 import 'package:c_editor/widgets/wave_generator_expectation_dialog.dart';
 import 'package:c_editor/widgets/wave_generator_zombie_tile.dart';
+import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
 
 /// Waves tab for levels using [WaveGeneratorProperties] (embedded wave data).
 class WaveGeneratorTab extends StatefulWidget {
@@ -25,7 +30,7 @@ class WaveGeneratorTab extends StatefulWidget {
   final PvzLevelFile levelFile;
   final ParsedLevelData parsed;
   final VoidCallback onChanged;
-  final void Function(String rtid)? onOpenModule;
+  final OpenModuleCallback? onOpenModule;
   final VoidCallback? onEditWaveGeneratorSettings;
   final void Function(int waveIndex) onEditWave;
 
@@ -116,31 +121,11 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
   }
 
   ArmrackPropertiesData? _getArmrackModuleData() {
-    final obj = widget.levelFile.objects.firstWhereOrNull(
-      (o) => o.objClass == 'ArmrackProperties',
-    );
-    if (obj?.objData is Map<String, dynamic>) {
-      try {
-        return ArmrackPropertiesData.fromJson(
-          obj!.objData as Map<String, dynamic>,
-        );
-      } catch (_) {}
-    }
-    return null;
+    return readArmrackModuleData(widget.levelFile);
   }
 
   EnergyGridPropertiesData? _getEnergyGridModuleData() {
-    final obj = widget.levelFile.objects.firstWhereOrNull(
-      (o) => o.objClass == 'EnergyGridProperties',
-    );
-    if (obj?.objData is Map<String, dynamic>) {
-      try {
-        return EnergyGridPropertiesData.fromJson(
-          obj!.objData as Map<String, dynamic>,
-        );
-      } catch (_) {}
-    }
-    return null;
+    return readEnergyGridModuleData(widget.levelFile);
   }
 
   HeianWindModulePropertiesData? _getHeianWindModuleData() {
@@ -164,18 +149,16 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
   }
 
   bool _waveHasArmrackActivity(int waveIndex) {
-    final data = _getArmrackModuleData();
-    if (data == null) return false;
-    return data.overrides.any(
-      (o) => o.wave == waveIndex && o.itemList.isNotEmpty,
+    return waveGeneratorWaveHasArmrackActivity(
+      waveGeneratorWaveIndex: waveIndex,
+      data: _getArmrackModuleData(),
     );
   }
 
   bool _waveHasEnergyGridActivity(int waveIndex) {
-    final data = _getEnergyGridModuleData();
-    if (data == null) return false;
-    return data.overrides.any(
-      (o) => o.wave == waveIndex && o.itemList.isNotEmpty,
+    return waveGeneratorWaveHasEnergyGridActivity(
+      waveGeneratorWaveIndex: waveIndex,
+      data: _getEnergyGridModuleData(),
     );
   }
 
@@ -276,107 +259,51 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
     );
   }
 
-  void _showCompanionDialog({
-    required BuildContext context,
-    required int waveIndex,
-    required String titleSuffix,
-    required Widget content,
-    required String? moduleClass,
-  }) {
-    final l10n = AppLocalizations.of(context);
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('${l10n?.waveLabel ?? 'Wave'} $waveIndex - $titleSuffix'),
-        content: SingleChildScrollView(child: content),
-        actions: [
-          if (widget.onOpenModule != null && moduleClass != null)
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: Colors.green),
-              onPressed: () {
-                final rtid = _getModuleRtid(moduleClass);
-                if (rtid != null) {
-                  Navigator.pop(ctx);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onOpenModule!(rtid);
-                  });
-                }
-              },
-              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
-      ),
-    );
+  void _openModule(String moduleClass, {ModuleOpenHint? hint}) {
+    if (widget.onOpenModule == null) return;
+    final rtid = _getModuleRtid(moduleClass);
+    if (rtid == null) return;
+    widget.onOpenModule!(rtid, hint: hint);
   }
 
   void _showHeianWindInfoDialog(BuildContext context, int waveIndex) {
-    final l10n = AppLocalizations.of(context);
     final heianWind = _getHeianWindModuleData();
     if (heianWind == null) return;
     final waves = heianWind.waveWindInfos
         .where((w) => w.waveNumber + 1 == waveIndex)
         .toList();
     if (waves.isEmpty) return;
-    _showCompanionDialog(
-      context: context,
+    showHeianWindWavePreviewDialog(
+      context,
       waveIndex: waveIndex,
-      titleSuffix: l10n?.heianWindModuleExpectationLabel ?? 'Divine Wind',
-      moduleClass: 'HeianWindModuleProperties',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final w in waves) ...[
-            Text(
-              '${l10n?.heianWindModuleWindDelay ?? 'Wind delay'}: ${w.windDelay}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            for (final wind in w.windInfos)
-              Padding(
-                padding: const EdgeInsets.only(left: 8, top: 4),
-                child: Text(
-                  wind.row == -1
-                      ? (l10n?.heianWindModuleAllRows ?? 'All rows (-1)')
-                      : '${l10n?.row ?? 'Row'} ${wind.row + 1} — ×${wind.affectZombies}, ${wind.distance}',
-                ),
+      waves: waves,
+      onOpenModuleSettings: widget.onOpenModule == null
+          ? null
+          : () => _openModule(
+                'HeianWindModuleProperties',
+                hint: ModuleOpenHint(heianWindWaveNumber: waveIndex - 1),
               ),
-            const SizedBox(height: 8),
-          ],
-        ],
-      ),
     );
   }
 
   void _showDropShipInfoDialog(BuildContext context, int waveIndex) {
-    final l10n = AppLocalizations.of(context);
     final dropShip = _getDropShipModuleData();
     if (dropShip == null) return;
     final waves = dropShip.appearWaves
         .where((w) => w.wave + 1 == waveIndex)
         .toList();
     if (waves.isEmpty) return;
-    _showCompanionDialog(
-      context: context,
+    showDropShipWavePreviewDialog(
+      context,
+      levelFile: widget.levelFile,
       waveIndex: waveIndex,
-      titleSuffix: l10n?.airDropShipModuleExpectationLabel ?? 'Imp drops',
-      moduleClass: 'DropShipProperties',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final w in waves)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                '${l10n?.airDropShipModuleExtraImpCount ?? 'Extra imp count'}: ${w.imp} | ${l10n?.airDropShipModuleDropArea ?? 'Drop area'}: R${w.rowRange.min + 1}-${w.rowRange.max + 1} × C${w.colRange.min + 1}-${w.colRange.max + 1}',
+      waves: waves,
+      onOpenModuleSettings: widget.onOpenModule == null
+          ? null
+          : () => _openModule(
+                'DropShipProperties',
+                hint: ModuleOpenHint(dropShipWave: waves.first.wave),
               ),
-            ),
-        ],
-      ),
     );
   }
 
@@ -384,29 +311,22 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
     final l10n = AppLocalizations.of(context);
     final data = _getArmrackModuleData();
     if (data == null) return;
-    final waveOverrides = data.overrides
-        .where((o) => o.wave == waveIndex && o.itemList.isNotEmpty)
-        .toList();
-    if (waveOverrides.isEmpty) return;
-    _showCompanionDialog(
-      context: context,
-      waveIndex: waveIndex,
-      titleSuffix: l10n?.armrackModuleExpectationLabel ?? 'Weapon stands',
-      moduleClass: 'ArmrackProperties',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final group in waveOverrides)
-            for (final item in group.itemList)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  '${item.type} — R${item.mY + 1}:C${item.mX + 1}',
-                ),
+    final moduleWave = moduleWaveForWaveGeneratorWave(waveIndex);
+    final items = armrackItemsForModuleWave(data, moduleWave);
+    if (items.isEmpty) return;
+    final label = l10n?.armrackModuleExpectationLabel ?? 'Weapon stands';
+    showArmrackGridPreviewDialog(
+      context,
+      levelFile: widget.levelFile,
+      items: items,
+      title: l10n?.waveGeneratorGridOverrideWavePreviewTitle(waveIndex, label) ??
+          '${l10n?.waveLabel ?? 'Wave'} $waveIndex — $label',
+      onOpenModuleSettings: widget.onOpenModule == null
+          ? null
+          : () => _openModule(
+                'ArmrackProperties',
+                hint: ModuleOpenHint(gridOverrideModuleWave: moduleWave),
               ),
-        ],
-      ),
     );
   }
 
@@ -414,27 +334,22 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
     final l10n = AppLocalizations.of(context);
     final data = _getEnergyGridModuleData();
     if (data == null) return;
-    final waveOverrides = data.overrides
-        .where((o) => o.wave == waveIndex && o.itemList.isNotEmpty)
-        .toList();
-    if (waveOverrides.isEmpty) return;
-    _showCompanionDialog(
-      context: context,
-      waveIndex: waveIndex,
-      titleSuffix: l10n?.energyGridModuleExpectationLabel ?? 'Taiji tiles',
-      moduleClass: 'EnergyGridProperties',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final group in waveOverrides)
-            for (final item in group.itemList)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text('(${item.mX}, ${item.mY})'),
+    final moduleWave = moduleWaveForWaveGeneratorWave(waveIndex);
+    final items = energyGridItemsForModuleWave(data, moduleWave);
+    if (items.isEmpty) return;
+    final label = l10n?.energyGridModuleExpectationLabel ?? 'Taiji tiles';
+    showEnergyGridPreviewDialog(
+      context,
+      levelFile: widget.levelFile,
+      items: items,
+      title: l10n?.waveGeneratorGridOverrideWavePreviewTitle(waveIndex, label) ??
+          '${l10n?.waveLabel ?? 'Wave'} $waveIndex — $label',
+      onOpenModuleSettings: widget.onOpenModule == null
+          ? null
+          : () => _openModule(
+                'EnergyGridProperties',
+                hint: ModuleOpenHint(gridOverrideModuleWave: moduleWave),
               ),
-        ],
-      ),
     );
   }
 
@@ -524,6 +439,10 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildWaveGeneratorSettingsCard(context, data),
+          InitialKongfuGridItemsCard(
+            levelFile: widget.levelFile,
+            onOpenModule: widget.onOpenModule,
+          ),
           const SizedBox(height: 16),
           if (data.waves.isEmpty)
             Card(
@@ -658,7 +577,7 @@ class _WaveRowCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDesktop = isDesktopPlatform(context);
-    final actionColumnWidth = isDesktop ? 148.0 : 132.0;
+    final actionColumnWidth = isDesktop ? 220.0 : 188.0;
     final showRandomPool = !wave.disableRandomSpawns;
     final hasRandomPool =
         showRandomPool && (globalPool.isNotEmpty || wavePoolEntries.isNotEmpty);
@@ -788,7 +707,7 @@ class _WaveRowCard extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: isDesktop ? 12 : 11,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                softWrap: true,
                               ),
                               onPressed: b.onTap,
                               visualDensity: VisualDensity.compact,

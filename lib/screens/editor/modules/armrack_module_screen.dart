@@ -18,12 +18,14 @@ class ArmrackModuleScreen extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     required this.onBack,
+    this.initialModuleWave,
   });
 
   final String rtid;
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback onBack;
+  final int? initialModuleWave;
 
   @override
   State<ArmrackModuleScreen> createState() => _ArmrackModuleScreenState();
@@ -59,9 +61,17 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
   void initState() {
     super.initState();
     _loadData();
-    if (_data.overrides.isNotEmpty) {
-      _selectedIndex = 0;
+    _selectedIndex = _resolveInitialIndex();
+  }
+
+  int _resolveInitialIndex() {
+    if (widget.initialModuleWave != null) {
+      final idx = _data.overrides.indexWhere(
+        (o) => o.wave == widget.initialModuleWave,
+      );
+      if (idx >= 0) return idx;
     }
+    return _data.overrides.isEmpty ? -1 : 0;
   }
 
   void _loadData() {
@@ -205,8 +215,9 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                   title: l10n?.armrackModuleHelpOverview ?? 'Overview',
                   body:
                       l10n?.armrackModuleHelpOverviewBody ??
-                      'Places weapon stands on the lawn. '
-                          'This module is required for weapon stands to display properly.',
+                      'Places weapon stands on the lawn. Wave 1 is the initial '
+                          'preset (before the level starts); later wave groups '
+                          'spawn during wave-generator waves using the N−1 rule.',
                 ),
                 HelpSectionData(
                   title: l10n?.armrackModuleHelpPlacement ?? 'Placement',
@@ -216,12 +227,15 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                           'Right-click or long-press a tile to remove its stand.',
                 ),
                 HelpSectionData(
-                  title: l10n?.armrackModuleHelpWaveLimit ?? 'Wave limit',
+                  title:
+                      l10n?.gridOverrideModuleHelpWaveNumbering ??
+                      'Wave numbering',
                   body:
-                      l10n?.armrackModuleHelpWaveLimitBody ??
-                      'Due to a game limitation, only wave 1 entries take effect in-game. '
-                          'Other wave groups can still be edited and are saved to the level file, '
-                          'but only wave 1 appears in the wave timeline tab.',
+                      l10n?.gridOverrideModuleHelpWaveNumberingBody ??
+                      'Wave 1 is the initial preset: objects appear on the lawn '
+                          'before the level starts. From wave 2 onward, module '
+                          'wave N spawns when wave-generator wave N−1 begins '
+                          '(wave 2 → generator wave 1, wave 3 → generator wave 2, …).',
                 ),
               ],
             ),
@@ -291,11 +305,36 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                               }
                             },
                           ),
-                          if (selected.wave != gridOverrideFirstWave) ...[
+                          if (selected.wave == gridOverrideInitialWave) ...[
                             const SizedBox(height: 8),
                             Text(
-                              l10n?.gridOverrideModuleTimelineNote ??
-                                  'Only wave 1 entries appear in the wave timeline tab.',
+                              l10n?.gridOverrideModuleInitialWaveNote ??
+                                  'These objects are the initial preset and appear '
+                                      'on the lawn before the level starts.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.tertiary,
+                              ),
+                            ),
+                          ] else ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n?.gridOverrideModuleWaveSpawnNote(
+                                    waveGeneratorWaveForModuleWave(
+                                          selected.wave,
+                                        ) ??
+                                        selected.wave - 1,
+                                  ) ??
+                                  'This group spawns when wave-generator wave '
+                                      '${waveGeneratorWaveForModuleWave(selected.wave) ?? selected.wave - 1} begins.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.tertiary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n?.gridOverrideModuleWaveSpawnTimelineNote ??
+                                  'These entries do not take effect in the '
+                                      'wave manager tab.',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.tertiary,
                               ),

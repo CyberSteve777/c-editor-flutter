@@ -13,12 +13,14 @@ class HeianWindModuleScreen extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     required this.onBack,
+    this.initialWaveNumber,
   });
 
   final String rtid;
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback onBack;
+  final int? initialWaveNumber;
 
   @override
   State<HeianWindModuleScreen> createState() => _HeianWindModuleScreenState();
@@ -39,6 +41,17 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
   void initState() {
     super.initState();
     _loadData();
+    _selectedWaveIndex = _resolveInitialIndex();
+  }
+
+  int _resolveInitialIndex() {
+    if (widget.initialWaveNumber != null) {
+      final idx = _data.waveWindInfos.indexWhere(
+        (w) => w.waveNumber == widget.initialWaveNumber,
+      );
+      if (idx >= 0) return idx;
+    }
+    return _data.waveWindInfos.isEmpty ? -1 : 0;
   }
 
   void _loadData() {

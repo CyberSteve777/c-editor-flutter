@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/module_open_hint.dart';
+import 'package:c_editor/data/renai_wave_preview_utils.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/wave_point_analysis.dart';
-import 'package:c_editor/data/armrack_type_catalog.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/escape_override.dart';
@@ -19,6 +20,8 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
     show EventChipWidget, isDesktopPlatform;
+import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
+import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
 
 String _waveGuideBodyForPlatform(BuildContext context, AppLocalizations? l10n) {
   if (l10n == null) {
@@ -91,7 +94,7 @@ class WaveTimelineTab extends StatefulWidget {
   final VoidCallback onEditWaveManagerSettings;
   final void Function(String rtid)? onEditCustomZombie;
   final void Function(String rtid)? onEditCustomFish;
-  final void Function(String rtid)? onOpenModule;
+  final OpenModuleCallback? onOpenModule;
   final ValueNotifier<({int waveIndex, String? rtid})?>? openWaveSheetNotifier;
   final VoidCallback? onCreateContainer;
   final VoidCallback? onDeleteContainer;
@@ -433,136 +436,24 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
   }
 
   void _showRenaiInfoDialog(BuildContext context, int waveIndex) {
-    final l10n = AppLocalizations.of(context);
     final renai = _getRenaiModuleData();
     if (renai == null) return;
-    final isEmpty = !renai.nightEnabled &&
-        renai.statueInfos.isEmpty &&
-        renai.statueNightInfos.isEmpty;
-    final sections = <Widget>[];
-    if (isEmpty) {
-      sections.add(
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(
-            'Empty (roller/tiles only)',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ),
-      );
-    } else {
-      final nightStarts = renai.nightEnabled &&
-          renai.nightStartWaveNum + 1 == waveIndex;
-      final dayStatues = renai.statueInfos
-          .where((s) => s.waveNumber + 1 == waveIndex)
-          .toList();
-      final nightStatues = renai.statueNightInfos
-          .where((s) => s.waveNumber + 1 == waveIndex)
-          .toList();
-      if (nightStarts || dayStatues.isNotEmpty || nightStatues.isNotEmpty) {
-        sections.add(
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (nightStarts)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Row(
-                      children: [
-                        Icon(Icons.nightlight_round,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.primary),
-                        const SizedBox(width: 8),
-                        Text(l10n?.renaiModuleNightStarts ?? 'Night starts'),
-                      ],
-                    ),
-                  ),
-                for (final s in dayStatues)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.wb_sunny,
-                            size: 14,
-                            color: Theme.of(context).colorScheme.tertiary),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${l10n?.renaiModuleStatueCarve ?? "Statue carve"}: R${s.gridY + 1}:C${s.gridX + 1} (${s.typeName})',
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                for (final s in nightStatues)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.nightlight_round,
-                            size: 14,
-                            color: Theme.of(context).colorScheme.primary),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${l10n?.renaiModuleStatueCarve ?? "Statue carve"}: R${s.gridY + 1}:C${s.gridX + 1} (${s.typeName})',
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      }
-    }
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          '${l10n?.waveLabel ?? "Wave"} $waveIndex - ${l10n?.renaiModuleExpectationLabel ?? "Renai events"}',
-        ),
-        content: SingleChildScrollView(
-          child: sections.isEmpty
-              ? Text(
-                  l10n?.noDynamicZombies ?? 'No events',
-                  style: Theme.of(ctx).textTheme.bodySmall,
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: sections,
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      showRenaiWavePreviewDialog(
+        context,
+        levelFile: widget.levelFile,
+        waveIndex: waveIndex,
+        renai: renai,
+        onOpenModuleSettings: widget.onOpenModule == null
+            ? null
+            : () => openModuleWithHint(
+                  widget.onOpenModule,
+                  widget.levelFile,
+                  'RenaiModuleProperties',
                 ),
-        ),
-        actions: [
-          if (widget.onOpenModule != null)
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green,
-              ),
-              onPressed: () {
-                final rtid = _getModuleRtid('RenaiModuleProperties');
-                if (rtid != null) {
-                  Navigator.pop(ctx);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onOpenModule!(rtid);
-                  });
-                }
-              },
-              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildWaveManagerSettingsCard(
@@ -2285,6 +2176,10 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           wm.minNextWaveHealthPercentage,
           wm.maxNextWaveHealthPercentage,
         ),
+        InitialKongfuGridItemsCard(
+          levelFile: widget.levelFile,
+          onOpenModule: widget.onOpenModule,
+        ),
         const SizedBox(height: 16),
         if (waves.isEmpty)
           _buildEmptyWaveCard(context)
@@ -2317,18 +2212,6 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               actionButtons.add((
                 label: l10n?.airDropShipModuleExpectationLabel ?? 'Imp drops',
                 onTap: () => _showDropShipInfoDialog(context, waveIndex),
-              ));
-            }
-            if (_waveHasArmrackActivity(waveIndex)) {
-              actionButtons.add((
-                label: l10n?.armrackModuleExpectationLabel ?? 'Weapon stands',
-                onTap: () => _showArmrackInfoDialog(context, waveIndex),
-              ));
-            }
-            if (_waveHasEnergyGridActivity(waveIndex)) {
-              actionButtons.add((
-                label: l10n?.energyGridModuleExpectationLabel ?? 'Taiji tiles',
-                onTap: () => _showEnergyGridInfoDialog(context, waveIndex),
               ));
             }
             if (_waveHasHeianWindActivity(waveIndex)) {
@@ -2410,13 +2293,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
   bool _waveHasRenaiActivity(int waveIndex) {
     final renai = _getRenaiModuleData();
     if (renai == null) return false;
-    final nightStarts = renai.nightEnabled &&
-        renai.nightStartWaveNum + 1 == waveIndex;
-    final dayCarve = renai.statueInfos
-        .any((s) => s.waveNumber + 1 == waveIndex);
-    final nightCarve = renai.statueNightInfos
-        .any((s) => s.waveNumber + 1 == waveIndex);
-    return nightStarts || dayCarve || nightCarve;
+    return renaiWaveHasPreviewActivity(renai, waveIndex);
   }
 
   String? _getModuleRtid(String objClass) {
@@ -2463,52 +2340,6 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         .any((w) => w.wave + 1 == waveIndex);
   }
 
-  ArmrackPropertiesData? _getArmrackModuleData() {
-    final obj = widget.levelFile.objects.firstWhereOrNull(
-      (o) => o.objClass == 'ArmrackProperties',
-    );
-    if (obj?.objData is Map<String, dynamic>) {
-      try {
-        return ArmrackPropertiesData.fromJson(
-          obj!.objData as Map<String, dynamic>,
-        );
-      } catch (_) {}
-    }
-    return null;
-  }
-
-  bool _waveHasArmrackActivity(int waveIndex) {
-    if (waveIndex != 1) return false;
-    final data = _getArmrackModuleData();
-    if (data == null) return false;
-    return data.overrides.any(
-      (o) => o.wave == 1 && o.itemList.isNotEmpty,
-    );
-  }
-
-  EnergyGridPropertiesData? _getEnergyGridModuleData() {
-    final obj = widget.levelFile.objects.firstWhereOrNull(
-      (o) => o.objClass == 'EnergyGridProperties',
-    );
-    if (obj?.objData is Map<String, dynamic>) {
-      try {
-        return EnergyGridPropertiesData.fromJson(
-          obj!.objData as Map<String, dynamic>,
-        );
-      } catch (_) {}
-    }
-    return null;
-  }
-
-  bool _waveHasEnergyGridActivity(int waveIndex) {
-    if (waveIndex != 1) return false;
-    final data = _getEnergyGridModuleData();
-    if (data == null) return false;
-    return data.overrides.any(
-      (o) => o.wave == 1 && o.itemList.isNotEmpty,
-    );
-  }
-
   HeianWindModulePropertiesData? _getHeianWindModuleData() {
     final obj = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.objClass == 'HeianWindModuleProperties',
@@ -2531,288 +2362,47 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
   }
 
   void _showHeianWindInfoDialog(BuildContext context, int waveIndex) {
-    final l10n = AppLocalizations.of(context);
     final heianWind = _getHeianWindModuleData();
     if (heianWind == null) return;
     final waves = heianWind.waveWindInfos
         .where((w) => w.waveNumber + 1 == waveIndex)
         .toList();
     if (waves.isEmpty) return;
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          '${l10n?.waveLabel ?? "Wave"} $waveIndex - ${l10n?.heianWindModuleExpectationLabel ?? "Heian wind"}',
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final w in waves) ...[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${l10n?.heianWindModuleWindDelay ?? "Wind delay"}: ${w.windDelay}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      for (final wind in w.windInfos)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8, top: 4),
-                          child: Row(
-                            children: [
-                              Icon(Icons.air,
-                                  size: 14,
-                                  color: Theme.of(context).colorScheme.primary),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  wind.row == -1
-                                      ? (l10n?.heianWindModuleAllRows ?? 'All rows')
-                                      : '${l10n?.row ?? "Row"} ${wind.row + 1}',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              Text(
-                                '×${wind.affectZombies}',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '${wind.distance}',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        actions: [
-          if (widget.onOpenModule != null)
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green,
+    showHeianWindWavePreviewDialog(
+      context,
+      waveIndex: waveIndex,
+      waves: waves,
+      onOpenModuleSettings: widget.onOpenModule == null
+          ? null
+          : () => openModuleWithHint(
+                widget.onOpenModule,
+                widget.levelFile,
+                'HeianWindModuleProperties',
+                hint: ModuleOpenHint(heianWindWaveNumber: waveIndex - 1),
               ),
-              onPressed: () {
-                final rtid = _getModuleRtid('HeianWindModuleProperties');
-                if (rtid != null) {
-                  Navigator.pop(ctx);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onOpenModule!(rtid);
-                  });
-                }
-              },
-              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
-      ),
     );
   }
 
   void _showDropShipInfoDialog(BuildContext context, int waveIndex) {
-    final l10n = AppLocalizations.of(context);
     final dropShip = _getDropShipModuleData();
     if (dropShip == null) return;
     final waves = dropShip.appearWaves
         .where((w) => w.wave + 1 == waveIndex)
         .toList();
     if (waves.isEmpty) return;
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          '${l10n?.waveLabel ?? "Wave"} $waveIndex - ${l10n?.airDropShipModuleExpectationLabel ?? "Imp drops"}',
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final w in waves) ...[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.flight_land,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.primary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '${l10n?.airDropShipModuleExtraImpCount ?? "Extra imp count"}: ${w.imp} | ${l10n?.airDropShipModuleDropArea ?? "Drop area"}: R${w.rowRange.min + 1}-${w.rowRange.max + 1} × C${w.colRange.min + 1}-${w.colRange.max + 1}',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        actions: [
-          if (widget.onOpenModule != null)
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green,
+    showDropShipWavePreviewDialog(
+      context,
+      levelFile: widget.levelFile,
+      waveIndex: waveIndex,
+      waves: waves,
+      onOpenModuleSettings: widget.onOpenModule == null
+          ? null
+          : () => openModuleWithHint(
+                widget.onOpenModule,
+                widget.levelFile,
+                'DropShipProperties',
+                hint: ModuleOpenHint(dropShipWave: waves.first.wave),
               ),
-              onPressed: () {
-                final rtid = _getModuleRtid('DropShipProperties');
-                if (rtid != null) {
-                  Navigator.pop(ctx);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onOpenModule!(rtid);
-                  });
-                }
-              },
-              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showArmrackInfoDialog(BuildContext context, int waveIndex) {
-    final l10n = AppLocalizations.of(context);
-    final data = _getArmrackModuleData();
-    if (data == null) return;
-    final waveOverrides = data.overrides
-        .where((o) => o.wave == waveIndex && o.itemList.isNotEmpty)
-        .toList();
-    if (waveOverrides.isEmpty) return;
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          '${l10n?.waveLabel ?? "Wave"} $waveIndex - ${l10n?.armrackModuleExpectationLabel ?? "Weapon stands"}',
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final wave in waveOverrides)
-                for (final item in wave.itemList)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: AssetImageWidget(
-                            assetPath: armrackIconAsset(item.type),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${item.type} — R${item.mY + 1}:C${item.mX + 1}',
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-            ],
-          ),
-        ),
-        actions: [
-          if (widget.onOpenModule != null)
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green,
-              ),
-              onPressed: () {
-                final rtid = _getModuleRtid('ArmrackProperties');
-                if (rtid != null) {
-                  Navigator.pop(ctx);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onOpenModule!(rtid);
-                  });
-                }
-              },
-              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showEnergyGridInfoDialog(BuildContext context, int waveIndex) {
-    final l10n = AppLocalizations.of(context);
-    final data = _getEnergyGridModuleData();
-    if (data == null) return;
-    final waveOverrides = data.overrides
-        .where((o) => o.wave == waveIndex && o.itemList.isNotEmpty)
-        .toList();
-    if (waveOverrides.isEmpty) return;
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          '${l10n?.waveLabel ?? "Wave"} $waveIndex - ${l10n?.energyGridModuleExpectationLabel ?? "Taiji tiles"}',
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final wave in waveOverrides)
-                for (final item in wave.itemList)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      'R${item.mY + 1}:C${item.mX + 1}',
-                    ),
-                  ),
-            ],
-          ),
-        ),
-        actions: [
-          if (widget.onOpenModule != null)
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green,
-              ),
-              onPressed: () {
-                final rtid = _getModuleRtid('EnergyGridProperties');
-                if (rtid != null) {
-                  Navigator.pop(ctx);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onOpenModule!(rtid);
-                  });
-                }
-              },
-              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
-      ),
     );
   }
 

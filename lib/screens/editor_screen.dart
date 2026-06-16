@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
@@ -1954,7 +1955,7 @@ class _EditorScreenState extends State<EditorScreen> {
     return RtidParser.build(newTypeAlias, 'CurrentLevel');
   }
 
-  void _handleEditModule(String rtid) {
+  void _handleEditModule(String rtid, {ModuleOpenHint? hint}) {
     final info = RtidParser.parse(rtid);
     if (info == null) return;
 
@@ -2592,6 +2593,7 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            initialDropShipWave: hint?.dropShipWave,
           ),
         ),
       );
@@ -2654,6 +2656,7 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            initialWaveNumber: hint?.heianWindWaveNumber,
           ),
         ),
       );
@@ -2696,6 +2699,7 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            initialModuleWave: hint?.gridOverrideModuleWave,
           ),
         ),
       );
@@ -2710,6 +2714,7 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            initialModuleWave: hint?.gridOverrideModuleWave,
           ),
         ),
       );
