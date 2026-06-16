@@ -402,16 +402,7 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
             onTap: widget.onEditWaveGeneratorSettings,
           ),
         ),
-        if (!data.spendingPointsValid) ...[
-          const SizedBox(height: 8),
-          Text(
-            l10n?.waveGeneratorSpendingPointsWarning ??
-                'WaveSpendingPoints must be ≤ WaveSpendingPointIncrement.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.error,
-            ),
-          ),
-        ],
+
       ],
     );
   }

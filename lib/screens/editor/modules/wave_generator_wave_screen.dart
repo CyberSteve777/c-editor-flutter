@@ -136,6 +136,68 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     );
   }
 
+  WaveGeneratorWaveData _copyWave({
+    bool? disableRandomSpawns,
+    List<WaveGeneratorZombieEntryData>? zombies,
+    int? spawnPlantFoodCount,
+    List<WaveGeneratorPoolEntryData>? addToZombiePool,
+    int? wavePointStart,
+    int? wavePointIncrement,
+    int? colNumPlantIsDragged,
+    bool? waitUntilAllZombiesDie,
+    bool clearSpawnPlantFood = false,
+    bool clearWavePointStart = false,
+    bool clearWavePointIncrement = false,
+    bool clearColNumPlantIsDragged = false,
+  }) {
+    return WaveGeneratorWaveData(
+      disableRandomSpawns:
+          disableRandomSpawns ?? _wave.disableRandomSpawns,
+      zombies: zombies ?? _wave.zombies,
+      spawnPlantFoodCount: clearSpawnPlantFood
+          ? null
+          : (spawnPlantFoodCount ?? _wave.spawnPlantFoodCount),
+      addToZombiePool: addToZombiePool ?? _wave.addToZombiePool,
+      wavePointStart: clearWavePointStart
+          ? null
+          : (wavePointStart ?? _wave.wavePointStart),
+      wavePointIncrement: clearWavePointIncrement
+          ? null
+          : (wavePointIncrement ?? _wave.wavePointIncrement),
+      colNumPlantIsDragged: clearColNumPlantIsDragged
+          ? null
+          : (colNumPlantIsDragged ?? _wave.colNumPlantIsDragged),
+      waitUntilAllZombiesDie:
+          waitUntilAllZombiesDie ?? _wave.waitUntilAllZombiesDie,
+    );
+  }
+
+  String _zombieDisplayName(String rtid) {
+    return ZombieDisplayUtils.localizedName(
+      context,
+      typeOrRtid: rtid,
+      levelFile: widget.levelFile,
+    );
+  }
+
+  String _zombieCodename(String rtid) {
+    return ZombieDisplayUtils.codename(rtid);
+  }
+
+  String? _zombieIcon(String rtid) {
+    return ZombieDisplayUtils.iconPath(
+      rtid,
+      levelFile: widget.levelFile,
+    );
+  }
+
+  int _rowValue(String? row) {
+    if (row == null || row.isEmpty || row == '?') {
+      return 0;
+    }
+    return int.tryParse(row) ?? 0;
+  }
+
   void _setZombieRow(int index, int rowValue) {
     final zombie = _wave.zombies[index];
     final rowStr = rowValue == 0 ? '?' : '$rowValue';
