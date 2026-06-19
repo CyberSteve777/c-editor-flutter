@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(c_editor LANGUAGES CXX)
 
+set(CMAKE_CXX_FLAGS "/D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS")
+
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "c_editor")
