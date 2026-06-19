@@ -115,6 +115,21 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
   Future<void> _removeZombie(int index) async {
     final params = _data.des.params;
     final removed = params.zombies[index];
+    final alias = CustomZombieLevelUtils.resolveCustomZombieAlias(
+      widget.levelFile,
+      removed.typeName,
+    );
+    var eraseOrphan = false;
+    if (alias != null && mounted) {
+      final choice =
+          await CustomZombieLevelUtils.maybePromptDeleteOrphanBeforeRemove(
+        context: context,
+        levelFile: widget.levelFile,
+        alias: alias,
+      );
+      if (!mounted || choice == null) return;
+      eraseOrphan = choice;
+    }
     final zombies = List<SchoolBusZombieData>.from(params.zombies)
       ..removeAt(index);
     _updateParams(
@@ -124,17 +139,9 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
         zombies: zombies,
       ),
     );
-    final alias = CustomZombieLevelUtils.resolveCustomZombieAlias(
-      widget.levelFile,
-      removed.typeName,
-    );
-    if (alias != null && mounted) {
-      await CustomZombieLevelUtils.maybePromptDeleteOrphan(
-        context: context,
-        levelFile: widget.levelFile,
-        alias: alias,
-        onChanged: widget.onChanged,
-      );
+    if (alias != null && eraseOrphan) {
+      CustomZombieLevelUtils.removeTypeAndProperties(widget.levelFile, alias);
+      widget.onChanged();
     }
   }
 

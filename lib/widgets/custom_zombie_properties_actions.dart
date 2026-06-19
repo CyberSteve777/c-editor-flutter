@@ -52,7 +52,6 @@ class CustomZombiePropertiesSheetActions extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryYellow = isDark ? pvzYellowDark : pvzYellowLight;
-    final secondaryYellow = isDark ? pvzYellowDarkMuted : pvzYellowLightMuted;
     final alias = _currentAlias;
 
     return Column(
@@ -62,8 +61,13 @@ class CustomZombiePropertiesSheetActions extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => _openSwitchDialog(context),
           style: OutlinedButton.styleFrom(
-            foregroundColor: secondaryYellow,
-            side: BorderSide(color: secondaryYellow),
+            foregroundColor: isDark
+                ? pvzYellowDarkMuted
+                : const Color(0xFF9A7600),
+            side: BorderSide(
+              color: isDark ? Colors.white : Colors.black,
+              width: 1.5,
+            ),
           ),
           icon: const Icon(Icons.swap_horiz),
           label: Text(l10n?.switchProperties ?? 'Switch properties'),

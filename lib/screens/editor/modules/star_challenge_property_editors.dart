@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/challenge_resource_l10n.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
@@ -564,28 +563,13 @@ class _DefeatZombiesOfTypeChallengeEditorState
     );
   }
 
-  Future<void> _removeZombieAt(int index) async {
-    final removed = _zombieList[index];
+  void _removeZombieAt(int index) {
     setState(() {
       final list = List<String>.from(_zombieList);
       list.removeAt(index);
       _setTypesToKill(list, _listType);
       _save();
     });
-    final levelFile = widget.levelFile;
-    if (levelFile == null || !mounted) return;
-    final alias = CustomZombieLevelUtils.resolveCustomZombieAlias(
-      levelFile,
-      removed,
-    );
-    if (alias != null) {
-      await CustomZombieLevelUtils.maybePromptDeleteOrphan(
-        context: context,
-        levelFile: levelFile,
-        alias: alias,
-        onChanged: widget.onChanged,
-      );
-    }
   }
 
   @override

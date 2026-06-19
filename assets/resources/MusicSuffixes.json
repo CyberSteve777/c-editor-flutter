@@ -29,6 +29,7 @@
     "BGMc",
     "retro",
     "SilkRoad",
+    "TeamBoss",
     "BGMe",
     "Roman",
     "ZCorp",
@@ -54,14 +55,15 @@
     "Renai": "Stage_Renai.webp",
     "Heian": "Stage_Heian.webp",
     "Atlantis": "Stage_Atlantis.webp",
-    "Twister": "Stage_Twister.webp",
-    "Uncharted": "Stage_Anniversary.webp",
-    "BGMa": "Stage_Modern.webp",
-    "BGMb": "Stage_Modern.webp",
-    "BGMd": "Stage_Modern.webp",
+    "Twister": "Suffix_Twister.webp",
+    "Uncharted": "Suffix_Uncharted.webp",
+    "BGMa": "Suffix_BGMa.webp",
+    "BGMb": "Suffix_BGMb.webp",
+    "BGMd": "Suffix_BGMd.webp",
     "BGMc": "Stage_Bowling.webp",
     "mausoleum": "Stage_Underground.webp",
     "ghostdom": "Stage_Underground.webp",
-    "SilkRoad": "Stage_JTTW.webp"
+    "SilkRoad": "Suffix_SilkRoad.webp",
+    "TeamBoss": "Suffix_TeamBoss.webp"
   }
 }

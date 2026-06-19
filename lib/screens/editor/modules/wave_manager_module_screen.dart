@@ -163,18 +163,28 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
     if (index >= _firstGroup.zombiePool.length) return;
     final removed = _firstGroup.zombiePool[index];
     final info = RtidParser.parse(removed);
+    var eraseOrphan = false;
+    if (info?.source == 'CurrentLevel' && mounted) {
+      final choice =
+          await CustomZombieLevelUtils.maybePromptDeleteOrphanBeforeRemove(
+        context: context,
+        levelFile: widget.levelFile,
+        alias: info!.alias,
+      );
+      if (!mounted || choice == null) return;
+      eraseOrphan = choice;
+    }
     _firstGroup.zombiePool.removeAt(index);
     if (index < _firstGroup.zombieLevel.length) {
       _firstGroup.zombieLevel.removeAt(index);
     }
     _sync();
-    if (info?.source == 'CurrentLevel' && mounted) {
-      await CustomZombieLevelUtils.maybePromptDeleteOrphan(
-        context: context,
-        levelFile: widget.levelFile,
-        alias: info!.alias,
-        onChanged: widget.onChanged,
+    if (info?.source == 'CurrentLevel' && eraseOrphan) {
+      CustomZombieLevelUtils.removeTypeAndProperties(
+        widget.levelFile,
+        info!.alias,
       );
+      widget.onChanged();
     }
   }
 

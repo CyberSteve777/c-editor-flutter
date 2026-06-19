@@ -1232,6 +1232,16 @@
     "icon": "zombie_iceage_hunter_elite.webp"
   },
   {
+    "id": "plantwars_iceage_hunter_elite",
+    "name": "zombie_plantwars_iceage_hunter_elite",
+    "tags": [
+      "Iceage_Lostcity",
+      "Elite",
+      "Basic"
+    ],
+    "icon": "zombie_iceage_hunter_elite.webp"
+  },
+  {
     "id": "iceage_weasel_elite",
     "name": "zombie_iceage_weasel_elite",
     "tags": [
@@ -1253,8 +1263,29 @@
     "icon": "zombie_iceage_weaselhoarder_elite.webp"
   },
   {
+    "id": "plantwars_iceage_weaselhoarder_elite",
+    "name": "zombie_iceage_weaselhoarder_elite",
+    "tags": [
+      "Iceage_Lostcity",
+      "Elite",
+      "Pet",
+      "Basic"
+    ],
+    "icon": "zombie_iceage_weaselhoarder_elite.webp"
+  },
+  {
     "id": "iceage_chief_elite",
     "name": "zombie_iceage_chief_elite",
+    "tags": [
+      "Iceage_Lostcity",
+      "Elite",
+      "Strong"
+    ],
+    "icon": "zombie_iceage_chief_elite.webp"
+  },
+  {
+    "id": "plantwars_iceage_chief_elite",
+    "name": "zombie_plantwars_iceage_chief_elite",
     "tags": [
       "Iceage_Lostcity",
       "Elite",
@@ -3618,6 +3649,17 @@
     "icon": "zombie_iceyearmonster.webp"
   },
   {
+    "id": "plantwars_IceYearMonster",
+    "name": "zombie_plantwars_IceYearMonster",
+    "tags": [
+      "Festival1",
+      "Elite",
+      "Imp",
+      "Pet"
+    ],
+    "icon": "zombie_iceyearmonster.webp"
+  },
+  {
     "id": "spring",
     "name": "zombie_spring",
     "tags": [
@@ -3860,6 +3902,16 @@
       "Imp"
     ],
     "icon": "zombie_bumpercar_elite.webp"
+  },
+  {
+    "id": "plantwars_bumpercar_elite",
+    "name": "zombie_plantwars_bumpercar_elite",
+    "tags": [
+      "Festival1",
+      "Elite",
+      "Imp"
+    ],
+    "icon": "zombie_plantwars_bumpercar_elite.webp"
   },
   {
     "id": "bubble_machine_imp",

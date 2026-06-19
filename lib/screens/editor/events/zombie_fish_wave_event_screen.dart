@@ -156,6 +156,19 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
   Future<void> _removeZombie(int index, {bool? eraseOrphanProperties}) async {
     final removed = _data.zombies[index];
     final info = RtidParser.parse(removed.type);
+    var eraseOrphan = eraseOrphanProperties ?? false;
+    if (info?.source == 'CurrentLevel' &&
+        eraseOrphanProperties == null &&
+        mounted) {
+      final choice =
+          await CustomZombieLevelUtils.maybePromptDeleteOrphanBeforeRemove(
+        context: context,
+        levelFile: widget.levelFile,
+        alias: info!.alias,
+      );
+      if (!mounted || choice == null) return;
+      eraseOrphan = choice;
+    }
     final zombies = List<ZombieSpawnData>.from(_data.zombies)..removeAt(index);
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
@@ -165,23 +178,12 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       fishes: _data.fishes,
     );
     _sync();
-    if (info?.source == 'CurrentLevel' && mounted) {
-      if (eraseOrphanProperties != null) {
-        if (eraseOrphanProperties) {
-          CustomZombieLevelUtils.removeTypeAndProperties(
-            widget.levelFile,
-            info!.alias,
-          );
-          widget.onChanged();
-        }
-      } else {
-        await CustomZombieLevelUtils.maybePromptDeleteOrphan(
-          context: context,
-          levelFile: widget.levelFile,
-          alias: info!.alias,
-          onChanged: widget.onChanged,
-        );
-      }
+    if (info?.source == 'CurrentLevel' && eraseOrphan) {
+      CustomZombieLevelUtils.removeTypeAndProperties(
+        widget.levelFile,
+        info!.alias,
+      );
+      widget.onChanged();
     }
   }
 

@@ -165,27 +165,38 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
     final entry = _data.barrels[barrelIndex];
     final params = entry.params!;
     final removed = params.zombies[zombieIndex];
-    final zombies = List<BarrelZombieData>.from(params.zombies)..removeAt(zombieIndex);
-    _updateBarrel(barrelIndex, BarrelEntryData(
-      row: entry.row,
-      type: entry.type,
-      params: BarrelParamsData(
-        barrelHitPoints: params.barrelHitPoints,
-        barrelSpeed: params.barrelSpeed,
-        zombies: zombies,
-      ),
-    ));
     final alias = CustomZombieLevelUtils.resolveCustomZombieAlias(
       widget.levelFile,
       removed.typeName,
     );
+    var eraseOrphan = false;
     if (alias != null && mounted) {
-      await CustomZombieLevelUtils.maybePromptDeleteOrphan(
+      final choice =
+          await CustomZombieLevelUtils.maybePromptDeleteOrphanBeforeRemove(
         context: context,
         levelFile: widget.levelFile,
         alias: alias,
-        onChanged: widget.onChanged,
       );
+      if (!mounted || choice == null) return;
+      eraseOrphan = choice;
+    }
+    final zombies = List<BarrelZombieData>.from(params.zombies)
+      ..removeAt(zombieIndex);
+    _updateBarrel(
+      barrelIndex,
+      BarrelEntryData(
+        row: entry.row,
+        type: entry.type,
+        params: BarrelParamsData(
+          barrelHitPoints: params.barrelHitPoints,
+          barrelSpeed: params.barrelSpeed,
+          zombies: zombies,
+        ),
+      ),
+    );
+    if (alias != null && eraseOrphan) {
+      CustomZombieLevelUtils.removeTypeAndProperties(widget.levelFile, alias);
+      widget.onChanged();
     }
   }
 
