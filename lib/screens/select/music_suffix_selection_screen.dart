@@ -7,7 +7,7 @@ import 'package:c_editor/widgets/editor_components.dart';
 
 /// Picker for `MusicSuffix` (codename + icon + localized title).
 ///
-/// Loads codenames/icons from `assets/resources/MusicSuffixes.json`; icons are shared with stage tiles under `assets/images/stages/`.
+/// Loads codenames/icons from `assets/resources/MusicSuffixes.json`; icons are shared with stage tiles under `assets/images/round_icons/`.
 class MusicSuffixSelectionScreen extends StatefulWidget {
   const MusicSuffixSelectionScreen({
     super.key,

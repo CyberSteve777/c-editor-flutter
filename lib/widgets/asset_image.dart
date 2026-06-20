@@ -31,7 +31,7 @@ class AssetImageWidget extends StatefulWidget {
     this.cacheHeight,
   });
 
-  /// Path relative to assets folder, e.g. 'images/stages/Stage_Modern.png'
+  /// Path relative to assets folder, e.g. 'images/round_icons/Stage_Modern.png'
   final String assetPath;
   final double? width;
   final double? height;

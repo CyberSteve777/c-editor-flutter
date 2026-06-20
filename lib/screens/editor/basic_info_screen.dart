@@ -223,8 +223,8 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
                             final iconName = stageItem?.iconName;
                             if (iconName != null) {
                               return AssetImageWidget(
-                                assetPath: 'assets/images/stages/$iconName',
-                                altCandidates: imageAltCandidates('assets/images/stages/$iconName'),
+                                assetPath: 'assets/images/round_icons/$iconName',
+                                altCandidates: imageAltCandidates('assets/images/round_icons/$iconName'),
                                 width: 96,
                                 height: 96,
                                 fit: BoxFit.cover,

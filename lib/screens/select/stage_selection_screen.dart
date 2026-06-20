@@ -160,8 +160,8 @@ class _StageGridItem extends StatelessWidget {
                   height: 96,
                   child: stage.iconName != null
                       ? AssetImageWidget(
-                          assetPath: 'assets/images/stages/${stage.iconName!}',
-                          altCandidates: imageAltCandidates('assets/images/stages/${stage.iconName!}'),
+                          assetPath: 'assets/images/round_icons/${stage.iconName!}',
+                          altCandidates: imageAltCandidates('assets/images/round_icons/${stage.iconName!}'),
                           width: 96,
                           height: 96,
                           fit: BoxFit.cover,

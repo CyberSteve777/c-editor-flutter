@@ -52,7 +52,7 @@ flutter:
     - assets/images/
     - assets/images/plants/
     - assets/images/zombies/
-    - assets/images/stages/
+    - assets/images/round_icons/
     - assets/images/tags/
     - assets/images/griditems/
     - assets/images/tools/
