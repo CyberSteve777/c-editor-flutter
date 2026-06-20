@@ -103,8 +103,6 @@ class GridItemRepository {
   }
 
   /// Returns asset path for icon, or unknown placeholder if no icon.
-  /// For renai_zomboss_statue_zombie1_half, returns base statue icon path;
-  /// caller should overlay purple "Z" badge when [needsZombossBadge] is true.
   static String getIconPath(String aliases) {
     final typeName = aliases == 'gravestone' ? 'gravestone_egypt' : aliases;
     try {
@@ -117,15 +115,6 @@ class GridItemRepository {
       return 'assets/images/others/unknown.webp';
     }
   }
-
-  /// True for renai_zomboss_statue_zombie1_half; caller should overlay purple "Z" badge.
-  static bool needsZombossBadge(String typeName) =>
-      typeName == 'renai_zomboss_statue_zombie1_half';
-
-  /// True for Renai statue types that use full-body (non-half) icons.
-  /// These are scaled down in [GridItemIcon] for better fit in grids and lists.
-  static bool isRenaiStatueNonHalf(String typeName) =>
-      isRenaiStatue(typeName) && !typeName.endsWith('_half');
 
   /// True for any Renai statue type (half or non-half).
   static bool isRenaiStatue(String typeName) =>
