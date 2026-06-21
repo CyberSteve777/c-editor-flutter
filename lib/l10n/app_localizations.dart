@@ -142,6 +142,12 @@ abstract class AppLocalizations {
   /// **'Clear cache'**
   String get clearCache;
 
+  /// No description provided for @ultra.
+  ///
+  /// In en, this message translates to:
+  /// **'Ultra'**
+  String get ultra;
+
   /// No description provided for @uiSize.
   ///
   /// In en, this message translates to:

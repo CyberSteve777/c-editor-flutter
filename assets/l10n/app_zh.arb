@@ -8,6 +8,7 @@
   "clearCache": "释放缓存",
   "uiSize": "界面大小",
   "aboutSoftware": "关于软件",
+  "ultra": "极致",
   "selectFolder": "选择文件夹",
   "storagePermissionHint": "需要存储权限。请在设置中开启「允许访问以管理所有文件」来打开关卡文件。",
   "storagePermissionDialogTitle": "需要存储权限",

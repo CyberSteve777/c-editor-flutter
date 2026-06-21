@@ -30,6 +30,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearCache => '释放缓存';
 
   @override
+  String get ultra => '极致';
+
+  @override
   String get uiSize => '界面大小';
 
   @override

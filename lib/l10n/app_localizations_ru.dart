@@ -30,6 +30,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clearCache => 'Очистить кэш';
 
   @override
+  String get ultra => 'Ультра';
+
+  @override
   String get uiSize => 'Размер интерфейса';
 
   @override
