@@ -213,21 +213,23 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
   }
 
   String _waveManagerPropsTitle(BuildContext context) {
-    const resourceKey = 'moduleTitle_WaveManagerProperties';
-    final resourceName = ResourceNames.lookup(context, resourceKey);
-    if (resourceName != resourceKey) {
-      return resourceName;
-    }
-    return _localizedText(
-      context,
-      zh: '波次管理属性',
-      en: 'Wave Manager Properties',
-    );
+    final l10n = AppLocalizations.of(context);
+    return l10n?.moduleTitle_WaveManagerProperties ??
+        _localizedText(
+          context,
+          zh: '波次管理属性',
+          en: 'Wave Manager Properties',
+        );
   }
 
   String _currentWaveManagerPropsText(BuildContext context, String value) {
-    final label = _localizedText(context, zh: '当前', en: 'Current');
-    return '$label: $value';
+    final l10n = AppLocalizations.of(context);
+    return l10n?.waveManagerPropsCurrent(value) ??
+        _localizedText(
+          context,
+          zh: '当前值：$value',
+          en: 'Current: $value',
+        );
   }
 
   @override
