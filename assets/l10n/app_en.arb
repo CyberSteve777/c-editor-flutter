@@ -283,6 +283,13 @@
   "editCustomZombieProperties": "Edit custom zombie properties",
   "makeZombieAsCustom": "Make zombie as custom",
   "customLabel": "Custom",
+  "moduleTitle_WaveManagerProperties": "Linked Wave Parameters (WaveManagerProps)",
+  "waveManagerPropsCurrent": "Current: {value}",
+  "@waveManagerPropsCurrent": {
+   "placeholders": {
+     "value": { "type": "String" }
+   }
+  }，
   "waveManagerGlobalParams": "Wave Manager Parameters",
   "waveManagerGlobalSummary": "Flag interval: {interval}, Next wave health threshold: {minPercent}% - {maxPercent}%",
   "@waveManagerGlobalSummary": {

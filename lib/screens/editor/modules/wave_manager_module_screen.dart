@@ -203,6 +203,33 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
     super.dispose();
   }
 
+  String _localizedText(
+    BuildContext context, {
+    required String zh,
+    required String en,
+  }) {
+    final locale = Localizations.localeOf(context).languageCode.toLowerCase();
+    return locale.startsWith('zh') ? zh : en;
+  }
+
+  String _waveManagerPropsTitle(BuildContext context) {
+    const resourceKey = 'moduleTitle_WaveManagerProperties';
+    final resourceName = ResourceNames.lookup(context, resourceKey);
+    if (resourceName != resourceKey) {
+      return resourceName;
+    }
+    return _localizedText(
+      context,
+      zh: '波次管理属性',
+      en: 'Wave Manager Properties',
+    );
+  }
+
+  String _currentWaveManagerPropsText(BuildContext context, String value) {
+    final label = _localizedText(context, zh: '当前', en: 'Current');
+    return '$label: $value';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -235,6 +262,11 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
     )?.alias;
     final isPropsValid =
         actualWaveMgrAlias != null && currentPropsAlias == actualWaveMgrAlias;
+    final waveManagerPropsTitle = _waveManagerPropsTitle(context);
+    final currentWaveManagerPropsText = _currentWaveManagerPropsText(
+      context,
+      _data.waveManagerProps ?? 'null',
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -298,7 +330,7 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'WaveManagerProps',
+                          waveManagerPropsTitle,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: isPropsValid
@@ -310,7 +342,7 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Current: ${_data.waveManagerProps ?? "null"}',
+                      currentWaveManagerPropsText,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isPropsValid
                             ? propsSubtextColor

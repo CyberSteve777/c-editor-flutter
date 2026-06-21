@@ -218,6 +218,13 @@
   "editCustomZombieProperties": "编辑自定义属性数值",
   "makeZombieAsCustom": "注入为自定义僵尸",
   "customLabel": "自定义",
+  "moduleTitle_WaveManagerProperties": "关联波次参数 (WaveManagerProps)",
+  "waveManagerPropsCurrent": "当前值：{value}",
+  "@waveManagerPropsCurrent": {
+   "placeholders": {
+     "value": { "type": "String" }
+   }
+  },
   "waveManagerGlobalParams": "波次管理器全局参数",
   "waveManagerGlobalSummary": "旗帜间隔: {interval}, 刷新血线: {minPercent}% - {maxPercent}%",
   "@waveManagerGlobalSummary": {

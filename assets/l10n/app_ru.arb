@@ -218,6 +218,13 @@
   "editCustomZombieProperties": "Редактировать свойства пользовательского зомби",
   "makeZombieAsCustom": "Сделать зомби пользовательским",
   "customLabel": "Пользовательский",
+  "moduleTitle_WaveManagerProperties": "Linked Wave Parameters (WaveManagerProps)",
+  "waveManagerPropsCurrent": "Current: {value}",
+  "@waveManagerPropsCurrent": {
+   "placeholders": {
+     "value": { "type": "String" }
+   }
+  },
   "waveManagerGlobalParams": "Глобальные параметры волн",
   "waveManagerGlobalSummary": "Интервал флага: {interval}, порог здоровья: {minPercent}% - {maxPercent}%",
   "@waveManagerGlobalSummary": {
