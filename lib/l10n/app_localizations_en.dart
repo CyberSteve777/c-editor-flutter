@@ -839,6 +839,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customLabel => 'Custom';
 
   @override
+  String get moduleTitle_WaveManagerProperties =>
+      'Linked Wave Parameters (WaveManagerProps)';
+
+  @override
+  String waveManagerPropsCurrent(String value) {
+    return 'Current: $value';
+  }
+
+  @override
   String get waveManagerGlobalParams => 'Wave Manager Parameters';
 
   @override

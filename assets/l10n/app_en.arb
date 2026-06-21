@@ -289,7 +289,7 @@
    "placeholders": {
      "value": { "type": "String" }
    }
-  }，
+  },
   "waveManagerGlobalParams": "Wave Manager Parameters",
   "waveManagerGlobalSummary": "Flag interval: {interval}, Next wave health threshold: {minPercent}% - {maxPercent}%",
   "@waveManagerGlobalSummary": {

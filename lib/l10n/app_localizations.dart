@@ -1654,6 +1654,18 @@ abstract class AppLocalizations {
   /// **'Custom'**
   String get customLabel;
 
+  /// No description provided for @moduleTitle_WaveManagerProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked Wave Parameters (WaveManagerProps)'**
+  String get moduleTitle_WaveManagerProperties;
+
+  /// No description provided for @waveManagerPropsCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {value}'**
+  String waveManagerPropsCurrent(String value);
+
   /// No description provided for @waveManagerGlobalParams.
   ///
   /// In en, this message translates to:

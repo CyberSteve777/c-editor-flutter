@@ -823,6 +823,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customLabel => '自定义';
 
   @override
+  String get moduleTitle_WaveManagerProperties => '关联波次参数 (WaveManagerProps)';
+
+  @override
+  String waveManagerPropsCurrent(String value) {
+    return '当前值：$value';
+  }
+
+  @override
   String get waveManagerGlobalParams => '波次管理器全局参数';
 
   @override

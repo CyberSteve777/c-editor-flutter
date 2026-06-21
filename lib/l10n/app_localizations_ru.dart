@@ -843,6 +843,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customLabel => 'Пользовательский';
 
   @override
+  String get moduleTitle_WaveManagerProperties =>
+      'Linked Wave Parameters (WaveManagerProps)';
+
+  @override
+  String waveManagerPropsCurrent(String value) {
+    return 'Current: $value';
+  }
+
+  @override
   String get waveManagerGlobalParams => 'Глобальные параметры волн';
 
   @override
