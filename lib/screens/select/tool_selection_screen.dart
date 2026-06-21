@@ -40,65 +40,87 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
     final theme = Theme.of(context);
     final themeColor = theme.colorScheme.primary;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: widget.onBack,
-        ),
-        backgroundColor: themeColor,
-        foregroundColor: Colors.white,
-        title: Text(
-          l10n?.selectToolCard ?? 'Select tool card',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(64),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: SelectionSearchField(
-              hintText: l10n?.search ?? 'Search',
-              query: _searchQuery,
-              fillColor: theme.colorScheme.surface,
-              onChanged: (v) => setState(() => _searchQuery = v),
-              onClear: () => setState(() => _searchQuery = ''),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: widget.onBack,
+          ),
+          backgroundColor: themeColor,
+          foregroundColor: Colors.white,
+          title: Text(
+            l10n?.selectToolCard ?? 'Select tool card',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(64),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: SelectionSearchField(
+                hintText: l10n?.search ?? 'Search',
+                query: _searchQuery,
+                fillColor: theme.colorScheme.surface,
+                onChanged: (v) => setState(() => _searchQuery = v),
+                onClear: () => setState(() => _searchQuery = ''),
+              ),
             ),
           ),
         ),
-      ),
-      body: Container(
-        color: theme.colorScheme.surface,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isDesktop = constraints.maxWidth > 600;
-            final crossAxisCount = isDesktop ? 4 : 2;
-            final childAspectRatio = isDesktop ? 1.25 : 0.95;
-            final showToolId = isDesktop;
-            return GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                childAspectRatio: childAspectRatio,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: tools.length,
-              itemBuilder: (context, index) {
-                final tool = tools[index];
-                final iconPath = tool.icon != null
-                    ? 'assets/images/tools/${tool.icon}'
-                    : null;
-                return _ToolCard(
-                  id: tool.id,
-                  name: ToolRepository.localizedName(context, tool.id),
-                  iconPath: iconPath,
-                  theme: theme,
-                  showToolId: showToolId,
-                  onTap: () => widget.onToolSelected(tool.id),
-                );
-              },
-            );
-          },
+        body: Container(
+          color: theme.colorScheme.surface,
+          child: tools.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.build,
+                        size: 64,
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n?.noItems ?? 'No items',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isDesktop = constraints.maxWidth > 600;
+                    final crossAxisCount = isDesktop ? 6 : 3;
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        childAspectRatio: 0.85,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemCount: tools.length,
+                      itemBuilder: (context, index) {
+                        final tool = tools[index];
+                        final iconPath = tool.icon != null
+                            ? 'assets/images/tools/${tool.icon}'
+                            : null;
+                        return _ToolCard(
+                          id: tool.id,
+                          name: ToolRepository.localizedName(context, tool.id),
+                          iconPath: iconPath,
+                          theme: theme,
+                          onTap: () => widget.onToolSelected(tool.id),
+                        );
+                      },
+                    );
+                  },
+                ),
         ),
       ),
     );
@@ -111,7 +133,6 @@ class _ToolCard extends StatelessWidget {
     required this.name,
     required this.iconPath,
     required this.theme,
-    required this.showToolId,
     required this.onTap,
   });
 
@@ -119,44 +140,39 @@ class _ToolCard extends StatelessWidget {
   final String name;
   final String? iconPath;
   final ThemeData theme;
-  final bool showToolId;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _ToolIcon(iconPath: iconPath, theme: theme),
-              const SizedBox(height: 10),
+              Expanded(child: _ToolIcon(iconPath: iconPath, theme: theme)),
+              const SizedBox(height: 8),
               Text(
                 name,
                 textAlign: TextAlign.center,
-                maxLines: 3,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (showToolId) ...[
-                const SizedBox(height: 4),
-                Text(
-                  id,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+              Text(
+                id,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-              ],
+              ),
             ],
           ),
         ),
@@ -173,12 +189,14 @@ class _ToolIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 88,
-      height: 72,
-      child: iconPath != null
-          ? AssetImageWidget(assetPath: iconPath!, fit: BoxFit.contain)
-          : Icon(Icons.build, size: 42, color: theme.colorScheme.outline),
+    if (iconPath != null) {
+      return AssetImageWidget(assetPath: iconPath!, fit: BoxFit.contain);
+    }
+    return Center(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Icon(Icons.build, size: 42, color: theme.colorScheme.outline),
+      ),
     );
   }
 }

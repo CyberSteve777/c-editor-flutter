@@ -759,7 +759,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                               'Columns dragged (ColNumPlantIsDragged)',
                           border: const OutlineInputBorder(),
                           helperText: l10n?.waveGeneratorBlackHoleFieldHint,
-                          helperMaxLines: 4,
+                          helperMaxLines: 8,
                         ),
                         keyboardType: TextInputType.number,
                         onChanged: (v) {

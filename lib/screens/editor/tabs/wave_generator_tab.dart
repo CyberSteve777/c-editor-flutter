@@ -531,7 +531,9 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
                   onTap: () => _showExpectationDialog(waveIndex, isFlagWave),
                 ));
               }
-              if (wave.colNumPlantIsDragged != null) {
+              if (waveIndex != data.waves.length &&
+                  wave.waitUntilAllZombiesDie == true &&
+                  wave.colNumPlantIsDragged != null) {
                 actionButtons.add((
                   label: l10n?.eventTitle_BlackHoleWaveActionProps ??
                       'Black Hole',
@@ -634,7 +636,7 @@ class _WaveRowCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDesktop = isDesktopPlatform(context);
-    final actionColumnWidth = isDesktop ? 220.0 : 188.0;
+    final actionColumnWidth = isDesktop ? 220.0 : 112.0;
     final showRandomPool = !wave.disableRandomSpawns;
     final hasRandomPool =
         showRandomPool && (globalPool.isNotEmpty || wavePoolEntries.isNotEmpty);
@@ -650,7 +652,7 @@ class _WaveRowCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
-                width: isDesktop ? 52 : 44,
+                width: isDesktop ? 52 : 36,
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Padding(

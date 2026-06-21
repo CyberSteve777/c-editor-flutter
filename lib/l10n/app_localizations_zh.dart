@@ -6403,7 +6403,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveGeneratorBlackHoleFieldHint =>
-      '填写列数以在本波结束时召唤时空黑洞，将所有植物向右吸动。\n注意：只有开启“在上一波僵尸全部死亡后再生成此波僵尸”时，才能召唤成功。';
+      '填写列数以在本波结束时召唤时空黑洞，将所有植物向右吸动。\n注意：只有本波不是关卡的最后一波，且开启“在上一波僵尸全部死亡后再生成此波僵尸”时，才能召唤成功。';
 
   @override
   String waveGeneratorBlackHoleWaveHint(int cols) {

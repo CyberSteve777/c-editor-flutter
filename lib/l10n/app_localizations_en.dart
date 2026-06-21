@@ -6746,7 +6746,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorBlackHoleFieldHint =>
-      'Enter the number of columns to summon a black hole at the end of this wave, pulling all plants to the right.\nNote: Black hole can only be summoned if \"Spawn this wave only after all zombies from the previous wave have been defeated\" is enabled.';
+      'Enter the number of columns to summon a black hole at the end of this wave, pulling all plants to the right.\nNote: Black hole can only be summoned if this wave is not the final wave of the level and \"Spawn this wave only after all zombies from the previous wave have been defeated\" is enabled.';
 
   @override
   String waveGeneratorBlackHoleWaveHint(int cols) {

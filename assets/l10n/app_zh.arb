@@ -2187,7 +2187,7 @@
   "waveGeneratorSpawnPlantFood": "植物食物掉落 (SpawnPlantFoodCount)",
   "waveGeneratorWavePointStart": "波次点数起始 (WavePointStart)",
   "waveGeneratorWavePointIncrement": "波次点数增量 (WavePointIncrement)",
-  "waveGeneratorBlackHoleFieldHint": "填写列数以在本波结束时召唤时空黑洞，将所有植物向右吸动。\n注意：只有开启“在上一波僵尸全部死亡后再生成此波僵尸”时，才能召唤成功。",
+  "waveGeneratorBlackHoleFieldHint": "填写列数以在本波结束时召唤时空黑洞，将所有植物向右吸动。\n注意：只有本波不是关卡的最后一波，且开启“在上一波僵尸全部死亡后再生成此波僵尸”时，才能召唤成功。",
   "waveGeneratorBlackHoleWaveHint": "时空黑洞在本波结束时出现，将植物向右吸动{cols}列",
   "@waveGeneratorBlackHoleWaveHint": {"placeholders": {"cols": {"type": "int"}}},
   "waveGeneratorWavePoolAdd": "本波扩展僵尸池 (AddToZombiePool)",
