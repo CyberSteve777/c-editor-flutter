@@ -154,6 +154,7 @@
   "templateCustomZombieExample": "自定义僵尸示例",
   "templateIPlantExample": "我是植物示例",
   "templateOldStyleExample": "旧式关卡",
+  "templateCustomStageExample": "自定义场地示例",
   "unsavedChanges": "有未保存的更改",
   "saveBeforeLeaving": "离开前是否保存更改？",
   "discard": "放弃",
@@ -2212,5 +2213,65 @@
         "type": "int"
       }
     }
-  }
+  },
+  "customStageProperties": "自定义场地属性",
+  "customStageNotFound": "未找到自定义场地对象。",
+  "customStageSectionGeneral": "常规",
+  "customStageSectionZombies": "僵尸类型",
+  "customStageSectionResourceGroups": "资源组",
+  "customStageSectionAppearance": "外观",
+  "customStageSectionAdvanced": "高级",
+  "customStageAlias": "场地别名",
+  "customStageNoResourceGroups": "列表中没有资源组",
+  "customStageMissingBackgroundWarning": "请至少导入一个在场地助手中列出的 DelayLoad_Background 资源组，否则草坪可能完全显示为黑色。",
+  "customStageEnableAmbient": "启用环境音",
+  "customStageDisabledCellsEmpty": "空",
+  "customStageDisabledCellsDefault": "默认",
+  "customStageBeachMinigame": "使用小游戏版本",
+  "customStageEnableSubmarine": "启用潜艇",
+  "customStageSubmarineHitpoints": "潜艇生命值",
+  "customStageNameSuffix": "（自定义）",
+  "selectCustomStageBase": "选择基础场地",
+  "searchStageObjclass": "搜索 objclass",
+  "noStageObjclassFound": "未找到 objclass",
+  "selectStageBackground": "选择草坪外观",
+  "searchStageBackground": "搜索场地",
+  "noStageBackgroundFound": "未找到草坪外观",
+  "importResourceGroup": "导入资源组",
+  "importResourceGroupGlobal": "从全局列表",
+  "importResourceGroupFromStage": "从场地导入",
+  "importResourceGroupSourceStage": "来源场地",
+  "searchResourceGroup": "搜索资源组",
+  "noResourceGroupFound": "未找到资源组",
+  "importResourceGroupsFromStageTitle": "从场地添加资源组？",
+  "importResourceGroupsFromStageMessage": "将添加以下来自 {stageName} 的资源组：",
+  "@importResourceGroupsFromStageMessage": {
+    "placeholders": {
+      "stageName": {
+        "type": "String"
+      }
+    }
+  },
+  "importResourceGroupsFromStageSkipped": "已有 {count} 个资源组在本关卡中，将跳过。",
+  "@importResourceGroupsFromStageSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importResourceGroupsFromStageAllPresent": "该场地的所有资源组已在本关卡中。",
+  "createCustomStage": "创建自定义草坪",
+  "createCustomStageHint": "选择基础场地属性类型，并在此关卡中本地编辑。",
+  "customStageAliasPromptTitle": "自定义场地别名",
+  "customStageAliasTaken": "该别名已在此关卡中使用。",
+  "stageSelectionTabBuiltin": "内置",
+  "stageSelectionTabCustom": "自定义",
+  "customStageSelectionEmpty": "此关卡中尚无自定义草坪。",
+  "customStageSelectionInLevel": "此关卡中的自定义草坪",
+  "customStageSwitchToBuiltinTitle": "切换为内置草坪？",
+  "customStageSwitchToBuiltinMessage": "这将永久删除此关卡中的自定义场地数据，且无法撤销。",
+  "customStageDeleteTitle": "删除自定义草坪？",
+  "customStageDeleteMessage": "这将永久删除此关卡中的自定义场地数据。若其为当前草坪，关卡将切换为默认内置草坪。",
+  "editCustomStage": "编辑自定义草坪"
 }

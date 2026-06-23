@@ -465,6 +465,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templateOldStyleExample => '旧式关卡';
 
   @override
+  String get templateCustomStageExample => '自定义场地示例';
+
+  @override
   String get unsavedChanges => '有未保存的更改';
 
   @override
@@ -6458,4 +6461,148 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get protectGridItemChallengeHelpOperationGuide =>
       '在上方网格中点击选择坐标，然后点击“添加目标”按钮选择要保护的物品类型。';
+
+  @override
+  String get customStageProperties => '自定义场地属性';
+
+  @override
+  String get customStageNotFound => '未找到自定义场地对象。';
+
+  @override
+  String get customStageSectionGeneral => '常规';
+
+  @override
+  String get customStageSectionZombies => '僵尸类型';
+
+  @override
+  String get customStageSectionResourceGroups => '资源组';
+
+  @override
+  String get customStageSectionAppearance => '外观';
+
+  @override
+  String get customStageSectionAdvanced => '高级';
+
+  @override
+  String get customStageAlias => '场地别名';
+
+  @override
+  String get customStageNoResourceGroups => '列表中没有资源组';
+
+  @override
+  String get customStageMissingBackgroundWarning =>
+      '请至少导入一个在场地助手中列出的 DelayLoad_Background 资源组，否则草坪可能完全显示为黑色。';
+
+  @override
+  String get customStageEnableAmbient => '启用环境音';
+
+  @override
+  String get customStageDisabledCellsEmpty => '空';
+
+  @override
+  String get customStageDisabledCellsDefault => '默认';
+
+  @override
+  String get customStageBeachMinigame => '使用小游戏版本';
+
+  @override
+  String get customStageEnableSubmarine => '启用潜艇';
+
+  @override
+  String get customStageSubmarineHitpoints => '潜艇生命值';
+
+  @override
+  String get customStageNameSuffix => '（自定义）';
+
+  @override
+  String get selectCustomStageBase => '选择基础场地';
+
+  @override
+  String get searchStageObjclass => '搜索 objclass';
+
+  @override
+  String get noStageObjclassFound => '未找到 objclass';
+
+  @override
+  String get selectStageBackground => '选择草坪外观';
+
+  @override
+  String get searchStageBackground => '搜索场地';
+
+  @override
+  String get noStageBackgroundFound => '未找到草坪外观';
+
+  @override
+  String get importResourceGroup => '导入资源组';
+
+  @override
+  String get importResourceGroupGlobal => '从全局列表';
+
+  @override
+  String get importResourceGroupFromStage => '从场地导入';
+
+  @override
+  String get importResourceGroupSourceStage => '来源场地';
+
+  @override
+  String get searchResourceGroup => '搜索资源组';
+
+  @override
+  String get noResourceGroupFound => '未找到资源组';
+
+  @override
+  String get importResourceGroupsFromStageTitle => '从场地添加资源组？';
+
+  @override
+  String importResourceGroupsFromStageMessage(String stageName) {
+    return '将添加以下来自 $stageName 的资源组：';
+  }
+
+  @override
+  String importResourceGroupsFromStageSkipped(int count) {
+    return '已有 $count 个资源组在本关卡中，将跳过。';
+  }
+
+  @override
+  String get importResourceGroupsFromStageAllPresent => '该场地的所有资源组已在本关卡中。';
+
+  @override
+  String get createCustomStage => '创建自定义草坪';
+
+  @override
+  String get createCustomStageHint => '选择基础场地属性类型，并在此关卡中本地编辑。';
+
+  @override
+  String get customStageAliasPromptTitle => '自定义场地别名';
+
+  @override
+  String get customStageAliasTaken => '该别名已在此关卡中使用。';
+
+  @override
+  String get stageSelectionTabBuiltin => '内置';
+
+  @override
+  String get stageSelectionTabCustom => '自定义';
+
+  @override
+  String get customStageSelectionEmpty => '此关卡中尚无自定义草坪。';
+
+  @override
+  String get customStageSelectionInLevel => '此关卡中的自定义草坪';
+
+  @override
+  String get customStageSwitchToBuiltinTitle => '切换为内置草坪？';
+
+  @override
+  String get customStageSwitchToBuiltinMessage => '这将永久删除此关卡中的自定义场地数据，且无法撤销。';
+
+  @override
+  String get customStageDeleteTitle => '删除自定义草坪？';
+
+  @override
+  String get customStageDeleteMessage =>
+      '这将永久删除此关卡中的自定义场地数据。若其为当前草坪，关卡将切换为默认内置草坪。';
+
+  @override
+  String get editCustomStage => '编辑自定义草坪';
 }

@@ -958,6 +958,12 @@ abstract class AppLocalizations {
   /// **'Old-style level'**
   String get templateOldStyleExample;
 
+  /// No description provided for @templateCustomStageExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom stage level template'**
+  String get templateCustomStageExample;
+
   /// No description provided for @unsavedChanges.
   ///
   /// In en, this message translates to:
@@ -12171,6 +12177,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Click a position in the grid above, then click the \"Add item\" button to select the type of item to protect.'**
   String get protectGridItemChallengeHelpOperationGuide;
+
+  /// No description provided for @customStageProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom stage properties'**
+  String get customStageProperties;
+
+  /// No description provided for @customStageNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom stage object not found.'**
+  String get customStageNotFound;
+
+  /// No description provided for @customStageSectionGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get customStageSectionGeneral;
+
+  /// No description provided for @customStageSectionZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie types'**
+  String get customStageSectionZombies;
+
+  /// No description provided for @customStageSectionResourceGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource groups'**
+  String get customStageSectionResourceGroups;
+
+  /// No description provided for @customStageSectionAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get customStageSectionAppearance;
+
+  /// No description provided for @customStageSectionAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get customStageSectionAdvanced;
+
+  /// No description provided for @customStageAlias.
+  ///
+  /// In en, this message translates to:
+  /// **'Stage alias'**
+  String get customStageAlias;
+
+  /// No description provided for @customStageNoResourceGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'No resource groups in list'**
+  String get customStageNoResourceGroups;
+
+  /// No description provided for @customStageMissingBackgroundWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Import at least one DelayLoad_Background group listed in the stage helper, or the lawn may appear completely black.'**
+  String get customStageMissingBackgroundWarning;
+
+  /// No description provided for @customStageEnableAmbient.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable ambient'**
+  String get customStageEnableAmbient;
+
+  /// No description provided for @customStageDisabledCellsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get customStageDisabledCellsEmpty;
+
+  /// No description provided for @customStageDisabledCellsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get customStageDisabledCellsDefault;
+
+  /// No description provided for @customStageBeachMinigame.
+  ///
+  /// In en, this message translates to:
+  /// **'Use minigame version'**
+  String get customStageBeachMinigame;
+
+  /// No description provided for @customStageEnableSubmarine.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable submarine'**
+  String get customStageEnableSubmarine;
+
+  /// No description provided for @customStageSubmarineHitpoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Submarine hitpoints'**
+  String get customStageSubmarineHitpoints;
+
+  /// No description provided for @customStageNameSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' (Custom)'**
+  String get customStageNameSuffix;
+
+  /// No description provided for @selectCustomStageBase.
+  ///
+  /// In en, this message translates to:
+  /// **'Select base lawn'**
+  String get selectCustomStageBase;
+
+  /// No description provided for @searchStageObjclass.
+  ///
+  /// In en, this message translates to:
+  /// **'Search objclass'**
+  String get searchStageObjclass;
+
+  /// No description provided for @noStageObjclassFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No objclass found'**
+  String get noStageObjclassFound;
+
+  /// No description provided for @selectStageBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Select lawn appearance'**
+  String get selectStageBackground;
+
+  /// No description provided for @searchStageBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Search lawn'**
+  String get searchStageBackground;
+
+  /// No description provided for @noStageBackgroundFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No lawn appearance found'**
+  String get noStageBackgroundFound;
+
+  /// No description provided for @importResourceGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Import resource group'**
+  String get importResourceGroup;
+
+  /// No description provided for @importResourceGroupGlobal.
+  ///
+  /// In en, this message translates to:
+  /// **'From global list'**
+  String get importResourceGroupGlobal;
+
+  /// No description provided for @importResourceGroupFromStage.
+  ///
+  /// In en, this message translates to:
+  /// **'From stage'**
+  String get importResourceGroupFromStage;
+
+  /// No description provided for @importResourceGroupSourceStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Source stage'**
+  String get importResourceGroupSourceStage;
+
+  /// No description provided for @searchResourceGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Search resource group'**
+  String get searchResourceGroup;
+
+  /// No description provided for @noResourceGroupFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No resource group found'**
+  String get noResourceGroupFound;
+
+  /// No description provided for @importResourceGroupsFromStageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add resource groups from stage?'**
+  String get importResourceGroupsFromStageTitle;
+
+  /// No description provided for @importResourceGroupsFromStageMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The following resource groups from {stageName} will be added:'**
+  String importResourceGroupsFromStageMessage(String stageName);
+
+  /// No description provided for @importResourceGroupsFromStageSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resource group(s) already in this level will be skipped.'**
+  String importResourceGroupsFromStageSkipped(int count);
+
+  /// No description provided for @importResourceGroupsFromStageAllPresent.
+  ///
+  /// In en, this message translates to:
+  /// **'All resource groups from this stage are already in this level.'**
+  String get importResourceGroupsFromStageAllPresent;
+
+  /// No description provided for @createCustomStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create custom lawn'**
+  String get createCustomStage;
+
+  /// No description provided for @createCustomStageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a base stage properties type and edit it locally in this level.'**
+  String get createCustomStageHint;
+
+  /// No description provided for @customStageAliasPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom stage alias'**
+  String get customStageAliasPromptTitle;
+
+  /// No description provided for @customStageAliasTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'That alias is already used in this level.'**
+  String get customStageAliasTaken;
+
+  /// No description provided for @stageSelectionTabBuiltin.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get stageSelectionTabBuiltin;
+
+  /// No description provided for @stageSelectionTabCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get stageSelectionTabCustom;
+
+  /// No description provided for @customStageSelectionEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No custom lawn in this level yet.'**
+  String get customStageSelectionEmpty;
+
+  /// No description provided for @customStageSelectionInLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom lawns in this level'**
+  String get customStageSelectionInLevel;
+
+  /// No description provided for @customStageSwitchToBuiltinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to built-in lawn?'**
+  String get customStageSwitchToBuiltinTitle;
+
+  /// No description provided for @customStageSwitchToBuiltinMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently removes the custom stage data from this level. This cannot be undone.'**
+  String get customStageSwitchToBuiltinMessage;
+
+  /// No description provided for @customStageDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete custom lawn?'**
+  String get customStageDeleteTitle;
+
+  /// No description provided for @customStageDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.'**
+  String get customStageDeleteMessage;
+
+  /// No description provided for @editCustomStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit custom lawn'**
+  String get editCustomStage;
 }
 
 class _AppLocalizationsDelegate

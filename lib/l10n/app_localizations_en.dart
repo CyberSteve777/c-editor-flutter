@@ -474,6 +474,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateOldStyleExample => 'Old-style level';
 
   @override
+  String get templateCustomStageExample => 'Custom stage level template';
+
+  @override
   String get unsavedChanges => 'Unsaved changes';
 
   @override
@@ -6805,4 +6808,153 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get protectGridItemChallengeHelpOperationGuide =>
       'Click a position in the grid above, then click the \"Add item\" button to select the type of item to protect.';
+
+  @override
+  String get customStageProperties => 'Custom stage properties';
+
+  @override
+  String get customStageNotFound => 'Custom stage object not found.';
+
+  @override
+  String get customStageSectionGeneral => 'General';
+
+  @override
+  String get customStageSectionZombies => 'Zombie types';
+
+  @override
+  String get customStageSectionResourceGroups => 'Resource groups';
+
+  @override
+  String get customStageSectionAppearance => 'Appearance';
+
+  @override
+  String get customStageSectionAdvanced => 'Advanced';
+
+  @override
+  String get customStageAlias => 'Stage alias';
+
+  @override
+  String get customStageNoResourceGroups => 'No resource groups in list';
+
+  @override
+  String get customStageMissingBackgroundWarning =>
+      'Import at least one DelayLoad_Background group listed in the stage helper, or the lawn may appear completely black.';
+
+  @override
+  String get customStageEnableAmbient => 'Enable ambient';
+
+  @override
+  String get customStageDisabledCellsEmpty => 'Empty';
+
+  @override
+  String get customStageDisabledCellsDefault => 'Default';
+
+  @override
+  String get customStageBeachMinigame => 'Use minigame version';
+
+  @override
+  String get customStageEnableSubmarine => 'Enable submarine';
+
+  @override
+  String get customStageSubmarineHitpoints => 'Submarine hitpoints';
+
+  @override
+  String get customStageNameSuffix => ' (Custom)';
+
+  @override
+  String get selectCustomStageBase => 'Select base lawn';
+
+  @override
+  String get searchStageObjclass => 'Search objclass';
+
+  @override
+  String get noStageObjclassFound => 'No objclass found';
+
+  @override
+  String get selectStageBackground => 'Select lawn appearance';
+
+  @override
+  String get searchStageBackground => 'Search lawn';
+
+  @override
+  String get noStageBackgroundFound => 'No lawn appearance found';
+
+  @override
+  String get importResourceGroup => 'Import resource group';
+
+  @override
+  String get importResourceGroupGlobal => 'From global list';
+
+  @override
+  String get importResourceGroupFromStage => 'From stage';
+
+  @override
+  String get importResourceGroupSourceStage => 'Source stage';
+
+  @override
+  String get searchResourceGroup => 'Search resource group';
+
+  @override
+  String get noResourceGroupFound => 'No resource group found';
+
+  @override
+  String get importResourceGroupsFromStageTitle =>
+      'Add resource groups from stage?';
+
+  @override
+  String importResourceGroupsFromStageMessage(String stageName) {
+    return 'The following resource groups from $stageName will be added:';
+  }
+
+  @override
+  String importResourceGroupsFromStageSkipped(int count) {
+    return '$count resource group(s) already in this level will be skipped.';
+  }
+
+  @override
+  String get importResourceGroupsFromStageAllPresent =>
+      'All resource groups from this stage are already in this level.';
+
+  @override
+  String get createCustomStage => 'Create custom lawn';
+
+  @override
+  String get createCustomStageHint =>
+      'Pick a base stage properties type and edit it locally in this level.';
+
+  @override
+  String get customStageAliasPromptTitle => 'Custom stage alias';
+
+  @override
+  String get customStageAliasTaken =>
+      'That alias is already used in this level.';
+
+  @override
+  String get stageSelectionTabBuiltin => 'Built-in';
+
+  @override
+  String get stageSelectionTabCustom => 'Custom';
+
+  @override
+  String get customStageSelectionEmpty => 'No custom lawn in this level yet.';
+
+  @override
+  String get customStageSelectionInLevel => 'Custom lawns in this level';
+
+  @override
+  String get customStageSwitchToBuiltinTitle => 'Switch to built-in lawn?';
+
+  @override
+  String get customStageSwitchToBuiltinMessage =>
+      'This permanently removes the custom stage data from this level. This cannot be undone.';
+
+  @override
+  String get customStageDeleteTitle => 'Delete custom lawn?';
+
+  @override
+  String get customStageDeleteMessage =>
+      'This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.';
+
+  @override
+  String get editCustomStage => 'Edit custom lawn';
 }

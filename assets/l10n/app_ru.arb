@@ -154,6 +154,7 @@
   "templateCustomZombieExample": "Пример пользовательского зомби",
   "templateIPlantExample": "Пример «Я растение»",
   "templateOldStyleExample": "Уровень старого типа",
+  "templateCustomStageExample": "Пример пользовательского газона",
   "unsavedChanges": "Несохранённые изменения",
   "saveBeforeLeaving": "Сохранить перед выходом?",
   "discard": "Не сохранять",
@@ -2213,5 +2214,65 @@
         "type": "int"
       }
     }
-  }
+  },
+  "customStageProperties": "Свойства пользовательской локации",
+  "customStageNotFound": "Объект пользовательской локации не найден.",
+  "customStageSectionGeneral": "Общие",
+  "customStageSectionZombies": "Типы зомби",
+  "customStageSectionResourceGroups": "Группы ресурсов",
+  "customStageSectionAppearance": "Внешний вид",
+  "customStageSectionAdvanced": "Дополнительно",
+  "customStageAlias": "Псевдоним локации",
+  "customStageNoResourceGroups": "В списке нет групп ресурсов",
+  "customStageMissingBackgroundWarning": "Импортируйте хотя бы одну группу DelayLoad_Background из справочника локаций, иначе газон может отображаться полностью чёрным.",
+  "customStageEnableAmbient": "Включить эмбиент",
+  "customStageDisabledCellsEmpty": "Пусто",
+  "customStageDisabledCellsDefault": "По умолчанию",
+  "customStageBeachMinigame": "Использовать мини-игровую версию",
+  "customStageEnableSubmarine": "Включить подлодку",
+  "customStageSubmarineHitpoints": "Прочность подлодки",
+  "customStageNameSuffix": " (Пользов.)",
+  "selectCustomStageBase": "Выберите базовую локацию",
+  "searchStageObjclass": "Поиск objclass",
+  "noStageObjclassFound": "Objclass не найден",
+  "selectStageBackground": "Выберите внешний вид газона",
+  "searchStageBackground": "Поиск локации",
+  "noStageBackgroundFound": "Внешний вид не найден",
+  "importResourceGroup": "Импорт группы ресурсов",
+  "importResourceGroupGlobal": "Из общего списка",
+  "importResourceGroupFromStage": "Из локации",
+  "importResourceGroupSourceStage": "Исходная локация",
+  "searchResourceGroup": "Поиск группы ресурсов",
+  "noResourceGroupFound": "Группа ресурсов не найдена",
+  "importResourceGroupsFromStageTitle": "Добавить группы ресурсов из локации?",
+  "importResourceGroupsFromStageMessage": "Будут добавлены следующие группы ресурсов из {stageName}:",
+  "@importResourceGroupsFromStageMessage": {
+    "placeholders": {
+      "stageName": {
+        "type": "String"
+      }
+    }
+  },
+  "importResourceGroupsFromStageSkipped": "{count} групп(ы) ресурсов уже есть на этом уровне и будут пропущены.",
+  "@importResourceGroupsFromStageSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importResourceGroupsFromStageAllPresent": "Все группы ресурсов из этой локации уже есть на этом уровне.",
+  "createCustomStage": "Создать пользовательский газон",
+  "createCustomStageHint": "Выберите базовый тип свойств локации и отредактируйте его локально в этом уровне.",
+  "customStageAliasPromptTitle": "Псевдоним пользовательской локации",
+  "customStageAliasTaken": "Этот псевдоним уже используется в этом уровне.",
+  "stageSelectionTabBuiltin": "Встроенные",
+  "stageSelectionTabCustom": "Пользовательские",
+  "customStageSelectionEmpty": "В этом уровне пока нет пользовательского газона.",
+  "customStageSelectionInLevel": "Пользовательские газоны в уровне",
+  "customStageSwitchToBuiltinTitle": "Переключиться на встроенный газон?",
+  "customStageSwitchToBuiltinMessage": "Это навсегда удалит данные пользовательского газона из этого уровня. Отменить будет нельзя.",
+  "customStageDeleteTitle": "Удалить пользовательский газон?",
+  "customStageDeleteMessage": "Это навсегда удалит данные пользовательского газона из этого уровня. Если он сейчас активен, уровень переключится на встроенный газон по умолчанию.",
+  "editCustomStage": "Редактировать пользовательский газон"
 }

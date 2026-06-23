@@ -477,6 +477,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get templateOldStyleExample => 'Уровень старого типа';
 
   @override
+  String get templateCustomStageExample => 'Пример пользовательского газона';
+
+  @override
   String get unsavedChanges => 'Несохранённые изменения';
 
   @override
@@ -6746,4 +6749,157 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get protectGridItemChallengeHelpOperationGuide =>
       'Click a position in the grid above, then click the \"Add item\" button to select the type of item to protect.';
+
+  @override
+  String get customStageProperties => 'Свойства пользовательской локации';
+
+  @override
+  String get customStageNotFound =>
+      'Объект пользовательской локации не найден.';
+
+  @override
+  String get customStageSectionGeneral => 'Общие';
+
+  @override
+  String get customStageSectionZombies => 'Типы зомби';
+
+  @override
+  String get customStageSectionResourceGroups => 'Группы ресурсов';
+
+  @override
+  String get customStageSectionAppearance => 'Внешний вид';
+
+  @override
+  String get customStageSectionAdvanced => 'Дополнительно';
+
+  @override
+  String get customStageAlias => 'Псевдоним локации';
+
+  @override
+  String get customStageNoResourceGroups => 'В списке нет групп ресурсов';
+
+  @override
+  String get customStageMissingBackgroundWarning =>
+      'Импортируйте хотя бы одну группу DelayLoad_Background из справочника локаций, иначе газон может отображаться полностью чёрным.';
+
+  @override
+  String get customStageEnableAmbient => 'Включить эмбиент';
+
+  @override
+  String get customStageDisabledCellsEmpty => 'Пусто';
+
+  @override
+  String get customStageDisabledCellsDefault => 'По умолчанию';
+
+  @override
+  String get customStageBeachMinigame => 'Использовать мини-игровую версию';
+
+  @override
+  String get customStageEnableSubmarine => 'Включить подлодку';
+
+  @override
+  String get customStageSubmarineHitpoints => 'Прочность подлодки';
+
+  @override
+  String get customStageNameSuffix => ' (Пользов.)';
+
+  @override
+  String get selectCustomStageBase => 'Выберите базовую локацию';
+
+  @override
+  String get searchStageObjclass => 'Поиск objclass';
+
+  @override
+  String get noStageObjclassFound => 'Objclass не найден';
+
+  @override
+  String get selectStageBackground => 'Выберите внешний вид газона';
+
+  @override
+  String get searchStageBackground => 'Поиск локации';
+
+  @override
+  String get noStageBackgroundFound => 'Внешний вид не найден';
+
+  @override
+  String get importResourceGroup => 'Импорт группы ресурсов';
+
+  @override
+  String get importResourceGroupGlobal => 'Из общего списка';
+
+  @override
+  String get importResourceGroupFromStage => 'Из локации';
+
+  @override
+  String get importResourceGroupSourceStage => 'Исходная локация';
+
+  @override
+  String get searchResourceGroup => 'Поиск группы ресурсов';
+
+  @override
+  String get noResourceGroupFound => 'Группа ресурсов не найдена';
+
+  @override
+  String get importResourceGroupsFromStageTitle =>
+      'Добавить группы ресурсов из локации?';
+
+  @override
+  String importResourceGroupsFromStageMessage(String stageName) {
+    return 'Будут добавлены следующие группы ресурсов из $stageName:';
+  }
+
+  @override
+  String importResourceGroupsFromStageSkipped(int count) {
+    return '$count групп(ы) ресурсов уже есть на этом уровне и будут пропущены.';
+  }
+
+  @override
+  String get importResourceGroupsFromStageAllPresent =>
+      'Все группы ресурсов из этой локации уже есть на этом уровне.';
+
+  @override
+  String get createCustomStage => 'Создать пользовательский газон';
+
+  @override
+  String get createCustomStageHint =>
+      'Выберите базовый тип свойств локации и отредактируйте его локально в этом уровне.';
+
+  @override
+  String get customStageAliasPromptTitle =>
+      'Псевдоним пользовательской локации';
+
+  @override
+  String get customStageAliasTaken =>
+      'Этот псевдоним уже используется в этом уровне.';
+
+  @override
+  String get stageSelectionTabBuiltin => 'Встроенные';
+
+  @override
+  String get stageSelectionTabCustom => 'Пользовательские';
+
+  @override
+  String get customStageSelectionEmpty =>
+      'В этом уровне пока нет пользовательского газона.';
+
+  @override
+  String get customStageSelectionInLevel => 'Пользовательские газоны в уровне';
+
+  @override
+  String get customStageSwitchToBuiltinTitle =>
+      'Переключиться на встроенный газон?';
+
+  @override
+  String get customStageSwitchToBuiltinMessage =>
+      'Это навсегда удалит данные пользовательского газона из этого уровня. Отменить будет нельзя.';
+
+  @override
+  String get customStageDeleteTitle => 'Удалить пользовательский газон?';
+
+  @override
+  String get customStageDeleteMessage =>
+      'Это навсегда удалит данные пользовательского газона из этого уровня. Если он сейчас активен, уровень переключится на встроенный газон по умолчанию.';
+
+  @override
+  String get editCustomStage => 'Редактировать пользовательский газон';
 }

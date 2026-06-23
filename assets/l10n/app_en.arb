@@ -154,6 +154,7 @@
   "templateCustomZombieExample": "Custom zombie level template",
   "templateIPlantExample": "I, Plant level template",
   "templateOldStyleExample": "Old-style level",
+  "templateCustomStageExample": "Custom stage level template",
   "unsavedChanges": "Unsaved changes",
   "saveBeforeLeaving": "Save before leaving?",
   "discard": "Discard",
@@ -2214,5 +2215,65 @@
         "type": "int"
       }
     }
-  }
+  },
+  "customStageProperties": "Custom stage properties",
+  "customStageNotFound": "Custom stage object not found.",
+  "customStageSectionGeneral": "General",
+  "customStageSectionZombies": "Zombie types",
+  "customStageSectionResourceGroups": "Resource groups",
+  "customStageSectionAppearance": "Appearance",
+  "customStageSectionAdvanced": "Advanced",
+  "customStageAlias": "Stage alias",
+  "customStageNoResourceGroups": "No resource groups in list",
+  "customStageMissingBackgroundWarning": "Import at least one DelayLoad_Background group listed in the stage helper, or the lawn may appear completely black.",
+  "customStageEnableAmbient": "Enable ambient",
+  "customStageDisabledCellsEmpty": "Empty",
+  "customStageDisabledCellsDefault": "Default",
+  "customStageBeachMinigame": "Use minigame version",
+  "customStageEnableSubmarine": "Enable submarine",
+  "customStageSubmarineHitpoints": "Submarine hitpoints",
+  "customStageNameSuffix": " (Custom)",
+  "selectCustomStageBase": "Select base lawn",
+  "searchStageObjclass": "Search objclass",
+  "noStageObjclassFound": "No objclass found",
+  "selectStageBackground": "Select lawn appearance",
+  "searchStageBackground": "Search lawn",
+  "noStageBackgroundFound": "No lawn appearance found",
+  "importResourceGroup": "Import resource group",
+  "importResourceGroupGlobal": "From global list",
+  "importResourceGroupFromStage": "From stage",
+  "importResourceGroupSourceStage": "Source stage",
+  "searchResourceGroup": "Search resource group",
+  "noResourceGroupFound": "No resource group found",
+  "importResourceGroupsFromStageTitle": "Add resource groups from stage?",
+  "importResourceGroupsFromStageMessage": "The following resource groups from {stageName} will be added:",
+  "@importResourceGroupsFromStageMessage": {
+    "placeholders": {
+      "stageName": {
+        "type": "String"
+      }
+    }
+  },
+  "importResourceGroupsFromStageSkipped": "{count} resource group(s) already in this level will be skipped.",
+  "@importResourceGroupsFromStageSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importResourceGroupsFromStageAllPresent": "All resource groups from this stage are already in this level.",
+  "createCustomStage": "Create custom lawn",
+  "createCustomStageHint": "Pick a base stage properties type and edit it locally in this level.",
+  "customStageAliasPromptTitle": "Custom stage alias",
+  "customStageAliasTaken": "That alias is already used in this level.",
+  "stageSelectionTabBuiltin": "Built-in",
+  "stageSelectionTabCustom": "Custom",
+  "customStageSelectionEmpty": "No custom lawn in this level yet.",
+  "customStageSelectionInLevel": "Custom lawns in this level",
+  "customStageSwitchToBuiltinTitle": "Switch to built-in lawn?",
+  "customStageSwitchToBuiltinMessage": "This permanently removes the custom stage data from this level. This cannot be undone.",
+  "customStageDeleteTitle": "Delete custom lawn?",
+  "customStageDeleteMessage": "This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.",
+  "editCustomStage": "Edit custom lawn"
 }
