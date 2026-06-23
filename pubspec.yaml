@@ -47,7 +47,6 @@ flutter:
     - assets/meta/properties.json
     - assets/reference/
     - assets/resources/
-    - lib/data/resources/CustomStagePresets.json
     - assets/l10n/resource_en.json
     - assets/l10n/resource_zh.json
     - assets/l10n/resource_ru.json

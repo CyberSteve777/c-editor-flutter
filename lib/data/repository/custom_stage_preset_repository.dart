@@ -6,7 +6,7 @@ import 'package:c_editor/data/models/custom_stage_preset.dart';
 
 abstract final class CustomStagePresetRepository {
   static const String _resourcePath =
-      'lib/data/resources/CustomStagePresets.json';
+      'assets/resources/CustomStagePresets.json';
 
   static final List<CustomStagePreset> _presets = [];
   static bool _isLoaded = false;
