@@ -125,6 +125,12 @@ class _CustomStagePropertiesScreenState
         _groupsToUnload,
       );
 
+  bool get _hasAdvancedSettings =>
+      _objclass == 'FutureStageProperties' ||
+      CustomStageLevelUtils.supportsBeachMinigame(_objdata) ||
+      CustomStageLevelUtils.supportsSubmarine(_objclass) ||
+      CustomStageLevelUtils.supportsSkyCityAirship(_objclass);
+
   Color get _accentColor => customStageAccent(context);
 
   String _fieldLabel(BuildContext context, String fieldName) {
@@ -162,6 +168,10 @@ class _CustomStagePropertiesScreenState
         }
       }
     }
+    _stageBaseOption = StageCatalogRepository.stageBaseOptionForObjdata(
+      objclass: _objclass,
+      objdata: _objdata,
+    );
     widget.onChanged();
     setState(() {});
   }
@@ -202,7 +212,15 @@ class _CustomStagePropertiesScreenState
             applySourceLawnAppearance = false,
           }) {
             if (targetUnloadList) {
-              _setGroupsToUnload([..._groupsToUnload, ...groups]);
+              final toUnload =
+                  mode == StageResourceGroupImportMode.fromStage &&
+                      sourceStageAlias != null
+                  ? CustomStageLevelUtils.sourceUnloadGroupsForImport(
+                      sourceStageAlias: sourceStageAlias,
+                      importedGroups: groups,
+                    )
+                  : groups;
+              _setGroupsToUnload([..._groupsToUnload, ...toUnload]);
             } else {
               final appearanceSnapshot =
                   CustomStageLevelUtils.snapshotLawnAppearance(_objdata);
@@ -217,17 +235,11 @@ class _CustomStagePropertiesScreenState
                   sourceStageAlias,
                 );
                 if (impl != null) {
-                  final unloadSource = CustomStageLevelUtils.stringList(
-                    impl.objdata['GroupsToUnloadForAds'],
-                  ).toSet();
-                  final toUnload = groups.where(unloadSource.contains).toList();
-                  if (toUnload.isNotEmpty) {
-                    CustomStageLevelUtils.setStringList(
-                      _objdata,
-                      'GroupsToUnloadForAds',
-                      [..._groupsToUnload, ...toUnload],
-                    );
-                  }
+                  CustomStageLevelUtils.syncUnloadGroupsFromSourceStage(
+                    objdata: _objdata,
+                    sourceStageAlias: sourceStageAlias,
+                    importedGroups: groups,
+                  );
                   if (applySourceLawnAppearance) {
                     CustomStageLevelUtils.applyLawnAppearanceFromSource(
                       _objdata,
@@ -599,19 +611,13 @@ class _CustomStagePropertiesScreenState
     final backgroundName = backgroundDisplay == null
         ? (_objdata['BackgroundImagePrefix'] as String? ?? '—')
         : ResourceNames.lookup(context, backgroundDisplay.nameKey);
-    final lawnAppearanceNameKey =
-        CustomStageLevelUtils.displayLawnAppearanceNameKey(
-          objclass: _objclass,
-          objdata: _objdata,
-        );
-    final lawnAppearanceName = lawnAppearanceNameKey.isEmpty
-        ? (_objdata['BackgroundImagePrefix'] as String? ?? '—')
-        : ResourceNames.lookup(context, lawnAppearanceNameKey);
-    final lawnAppearanceIcon =
-        CustomStageLevelUtils.displayLawnAppearanceIconFileName(
-          objclass: _objclass,
-          objdata: _objdata,
-        );
+    final baseStageNameKey = _stageBaseOption == null
+        ? ''
+        : 'stage_${_stageBaseOption!.alias}';
+    final baseStageName = baseStageNameKey.isEmpty
+        ? (_stageBaseOption?.alias ?? _objclass)
+        : ResourceNames.lookup(context, baseStageNameKey);
+    final baseStageIcon = _stageBaseOption?.iconName;
     final musicSuffix = _objdata['MusicSuffix'] as String? ?? '';
     final musicName = ResourceNames.lookup(
       context,
@@ -637,10 +643,9 @@ class _CustomStagePropertiesScreenState
             children: [
               _sectionTitle(l10n?.customStageSectionGeneral ?? 'General'),
               _lawnAppearanceSummaryCard(
-                label:
-                    l10n?.customStageLawnAppearance ?? 'Lawn appearance',
-                value: lawnAppearanceName,
-                iconFileName: lawnAppearanceIcon,
+                label: l10n?.customStageBaseStage ?? 'Base stage',
+                value: baseStageName,
+                iconFileName: baseStageIcon,
               ),
               const SizedBox(height: 8),
               Card(
@@ -669,58 +674,9 @@ class _CustomStagePropertiesScreenState
                 ),
               ),
               const SizedBox(height: 16),
-              _sectionTitle(l10n?.customStageSectionZombies ?? 'Zombie types'),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      for (final field
-                          in CustomStageLevelUtils.editableZombieFields(
-                            _section,
-                          ))
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: StageZombieTypePickerRow(
-                            fieldLabel: _fieldLabel(context, field.name),
-                            zombieId: _objdata[field.name] as String?,
-                            onChanged: (id) {
-                              _objdata[field.name] = id;
-                              _sync();
-                            },
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
               _sectionTitle(
-                l10n?.customStageSectionResourceGroups ?? 'Resource groups',
-              ),
-              if (_missingKnownBackground) ...[
-                _warningCard(
-                  l10n?.customStageMissingBackgroundWarning ??
-                      'Import at least one DelayLoad_Background group listed in the stage helper, or the lawn may appear completely black.',
-                ),
-                const SizedBox(height: 8),
-              ],
-              _resourceGroupSection(
-                title: _fieldLabel(context, 'ResourceGroupNames'),
-                groups: _resourceGroups,
-                onChanged: _setResourceGroups,
-                targetUnloadList: false,
-              ),
-              const SizedBox(height: 8),
-              _resourceGroupSection(
-                title: _fieldLabel(context, 'GroupsToUnloadForAds'),
-                groups: _groupsToUnload,
-                onChanged: _setGroupsToUnload,
-                targetUnloadList: true,
-              ),
-              const SizedBox(height: 16),
-              _sectionTitle(
-                l10n?.customStageSectionMusicAndOther ?? 'Music & Other',
+                l10n?.customStageSectionMusicAndOther ??
+                    'Lawn appearance, Music & Other',
               ),
               _pickerTile(
                 label: l10n?.customStageLawnAppearance ?? 'Lawn appearance',
@@ -830,192 +786,247 @@ class _CustomStagePropertiesScreenState
                   ),
                 ),
               ),
-              if (_objclass == 'FutureStageProperties') ...[
+              if (_hasAdvancedSettings) ...[
                 const SizedBox(height: 16),
-                _sectionTitle(l10n?.customStageSectionAdvanced ?? 'Advanced'),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: TextField(
-                      controller: _linkedAlphaCtrl,
-                      decoration: customStageInputDecoration(
-                        context,
-                        labelText: _fieldLabel(
-                          context,
-                          'LinkedTilePropagationAlpha',
-                        ),
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      onChanged: (value) {
-                        final parsed = double.tryParse(value);
-                        if (parsed != null) {
-                          _objdata['LinkedTilePropagationAlpha'] = parsed;
-                          _sync();
-                        }
-                      },
-                    ),
-                  ),
+                _sectionTitle(
+                  l10n?.customStageSectionAdvanced ?? 'Advanced Settings',
                 ),
-              ],
-              if (CustomStageLevelUtils.supportsBeachMinigame(_objdata)) ...[
-                const SizedBox(height: 8),
-                Card(
-                  child: SwitchListTile(
-                    title: Text(
-                      l10n?.customStageBeachMinigame ?? 'Use minigame version',
-                    ),
-                    value: CustomStageLevelUtils.isBeachMinigameEnabled(
-                      _objdata,
-                    ),
-                    activeThumbColor: accent,
-                    onChanged: (enabled) {
-                      CustomStageLevelUtils.applyBeachMinigame(
-                        _objdata,
-                        enabled: enabled,
-                      );
-                      _sync();
-                    },
-                  ),
-                ),
-              ],
-              if (CustomStageLevelUtils.supportsSubmarine(_objclass)) ...[
-                const SizedBox(height: 8),
-                Card(
-                  child: SwitchListTile(
-                    title: Text(
-                      l10n?.customStageEnableSubmarine ?? 'Enable submarine',
-                    ),
-                    value: CustomStageLevelUtils.isSubmarineEnabled(_objdata),
-                    activeThumbColor: accent,
-                    onChanged: (enabled) {
-                      CustomStageLevelUtils.applySubmarineEnabled(
-                        _objdata,
-                        enabled: enabled,
-                        hitpoints: double.tryParse(_submarineHpCtrl.text),
-                      );
-                      _sync();
-                    },
-                  ),
-                ),
-                if (CustomStageLevelUtils.isSubmarineEnabled(_objdata))
+                if (_objclass == 'FutureStageProperties')
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: TextField(
-                        controller: _submarineHpCtrl,
+                        controller: _linkedAlphaCtrl,
                         decoration: customStageInputDecoration(
                           context,
-                          labelText:
-                              l10n?.customStageSubmarineHitpoints ??
-                              'Submarine hitpoints',
+                          labelText: _fieldLabel(
+                            context,
+                            'LinkedTilePropagationAlpha',
+                          ),
                         ),
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
                         onChanged: (value) {
-                          final hp = double.tryParse(value);
-                          if (hp == null) return;
-                          CustomStageLevelUtils.applySubmarineEnabled(
-                            _objdata,
-                            enabled: true,
-                            hitpoints: hp,
-                          );
-                          _sync();
+                          final parsed = double.tryParse(value);
+                          if (parsed != null) {
+                            _objdata['LinkedTilePropagationAlpha'] = parsed;
+                            _sync();
+                          }
                         },
                       ),
                     ),
                   ),
-              ],
-              if (CustomStageLevelUtils.supportsSkyCityAirship(_objclass)) ...[
-                const SizedBox(height: 8),
-                Card(
-                  child: SwitchListTile(
-                    title: Text(_fieldLabel(context, 'HasGridItemAirShip')),
-                    value: CustomStageLevelUtils.readBool(
-                      _objdata,
-                      'HasGridItemAirShip',
-                    ),
-                    activeThumbColor: accent,
-                    onChanged: (enabled) {
-                      CustomStageLevelUtils.applySkyCityAirship(
-                        _objdata,
-                        enabled: enabled,
-                      );
-                      _sync();
-                    },
-                  ),
-                ),
-                if (CustomStageLevelUtils.readBool(
-                  _objdata,
-                  'HasGridItemAirShip',
-                )) ...[
+                if (CustomStageLevelUtils.supportsBeachMinigame(_objdata)) ...[
+                  if (_objclass == 'FutureStageProperties')
+                    const SizedBox(height: 8),
                   Card(
                     child: SwitchListTile(
-                      title: Text(_fieldLabel(context, 'HasCannon')),
-                      value: CustomStageLevelUtils.readBool(
+                      title: Text(
+                        l10n?.customStageBeachMinigame ??
+                            'Use minigame version',
+                      ),
+                      value: CustomStageLevelUtils.isBeachMinigameEnabled(
                         _objdata,
-                        'HasCannon',
                       ),
                       activeThumbColor: accent,
                       onChanged: (enabled) {
-                        CustomStageLevelUtils.applySkyCityCannon(
+                        CustomStageLevelUtils.applyBeachMinigame(
                           _objdata,
                           enabled: enabled,
                         );
-                        for (final key
-                            in CustomStageLevelUtils.skycityCannonFieldNames) {
-                          _skycityCtrls.putIfAbsent(
-                            key,
-                            () => TextEditingController(),
-                          );
-                          _skycityCtrls[key]!.text = '${_objdata[key] ?? ''}';
-                        }
                         _sync();
                       },
                     ),
                   ),
-                  if (CustomStageLevelUtils.readBool(_objdata, 'HasCannon'))
+                ],
+                if (CustomStageLevelUtils.supportsSubmarine(_objclass)) ...[
+                  const SizedBox(height: 8),
+                  Card(
+                    child: SwitchListTile(
+                      title: Text(
+                        l10n?.customStageEnableSubmarine ?? 'Enable submarine',
+                      ),
+                      value: CustomStageLevelUtils.isSubmarineEnabled(_objdata),
+                      activeThumbColor: accent,
+                      onChanged: (enabled) {
+                        CustomStageLevelUtils.applySubmarineEnabled(
+                          _objdata,
+                          enabled: enabled,
+                          hitpoints: double.tryParse(_submarineHpCtrl.text),
+                        );
+                        _sync();
+                      },
+                    ),
+                  ),
+                  if (CustomStageLevelUtils.isSubmarineEnabled(_objdata))
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: [
-                            for (final key
-                                in CustomStageLevelUtils
-                                    .skycityCannonFieldNames)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: TextField(
-                                  controller: _skycityCtrls.putIfAbsent(
-                                    key,
-                                    () => TextEditingController(
-                                      text: '${_objdata[key] ?? ''}',
-                                    ),
-                                  ),
-                                  decoration: customStageInputDecoration(
-                                    context,
-                                    labelText: _fieldLabel(context, key),
-                                  ),
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                        decimal: true,
-                                      ),
-                                  onChanged: (value) {
-                                    final parsed = num.tryParse(value);
-                                    if (parsed == null) return;
-                                    _objdata[key] = parsed;
-                                    _sync();
-                                  },
-                                ),
-                              ),
-                          ],
+                        child: TextField(
+                          controller: _submarineHpCtrl,
+                          decoration: customStageInputDecoration(
+                            context,
+                            labelText:
+                                l10n?.customStageSubmarineHitpoints ??
+                                'Submarine hitpoints',
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (value) {
+                            final hp = double.tryParse(value);
+                            if (hp == null) return;
+                            CustomStageLevelUtils.applySubmarineEnabled(
+                              _objdata,
+                              enabled: true,
+                              hitpoints: hp,
+                            );
+                            _sync();
+                          },
                         ),
                       ),
                     ),
                 ],
+                if (CustomStageLevelUtils.supportsSkyCityAirship(_objclass)) ...[
+                  const SizedBox(height: 8),
+                  Card(
+                    child: SwitchListTile(
+                      title: Text(_fieldLabel(context, 'HasGridItemAirShip')),
+                      value: CustomStageLevelUtils.readBool(
+                        _objdata,
+                        'HasGridItemAirShip',
+                      ),
+                      activeThumbColor: accent,
+                      onChanged: (enabled) {
+                        CustomStageLevelUtils.applySkyCityAirship(
+                          _objdata,
+                          enabled: enabled,
+                        );
+                        _sync();
+                      },
+                    ),
+                  ),
+                  if (CustomStageLevelUtils.readBool(
+                    _objdata,
+                    'HasGridItemAirShip',
+                  )) ...[
+                    Card(
+                      child: SwitchListTile(
+                        title: Text(_fieldLabel(context, 'HasCannon')),
+                        value: CustomStageLevelUtils.readBool(
+                          _objdata,
+                          'HasCannon',
+                        ),
+                        activeThumbColor: accent,
+                        onChanged: (enabled) {
+                          CustomStageLevelUtils.applySkyCityCannon(
+                            _objdata,
+                            enabled: enabled,
+                          );
+                          for (final key
+                              in CustomStageLevelUtils.skycityCannonFieldNames) {
+                            _skycityCtrls.putIfAbsent(
+                              key,
+                              () => TextEditingController(),
+                            );
+                            _skycityCtrls[key]!.text = '${_objdata[key] ?? ''}';
+                          }
+                          _sync();
+                        },
+                      ),
+                    ),
+                    if (CustomStageLevelUtils.readBool(_objdata, 'HasCannon'))
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            children: [
+                              for (final key
+                                  in CustomStageLevelUtils
+                                      .skycityCannonFieldNames)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: TextField(
+                                    controller: _skycityCtrls.putIfAbsent(
+                                      key,
+                                      () => TextEditingController(
+                                        text: '${_objdata[key] ?? ''}',
+                                      ),
+                                    ),
+                                    decoration: customStageInputDecoration(
+                                      context,
+                                      labelText: _fieldLabel(context, key),
+                                    ),
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                          decimal: true,
+                                        ),
+                                    onChanged: (value) {
+                                      final parsed = num.tryParse(value);
+                                      if (parsed == null) return;
+                                      _objdata[key] = parsed;
+                                      _sync();
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ],
               ],
+              const SizedBox(height: 16),
+              _sectionTitle(l10n?.customStageSectionZombies ?? 'Zombie types'),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      for (final field
+                          in CustomStageLevelUtils.editableZombieFields(
+                            _section,
+                          ))
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: StageZombieTypePickerRow(
+                            fieldLabel: _fieldLabel(context, field.name),
+                            zombieId: _objdata[field.name] as String?,
+                            onChanged: (id) {
+                              _objdata[field.name] = id;
+                              _sync();
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _sectionTitle(
+                l10n?.customStageSectionResourceGroups ?? 'Resource groups',
+              ),
+              if (_missingKnownBackground) ...[
+                _warningCard(
+                  l10n?.customStageMissingBackgroundWarning ??
+                      'Import at least one DelayLoad_Background group listed in the stage helper, or the lawn may appear completely black.',
+                ),
+                const SizedBox(height: 8),
+              ],
+              _resourceGroupSection(
+                title: _fieldLabel(context, 'ResourceGroupNames'),
+                groups: _resourceGroups,
+                onChanged: _setResourceGroups,
+                targetUnloadList: false,
+              ),
+              const SizedBox(height: 8),
+              _resourceGroupSection(
+                title: _fieldLabel(context, 'GroupsToUnloadForAds'),
+                groups: _groupsToUnload,
+                onChanged: _setGroupsToUnload,
+                targetUnloadList: true,
+              ),
             ],
           ),
         ),

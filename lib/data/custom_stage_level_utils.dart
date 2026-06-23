@@ -287,6 +287,43 @@ abstract final class CustomStageLevelUtils {
     objdata[key] = uniqueStrings(values);
   }
 
+  /// Adds [importedGroups] to GroupsToUnloadForAds when they also appear in
+  /// [sourceStageAlias]'s GroupsToUnloadForAds.
+  static void syncUnloadGroupsFromSourceStage({
+    required Map<String, dynamic> objdata,
+    required String sourceStageAlias,
+    required Iterable<String> importedGroups,
+  }) {
+    final toAlsoUnload = sourceUnloadGroupsForImport(
+      sourceStageAlias: sourceStageAlias,
+      importedGroups: importedGroups,
+    );
+    if (toAlsoUnload.isEmpty) return;
+    setStringList(
+      objdata,
+      'GroupsToUnloadForAds',
+      [
+        ...stringList(objdata['GroupsToUnloadForAds']),
+        ...toAlsoUnload,
+      ],
+    );
+  }
+
+  static List<String> sourceUnloadGroupsForImport({
+    required String sourceStageAlias,
+    required Iterable<String> importedGroups,
+  }) {
+    final impl = StageCatalogRepository.catalogImplementation(sourceStageAlias);
+    if (impl == null) return const [];
+    final sourceUnload = stringList(
+      impl.objdata['GroupsToUnloadForAds'],
+    ).toSet();
+    if (sourceUnload.isEmpty) return const [];
+    return uniqueStrings(
+      importedGroups.where(sourceUnload.contains),
+    );
+  }
+
   static void applyAmbientEnabled(
     Map<String, dynamic> objdata, {
     required bool enabled,
