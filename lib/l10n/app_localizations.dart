@@ -12244,28 +12244,10 @@ abstract class AppLocalizations {
   /// **'Enable ambient audio'**
   String get customStageEnableAmbient;
 
-  /// No description provided for @stageField_MusicSuffix.
-  ///
-  /// In en, this message translates to:
-  /// **'Music module (MusicSuffix)'**
-  String get stageField_MusicSuffix;
-
-  /// No description provided for @stageField_AmbientAudioSuffix.
-  ///
-  /// In en, this message translates to:
-  /// **'Ambient sound (AmbientAudioSuffix)'**
-  String get stageField_AmbientAudioSuffix;
-
-  /// No description provided for @customStageDisabledStreetCells.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombie positions on the seed selection screen (DisabledStreetCells)'**
-  String get customStageDisabledStreetCells;
-
   /// No description provided for @customStageDisabledCellsEmpty.
   ///
   /// In en, this message translates to:
-  /// **'Empty'**
+  /// **'Leave empty'**
   String get customStageDisabledCellsEmpty;
 
   /// No description provided for @customStageDisabledCellsDefault.
