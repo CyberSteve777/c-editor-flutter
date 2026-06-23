@@ -26,6 +26,7 @@ class StageResourceGroupImportScreen extends StatefulWidget {
   final void Function({
     required List<String> groups,
     String? sourceStageAlias,
+    bool applySourceLawnAppearance,
   }) onImport;
   final VoidCallback onBack;
 
@@ -37,6 +38,7 @@ class StageResourceGroupImportScreen extends StatefulWidget {
 class _StageResourceGroupImportScreenState
     extends State<StageResourceGroupImportScreen> {
   String _searchQuery = '';
+  bool _applySourceLawnAppearance = false;
 
   Iterable<String> _globalGroups() {
     return StageCatalogRepository.knownResourceGroups.where(
@@ -140,78 +142,98 @@ class _StageResourceGroupImportScreenState
       context: context,
       builder: (ctx) {
         final theme = Theme.of(ctx);
-        return AlertDialog(
-          title: Text(
-            l10n?.importResourceGroupsFromStageTitle ??
-                'Add resource groups from stage?',
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  l10n?.importResourceGroupsFromStageMessage(stageName) ??
-                      'The following resource groups from $stageName will be added:',
-                  style: theme.textTheme.bodyMedium,
-                ),
-                if (skipped > 0) ...[
-                  const SizedBox(height: 8),
+        var applyLawnAppearance = _applySourceLawnAppearance;
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) => AlertDialog(
+            title: Text(
+              l10n?.importResourceGroupsFromStageTitle ??
+                  'Add resource groups from stage?',
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(
-                    l10n?.importResourceGroupsFromStageSkipped(skipped) ??
-                        '$skipped resource group(s) already in this level will be skipped.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                    l10n?.importResourceGroupsFromStageMessage(stageName) ??
+                        'The following resource groups from $stageName will be added:',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  if (skipped > 0) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n?.importResourceGroupsFromStageSkipped(skipped) ??
+                          '$skipped resource group(s) already in this level will be skipped.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
+                  ],
+                  const SizedBox(height: 12),
+                  ...toAdd.map(
+                    (group) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.add_circle_outline,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _groupLabel(group),
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                                Text(
+                                  group,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Text(
+                      l10n?.importResourceGroupsApplySourceLawnAppearance ??
+                          'Also use this stage\'s lawn appearance',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    value: applyLawnAppearance,
+                    onChanged: (value) {
+                      setDialogState(() => applyLawnAppearance = value ?? false);
+                    },
                   ),
                 ],
-                const SizedBox(height: 12),
-                ...toAdd.map(
-                  (group) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.add_circle_outline,
-                          size: 18,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _groupLabel(group),
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              Text(
-                                group,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n?.cancel ?? 'Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  _applySourceLawnAppearance = applyLawnAppearance;
+                  Navigator.pop(ctx, true);
+                },
+                child: Text(l10n?.confirm ?? 'Confirm'),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n?.cancel ?? 'Cancel'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n?.confirm ?? 'Confirm'),
-            ),
-          ],
         );
       },
     );
@@ -220,6 +242,7 @@ class _StageResourceGroupImportScreenState
     widget.onImport(
       groups: toAdd,
       sourceStageAlias: option.alias,
+      applySourceLawnAppearance: _applySourceLawnAppearance,
     );
   }
 
@@ -291,7 +314,10 @@ class _StageResourceGroupImportScreenState
             title: Text(label),
             subtitle: Text(group),
             trailing: const Icon(Icons.add),
-            onTap: () => widget.onImport(groups: [group]),
+            onTap: () => widget.onImport(
+              groups: [group],
+              applySourceLawnAppearance: false,
+            ),
           ),
         );
       },

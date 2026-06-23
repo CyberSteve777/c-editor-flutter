@@ -98,14 +98,102 @@ abstract final class CustomStageLevelUtils {
     required String objclass,
     required Map<String, dynamic> objdata,
   }) {
+    final appearanceKey = displayLawnAppearanceNameKey(
+      objclass: objclass,
+      objdata: objdata,
+    );
+    if (appearanceKey.isNotEmpty) return appearanceKey;
+    return displayNameKey(
+      backgroundImagePrefix: objdata['BackgroundImagePrefix'] as String?,
+      objdata: objdata,
+    );
+  }
+
+  static String displayLawnAppearanceNameKey({
+    required String objclass,
+    required Map<String, dynamic> objdata,
+  }) {
+    final display = _resolveLawnAppearanceDisplay(objclass: objclass, objdata: objdata);
+    if (display != null && display.nameKey.isNotEmpty) {
+      return display.nameKey;
+    }
     final option = StageCatalogRepository.stageBaseOptionForObjdata(
       objclass: objclass,
       objdata: objdata,
     );
     if (option != null) return 'stage_${option.alias}';
-    return displayNameKey(
-      backgroundImagePrefix: objdata['BackgroundImagePrefix'] as String?,
+    return '';
+  }
+
+  static String? displayLawnAppearanceIconFileName({
+    required String objclass,
+    required Map<String, dynamic> objdata,
+  }) {
+    if (supportsBeachMinigame(objdata) &&
+        isBeachMinigameEnabled(objdata)) {
+      return 'Stage_BeachSnake.webp';
+    }
+    final display = _resolveLawnAppearanceDisplay(objclass: objclass, objdata: objdata);
+    if (display != null && display.image.isNotEmpty) {
+      return display.image;
+    }
+    final option = StageCatalogRepository.stageBaseOptionForObjdata(
+      objclass: objclass,
       objdata: objdata,
+    );
+    return option?.iconName;
+  }
+
+  static const lawnAppearanceFieldNames = [
+    'BackgroundImagePrefix',
+    'BackgroundResourceGroup',
+    'BackgroundImageLeft',
+    'BackgroundImageMiddle',
+    'BackgroundImageRight',
+  ];
+
+  static Map<String, dynamic> snapshotLawnAppearance(
+    Map<String, dynamic> objdata,
+  ) {
+    return {
+      for (final key in lawnAppearanceFieldNames)
+        if (objdata.containsKey(key)) key: cloneJson(objdata[key]),
+    };
+  }
+
+  static void restoreLawnAppearance(
+    Map<String, dynamic> objdata,
+    Map<String, dynamic> snapshot,
+  ) {
+    for (final key in lawnAppearanceFieldNames) {
+      if (snapshot.containsKey(key)) {
+        objdata[key] = cloneJson(snapshot[key]);
+      } else {
+        objdata.remove(key);
+      }
+    }
+  }
+
+  static void applyLawnAppearanceFromSource(
+    Map<String, dynamic> objdata,
+    Map<String, dynamic> sourceObjdata,
+  ) {
+    for (final key in lawnAppearanceFieldNames) {
+      if (sourceObjdata.containsKey(key)) {
+        objdata[key] = cloneJson(sourceObjdata[key]);
+      }
+    }
+  }
+
+  static StageBackgroundOption? _resolveLawnAppearanceDisplay({
+    required String objclass,
+    required Map<String, dynamic> objdata,
+  }) {
+    return StageCatalogRepository.resolveBackgroundDisplay(
+      backgroundImagePrefix: objdata['BackgroundImagePrefix'] as String?,
+      backgroundResourceGroup: objdata['BackgroundResourceGroup'] as String?,
+      resourceGroupNames: stringList(objdata['ResourceGroupNames']),
+      groupsToUnloadForAds: stringList(objdata['GroupsToUnloadForAds']),
     );
   }
 
@@ -238,6 +326,19 @@ abstract final class CustomStageLevelUtils {
     return const DeepCollectionEquality().equals(current, defaults);
   }
 
+  static bool supportsBeachMinigame(Map<String, dynamic> objdata) =>
+      objdata['BackgroundImagePrefix'] == 'IMAGE_BACKGROUNDS_BEACH';
+
+  static bool isBeachMinigameEnabled(Map<String, dynamic> objdata) =>
+      objdata['BackgroundImageMiddle'] == 'TEXTURE_01';
+
+  static void applyBeachMinigame(
+    Map<String, dynamic> objdata, {
+    required bool enabled,
+  }) {
+    objdata['BackgroundImageMiddle'] = enabled ? 'TEXTURE_01' : 'TEXTURE';
+  }
+
   static bool supportsSubmarine(String objclass) =>
       objclass == 'DeepseaStageProperties' ||
       objclass == 'DeepseaStageLandProperties';
@@ -350,17 +451,10 @@ abstract final class CustomStageLevelUtils {
     required String objclass,
     required Map<String, dynamic> objdata,
   }) {
-    final option = StageCatalogRepository.stageBaseOptionForObjdata(
+    return displayLawnAppearanceIconFileName(
       objclass: objclass,
       objdata: objdata,
     );
-    if (option != null) return option.iconName;
-    return StageCatalogRepository.resolveBackgroundDisplay(
-      backgroundImagePrefix: objdata['BackgroundImagePrefix'] as String?,
-      backgroundResourceGroup: objdata['BackgroundResourceGroup'] as String?,
-      resourceGroupNames: stringList(objdata['ResourceGroupNames']),
-      groupsToUnloadForAds: stringList(objdata['GroupsToUnloadForAds']),
-    )?.image;
   }
 
   static const displayNameSuffixDefault = ' (Custom)';

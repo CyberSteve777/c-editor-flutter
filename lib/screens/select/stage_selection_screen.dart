@@ -435,7 +435,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
             );
           }),
         ],
-        if (presets.isNotEmpty) ...[
+        if (presets.isNotEmpty && customStages.isEmpty) ...[
           SizedBox(height: customStages.isEmpty ? 32 : 16),
           Text(
             l10n?.customStagePresetSectionTitle ??
@@ -454,12 +454,8 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _PresetCustomStageCard(
                   preset: preset,
-                  displayName: _localizedPresetText(
-                    context,
-                    l10n,
-                    preset.nameKey,
-                  ),
-                  source: _localizedPresetText(context, l10n, preset.sourceKey),
+                  displayName: ResourceNames.lookup(context, preset.nameKey),
+                  source: ResourceNames.lookup(context, preset.sourceKey),
                   selected: isSelectedPreset,
                   disabled: isDisabled,
                   onTap: () => _copyPreset(preset),
@@ -470,35 +466,6 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
         ],
       ],
     );
-  }
-
-  String _localizedPresetText(
-    BuildContext context,
-    AppLocalizations? l10n,
-    String key,
-  ) {
-    switch (key) {
-      case 'customStagePreset_bigWaveNight':
-        return Localizations.localeOf(context).languageCode == 'zh'
-            ? '巨浪黑夜'
-            : 'Big Wave Night';
-      case 'customStagePreset_mixtapeSummerNight':
-        return l10n?.customStagePreset_mixtapeSummerNight ??
-            'Mixtape Summer Night';
-      case 'customStagePreset_oneSidedAtlantis':
-        return l10n?.customStagePreset_oneSidedAtlantis ??
-            'One-Sided Atlantis';
-      case 'customStagePresetSource_memoryLaneS25Week6Boss':
-        return l10n?.customStagePresetSource_memoryLaneS25Week6Boss ??
-            'From Memory Lane Season 25 Week 6 BOSS level';
-      case 'customStagePresetSource_memoryLaneS26HardLevel1':
-        return l10n?.customStagePresetSource_memoryLaneS26HardLevel1 ??
-            'From Memory Lane Season 26 Hard Mode Level 1';
-      case 'customStagePresetSource_memoryLaneS28Week3Original5_8':
-        return l10n?.customStagePresetSource_memoryLaneS28Week3Original5_8 ??
-            'From Memory Lane Season 28 Week 3, original 5-8';
-    }
-    return key;
   }
 
   String _typeLabel(StageType t, AppLocalizations? l10n) {

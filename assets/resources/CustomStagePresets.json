@@ -7,8 +7,19 @@
     "iconName": "Stage_Night.webp",
     "objclass": "BeachStageProperties",
     "objdata": {
-      "ResourceGroupNames": ["Egypt_Gravestone", "Game_Tombstones_Dynamic", "DelayLoad_Background_Beach", "DelayLoad_Background_Beach_Compressed", "Dirt_Spawn_Beach", "Tombstone_Dark_Effects", "DelayLoad_Background_Night", "AudioTutorial"],
-      "GroupsToUnloadForAds": ["DelayLoad_Background_Night"],
+      "ResourceGroupNames": [
+        "Egypt_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "DelayLoad_Background_Beach",
+        "DelayLoad_Background_Beach_Compressed",
+        "Dirt_Spawn_Beach",
+        "Tombstone_Dark_Effects",
+        "DelayLoad_Background_Night",
+        "AudioTutorial"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Night"
+      ],
       "BelongsToWorld": "beach",
       "StagePrefix": "beach",
       "BackgroundResourceGroup": "DelayLoad_Background_Night",
@@ -23,10 +34,158 @@
       "RailcartDefaultTypeName": "railcart_tutotial",
       "GravestoneDefaultTypeName": "gravestone_tutorial",
       "DisabledStreetCells": [
-        {"mX": 0, "mY": 0}, {"mX": 0, "mY": 1}, {"mX": 0, "mY": 2}, {"mX": 0, "mY": 3}, {"mX": 0, "mY": 4}, {"mX": 0, "mY": 5}, {"mX": 0, "mY": 6}, {"mX": 0, "mY": 7}, {"mX": 0, "mY": 8}, {"mX": 0, "mY": 9},
-        {"mX": 1, "mY": 0}, {"mX": 1, "mY": 1}, {"mX": 1, "mY": 2}, {"mX": 1, "mY": 3}, {"mX": 1, "mY": 4}, {"mX": 1, "mY": 5}, {"mX": 1, "mY": 6}, {"mX": 1, "mY": 7}, {"mX": 1, "mY": 8}, {"mX": 1, "mY": 9},
-        {"mX": 2, "mY": 0}, {"mX": 2, "mY": 1}, {"mX": 2, "mY": 2}, {"mX": 2, "mY": 3}, {"mX": 2, "mY": 4}, {"mX": 2, "mY": 5}, {"mX": 2, "mY": 6}, {"mX": 2, "mY": 7}, {"mX": 2, "mY": 8}, {"mX": 2, "mY": 9},
-        {"mX": 3, "mY": 9}, {"mX": 5, "mY": 9}, {"mX": 7, "mY": 9}, {"mX": 7, "mY": 8}, {"mX": 7, "mY": 7}, {"mX": 8, "mY": 9}, {"mX": 8, "mY": 8}, {"mX": 8, "mY": 7}
+        {
+          "mX": 0,
+          "mY": 0
+        },
+        {
+          "mX": 0,
+          "mY": 1
+        },
+        {
+          "mX": 0,
+          "mY": 2
+        },
+        {
+          "mX": 0,
+          "mY": 3
+        },
+        {
+          "mX": 0,
+          "mY": 4
+        },
+        {
+          "mX": 0,
+          "mY": 5
+        },
+        {
+          "mX": 0,
+          "mY": 6
+        },
+        {
+          "mX": 0,
+          "mY": 7
+        },
+        {
+          "mX": 0,
+          "mY": 8
+        },
+        {
+          "mX": 0,
+          "mY": 9
+        },
+        {
+          "mX": 1,
+          "mY": 0
+        },
+        {
+          "mX": 1,
+          "mY": 1
+        },
+        {
+          "mX": 1,
+          "mY": 2
+        },
+        {
+          "mX": 1,
+          "mY": 3
+        },
+        {
+          "mX": 1,
+          "mY": 4
+        },
+        {
+          "mX": 1,
+          "mY": 5
+        },
+        {
+          "mX": 1,
+          "mY": 6
+        },
+        {
+          "mX": 1,
+          "mY": 7
+        },
+        {
+          "mX": 1,
+          "mY": 8
+        },
+        {
+          "mX": 1,
+          "mY": 9
+        },
+        {
+          "mX": 2,
+          "mY": 0
+        },
+        {
+          "mX": 2,
+          "mY": 1
+        },
+        {
+          "mX": 2,
+          "mY": 2
+        },
+        {
+          "mX": 2,
+          "mY": 3
+        },
+        {
+          "mX": 2,
+          "mY": 4
+        },
+        {
+          "mX": 2,
+          "mY": 5
+        },
+        {
+          "mX": 2,
+          "mY": 6
+        },
+        {
+          "mX": 2,
+          "mY": 7
+        },
+        {
+          "mX": 2,
+          "mY": 8
+        },
+        {
+          "mX": 2,
+          "mY": 9
+        },
+        {
+          "mX": 3,
+          "mY": 9
+        },
+        {
+          "mX": 5,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 8
+        },
+        {
+          "mX": 7,
+          "mY": 7
+        },
+        {
+          "mX": 8,
+          "mY": 9
+        },
+        {
+          "mX": 8,
+          "mY": 8
+        },
+        {
+          "mX": 8,
+          "mY": 7
+        }
       ]
     }
   },
@@ -38,9 +197,22 @@
     "iconName": "Stage_SummerNight.webp",
     "objclass": "EightiesStageProperties",
     "objdata": {
-      "ResourceGroupNames": ["DelayLoad_Background_Summer_Night", "Dirt_Spawn_Eighties", "AudioEighties", "Eighties_Background_Effects"],
-      "ResourceGroupNames-Need for fix": ["DelayLoad_Background_Eighties_Compressed", "Dirt_Spawn_Eighties", "EightiesGroansAudio", "Eighties_Background_Effects", "EightiesLootPinatas"],
-      "GroupsToUnloadForAds": ["DelayLoad_Background_Eighties_Compressed"],
+      "ResourceGroupNames": [
+        "DelayLoad_Background_Summer_Night",
+        "Dirt_Spawn_Eighties",
+        "AudioEighties",
+        "Eighties_Background_Effects"
+      ],
+      "ResourceGroupNames-Need for fix": [
+        "DelayLoad_Background_Eighties_Compressed",
+        "Dirt_Spawn_Eighties",
+        "EightiesGroansAudio",
+        "Eighties_Background_Effects",
+        "EightiesLootPinatas"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Eighties_Compressed"
+      ],
       "BelongsToWorld": "eighties",
       "StagePrefix": "summer_night",
       "BackgroundResourceGroup": "DelayLoad_Background_Summer_Night",
@@ -65,8 +237,19 @@
     "iconName": "Stage_Atlantis.webp",
     "objclass": "DeepseaStageLandProperties",
     "objdata": {
-      "ResourceGroupNames": ["Dirt_Spawn_Eighties", "Submarine_Atlantis", "Environment_Atlantis", "AtlantisSpermWhaleGroup", "DelayLoad_Background_Deepsea", "TideWave_Atlantis", "AudioAtlantics", "PlantOxygenAlgae"],
-      "GroupsToUnloadForAds": ["DelayLoad_Background_Deepsea"],
+      "ResourceGroupNames": [
+        "Dirt_Spawn_Eighties",
+        "Submarine_Atlantis",
+        "Environment_Atlantis",
+        "AtlantisSpermWhaleGroup",
+        "DelayLoad_Background_Deepsea",
+        "TideWave_Atlantis",
+        "AudioAtlantics",
+        "PlantOxygenAlgae"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Deepsea"
+      ],
       "StagePrefix": "atlantis",
       "BackgroundResourceGroup": "DelayLoad_Background_Deepsea",
       "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_DEEPSEALAND",
@@ -80,25 +263,1318 @@
       "DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_EIGHTIES",
       "MusicSuffix": "Atlantis",
       "AmbientAudioSuffix": "Atlantis_Currents_BG",
-      "InitSubmarineInfo": {"Width": 0, "Height": 0, "Hitpoints": 32000, "InitialLocation": {"mX": -10, "mY": -6}},
+      "InitSubmarineInfo": {
+        "Width": 0,
+        "Height": 0,
+        "Hitpoints": 32000,
+        "InitialLocation": {
+          "mX": -10,
+          "mY": -6
+        }
+      },
       "ProjectileConverterProps": {
         "ConvertProjectiles": [
-          {"InputType": "FirePeaDefault", "OutputType": "GatlingPeaDefault", "AdvOutputType": "GatlingPeaDefault", "AudioEventName": ""},
-          {"InputType": "UltraFirePeaDefault", "OutputType": "GatlingPeaDefault", "AdvOutputType": "GatlingPeaDefault", "AudioEventName": ""},
-          {"InputType": "AvatarUltraFirePeaDefault", "OutputType": "GatlingPeaDefault", "AdvOutputType": "GatlingPeaDefault", "AudioEventName": ""},
-          {"InputType": "AvatarUltraFirePeaAvatarDefault", "OutputType": "PeaAvatarDefault", "AdvOutputType": "PeaAvatarDefault", "AudioEventName": ""},
-          {"InputType": "UltraFirePeaAvatarDefault", "OutputType": "PeaAvatarDefault", "AdvOutputType": "PeaAvatarDefault", "AudioEventName": ""},
-          {"InputType": "FirePeaAvatarDefault", "OutputType": "PeaAvatarDefault", "AdvOutputType": "PeaAvatarDefault", "AudioEventName": ""},
-          {"InputType": "PeapodGiantUltraFirePeaDefault", "OutputType": "PeapodPlantfoodPea", "AdvOutputType": "PeapodPlantfoodPea", "AudioEventName": ""},
-          {"InputType": "BearberryAvatarProjectile", "OutputType": "BearberryPlantfoodProjectile", "AdvOutputType": "BearberryPlantfoodProjectile", "AudioEventName": ""},
-          {"InputType": "StephaniaAvatarPlantfoodProjectileDefault", "OutputType": "StephaniaPlantfoodProjectileDefault", "AdvOutputType": "StephaniaPlantfoodProjectileDefault", "AudioEventName": ""},
-          {"InputType": "pineconePlantFoodAvatar", "OutputType": "pineconePlantFoodDefault", "AdvOutputType": "pineconePlantFoodDefault", "AudioEventName": ""},
-          {"InputType": "SlingPeaPlantfoodBlueFireDefault", "OutputType": "SlingPeaBounceDefault", "AdvOutputType": "SlingPeaBounceDefault", "AudioEventName": ""},
-          {"InputType": "SlingPeaPlantfoodFireDefault", "OutputType": "SlingPeaBounceDefault", "AdvOutputType": "SlingPeaBounceDefault", "AudioEventName": ""},
-          {"InputType": "HomingThistlePlantfoodFire", "OutputType": "HomingThistlePlantfood", "AdvOutputType": "HomingThistlePlantfood", "AudioEventName": ""}
+          {
+            "InputType": "FirePeaDefault",
+            "OutputType": "GatlingPeaDefault",
+            "AdvOutputType": "GatlingPeaDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "UltraFirePeaDefault",
+            "OutputType": "GatlingPeaDefault",
+            "AdvOutputType": "GatlingPeaDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "AvatarUltraFirePeaDefault",
+            "OutputType": "GatlingPeaDefault",
+            "AdvOutputType": "GatlingPeaDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "AvatarUltraFirePeaAvatarDefault",
+            "OutputType": "PeaAvatarDefault",
+            "AdvOutputType": "PeaAvatarDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "UltraFirePeaAvatarDefault",
+            "OutputType": "PeaAvatarDefault",
+            "AdvOutputType": "PeaAvatarDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "FirePeaAvatarDefault",
+            "OutputType": "PeaAvatarDefault",
+            "AdvOutputType": "PeaAvatarDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "PeapodGiantUltraFirePeaDefault",
+            "OutputType": "PeapodPlantfoodPea",
+            "AdvOutputType": "PeapodPlantfoodPea",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "BearberryAvatarProjectile",
+            "OutputType": "BearberryPlantfoodProjectile",
+            "AdvOutputType": "BearberryPlantfoodProjectile",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "StephaniaAvatarPlantfoodProjectileDefault",
+            "OutputType": "StephaniaPlantfoodProjectileDefault",
+            "AdvOutputType": "StephaniaPlantfoodProjectileDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "pineconePlantFoodAvatar",
+            "OutputType": "pineconePlantFoodDefault",
+            "AdvOutputType": "pineconePlantFoodDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "SlingPeaPlantfoodBlueFireDefault",
+            "OutputType": "SlingPeaBounceDefault",
+            "AdvOutputType": "SlingPeaBounceDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "SlingPeaPlantfoodFireDefault",
+            "OutputType": "SlingPeaBounceDefault",
+            "AdvOutputType": "SlingPeaBounceDefault",
+            "AudioEventName": ""
+          },
+          {
+            "InputType": "HomingThistlePlantfoodFire",
+            "OutputType": "HomingThistlePlantfood",
+            "AdvOutputType": "HomingThistlePlantfood",
+            "AudioEventName": ""
+          }
         ]
       },
       "DisabledStreetCells": []
+    }
+  },
+  {
+    "id": "pvz1_s29_5_future",
+    "alias": "FutureLawnCustom",
+    "nameKey": "customStagePreset_futureLawn",
+    "sourceKey": "customStagePresetSource_memoryLaneS28Level5",
+    "iconName": "Stage_Future.webp",
+    "objclass": "FutureStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "DelayLoad_Background_Future",
+        "PowerTileModule",
+        "AudioFuture",
+        "Egypt_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "Tombstone_Dark_Effects",
+        "DelayLoad_Background_Modern_Compressed",
+        "Dirt_Spawn_Modern"
+      ],
+      "BelongsToWorld": "future",
+      "StagePrefix": "future",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_FUTURE",
+      "BackgroundImageLeft": "TEXTURE_LEFT",
+      "BackgroundImageMiddle": "TEXTURE",
+      "BackgroundImageRight": "TEXTURE_RIGHT",
+      "GravestoneImagePrefixes": [
+        "IMAGE_TOMBSTONE_PIRATE"
+      ],
+      "BasicZombieTypeName": "future",
+      "FlagZombieTypeName": "future_flag",
+      "Armor1ZombieTypeName": "future_armor1",
+      "Armor2ZombieTypeName": "future_armor2",
+      "ZombieEventType": "raidingparty",
+      "RailcartDefaultTypeName": "railcart_future",
+      "DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+      "FactoryArmDropTime": 2.5,
+      "FactoryArmGrabTime": 1.0,
+      "FactoryArmRiseTime": 1.5,
+      "FactoryArmCoinDropCount": 5,
+      "FactoryArmCoinDropChance": 0.5,
+      "LinkedTilePropagationAlpha": 1.0,
+      "MusicSuffix": "Future"
+    }
+  },
+  {
+    "id": "pvz1_s27_61_roof_night",
+    "alias": "RoofNightCustom",
+    "nameKey": "customStagePreset_roofNight",
+    "sourceKey": "customStagePresetSource_memoryLaneS27Level61",
+    "iconName": "Stage_RoofNight.webp",
+    "objclass": "RoofStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Egypt_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "Tombstone_Dark_Effects",
+        "DelayLoad_Background_Roof",
+        "AudioTutorial"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Roof"
+      ],
+      "StagePrefix": "roof_night",
+      "BackgroundResourceGroup": "DelayLoad_Background_Roof",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_ROOF_NIGHT",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "tutorial",
+      "FlagZombieTypeName": "tutorial_flag",
+      "Armor1ZombieTypeName": "tutorial_armor1",
+      "Armor2ZombieTypeName": "tutorial_armor2",
+      "MusicSuffix": "Twister",
+      "AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
+      "RailcartDefaultTypeName": "railcart_tutotial",
+      "GravestoneDefaultTypeName": "gravestone_tutorial",
+      "PlantsWhichCannotBePlantedOnRoof": {
+        "ListType": "whitelist",
+        "List": []
+      },
+      "PlantsWhichCanBeUpdateOnRoof": {
+        "ListType": "whitelist",
+        "List": [
+          "jackfruit",
+          "smallChestnut"
+        ]
+      },
+      "DisabledStreetCells": [
+        {
+          "mX": 0,
+          "mY": 0
+        },
+        {
+          "mX": 0,
+          "mY": 1
+        },
+        {
+          "mX": 0,
+          "mY": 2
+        },
+        {
+          "mX": 0,
+          "mY": 3
+        },
+        {
+          "mX": 0,
+          "mY": 4
+        },
+        {
+          "mX": 0,
+          "mY": 5
+        },
+        {
+          "mX": 0,
+          "mY": 6
+        },
+        {
+          "mX": 0,
+          "mY": 7
+        },
+        {
+          "mX": 0,
+          "mY": 8
+        },
+        {
+          "mX": 0,
+          "mY": 9
+        },
+        {
+          "mX": 1,
+          "mY": 0
+        },
+        {
+          "mX": 1,
+          "mY": 1
+        },
+        {
+          "mX": 1,
+          "mY": 2
+        },
+        {
+          "mX": 1,
+          "mY": 3
+        },
+        {
+          "mX": 1,
+          "mY": 4
+        },
+        {
+          "mX": 1,
+          "mY": 5
+        },
+        {
+          "mX": 1,
+          "mY": 6
+        },
+        {
+          "mX": 1,
+          "mY": 7
+        },
+        {
+          "mX": 1,
+          "mY": 8
+        },
+        {
+          "mX": 1,
+          "mY": 9
+        },
+        {
+          "mX": 2,
+          "mY": 0
+        },
+        {
+          "mX": 2,
+          "mY": 1
+        },
+        {
+          "mX": 2,
+          "mY": 2
+        },
+        {
+          "mX": 2,
+          "mY": 3
+        },
+        {
+          "mX": 2,
+          "mY": 4
+        },
+        {
+          "mX": 2,
+          "mY": 5
+        },
+        {
+          "mX": 2,
+          "mY": 6
+        },
+        {
+          "mX": 2,
+          "mY": 7
+        },
+        {
+          "mX": 2,
+          "mY": 8
+        },
+        {
+          "mX": 2,
+          "mY": 9
+        },
+        {
+          "mX": 3,
+          "mY": 9
+        },
+        {
+          "mX": 5,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 8
+        },
+        {
+          "mX": 7,
+          "mY": 7
+        },
+        {
+          "mX": 8,
+          "mY": 9
+        },
+        {
+          "mX": 8,
+          "mY": 8
+        },
+        {
+          "mX": 8,
+          "mY": 7
+        }
+      ]
+    }
+  },
+  {
+    "id": "pvz1_s29_57_snow_modern",
+    "alias": "SnowModernCustom",
+    "nameKey": "customStagePreset_snowModern",
+    "sourceKey": "customStagePresetSource_memoryLaneS29Level57",
+    "iconName": "Stage_SnowModern.webp",
+    "objclass": "StageModuleProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Egypt_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "Tombstone_Dark_Effects",
+        "DelayLoad_Background_Snow_Modern",
+        "AudioTutorial"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Snow_Modern"
+      ],
+      "StagePrefix": "snow_modern",
+      "BackgroundResourceGroup": "DelayLoad_Background_Snow_Modern",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_SNOW_MODERN",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "christmas",
+      "FlagZombieTypeName": "lny_flag",
+      "Armor1ZombieTypeName": "christmas_armor1",
+      "Armor2ZombieTypeName": "christmas_armor2",
+      "MusicSuffix": "Modern",
+      "AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
+      "RailcartDefaultTypeName": "railcart_tutotial",
+      "GravestoneDefaultTypeName": "gravestone_tutorial",
+      "DisabledStreetCells": [
+        {
+          "mX": 0,
+          "mY": 0
+        },
+        {
+          "mX": 0,
+          "mY": 1
+        },
+        {
+          "mX": 0,
+          "mY": 2
+        },
+        {
+          "mX": 0,
+          "mY": 3
+        },
+        {
+          "mX": 0,
+          "mY": 4
+        },
+        {
+          "mX": 0,
+          "mY": 5
+        },
+        {
+          "mX": 0,
+          "mY": 6
+        },
+        {
+          "mX": 0,
+          "mY": 7
+        },
+        {
+          "mX": 0,
+          "mY": 8
+        },
+        {
+          "mX": 0,
+          "mY": 9
+        },
+        {
+          "mX": 1,
+          "mY": 0
+        },
+        {
+          "mX": 1,
+          "mY": 1
+        },
+        {
+          "mX": 1,
+          "mY": 2
+        },
+        {
+          "mX": 1,
+          "mY": 3
+        },
+        {
+          "mX": 1,
+          "mY": 4
+        },
+        {
+          "mX": 1,
+          "mY": 5
+        },
+        {
+          "mX": 1,
+          "mY": 6
+        },
+        {
+          "mX": 1,
+          "mY": 7
+        },
+        {
+          "mX": 1,
+          "mY": 8
+        },
+        {
+          "mX": 1,
+          "mY": 9
+        },
+        {
+          "mX": 2,
+          "mY": 0
+        },
+        {
+          "mX": 2,
+          "mY": 1
+        },
+        {
+          "mX": 2,
+          "mY": 2
+        },
+        {
+          "mX": 2,
+          "mY": 3
+        },
+        {
+          "mX": 2,
+          "mY": 4
+        },
+        {
+          "mX": 2,
+          "mY": 5
+        },
+        {
+          "mX": 2,
+          "mY": 6
+        },
+        {
+          "mX": 2,
+          "mY": 7
+        },
+        {
+          "mX": 2,
+          "mY": 8
+        },
+        {
+          "mX": 2,
+          "mY": 9
+        },
+        {
+          "mX": 3,
+          "mY": 9
+        },
+        {
+          "mX": 5,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 8
+        },
+        {
+          "mX": 7,
+          "mY": 7
+        },
+        {
+          "mX": 8,
+          "mY": 9
+        },
+        {
+          "mX": 8,
+          "mY": 8
+        },
+        {
+          "mX": 8,
+          "mY": 7
+        }
+      ]
+    }
+  },
+  {
+    "id": "pvz1_s31_20_pool_day",
+    "alias": "PoolDaylightCustom",
+    "nameKey": "customStagePreset_poolDaylight",
+    "sourceKey": "customStagePresetSource_memoryLaneS31Level20",
+    "iconName": "Stage_PoolDaylight.webp",
+    "objclass": "PoolDaylightStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Egypt_Gravestone",
+        "DelayLoad_Background_Beach",
+        "DelayLoad_Background_Beach_Compressed",
+        "DelayLoad_Background_Pool_Daylight",
+        "Dirt_Spawn_Beach",
+        "DelayLoad_Background_Pirate",
+        "DelayLoad_Background_Pirate_Compressed",
+        "ZombiePirateSwashbucklerGroup",
+        "AudioPirate",
+        "PlantLilyPad",
+        "Game_Tombstones_Dynamic",
+        "ToxicWaterGroup",
+        "Tombstone_Dark_Effects",
+        "Tombstone_Dark_Sun",
+        "Tombstone_Dark_Special",
+        "PlantImpPear"
+      ],
+      "BelongsToWorld": "beach",
+      "StagePrefix": "beach",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_POOL_DAYLIGHT",
+      "BackgroundImageLeft": "POOLDAYLIGHTSTAGE_LEFT",
+      "BackgroundImageMiddle": "POOLDAYLIGHTSTAGE",
+      "BackgroundImageRight": "POOLDAYLIGHTSTAGE_RIGHT",
+      "GravestoneImagePrefixes": [
+        "IMAGE_TOMBSTONE_PIRATE"
+      ],
+      "BasicZombieTypeName": "birthday",
+      "FlagZombieTypeName": "birthday_flag",
+      "Armor1ZombieTypeName": "beach_armor1",
+      "Armor2ZombieTypeName": "beach_armor2",
+      "AmbientAudioSuffix": "PVZ_Pirate_BG_WaterBubble_LP_02",
+      "RailcartDefaultTypeName": "railcart_beach",
+      "DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+      "ZombieEventType": "raidingparty",
+      "BreakerInterval": 4.0,
+      "MusicSuffix": "Twister"
+    }
+  },
+  {
+    "id": "pvz1_s30_31_renai",
+    "alias": "RenaiCustom",
+    "nameKey": "customStagePreset_renai",
+    "sourceKey": "customStagePresetSource_memoryLaneS30Level31",
+    "iconName": "Stage_Renai.webp",
+    "objclass": "RenaiStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Renai_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "DelayLoad_Background_Renai_Compressed",
+        "Dirt_Spawn_Renai",
+        "RenaiAnim"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Renai_Compressed"
+      ],
+      "StagePrefix": "renai",
+      "BackgroundResourceGroup": "DelayLoad_Background_Renai_Compressed",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_RENAI",
+      "DrawBackgroundLeft": false,
+      "DrawBackgroundMiddle": false,
+      "DrawBackgroundRight": false,
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "renai_worker",
+      "FlagZombieTypeName": "roman_flag",
+      "Armor1ZombieTypeName": "renai_armor1",
+      "Armor2ZombieTypeName": "renai_armor2",
+      "BackgroundImageLeft": "TEXTURE_DAY_LEFT",
+      "BackgroundImageMiddle": "TEXTURE_DAY",
+      "BackgroundImageRight": "TEXTURE_DAY_RIGHT",
+      "GravestoneDefaultTypeName": "gravestone_renai",
+      "DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_RENAI",
+      "MusicSuffix": "Renai",
+      "Anims": [
+        {
+          "AnimName": "POPANIM_ENV_ANIM_CANDLE1",
+          "AnimPos": {
+            "x": 869.0,
+            "y": 114.0
+          }
+        },
+        {
+          "AnimName": "POPANIM_ENV_ANIM_CANDLE3",
+          "AnimPos": {
+            "x": -150.0,
+            "y": 173.0
+          }
+        },
+        {
+          "AnimName": "POPANIM_ENV_ANIM_CANDLE4",
+          "AnimPos": {
+            "x": -2.0,
+            "y": 378.0
+          }
+        },
+        {
+          "AnimName": "POPANIM_ENV_ANIM_CANDLE5",
+          "AnimPos": {
+            "x": -118.0,
+            "y": 431.0
+          }
+        }
+      ],
+      "DisabledStreetCells": [
+        {
+          "mX": 0,
+          "mY": 0
+        },
+        {
+          "mX": 0,
+          "mY": 1
+        },
+        {
+          "mX": 0,
+          "mY": 2
+        },
+        {
+          "mX": 0,
+          "mY": 3
+        },
+        {
+          "mX": 0,
+          "mY": 4
+        },
+        {
+          "mX": 0,
+          "mY": 5
+        },
+        {
+          "mX": 0,
+          "mY": 6
+        },
+        {
+          "mX": 0,
+          "mY": 7
+        },
+        {
+          "mX": 0,
+          "mY": 8
+        },
+        {
+          "mX": 0,
+          "mY": 9
+        },
+        {
+          "mX": 1,
+          "mY": 0
+        },
+        {
+          "mX": 1,
+          "mY": 1
+        },
+        {
+          "mX": 1,
+          "mY": 2
+        },
+        {
+          "mX": 1,
+          "mY": 3
+        },
+        {
+          "mX": 1,
+          "mY": 4
+        },
+        {
+          "mX": 1,
+          "mY": 5
+        },
+        {
+          "mX": 1,
+          "mY": 6
+        },
+        {
+          "mX": 1,
+          "mY": 7
+        },
+        {
+          "mX": 1,
+          "mY": 8
+        },
+        {
+          "mX": 1,
+          "mY": 9
+        },
+        {
+          "mX": 2,
+          "mY": 0
+        },
+        {
+          "mX": 2,
+          "mY": 1
+        },
+        {
+          "mX": 2,
+          "mY": 2
+        },
+        {
+          "mX": 2,
+          "mY": 3
+        },
+        {
+          "mX": 2,
+          "mY": 4
+        },
+        {
+          "mX": 2,
+          "mY": 5
+        },
+        {
+          "mX": 2,
+          "mY": 6
+        },
+        {
+          "mX": 2,
+          "mY": 7
+        },
+        {
+          "mX": 2,
+          "mY": 8
+        },
+        {
+          "mX": 2,
+          "mY": 9
+        },
+        {
+          "mX": 5,
+          "mY": 9
+        },
+        {
+          "mX": 6,
+          "mY": 0
+        },
+        {
+          "mX": 6,
+          "mY": 1
+        },
+        {
+          "mX": 6,
+          "mY": 2
+        },
+        {
+          "mX": 6,
+          "mY": 3
+        },
+        {
+          "mX": 6,
+          "mY": 4
+        },
+        {
+          "mX": 6,
+          "mY": 5
+        },
+        {
+          "mX": 6,
+          "mY": 6
+        },
+        {
+          "mX": 6,
+          "mY": 7
+        },
+        {
+          "mX": 6,
+          "mY": 8
+        },
+        {
+          "mX": 6,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 0
+        },
+        {
+          "mX": 7,
+          "mY": 6
+        },
+        {
+          "mX": 7,
+          "mY": 7
+        },
+        {
+          "mX": 7,
+          "mY": 8
+        },
+        {
+          "mX": 7,
+          "mY": 9
+        },
+        {
+          "mX": 8,
+          "mY": 0
+        },
+        {
+          "mX": 8,
+          "mY": 6
+        },
+        {
+          "mX": 8,
+          "mY": 7
+        },
+        {
+          "mX": 8,
+          "mY": 8
+        },
+        {
+          "mX": 8,
+          "mY": 9
+        }
+      ]
+    }
+  },
+  {
+    "id": "pvz1_s31_9_steam",
+    "alias": "SteamCustom",
+    "nameKey": "customStagePreset_steam",
+    "sourceKey": "customStagePresetSource_memoryLaneS31Level9",
+    "iconName": "Stage_Steam.webp",
+    "objclass": "SteamStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Steam_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "DelayLoad_Background_Steam_Compressed",
+        "Dirt_Spawn_Steam",
+        "PlantPaphiopedilum",
+        "AudioSteam"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Steam_Compressed"
+      ],
+      "StagePrefix": "steam",
+      "BackgroundResourceGroup": "DelayLoad_Background_Steam_Compressed",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_STEAM",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "steam_worker",
+      "FlagZombieTypeName": "steam_flag",
+      "Armor1ZombieTypeName": "steam_armor1",
+      "Armor2ZombieTypeName": "steam_armor2",
+      "GravestoneDefaultTypeName": "gravestone_steam",
+      "DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_STEAM",
+      "MusicSuffix": "Modern",
+      "DisabledStreetCells": []
+    }
+  },
+  {
+    "id": "pvz1_s30_boss_volcano",
+    "alias": "LostVolcanoCustom",
+    "nameKey": "customStagePreset_lostVolcano",
+    "sourceKey": "customStagePresetSource_memoryLaneS30Boss6",
+    "iconName": "Stage_LostVolcano.webp",
+    "objclass": "LostCityStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "DelayLoad_Background_Volcano",
+        "DelayLoad_Background_LostCity_Compressed",
+        "Dirt_Spawn_LostCity",
+        "AudioLostCity"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Volcano",
+        "DelayLoad_Background_LostCity_Compressed"
+      ],
+      "BelongsToWorld": "lostcity",
+      "StagePrefix": "lostcity",
+      "BackgroundResourceGroup": "DelayLoad_Background_Volcano",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_VOLCANO",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "lostcity",
+      "FlagZombieTypeName": "lostcity_flag",
+      "Armor1ZombieTypeName": "lostcity_armor1",
+      "Armor2ZombieTypeName": "lostcity_armor2",
+      "RailcartDefaultTypeName": "railcart_egypt",
+      "GravestoneDefaultTypeName": "gravestone_egypt",
+      "DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_LOSTCITY",
+      "MusicSuffix": "LostCity"
+    }
+  },
+  {
+    "id": "pvz1_minigame_summer_day",
+    "alias": "SummerDaylightCustom",
+    "nameKey": "customStagePreset_summerDaylight",
+    "sourceKey": "customStagePresetSource_minigameGame33",
+    "iconName": "Stage_SummerDaylight.webp",
+    "objclass": "BeachStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Egypt_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "Tombstone_Dark_Effects",
+        "DelayLoad_Background_Summer_Daylight",
+        "AudioTutorial",
+        "DelayLoad_Background_Beach",
+        "DelayLoad_Background_Beach_Compressed",
+        "Dirt_Spawn_Beach"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Summer_Daylight"
+      ],
+      "StagePrefix": "beach",
+      "BackgroundResourceGroup": "DelayLoad_Background_Summer_Daylight",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_SUMMER_DAYLIGHT",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "beach",
+      "FlagZombieTypeName": "beach_flag",
+      "Armor1ZombieTypeName": "beach_armor1",
+      "Armor2ZombieTypeName": "beach_armor2",
+      "MusicSuffix": "BGMc",
+      "AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
+      "RailcartDefaultTypeName": "railcart_tutotial",
+      "GravestoneDefaultTypeName": "gravestone_tutorial",
+      "DisabledStreetCells": [
+        {
+          "mX": 0,
+          "mY": 0
+        },
+        {
+          "mX": 0,
+          "mY": 1
+        },
+        {
+          "mX": 0,
+          "mY": 2
+        },
+        {
+          "mX": 0,
+          "mY": 3
+        },
+        {
+          "mX": 0,
+          "mY": 4
+        },
+        {
+          "mX": 0,
+          "mY": 5
+        },
+        {
+          "mX": 0,
+          "mY": 6
+        },
+        {
+          "mX": 0,
+          "mY": 7
+        },
+        {
+          "mX": 0,
+          "mY": 8
+        },
+        {
+          "mX": 0,
+          "mY": 9
+        },
+        {
+          "mX": 1,
+          "mY": 0
+        },
+        {
+          "mX": 1,
+          "mY": 1
+        },
+        {
+          "mX": 1,
+          "mY": 2
+        },
+        {
+          "mX": 1,
+          "mY": 3
+        },
+        {
+          "mX": 1,
+          "mY": 4
+        },
+        {
+          "mX": 1,
+          "mY": 5
+        },
+        {
+          "mX": 1,
+          "mY": 6
+        },
+        {
+          "mX": 1,
+          "mY": 7
+        },
+        {
+          "mX": 1,
+          "mY": 8
+        },
+        {
+          "mX": 1,
+          "mY": 9
+        },
+        {
+          "mX": 2,
+          "mY": 0
+        },
+        {
+          "mX": 2,
+          "mY": 1
+        },
+        {
+          "mX": 2,
+          "mY": 2
+        },
+        {
+          "mX": 2,
+          "mY": 3
+        },
+        {
+          "mX": 2,
+          "mY": 4
+        },
+        {
+          "mX": 2,
+          "mY": 5
+        },
+        {
+          "mX": 2,
+          "mY": 6
+        },
+        {
+          "mX": 2,
+          "mY": 7
+        },
+        {
+          "mX": 2,
+          "mY": 8
+        },
+        {
+          "mX": 2,
+          "mY": 9
+        },
+        {
+          "mX": 3,
+          "mY": 9
+        },
+        {
+          "mX": 5,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 8
+        },
+        {
+          "mX": 7,
+          "mY": 7
+        },
+        {
+          "mX": 8,
+          "mY": 9
+        },
+        {
+          "mX": 8,
+          "mY": 8
+        },
+        {
+          "mX": 8,
+          "mY": 7
+        }
+      ]
+    }
+  },
+  {
+    "id": "pvz1_s30_1_newyear_night",
+    "alias": "NewYearNightCustom",
+    "nameKey": "customStagePreset_newYearNight",
+    "sourceKey": "customStagePresetSource_memoryLaneS30Hard1",
+    "iconName": "Stage_NewYearNight.webp",
+    "objclass": "EightiesStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "DelayLoad_Background_NewYear_Night",
+        "Dirt_Spawn_Eighties",
+        "AudioEighties",
+        "Eighties_Background_Effects"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Eighties_Compressed"
+      ],
+      "BelongsToWorld": "eighties",
+      "StagePrefix": "summer_night",
+      "BackgroundResourceGroup": "DelayLoad_Background_NewYear_Night",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_NEWYEAR_NIGHT",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "summer_basic",
+      "FlagZombieTypeName": "needforspeed_flag",
+      "Armor1ZombieTypeName": "summer_armor1",
+      "Armor2ZombieTypeName": "summer_armor2",
+      "RailcartDefaultTypeName": "railcart_egypt",
+      "GravestoneDefaultTypeName": "gravestone_eighties",
+      "DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_EIGHTIES",
+      "MusicSuffix": "Eighties",
+      "DisabledStreetCells": []
+    }
+  },
+  {
+    "id": "pvz1_s28_13_autumn_late",
+    "alias": "AutumnLateCustom",
+    "nameKey": "customStagePreset_autumnLate",
+    "sourceKey": "customStagePresetSource_memoryLaneS28Level13",
+    "iconName": "Stage_Autumn.webp",
+    "objclass": "StageModuleProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Egypt_Gravestone",
+        "Game_Tombstones_Dynamic",
+        "Tombstone_Dark_Effects",
+        "DelayLoad_Background_Autumn_Late",
+        "AudioTutorial"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Autumn_Late"
+      ],
+      "StagePrefix": "Autumn_Late",
+      "BackgroundResourceGroup": "DelayLoad_Background_Autumn_Late",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_AUTUMN_LATE",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "tutorial",
+      "FlagZombieTypeName": "journey_to_the_west_flag",
+      "Armor1ZombieTypeName": "tutorial_armor1",
+      "Armor2ZombieTypeName": "tutorial_armor2",
+      "MusicSuffix": "Twister",
+      "AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
+      "RailcartDefaultTypeName": "railcart_tutotial",
+      "GravestoneDefaultTypeName": "gravestone_tutorial",
+      "DisabledStreetCells": [
+        {
+          "mX": 0,
+          "mY": 0
+        },
+        {
+          "mX": 0,
+          "mY": 1
+        },
+        {
+          "mX": 0,
+          "mY": 2
+        },
+        {
+          "mX": 0,
+          "mY": 3
+        },
+        {
+          "mX": 0,
+          "mY": 4
+        },
+        {
+          "mX": 0,
+          "mY": 5
+        },
+        {
+          "mX": 0,
+          "mY": 6
+        },
+        {
+          "mX": 0,
+          "mY": 7
+        },
+        {
+          "mX": 0,
+          "mY": 8
+        },
+        {
+          "mX": 0,
+          "mY": 9
+        },
+        {
+          "mX": 1,
+          "mY": 0
+        },
+        {
+          "mX": 1,
+          "mY": 1
+        },
+        {
+          "mX": 1,
+          "mY": 2
+        },
+        {
+          "mX": 1,
+          "mY": 3
+        },
+        {
+          "mX": 1,
+          "mY": 4
+        },
+        {
+          "mX": 1,
+          "mY": 5
+        },
+        {
+          "mX": 1,
+          "mY": 6
+        },
+        {
+          "mX": 1,
+          "mY": 7
+        },
+        {
+          "mX": 1,
+          "mY": 8
+        },
+        {
+          "mX": 1,
+          "mY": 9
+        },
+        {
+          "mX": 2,
+          "mY": 0
+        },
+        {
+          "mX": 2,
+          "mY": 1
+        },
+        {
+          "mX": 2,
+          "mY": 2
+        },
+        {
+          "mX": 2,
+          "mY": 3
+        },
+        {
+          "mX": 2,
+          "mY": 4
+        },
+        {
+          "mX": 2,
+          "mY": 5
+        },
+        {
+          "mX": 2,
+          "mY": 6
+        },
+        {
+          "mX": 2,
+          "mY": 7
+        },
+        {
+          "mX": 2,
+          "mY": 8
+        },
+        {
+          "mX": 2,
+          "mY": 9
+        },
+        {
+          "mX": 3,
+          "mY": 9
+        },
+        {
+          "mX": 5,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 9
+        },
+        {
+          "mX": 7,
+          "mY": 8
+        },
+        {
+          "mX": 7,
+          "mY": 7
+        },
+        {
+          "mX": 8,
+          "mY": 9
+        },
+        {
+          "mX": 8,
+          "mY": 8
+        },
+        {
+          "mX": 8,
+          "mY": 7
+        }
+      ]
     }
   }
 ]

@@ -9,6 +9,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/music_suffix_catalog.dart';
 import 'package:c_editor/screens/select/music_suffix_selection_screen.dart';
+import 'package:c_editor/screens/select/stage_background_selection_screen.dart';
 import 'package:c_editor/screens/select/stage_resource_group_import_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -179,23 +180,32 @@ class _CustomStagePropertiesScreenState
     _sync();
   }
 
-  Future<void> _importResourceGroup({
+  Future<bool> _importResourceGroup({
     required StageResourceGroupImportMode mode,
     required bool targetUnloadList,
+    BuildContext? navigatorContext,
   }) async {
     final existing = targetUnloadList
         ? _groupsToUnload.toSet()
         : _resourceGroups.toSet();
+    final nav = navigatorContext ?? context;
+    var imported = false;
     await Navigator.push<void>(
-      context,
+      nav,
       MaterialPageRoute(
         builder: (ctx) => StageResourceGroupImportScreen(
           mode: mode,
           existingGroups: existing,
-          onImport: ({required groups, sourceStageAlias}) {
+          onImport: ({
+            required groups,
+            sourceStageAlias,
+            applySourceLawnAppearance = false,
+          }) {
             if (targetUnloadList) {
               _setGroupsToUnload([..._groupsToUnload, ...groups]);
             } else {
+              final appearanceSnapshot =
+                  CustomStageLevelUtils.snapshotLawnAppearance(_objdata);
               CustomStageLevelUtils.setStringList(
                 _objdata,
                 'ResourceGroupNames',
@@ -218,10 +228,72 @@ class _CustomStagePropertiesScreenState
                       [..._groupsToUnload, ...toUnload],
                     );
                   }
+                  if (applySourceLawnAppearance) {
+                    CustomStageLevelUtils.applyLawnAppearanceFromSource(
+                      _objdata,
+                      Map<String, dynamic>.from(impl.objdata),
+                    );
+                  } else {
+                    CustomStageLevelUtils.restoreLawnAppearance(
+                      _objdata,
+                      appearanceSnapshot,
+                    );
+                  }
+                } else {
+                  CustomStageLevelUtils.restoreLawnAppearance(
+                    _objdata,
+                    appearanceSnapshot,
+                  );
                 }
+              } else {
+                CustomStageLevelUtils.restoreLawnAppearance(
+                  _objdata,
+                  appearanceSnapshot,
+                );
               }
               _sync();
             }
+            imported = true;
+            Navigator.pop(ctx);
+          },
+          onBack: () => Navigator.pop(ctx),
+        ),
+      ),
+    );
+    return imported;
+  }
+
+  Future<void> _pickBackground() async {
+    final current = _objdata['BackgroundImagePrefix'] as String? ?? '';
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (ctx) => StageBackgroundSelectionScreen(
+          optionsBuilder: () {
+            final delayLoads = StageCatalogRepository.delayLoadGroupsInLists(
+              _resourceGroups,
+              _groupsToUnload,
+            );
+            return StageCatalogRepository.backgroundOptionsForDelayLoads(
+              delayLoads,
+            );
+          },
+          currentImagePrefix: current,
+          onImportFromStage: () async {
+            final imported = await _importResourceGroup(
+              navigatorContext: ctx,
+              mode: StageResourceGroupImportMode.fromStage,
+              targetUnloadList: false,
+            );
+            if (imported && ctx.mounted) {
+              Navigator.pop(ctx);
+            }
+            return imported;
+          },
+          onSelected: (option) {
+            _objdata['BackgroundImagePrefix'] = option.imagePrefix;
+            _objdata['BackgroundResourceGroup'] = option.delayLoadGroup;
+            _sync();
             Navigator.pop(ctx);
           },
           onBack: () => Navigator.pop(ctx),
@@ -321,15 +393,15 @@ class _CustomStagePropertiesScreenState
                   ),
                   itemBuilder: (ctx) => [
                     PopupMenuItem(
-                      value: StageResourceGroupImportMode.global,
-                      child: Text(
-                        l10n?.importResourceGroupGlobal ?? 'From global list',
-                      ),
-                    ),
-                    PopupMenuItem(
                       value: StageResourceGroupImportMode.fromStage,
                       child: Text(
                         l10n?.importResourceGroupFromStage ?? 'From stage',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: StageResourceGroupImportMode.global,
+                      child: Text(
+                        l10n?.importResourceGroupGlobal ?? 'From global list',
                       ),
                     ),
                   ],
@@ -524,14 +596,19 @@ class _CustomStagePropertiesScreenState
       resourceGroupNames: _resourceGroups,
       groupsToUnloadForAds: _groupsToUnload,
     );
-    final lawnAppearanceName = _stageBaseOption == null
-        ? backgroundDisplay == null
-              ? (_objdata['BackgroundImagePrefix'] as String? ?? '-')
-              : ResourceNames.lookup(context, backgroundDisplay.nameKey)
-        : ResourceNames.lookup(context, 'stage_${_stageBaseOption!.alias}');
+    final backgroundName = backgroundDisplay == null
+        ? (_objdata['BackgroundImagePrefix'] as String? ?? '—')
+        : ResourceNames.lookup(context, backgroundDisplay.nameKey);
+    final lawnAppearanceNameKey =
+        CustomStageLevelUtils.displayLawnAppearanceNameKey(
+          objclass: _objclass,
+          objdata: _objdata,
+        );
+    final lawnAppearanceName = lawnAppearanceNameKey.isEmpty
+        ? (_objdata['BackgroundImagePrefix'] as String? ?? '—')
+        : ResourceNames.lookup(context, lawnAppearanceNameKey);
     final lawnAppearanceIcon =
-        _stageBaseOption?.iconName ??
-        CustomStageLevelUtils.displayIconFileName(
+        CustomStageLevelUtils.displayLawnAppearanceIconFileName(
           objclass: _objclass,
           objdata: _objdata,
         );
@@ -645,6 +722,16 @@ class _CustomStagePropertiesScreenState
               _sectionTitle(
                 l10n?.customStageSectionMusicAndOther ?? 'Music & Other',
               ),
+              _pickerTile(
+                label: l10n?.customStageLawnAppearance ?? 'Lawn appearance',
+                value: backgroundName,
+                iconFileName: CustomStageLevelUtils.displayLawnAppearanceIconFileName(
+                  objclass: _objclass,
+                  objdata: _objdata,
+                ),
+                onTap: _pickBackground,
+              ),
+              const SizedBox(height: 8),
               _pickerTile(
                 label: _fieldLabel(context, 'MusicSuffix'),
                 value: musicName,
@@ -769,6 +856,27 @@ class _CustomStagePropertiesScreenState
                         }
                       },
                     ),
+                  ),
+                ),
+              ],
+              if (CustomStageLevelUtils.supportsBeachMinigame(_objdata)) ...[
+                const SizedBox(height: 8),
+                Card(
+                  child: SwitchListTile(
+                    title: Text(
+                      l10n?.customStageBeachMinigame ?? 'Use minigame version',
+                    ),
+                    value: CustomStageLevelUtils.isBeachMinigameEnabled(
+                      _objdata,
+                    ),
+                    activeThumbColor: accent,
+                    onChanged: (enabled) {
+                      CustomStageLevelUtils.applyBeachMinigame(
+                        _objdata,
+                        enabled: enabled,
+                      );
+                      _sync();
+                    },
                   ),
                 ),
               ],

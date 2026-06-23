@@ -679,6 +679,16 @@ class _EditorScreenState extends State<EditorScreen> {
     if (CustomStageLevelUtils.customStageObjectsInLevel(
       _ec.state.levelFile!,
     ).isNotEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)?.customStageOnePerLevelLimit ??
+                  'This level already has a custom lawn. Delete it before adding another.',
+            ),
+          ),
+        );
+      }
       return;
     }
     StageBaseOption? baseOption;
@@ -735,6 +745,7 @@ class _EditorScreenState extends State<EditorScreen> {
     _markDirty();
     onStagePicked?.call();
     await _handleEditCustomStage(alias);
+    onStagePicked?.call();
   }
 
   Future<String?> _createCustomStageFromPreset({
@@ -744,10 +755,20 @@ class _EditorScreenState extends State<EditorScreen> {
   }) {
     if (_ec.state.levelFile == null) return Future<String?>.value();
     final levelFile = _ec.state.levelFile!;
-    final alias = CustomStageLevelUtils.uniqueCustomStageAlias(
-      levelFile,
-      preset.alias,
-    );
+    if (CustomStageLevelUtils.customStageObjectsInLevel(levelFile).isNotEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)?.customStageOnePerLevelLimit ??
+                  'This level already has a custom lawn. Delete it before adding another.',
+            ),
+          ),
+        );
+      }
+      return Future.value(null);
+    }
+    final alias = preset.alias;
     final rtid = CustomStageLevelUtils.createCustomStageFromTemplate(
       levelFile: levelFile,
       alias: alias,
@@ -772,7 +793,10 @@ class _EditorScreenState extends State<EditorScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      unawaited(_handleEditCustomStage(alias));
+      unawaited(() async {
+        await _handleEditCustomStage(alias);
+        onStagePicked?.call();
+      }());
     });
     return Future.value(alias);
   }
@@ -821,6 +845,7 @@ class _EditorScreenState extends State<EditorScreen> {
             }
             Navigator.pop(stageRouteContext);
             await _handleEditCustomStage(alias);
+            onStagePicked?.call();
           },
           onDeleteCustomStage: (alias) =>
               _handleDeleteCustomStage(levelDef: levelDef, alias: alias),
