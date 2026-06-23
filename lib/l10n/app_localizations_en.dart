@@ -6856,6 +6856,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customStageSubmarineHitpoints => 'Submarine health';
 
   @override
+  String get customStageBeachMinigame => 'Use minigame version';
+
+  @override
+  String get customStageOnePerLevelLimit =>
+      'This level already has a custom lawn. Delete it before adding another.';
+
+  @override
+  String get selectStageBackground => 'Select lawn appearance';
+
+  @override
+  String get searchStageBackground => 'Search lawn';
+
+  @override
+  String get noStageBackgroundFound => 'No lawn appearance found';
+
+  @override
+  String get stageBackgroundNeedMorePromptTitle =>
+      'Need another lawn appearance?';
+
+  @override
+  String get stageBackgroundNeedMorePromptMessage =>
+      'Import resource groups from another stage to unlock more lawn appearances here.';
+
+  @override
+  String get stageBackgroundAddFromStage => 'Add another lawn appearance';
+
+  @override
   String get customStageNameSuffix => ' (Custom)';
 
   @override
@@ -6902,6 +6929,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get importResourceGroupsFromStageAllPresent =>
       'All resource groups from this stage are already in this level.';
+
+  @override
+  String get importResourceGroupsApplySourceLawnAppearance =>
+      'Also use this stage\'s lawn appearance';
 
   @override
   String get createCustomStage => 'Create custom lawn';
@@ -6956,6 +6987,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customStagePreset_oneSidedAtlantis => 'One-Sided Atlantis';
 
   @override
+  String get customStagePreset_futureLawn => 'Future Lawn';
+
+  @override
+  String get customStagePreset_roofNight => 'Roof Night';
+
+  @override
+  String get customStagePreset_snowModern => 'Snow Modern';
+
+  @override
+  String get customStagePreset_poolDaylight => 'Pool Daylight';
+
+  @override
+  String get customStagePreset_renai => 'Renai';
+
+  @override
+  String get customStagePreset_steam => 'Steam';
+
+  @override
+  String get customStagePreset_lostVolcano => 'Lost Volcano';
+
+  @override
+  String get customStagePreset_summerDaylight => 'Summer Daylight';
+
+  @override
+  String get customStagePreset_newYearNight => 'New Year Night';
+
+  @override
+  String get customStagePreset_autumnLate => 'Autumn Late';
+
+  @override
   String get customStagePresetSource_memoryLaneS25Week6Boss =>
       'From Memory Lane Season 25 Week 6 Boss level';
 
@@ -6966,6 +7027,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get customStagePresetSource_memoryLaneS28Week3Original5_8 =>
       'From Memory Lane Season 28 Week 3, original Levels 5-8';
+
+  @override
+  String get customStagePresetSource_memoryLaneS28Level5 =>
+      'From Memory Lane Season 28 Level 5';
+
+  @override
+  String get customStagePresetSource_memoryLaneS27Level61 =>
+      'From Memory Lane Season 27 Level 61';
+
+  @override
+  String get customStagePresetSource_memoryLaneS29Level57 =>
+      'From Memory Lane Season 29 Level 57';
+
+  @override
+  String get customStagePresetSource_memoryLaneS31Level20 =>
+      'From Memory Lane Season 31 Level 20';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Level31 =>
+      'From Memory Lane Season 30 Level 31';
+
+  @override
+  String get customStagePresetSource_memoryLaneS31Level9 =>
+      'From Memory Lane Season 31 Level 9';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Boss6 =>
+      'From Memory Lane Season 30 Boss level 6';
+
+  @override
+  String get customStagePresetSource_minigameGame33 => 'From Minigame level 33';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Hard1 =>
+      'From Memory Lane Season 30 Hard Mode Level 1';
+
+  @override
+  String get customStagePresetSource_memoryLaneS28Level13 =>
+      'From Memory Lane Season 28 Level 13';
 
   @override
   String get editCustomStage => 'Edit custom lawn';

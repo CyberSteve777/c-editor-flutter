@@ -5376,7 +5376,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get airDropShipModuleDropAreaPreview => '投放区域预览';
 
   @override
-  String get airDropShipModuleAreaDropPreviewLabel => 'Area drop preview:';
+  String get airDropShipModuleAreaDropPreviewLabel => '投放区域预览：';
 
   @override
   String get airDropShipModuleExpectationLabel => '空投小鬼';
@@ -6509,6 +6509,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customStageSubmarineHitpoints => '潜艇生命值';
 
   @override
+  String get customStageBeachMinigame => '使用小游戏版本';
+
+  @override
+  String get customStageOnePerLevelLimit => '此关卡已有自定义地图，请先删除后再添加。';
+
+  @override
+  String get selectStageBackground => '选择地图外观';
+
+  @override
+  String get searchStageBackground => '搜索地图';
+
+  @override
+  String get noStageBackgroundFound => '未找到地图外观';
+
+  @override
+  String get stageBackgroundNeedMorePromptTitle => '需要更多地图外观？';
+
+  @override
+  String get stageBackgroundNeedMorePromptMessage =>
+      '从其他地图导入资源组，以在此解锁更多地图外观选项。';
+
+  @override
+  String get stageBackgroundAddFromStage => '再添加地图外观';
+
+  @override
   String get customStageNameSuffix => '（自定义）';
 
   @override
@@ -6554,6 +6579,9 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get importResourceGroupsFromStageAllPresent =>
       '该地图的所有资源组已在自定义地图中，无需再次添加。';
+
+  @override
+  String get importResourceGroupsApplySourceLawnAppearance => '同时改用该地图的外观';
 
   @override
   String get createCustomStage => '创建自定义地图';
@@ -6605,6 +6633,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customStagePreset_oneSidedAtlantis => '单面海底';
 
   @override
+  String get customStagePreset_futureLawn => '未来草坪';
+
+  @override
+  String get customStagePreset_roofNight => '屋顶黑夜';
+
+  @override
+  String get customStagePreset_snowModern => '现代雪夜';
+
+  @override
+  String get customStagePreset_poolDaylight => '泳池白天';
+
+  @override
+  String get customStagePreset_renai => '文艺复兴';
+
+  @override
+  String get customStagePreset_steam => '蒸汽';
+
+  @override
+  String get customStagePreset_lostVolcano => '失落火山';
+
+  @override
+  String get customStagePreset_summerDaylight => '夏日白天';
+
+  @override
+  String get customStagePreset_newYearNight => '新年黑夜';
+
+  @override
+  String get customStagePreset_autumnLate => '深秋';
+
+  @override
   String get customStagePresetSource_memoryLaneS25Week6Boss =>
       '出自回忆之旅25赛季第六周BOSS关';
 
@@ -6615,6 +6673,36 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get customStagePresetSource_memoryLaneS28Week3Original5_8 =>
       '出自回忆之旅28赛季第三周原5~8关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS28Level5 => '出自回忆之旅28赛季第5关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS27Level61 => '出自回忆之旅27赛季第61关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS29Level57 => '出自回忆之旅29赛季第57关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS31Level20 => '出自回忆之旅31赛季第20关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Level31 => '出自回忆之旅30赛季第31关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS31Level9 => '出自回忆之旅31赛季第9关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Boss6 => '出自回忆之旅30赛季BOSS第6关';
+
+  @override
+  String get customStagePresetSource_minigameGame33 => '出自小游戏第33关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Hard1 => '出自回忆之旅30赛季困难模式第1关';
+
+  @override
+  String get customStagePresetSource_memoryLaneS28Level13 => '出自回忆之旅28赛季第13关';
 
   @override
   String get editCustomStage => '编辑自定义地图';

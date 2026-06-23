@@ -12268,6 +12268,54 @@ abstract class AppLocalizations {
   /// **'Submarine health'**
   String get customStageSubmarineHitpoints;
 
+  /// No description provided for @customStageBeachMinigame.
+  ///
+  /// In en, this message translates to:
+  /// **'Use minigame version'**
+  String get customStageBeachMinigame;
+
+  /// No description provided for @customStageOnePerLevelLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'This level already has a custom lawn. Delete it before adding another.'**
+  String get customStageOnePerLevelLimit;
+
+  /// No description provided for @selectStageBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Select lawn appearance'**
+  String get selectStageBackground;
+
+  /// No description provided for @searchStageBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Search lawn'**
+  String get searchStageBackground;
+
+  /// No description provided for @noStageBackgroundFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No lawn appearance found'**
+  String get noStageBackgroundFound;
+
+  /// No description provided for @stageBackgroundNeedMorePromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Need another lawn appearance?'**
+  String get stageBackgroundNeedMorePromptTitle;
+
+  /// No description provided for @stageBackgroundNeedMorePromptMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Import resource groups from another stage to unlock more lawn appearances here.'**
+  String get stageBackgroundNeedMorePromptMessage;
+
+  /// No description provided for @stageBackgroundAddFromStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another lawn appearance'**
+  String get stageBackgroundAddFromStage;
+
   /// No description provided for @customStageNameSuffix.
   ///
   /// In en, this message translates to:
@@ -12351,6 +12399,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All resource groups from this stage are already in this level.'**
   String get importResourceGroupsFromStageAllPresent;
+
+  /// No description provided for @importResourceGroupsApplySourceLawnAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Also use this stage\'s lawn appearance'**
+  String get importResourceGroupsApplySourceLawnAppearance;
 
   /// No description provided for @createCustomStage.
   ///
@@ -12448,6 +12502,66 @@ abstract class AppLocalizations {
   /// **'One-Sided Atlantis'**
   String get customStagePreset_oneSidedAtlantis;
 
+  /// No description provided for @customStagePreset_futureLawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Future Lawn'**
+  String get customStagePreset_futureLawn;
+
+  /// No description provided for @customStagePreset_roofNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Roof Night'**
+  String get customStagePreset_roofNight;
+
+  /// No description provided for @customStagePreset_snowModern.
+  ///
+  /// In en, this message translates to:
+  /// **'Snow Modern'**
+  String get customStagePreset_snowModern;
+
+  /// No description provided for @customStagePreset_poolDaylight.
+  ///
+  /// In en, this message translates to:
+  /// **'Pool Daylight'**
+  String get customStagePreset_poolDaylight;
+
+  /// No description provided for @customStagePreset_renai.
+  ///
+  /// In en, this message translates to:
+  /// **'Renai'**
+  String get customStagePreset_renai;
+
+  /// No description provided for @customStagePreset_steam.
+  ///
+  /// In en, this message translates to:
+  /// **'Steam'**
+  String get customStagePreset_steam;
+
+  /// No description provided for @customStagePreset_lostVolcano.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost Volcano'**
+  String get customStagePreset_lostVolcano;
+
+  /// No description provided for @customStagePreset_summerDaylight.
+  ///
+  /// In en, this message translates to:
+  /// **'Summer Daylight'**
+  String get customStagePreset_summerDaylight;
+
+  /// No description provided for @customStagePreset_newYearNight.
+  ///
+  /// In en, this message translates to:
+  /// **'New Year Night'**
+  String get customStagePreset_newYearNight;
+
+  /// No description provided for @customStagePreset_autumnLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Autumn Late'**
+  String get customStagePreset_autumnLate;
+
   /// No description provided for @customStagePresetSource_memoryLaneS25Week6Boss.
   ///
   /// In en, this message translates to:
@@ -12465,6 +12579,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'From Memory Lane Season 28 Week 3, original Levels 5-8'**
   String get customStagePresetSource_memoryLaneS28Week3Original5_8;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS28Level5.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 28 Level 5'**
+  String get customStagePresetSource_memoryLaneS28Level5;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS27Level61.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 27 Level 61'**
+  String get customStagePresetSource_memoryLaneS27Level61;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS29Level57.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 29 Level 57'**
+  String get customStagePresetSource_memoryLaneS29Level57;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS31Level20.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 31 Level 20'**
+  String get customStagePresetSource_memoryLaneS31Level20;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS30Level31.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 30 Level 31'**
+  String get customStagePresetSource_memoryLaneS30Level31;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS31Level9.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 31 Level 9'**
+  String get customStagePresetSource_memoryLaneS31Level9;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS30Boss6.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 30 Boss level 6'**
+  String get customStagePresetSource_memoryLaneS30Boss6;
+
+  /// No description provided for @customStagePresetSource_minigameGame33.
+  ///
+  /// In en, this message translates to:
+  /// **'From Minigame level 33'**
+  String get customStagePresetSource_minigameGame33;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS30Hard1.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 30 Hard Mode Level 1'**
+  String get customStagePresetSource_memoryLaneS30Hard1;
+
+  /// No description provided for @customStagePresetSource_memoryLaneS28Level13.
+  ///
+  /// In en, this message translates to:
+  /// **'From Memory Lane Season 28 Level 13'**
+  String get customStagePresetSource_memoryLaneS28Level13;
 
   /// No description provided for @editCustomStage.
   ///

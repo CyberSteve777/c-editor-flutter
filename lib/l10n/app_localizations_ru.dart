@@ -4490,7 +4490,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get followAccountLevel =>
-      'Level 0 plants use their corresponding tier from the player\'s account.';
+      'Растения 0 уровня используют соответствующий ранг из аккаунта игрока.';
 
   @override
   String get enablePointSpawning => 'Включить очки спавна';
@@ -6798,6 +6798,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customStageSubmarineHitpoints => 'Прочность подлодки';
 
   @override
+  String get customStageBeachMinigame => 'Использовать мини-игровую версию';
+
+  @override
+  String get customStageOnePerLevelLimit =>
+      'В этом уровне уже есть пользовательский газон. Удалите его, прежде чем добавлять другой.';
+
+  @override
+  String get selectStageBackground => 'Выберите вид газона';
+
+  @override
+  String get searchStageBackground => 'Поиск газона';
+
+  @override
+  String get noStageBackgroundFound => 'Вид газона не найден';
+
+  @override
+  String get stageBackgroundNeedMorePromptTitle => 'Нужен другой вид газона?';
+
+  @override
+  String get stageBackgroundNeedMorePromptMessage =>
+      'Импортируйте группы ресурсов из другой локации, чтобы открыть здесь больше вариантов газона.';
+
+  @override
+  String get stageBackgroundAddFromStage => 'Добавить ещё вид газона';
+
+  @override
   String get customStageNameSuffix => ' (Пользов.)';
 
   @override
@@ -6844,6 +6870,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get importResourceGroupsFromStageAllPresent =>
       'Все группы ресурсов из этой локации уже есть на этом уровне.';
+
+  @override
+  String get importResourceGroupsApplySourceLawnAppearance =>
+      'Также использовать вид газона этой локации';
 
   @override
   String get createCustomStage => 'Создать пользовательский газон';
@@ -6901,6 +6931,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customStagePreset_oneSidedAtlantis => 'One-Sided Atlantis';
 
   @override
+  String get customStagePreset_futureLawn => 'Future Lawn';
+
+  @override
+  String get customStagePreset_roofNight => 'Roof Night';
+
+  @override
+  String get customStagePreset_snowModern => 'Snow Modern';
+
+  @override
+  String get customStagePreset_poolDaylight => 'Pool Daylight';
+
+  @override
+  String get customStagePreset_renai => 'Renai';
+
+  @override
+  String get customStagePreset_steam => 'Steam';
+
+  @override
+  String get customStagePreset_lostVolcano => 'Lost Volcano';
+
+  @override
+  String get customStagePreset_summerDaylight => 'Summer Daylight';
+
+  @override
+  String get customStagePreset_newYearNight => 'New Year Night';
+
+  @override
+  String get customStagePreset_autumnLate => 'Autumn Late';
+
+  @override
   String get customStagePresetSource_memoryLaneS25Week6Boss =>
       'From Memory Lane Season 25 Week 6 Boss level';
 
@@ -6911,6 +6971,45 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get customStagePresetSource_memoryLaneS28Week3Original5_8 =>
       'From Memory Lane Season 28 Week 3, original Levels 5-8';
+
+  @override
+  String get customStagePresetSource_memoryLaneS28Level5 =>
+      'From Memory Lane Season 28 Level 5';
+
+  @override
+  String get customStagePresetSource_memoryLaneS27Level61 =>
+      'From Memory Lane Season 27 Level 61';
+
+  @override
+  String get customStagePresetSource_memoryLaneS29Level57 =>
+      'From Memory Lane Season 29 Level 57';
+
+  @override
+  String get customStagePresetSource_memoryLaneS31Level20 =>
+      'From Memory Lane Season 31 Level 20';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Level31 =>
+      'From Memory Lane Season 30 Level 31';
+
+  @override
+  String get customStagePresetSource_memoryLaneS31Level9 =>
+      'From Memory Lane Season 31 Level 9';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Boss6 =>
+      'From Memory Lane Season 30 Boss level 6';
+
+  @override
+  String get customStagePresetSource_minigameGame33 => 'From Minigame level 33';
+
+  @override
+  String get customStagePresetSource_memoryLaneS30Hard1 =>
+      'From Memory Lane Season 30 Hard Mode Level 1';
+
+  @override
+  String get customStagePresetSource_memoryLaneS28Level13 =>
+      'From Memory Lane Season 28 Level 13';
 
   @override
   String get editCustomStage => 'Редактировать пользовательский газон';
