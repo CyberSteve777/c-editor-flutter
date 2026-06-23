@@ -132,15 +132,6 @@ class _CustomStagePropertiesScreenState
     return localized == key ? fieldName : localized;
   }
 
-  String _disabledStreetCellsLabel(BuildContext context) {
-    const key = 'customStageDisabledStreetCells';
-    final localized = ResourceNames.lookup(context, key);
-    if (localized != key) return localized;
-    return Localizations.localeOf(context).languageCode == 'zh'
-        ? '禁用格子'
-        : 'Disabled street cells';
-  }
-
   void _sync({bool renameAlias = false}) {
     if (_stageObj == null) return;
     CustomStageLevelUtils.syncHiddenFieldsFromTemplate(
@@ -723,7 +714,7 @@ class _CustomStagePropertiesScreenState
                     initialValue: _disabledCellsMode,
                     decoration: customStageInputDecoration(
                       context,
-                      labelText: _disabledStreetCellsLabel(context),
+                      labelText: _fieldLabel(context, 'DisabledStreetCells'),
                     ),
                     items: [
                       DropdownMenuItem(

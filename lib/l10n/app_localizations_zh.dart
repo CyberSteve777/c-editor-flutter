@@ -6491,19 +6491,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get customStageMissingBackgroundWarning =>
-      '请至少导入一个该地图拥有列出的 DelayLoad_Background 资源组，否则地图无法正常显示。';
+      '请至少导入一个该地图拥有的 DelayLoad_Background 资源组，否则地图无法正常显示。';
 
   @override
   String get customStageEnableAmbient => '启用环境音';
-
-  @override
-  String get stageField_MusicSuffix => '音乐模块 (MusicSuffix)';
-
-  @override
-  String get stageField_AmbientAudioSuffix => '环境音效 (AmbientAudioSuffix)';
-
-  @override
-  String get customStageDisabledStreetCells => '选卡界面僵尸位置 (DisabledStreetCells)';
 
   @override
   String get customStageDisabledCellsEmpty => '留空';
@@ -6533,7 +6524,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importResourceGroup => '导入资源组';
 
   @override
-  String get importResourceGroupGlobal => '全局列表';
+  String get importResourceGroupGlobal => '单独导入';
 
   @override
   String get importResourceGroupFromStage => '从地图导入';

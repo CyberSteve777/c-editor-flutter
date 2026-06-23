@@ -6786,17 +6786,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customStageEnableAmbient => 'Включить эмбиент';
 
   @override
-  String get stageField_MusicSuffix => 'Music module (MusicSuffix)';
-
-  @override
-  String get stageField_AmbientAudioSuffix =>
-      'Ambient sound (AmbientAudioSuffix)';
-
-  @override
-  String get customStageDisabledStreetCells =>
-      'Zombie positions on the seed selection screen (DisabledStreetCells)';
-
-  @override
   String get customStageDisabledCellsEmpty => 'Пусто';
 
   @override

@@ -6844,18 +6844,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customStageEnableAmbient => 'Enable ambient audio';
 
   @override
-  String get stageField_MusicSuffix => 'Music module (MusicSuffix)';
-
-  @override
-  String get stageField_AmbientAudioSuffix =>
-      'Ambient sound (AmbientAudioSuffix)';
-
-  @override
-  String get customStageDisabledStreetCells =>
-      'Zombie positions on the seed selection screen (DisabledStreetCells)';
-
-  @override
-  String get customStageDisabledCellsEmpty => 'Empty';
+  String get customStageDisabledCellsEmpty => 'Leave empty';
 
   @override
   String get customStageDisabledCellsDefault => 'Default';
