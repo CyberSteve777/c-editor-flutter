@@ -2227,7 +2227,7 @@
   "customStageMissingBackgroundWarning": "Импортируйте хотя бы одну группу DelayLoad_Background из справочника локаций, иначе газон может отображаться полностью чёрным.",
   "customStageEnableAmbient": "Включить эмбиент",
   "stageField_MusicSuffix": "Music module (MusicSuffix)",
-  "stageField_AmbientAudioSuffix": "Ambient sound (AmbientAudioSuffix)"，
+  "stageField_AmbientAudioSuffix": "Ambient sound (AmbientAudioSuffix)",
   "customStageDisabledCellsEmpty": "Пусто",
   "customStageDisabledCellsDefault": "По умолчанию",
   "customStageBeachMinigame": "Использовать мини-игровую версию",

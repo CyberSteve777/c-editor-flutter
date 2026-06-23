@@ -2226,7 +2226,7 @@
   "customStageMissingBackgroundWarning": "请至少导入一个该地图拥有列出的 DelayLoad_Background 资源组，否则地图无法正常显示。",
   "customStageEnableAmbient": "启用环境音",
   "stageField_MusicSuffix": "音乐模块 (MusicSuffix)",
-  "stageField_AmbientAudioSuffix": "环境音效 (AmbientAudioSuffix)"，
+  "stageField_AmbientAudioSuffix": "环境音效 (AmbientAudioSuffix)",
   "customStageDisabledStreetCells": "选卡界面僵尸位置 (DisabledStreetCells)",
   "customStageDisabledCellsEmpty": "留空",
   "customStageDisabledCellsDefault": "默认",

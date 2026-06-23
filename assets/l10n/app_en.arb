@@ -2228,7 +2228,7 @@
   "customStageMissingBackgroundWarning": "Import at least one DelayLoad_Background group listed in the stage helper, or the lawn may appear completely black.",
   "customStageEnableAmbient": "Enable ambient audio",
   "stageField_MusicSuffix": "Music module (MusicSuffix)",
-  "stageField_AmbientAudioSuffix": "Ambient sound (AmbientAudioSuffix)"，
+  "stageField_AmbientAudioSuffix": "Ambient sound (AmbientAudioSuffix)",
   "customStageDisabledStreetCells": "Zombie positions on the seed selection screen (DisabledStreetCells)"
   "customStageDisabledCellsEmpty": "Empty",
   "customStageDisabledCellsDefault": "Default",
