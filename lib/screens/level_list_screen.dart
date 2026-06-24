@@ -28,12 +28,9 @@ class LevelListScreen extends StatefulWidget {
 }
 
 class _LevelListScreenState extends State<LevelListScreen> {
-  static const _floatingSuccessSnackBarMargin = EdgeInsets.fromLTRB(
-    16,
-    0,
-    16,
-    96,
-  );
+  static const _successSnackBarMaxWidth = 360.0;
+  static const _successSnackBarHorizontalPadding = 16.0;
+  static const _successSnackBarEstimatedHeight = 48.0;
 
   List<FileItem> _fileItems = [];
   bool _isLoading = false;
@@ -60,34 +57,52 @@ class _LevelListScreenState extends State<LevelListScreen> {
   void _showFloatingSuccessSnackBar(String message, {Color? backgroundColor}) {
     if (!mounted) return;
     final theme = Theme.of(context);
+    final media = MediaQuery.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor =
         backgroundColor ??
         (isDark ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        margin: _floatingSuccessSnackBarMargin,
-        backgroundColor: bgColor,
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+    final maxSnackBarWidth =
+        media.size.width - (_successSnackBarHorizontalPadding * 2);
+    final snackBarWidth = maxSnackBarWidth < _successSnackBarMaxWidth
+        ? maxSnackBarWidth
+        : _successSnackBarMaxWidth;
+    final horizontalMargin = (media.size.width - snackBarWidth) / 2;
+    final usableHeight =
+        media.size.height - media.padding.top - media.padding.bottom;
+    final bottomMargin =
+        (usableHeight / 2) - (_successSnackBarEstimatedHeight / 2);
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.only(
+            left: horizontalMargin,
+            right: horizontalMargin,
+            bottom: bottomMargin > 0 ? bottomMargin : 0,
+          ),
+          backgroundColor: bgColor,
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  message,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 
   /// Extension to use when the user omits one (matches [LevelRepository] level files).
@@ -2077,6 +2092,19 @@ class _FileItemRow extends StatelessWidget {
     );
   }
 
+  Widget _buildLevelFileActions(BuildContext context, ThemeData theme) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (item.isFavorite) ...[
+          const Icon(Icons.favorite, color: Colors.red, size: 20),
+          const SizedBox(width: 4),
+        ],
+        _buildLevelFileMenu(context, theme),
+      ],
+    );
+  }
+
   Widget _buildFolderMenu(ThemeData theme) {
     return PopupMenuButton<String>(
       icon: Icon(
@@ -2159,7 +2187,7 @@ class _FileItemRow extends StatelessWidget {
                 ? (compact
                       ? _buildFolderMenu(theme)
                       : _buildFolderActions(theme))
-                : _buildLevelFileMenu(context, theme);
+                : _buildLevelFileActions(context, theme);
 
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 12),
