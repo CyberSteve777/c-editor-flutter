@@ -1,0 +1,17 @@
+{
+  "project": "c-editor-flutter",
+  "platform": "ios",
+  "github": {
+    "owner": "CyberSteve777",
+    "repo": "z-editor-flutter"
+  },
+  "ios": {
+    "path": "ios"
+  },
+  "flutter": {
+    "version": "3.41.6",
+    "watch": {}
+  },
+  "reactNative": {},
+  "mobai": {}
+}
