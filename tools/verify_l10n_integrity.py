@@ -70,7 +70,7 @@ def main() -> int:
         if empty_res:
             issues.append(f"Empty resource values in resource_{loc}.json: {empty_res[:5]}")
 
-    # --- Custom stage preset coverage ---
+    # --- Custom stage preset coverage (resource JSON only; UI uses ResourceNames) ---
     presets_path = ROOT / "assets/resources/CustomStagePresets.json"
     if presets_path.exists():
         presets = json.loads(presets_path.read_text(encoding="utf-8"))
@@ -83,16 +83,21 @@ def main() -> int:
             missing = sorted(preset_keys - set(resources[loc]))
             if missing:
                 issues.append(f"Preset keys missing in resource_{loc}.json: {missing}")
-            arb_missing = sorted(preset_keys - arb_keys[loc])
-            if arb_missing:
-                issues.append(f"Preset keys missing in app_{loc}.arb: {arb_missing}")
-        # Sync check: resource should match arb (except ru overrides from generator)
-        for key in sorted(preset_keys):
-            for loc in ("en", "zh"):
-                if resources[loc].get(key) != arb_keys[loc] and key in arb_keys[loc]:
-                    arb_val = json.loads((L10N / f"app_{loc}.arb").read_text(encoding="utf-8"))[key]
-                    if resources[loc].get(key) != arb_val:
-                        warnings.append(f"resource_{loc}.json preset {key} differs from ARB")
+        for loc in LOCALES:
+            all_keys = set(resources[loc]) | arb_keys[loc]
+            orphaned = sorted(
+                k
+                for k in all_keys
+                if (
+                    k.startswith("customStagePreset_")
+                    or k.startswith("customStagePresetSource_")
+                )
+                and k not in preset_keys
+            )
+            if orphaned:
+                issues.append(
+                    f"Orphaned preset keys for removed presets ({loc}): {orphaned}"
+                )
 
     # --- Stage name keys from Stages_new.json ---
     stages_new = ROOT / "assets/resources/Stages_new.json"
