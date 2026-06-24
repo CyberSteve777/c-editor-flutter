@@ -47,7 +47,7 @@ jobs:
       BUILD_ID: ${{ inputs.build_id || format('build-{0}', github.run_id) }}
       IOS_PATH: ${{ inputs.ios_path || 'ios' }}
       SCHEME: ${{ inputs.scheme }}
-      CONFIGURATION: ${{ inputs.configuration || 'Debug' }}
+      CONFIGURATION: ${{ inputs.configuration || 'Release' }}
       USE_SIGNING: ${{ inputs.use_signing && 'true' || 'false' }}
 
     steps:
