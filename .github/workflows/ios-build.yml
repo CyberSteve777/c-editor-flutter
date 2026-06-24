@@ -30,7 +30,7 @@ on:
         description: 'Build configuration (Debug is faster, Release for production)'
         required: false
         type: string
-        default: 'Debug'
+        default: 'Release'
       flutter_version:
         description: 'Flutter version to use (e.g., 3.24.0). Empty means latest stable.'
         required: false
