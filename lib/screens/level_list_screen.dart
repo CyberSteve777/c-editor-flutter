@@ -11,7 +11,7 @@ import 'package:c_editor/data/app_links.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
-import 'package:c_editor/utils/apple_folder_access.dart';
+import 'package:c_editor/widgets/app_message.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LevelListScreen extends StatefulWidget {
@@ -31,10 +31,6 @@ class LevelListScreen extends StatefulWidget {
 }
 
 class _LevelListScreenState extends State<LevelListScreen> {
-  static const _successToastMaxWidth = 360.0;
-  static const _successToastHorizontalMargin = 24.0;
-  static const _successToastDuration = Duration(seconds: 2);
-
   List<FileItem> _fileItems = [];
   bool _isLoading = false;
   List<({String name, String path})> _pathStack = [];
@@ -53,82 +49,20 @@ class _LevelListScreenState extends State<LevelListScreen> {
   String _newLevelNameInput = '';
   bool _showUiScaleDialog = false;
   final ScrollController _listScrollController = ScrollController();
-  OverlayEntry? _successToastEntry;
   bool _listScrollAtTop = true;
 
   bool get _canGoBack => _pathStack.length > 1;
 
-  void _showFloatingSuccessSnackBar(String message, {Color? backgroundColor}) {
-    if (!mounted) return;
-    final overlay = Overlay.maybeOf(context);
-    if (overlay == null) return;
+  void _showMessage(String message, {IconData? icon}) {
+    AppMessage.show(context, message, icon: icon ?? Icons.info_outline);
+  }
 
-    final theme = Theme.of(context);
-    final media = MediaQuery.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bgColor =
-        backgroundColor ??
-        (isDark ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50));
-    final maxWidth = media.size.width - (_successToastHorizontalMargin * 2);
-    final toastWidth = maxWidth < _successToastMaxWidth
-        ? maxWidth
-        : _successToastMaxWidth;
+  void _showSuccessMessage(String message) {
+    AppMessage.show(context, message, icon: Icons.check_circle);
+  }
 
-    _successToastEntry?.remove();
-    late final OverlayEntry entry;
-    entry = OverlayEntry(
-      builder: (context) => Positioned.fill(
-        child: IgnorePointer(
-          child: SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: toastWidth),
-                child: Material(
-                  color: bgColor,
-                  elevation: 6,
-                  borderRadius: BorderRadius.circular(6),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 14,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Flexible(
-                          child: Text(
-                            message,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    _successToastEntry = entry;
-    overlay.insert(entry);
-    Future.delayed(_successToastDuration, () {
-      if (_successToastEntry != entry) return;
-      entry.remove();
-      _successToastEntry = null;
-    });
+  void _showWarningMessage(String message) {
+    AppMessage.show(context, message, icon: Icons.warning_amber_rounded);
   }
 
   /// Extension to use when the user omits one (matches [LevelRepository] level files).
@@ -163,8 +97,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   @override
   void dispose() {
-    _successToastEntry?.remove();
-    _successToastEntry = null;
     _listScrollController.removeListener(_onListScroll);
     _listScrollController.dispose();
     super.dispose();
@@ -208,10 +140,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
       return;
     }
     var resolvedPath = path;
-    if (resolvedPath == null && Platform.isIOS) {
-      resolvedPath = await LevelRepository.ensureIosLibraryPath();
-      await LevelRepository.setSavedFolderPath(resolvedPath);
-    }
     if (resolvedPath != null && mounted) {
       final libraryPath = resolvedPath;
       setState(() {
@@ -251,25 +179,32 @@ class _LevelListScreenState extends State<LevelListScreen> {
     }
     final result = await FilePicker.getDirectoryPath();
     if (result == null || !mounted) return;
-    if (Platform.isIOS) {
-      final granted = await AppleFolderAccess.grantAccessForPath(result);
-      if (!granted && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)?.selectFolderPrompt ??
-                  'Please select a folder for your level library.',
-            ),
-          ),
+    await _applyLibraryFolder(result);
+  }
+
+  Future<void> _useDefaultIosLibraryFolder() async {
+    final path = await LevelRepository.ensureIosLibraryPath();
+    await _applyLibraryFolder(path);
+  }
+
+  Future<void> _applyLibraryFolder(String path) async {
+    await LevelRepository.setSavedFolderPath(path);
+    if (!mounted) return;
+    if (!kIsWeb && Platform.isIOS) {
+      final ok = await LevelRepository.ensureFolderAccess();
+      if (!ok) {
+        if (!mounted) return;
+        _showWarningMessage(
+          AppLocalizations.of(context)!.selectFolderPrompt,
         );
         return;
       }
     }
-    await LevelRepository.setSavedFolderPath(result);
+    if (!mounted) return;
     setState(() {
-      _rootFolderPath = result;
-      final name = result.split(RegExp(r'[/\\]')).last;
-      _pathStack = [(name: name.isEmpty ? 'Root' : name, path: result)];
+      _rootFolderPath = path;
+      final name = path.split(RegExp(r'[/\\]')).last;
+      _pathStack = [(name: name.isEmpty ? 'Root' : name, path: path)];
     });
     _loadCurrentDirectory();
   }
@@ -308,28 +243,21 @@ class _LevelListScreenState extends State<LevelListScreen> {
     if (currentPath == null) return;
     setState(() => _isLoading = true);
     try {
+      var activePath = currentPath;
       if (!kIsWeb && Platform.isIOS) {
         final ok = await LevelRepository.ensureFolderAccess();
         if (!ok && mounted) {
           setState(() {
             _fileItems = [];
             _isLoading = false;
-            _rootFolderPath = null;
-            _pathStack = [];
           });
-          final l10n = AppLocalizations.of(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n?.selectFolderPrompt ??
-                    'Please select a folder for your level library.',
-              ),
-            ),
+          _showWarningMessage(
+            AppLocalizations.of(context)!.selectFolderPrompt,
           );
           return;
         }
       }
-      final items = await LevelRepository.getDirectoryContents(currentPath);
+      final items = await LevelRepository.getDirectoryContents(activePath);
       if (mounted) {
         setState(() {
           _fileItems = items;
@@ -385,42 +313,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
       target.isDirectory,
     );
     if (mounted) {
-      final theme = Theme.of(context);
-      final isDark = theme.brightness == Brightness.dark;
       if (ok) {
-        _showFloatingSuccessSnackBar(l10n.renameSuccess);
+        _showSuccessMessage(l10n.renameSuccess);
         setState(() => _itemToRename = null);
         _loadCurrentDirectory();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: isDark
-                ? const Color(0xFF8D6E00)
-                : const Color(0xFFFFF59D),
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.report_problem,
-                  color: isDark
-                      ? const Color(0xFFFFEB3B)
-                      : const Color(0xFF8D6E00),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.renamingFailed,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : const Color(0xFF5D4E00),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        _showWarningMessage(l10n.renamingFailed);
       }
     }
   }
@@ -436,42 +334,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
       finalName,
     );
     if (mounted) {
-      final theme = Theme.of(context);
-      final isDark = theme.brightness == Brightness.dark;
       if (ok) {
-        _showFloatingSuccessSnackBar(l10n.copySuccess);
+        _showSuccessMessage(l10n.copySuccess);
         setState(() => _itemToCopy = null);
         _loadCurrentDirectory();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: isDark
-                ? const Color(0xFF8D6E00)
-                : const Color(0xFFFFF59D),
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.report_problem,
-                  color: isDark
-                      ? const Color(0xFFFFEB3B)
-                      : const Color(0xFF8D6E00),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.copyFail,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : const Color(0xFF5D4E00),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        _showWarningMessage(l10n.copyFail);
       }
     }
   }
@@ -484,45 +352,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
       _newFolderNameInput.trim(),
     );
     if (mounted) {
-      final theme = Theme.of(context);
-      final isDark = theme.brightness == Brightness.dark;
       if (ok) {
-        _showFloatingSuccessSnackBar(l10n.folderCreated);
+        _showSuccessMessage(l10n.folderCreated);
         setState(() {
           _showNewFolderDialog = false;
           _newFolderNameInput = '';
         });
         _loadCurrentDirectory();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: isDark
-                ? const Color(0xFF8D6E00)
-                : const Color(0xFFFFF59D),
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.report_problem,
-                  color: isDark
-                      ? const Color(0xFFFFEB3B)
-                      : const Color(0xFF8D6E00),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.createFail,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : const Color(0xFF5D4E00),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        _showWarningMessage(l10n.createFail);
       }
     }
   }
@@ -569,9 +407,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     if (list.isEmpty) list = await LevelRepository.getTemplateList();
     if (!mounted) return;
     if (list.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n?.noTemplates ?? 'No templates found')),
-      );
+      _showMessage(l10n?.noTemplates ?? 'No templates found');
     } else {
       _templates = list;
       _showTemplateListDialog();
@@ -710,44 +546,14 @@ class _LevelListScreenState extends State<LevelListScreen> {
       content,
     );
     if (mounted) {
-      final theme = Theme.of(context);
-      final isDark = theme.brightness == Brightness.dark;
       if (ok) {
-        _showFloatingSuccessSnackBar(l10n.levelCreated);
+        _showSuccessMessage(l10n.levelCreated);
         setState(() {
           _newLevelNameInput = '';
         });
         _loadCurrentDirectory();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: isDark
-                ? const Color(0xFF8D6E00)
-                : const Color(0xFFFFF59D),
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.report_problem,
-                  color: isDark
-                      ? const Color(0xFFFFEB3B)
-                      : const Color(0xFF8D6E00),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.levelCreateFail,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : const Color(0xFF5D4E00),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        _showWarningMessage(l10n.levelCreateFail);
       }
     }
   }
@@ -840,9 +646,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               } else if (value == 'cache') {
                 final count = await LevelRepository.clearAllInternalCache();
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.cacheCleared(count))),
-                  );
+                  _showMessage(l10n.cacheCleared(count));
                 }
               } else if (value == 'ui') {
                 setState(() => _showUiScaleDialog = true);
@@ -891,6 +695,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
                               kIsWeb ? 'Open file' : l10n.selectFolderButton,
                             ),
                           ),
+                          if (!kIsWeb && Platform.isIOS) ...[
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: _useDefaultIosLibraryFolder,
+                              child: Text(l10n.useDefaultLibraryFolder),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -1423,84 +1234,42 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   void _showMoveSnackbar(String type, {String? newFileName}) {
     if (!mounted) return;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    Color bgColor;
-    Widget leading;
-    String text;
+    final String text;
+    final bool isSuccess;
     switch (type) {
       case 'success':
-        bgColor = isDark ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50);
-        leading = const Icon(Icons.check_circle, color: Colors.white, size: 20);
         text = l10n.movingSuccess;
+        isSuccess = true;
         break;
       case 'renamed':
-        bgColor = isDark ? const Color(0xFF43A047) : const Color(0xFF388E3C);
-        leading = const Icon(Icons.check_circle, color: Colors.white, size: 20);
         text = l10n.movedAs(newFileName ?? '');
+        isSuccess = true;
         break;
       case 'overwritten':
-        bgColor = isDark ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50);
-        leading = const Icon(Icons.check_circle, color: Colors.white, size: 20);
         text = l10n.fileOverwritten(newFileName ?? '');
+        isSuccess = true;
         break;
       case 'cancelled':
-        bgColor = isDark ? const Color(0xFF8D6E00) : const Color(0xFFFFF59D);
-        leading = Icon(
-          Icons.warning,
-          color: isDark ? const Color(0xFFFFEB3B) : const Color(0xFF8D6E00),
-          size: 20,
-        );
         text = l10n.moveCancelled;
+        isSuccess = false;
         break;
       case 'sameFolder':
-        bgColor = isDark ? const Color(0xFF8D6E00) : const Color(0xFFFFF59D);
-        leading = Icon(
-          Icons.warning,
-          color: isDark ? const Color(0xFFFFEB3B) : const Color(0xFF8D6E00),
-          size: 20,
-        );
         text = l10n.moveSameFolder;
+        isSuccess = false;
         break;
       case 'fail':
-        bgColor = isDark ? const Color(0xFF8D6E00) : const Color(0xFFFFF59D);
-        leading = Icon(
-          Icons.report_problem,
-          color: isDark ? const Color(0xFFFFEB3B) : const Color(0xFF8D6E00),
-          size: 20,
-        );
         text = l10n.movingFail;
+        isSuccess = false;
         break;
       default:
         return;
     }
-    final isGreen =
-        type == 'success' || type == 'renamed' || type == 'overwritten';
-    if (isGreen) {
-      _showFloatingSuccessSnackBar(text, backgroundColor: bgColor);
-      return;
+    if (isSuccess) {
+      _showSuccessMessage(text);
+    } else {
+      _showWarningMessage(text);
     }
-    final textColor = isDark ? Colors.white : const Color(0xFF5D4E00);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: bgColor,
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            leading,
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                text,
-                style: TextStyle(color: textColor),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Future<String?> _showConversionRequiredDialog(FileItem item) async {
@@ -1540,7 +1309,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
   ) async {
     if (_pathStack.isEmpty || item.isDirectory) return null;
     final l10n = AppLocalizations.of(context)!;
-    final messenger = ScaffoldMessenger.of(context);
 
     final dir = _pathStack.last.path;
     final base = LevelRepository.baseNameWithoutLevelExtension(item.name);
@@ -1591,13 +1359,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
     );
     if (!mounted) return null;
     if (converted != null) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.convertedMessage(converted))),
-      );
+      _showSuccessMessage(l10n.convertedMessage(converted));
       await _loadCurrentDirectory();
       return converted;
     }
-    messenger.showSnackBar(SnackBar(content: Text(l10n.conversionFailed)));
+    _showWarningMessage(l10n.conversionFailed);
     return null;
   }
 
@@ -1844,7 +1610,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       target.isDirectory,
     );
     if (mounted) {
-      _showFloatingSuccessSnackBar(l10n.deleted);
+      _showSuccessMessage(l10n.deleted);
       _loadCurrentDirectory();
     }
   }
@@ -1855,7 +1621,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final next = !item.isFavorite;
     await LevelRepository.setFavoriteLevelPath(item.path, next);
     if (!mounted) return;
-    _showFloatingSuccessSnackBar(
+    _showSuccessMessage(
       next ? l10n.addedToFavorites : l10n.removedFromFavorites,
     );
     await _loadCurrentDirectory();

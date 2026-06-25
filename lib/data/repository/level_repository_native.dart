@@ -14,6 +14,7 @@ LevelRepositoryBase createLevelRepository() => LevelRepositoryNativeImpl();
 
 class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   static const _prefsFolderKey = 'folder_path';
+  static const _prefsFolderBookmarkKey = 'folder_bookmark';
   static const _prefsLastLevelDirKey = 'last_level_directory';
 
   @override
@@ -38,16 +39,64 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     }
   }
 
+  Future<String?> _resolveIosFolderPath(SharedPreferences prefs) async {
+    final bookmark = prefs.getString(_prefsFolderBookmarkKey);
+    if (bookmark != null && bookmark.isNotEmpty) {
+      final resolved = await AppleFolderAccess.resolveBookmark(bookmark);
+      if (resolved != null && resolved.isNotEmpty) {
+        final stored = prefs.getString(_prefsFolderKey);
+        if (stored != resolved) {
+          await prefs.setString(_prefsFolderKey, resolved);
+        }
+        return resolved;
+      }
+    }
+
+    final path = prefs.getString(_prefsFolderKey);
+    if (path == null || path.isEmpty) return null;
+
+    if (await AppleFolderAccess.isAppSandboxPath(path)) {
+      if (await Directory(path).exists()) return path;
+      final defaultPath = await ensureIosLibraryPath();
+      await prefs.setString(_prefsFolderKey, defaultPath);
+      await prefs.remove(_prefsFolderBookmarkKey);
+      return defaultPath;
+    }
+
+    return path;
+  }
+
   @override
   Future<String?> getSavedFolderPath() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_prefsFolderKey);
+    if (!Platform.isIOS) {
+      return prefs.getString(_prefsFolderKey);
+    }
+    return _resolveIosFolderPath(prefs);
   }
 
   @override
   Future<void> setSavedFolderPath(String path) async {
+    if (Platform.isIOS && !await AppleFolderAccess.isAppSandboxPath(path)) {
+      await AppleFolderAccess.grantAccessForPath(path);
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsFolderKey, path);
+
+    if (!Platform.isIOS) return;
+
+    if (await AppleFolderAccess.isAppSandboxPath(path)) {
+      await prefs.remove(_prefsFolderBookmarkKey);
+      return;
+    }
+
+    final bookmark = await AppleFolderAccess.createBookmark(path);
+    if (bookmark != null && bookmark.isNotEmpty) {
+      await prefs.setString(_prefsFolderBookmarkKey, bookmark);
+    } else {
+      await prefs.remove(_prefsFolderBookmarkKey);
+    }
   }
 
   @override

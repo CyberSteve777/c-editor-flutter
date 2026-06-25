@@ -75,6 +75,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectFolderButton => 'Выбрать папку';
 
   @override
+  String get levelLibraryPath => 'Папка библиотеки уровней';
+
+  @override
+  String get levelLibraryPathHint =>
+      'Уровни хранятся в этой папке. На iOS можно выбрать любую папку — доступ сохраняется после перезапуска.';
+
+  @override
+  String get pathCopied => 'Путь скопирован в буфер обмена';
+
+  @override
+  String get useDefaultLibraryFolder => 'Использовать папку по умолчанию';
+
+  @override
   String get emptyFolder => 'Папка пуста';
 
   @override

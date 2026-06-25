@@ -226,6 +226,30 @@ abstract class AppLocalizations {
   /// **'Select folder'**
   String get selectFolderButton;
 
+  /// No description provided for @levelLibraryPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Level library folder'**
+  String get levelLibraryPath;
+
+  /// No description provided for @levelLibraryPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Levels are stored in this folder. On iOS you can pick any folder; access is saved so it persists after restart.'**
+  String get levelLibraryPathHint;
+
+  /// No description provided for @pathCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Path copied to clipboard'**
+  String get pathCopied;
+
+  /// No description provided for @useDefaultLibraryFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Use default folder'**
+  String get useDefaultLibraryFolder;
+
   /// No description provided for @emptyFolder.
   ///
   /// In en, this message translates to:

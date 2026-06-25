@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +13,7 @@ import 'package:c_editor/screens/about_screen.dart';
 import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/screens/level_list_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
+import 'package:c_editor/widgets/app_message.dart';
 
 /// Wraps child and handles Escape key on desktop to trigger back/pop.
 /// Uses HardwareKeyboard.addHandler for immediate, global Escape handling.
@@ -137,7 +137,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 child: SizedBox(
                   width: scaledSize.width,
                   height: scaledSize.height,
-                  child: child,
+                  child: AppMessageMessenger(child: child!),
                 ),
               ),
             );

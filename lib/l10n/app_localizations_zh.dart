@@ -73,6 +73,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectFolderButton => '选择文件夹';
 
   @override
+  String get levelLibraryPath => '关卡库文件夹';
+
+  @override
+  String get levelLibraryPathHint =>
+      '关卡保存在此文件夹。在 iOS 上可选择任意文件夹，访问权限会保存并在重启后仍然有效。';
+
+  @override
+  String get pathCopied => '路径已复制到剪贴板';
+
+  @override
+  String get useDefaultLibraryFolder => '使用默认文件夹';
+
+  @override
   String get emptyFolder => '文件夹为空';
 
   @override

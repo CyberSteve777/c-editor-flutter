@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
@@ -127,7 +128,6 @@ import 'package:c_editor/screens/editor/others/custom_stage_properties_screen.da
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
-import 'package:c_editor/theme/app_theme.dart';
 
 class _EditorEscapeIntent extends Intent {
   const _EditorEscapeIntent();
@@ -150,13 +150,6 @@ class EditorScreen extends StatefulWidget {
 }
 
 class _EditorScreenState extends State<EditorScreen> {
-  static const _floatingSuccessSnackBarMargin = EdgeInsets.fromLTRB(
-    16,
-    0,
-    16,
-    96,
-  );
-
   TabController? _tabController;
 
   EditorCubit get _ec => context.read<EditorCubit>();
@@ -486,32 +479,10 @@ class _EditorScreenState extends State<EditorScreen> {
     if (!mounted) return;
     if (hadChanges) {
       final l10n = AppLocalizations.of(context);
-      final theme = Theme.of(context);
-      final isDark = theme.brightness == Brightness.dark;
-      final snackColor = isDark ? pvzGreenDark : pvzGreenLight;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          margin: _floatingSuccessSnackBarMargin,
-          backgroundColor: snackColor,
-          content: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.check_circle, color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n?.saved ?? 'Saved',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
+      AppMessage.show(
+        context,
+        l10n?.saved ?? 'Saved',
+        icon: Icons.check_circle,
       );
     }
   }
@@ -687,13 +658,11 @@ class _EditorScreenState extends State<EditorScreen> {
       _ec.state.levelFile!,
     ).isNotEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)?.customStageOnePerLevelLimit ??
-                  'This level already has a custom lawn. Delete it before adding another.',
-            ),
-          ),
+        AppMessage.show(
+          context,
+          AppLocalizations.of(context)?.customStageOnePerLevelLimit ??
+              'This level already has a custom lawn. Delete it before adding another.',
+          icon: Icons.info_outline,
         );
       }
       return;
@@ -726,13 +695,11 @@ class _EditorScreenState extends State<EditorScreen> {
       (o) => o.aliases?.contains(alias) == true,
     )) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.customStageAliasTaken ??
-                'That alias is already used in this level.',
-          ),
-        ),
+      AppMessage.show(
+        context,
+        AppLocalizations.of(context)?.customStageAliasTaken ??
+            'That alias is already used in this level.',
+        icon: Icons.info_outline,
       );
       return;
     }
@@ -764,13 +731,11 @@ class _EditorScreenState extends State<EditorScreen> {
     final levelFile = _ec.state.levelFile!;
     if (CustomStageLevelUtils.customStageObjectsInLevel(levelFile).isNotEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)?.customStageOnePerLevelLimit ??
-                  'This level already has a custom lawn. Delete it before adding another.',
-            ),
-          ),
+        AppMessage.show(
+          context,
+          AppLocalizations.of(context)?.customStageOnePerLevelLimit ??
+              'This level already has a custom lawn. Delete it before adding another.',
+          icon: Icons.info_outline,
         );
       }
       return Future.value(null);
@@ -1852,12 +1817,10 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          l10n?.eventEditorInDevelopment ?? 'Event editor in development',
-        ),
-      ),
+    AppMessage.show(
+      context,
+      l10n?.eventEditorInDevelopment ?? 'Event editor in development',
+      icon: Icons.info_outline,
     );
   }
 
@@ -3277,12 +3240,10 @@ class _EditorScreenState extends State<EditorScreen> {
       );
     } else {
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n?.moduleEditorInProgress ?? 'Module editor in development',
-          ),
-        ),
+      AppMessage.show(
+        context,
+        l10n?.moduleEditorInProgress ?? 'Module editor in development',
+        icon: Icons.info_outline,
       );
     }
   }
@@ -3327,21 +3288,28 @@ class _EditorScreenState extends State<EditorScreen> {
                 tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',
                 onPressed: _ec.state.levelFile != null
                     ? () async {
+                        final hadChanges = _ec.state.hasChanges;
                         await _save();
-                        if (context.mounted) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => JsonViewerScreen(
-                                fileName: _ec.fileName,
-                                filePath: _ec.filePath,
-                                levelFile: _ec.state.levelFile!,
-                                onBack: () => Navigator.pop(context),
-                                onSaved: () => _ec.onJsonViewerSaved(),
-                              ),
-                            ),
+                        if (!context.mounted) return;
+                        if (hadChanges) {
+                          // Let the banner start its fade-in before the route covers the frame.
+                          await Future<void>.delayed(
+                            const Duration(milliseconds: 32),
                           );
+                          if (!context.mounted) return;
                         }
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => JsonViewerScreen(
+                              fileName: _ec.fileName,
+                              filePath: _ec.filePath,
+                              levelFile: _ec.state.levelFile!,
+                              onBack: () => Navigator.pop(context),
+                              onSaved: () => _ec.onJsonViewerSaved(),
+                            ),
+                          ),
+                        );
                       }
                     : null,
               ),

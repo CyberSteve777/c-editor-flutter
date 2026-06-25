@@ -75,6 +75,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectFolderButton => 'Select folder';
 
   @override
+  String get levelLibraryPath => 'Level library folder';
+
+  @override
+  String get levelLibraryPathHint =>
+      'Levels are stored in this folder. On iOS you can pick any folder; access is saved so it persists after restart.';
+
+  @override
+  String get pathCopied => 'Path copied to clipboard';
+
+  @override
+  String get useDefaultLibraryFolder => 'Use default folder';
+
+  @override
   String get emptyFolder => 'Folder is empty';
 
   @override

@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:accessing_security_scoped_resource/accessing_security_scoped_resource.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-/// Keeps iOS security-scoped access open for a picked folder during the app session.
+/// iOS security-scoped folder access and bookmark persistence.
 class AppleFolderAccess {
+  static const _bookmarkChannel = MethodChannel('c_editor/folder_bookmark');
+
   static AppleScopedResource? _activeResource;
   static String? _activePath;
 
@@ -42,6 +45,32 @@ class AppleFolderAccess {
     await _activeResource?.release();
     _activeResource = null;
     _activePath = null;
+  }
+
+  static Future<String?> createBookmark(String path) async {
+    if (!Platform.isIOS) return null;
+    try {
+      final bookmark = await _bookmarkChannel.invokeMethod<String>(
+        'createBookmark',
+        path,
+      );
+      return bookmark;
+    } on PlatformException {
+      return null;
+    }
+  }
+
+  static Future<String?> resolveBookmark(String bookmark) async {
+    if (!Platform.isIOS) return null;
+    try {
+      final path = await _bookmarkChannel.invokeMethod<String>(
+        'resolveBookmark',
+        bookmark,
+      );
+      return path;
+    } on PlatformException {
+      return null;
+    }
   }
 
   static Future<String> defaultLibraryPath() async {

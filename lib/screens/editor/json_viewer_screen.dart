@@ -7,8 +7,8 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/escape_override.dart';
-import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/utils/json_viewer_search.dart';
+import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/json_viewer_search_bar.dart';
 
 const _fontSizeKey = 'json_viewer_font_size';
@@ -363,74 +363,20 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         });
         widget.onSaved?.call();
         final l10n = AppLocalizations.of(context);
-        final theme = Theme.of(context);
-        final isDark = theme.brightness == Brightness.dark;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: isDark ? pvzGreenDark : pvzGreenLight,
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n?.saved ?? 'Saved',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        AppMessage.show(
+          context,
+          l10n?.saved ?? 'Saved',
+          icon: Icons.check_circle,
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _syntaxError = 'JSON error: $e');
         final l10n = AppLocalizations.of(context);
-        final theme = Theme.of(context);
-        final isDark = theme.brightness == Brightness.dark;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: isDark ? snackbarFailedDark : snackbarFailedLight,
-            content: Row(
-              children: [
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () =>
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-                    customBorder: const CircleBorder(),
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: Colors.black26,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        color: Colors.black87,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    l10n?.saveFail ?? 'Save failed',
-                    style: const TextStyle(color: Colors.black87),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        AppMessage.show(
+          context,
+          l10n?.saveFail ?? 'Save failed',
+          icon: Icons.warning_amber_rounded,
         );
       }
     }
@@ -762,29 +708,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     if (toRemove.isEmpty) {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
-        final theme = Theme.of(context);
-        final isDark = theme.brightness == Brightness.dark;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: isDark ? pvzGreenDark : pvzGreenLight,
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n?.clearUnusedNone ?? 'No unused objects found.',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        AppMessage.show(
+          context,
+          l10n?.clearUnusedNone ?? 'No unused objects found.',
+          icon: Icons.check_circle,
         );
       }
       return;
@@ -821,41 +748,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       widget.onSaved?.call();
       setState(() {});
       if (mounted) {
-        final theme = Theme.of(context);
-        final isDark = theme.brightness == Brightness.dark;
         final msg =
             l10n?.clearUnusedDone(toRemove.length) ??
             'Removed ${toRemove.length} unused object(s).';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: toRemove.isNotEmpty
-                ? (isDark ? pvzGreenDark : pvzGreenLight)
-                : null,
-            content: toRemove.isNotEmpty
-                ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          msg,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  )
-                : Text(msg, overflow: TextOverflow.ellipsis),
-          ),
-        );
+        AppMessage.show(context, msg, icon: Icons.check_circle);
       }
     }
   }
@@ -888,8 +784,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       widget.onSaved?.call();
       setState(() {});
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n?.objectDeleted ?? 'Object deleted')),
+        AppMessage.show(
+          context,
+          l10n?.objectDeleted ?? 'Object deleted',
+          icon: Icons.check_circle,
         );
       }
     }
