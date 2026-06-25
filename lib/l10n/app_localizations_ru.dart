@@ -45,6 +45,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aboutSoftware => 'О программе';
 
   @override
+  String get share => 'Поделиться';
+
+  @override
+  String shareLevelFileText(String name) {
+    return 'Файл уровня: $name';
+  }
+
+  @override
   String get selectFolder => 'Выбрать папку';
 
   @override
@@ -171,6 +179,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Сейчас вы покинете редактор и перейдёте на официальный сайт продвинутой Креаторской Площадки. После регистрации/входа через эл. почту, вы сможете загружать JSON файлы уровней из редактора прямо в игровую Креаторскую Площадку, чтобы другие люди могли сыграть в ваш уровень. Хотите продолжить?';
 
   @override
+  String get noLevelsFound => 'Уровни не найдены';
+
+  @override
+  String get searchLevel => 'Поиск уровней...';
+
+  @override
   String get proceed => 'Продолжить';
 
   @override
@@ -182,6 +196,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get deepCopy => 'Полная копия';
+
+  @override
+  String get discordLabel => 'Наш Discord сервер:';
+
+  @override
+  String get comingSoon => 'Скоро';
+
+  @override
+  String get allLevelsCategory => 'Все';
+
+  @override
+  String get favoritesCategory => 'Избранное';
+
+  @override
+  String get newFolderNameHint => 'Оставьте пустым для имени по умолчанию';
+
+  @override
+  String get emptyFavorites => 'У вас пока нет избранных уровней';
 
   @override
   String get copyEventTarget => 'Целевая волна';

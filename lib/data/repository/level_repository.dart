@@ -17,6 +17,8 @@ class LevelRepository {
 
   static Future<String> ensureIosLibraryPath() => _impl.ensureIosLibraryPath();
 
+  static Future<List<FileItem>> getFavorites(String rootPath) => _impl.getFavorites(rootPath);
+
   static Future<bool> ensureFolderAccess() => _impl.ensureFolderAccess();
 
   static Future<void> setLastOpenedLevelDirectory(String path) =>

@@ -164,6 +164,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           onSurface: theme.colorScheme.onSurface,
                           linkColor: theme.colorScheme.primary,
                         ),
+                        _Bullet('${l10n.discordLabel} ${l10n.comingSoon}'),
                       ],
                       const SizedBox(height: 12),
                       Text(

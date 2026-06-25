@@ -31,6 +31,14 @@
   "delete": "Удалить",
   "copy": "Копировать",
   "download": "Скачать",
+  "share": "Поделиться",
+  "shareLevelFileText": "Файл уровня: {name}",
+  "@shareLevelFileText": {
+    "description": "Текстовая подпись, прикрепляемая к файлу уровня при использовании системной функции «Поделиться»",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "favorite": "В избранное",
   "unfavorite": "Убрать из избранного",
   "move": "Переместить",
@@ -41,6 +49,14 @@
   "create": "Создать",
   "newName": "Новое имя",
   "folderName": "Имя папки",
+  "newFolderNameHint": "Оставьте пустым для имени по умолчанию",
+  "emptyFavorites": "У вас пока нет избранных уровней",
+  "discordLabel": "Наш Discord сервер:",
+  "comingSoon": "Скоро",
+  "allLevelsCategory": "Все",
+  "favoritesCategory": "Избранное",
+  "searchLevel": "Поиск уровней...",
+  "noLevelsFound": "Уровни не найдены",
   "confirmDelete": "Подтвердить удаление",
   "confirmDeleteMessage": "Вы уверены, что хотите удалить «{name}»? {detail}",
   "folderDeleteDetail": "Если это папка, её содержимое также будет удалено.",

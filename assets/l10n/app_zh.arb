@@ -12,12 +12,28 @@
   "plantTagInternational": "国际版移植",
   "plantTagChinese": "中文版原创",
   "selectFolder": "选择文件夹",
+  "share": "分享",
+  "shareLevelFileText": "关卡文件: {name}",
+  "@shareLevelFileText": {
+    "description": "通过系统分享功能发送关卡文件时的随附文字",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "storagePermissionHint": "需要存储权限。请在设置中开启「允许访问以管理所有文件」来打开关卡文件。",
   "storagePermissionDialogTitle": "需要存储权限",
   "storagePermissionDialogMessage": "本应用需要访问外部存储以打开和保存关卡文件。请在设置中授予「允许访问以管理所有文件」权限。",
   "storagePermissionGoToSettings": "前往设置",
   "storagePermissionDeny": "拒绝",
   "initSetup": "初始化设置",
+  "discordLabel": "我们的Discord服务器：",
+  "comingSoon": "敬请期待",
+  "allLevelsCategory": "全部",
+  "favoritesCategory": "收藏",
+  "newFolderNameHint": "留空以使用默认名称",
+  "emptyFavorites": "您还没有收藏的关卡",
+  "searchLevel": "搜索关卡...",
+  "noLevelsFound": "未找到关卡",
   "selectFolderPrompt": "请选择一个文件夹作为关卡存储目录。",
   "selectFolderButton": "选择文件夹",
   "levelLibraryPath": "关卡库文件夹",

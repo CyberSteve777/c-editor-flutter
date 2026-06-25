@@ -11,6 +11,14 @@
   "plantTagInternational": "International",
   "plantTagChinese": "China Only",
   "aboutSoftware": "About",
+  "share": "Share",
+  "shareLevelFileText": "Level file: {name}",
+  "@shareLevelFileText": {
+    "description": "The caption text included when sharing a level file via the system share sheet",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "selectFolder": "Select folder",
   "storagePermissionHint": "Storage permission required. Enable \"Allow access to manage all files\" in Settings to open level files.",
   "storagePermissionDialogTitle": "Storage Permission Required",
@@ -51,10 +59,18 @@
   "uploadLevel": "Upload to Creative Courtyard",
   "uploadLevelConfirm": "You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?",
   "back": "Back",
+  "noLevelsFound": "No levels found",
+  "searchLevel": "Search levels...",
   "proceed": "Continue",
   "copyReferenceOrDeep": "Copy reference or make a deep copy?",
   "copyReference": "Copy reference",
   "deepCopy": "Deep copy",
+  "discordLabel": "Our Discord server:",
+  "comingSoon": "Coming soon",
+  "allLevelsCategory": "All",
+  "favoritesCategory": "Favorites",
+  "newFolderNameHint": "Leave empty for default name",
+  "emptyFavorites": "You don't have any favorite levels yet",
   "copyEventTarget": "Target wave",
   "targetWaveIndex": "Target wave number",
   "moveToWaveIndex": "Move to wave number",

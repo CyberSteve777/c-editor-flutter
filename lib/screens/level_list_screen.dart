@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, Directory;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
@@ -13,6 +13,9 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
+
+enum LevelViewMode { all, favorites }
 
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
@@ -31,8 +34,11 @@ class LevelListScreen extends StatefulWidget {
 }
 
 class _LevelListScreenState extends State<LevelListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
   List<FileItem> _fileItems = [];
   bool _isLoading = false;
+  LevelViewMode _viewMode = LevelViewMode.all;
   List<({String name, String path})> _pathStack = [];
   String? _rootFolderPath;
   FileItem? _itemToDelete;
@@ -99,6 +105,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
   void dispose() {
     _listScrollController.removeListener(_onListScroll);
     _listScrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -240,7 +247,22 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final currentPath = _pathStack.isNotEmpty
         ? _pathStack.last.path
         : _rootFolderPath;
+
     if (currentPath == null) return;
+
+    if (!kIsWeb) {
+      final dir = Directory(currentPath);
+      if (!await dir.exists()) {
+        if (_pathStack.length > 1 && mounted) {
+          setState(() {
+            _pathStack = [_pathStack.first];
+          });
+          _loadCurrentDirectory();
+          return;
+        }
+      }
+    }
+
     setState(() => _isLoading = true);
     try {
       var activePath = currentPath;
@@ -251,13 +273,18 @@ class _LevelListScreenState extends State<LevelListScreen> {
             _fileItems = [];
             _isLoading = false;
           });
-          _showWarningMessage(
-            AppLocalizations.of(context)!.selectFolderPrompt,
-          );
+          _showWarningMessage(AppLocalizations.of(context)!.selectFolderPrompt);
           return;
         }
       }
-      final items = await LevelRepository.getDirectoryContents(activePath);
+
+      List<FileItem> items;
+      if (_viewMode == LevelViewMode.favorites) {
+        items = await LevelRepository.getFavorites(_rootFolderPath!);
+      } else {
+        items = await LevelRepository.getDirectoryContents(activePath);
+      }
+
       if (mounted) {
         setState(() {
           _fileItems = items;
@@ -269,6 +296,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
         setState(() {
           _fileItems = [];
           _isLoading = false;
+          if (_pathStack.length > 1) {
+            _pathStack = [_pathStack.first];
+            _loadCurrentDirectory();
+          }
         });
       }
     }
@@ -345,12 +376,24 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _handleNewFolder() async {
-    if (_newFolderNameInput.trim().isEmpty || _pathStack.isEmpty) return;
+    if (_pathStack.isEmpty) return;
     final l10n = AppLocalizations.of(context)!;
+
+    String nameInput = _newFolderNameInput.trim();
+    if (nameInput.isEmpty) {
+      nameInput = l10n.newFolder;
+    }
+
+    final finalName = await LevelRepository.getNextAvailableNameForTemplate(
+      _pathStack.last.path,
+      nameInput,
+    );
+
     final ok = await LevelRepository.createDirectory(
       _pathStack.last.path,
-      _newFolderNameInput.trim(),
+      finalName,
     );
+
     if (mounted) {
       if (ok) {
         _showSuccessMessage(l10n.folderCreated);
@@ -564,6 +607,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
+    final filteredItems = _fileItems.where((item) {
+      if (_searchQuery.isEmpty) return true;
+      return item.name.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+
     final fabBgColor =
         theme.floatingActionButtonTheme.backgroundColor ??
         theme.colorScheme.primaryContainer;
@@ -712,6 +760,58 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   pathStack: _pathStack,
                   onBreadcrumbClick: _breadcrumbTap,
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: SegmentedButton<LevelViewMode>(
+                    segments: [
+                      ButtonSegment(
+                        value: LevelViewMode.all,
+                        label: Text(l10n.allLevelsCategory),
+                        icon: const Icon(Icons.folder_outlined),
+                      ),
+                      ButtonSegment(
+                        value: LevelViewMode.favorites,
+                        label: Text(l10n.favoritesCategory),
+                        icon: const Icon(Icons.favorite_outline),
+                      ),
+                    ],
+                    selected: {_viewMode},
+                    onSelectionChanged: (newSelection) {
+                      setState(() {
+                        _viewMode = newSelection.first;
+                        if (_viewMode == LevelViewMode.favorites && _pathStack.isNotEmpty) {
+                          _pathStack = [_pathStack.first];
+                          _resetListScrollToTop();
+                        }
+                        _loadCurrentDirectory();
+                      });
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                    decoration: InputDecoration(
+                      hintText: l10n.searchLevel,
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    ),
+                  ),
+                ),
                 if (_canGoBack)
                   Card(
                     margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -798,20 +898,21 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : _fileItems.isEmpty
+                      : filteredItems.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.folder_open,
+                                _searchQuery.isEmpty ? Icons.folder_open : Icons.search_off,
                                 size: 64,
-                                color:
-                                    theme.colorScheme.surfaceContainerHighest,
+                                color: theme.colorScheme.surfaceContainerHighest,
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                l10n.emptyFolder,
+                                _searchQuery.isEmpty
+                                    ? (_viewMode == LevelViewMode.favorites ? l10n.emptyFavorites : l10n.emptyFolder)
+                                    : l10n.noLevelsFound,
                                 style: TextStyle(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
@@ -822,13 +923,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
                       : ListView.builder(
                           controller: _listScrollController,
                           padding: const EdgeInsets.all(16),
-                          itemCount: _fileItems.length + 1,
+                          itemCount: filteredItems.length + 1,
                           itemBuilder: (context, index) {
                             final itemIndex = index;
-                            if (itemIndex >= _fileItems.length) {
+                            if (itemIndex >= filteredItems.length) {
                               return const SizedBox(height: 80);
                             }
-                            final item = _fileItems[itemIndex];
+                            final item = filteredItems[itemIndex];
                             final isMovingMode = _itemToMove != null;
                             final isSelfMoving =
                                 isMovingMode && _itemToMove == item;
@@ -842,6 +943,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                               child: _FileItemRow(
                                 item: item,
                                 l10n: l10n,
+                                rootFolderPath: _rootFolderPath,
                                 onTap: () async {
                                   if (isMovingMode) {
                                     if (item.isDirectory) {
@@ -966,6 +1068,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                     actionsDisabled || item.isDirectory
                                     ? null
                                     : () => _toggleFavorite(item),
+                                onShare: actionsDisabled || item.isDirectory || kIsWeb
+                                    ? null
+                                    : () => _handleShare(item),
                                 showMove: !item.isDirectory && !kIsWeb,
                               ),
                             );
@@ -1116,7 +1221,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         title: Text(l10n.newFolder),
         content: TextField(
           controller: ctrl,
-          decoration: InputDecoration(labelText: l10n.folderName),
+          decoration: InputDecoration(labelText: l10n.folderName, helperText: l10n.newFolderNameHint),
           onChanged: (v) => _newFolderNameInput = v,
         ),
         actions: [
@@ -1633,6 +1738,16 @@ class _LevelListScreenState extends State<LevelListScreen> {
     });
   }
 
+  Future<void> _handleShare(FileItem item) async {
+    if (item.isDirectory) return;
+    final l10n = AppLocalizations.of(context)!;
+
+    await Share.shareXFiles(
+      [XFile(item.path)],
+      text: l10n.shareLevelFileText(item.name),
+    );
+  }
+
   void _showCopyDialog() {
     final item = _itemToCopy;
     if (item == null || !mounted) return;
@@ -1798,9 +1913,11 @@ class _FileItemRow extends StatelessWidget {
     required this.onCopy,
     required this.onMove,
     required this.showMove,
+    this.rootFolderPath,
     this.onDownload,
     this.onConvert,
     this.onToggleFavorite,
+    this.onShare,
   });
 
   final FileItem item;
@@ -1811,9 +1928,11 @@ class _FileItemRow extends StatelessWidget {
   final VoidCallback onCopy;
   final VoidCallback onMove;
   final bool showMove;
+  final String? rootFolderPath;
   final VoidCallback? onDownload;
   final VoidCallback? onConvert;
   final VoidCallback? onToggleFavorite;
+  final VoidCallback? onShare;
 
   static const _iconBtnStyle = ButtonStyle(
     padding: WidgetStatePropertyAll(EdgeInsets.all(6)),
@@ -1895,6 +2014,14 @@ class _FileItemRow extends StatelessWidget {
               label: l10n.convertHelpTooltip,
             ),
           ),
+        if (onShare != null)
+          PopupMenuItem(
+            value: 'share',
+            child: _popupMenuTile(
+              icon: Icons.share,
+              label: l10n.share,
+            ),
+          ),
         if (showMove)
           PopupMenuItem(
             value: 'move',
@@ -1925,6 +2052,8 @@ class _FileItemRow extends StatelessWidget {
             onDownload?.call();
           case 'convert':
             onConvert?.call();
+          case 'share':
+            onShare?.call();
           case 'move':
             onMove();
           case 'delete':
@@ -2063,10 +2192,7 @@ class _FileItemRow extends StatelessWidget {
                         if (!item.isDirectory) ...[
                           const SizedBox(height: 2),
                           Text(
-                            p
-                                .extension(item.name)
-                                .replaceFirst('.', '')
-                                .toUpperCase(),
+                            p.extension(item.name).replaceFirst('.', '').toUpperCase(),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

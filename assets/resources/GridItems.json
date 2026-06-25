@@ -102,5 +102,6 @@
   { "typeName": "renai_zomboss_statue_zombie1_half", "category": "scene", "icon": "renai_zomboss_statue_zombie1_half.webp" },
   { "typeName": "renai_statue_zombie_armor2_half", "category": "scene", "icon": "renai_statue_zombie_armor2_half.webp" },
   { "typeName": "renai_statue_zombie_armor1_half", "category": "scene", "icon": "renai_statue_zombie_armor1_half.webp" },
-  { "typeName": "renai_statue_zombie_perfumer_half", "category": "scene", "icon": "renai_statue_zombie_perfumer_half.webp" }
+  { "typeName": "renai_statue_zombie_perfumer_half", "category": "scene", "icon": "renai_statue_zombie_perfumer_half.webp" },
+  { "typeName": "puddle", "category": "scene", "icon": "puddle.webp" }
 ]

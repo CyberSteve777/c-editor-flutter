@@ -21,6 +21,28 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   Future<String> ensureIosLibraryPath() => AppleFolderAccess.defaultLibraryPath();
 
   @override
+  Future<List<FileItem>> getFavorites(String rootPath) async {
+    final favoritePaths = await readFavoriteLevelPaths();
+    final list = <FileItem>[];
+    for (final path in favoritePaths) {
+      final file = File(path);
+      if (await file.exists() && path.startsWith(rootPath)) {
+        final stat = await file.stat();
+        list.add(FileItem(
+          name: p.basename(path),
+          path: path,
+          isDirectory: false,
+          lastModified: stat.modified.millisecondsSinceEpoch,
+          size: stat.size,
+          isFavorite: true,
+        ));
+      }
+    }
+    list.sort((a, b) => naturalCompare(a.name, b.name));
+    return list;
+  }
+
+  @override
   Future<bool> ensureFolderAccess() async {
     if (!Platform.isIOS) return true;
     final path = await getSavedFolderPath();

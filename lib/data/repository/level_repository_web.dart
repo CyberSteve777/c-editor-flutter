@@ -92,6 +92,35 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   }
 
   @override
+  Future<List<FileItem>> getFavorites(String rootPath) async {
+    final favoritePaths = await readFavoriteLevelPaths();
+    final items = <FileItem>[];
+
+    for (final entry in _memoryCache.entries) {
+      final fullPath = entry.key.startsWith(_webPathPrefix)
+          ? entry.key
+          : '$_webPathPrefix${entry.key}';
+
+      if (favoritePaths.contains(fullPath)) {
+        final name = _leafNameFromWebPath(fullPath);
+        items.add(
+          FileItem(
+            name: name,
+            path: fullPath,
+            isDirectory: false,
+            lastModified: 0,
+            size: entry.value.length,
+            isFavorite: true,
+          ),
+        );
+      }
+    }
+
+    items.sort((a, b) => naturalCompare(a.name, b.name));
+    return items;
+  }
+
+  @override
   Future<String> ensureIosLibraryPath() async => _webPathPrefix;
 
   @override

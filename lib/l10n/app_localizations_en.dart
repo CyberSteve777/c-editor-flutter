@@ -45,6 +45,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutSoftware => 'About';
 
   @override
+  String get share => 'Share';
+
+  @override
+  String shareLevelFileText(String name) {
+    return 'Level file: $name';
+  }
+
+  @override
   String get selectFolder => 'Select folder';
 
   @override
@@ -170,6 +178,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
 
   @override
+  String get noLevelsFound => 'No levels found';
+
+  @override
+  String get searchLevel => 'Search levels...';
+
+  @override
   String get proceed => 'Continue';
 
   @override
@@ -180,6 +194,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deepCopy => 'Deep copy';
+
+  @override
+  String get discordLabel => 'Our Discord server:';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get allLevelsCategory => 'All';
+
+  @override
+  String get favoritesCategory => 'Favorites';
+
+  @override
+  String get newFolderNameHint => 'Leave empty for default name';
+
+  @override
+  String get emptyFavorites => 'You don\'t have any favorite levels yet';
 
   @override
   String get copyEventTarget => 'Target wave';

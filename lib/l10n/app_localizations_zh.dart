@@ -45,6 +45,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aboutSoftware => '关于软件';
 
   @override
+  String get share => '分享';
+
+  @override
+  String shareLevelFileText(String name) {
+    return '关卡文件: $name';
+  }
+
+  @override
   String get selectFolder => '选择文件夹';
 
   @override
@@ -167,6 +175,12 @@ class AppLocalizationsZh extends AppLocalizations {
       '即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将编辑器中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？';
 
   @override
+  String get noLevelsFound => '未找到关卡';
+
+  @override
+  String get searchLevel => '搜索关卡...';
+
+  @override
   String get proceed => '继续';
 
   @override
@@ -177,6 +191,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deepCopy => '创建独立副本';
+
+  @override
+  String get discordLabel => '我们的Discord服务器：';
+
+  @override
+  String get comingSoon => '敬请期待';
+
+  @override
+  String get allLevelsCategory => '全部';
+
+  @override
+  String get favoritesCategory => '收藏';
+
+  @override
+  String get newFolderNameHint => '留空以使用默认名称';
+
+  @override
+  String get emptyFavorites => '您还没有收藏的关卡';
 
   @override
   String get copyEventTarget => '目标波次';

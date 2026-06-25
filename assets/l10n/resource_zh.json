@@ -17,6 +17,7 @@
   "PlantDefeatZombieChallengeProps_NumZombiesToKill": "击杀僵尸数",
   "PlantDefeatZombieChallengeProps_PlantTypeName": "植物",
   "RenaiRollerChallengeProps_MaximumPlantsDied": "最大碾压植物数",
+  "griditem_puddle": "水坑",
   "StarChallengeBarrelPowderZombieKillProps_Count": "击杀个数 (Count)",
   "StarChallengeBeatTheLevelProps_Description": "提示正文 (Description)\n支持显示中文，\n多行文字需直接输入回车，\n无需使用转义序列\\n，\n注意iOS端庭院内无法查看提示内容",
   "StarChallengeBeatTheLevelProps_DescriptiveName": "提示名称 (DescriptiveName)",

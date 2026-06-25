@@ -59,6 +59,7 @@ abstract class LevelRepositoryBase {
   Future<String> getCacheDir();
   Future<bool> fileExistsInDirectory(String dirPath, String fileName);
   Future<List<FileItem>> getDirectoryContents(String dirPath);
+  Future<List<FileItem>> getFavorites(String rootPath);
   Future<bool> createDirectory(String parentPath, String name);
   Future<bool> renameItem(
     String currentDirPath,

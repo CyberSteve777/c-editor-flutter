@@ -172,6 +172,18 @@ abstract class AppLocalizations {
   /// **'About'**
   String get aboutSoftware;
 
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// The caption text included when sharing a level file via the system share sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Level file: {name}'**
+  String shareLevelFileText(String name);
+
   /// No description provided for @selectFolder.
   ///
   /// In en, this message translates to:
@@ -406,6 +418,18 @@ abstract class AppLocalizations {
   /// **'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
   String get uploadLevelConfirm;
 
+  /// No description provided for @noLevelsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No levels found'**
+  String get noLevelsFound;
+
+  /// No description provided for @searchLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search levels...'**
+  String get searchLevel;
+
   /// No description provided for @proceed.
   ///
   /// In en, this message translates to:
@@ -429,6 +453,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deep copy'**
   String get deepCopy;
+
+  /// No description provided for @discordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Discord server:'**
+  String get discordLabel;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @allLevelsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allLevelsCategory;
+
+  /// No description provided for @favoritesCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favoritesCategory;
+
+  /// No description provided for @newFolderNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty for default name'**
+  String get newFolderNameHint;
+
+  /// No description provided for @emptyFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any favorite levels yet'**
+  String get emptyFavorites;
 
   /// No description provided for @copyEventTarget.
   ///
