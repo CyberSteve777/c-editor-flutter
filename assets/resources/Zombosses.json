@@ -1,110 +1,110 @@
 [
-  {
-    "id": "ZombieZombossBlade",
-    "icon": "kongfu_zomboss_blade.webp",
-    "variations": [
-      "kongfu_zomboss_blade",
-      "kongfu_zomboss_blade_vacation"
-    ],
-    "resourceGroups": [
-      "ZombieKongFuZombossBladeGroup",
-      "ZombossKongfuBladeAudio"
-    ]
-  },
-  {
-    "id": "ZombieZombossExplosive",
-    "icon": "kongfu_zomboss_explosive.webp",
-    "variations": [
-      "kongfu_zomboss_explosive",
-      "kongfu_zomboss_explosive_vacation"
-    ],
-    "resourceGroups": [
-      "Missile_Explosion_Common",
-      "ZombieKongFuZombossExplosiveGroup",
-      "ZombossKongfuExplosiveAudio"
-    ]
-  },
-  {
-    "id": "ZombieZombossQigong",
-    "icon": "kongfu_zomboss_qigong.webp",
-    "variations": [
-      "kongfu_zomboss_qigong",
-      "kongfu_zomboss_qigong_vacation",
-      "kongfu_zomboss_qigong_12th",
-      "kongfu_zomboss_qigong_12TH"
-    ],
-    "resourceGroups": [
-      "ZombieKongFuZombossQigongGroup",
-      "ZombossQigongAudio"
-    ]
-  },
-  {
-    "id": "ZombieZombossQinShiHuang",
-    "icon": "zomboss_qinshihuang.webp",
-    "variations": [
-      "zomboss_qinshihuang",
-      "zomboss_qinshihuang_hard"
-    ],
-    "resourceGroups": [
-      "FrostbiteIceBlockPlantGroup",
-      "MausoleumAudio",
-      "PlantFlamelady",
-      "PlantSeaderris",
-      "UI_MausoleumTunnel",
-      "ZombiePVZ1RobotZombossGroup",
-      "ZombossQinShiHuangAudio",
-      "ZombossQinShiHuangGroup"
-    ],
-    "modules": [
-      {
-        "objclass": "ZombossFinalStageTimeLimitedChallengeProperties",
-        "alias": "FinalStageTimeLimitedChallenge",
-        "source": "LevelModules"
-      },
-      {
-        "objclass": "TunnelDefendModuleProperties",
-        "alias": "TunnelDefend",
-        "source": "CurrentLevel",
-        "objdata": {
-          "Roads": [],
-          "TunnelSequenceInterval": 0.4,
-          "BrickMapIndex": 1
-        }
-      }
-    ]
-  },
-  {
-    "id": "ZombieZombossQinShiHuangGhost",
-    "icon": "zomboss_qinshihuang_ghost.webp",
-    "variations": [
-      "zomboss_qinshihuang_ghost"
-    ],
-    "resourceGroups": [
-      "FrostbiteIceBlockPlantGroup",
-      "MausoleumAudio",
-      "PlantFlamelady",
-      "PlantSeaderris",
-      "UI_MausoleumTunnel",
-      "ZombiePVZ1RobotZombossGroup",
-      "ZombossQinShiHuangAudio",
-      "ZombossQinShiHuangGroup"
-    ],
-    "modules": [
-      {
-        "objclass": "ZombossFinalStageTimeLimitedChallengeProperties",
-        "alias": "FinalStageTimeLimitedChallenge",
-        "source": "LevelModules"
-      },
-      {
-        "objclass": "TunnelDefendModuleProperties",
-        "alias": "TunnelDefend",
-        "source": "CurrentLevel",
-        "objdata": {
-          "Roads": [],
-          "TunnelSequenceInterval": 0.4,
-          "BrickMapIndex": 2
-        }
-      }
-    ]
-  }
+    {
+        "id": "ZombieZombossBlade",
+        "icon": "kongfu_zomboss_blade.webp",
+        "variations": [
+            "kongfu_zomboss_blade",
+            "kongfu_zomboss_blade_vacation"
+        ],
+        "resourceGroups": [
+            "ZombieKongFuZombossBladeGroup",
+            "ZombossKongfuBladeAudio"
+        ]
+    },
+    {
+        "id": "ZombieZombossExplosive",
+        "icon": "kongfu_zomboss_explosive.webp",
+        "variations": [
+            "kongfu_zomboss_explosive",
+            "kongfu_zomboss_explosive_vacation"
+        ],
+        "resourceGroups": [
+            "Missile_Explosion_Common",
+            "ZombieKongFuZombossExplosiveGroup",
+            "ZombossKongfuExplosiveAudio"
+        ]
+    },
+    {
+        "id": "ZombieZombossQigong",
+        "icon": "kongfu_zomboss_qigong.webp",
+        "variations": [
+            "kongfu_zomboss_qigong",
+            "kongfu_zomboss_qigong_12TH",
+            "kongfu_zomboss_qigong_12th",
+            "kongfu_zomboss_qigong_vacation"
+        ],
+        "resourceGroups": [
+            "ZombieKongFuZombossQigongGroup",
+            "ZombossQigongAudio"
+        ]
+    },
+    {
+        "id": "ZombieZombossQinShiHuang",
+        "icon": "zomboss_qinshihuang.webp",
+        "variations": [
+            "zomboss_qinshihuang",
+            "zomboss_qinshihuang_hard"
+        ],
+        "resourceGroups": [
+            "FrostbiteIceBlockPlantGroup",
+            "MausoleumAudio",
+            "PlantFlamelady",
+            "PlantSeaderris",
+            "UI_MausoleumTunnel",
+            "ZombiePVZ1RobotZombossGroup",
+            "ZombossQinShiHuangAudio",
+            "ZombossQinShiHuangGroup"
+        ],
+        "modules": [
+            {
+                "objclass": "ZombossFinalStageTimeLimitedChallengeProperties",
+                "alias": "FinalStageTimeLimitedChallenge",
+                "source": "LevelModules"
+            },
+            {
+                "objclass": "TunnelDefendModuleProperties",
+                "alias": "TunnelDefend",
+                "source": "CurrentLevel",
+                "objdata": {
+                    "Roads": [],
+                    "TunnelSequenceInterval": 0.4,
+                    "BrickMapIndex": 1
+                }
+            }
+        ]
+    },
+    {
+        "id": "ZombieZombossQinShiHuangGhost",
+        "icon": "zomboss_qinshihuang_ghost.webp",
+        "variations": [
+            "zomboss_qinshihuang_ghost"
+        ],
+        "resourceGroups": [
+            "FrostbiteIceBlockPlantGroup",
+            "MausoleumAudio",
+            "PlantFlamelady",
+            "PlantSeaderris",
+            "UI_MausoleumTunnel",
+            "ZombiePVZ1RobotZombossGroup",
+            "ZombossQinShiHuangAudio",
+            "ZombossQinShiHuangGroup"
+        ],
+        "modules": [
+            {
+                "objclass": "ZombossFinalStageTimeLimitedChallengeProperties",
+                "alias": "FinalStageTimeLimitedChallenge",
+                "source": "LevelModules"
+            },
+            {
+                "objclass": "TunnelDefendModuleProperties",
+                "alias": "TunnelDefend",
+                "source": "CurrentLevel",
+                "objdata": {
+                    "Roads": [],
+                    "TunnelSequenceInterval": 0.4,
+                    "BrickMapIndex": 2
+                }
+            }
+        ]
+    }
 ]

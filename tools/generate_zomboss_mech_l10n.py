@@ -33,6 +33,8 @@ def humanize_identifier(name: str) -> str:
 
 def variation_default(variation: str) -> str:
     v = variation
+    if v.startswith("vacation_zombossmech_"):
+        v = v[len("vacation_zombossmech_") :] + "_vacation"
     if v.startswith("zombossmech_"):
         v = v[len("zombossmech_") :]
     return humanize_identifier(v)

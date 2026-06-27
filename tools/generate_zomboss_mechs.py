@@ -19,6 +19,7 @@ PROPERTY_SHEETS_PATH = ROOT / "assets/reference/PropertySheets.json"
 ZOMBIE_ACTIONS_PATH = ROOT / "assets/reference/ZombieActions.json"
 MECHS_OUT_PATH = ROOT / "assets/resources/ZombossMechs.json"
 NON_MECH_OUT_PATH = ROOT / "assets/resources/Zombosses.json"
+ZOMBIE_ICONS_DIR = ROOT / "assets/images/zombies"
 
 RTID_RE = re.compile(r"^RTID\(([^@]+)@")
 ZOMBOSS_MECH_PREFIX = "zombossmech_"
@@ -395,8 +396,12 @@ def is_valid_action_implementation(objclass: str, values: dict[str, Any]) -> boo
     return True
 
 
-def build_zombie_type_map(zombie_types_doc: dict[str, Any]) -> dict[str, dict[str, Any]]:
+def build_zombie_type_map(
+    zombie_types_doc: dict[str, Any],
+) -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
+    """Map TypeName -> info, and alias -> TypeName for alias/type mismatches."""
     result: dict[str, dict[str, Any]] = {}
+    alias_to_type_name: dict[str, str] = {}
     for entry in zombie_types_doc.get("objects", []):
         if entry.get("objclass") != "ZombieType":
             continue
@@ -404,16 +409,44 @@ def build_zombie_type_map(zombie_types_doc: dict[str, Any]) -> dict[str, dict[st
         type_name = objdata.get("TypeName")
         if not isinstance(type_name, str):
             continue
+        aliases = [a for a in (entry.get("aliases") or []) if isinstance(a, str)]
         prop_alias, prop_source = parse_rtid(objdata.get("Properties"))
         result[type_name] = {
             "typeName": type_name,
+            "aliases": aliases,
             "zombieClass": objdata.get("ZombieClass"),
             "propertiesAlias": prop_alias,
             "propertiesSource": prop_source,
             "resourceGroups": list(objdata.get("ResourceGroups") or []),
             "objdata": objdata,
         }
-    return result
+        for alias in aliases:
+            alias_to_type_name[alias] = type_name
+    return result, alias_to_type_name
+
+
+def resolve_type_name(
+    identifier: str,
+    zombie_type_map: dict[str, dict[str, Any]],
+    alias_to_type_name: dict[str, str],
+) -> str | None:
+    if identifier in zombie_type_map:
+        return identifier
+    return alias_to_type_name.get(identifier)
+
+
+def type_matches_prefix(
+    type_name: str,
+    aliases: list[str],
+    prefix: str,
+) -> bool:
+    if type_name.startswith(prefix):
+        return True
+    return any(alias.startswith(prefix) for alias in aliases)
+
+
+def is_zomboss_mech_type(type_name: str, aliases: list[str]) -> bool:
+    return type_matches_prefix(type_name, aliases, ZOMBOSS_MECH_PREFIX)
 
 
 def build_property_sheet_map(property_sheets_doc: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -464,11 +497,21 @@ def build_action_objclass_section(
     return section
 
 
-def build_variations(icon_key: str, seed_ids: list[str], zombie_type_map: dict[str, dict[str, Any]]) -> list[str]:
-    variations = {sid for sid in seed_ids if sid in zombie_type_map}
-    for zombie_id in zombie_type_map:
-        if zombie_id.startswith(icon_key):
-            variations.add(zombie_id)
+def build_variations(
+    icon_key: str,
+    seed_ids: list[str],
+    zombie_type_map: dict[str, dict[str, Any]],
+    alias_to_type_name: dict[str, str],
+) -> list[str]:
+    variations: set[str] = set()
+    for sid in seed_ids:
+        resolved = resolve_type_name(sid, zombie_type_map, alias_to_type_name)
+        if resolved:
+            variations.add(resolved)
+    for type_name, info in zombie_type_map.items():
+        aliases = info.get("aliases") or []
+        if type_matches_prefix(type_name, aliases, icon_key):
+            variations.add(type_name)
     if icon_key == "zombossmech_pvz1_robot":
         variations.discard("zombossmech_pvz1_robot_1_vacation")
     return sorted(variations)
@@ -670,6 +713,7 @@ def build_properties_section(
 def build_mech_output(
     zombosses_old: list[dict[str, Any]],
     zombie_type_map: dict[str, dict[str, Any]],
+    alias_to_type_name: dict[str, str],
     property_sheet_map: dict[str, dict[str, Any]],
     action_map: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -689,13 +733,19 @@ def build_mech_output(
         if is_excluded_teamboss(icon_key=icon_key):
             continue
         seed_ids = [m["id"] for m in members if isinstance(m.get("id"), str)]
-        variations = build_variations(icon_key, seed_ids, zombie_type_map)
+        variations = build_variations(
+            icon_key, seed_ids, zombie_type_map, alias_to_type_name
+        )
         base_id = resolve_base_mech_id(icon_key, variations)
         if base_id and base_id not in variations:
             variations.append(base_id)
         variations = sorted(set(variations))
 
         representative = base_id or (seed_ids[0] if seed_ids else icon_key)
+        representative = (
+            resolve_type_name(representative, zombie_type_map, alias_to_type_name)
+            or representative
+        )
         zombie_class = zombie_type_map.get(representative, {}).get("zombieClass")
         if not isinstance(zombie_class, str):
             zombie_class = icon_key
@@ -704,8 +754,9 @@ def build_mech_output(
 
         # Include every zombossmech TypeName for this class (e.g. zombossmech_modern_beach).
         for type_name, info in zombie_type_map.items():
+            aliases = info.get("aliases") or []
             if (
-                type_name.startswith(ZOMBOSS_MECH_PREFIX)
+                is_zomboss_mech_type(type_name, aliases)
                 and info.get("zombieClass") == zombie_class
             ):
                 variations.append(type_name)
@@ -773,7 +824,61 @@ def extra_groups_for_type(type_name: str, zombie_class: str) -> list[str]:
     return groups
 
 
-def build_non_mech_output(zombie_type_map: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def load_zombie_icons() -> set[str]:
+    if not ZOMBIE_ICONS_DIR.is_dir():
+        return set()
+    return {
+        path.name
+        for path in ZOMBIE_ICONS_DIR.iterdir()
+        if path.is_file() and path.suffix.lower() == ".webp"
+    }
+
+
+def resolve_non_mech_icon(
+    base_type_name: str,
+    variations: list[str],
+    available_icons: set[str],
+) -> str:
+    """Pick icon filename from assets/images/zombies/ for a non-mech zomboss group."""
+    seen: set[str] = set()
+    for name in (base_type_name, *variations):
+        if not isinstance(name, str) or name in seen:
+            continue
+        seen.add(name)
+        icon = f"{name}.webp"
+        if icon in available_icons:
+            return icon
+    return UNKNOWN_ICON
+
+
+def load_non_mech_overlays() -> dict[str, dict[str, Any]]:
+    """Hand-maintained fields preserved across regeneration (e.g. auto-import modules)."""
+    if not NON_MECH_OUT_PATH.exists():
+        return {}
+    data = load_json(NON_MECH_OUT_PATH)
+    if not isinstance(data, list):
+        return {}
+    overlays: dict[str, dict[str, Any]] = {}
+    for entry in data:
+        if not isinstance(entry, dict):
+            continue
+        entry_id = entry.get("id")
+        if not isinstance(entry_id, str):
+            continue
+        overlay: dict[str, Any] = {}
+        modules = entry.get("modules")
+        if isinstance(modules, list) and modules:
+            overlay["modules"] = modules
+        if overlay:
+            overlays[entry_id] = overlay
+    return overlays
+
+
+def build_non_mech_output(
+    zombie_type_map: dict[str, dict[str, Any]],
+    available_icons: set[str],
+    overlays: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     by_class: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for info in zombie_type_map.values():
         zombie_class = info.get("zombieClass")
@@ -816,14 +921,20 @@ def build_non_mech_output(zombie_type_map: dict[str, dict[str, Any]]) -> list[di
         if zombie_class in {"ZombieZombossQinShiHuang", "ZombieZombossQinShiHuangGhost"}:
             groups = set(QIN_EXTRA_GROUPS)
 
-        output.append(
-            {
-                "id": zombie_class,
-                "icon": UNKNOWN_ICON,
-                "variations": variations,
-                "resourceGroups": sorted(groups),
-            }
-        )
+        entry: dict[str, Any] = {
+            "id": zombie_class,
+            "icon": resolve_non_mech_icon(
+                base_type_name if isinstance(base_type_name, str) else "",
+                variations,
+                available_icons,
+            ),
+            "variations": variations,
+            "resourceGroups": sorted(groups),
+        }
+        overlay = (overlays or {}).get(zombie_class)
+        if overlay:
+            entry.update(overlay)
+        output.append(entry)
     return output
 
 
@@ -889,13 +1000,14 @@ def main() -> None:
     property_sheets_doc = load_json(PROPERTY_SHEETS_PATH)
     zombie_actions_doc = load_json(ZOMBIE_ACTIONS_PATH)
 
-    zombie_type_map = build_zombie_type_map(zombie_types_doc)
+    zombie_type_map, alias_to_type_name = build_zombie_type_map(zombie_types_doc)
     property_sheet_map = build_property_sheet_map(property_sheets_doc)
     action_map = build_action_map(zombie_actions_doc)
 
     mech_out = build_mech_output(
         zombosses_old,
         zombie_type_map,
+        alias_to_type_name,
         property_sheet_map,
         action_map,
     )
@@ -906,19 +1018,27 @@ def main() -> None:
             print(f"  - {i}")
         raise SystemExit(1)
 
-    non_mech_out = build_non_mech_output(zombie_type_map)
+    non_mech_overlays = load_non_mech_overlays()
+    non_mech_out = build_non_mech_output(
+        zombie_type_map, load_zombie_icons(), non_mech_overlays
+    )
 
     with MECHS_OUT_PATH.open("w", encoding="utf-8", newline="\n") as f:
-        json.dump(mech_out, f, ensure_ascii=False, indent=2)
+        json.dump(mech_out, f, ensure_ascii=False, indent=4)
         f.write("\n")
     with NON_MECH_OUT_PATH.open("w", encoding="utf-8", newline="\n") as f:
-        json.dump(non_mech_out, f, ensure_ascii=False, indent=2)
+        json.dump(non_mech_out, f, ensure_ascii=False, indent=4)
         f.write("\n")
 
     editable_count = sum(1 for entry in mech_out if entry["editableInstance"] != "none")
+    unknown_icon_count = sum(
+        1 for entry in non_mech_out if entry.get("icon") == UNKNOWN_ICON
+    )
     print(f"Wrote {len(mech_out)} mech groups to {MECHS_OUT_PATH}")
     print(f"Editable instances found: {editable_count}")
     print(f"Wrote {len(non_mech_out)} non-mech zomboss groups to {NON_MECH_OUT_PATH}")
+    if unknown_icon_count:
+        print(f"Non-mech zombosses without icons: {unknown_icon_count}")
 
 
 if __name__ == "__main__":
