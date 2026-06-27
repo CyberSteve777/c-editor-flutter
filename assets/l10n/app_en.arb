@@ -28,6 +28,7 @@
   "initSetup": "Initial setup",
   "selectFolderPrompt": "Please select a folder as the level storage directory.",
   "selectFolderButton": "Select folder",
+  "openFolder": "Open folder",
   "levelLibraryPath": "Level library folder",
   "levelLibraryPathHint": "Levels are stored in this folder. On iOS you can pick any folder; access is saved so it persists after restart.",
   "pathCopied": "Path copied to clipboard",

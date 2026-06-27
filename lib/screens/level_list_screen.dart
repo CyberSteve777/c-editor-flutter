@@ -184,7 +184,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
       await _pickAndAddFile();
       return;
     }
-    final result = await FilePicker.getDirectoryPath();
+    final result = await FilePicker.getDirectoryPath(
+      dialogTitle: AppLocalizations.of(context)!.openFolder,
+    );
     if (result == null || !mounted) return;
     await _applyLibraryFolder(result);
   }

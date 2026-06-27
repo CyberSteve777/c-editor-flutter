@@ -81,6 +81,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectFolderButton => '选择文件夹';
 
   @override
+  String get openFolder => '打开文件夹';
+
+  @override
   String get levelLibraryPath => '关卡库文件夹';
 
   @override

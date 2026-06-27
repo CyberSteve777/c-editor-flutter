@@ -238,6 +238,12 @@ abstract class AppLocalizations {
   /// **'Select folder'**
   String get selectFolderButton;
 
+  /// No description provided for @openFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open folder'**
+  String get openFolder;
+
   /// No description provided for @levelLibraryPath.
   ///
   /// In en, this message translates to:

@@ -83,6 +83,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectFolderButton => 'Select folder';
 
   @override
+  String get openFolder => 'Open folder';
+
+  @override
   String get levelLibraryPath => 'Level library folder';
 
   @override

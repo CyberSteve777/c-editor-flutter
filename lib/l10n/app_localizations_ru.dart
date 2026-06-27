@@ -83,6 +83,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectFolderButton => 'Выбрать папку';
 
   @override
+  String get openFolder => 'Открыть папку';
+
+  @override
   String get levelLibraryPath => 'Папка библиотеки уровней';
 
   @override
