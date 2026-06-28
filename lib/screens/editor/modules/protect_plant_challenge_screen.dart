@@ -10,6 +10,7 @@ import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Protect-the-plant challenge. Ported from ProtectThePlantChallengePropertiesEP.kt
 class ProtectPlantChallengeScreen extends StatefulWidget {
@@ -35,6 +36,8 @@ class ProtectPlantChallengeScreen extends StatefulWidget {
 
 class _ProtectPlantChallengeScreenState
     extends State<ProtectPlantChallengeScreen> {
+  static const _objClass = 'ProtectThePlantChallengeProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late ProtectThePlantChallengePropertiesData _data;
   int _selectedX = 0;
@@ -43,12 +46,12 @@ class _ProtectPlantChallengeScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -120,6 +123,17 @@ class _ProtectPlantChallengeScreenState
   int get _gridRows => _isDeepSeaLawn ? 6 : 5;
   int get _gridCols => _isDeepSeaLawn ? 10 : 9;
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -137,7 +151,12 @@ class _ProtectPlantChallengeScreenState
           tooltip: l10n.back,
           onPressed: widget.onBack,
         ),
-        title: Text(l10n.protectPlants),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -164,6 +183,13 @@ class _ProtectPlantChallengeScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             Card(
               color: theme.colorScheme.surfaceContainerHighest,
               child: Padding(

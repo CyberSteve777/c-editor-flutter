@@ -15,6 +15,7 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Spawn zombies from grid item event editor. Ported from Z-Editor-master GridItemSpawnerEventEP.kt.
 /// Uses jittered-style zombie icon cards, bottom sheet editing, and button handling.
@@ -48,8 +49,11 @@ class GridItemSpawnEventScreen extends StatefulWidget {
 }
 
 class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
+  static const _objClass = 'SpawnZombiesFromGridItemSpawnerProps';
+
   late PvzObject _moduleObj;
   late SpawnZombiesFromGridItemData _data;
+  late String _alias;
 
   bool get _isDeepSeaLawn =>
       LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
@@ -58,11 +62,12 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -71,7 +76,7 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'SpawnZombiesFromGridItemSpawnerProps',
+        objClass: _objClass,
         objData: SpawnZombiesFromGridItemData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -505,11 +510,21 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
     );
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final zombieRepo = ZombieRepository();
     final objectAliases = widget.levelFile.objects
         .expand((o) => o.aliases ?? [])
@@ -522,15 +537,11 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
           tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? alias),
-            Text(
-              l10n?.eventGraveSpawnSubtitle ?? 'Spawn zombies from graves',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -563,6 +574,13 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

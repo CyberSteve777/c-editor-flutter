@@ -13,6 +13,7 @@ import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/screens/editor/events/fish_properties_entry_screen.dart';
 
 /// Zombie + fish wave event for submarine levels.
@@ -50,8 +51,11 @@ class ZombieFishWaveEventScreen extends StatefulWidget {
 }
 
 class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
+  static const _objClass = 'SpawnZombiesFishWaveActionProps';
+
   late PvzObject _moduleObj;
   late SpawnZombiesFishWaveActionPropsData _data;
+  late String _alias;
   double _batchLevel = 1;
 
   bool get _isDeepSeaLawn =>
@@ -61,12 +65,12 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -75,7 +79,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'SpawnZombiesFishWaveActionProps',
+        objClass: _objClass,
         objData: SpawnZombiesFishWaveActionPropsData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -206,12 +210,21 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     );
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final hasFishes = _data.fishes.isNotEmpty;
 
     return Scaffold(
@@ -220,15 +233,11 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventZombieFishWave ?? 'Zombie Fish Wave',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -269,6 +278,13 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Text(
                 l10n?.zombieList ?? 'Zombies',
                 style: theme.textTheme.titleMedium?.copyWith(

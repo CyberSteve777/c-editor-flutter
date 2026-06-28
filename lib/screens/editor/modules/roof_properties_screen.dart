@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Roof properties. Ported from Z-Editor-master RoofPropertiesEP.kt
 class RoofPropertiesScreen extends StatefulWidget {
@@ -25,6 +26,8 @@ class RoofPropertiesScreen extends StatefulWidget {
 }
 
 class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
+  static const _objClass = 'RoofProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late RoofPropertiesData _data;
   late TextEditingController _startColController;
@@ -33,12 +36,12 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -78,13 +81,27 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context)?.roofFlowerPot ?? 'Roof flower pot',
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -96,6 +113,13 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),

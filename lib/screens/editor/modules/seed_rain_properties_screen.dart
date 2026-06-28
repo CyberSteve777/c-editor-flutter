@@ -11,6 +11,7 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Seed rain properties editor. Ported from Z-Editor-master SeedRainPropertiesEP.kt
 class SeedRainPropertiesScreen extends StatefulWidget {
@@ -37,6 +38,8 @@ class SeedRainPropertiesScreen extends StatefulWidget {
 }
 
 class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
+  static const _objClass = 'SeedRainProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late SeedRainPropertiesData _data;
   late TextEditingController _rainIntervalCtrl;
@@ -44,12 +47,12 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -334,6 +337,17 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
     );
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -345,13 +359,25 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.seedRain ?? 'Seed rain'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),

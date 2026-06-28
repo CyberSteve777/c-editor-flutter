@@ -5,6 +5,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Tide properties editor. Ported from Z-Editor-master TidePropertiesEP.kt
 class TidePropertiesScreen extends StatefulWidget {
@@ -26,6 +27,8 @@ class TidePropertiesScreen extends StatefulWidget {
 }
 
 class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
+  static const _objClass = 'TideProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late TidePropertiesData _data;
   late TextEditingController _startLocCtrl;
@@ -38,12 +41,12 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? 'Tide';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -81,6 +84,17 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -92,7 +106,12 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.moduleTitle_TideProperties ?? 'Tide'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -122,6 +141,13 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),

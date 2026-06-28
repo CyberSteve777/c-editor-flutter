@@ -6,6 +6,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Manhole pipeline module. Ported from ManholePipelinePropertiesEP.kt
 class ManholePipelineModuleScreen extends StatefulWidget {
@@ -29,6 +30,8 @@ class ManholePipelineModuleScreen extends StatefulWidget {
 
 class _ManholePipelineModuleScreenState
     extends State<ManholePipelineModuleScreen> {
+  static const _objClass = 'ManholePipelineModuleProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late ManholePipelineModuleData _data;
   int _selectedIndex = 0;
@@ -50,12 +53,12 @@ class _ManholePipelineModuleScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -153,6 +156,17 @@ class _ManholePipelineModuleScreenState
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -164,7 +178,12 @@ class _ManholePipelineModuleScreenState
           tooltip: l10n.back,
           onPressed: widget.onBack,
         ),
-        title: Text(l10n.manholePipeline),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -191,6 +210,13 @@ class _ManholePipelineModuleScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),

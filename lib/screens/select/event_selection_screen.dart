@@ -120,6 +120,16 @@ class EventSelectionScreen extends StatelessWidget {
     return _resolveEventKeyStatic(meta.titleKey, 'eventTitle_', l10n);
   }
 
+  static String resolveEventTitleByObjClass(
+    BuildContext context,
+    String objClass,
+    AppLocalizations? l10n,
+  ) {
+    final meta = EventRegistry.getByObjClass(objClass);
+    if (meta != null) return resolveEventTitle(context, meta, l10n);
+    return objClass;
+  }
+
   static String _resolveEventKeyStatic(
     String key,
     String prefix,

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Parachute/Bass/Spider rain event editor. Ported from Z-Editor-master
 /// ParachuteRainEventEP.kt, BassRainEventEP.kt, SpiderRainEventEP.kt
@@ -60,16 +60,19 @@ class ParachuteRainEventScreen extends StatefulWidget {
 class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
   late PvzObject _moduleObj;
   late ParachuteRainEventData _data;
+  late String _alias;
+  late final String _objClass;
 
   @override
   void initState() {
     super.initState();
+    _objClass = widget.eventObjClass;
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -78,7 +81,7 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'ParachuteRainZombieSpawnerProps',
+        objClass: _objClass,
         objData: ParachuteRainEventData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -115,12 +118,21 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
     setState(() {});
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
@@ -128,12 +140,11 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(widget.eventSubtitle, style: theme.textTheme.bodySmall),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -164,6 +175,13 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               _buildZombieConfigCard(context, theme, l10n),
               const SizedBox(height: 16),
               _buildCountCard(context, theme, l10n),

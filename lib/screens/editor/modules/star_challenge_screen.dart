@@ -7,6 +7,7 @@ import 'package:c_editor/data/repository/challenge_repository.dart';
 import 'package:c_editor/screens/select/challenge_selection_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/screens/editor/modules/challenge_editors.dart'
     show showChallengeEditorDialog;
 
@@ -30,23 +31,25 @@ class StarChallengeModuleScreen extends StatefulWidget {
 }
 
 class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
+  static const _objClass = 'StarChallengeModuleProperties';
+
   late StarChallengeModuleData _data;
   late PvzObject _moduleObj;
+  late String _alias;
 
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    if (info == null) return;
+    final alias = _alias;
 
     _moduleObj = widget.levelFile.objects.firstWhere(
-      (o) => o.aliases?.contains(info.alias) == true,
-      orElse: () =>
-          PvzObject(objClass: 'StarChallengeModuleProperties', objData: {}),
+      (o) => o.aliases?.contains(alias) == true,
+      orElse: () => PvzObject(objClass: _objClass, objData: {}),
     );
 
     try {
@@ -199,45 +202,65 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       ),
     );
 
-    if (info != null) {
-      final defaultAlias = info.defaultAlias;
-      bool aliasTaken(String a) =>
-          widget.levelFile.objects.any((o) => o.aliases?.contains(a) == true);
-      final String alias;
-      if (!aliasTaken(defaultAlias)) {
-        alias = defaultAlias;
-      } else {
-        int n = 1;
-        while (aliasTaken('${defaultAlias}_$n')) {
-          n++;
-        }
-        alias = '${defaultAlias}_$n';
+    if (info == null) return;
+
+    final l10n = AppLocalizations.of(context);
+    final defaultAlias = info.defaultAlias;
+    bool aliasTaken(String a) =>
+        widget.levelFile.objects.any((o) => o.aliases?.contains(a) == true);
+    String suggestedAlias;
+    if (!aliasTaken(defaultAlias)) {
+      suggestedAlias = defaultAlias;
+    } else {
+      int n = 1;
+      while (aliasTaken('${defaultAlias}_$n')) {
+        n++;
       }
-
-      Map<String, dynamic> objDataMap = {};
-      final objData = info.initialDataFactory?.call();
-      if (objData is Map<String, dynamic>) {
-        objDataMap = Map<String, dynamic>.from(objData);
-      } else if (objData != null) {
-        try {
-          objDataMap = (objData as dynamic).toJson() as Map<String, dynamic>;
-        } catch (_) {
-          objDataMap = {};
-        }
-      }
-
-      final newObj = PvzObject(
-        aliases: [alias],
-        objClass: info.objClass,
-        objData: objDataMap,
-      );
-
-      setState(() {
-        widget.levelFile.objects.add(newObj);
-        _data.challenges[0].add('RTID($alias@CurrentLevel)');
-        _saveData();
-      });
+      suggestedAlias = '${defaultAlias}_$n';
     }
+
+    final alias = await showPvzAliasInputDialog(
+      context,
+      defaultAlias: suggestedAlias,
+      title: l10n?.addChallenge ?? 'Add Challenge',
+      objClass: info.objClass,
+      levelFile: widget.levelFile,
+    );
+    if (alias == null || !mounted) return;
+
+    Map<String, dynamic> objDataMap = {};
+    final objData = info.initialDataFactory?.call();
+    if (objData is Map<String, dynamic>) {
+      objDataMap = Map<String, dynamic>.from(objData);
+    } else if (objData != null) {
+      try {
+        objDataMap = (objData as dynamic).toJson() as Map<String, dynamic>;
+      } catch (_) {
+        objDataMap = {};
+      }
+    }
+
+    final newObj = PvzObject(
+      aliases: [alias],
+      objClass: info.objClass,
+      objData: objDataMap,
+    );
+
+    setState(() {
+      widget.levelFile.objects.add(newObj);
+      _data.challenges[0].add('RTID($alias@CurrentLevel)');
+      _saveData();
+    });
+  }
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
   }
 
   @override
@@ -252,7 +275,13 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.starChallenges ?? 'Star Challenges'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: theme.colorScheme.onPrimary,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l10n?.back ?? 'Back',
@@ -293,6 +322,14 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          EditorAliasInputField(
+            alias: _alias,
+            levelFile: widget.levelFile,
+            onAliasChanged: _handleAliasChanged,
+            onChanged: widget.onChanged,
+            accentColor: themeColor,
+          ),
+          const SizedBox(height: 16),
           if (challenges.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),

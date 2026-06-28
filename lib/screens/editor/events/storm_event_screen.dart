@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
-import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
@@ -13,6 +12,7 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Storm zombie spawner event editor. Ported from Z-Editor-master StormSpawnerEventEP.kt.
 /// Uses jittered-style zombie icon cards, bottom sheet editing, and button handling.
@@ -43,17 +43,21 @@ class StormEventScreen extends StatefulWidget {
 }
 
 class _StormEventScreenState extends State<StormEventScreen> {
+  static const _objClass = 'StormZombieSpawnerProps';
+
   late PvzObject _moduleObj;
   late StormZombieSpawnerPropsData _data;
+  late String _alias;
 
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -62,7 +66,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'StormZombieSpawnerProps',
+        objClass: _objClass,
         objData: StormZombieSpawnerPropsData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -414,11 +418,21 @@ class _StormEventScreenState extends State<StormEventScreen> {
     );
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final zombieRepo = ZombieRepository();
 
     return Scaffold(
@@ -427,15 +441,11 @@ class _StormEventScreenState extends State<StormEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventStormSpawn ?? 'Event: Storm spawn',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -474,6 +484,13 @@ class _StormEventScreenState extends State<StormEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

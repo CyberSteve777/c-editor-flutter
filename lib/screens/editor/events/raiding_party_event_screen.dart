@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Raiding party event editor. Ported from Z-Editor-master RaidingPartyEventEP.kt
 class RaidingPartyEventScreen extends StatefulWidget {
@@ -26,17 +26,21 @@ class RaidingPartyEventScreen extends StatefulWidget {
 }
 
 class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
+  static const _objClass = 'RaidingPartyZombieSpawnerProps';
+
   late PvzObject _moduleObj;
   late RaidingPartyEventData _data;
+  late String _alias;
 
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -45,7 +49,7 @@ class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'RaidingPartyZombieSpawnerProps',
+        objClass: _objClass,
         objData: RaidingPartyEventData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -65,11 +69,21 @@ class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
     setState(() {});
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
@@ -77,15 +91,11 @@ class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventRaidingParty ?? 'Event: Raiding party',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -118,6 +128,13 @@ class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

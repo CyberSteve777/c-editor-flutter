@@ -6,6 +6,7 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/theme/app_theme.dart'
@@ -50,6 +51,8 @@ class PickupCollectableTutorialScreen extends StatefulWidget {
 
 class _PickupCollectableTutorialScreenState
     extends State<PickupCollectableTutorialScreen> {
+  static const _objClass = 'PickupCollectableTutorialProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late PickupCollectableTutorialData _data;
   late TextEditingController _pickupController;
@@ -60,6 +63,7 @@ class _PickupCollectableTutorialScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _pickupFocusNode = FocusNode();
     _postPickupFocusNode = FocusNode();
@@ -77,8 +81,7 @@ class _PickupCollectableTutorialScreenState
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -132,6 +135,17 @@ class _PickupCollectableTutorialScreenState
     }
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -141,9 +155,12 @@ class _PickupCollectableTutorialScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n?.pickupCollectableTutorialTitle ?? 'Pickup tutorial',
-          overflow: TextOverflow.ellipsis,
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -186,6 +203,14 @@ class _PickupCollectableTutorialScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: appBarColor,
+            ),
+            const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

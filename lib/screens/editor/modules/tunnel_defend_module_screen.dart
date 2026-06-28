@@ -8,6 +8,7 @@ import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Tunnel defend (mausoleum) module. Ported from TunnelDefendModuleEP.kt
 class TunnelDefendModuleScreen extends StatefulWidget {
@@ -30,6 +31,8 @@ class TunnelDefendModuleScreen extends StatefulWidget {
 }
 
 class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
+  static const _objClass = 'TunnelDefendModuleProperties';
+  late String _alias;
   static const _assetWidth = 128.0;
   static const _assetHeight = 152.0;
 
@@ -78,12 +81,12 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -274,6 +277,17 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     setState(() {});
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -292,7 +306,13 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
         ),
         backgroundColor: accentColor,
         foregroundColor: Colors.white,
-        title: Text(l10n?.tunnelDefendTitle ?? 'Tunnel defend'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.help_outline, color: gridBg),
@@ -334,6 +354,14 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: accentColor,
+            ),
+            const SizedBox(height: 16),
             InputDecorator(
               decoration: InputDecoration(
                 labelText:

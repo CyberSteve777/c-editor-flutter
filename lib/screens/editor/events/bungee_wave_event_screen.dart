@@ -4,12 +4,12 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/theme/app_theme.dart'
     show pvzLightOrangeDark, pvzLightOrangeLight;
 
@@ -37,8 +37,11 @@ class BungeeWaveEventScreen extends StatefulWidget {
 }
 
 class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
+  static const _objClass = 'BungeeWaveActionProps';
+
   late PvzObject _moduleObj;
   late BungeeWaveActionData _data;
+  late String _alias;
   late TextEditingController _levelController;
   late FocusNode _levelFocusNode;
 
@@ -53,14 +56,14 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _levelFocusNode = FocusNode();
     _levelFocusNode.addListener(() => setState(() {}));
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -69,7 +72,7 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'BungeeWaveActionProps',
+        objClass: _objClass,
         objData: BungeeWaveActionData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -129,18 +132,32 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
     _sync();
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final appBarColor = isDark ? pvzLightOrangeDark : pvzLightOrangeLight;
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n?.bungeeWaveEventTitle ?? 'Bungee drop event',
-          overflow: TextOverflow.ellipsis,
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -180,6 +197,14 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+                accentColor: appBarColor,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

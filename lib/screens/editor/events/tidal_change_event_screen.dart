@@ -2,9 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Tidal change event editor. Ported from Z-Editor-master TidalChangeEventEP.kt
 class TidalChangeEventScreen extends StatefulWidget {
@@ -26,8 +26,11 @@ class TidalChangeEventScreen extends StatefulWidget {
 }
 
 class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
+  static const _objClass = 'TidalChangeWaveActionProps';
+
   late PvzObject _moduleObj;
   late TidalChangeWaveActionData _data;
+  late String _alias;
 
   bool get _isDeepSeaLawn =>
       LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
@@ -37,12 +40,12 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -51,7 +54,7 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'TidalChangeWaveActionProps',
+        objClass: _objClass,
         objData: TidalChangeWaveActionData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -76,12 +79,21 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
     return col >= waterStartCol;
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final hasTideModule = widget.levelFile.objects.any(
       (o) => o.objClass == 'TideProperties',
     );
@@ -92,16 +104,11 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventDesc_TidalChangeWaveActionProps ??
-                  'Event: Tidal change',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -136,6 +143,13 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               if (!hasTideModule)
                 Card(
                   color: theme.colorScheme.errorContainer,

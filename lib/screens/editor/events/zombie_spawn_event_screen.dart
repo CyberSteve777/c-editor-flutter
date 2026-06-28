@@ -13,6 +13,7 @@ import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Zombie spawn event editor for JitteredWave and GroundSpawner.
 /// Ported from Z-Editor-master JitteredWaveEventEP.kt, SpawnZombiesFromGroundEventEP.kt
@@ -51,6 +52,8 @@ class ZombieSpawnEventScreen extends StatefulWidget {
 class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
   late PvzObject _moduleObj;
   late dynamic _data;
+  late String _alias;
+  late final String _objClass;
   double _batchLevel = 1;
 
   bool get _isDeepSeaLawn =>
@@ -70,15 +73,16 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
   @override
   void initState() {
     super.initState();
+    _objClass = widget.isGroundSpawner
+        ? 'SpawnZombiesFromGroundSpawnerProps'
+        : 'SpawnZombiesJitteredWaveActionProps';
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
-    final objClass = widget.isGroundSpawner
-        ? 'SpawnZombiesFromGroundSpawnerProps'
-        : 'SpawnZombiesJitteredWaveActionProps';
+    final alias = _alias;
+    final objClass = _objClass;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -626,12 +630,21 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
     );
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
@@ -639,12 +652,11 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(widget.eventSubtitle, style: theme.textTheme.bodySmall),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -688,6 +700,13 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               if (widget.isGroundSpawner) _buildColumnRangeCard(theme, l10n),
               if (widget.isGroundSpawner) const SizedBox(height: 16),
               if (!widget.isGroundSpawner && _supportsLevelJamMusic) ...[

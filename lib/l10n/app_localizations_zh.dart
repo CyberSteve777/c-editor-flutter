@@ -2578,6 +2578,22 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String editNamedEvent(Object name) {
+    return '编辑$name事件';
+  }
+
+  @override
+  String editNamedModule(Object name) {
+    return '编辑$name模块';
+  }
+
+  @override
+  String get addEventAliasTitle => '添加事件';
+
+  @override
+  String get addModuleAliasTitle => '添加模块';
+
+  @override
   String get aliasLabel => '代号';
 
   @override

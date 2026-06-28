@@ -7,6 +7,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/grid_override_placement_grid.dart';
 import 'package:c_editor/widgets/grid_override_wave_groups_bar.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 class EnergyGridModuleScreen extends StatefulWidget {
   const EnergyGridModuleScreen({
@@ -29,6 +30,8 @@ class EnergyGridModuleScreen extends StatefulWidget {
 }
 
 class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
+  static const _objClass = 'EnergyGridProperties';
+  late String _alias;
   static const _tileAsset = 'assets/images/griditems/energyGrid.webp';
 
   late PvzObject _moduleObj;
@@ -58,6 +61,7 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _selectedIndex = _resolveInitialIndex();
   }
@@ -73,8 +77,7 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? 'EnergyGrid';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -175,6 +178,17 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
     _placeAt(col, row);
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -190,7 +204,12 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
           tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
-        title: Text(title),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -237,6 +256,13 @@ class _EnergyGridModuleScreenState extends State<EnergyGridModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
                 Text(
                   l10n?.gridOverrideModuleAppearances ?? 'Wave groups',
                   style: theme.textTheme.titleMedium?.copyWith(

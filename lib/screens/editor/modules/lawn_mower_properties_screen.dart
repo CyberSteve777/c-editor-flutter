@@ -6,6 +6,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Lawn mower style settings. Ported from LawnMowerPropertiesEP.kt
 class LawnMowerPropertiesScreen extends StatefulWidget {
@@ -28,6 +29,8 @@ class LawnMowerPropertiesScreen extends StatefulWidget {
 }
 
 class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
+  static const _objClass = 'LawnMowerProperties';
+  late String _alias;
   static const _mowerAliases = [
     'FrontLawnMowers',
     'EgyptMowers',
@@ -55,6 +58,12 @@ class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
   ];
 
   static final _targetAliases = _mowerAliases.toSet();
+
+  @override
+  void initState() {
+    super.initState();
+    _alias = aliasFromRtid(widget.rtid);
+  }
 
   String _mowerLabel(BuildContext context, String alias) {
     final key = 'lawnMower_$alias';
@@ -114,6 +123,17 @@ class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
     return RtidParser.parse(widget.rtid)?.alias ?? 'LawnMower';
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -130,7 +150,13 @@ class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
         ),
         backgroundColor: accentColor,
         foregroundColor: Colors.white,
-        title: Text(l10n?.lawnMowerTitle ?? 'Lawn mower style'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -162,6 +188,16 @@ class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: accentColor,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(

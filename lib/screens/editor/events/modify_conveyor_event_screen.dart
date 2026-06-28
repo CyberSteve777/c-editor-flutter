@@ -9,6 +9,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Modify conveyor event editor. Ported from Z-Editor-master ModifyConveyorEventEP.kt
 class ModifyConveyorEventScreen extends StatefulWidget {
@@ -37,18 +38,21 @@ class ModifyConveyorEventScreen extends StatefulWidget {
 }
 
 class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
+  static const _objClass = 'ModifyConveyorWaveActionProps';
+
   late PvzObject _moduleObj;
   late ModifyConveyorWaveActionData _data;
+  late String _alias;
 
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -57,7 +61,7 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'ModifyConveyorWaveActionProps',
+        objClass: _objClass,
         objData: ModifyConveyorWaveActionData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -267,12 +271,21 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
     return PlantRepository().getPlantInfoById(plantId)?.iconAssetPath;
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final hasConveyor = widget.levelFile.objects.any(
       (o) => o.objClass == 'ConveyorSeedBankProperties',
     );
@@ -283,15 +296,11 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventConveyorModify ?? 'Event: Conveyor modify',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -324,6 +333,13 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               if (!hasConveyor)
                 Card(
                   color: theme.colorScheme.errorContainer,

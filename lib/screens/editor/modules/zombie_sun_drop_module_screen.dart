@@ -11,6 +11,7 @@ import 'package:c_editor/widgets/asset_image.dart'
 import 'package:c_editor/theme/app_theme.dart'
     show pvzPurpleDark, pvzPurpleLight;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Zombie Sun Drop module: zombie sun drop values per tier (1–10). Ported from Z-Editor-master LevelMutatorRiftTimedSunEP.kt
 class ZombieSunDropModuleScreen extends StatefulWidget {
@@ -36,17 +37,19 @@ class ZombieSunDropModuleScreen extends StatefulWidget {
 }
 
 class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
+  static const _objClass = 'LevelMutatorRiftTimedSunProps';
+  late String _alias;
   late PvzObject _moduleObj;
   late RiftTimedSunModuleData _data;
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -129,6 +132,17 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
     );
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -138,9 +152,12 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n?.zombieSunDropTitle ?? 'Zombie sun drop config',
-          overflow: TextOverflow.ellipsis,
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -173,7 +190,21 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
           ),
         ],
       ),
-      body: _data.sunDrops.isEmpty
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: appBarColor,
+            ),
+          ),
+          Expanded(
+            child: _data.sunDrops.isEmpty
           ? Center(
               child: Text(
                 l10n?.zombieSunDropEmpty ?? 'No entries. Tap + to add.',
@@ -195,6 +226,9 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
                 );
               },
             ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           widget.onRequestZombieSelection((selectedIds) {

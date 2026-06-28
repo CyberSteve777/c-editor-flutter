@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Last stand minigame. Ported from Z-Editor-master LastStandMinigamePropertiesEP.kt
 class LastStandMinigameScreen extends StatefulWidget {
@@ -24,6 +25,8 @@ class LastStandMinigameScreen extends StatefulWidget {
 }
 
 class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
+  static const _objClass = 'LastStandMinigameProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late LastStandMinigamePropertiesData _data;
   late TextEditingController _sunController;
@@ -32,17 +35,17 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
         aliases: [alias],
-        objClass: 'LastStandMinigameProperties',
+        objClass: _objClass,
         objData: LastStandMinigamePropertiesData().toJson(),
       ),
     );
@@ -71,15 +74,28 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context)?.lastStandSettings ??
-              'Last stand settings',
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -91,6 +107,13 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),

@@ -8,6 +8,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Spawn modern portals event editor. Ported from Z-Editor-master ModernPortalEventEP.kt
 class ModernPortalsEventScreen extends StatefulWidget {
@@ -30,8 +31,11 @@ class ModernPortalsEventScreen extends StatefulWidget {
 }
 
 class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
+  static const _objClass = 'SpawnModernPortalsWaveActionProps';
+
   late PvzObject _moduleObj;
   late PortalEventData _data;
+  late String _alias;
 
   bool get _isDeepSeaLawn {
     final parsed = LevelParser.parseLevel(widget.levelFile);
@@ -44,11 +48,12 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -57,7 +62,7 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'SpawnModernPortalsWaveActionProps',
+        objClass: _objClass,
         objData: PortalEventData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -205,11 +210,21 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
     }
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
@@ -217,15 +232,11 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventTimeRift ?? 'Event: Time rift',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -258,6 +269,13 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

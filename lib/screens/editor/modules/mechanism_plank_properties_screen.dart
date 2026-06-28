@@ -5,6 +5,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/theme/app_theme.dart'
@@ -35,6 +36,8 @@ class MechanismPlankPropertiesScreen extends StatefulWidget {
 
 class _MechanismPlankPropertiesScreenState
     extends State<MechanismPlankPropertiesScreen> {
+  static const _objClass = 'MechanismPlankProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late Map<String, dynamic> _data;
   late (int rows, int cols) _gridDims;
@@ -70,6 +73,7 @@ class _MechanismPlankPropertiesScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
@@ -81,8 +85,7 @@ class _MechanismPlankPropertiesScreenState
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? 'MechanismPlank';
+    final alias = _alias;
 
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
@@ -222,6 +225,17 @@ class _MechanismPlankPropertiesScreenState
     return false;
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -239,8 +253,11 @@ class _MechanismPlankPropertiesScreenState
           tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
-        title: Text(
-          l10n?.mechanismPlankSettings ?? 'Connected Minecart Settings',
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
         ),
       ),
       body: SingleChildScrollView(
@@ -248,6 +265,13 @@ class _MechanismPlankPropertiesScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             if (_hasOutOfAreaWarning())
               _MechanismPlankWarningBanner(
                 message:

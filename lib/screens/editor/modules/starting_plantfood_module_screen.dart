@@ -4,6 +4,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzCyanDark, pvzCyanLight;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 class StartingPlantfoodModuleScreen extends StatefulWidget {
   const StartingPlantfoodModuleScreen({
@@ -26,6 +27,8 @@ class StartingPlantfoodModuleScreen extends StatefulWidget {
 
 class _StartingPlantfoodModuleScreenState
     extends State<StartingPlantfoodModuleScreen> {
+  static const _objClass = 'LevelMutatorStartingPlantfoodProps';
+  late String _alias;
   late PvzObject _moduleObj;
   late LevelMutatorStartingPlantfoodPropsData _data;
   late TextEditingController _pfController;
@@ -33,12 +36,12 @@ class _StartingPlantfoodModuleScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -70,6 +73,17 @@ class _StartingPlantfoodModuleScreenState
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -78,8 +92,12 @@ class _StartingPlantfoodModuleScreenState
     final accentColor = isDark ? pvzCyanDark : pvzCyanLight;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n?.overrideStartingPlantfood ?? 'Override Starting Plantfood',
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -117,6 +135,14 @@ class _StartingPlantfoodModuleScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: accentColor,
+            ),
+            const SizedBox(height: 16),
             Text(
               l10n?.startingPlantfoodOverride ?? 'Starting Plantfood Override',
               style: const TextStyle(fontSize: 16),

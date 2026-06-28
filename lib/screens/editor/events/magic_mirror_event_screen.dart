@@ -6,6 +6,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Magic mirror event editor. Ported from Z-Editor-master MagicMirrorEventEP.kt
 class MagicMirrorEventScreen extends StatefulWidget {
@@ -27,8 +28,11 @@ class MagicMirrorEventScreen extends StatefulWidget {
 }
 
 class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
+  static const _objClass = 'MagicMirrorWaveActionProps';
+
   late PvzObject _moduleObj;
   late MagicMirrorWaveActionData _data;
+  late String _alias;
   int _selectedIndex = 0;
   bool _isEditingMirror2 = false;
 
@@ -43,6 +47,7 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
@@ -53,7 +58,7 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
       x < 0 || x >= _gridCols || y < 0 || y >= _gridRows;
 
   void _loadData() {
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -62,7 +67,7 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'MagicMirrorWaveActionProps',
+        objClass: _objClass,
         objData: MagicMirrorWaveActionData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -153,11 +158,21 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
     _sync();
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final currentArray = _data.arrays.elementAtOrNull(_selectedIndex);
 
     return Scaffold(
@@ -166,15 +181,11 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventMagicMirror ?? 'Magic mirror event',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -203,6 +214,13 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               SizedBox(
                 height: 40,
                 child: ListView.separated(

@@ -7,6 +7,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Spawn gravestones event editor. Ported from Z-Editor-master SpawnGraveStonesEventEP.kt
 class SpawnGraveStonesEventScreen extends StatefulWidget {
@@ -33,18 +34,21 @@ class SpawnGraveStonesEventScreen extends StatefulWidget {
 
 class _SpawnGraveStonesEventScreenState
     extends State<SpawnGraveStonesEventScreen> {
+  static const _objClass = 'SpawnGravestonesWaveActionProps';
+
   late PvzObject _moduleObj;
   late SpawnGraveStonesData _data;
+  late String _alias;
 
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -53,7 +57,7 @@ class _SpawnGraveStonesEventScreenState
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'SpawnGravestonesWaveActionProps',
+        objClass: _objClass,
         objData: SpawnGraveStonesData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -126,12 +130,21 @@ class _SpawnGraveStonesEventScreenState
     _sync();
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final internalAliases = widget.levelFile.objects
         .expand<String>((o) => o.aliases ?? <String>[])
         .toSet();
@@ -143,15 +156,11 @@ class _SpawnGraveStonesEventScreenState
           tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventSpawnGravestones ?? 'Event: Spawn gravestones',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -187,6 +196,13 @@ class _SpawnGraveStonesEventScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               _buildPositionPoolCard(theme, l10n),
               const SizedBox(height: 16),
               _buildInfoCard(theme, l10n),

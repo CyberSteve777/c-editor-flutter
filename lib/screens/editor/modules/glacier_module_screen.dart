@@ -9,6 +9,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Ice Age glacier-block zombie weights (`GlacierModuleProperties`).
 class GlacierModuleScreen extends StatefulWidget {
@@ -35,6 +36,7 @@ class GlacierModuleScreen extends StatefulWidget {
 class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
   static const _defaultAlias = 'GlacierModule';
   static const _objClass = 'GlacierModuleProperties';
+  late String _alias;
   static const _levelMin = 0;
   static const _levelMax = 10;
 
@@ -44,12 +46,12 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? _defaultAlias;
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -140,6 +142,17 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     });
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -152,7 +165,12 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
           tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
-        title: Text(title),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -183,6 +201,13 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+EditorAliasInputField(
+          alias: _alias,
+          levelFile: widget.levelFile,
+          onAliasChanged: _handleAliasChanged,
+          onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
           ...List.generate(GlacierModulePropertiesData.columnCount, (col) {
             return _ColumnCard(
               columnIndex: col,

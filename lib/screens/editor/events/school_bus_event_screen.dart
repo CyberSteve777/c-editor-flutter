@@ -4,12 +4,12 @@ import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Ice cream truck (school bus) wave event editor (`SchoolBusWaveActionProps`).
 class SchoolBusEventScreen extends StatefulWidget {
@@ -34,8 +34,11 @@ class SchoolBusEventScreen extends StatefulWidget {
 }
 
 class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
+  static const _objClass = 'SchoolBusWaveActionProps';
+
   late PvzObject _moduleObj;
   late SchoolBusWaveActionPropsData _data;
+  late String _alias;
 
   bool get _isDeepSeaLawn =>
       LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
@@ -47,12 +50,12 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -61,7 +64,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'SchoolBusWaveActionProps',
+        objClass: _objClass,
         objData: SchoolBusWaveActionPropsData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -158,12 +161,21 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
     );
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final des = _data.des;
     final params = des.params;
     final busType = des.type == schoolBusNormalType
@@ -176,15 +188,11 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventSchoolBusSpawn ?? 'Event: Ice cream truck spawn',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -223,6 +231,13 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

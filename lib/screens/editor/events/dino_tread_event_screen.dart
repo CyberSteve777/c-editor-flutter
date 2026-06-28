@@ -4,6 +4,7 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Dino tread event editor. Grid-based dinosaur tread hazard.
 class DinoTreadEventScreen extends StatefulWidget {
@@ -25,9 +26,12 @@ class DinoTreadEventScreen extends StatefulWidget {
 }
 
 class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
+  static const _objClass = 'DinoTreadActionProps';
+
   late PvzObject _moduleObj;
   late DinoTreadActionPropsData _data;
   late TextEditingController _waveStartMessageCtrl;
+  late String _alias;
 
   bool get _isDeepSeaLawn =>
       LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
@@ -37,6 +41,7 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
@@ -57,7 +62,7 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
   }
 
   void _loadData() {
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -67,7 +72,7 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
       final defaultMsg = _getDefaultWaveStartMessage();
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'DinoTreadActionProps',
+        objClass: _objClass,
         objData: DinoTreadActionPropsData(
           waveStartMessage: defaultMsg,
         ).toJson(),
@@ -103,11 +108,21 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
     setState(() {});
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final dinoColor = theme.brightness == Brightness.dark
         ? const Color(0xFFA2B659)
         : const Color(0xFF91B900);
@@ -118,15 +133,11 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventDinoTread ?? 'Event: Dino tread',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -155,6 +166,13 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

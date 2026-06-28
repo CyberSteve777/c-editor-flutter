@@ -4,6 +4,7 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/widgets/editor_components.dart'
     show
@@ -47,6 +48,8 @@ class _FieldSpec {
 }
 
 class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
+  static const _objClass = 'PVZ1PassageModuleProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late PVZ1PassageModulePropertiesData _data;
   late List<TextEditingController> _controllers;
@@ -72,6 +75,7 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _focusNodes = List.generate(6, (_) => FocusNode());
     for (final n in _focusNodes) {
@@ -88,8 +92,7 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -195,6 +198,17 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
     ];
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -213,7 +227,13 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
         ),
         backgroundColor: accentColor,
         foregroundColor: Colors.white,
-        title: Text(l10n?.pvz1PassageModuleTitle ?? 'Portal combat'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -259,6 +279,14 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: accentColor,
+            ),
+            const SizedBox(height: 16),
                 Text(
                   l10n?.pvz1PassageSectionParams ?? 'Portal parameters',
                   style: theme.textTheme.titleMedium?.copyWith(

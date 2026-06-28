@@ -4,6 +4,7 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Dino run event editor. Row-based dinosaur run hazard.
 class DinoRunEventScreen extends StatefulWidget {
@@ -25,9 +26,12 @@ class DinoRunEventScreen extends StatefulWidget {
 }
 
 class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
+  static const _objClass = 'DinoRunActionProps';
+
   late PvzObject _moduleObj;
   late DinoRunActionPropsData _data;
   late TextEditingController _waveStartMessageCtrl;
+  late String _alias;
 
   bool get _isDeepSeaLawn =>
       LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
@@ -36,6 +40,7 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
@@ -56,7 +61,7 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
   }
 
   void _loadData() {
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -66,7 +71,7 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
       final defaultMsg = _getDefaultWaveStartMessage();
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'DinoRunActionProps',
+        objClass: _objClass,
         objData: DinoRunActionPropsData(waveStartMessage: defaultMsg).toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -98,11 +103,21 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
     setState(() {});
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final alias = LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
     final dinoColor = theme.brightness == Brightness.dark
         ? const Color(0xFFA2B659)
         : const Color(0xFF91B900);
@@ -113,15 +128,11 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventDinoRun ?? 'Event: Dino run',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -150,6 +161,13 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

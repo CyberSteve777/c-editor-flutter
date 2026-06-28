@@ -4990,6 +4990,30 @@ abstract class AppLocalizations {
   /// **'Edit {alias}'**
   String editAlias(Object alias);
 
+  /// No description provided for @editNamedEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {name} event'**
+  String editNamedEvent(Object name);
+
+  /// No description provided for @editNamedModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {name} module'**
+  String editNamedModule(Object name);
+
+  /// No description provided for @addEventAliasTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event'**
+  String get addEventAliasTitle;
+
+  /// No description provided for @addModuleAliasTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add module'**
+  String get addModuleAliasTitle;
+
   /// No description provided for @aliasLabel.
   ///
   /// In en, this message translates to:

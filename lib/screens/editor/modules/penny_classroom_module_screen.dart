@@ -8,6 +8,7 @@ import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Penny classroom module (global plant levels). Ported from PennyClassroomModulePropertiesEP.kt
 class PennyClassroomModuleScreen extends StatefulWidget {
@@ -33,6 +34,8 @@ class PennyClassroomModuleScreen extends StatefulWidget {
 
 class _PennyClassroomModuleScreenState
     extends State<PennyClassroomModuleScreen> {
+  static const _objClass = 'PennyClassroomModuleProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late PennyClassroomModuleData _data;
   double _batchLevel = 1.0;
@@ -40,12 +43,12 @@ class _PennyClassroomModuleScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -109,6 +112,17 @@ class _PennyClassroomModuleScreenState
     _sync();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -122,7 +136,12 @@ class _PennyClassroomModuleScreenState
           tooltip: l10n.back,
           onPressed: widget.onBack,
         ),
-        title: Text(l10n.plantLevels),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -153,6 +172,13 @@ class _PennyClassroomModuleScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
                   Row(
                     children: [
                       const Icon(Icons.layers),

@@ -5,6 +5,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Bowling minigame editor. Ported from Z-Editor-master BowlingMinigamePropertiesEP.kt
 class BowlingMinigameScreen extends StatefulWidget {
@@ -26,6 +27,8 @@ class BowlingMinigameScreen extends StatefulWidget {
 }
 
 class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
+  static const _objClass = 'BowlingMinigameProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late BowlingMinigamePropertiesData _data;
   late TextEditingController _foulLineCtrl;
@@ -33,12 +36,12 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -100,6 +103,17 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
     );
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -115,7 +129,13 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
         ),
         backgroundColor: accentColor,
         foregroundColor: Colors.white,
-        title: Text(l10n?.bowlingMinigame ?? 'Bulb Bowling module'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -132,6 +152,14 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: accentColor,
+            ),
+            const SizedBox(height: 16),
                 Text(
                   l10n?.bowlingMinigameParams ?? 'Parameters',
                   style: theme.textTheme.titleMedium?.copyWith(

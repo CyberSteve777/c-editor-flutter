@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Beach stage / low tide event editor. Ported from Z-Editor-master BeachStageEventEP.kt
 class BeachStageEventScreen extends StatefulWidget {
@@ -33,18 +33,21 @@ class BeachStageEventScreen extends StatefulWidget {
 }
 
 class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
+  static const _objClass = 'BeachStageEventZombieSpawnerProps';
+
   late PvzObject _moduleObj;
   late BeachStageEventData _data;
+  late String _alias;
 
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -53,7 +56,7 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'BeachStageEventZombieSpawnerProps',
+        objClass: _objClass,
         objData: BeachStageEventData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -73,12 +76,21 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
     setState(() {});
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
@@ -86,16 +98,11 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventDesc_BeachStageEventZombieSpawnerProps ??
-                  'Event: Low tide spawn',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -124,6 +131,13 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               _buildZombieConfigCard(context, theme, l10n),
               const SizedBox(height: 16),
               _buildCountCard(context, theme, l10n),

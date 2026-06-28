@@ -5,6 +5,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Final zomboss stage time limit challenge (`ZombossFinalStageTimeLimitedChallengeProperties`).
 ///
@@ -39,6 +40,7 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
     extends State<FinalStageTimeLimitedChallengePropertiesScreen> {
   static const _defaultAlias = 'FinalStageTimeLimitedChallenge';
   static const _objClass = 'ZombossFinalStageTimeLimitedChallengeProperties';
+  late String _alias;
 
   late ZombossFinalStageTimeLimitedChallengePropertiesData _data;
   late TextEditingController _timeLimitCtrl;
@@ -51,12 +53,12 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? _defaultAlias;
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -147,6 +149,17 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -161,8 +174,12 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(
-          l10n?.finalStageTimeLimitedChallengeTitle ?? 'Final stage time limit',
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: theme.colorScheme.onPrimary,
         ),
         backgroundColor: themeColor,
         foregroundColor: theme.colorScheme.onPrimary,
@@ -200,6 +217,14 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: themeColor,
+            ),
+            const SizedBox(height: 16),
             Card(
               elevation: 2,
               child: Padding(

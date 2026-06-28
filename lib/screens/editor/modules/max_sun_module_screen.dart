@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/theme/app_theme.dart'
     show pvzLightOrangeDark, pvzLightOrangeLight;
 import 'package:c_editor/widgets/editor_components.dart'
@@ -26,6 +27,8 @@ class MaxSunModuleScreen extends StatefulWidget {
 }
 
 class _MaxSunModuleScreenState extends State<MaxSunModuleScreen> {
+  static const _objClass = 'LevelMutatorMaxSunProps';
+  late String _alias;
   late PvzObject _moduleObj;
   late LevelMutatorMaxSunPropsData _data;
   late TextEditingController _sunController;
@@ -34,14 +37,14 @@ class _MaxSunModuleScreenState extends State<MaxSunModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _sunFocusNode = FocusNode();
     _sunFocusNode.addListener(() => setState(() {}));
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -71,6 +74,17 @@ class _MaxSunModuleScreenState extends State<MaxSunModuleScreen> {
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -79,7 +93,13 @@ class _MaxSunModuleScreenState extends State<MaxSunModuleScreen> {
     final accentColor = isDark ? pvzLightOrangeDark : pvzLightOrangeLight;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.overrideMaxSun ?? 'Override Max Sun'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l10n?.back ?? 'Back',
@@ -114,6 +134,14 @@ class _MaxSunModuleScreenState extends State<MaxSunModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: accentColor,
+            ),
+            const SizedBox(height: 16),
             Text(
               l10n?.maxSunOverride ?? 'Max Sun Override',
               style: const TextStyle(fontSize: 16),

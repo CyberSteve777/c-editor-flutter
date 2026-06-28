@@ -10,6 +10,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Power tile properties. Ported from Z-Editor-master PowerTilePropertiesEP.kt
 class PowerTilePropertiesScreen extends StatefulWidget {
@@ -34,6 +35,8 @@ class PowerTilePropertiesScreen extends StatefulWidget {
 typedef _GroupInfo = (String id, String label, Color accent, String fileName);
 
 class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
+  static const _objClass = 'PowerTileProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late PowerTilePropertiesData _data;
   String _selectedGroup = 'alpha';
@@ -78,12 +81,12 @@ class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -187,6 +190,17 @@ class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
     );
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -201,7 +215,12 @@ class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.powerTile ?? 'Power tile'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l10n?.back ?? 'Back',
@@ -245,6 +264,13 @@ class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
             Text(
               l10n?.selectGroup ?? 'Select group',
               style: theme.textTheme.titleSmall?.copyWith(

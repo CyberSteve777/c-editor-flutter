@@ -2710,6 +2710,22 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String editNamedEvent(Object name) {
+    return 'Редактировать событие «$name»';
+  }
+
+  @override
+  String editNamedModule(Object name) {
+    return 'Редактировать модуль «$name»';
+  }
+
+  @override
+  String get addEventAliasTitle => 'Добавить событие';
+
+  @override
+  String get addModuleAliasTitle => 'Добавить модуль';
+
+  @override
   String get aliasLabel => 'Псевдоним';
 
   @override

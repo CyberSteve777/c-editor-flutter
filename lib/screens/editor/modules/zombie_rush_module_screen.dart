@@ -4,6 +4,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Zombie Rush level timer module. Ported from ZombieRushModuleEP.kt
 class ZombieRushModuleScreen extends StatefulWidget {
@@ -25,6 +26,8 @@ class ZombieRushModuleScreen extends StatefulWidget {
 }
 
 class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
+  static const _objClass = 'ZombieRushModuleProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late ZombieRushModuleData _data;
   late TextEditingController _timeController;
@@ -32,12 +35,12 @@ class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -73,6 +76,17 @@ class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -89,7 +103,13 @@ class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
         ),
         backgroundColor: accentColor,
         foregroundColor: Colors.white,
-        title: Text(l10n?.zombieRushTitle ?? 'Level timer'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -123,6 +143,14 @@ class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: accentColor,
+            ),
+            const SizedBox(height: 16),
             Card(
               color: theme.colorScheme.surface,
               child: Padding(

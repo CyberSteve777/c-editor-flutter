@@ -4,12 +4,12 @@ import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Barrel wave event editor. Rows are 1-based (1–5 standard, 1–6 Deep Sea).
 /// Barrel types: empty, zombie (monster), explosive.
@@ -35,8 +35,11 @@ class BarrelWaveEventScreen extends StatefulWidget {
 }
 
 class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
+  static const _objClass = 'BarrelWaveActionProps';
+
   late PvzObject _moduleObj;
   late BarrelWaveEventData _data;
+  late String _alias;
 
   bool get _isDeepSeaLawn =>
       LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
@@ -49,12 +52,12 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -63,7 +66,7 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'BarrelWaveActionProps',
+        objClass: _objClass,
         objData: BarrelWaveEventData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -230,12 +233,21 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
     );
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
@@ -243,15 +255,11 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventBarrelWave ?? 'Event: Barrel wave',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -284,6 +292,13 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Text(
                 l10n?.barrelWaveRowsHint ??
                     'Rows are 1-based (1–$_maxRow). Deep Sea supports 6 rows.',

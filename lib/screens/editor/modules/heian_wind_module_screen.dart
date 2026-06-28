@@ -4,6 +4,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Heian Wind module editor. Configures winds that affect zombies on waves.
 class HeianWindModuleScreen extends StatefulWidget {
@@ -27,6 +28,8 @@ class HeianWindModuleScreen extends StatefulWidget {
 }
 
 class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
+  static const _objClass = 'HeianWindModuleProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late HeianWindModulePropertiesData _data;
   int _selectedWaveIndex = -1;
@@ -40,6 +43,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _selectedWaveIndex = _resolveInitialIndex();
   }
@@ -55,8 +59,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -163,6 +166,17 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     );
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -182,7 +196,12 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
           tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
-        title: Text(title),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -221,6 +240,13 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
                 Text(
                   l10n?.heianWindModuleAppearances ?? 'Appearances',
                   style: theme.textTheme.titleMedium?.copyWith(

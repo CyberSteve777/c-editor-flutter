@@ -10,6 +10,7 @@ import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Wave manager module editor. Ported from WaveManagerModulesPropertiesEP.kt
 class WaveManagerModuleScreen extends StatefulWidget {
@@ -35,6 +36,8 @@ class WaveManagerModuleScreen extends StatefulWidget {
 }
 
 class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
+  static const _objClass = 'WaveManagerModuleProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late WaveManagerModuleData _data;
   late TextEditingController _startWaveCtrl;
@@ -45,12 +48,12 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -223,6 +226,17 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
         _localizedText(context, zh: '当前值：$value', en: 'Current: $value');
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -270,7 +284,13 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
         ),
         backgroundColor: sectionTitleColor,
         foregroundColor: Colors.white,
-        title: Text(l10n?.waveManagerModule ?? 'Wave manager module'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: Colors.white,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -304,6 +324,14 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: sectionTitleColor,
+            ),
+            const SizedBox(height: 16),
             Card(
               color: isPropsValid ? propsCardColor : theme.colorScheme.error,
               child: Padding(

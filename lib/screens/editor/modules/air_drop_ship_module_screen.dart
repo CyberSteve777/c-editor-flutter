@@ -4,6 +4,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Air Drop Ship (DropShip) module editor. Configures waves when imps are dropped.
 class AirDropShipModuleScreen extends StatefulWidget {
@@ -28,6 +29,8 @@ class AirDropShipModuleScreen extends StatefulWidget {
 }
 
 class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
+  static const _objClass = 'DropShipProperties';
+  late String _alias;
   late PvzObject _moduleObj;
   late DropShipPropertiesData _data;
   int _selectedIndex = -1;
@@ -53,6 +56,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _selectedIndex = _resolveInitialIndex();
   }
@@ -68,8 +72,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -131,6 +134,17 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
     _sync();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -149,7 +163,12 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
           tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
-        title: Text(title),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -182,6 +201,13 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+            ),
+            const SizedBox(height: 16),
                 Text(
                   l10n?.airDropShipModuleAppearances ?? 'Appearances',
                   style: theme.textTheme.titleMedium?.copyWith(

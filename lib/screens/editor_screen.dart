@@ -113,6 +113,8 @@ import 'package:c_editor/screens/editor/events/shell_event_screen.dart';
 import 'package:c_editor/screens/editor/events/pumpkin_house_event_screen.dart';
 import 'package:c_editor/screens/editor/events/jittered_event_screen.dart';
 import 'package:c_editor/screens/editor/events/ground_spawn_event_screen.dart';
+import 'package:c_editor/data/pvz_alias_utils.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/screens/select/grid_item_selection_screen.dart';
@@ -940,24 +942,43 @@ class _EditorScreenState extends State<EditorScreen> {
     );
 
     if (meta != null) {
-      _addModule(meta);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      var suggestedAlias = meta.effectiveAlias;
+      if (meta.defaultSource == 'CurrentLevel') {
+        suggestedAlias = PvzAliasUtils.uniqueAlias(
+          _ec.state.levelFile!,
+          suggestedAlias,
+        );
+      }
+      final chosenAlias = await showPvzAliasInputDialog(
+        context,
+        defaultAlias: suggestedAlias,
+        title: l10n.addModuleAliasTitle,
+        objClass: meta.objClass,
+        levelFile: _ec.state.levelFile!,
+      );
+      if (chosenAlias == null || !mounted) return;
+      _addModule(meta, aliasOverride: chosenAlias);
     }
   }
 
-  void _addModule(ModuleMetadata meta) {
+  void _addModule(ModuleMetadata meta, {String? aliasOverride}) {
     final def = _ec.state.parsedData!.levelDef;
     if (def == null) return;
 
-    var alias = meta.effectiveAlias;
+    var alias = aliasOverride ?? meta.effectiveAlias;
     final source = meta.defaultSource;
 
     if (source == 'CurrentLevel') {
-      var count = 0;
-      while (_ec.state.levelFile!.objects.any(
-        (o) => o.aliases?.contains(alias) == true,
-      )) {
-        count++;
-        alias = '${meta.effectiveAlias}_$count';
+      if (aliasOverride == null) {
+        var count = 0;
+        while (_ec.state.levelFile!.objects.any(
+          (o) => o.aliases?.contains(alias) == true,
+        )) {
+          count++;
+          alias = '${meta.effectiveAlias}_$count';
+        }
       }
 
       final rtid = RtidParser.build(alias, source);
@@ -1844,16 +1865,26 @@ class _EditorScreenState extends State<EditorScreen> {
 
     if (meta == null || !mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final waveEvents = wm.waves[waveIndex - 1];
     var prefix = 'Wave$waveIndex${meta.defaultAlias}';
     var count = 0;
-    var newAlias = '$prefix$count';
+    var suggestedAlias = '$prefix$count';
     while (_ec.state.levelFile!.objects.any(
-      (o) => o.aliases?.contains(newAlias) == true,
+      (o) => o.aliases?.contains(suggestedAlias) == true,
     )) {
       count++;
-      newAlias = '$prefix$count';
+      suggestedAlias = '$prefix$count';
     }
+
+    final newAlias = await showPvzAliasInputDialog(
+      context,
+      defaultAlias: suggestedAlias,
+      title: l10n.addEventAliasTitle,
+      objClass: meta.defaultObjClass,
+      levelFile: _ec.state.levelFile!,
+    );
+    if (newAlias == null || !mounted) return;
 
     final newRtid = RtidParser.build(newAlias, 'CurrentLevel');
     final data = meta.initialDataFactory();

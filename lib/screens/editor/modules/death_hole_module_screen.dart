@@ -5,6 +5,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart'
     show editorInputDecoration;
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Death hole module editor. Ported from Z-Editor-master DeathHoleModuleEP.kt
 class DeathHoleModuleScreen extends StatefulWidget {
@@ -26,22 +27,25 @@ class DeathHoleModuleScreen extends StatefulWidget {
 }
 
 class _DeathHoleModuleScreenState extends State<DeathHoleModuleScreen> {
+  static const _objClass = 'DeathHoleModuleProperties';
+
   late PvzObject _moduleObj;
   late DeathHoleModuleData _data;
+  late String _alias;
   late TextEditingController _lifeTimeCtrl;
   late FocusNode _lifeTimeFocusNode;
 
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
     _lifeTimeFocusNode = FocusNode();
     _lifeTimeFocusNode.addListener(() => setState(() {}));
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -50,7 +54,7 @@ class _DeathHoleModuleScreenState extends State<DeathHoleModuleScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'DeathHoleModuleProperties',
+        objClass: _objClass,
         objData: DeathHoleModuleData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -78,6 +82,16 @@ class _DeathHoleModuleScreenState extends State<DeathHoleModuleScreen> {
     super.dispose();
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -87,45 +101,63 @@ class _DeathHoleModuleScreenState extends State<DeathHoleModuleScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.deathHole ?? 'Death Hole'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n?.duration ?? 'Duration',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  focusNode: _lifeTimeFocusNode,
-                  controller: _lifeTimeCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: editorInputDecoration(
-                    context,
-                    labelText:
-                        l10n?.holeLifetimeSeconds ?? 'Hole lifetime (seconds)',
-                    focusColor: Theme.of(context).colorScheme.primary,
-                    isFocused: _lifeTimeFocusNode.hasFocus,
-                  ),
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.lifeTime = n;
-                      _sync();
-                    }
-                  },
-                ),
-              ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
             ),
-          ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n?.duration ?? 'Duration',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      focusNode: _lifeTimeFocusNode,
+                      controller: _lifeTimeCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: editorInputDecoration(
+                        context,
+                        labelText:
+                            l10n?.holeLifetimeSeconds ??
+                            'Hole lifetime (seconds)',
+                        focusColor: Theme.of(context).colorScheme.primary,
+                        isFocused: _lifeTimeFocusNode.hasFocus,
+                      ),
+                      onChanged: (v) {
+                        final n = int.tryParse(v);
+                        if (n != null) {
+                          _data.lifeTime = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

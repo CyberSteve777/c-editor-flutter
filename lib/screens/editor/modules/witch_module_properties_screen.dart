@@ -5,6 +5,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Witch module editor (`WitchModuleProperties`). Default uses LevelModules.
 class WitchModulePropertiesScreen extends StatefulWidget {
@@ -34,6 +35,7 @@ class _WitchModulePropertiesScreenState
     extends State<WitchModulePropertiesScreen> {
   static const _defaultAlias = 'WitchModule';
   static const _objClass = 'WitchModuleProperties';
+  late String _alias;
 
   late WitchModulePropertiesData _data;
   late TextEditingController _spawnIntervalCtrl;
@@ -46,12 +48,12 @@ class _WitchModulePropertiesScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? _defaultAlias;
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -144,6 +146,17 @@ class _WitchModulePropertiesScreenState
     super.dispose();
   }
 
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -158,7 +171,13 @@ class _WitchModulePropertiesScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.witchModuleTitle ?? 'Witch module'),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+          foregroundColor: theme.colorScheme.onPrimary,
+        ),
         backgroundColor: themeColor,
         foregroundColor: theme.colorScheme.onPrimary,
         actions: [
@@ -191,6 +210,14 @@ class _WitchModulePropertiesScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+EditorAliasInputField(
+              alias: _alias,
+              levelFile: widget.levelFile,
+              onAliasChanged: _handleAliasChanged,
+              onChanged: widget.onChanged,
+              accentColor: themeColor,
+            ),
+            const SizedBox(height: 16),
             Card(
               elevation: 2,
               child: Padding(

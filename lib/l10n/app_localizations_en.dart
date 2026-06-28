@@ -2736,6 +2736,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String editNamedEvent(Object name) {
+    return 'Edit $name event';
+  }
+
+  @override
+  String editNamedModule(Object name) {
+    return 'Edit $name module';
+  }
+
+  @override
+  String get addEventAliasTitle => 'Add event';
+
+  @override
+  String get addModuleAliasTitle => 'Add module';
+
+  @override
   String get aliasLabel => 'Alias';
 
   @override

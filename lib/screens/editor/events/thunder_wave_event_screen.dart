@@ -1,10 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Thunder wave event editor. Thunders can be positive or negative.
 class ThunderWaveEventScreen extends StatefulWidget {
@@ -26,8 +25,11 @@ class ThunderWaveEventScreen extends StatefulWidget {
 }
 
 class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
+  static const _objClass = 'ThunderWaveActionProps';
+
   late PvzObject _moduleObj;
   late ThunderWaveActionPropsData _data;
+  late String _alias;
 
   static const _typePositive = 'positive';
   static const _typeNegative = 'negative';
@@ -35,12 +37,12 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? LevelParser.extractAlias(widget.rtid);
+    final alias = _alias;
     final existing = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(alias) == true,
     );
@@ -49,7 +51,7 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
     } else {
       _moduleObj = PvzObject(
         aliases: [alias],
-        objClass: 'ThunderWaveActionProps',
+        objClass: _objClass,
         objData: ThunderWaveActionPropsData().toJson(),
       );
       widget.levelFile.objects.add(_moduleObj);
@@ -111,12 +113,21 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
     _sync();
   }
 
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? LevelParser.extractAlias(widget.rtid);
+    final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
 
     return Scaffold(
       appBar: AppBar(
@@ -124,15 +135,11 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n?.editAlias(alias) ?? 'Edit $alias'),
-            Text(
-              l10n?.eventThunderWave ?? 'Event: Thunder',
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: eventTitle,
+          isEvent: true,
+          objClass: _objClass,
         ),
         actions: [
           IconButton(
@@ -165,6 +172,13 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              EditorAliasInputField(
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               // Kill rate
               Card(
                 margin: const EdgeInsets.only(bottom: 16),
