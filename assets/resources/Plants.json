@@ -132,7 +132,7 @@
             "Magic",
             "International"
         ],
-        "icon": "icon_snapdragon.webp"
+        "icon": "icon_snapdragon.gif"
     },
     {
         "id": "powerlily",
@@ -500,7 +500,7 @@
             "Magic",
             "International"
         ],
-        "icon": "icon_powerplant.webp"
+        "icon": "icon_powerplant.gif"
     },
     {
         "id": "carrotlauncher",
@@ -772,7 +772,7 @@
             "Physical",
             "Chinese"
         ],
-        "icon": "icon_lemon.webp"
+        "icon": "icon_lemon.gif"
     },
     {
         "id": "ghostpepper",
@@ -1246,7 +1246,7 @@
             "Magic",
             "Chinese"
         ],
-        "icon": "icon_pinkstarfruit.webp"
+        "icon": "icon_pinkstarfruit.gif"
     },
     {
         "id": "matchflower",
@@ -1407,7 +1407,7 @@
             "Magic",
             "International"
         ],
-        "icon": "icon_coldsnapdragon.webp"
+        "icon": "icon_coldsnapdragon.gif"
     },
     {
         "id": "shrinkingviolet",
@@ -2223,7 +2223,7 @@
             "Trapper",
             "International"
         ],
-        "icon": "icon_gumnut.webp"
+        "icon": "icon_gumnut.gif"
     },
     {
         "id": "olivepit",
@@ -2409,7 +2409,7 @@
             "Physical",
             "Chinese"
         ],
-        "icon": "icon_tigerstool.webp"
+        "icon": "icon_tigerstool.gif"
     },
     {
         "id": "draftodil",
@@ -2838,7 +2838,7 @@
             "Fire",
             "Chinese"
         ],
-        "icon": "icon_gluttonydragon.webp"
+        "icon": "icon_gluttonydragon.gif"
     },
     {
         "id": "waterrabbit",
@@ -3059,7 +3059,7 @@
             "Magic",
             "Chinese"
         ],
-        "icon": "icon_eywa.webp"
+        "icon": "icon_eywa.gif"
     },
     {
         "id": "buduhboom",
@@ -3114,7 +3114,7 @@
             "Physical",
             "International"
         ],
-        "icon": "icon_megagatling.webp"
+        "icon": "icon_megagatling.gif"
     },
     {
         "id": "oxygenalgae",
