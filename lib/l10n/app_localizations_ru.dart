@@ -696,22 +696,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagAll => 'Все растения';
 
   @override
-  String get plantTagWhite => 'Белое качество';
+  String get plantTagWhite => 'Обычная редкость';
 
   @override
-  String get plantTagGreen => 'Зелёное качество';
+  String get plantTagGreen => 'Необычная редкость';
 
   @override
-  String get plantTagBlue => 'Синее качество';
+  String get plantTagBlue => 'Редкая редкость';
 
   @override
-  String get plantTagPurple => 'Фиолетовое качество';
+  String get plantTagPurple => 'Эпическая редкость';
 
   @override
-  String get plantTagOrange => 'Оранжевое качество';
+  String get plantTagOrange => 'Легендарная редкость';
 
   @override
-  String get plantTagRed => 'Красное качество';
+  String get plantTagRed => 'Особая редкость';
 
   @override
   String get plantTagSupport => 'Поддержка';
@@ -720,7 +720,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagRanger => 'Дальний бой';
 
   @override
-  String get plantTagSunProducer => 'Производитель солнц';
+  String get plantTagSunProducer => 'Солнце дающие';
 
   @override
   String get plantTagDefence => 'Защита';
@@ -750,7 +750,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagPhysical => 'Физика';
 
   @override
-  String get plantTagWorldTutorial => 'Tutorial';
+  String get plantTagWorldTutorial => 'Туториал';
 
   @override
   String get plantTagWorldEgypt => 'Древний Египет';
@@ -765,13 +765,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagWorldKongfu => 'Мир Кунг-фу';
 
   @override
-  String get plantTagWorldFuture => 'Будущее';
+  String get plantTagWorldFuture => 'Далёкое Будующее';
 
   @override
   String get plantTagWorldDarkAges => 'Тёмные века';
 
   @override
-  String get plantTagWorldBeach => 'Пляж';
+  String get plantTagWorldBeach => 'Пляж Большой Волны';
 
   @override
   String get plantTagWorldIceage => 'Ледниковый период';
@@ -783,16 +783,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagWorldLostCity => 'Затерянный город';
 
   @override
-  String get plantTagWorldEighties => 'Неон 80-х';
+  String get plantTagWorldEighties => 'Микстейп';
 
   @override
-  String get plantTagWorldDino => 'Юрские болота';
+  String get plantTagWorldDino => 'Юрские Болота';
 
   @override
-  String get plantTagWorldModern => 'Современность';
+  String get plantTagWorldModern => 'Современные Дни';
 
   @override
-  String get plantTagWorldSteam => 'Паровая эра';
+  String get plantTagWorldSteam => 'Паровой Век';
 
   @override
   String get plantTagWorldRenai => 'Ренессанс';
@@ -807,19 +807,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagWorldFairytale => 'Сказочный лес';
 
   @override
-  String get plantTagWorldZcorp => 'Z-Corp';
+  String get plantTagWorldZcorp => 'Z-корп';
 
   @override
   String get plantTagWorldMausoleum => 'Мавзолей';
 
   @override
-  String get plantTagOriginal => 'Оригинал PvZ1';
+  String get plantTagOriginal => 'PvZ1';
 
   @override
   String get plantTagParallel => 'Параллельный мир';
 
   @override
-  String get plantTagSpecial => 'Специальное';
+  String get plantTagSpecial => 'Специальные';
 
   @override
   String get removeModuleConfirm =>
@@ -1739,18 +1739,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleDesc_EvilDaveProperties => 'Включить режим «Я зомби»';
 
   @override
-  String get moduleTitle_ZombossBattleModuleProperties => 'Бой с ZombossMech';
+  String get moduleTitle_ZombossBattleModuleProperties => 'Бой с Зомботом';
 
   @override
-  String get moduleDesc_ZombossBattleModuleProperties =>
-      'Параметры ZombossMech';
+  String get moduleDesc_ZombossBattleModuleProperties => 'Параметры Зомботов';
 
   @override
-  String get moduleTitle_ZombossBattleIntroProperties => 'Заставка ZombossMech';
+  String get moduleTitle_ZombossBattleIntroProperties => 'Заставка Зомбота';
 
   @override
   String get moduleDesc_ZombossBattleIntroProperties =>
-      'Заставка и полоска здоровья ZombossMech';
+      'Заставка и полоска здоровья Зомбота';
 
   @override
   String get moduleTitle_ZombossLastStandMinigameProperties =>
@@ -1758,27 +1757,29 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
-      'Параметры боя с немеханическим Зомбоссом (Kongfu, Цинь и т.д.)';
+      'Параметры боя с Боссами (Kongfu, Цинь и т.д.)';
 
   @override
-  String get moduleTitle_SeedRainProperties => 'Семенной дождь';
+  String get moduleTitle_SeedRainProperties => 'Дождь из семян';
 
   @override
   String get moduleDesc_SeedRainProperties =>
       'Падающие растения/зомби/предметы';
 
   @override
-  String get moduleTitle_LastStandMinigameProperties => 'Несокрушимый';
+  String get moduleTitle_LastStandMinigameProperties => 'Ласт стенд';
 
   @override
   String get moduleDesc_LastStandMinigameProperties =>
       'Стартовые ресурсы и фаза подготовки';
 
   @override
-  String get moduleTitle_PVZ1OverwhelmModuleProperties => 'Overwhelm';
+  String get moduleTitle_PVZ1OverwhelmModuleProperties =>
+      'Высадка по 5-ти линиям';
 
   @override
-  String get moduleDesc_PVZ1OverwhelmModuleProperties => 'Мини-игра Overwhelm';
+  String get moduleDesc_PVZ1OverwhelmModuleProperties =>
+      'Мини-игра Колона, как вы её видите';
 
   @override
   String get moduleTitle_SunBombChallengeProperties => 'Солнечные бомбы';
@@ -1806,7 +1807,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_ZombieMoveFastModuleProperties =>
-      'Зомби быстрее входят';
+      'Зомби быстрее выходят';
 
   @override
   String get moduleTitle_InitialPlantProperties =>
@@ -2388,7 +2389,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleCategoryScene => 'Сцена';
 
   @override
-  String get moduleCategoryGimmick => 'Gimmick';
+  String get moduleCategoryGimmick => 'Гиммики';
 
   @override
   String get moduleTitle_RocketZombieFlickModuleProperties =>
