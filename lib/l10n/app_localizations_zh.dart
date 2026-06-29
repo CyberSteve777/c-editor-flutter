@@ -4413,6 +4413,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reservedColumnCountHint => '表示右边预留不能种植植物的列数，通常预留两列以上';
 
   @override
+  String get reservedColumnPreview => '预留列预览';
+
+  @override
   String get protectedList => '保护目标列表';
 
   @override

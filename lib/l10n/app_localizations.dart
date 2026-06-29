@@ -8344,6 +8344,12 @@ abstract class AppLocalizations {
   /// **'Number of columns reserved on the right where planting is disabled. Typically 2 or more columns are reserved.'**
   String get reservedColumnCountHint;
 
+  /// No description provided for @reservedColumnPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved column preview'**
+  String get reservedColumnPreview;
+
   /// No description provided for @protectedList.
   ///
   /// In en, this message translates to:

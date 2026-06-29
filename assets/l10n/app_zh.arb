@@ -1494,6 +1494,7 @@
   "parameters": "关卡参数",
   "reservedColumnCount": "预留列",
   "reservedColumnCountHint": "表示右边预留不能种植植物的列数，通常预留两列以上",
+  "reservedColumnPreview": "预留列预览",
   "protectedList": "保护目标列表",
   "plantLevelsFollowGlobal": "此模块中的植物随玩家账号阶级，可以使用全局阶级定义模块统一等级。",
   "protectPlantsOverview": "定义关卡中必须保护的植物。如果这些植物被僵尸吃掉或摧毁，关卡失败。",

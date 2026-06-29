@@ -7,6 +7,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/zomboss_battle_base_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/reserved_column_preview_grid.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossBattleTab extends StatefulWidget {
@@ -314,6 +315,25 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
           min: 0,
           max: 9,
         ),
+        const SizedBox(height: 12),
+        Center(
+          child: Text(
+            l10n?.reservedColumnPreview ?? 'Reserved column preview',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Center(
+          child: ReservedColumnPreviewGrid(
+            gridRows: maxRow + 1,
+            gridCols: maxCol + 1,
+            reservedColumnCount: _data.reservedColumnCount,
+          ),
+        ),
+        const SizedBox(height: 12),
         Tooltip(
           message: l10n?.zombossBattleSkipPlantingHint ?? '',
           child: Row(

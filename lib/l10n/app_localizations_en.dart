@@ -4638,6 +4638,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Number of columns reserved on the right where planting is disabled. Typically 2 or more columns are reserved.';
 
   @override
+  String get reservedColumnPreview => 'Reserved column preview';
+
+  @override
   String get protectedList => 'Protected Targets';
 
   @override

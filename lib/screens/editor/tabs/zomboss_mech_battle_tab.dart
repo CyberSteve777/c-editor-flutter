@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
@@ -8,6 +9,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_properties_screen.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_base_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/reserved_column_preview_grid.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossMechBattleTab extends StatefulWidget {
@@ -376,6 +378,9 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
       _battleData.zombossMechType,
       catalog: catalog,
     );
+    final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(
+      widget.levelFile,
+    );
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -517,6 +522,24 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
               _sync(extra: () => _battleData.reservedColumnCount = val),
           min: 0,
           max: 9,
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: Text(
+            l10n?.reservedColumnPreview ?? 'Reserved column preview',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Center(
+          child: ReservedColumnPreviewGrid(
+            gridRows: gridRows,
+            gridCols: gridCols,
+            reservedColumnCount: _battleData.reservedColumnCount,
+          ),
         ),
         if (ZombossMechRepository.isIceAgeMechVariation(
           _battleData.zombossMechType,

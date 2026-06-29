@@ -4589,6 +4589,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Колонки справа, где нельзя сажать растения.';
 
   @override
+  String get reservedColumnPreview => 'Предпросмотр зарезервированных колонок';
+
+  @override
   String get protectedList => 'Список защищаемых';
 
   @override

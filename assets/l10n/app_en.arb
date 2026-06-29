@@ -1488,6 +1488,7 @@
   "parameters": "Parameters",
   "reservedColumnCount": "Reserved Columns (ReservedColumnCount)",
   "reservedColumnCountHint": "Number of columns reserved on the right where planting is disabled. Typically 2 or more columns are reserved.",
+  "reservedColumnPreview": "Reserved column preview",
   "protectedList": "Protected Targets",
   "plantLevelsFollowGlobal": "Plants in this module follow their respective tiers from the player’s account. You can standardize their levels using the Tier Definition module.",
   "protectPlantsOverview": "Defines plants that must be protected. The level fails if any of them are eaten or destroyed.",
