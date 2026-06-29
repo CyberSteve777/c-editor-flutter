@@ -5994,6 +5994,16 @@
     "icon": "zombie_roman_medusa.webp"
   },
   {
+    "id": "gladiator_zombie",
+    "name": "zombie_gladiator_zombie",
+    "tags": [
+      "Roman",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_gladiator_zombie.webp"
+  },
+  {
     "id": "general_caesar_phase1",
     "name": "zombie_general_caesar_phase1",
     "tags": [

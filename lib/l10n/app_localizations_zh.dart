@@ -39,7 +39,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get plantTagInternational => '国际版移植';
 
   @override
-  String get plantTagChinese => '中文版原创';
+  String get plantTagChinese => '中文版独有';
 
   @override
   String get aboutSoftware => '关于软件';
@@ -631,7 +631,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieTagFestival2 => '节日串烧2';
 
   @override
-  String get zombieTagRoman => '罗马世界';
+  String get zombieTagRoman => '罗马帝国';
 
   @override
   String get zombieTagCustom => '回忆变体';

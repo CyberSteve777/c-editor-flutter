@@ -19,21 +19,22 @@
     "Renai",
     "Heian",
     "Atlantis",
+    "mausoleum",
+    "ghostdom",
+    "ZCorp",
     "Twister",
     "Uncharted",
     "BGMa",
     "BGMb",
     "BGMd",
-    "mausoleum",
-    "ghostdom",
     "BGMc",
+    "TeamBoss",
     "retro",
     "SilkRoad",
-    "TeamBoss",
-    "BGMe",
+    "Sportz",
     "Roman",
-    "ZCorp",
     "rift",
+    "BGMe",
     "circus"
   ],
   "iconFiles": {
@@ -65,6 +66,10 @@
     "ghostdom": "Stage_Underground.webp",
     "retro": "Suffix_retro.webp",
     "SilkRoad": "Suffix_SilkRoad.webp",
-    "TeamBoss": "Suffix_TeamBoss.webp"
+    "TeamBoss": "Suffix_TeamBoss.webp",
+    "Sportz": "Stage_DaveCup.webp",
+    "Roman": "Suffix_Roman.webp",
+    "ZCorp": "Stage_ZCorp.webp",
+    "rift": "Suffix_rift.webp"
   }
 }

@@ -129,8 +129,6 @@ class _AboutScreenState extends State<AboutScreen> {
                           (l10n.usageRecommendedLevelsLabel.isNotEmpty ||
                               l10n.discordInviteLabel.isNotEmpty)) ...[
                         const SizedBox(height: 12),
-                        _SubsectionTitle(l10n.linksSubsection),
-                        const SizedBox(height: 8),
                         if (l10n.usageRecommendedLevelsLabel.isNotEmpty)
                           _LinkRow(
                             label: l10n.usageRecommendedLevelsLabel,
@@ -166,8 +164,6 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       if (links != null) ...[
                         const SizedBox(height: 12),
-                        _SubsectionTitle(l10n.linksSubsection),
-                        const SizedBox(height: 8),
                         _LinkRow(
                           label: l10n.sourceLabel,
                           url: links.source,

@@ -3434,11 +3434,22 @@
         "name": "plant_solarsage",
         "tags": [
             "Orange",
-            "Productor",
+            "SunProducer",
             "Magic",
             "International"
         ],
         "icon": "icon_solarsage.webp"
+    },
+    {
+        "id": "pineclone",
+        "name": "plant_pineclone",
+        "tags": [
+            "Orange",
+            "Trapper",
+            "Electric",
+            "Chinese"
+        ],
+        "icon": "icon_pineclone.webp"
     },
     {
         "id": "moonflower_iz",

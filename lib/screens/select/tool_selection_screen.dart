@@ -95,7 +95,7 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
               : LayoutBuilder(
                   builder: (context, constraints) {
                     final isDesktop = constraints.maxWidth > 600;
-                    final crossAxisCount = isDesktop ? 6 : 3;
+                    final crossAxisCount = isDesktop ? 6 : 2;
                     return GridView.builder(
                       padding: const EdgeInsets.all(16),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
