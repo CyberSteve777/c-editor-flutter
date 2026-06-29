@@ -133,31 +133,18 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
                       )
                     : LayoutBuilder(
                         builder: (context, constraints) {
-                          final crossAxisCount =
-                              SelectionGridLayout.crossAxisCount(
-                                constraints.maxWidth,
-                              );
-                          final cellWidth = SelectionGridLayout.cellWidth(
+                          final crossAxisCount = _selectionGridColumnCount(
                             constraints.maxWidth,
-                            crossAxisCount,
-                          );
-                          final iconSize = SelectionGridLayout.iconSize(
-                            cellWidth,
                           );
 
                           return GridView.builder(
-                            padding: const EdgeInsets.all(
-                              SelectionGridLayout.padding,
-                            ),
+                            padding: const EdgeInsets.all(16),
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: crossAxisCount,
-                                  childAspectRatio:
-                                      SelectionGridLayout.childAspectRatio(
-                                        constraints.maxWidth,
-                                      ),
-                                  crossAxisSpacing: SelectionGridLayout.spacing,
-                                  mainAxisSpacing: SelectionGridLayout.spacing,
+                                  childAspectRatio: 0.85,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
                                 ),
                             itemCount: displayList.length,
                             itemBuilder: (context, index) {
@@ -173,7 +160,6 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
                               return _GridItemCard(
                                 item: item,
                                 name: name,
-                                iconSize: iconSize,
                                 theme: theme,
                                 onTap: () => _handleItemTap(item.typeName),
                               );
@@ -218,18 +204,23 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
   }
 }
 
+int _selectionGridColumnCount(double width) {
+  final columns = (width / 180).floor();
+  if (columns < 2) return 2;
+  if (columns > 6) return 6;
+  return columns;
+}
+
 class _GridItemCard extends StatelessWidget {
   const _GridItemCard({
     required this.item,
     required this.name,
-    required this.iconSize,
     required this.theme,
     required this.onTap,
   });
 
   final GridItemInfo item;
   final String name;
-  final double iconSize;
   final ThemeData theme;
   final VoidCallback onTap;
 
@@ -240,16 +231,19 @@ class _GridItemCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+          padding: const EdgeInsets.all(12),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: Center(
-                  child: GridItemIcon(
-                    typeName: item.typeName,
-                    size: iconSize,
-                    fit: BoxFit.contain,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GridItemIcon(
+                      typeName: item.typeName,
+                      size: 72,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),

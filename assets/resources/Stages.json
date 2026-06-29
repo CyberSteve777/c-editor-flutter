@@ -17488,8 +17488,7 @@
           "FlagZombieTypeName": "tutorial_flag",
           "Armor1ZombieTypeName": "tutorial_armor1",
           "Armor2ZombieTypeName": "tutorial_armor2",
-          "MusicSuffix": "Egypt",
-          "AmbientAudioSuffix": "Egypt_Wind_BG",
+          "MusicSuffix": "Sportz",
           "RailcartDefaultTypeName": "railcart_tutotial",
           "GravestoneDefaultTypeName": "gravestone_tutorial",
           "DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
@@ -22475,12 +22474,15 @@
           "StagePrefix": "team_boss",
           "BackgroundResourceGroup": "DelayLoad_Background_Team_Boss",
           "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_TEAM_BOSS",
+          "BackgroundImageLeft": "ROMAN_LEFT",
+          "BackgroundImageMiddle": "ROMAN",
+          "BackgroundImageRight": "ROMAN_RIGHT",
           "LevelPowerupSet": "LevelPowerupsDefault",
           "BasicZombieTypeName": "tutorial",
           "FlagZombieTypeName": "tutorial_flag",
           "Armor1ZombieTypeName": "tutorial_armor1",
           "Armor2ZombieTypeName": "tutorial_armor2",
-          "MusicSuffix": "TeamBoss",
+          "MusicSuffix": "Roman",
           "AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
           "RailcartDefaultTypeName": "railcart_tutotial",
           "GravestoneDefaultTypeName": "gravestone_tutorial",
@@ -22638,7 +22640,9 @@
               "mY": 7
             }
           ]
-        }
+        },
+        "image": "Stage_TeamBoss.webp",
+        "tag": "extra"
       },
       {
         "alias": "TutorialStage",

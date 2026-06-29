@@ -94,8 +94,9 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
                 )
               : LayoutBuilder(
                   builder: (context, constraints) {
-                    final isDesktop = constraints.maxWidth > 600;
-                    final crossAxisCount = isDesktop ? 6 : 3;
+                    final crossAxisCount = _selectionGridColumnCount(
+                      constraints.maxWidth,
+                    );
                     return GridView.builder(
                       padding: const EdgeInsets.all(16),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -125,6 +126,13 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
       ),
     );
   }
+}
+
+int _selectionGridColumnCount(double width) {
+  final columns = (width / 180).floor();
+  if (columns < 2) return 2;
+  if (columns > 6) return 6;
+  return columns;
 }
 
 class _ToolCard extends StatelessWidget {

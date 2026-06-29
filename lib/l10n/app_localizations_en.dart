@@ -641,7 +641,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagFestival2 => 'Festival 2';
 
   @override
-  String get zombieTagRoman => 'Ancient Rome';
+  String get zombieTagRoman => 'Roman Empire';
 
   @override
   String get zombieTagCustom => 'Memory Lane Variants';

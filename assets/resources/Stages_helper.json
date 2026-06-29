@@ -289,7 +289,7 @@
   },
   "DelayLoad_Background_Team_Boss": {
     "IMAGE_BACKGROUNDS_TEAM_BOSS": {
-      "image": "unknown.webp",
+      "image": "Stage_TeamBoss.webp",
       "nameKey": "stage_TeamBossStage"
     }
   },

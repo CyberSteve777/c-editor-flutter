@@ -1285,7 +1285,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieTagRoman.
   ///
   /// In en, this message translates to:
-  /// **'Ancient Rome'**
+  /// **'Roman Empire'**
   String get zombieTagRoman;
 
   /// No description provided for @zombieTagCustom.
