@@ -3,7 +3,7 @@
 		{
 			"objclass": "LevelDefinition",
 			"objdata": {
-				"Description": "",
+				"Description": "Example of old-style level",
 				"LevelIndex": 424,
 				"LevelNumber": 24,
 				"Loot": "RTID(DefaultLoot@LevelModules)",
@@ -20,7 +20,7 @@
 					"RTID(Bronze@CurrentLevel)",
 					"RTID(DefaultCustomLevel@LevelModules)"
 				],
-				"Name": "",
+				"Name": "Old-style level",
 				"NormalPresentTable": "kongfu_normal_01",
 				"ShinyPresentTable": "kongfu_shiny_01",
 				"StageModule": "RTID(KongfuStage@LevelModules)",
