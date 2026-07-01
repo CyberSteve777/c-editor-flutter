@@ -61,6 +61,9 @@ jobs:
           echo "ARTIFACT_PATH=$zipPath" >> $env:GITHUB_ENV
           echo "ARTIFACT_NAME=$baseName" >> $env:GITHUB_ENV
 
+      - name: Install ImageMagick
+        run: choco install imagemagick -y --no-progress
+
       - name: Prepare Windows installer
         id: installer
         shell: pwsh
@@ -71,22 +74,12 @@ jobs:
           $baseName = "c_editor-$env:VERSION+$env:SHORT_SHA-windows-installer"
           $releasePath = ((Resolve-Path "build/windows/x64/runner/Release").Path) -replace '\\', '/'
           $outputDir = ((Resolve-Path ".").Path + "/dist/installer") -replace '\\', '/'
-          New-Item -ItemType Directory -Path "dist/installer" -Force | Out-Null
 
-          Copy-Item LICENSE dist/installer/license.txt
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+          pwsh .github/scripts/prepare-installer-assets.ps1 -InstallerDir dist/installer
+
           $licenseFilePath = ((Resolve-Path "dist/installer/license.txt").Path) -replace '\\', '/'
-
-          Add-Type -AssemblyName System.Drawing
-          $iconPng = (Resolve-Path "assets/meta/icon.png").Path
-          $iconIco = Join-Path (Resolve-Path "dist/installer").Path "setup_icon.ico"
-          $bitmap = [System.Drawing.Bitmap]::new($iconPng)
-          $icon = [System.Drawing.Icon]::FromHandle($bitmap.GetHicon())
-          $fileStream = [System.IO.File]::Create($iconIco)
-          $icon.Save($fileStream)
-          $fileStream.Close()
-          $icon.Dispose()
-          $bitmap.Dispose()
-          $setupIconPath = ($iconIco -replace '\\', '/')
+          $setupIconPath = ((Resolve-Path "dist/installer/setup_icon.ico").Path) -replace '\\', '/'
 
           echo "name=$baseName" >> $env:GITHUB_OUTPUT
           echo "path=dist/installer/$baseName.exe" >> $env:GITHUB_OUTPUT
