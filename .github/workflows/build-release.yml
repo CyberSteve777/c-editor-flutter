@@ -21,6 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Release metadata
+        id: release
+        shell: bash
+        run: bash .github/scripts/release-vars.sh
+
       - name: Cache Pub
         uses: actions/cache@v6
         with:
@@ -41,19 +46,50 @@ jobs:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
         run: flutter build windows --release
 
-      # upload-artifact strips the path root you upload; use artifact/c_editor so the
-      # downloaded zip has c_editor/ at the top, not loose exe/dll/data.
-      - name: Stage Windows bundle for artifact
+      - name: Package Windows portable
         shell: pwsh
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
-          $dest = "artifact/c_editor"
-          New-Item -ItemType Directory -Path $dest -Force | Out-Null
-          Get-ChildItem -Path "build/windows/x64/runner/Release" -Force | Move-Item -Destination $dest
+          $baseName = "c_editor-$env:VERSION+$env:SHORT_SHA-windows-portable"
+          $bundleDir = "dist/portable/c_editor"
+          New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
+          Copy-Item -Path "build/windows/x64/runner/Release/*" -Destination $bundleDir -Recurse -Force
+          $zipPath = "dist/$baseName.zip"
+          Compress-Archive -Path $bundleDir -DestinationPath $zipPath -Force
+          echo "ARTIFACT_PATH=$zipPath" >> $env:GITHUB_ENV
+          echo "ARTIFACT_NAME=$baseName" >> $env:GITHUB_ENV
+
+      - name: Prepare Windows installer
+        id: installer
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
+        run: |
+          $baseName = "c_editor-$env:VERSION+$env:SHORT_SHA-windows-installer"
+          $releasePath = (Resolve-Path "build/windows/x64/runner/Release").Path
+          echo "name=$baseName" >> $env:GITHUB_OUTPUT
+          echo "path=dist/installer/$baseName.exe" >> $env:GITHUB_OUTPUT
+          echo "options=/DMyAppVersion=$env:VERSION /DSourcePath=$releasePath /DOutputBaseFilename=$baseName" >> $env:GITHUB_OUTPUT
+
+      - name: Build Windows installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        with:
+          path: windows/installer/c_editor.iss
+          options: ${{ steps.installer.outputs.options }}
 
       - uses: actions/upload-artifact@v7
         with:
-          name: c_editor-windows-x64
-          path: artifact
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.installer.outputs.name }}
+          path: ${{ steps.installer.outputs.path }}
           if-no-files-found: error
 
   build-linux:
@@ -62,12 +98,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Release metadata
+        id: release
+        run: bash .github/scripts/release-vars.sh
+
       - name: Install Linux build dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev \
-            libstdc++-14-dev
+            libstdc++-14-dev zip
           sudo ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6 \
             /usr/lib/x86_64-linux-gnu/libstdc++.so
 
@@ -88,16 +128,22 @@ jobs:
       - run: flutter pub get
       - run: flutter build linux --release
 
-      - name: Stage Linux bundle for artifact
+      - name: Package Linux portable
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
-          mkdir -p artifact/c_editor
-          shopt -s dotglob
-          mv build/linux/x64/release/bundle/* artifact/c_editor/
+          BASE_NAME="c_editor-${VERSION}+${SHORT_SHA}-linux-portable"
+          mkdir -p "dist/portable/c_editor"
+          cp -a build/linux/x64/release/bundle/. "dist/portable/c_editor/"
+          (cd dist/portable && zip -r "../${BASE_NAME}.zip" c_editor)
+          echo "ARTIFACT_PATH=dist/${BASE_NAME}.zip" >> "$GITHUB_ENV"
+          echo "ARTIFACT_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: c_editor-linux-x64
-          path: artifact
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
           if-no-files-found: error
 
   build-android:
@@ -107,6 +153,10 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v7
+
+      - name: Release metadata
+        id: release
+        run: bash .github/scripts/release-vars.sh
 
       - uses: actions/setup-java@v5
         with:
@@ -159,12 +209,18 @@ jobs:
         run: flutter build apk --release
 
       - name: Stage APK artifact
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
-          mkdir -p artifacts
-          cp build/app/outputs/flutter-apk/app-release.apk artifacts/c_editor-release.apk
+          BASE_NAME="c_editor-${VERSION}+${SHORT_SHA}-android-apk"
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/${BASE_NAME}.apk"
+          echo "ARTIFACT_PATH=dist/${BASE_NAME}.apk" >> "$GITHUB_ENV"
+          echo "ARTIFACT_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: c_editor-android-apk
-          path: artifacts/c_editor-release.apk
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
           if-no-files-found: error
