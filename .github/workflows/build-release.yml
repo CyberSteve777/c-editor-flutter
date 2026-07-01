@@ -69,16 +69,38 @@ jobs:
           SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
           $baseName = "c_editor-$env:VERSION+$env:SHORT_SHA-windows-installer"
-          $releasePath = (Resolve-Path "build/windows/x64/runner/Release").Path
+          $releasePath = ((Resolve-Path "build/windows/x64/runner/Release").Path) -replace '\\', '/'
+          $outputDir = ((Resolve-Path ".").Path + "/dist/installer") -replace '\\', '/'
+          New-Item -ItemType Directory -Path "dist/installer" -Force | Out-Null
           echo "name=$baseName" >> $env:GITHUB_OUTPUT
           echo "path=dist/installer/$baseName.exe" >> $env:GITHUB_OUTPUT
-          echo "options=/DMyAppVersion=$env:VERSION /DSourcePath=$releasePath /DOutputBaseFilename=$baseName" >> $env:GITHUB_OUTPUT
+          @(
+            "options<<EOF"
+            "/DMyAppVersion=$env:VERSION"
+            "/DSourcePath=$releasePath"
+            "/DOutputBaseFilename=$baseName"
+            "/DOutputDir=$outputDir"
+            "EOF"
+          ) | ForEach-Object { echo $_ >> $env:GITHUB_OUTPUT }
 
       - name: Build Windows installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
           path: windows/installer/c_editor.iss
           options: ${{ steps.installer.outputs.options }}
+
+      - name: Verify Windows installer
+        shell: pwsh
+        run: |
+          $installerPath = "${{ steps.installer.outputs.path }}"
+          if (-not (Test-Path $installerPath)) {
+            Write-Error "Installer not found at $installerPath"
+            if (Test-Path dist/installer) {
+              Write-Host "Contents of dist/installer:"
+              Get-ChildItem dist/installer | Format-Table -AutoSize
+            }
+            exit 1
+          }
 
       - uses: actions/upload-artifact@v7
         with:

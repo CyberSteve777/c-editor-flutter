@@ -1,3 +1,7 @@
+#ifndef OutputDir
+  #define OutputDir "..\..\dist\installer"
+#endif
+
 #ifndef MyAppVersion
   #define MyAppVersion "0.0.0"
 #endif
@@ -21,7 +25,7 @@ AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputDir=..\..\dist\installer
+OutputDir={#OutputDir}
 OutputBaseFilename={#OutputBaseFilename}
 Compression=lzma2/ultra64
 SolidCompression=yes
