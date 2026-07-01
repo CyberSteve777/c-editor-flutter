@@ -71,15 +71,32 @@ jobs:
           VERSION: ${{ steps.release.outputs.version }}
           SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
+          $ErrorActionPreference = "Stop"
           $baseName = "c_editor-$env:VERSION+$env:SHORT_SHA-windows-installer"
           $releasePath = ((Resolve-Path "build/windows/x64/runner/Release").Path) -replace '\\', '/'
           $outputDir = ((Resolve-Path ".").Path + "/dist/installer") -replace '\\', '/'
 
+          New-Item -ItemType Directory -Path dist/installer -Force | Out-Null
+          Copy-Item LICENSE dist/installer/license.txt -Force
+
           $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-          pwsh .github/scripts/prepare-installer-assets.ps1 -InstallerDir dist/installer
+          $magick = (Get-Command magick -ErrorAction SilentlyContinue)?.Source
+          if (-not $magick) {
+            $magick = (Get-ChildItem "C:\Program Files\ImageMagick-*\magick.exe" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+          }
+          if (-not $magick) {
+            throw "ImageMagick (magick) not found after install."
+          }
+
+          $iconPng = (Resolve-Path "assets/meta/icon.png").Path
+          $iconIco = (Resolve-Path "dist/installer").Path + "\setup_icon.ico"
+          & $magick $iconPng -define icon:auto-resize=256,128,64,48,32,16 $iconIco
+          if (-not (Test-Path $iconIco)) {
+            throw "Failed to create installer icon at $iconIco"
+          }
 
           $licenseFilePath = ((Resolve-Path "dist/installer/license.txt").Path) -replace '\\', '/'
-          $setupIconPath = ((Resolve-Path "dist/installer/setup_icon.ico").Path) -replace '\\', '/'
+          $setupIconPath = ($iconIco -replace '\\', '/')
 
           echo "name=$baseName" >> $env:GITHUB_OUTPUT
           echo "path=dist/installer/$baseName.exe" >> $env:GITHUB_OUTPUT
