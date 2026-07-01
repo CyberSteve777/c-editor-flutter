@@ -72,6 +72,29 @@ jobs:
           $releasePath = ((Resolve-Path "build/windows/x64/runner/Release").Path) -replace '\\', '/'
           $outputDir = ((Resolve-Path ".").Path + "/dist/installer") -replace '\\', '/'
           New-Item -ItemType Directory -Path "dist/installer" -Force | Out-Null
+
+          Copy-Item LICENSE dist/installer/license.txt
+          $licenseFilePath = ((Resolve-Path "dist/installer/license.txt").Path) -replace '\\', '/'
+
+          Add-Type -AssemblyName System.Drawing
+          $iconPng = (Resolve-Path "assets/meta/icon.png").Path
+          $iconIco = Join-Path (Resolve-Path "dist/installer").Path "setup_icon.ico"
+          $bitmap = [System.Drawing.Bitmap]::new($iconPng)
+          $iconHandle = $bitmap.GetHicon()
+          try {
+            $icon = [System.Drawing.Icon]::FromHandle($iconHandle)
+            $fileStream = [System.IO.File]::OpenWrite($iconIco)
+            try {
+              $icon.Save($fileStream)
+            } finally {
+              $fileStream.Close()
+            }
+          } finally {
+            [void][System.Runtime.InteropServices.Marshal]::DestroyIcon($iconHandle)
+            $bitmap.Dispose()
+          }
+          $setupIconPath = ($iconIco -replace '\\', '/')
+
           echo "name=$baseName" >> $env:GITHUB_OUTPUT
           echo "path=dist/installer/$baseName.exe" >> $env:GITHUB_OUTPUT
           @(
@@ -80,6 +103,8 @@ jobs:
             "/DSourcePath=$releasePath"
             "/DOutputBaseFilename=$baseName"
             "/DOutputDir=$outputDir"
+            "/DLicenseFilePath=$licenseFilePath"
+            "/DSetupIconPath=$setupIconPath"
             "EOF"
           ) | ForEach-Object { echo $_ >> $env:GITHUB_OUTPUT }
 

@@ -14,6 +14,14 @@
   #define OutputBaseFilename "c_editor-setup"
 #endif
 
+#ifndef LicenseFilePath
+  #define LicenseFilePath "..\..\LICENSE"
+#endif
+
+#ifndef SetupIconPath
+  #define SetupIconPath "..\..\windows\runner\resources\app_icon.ico"
+#endif
+
 #define MyAppName "C-Editor"
 #define MyAppExeName "c_editor.exe"
 #define MyAppPublisher "team.international2c"
@@ -23,6 +31,8 @@ AppId={{8F4E2A91-6C3D-4B8E-9F1A-2D5E7C0A4B63}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
+LicenseFile={#LicenseFilePath}
+SetupIconFile={#SetupIconPath}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputDir={#OutputDir}
@@ -41,10 +51,12 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{#SourcePath}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE"; Flags: ignoreversion
+Source: "{#SetupIconPath}"; DestDir: "{app}"; DestName: "app_icon.ico"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\app_icon.ico"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
