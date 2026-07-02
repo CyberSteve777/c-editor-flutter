@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/dino_tread_preview_grid.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
@@ -126,6 +127,9 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
     final dinoColor = theme.brightness == Brightness.dark
         ? const Color(0xFFA2B659)
         : const Color(0xFF91B900);
+    final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(
+      widget.levelFile,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -242,6 +246,26 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
                           );
                           _sync();
                         },
+                      ),
+                      const SizedBox(height: 12),
+                      Center(
+                        child: Text(
+                          l10n?.dinoTreadPreview ?? 'Stomp area preview',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: DinoTreadPreviewGrid(
+                          gridRows: gridRows,
+                          gridCols: gridCols,
+                          gridY: _data.gridY,
+                          gridXMin: _data.gridXMin,
+                          gridXMax: _data.gridXMax,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
