@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/dino_run_preview_grid.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
@@ -121,6 +122,9 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
     final dinoColor = theme.brightness == Brightness.dark
         ? const Color(0xFFA2B659)
         : const Color(0xFF91B900);
+    final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(
+      widget.levelFile,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -222,6 +226,24 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                                 : null,
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 12),
+                      Center(
+                        child: Text(
+                          l10n?.dinoRunPreview ?? 'Stampede preview',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: DinoRunPreviewGrid(
+                          gridRows: gridRows,
+                          gridCols: gridCols,
+                          dinoRow: _data.dinoRow,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
