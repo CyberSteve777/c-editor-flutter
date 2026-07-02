@@ -21,6 +21,7 @@ class WaveManagerModuleScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     required this.onRequestZombieSelection,
+    required this.onOpenWaveTimeline,
   });
 
   final String rtid;
@@ -29,6 +30,7 @@ class WaveManagerModuleScreen extends StatefulWidget {
   final VoidCallback onBack;
   final void Function(void Function(String) onSelected)
   onRequestZombieSelection;
+  final VoidCallback onOpenWaveTimeline;
 
   @override
   State<WaveManagerModuleScreen> createState() =>
@@ -251,6 +253,7 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
         ? Colors.white.withValues(alpha: 0.9)
         : const Color(0xFF689F38);
     final sectionTitleColor = isDark ? pvzPurpleDark : pvzPurpleLight;
+    final sectionColor = theme.colorScheme.primary;
     final contentCardColor = isDark
         ? theme.colorScheme.surfaceContainerHighest
         : theme.colorScheme.surface;
@@ -329,81 +332,95 @@ EditorAliasInputField(
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,
               onChanged: widget.onChanged,
-              accentColor: sectionTitleColor,
             ),
             const SizedBox(height: 16),
             Card(
               color: isPropsValid ? propsCardColor : theme.colorScheme.error,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          isPropsValid ? Icons.check_circle : editorWarningIcon,
-                          color: isPropsValid
-                              ? (isDark
-                                    ? Colors.white
-                                    : const Color(0xFF2E7D32))
-                              : theme.colorScheme.onError,
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: widget.onOpenWaveTimeline,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        isPropsValid ? Icons.check_circle : editorWarningIcon,
+                        color: isPropsValid
+                            ? (isDark
+                                  ? Colors.white
+                                  : const Color(0xFF2E7D32))
+                            : theme.colorScheme.onError,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              waveManagerPropsTitle,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isPropsValid
+                                    ? propsTextColor
+                                    : theme.colorScheme.onError,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              currentWaveManagerPropsText,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: isPropsValid
+                                    ? propsSubtextColor
+                                    : theme.colorScheme.onError,
+                              ),
+                            ),
+                            if (actualWaveMgrAlias == null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  l10n?.noWaveManagerPropsFound ??
+                                      'No WaveManagerProperties object found.',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.onError,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            if (!isPropsValid && actualWaveMgrAlias != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: FilledButton(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor:
+                                        theme.colorScheme.onError,
+                                    foregroundColor:
+                                        theme.colorScheme.onPrimary,
+                                  ),
+                                  onPressed: () {
+                                    _data.waveManagerProps = RtidParser.build(
+                                      actualWaveMgrAlias,
+                                      'CurrentLevel',
+                                    );
+                                    _sync();
+                                  },
+                                  child: Text(
+                                    l10n?.fixToAlias(actualWaveMgrAlias) ??
+                                        'Fix to $actualWaveMgrAlias',
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          waveManagerPropsTitle,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isPropsValid
-                                ? propsTextColor
-                                : theme.colorScheme.onError,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      currentWaveManagerPropsText,
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      ),
+                      Icon(
+                        Icons.chevron_right,
                         color: isPropsValid
                             ? propsSubtextColor
                             : theme.colorScheme.onError,
                       ),
-                    ),
-                    if (actualWaveMgrAlias == null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          l10n?.noWaveManagerPropsFound ??
-                              'No WaveManagerProperties object found.',
-                          style: TextStyle(
-                            color: theme.colorScheme.onError,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    if (!isPropsValid && actualWaveMgrAlias != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: FilledButton(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: theme.colorScheme.onError,
-                            foregroundColor: theme.colorScheme.onPrimary,
-                          ),
-                          onPressed: () {
-                            _data.waveManagerProps = RtidParser.build(
-                              actualWaveMgrAlias,
-                              'CurrentLevel',
-                            );
-                            _sync();
-                          },
-                          child: Text(
-                            l10n?.fixToAlias(actualWaveMgrAlias) ??
-                                'Fix to $actualWaveMgrAlias',
-                          ),
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -473,7 +490,7 @@ EditorAliasInputField(
                 l10n?.pointSettings ?? 'Point settings',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: sectionTitleColor,
+                  color: sectionColor,
                 ),
               ),
               const SizedBox(height: 8),
@@ -520,7 +537,7 @@ EditorAliasInputField(
                     l10n?.zombiePool ?? 'Zombie pool',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: sectionTitleColor,
+                      color: sectionColor,
                     ),
                   ),
                   const Spacer(),

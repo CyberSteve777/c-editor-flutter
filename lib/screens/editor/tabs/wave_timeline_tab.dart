@@ -20,6 +20,7 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
     show EventChipWidget, isDesktopPlatform;
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
 import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
 
@@ -456,6 +457,59 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               ),
       );
     });
+  }
+
+  Widget _buildWaveContainerAliasCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final propsObj = widget.levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'WaveManagerProperties',
+    );
+    final alias = propsObj?.aliases?.firstOrNull;
+    if (alias == null) return const SizedBox.shrink();
+
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n?.waveContainerAliasSection ?? 'Wave container alias',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n?.waveContainerAliasHint ??
+                  'Alias for the WaveManagerProperties object that stores wave data.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+            EditorAliasInputField(
+              key: ValueKey(alias),
+              alias: alias,
+              levelFile: widget.levelFile,
+              wrapInCard: false,
+              onAliasChanged: (newAlias) {
+                renameLevelObjectAlias(
+                  levelFile: widget.levelFile,
+                  oldAlias: alias,
+                  newAlias: newAlias,
+                  onChanged: widget.onChanged,
+                );
+              },
+              onChanged: widget.onChanged,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildWaveManagerSettingsCard(
@@ -2166,6 +2220,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         if (deadLinks.isNotEmpty) _buildDeadLinksCard(context, deadLinks),
         _buildCustomZombieCard(context, customZombies),
         if (isDeepSeaLawn) _buildCustomFishCard(context, customFishes),
+        _buildWaveContainerAliasCard(context),
         _buildWaveManagerSettingsCard(
           context,
           interval,
