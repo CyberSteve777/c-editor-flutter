@@ -14,6 +14,7 @@ import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/widgets/zombie_ztalemate_perks_editor.dart';
 
 /// Zombie spawn event editor for JitteredWave and GroundSpawner.
 /// Ported from Z-Editor-master JitteredWaveEventEP.kt, SpawnZombiesFromGroundEventEP.kt
@@ -226,9 +227,9 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
     final level = _batchLevel.round();
     final zombies = _zombies.map((z) {
       if (_isElite(z)) {
-        return ZombieSpawnData(type: z.type, row: z.row, level: null);
+        return z.copyWith(clearLevel: true);
       }
-      return ZombieSpawnData(type: z.type, row: z.row, level: level);
+      return z.copyWith(level: level);
     }).toList();
     _updateZombies(zombies);
   }
@@ -352,6 +353,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
         int rowValue = zombie.row ?? 0;
         int levelValue = zombie.level ?? 0;
         bool fromLeft = zombie.direction == 'left';
+        var titles = List<String>.from(zombie.titles ?? []);
         return StatefulBuilder(
           builder: (ctx, setModalState) {
             return Padding(
@@ -440,13 +442,15 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                             onChanged: (v) {
                               if (v == null) return;
                               setModalState(() => rowValue = v);
-                              final updated = ZombieSpawnData(
-                                type: zombie.type,
-                                row: v == 0 ? null : v,
-                                level: zombie.level,
-                                direction: fromLeft ? 'left' : null,
+                              _updateZombie(
+                                index,
+                                zombie.copyWith(
+                                  row: v == 0 ? null : v,
+                                  clearRow: v == 0,
+                                  direction: fromLeft ? 'left' : null,
+                                  clearDirection: !fromLeft,
+                                ),
                               );
-                              _updateZombie(index, updated);
                             },
                           ),
                         ),
@@ -468,11 +472,12 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                                   );
                                   _updateZombie(
                                     index,
-                                    ZombieSpawnData(
+                                    zombie.copyWith(
                                       type: rtid,
-                                      row: zombie.row,
                                       level: isEliteNew ? null : zombie.level,
+                                      clearLevel: isEliteNew,
                                       direction: fromLeft ? 'left' : null,
+                                      clearDirection: !fromLeft,
                                     ),
                                   );
                                 });
@@ -497,13 +502,15 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                         value: levelValue == 0,
                         onChanged: (v) {
                           setModalState(() => levelValue = v ? 0 : 1);
-                          final updated = ZombieSpawnData(
-                            type: zombie.type,
-                            row: zombie.row,
-                            level: v ? null : 1,
-                            direction: fromLeft ? 'left' : null,
+                          _updateZombie(
+                            index,
+                            zombie.copyWith(
+                              level: v ? null : 1,
+                              clearLevel: v,
+                              direction: fromLeft ? 'left' : null,
+                              clearDirection: !fromLeft,
+                            ),
                           );
-                          _updateZombie(index, updated);
                         },
                       ),
                       if (levelValue != 0)
@@ -523,13 +530,14 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                               onChanged: (v) {
                                 final newLevel = v.round();
                                 setModalState(() => levelValue = newLevel);
-                                final updated = ZombieSpawnData(
-                                  type: zombie.type,
-                                  row: zombie.row,
-                                  level: newLevel,
-                                  direction: fromLeft ? 'left' : null,
+                                _updateZombie(
+                                  index,
+                                  zombie.copyWith(
+                                    level: newLevel,
+                                    direction: fromLeft ? 'left' : null,
+                                    clearDirection: !fromLeft,
+                                  ),
                                 );
-                                _updateZombie(index, updated);
                               },
                             ),
                           ],
@@ -541,28 +549,48 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                       value: fromLeft,
                       onChanged: (v) {
                         setModalState(() => fromLeft = v);
-                        final updated = ZombieSpawnData(
-                          type: zombie.type,
-                          row: zombie.row,
-                          level: zombie.level,
-                          direction: v ? 'left' : null,
+                        _updateZombie(
+                          index,
+                          zombie.copyWith(
+                            direction: v ? 'left' : null,
+                            clearDirection: !v,
+                          ),
                         );
-                        _updateZombie(index, updated);
                       },
                     ),
+                    if (!widget.isGroundSpawner) ...[
+                      const SizedBox(height: 12),
+                      ZombieZtalematePerksEditor(
+                        titles: titles,
+                        onChanged: (next) {
+                          setModalState(() => titles = List<String>.from(next));
+                          _updateZombie(
+                            index,
+                            zombie.copyWith(
+                              titles: next,
+                              clearTitles: next.isEmpty,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              final copy = ZombieSpawnData(
-                                type: zombie.type,
+                              final copy = zombie.copyWith(
                                 row: rowValue == 0 ? null : rowValue,
+                                clearRow: rowValue == 0,
                                 level: isElite
                                     ? null
                                     : (levelValue == 0 ? null : levelValue),
+                                clearLevel: isElite || levelValue == 0,
                                 direction: fromLeft ? 'left' : null,
+                                clearDirection: !fromLeft,
+                                titles: titles,
+                                clearTitles: titles.isEmpty,
                               );
                               final list = List<ZombieSpawnData>.from(_zombies)
                                 ..add(copy);
@@ -609,15 +637,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                         onInjectCustomZombie: widget.onInjectCustomZombie,
                         onCloseSheet: () => Navigator.pop(ctx),
                         onRtidSelected: (rtid) {
-                          _updateZombie(
-                            index,
-                            ZombieSpawnData(
-                              type: rtid,
-                              row: zombie.row,
-                              level: zombie.level,
-                              direction: zombie.direction,
-                            ),
-                          );
+                          _updateZombie(index, zombie.copyWith(type: rtid));
                         },
                       ),
                   ],
@@ -679,6 +699,13 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                     body:
                         l10n?.onlyAppliesRockEra ??
                         'Only applies to Rock era maps.',
+                  ),
+                if (!widget.isGroundSpawner)
+                  HelpSectionData(
+                    title: l10n?.ztPerksSectionTitle ?? 'Ztalemate perks',
+                    body:
+                        l10n?.eventHelpJitteredZtPerks ??
+                        'Assign Ztalemate Escape buffs to individual zombies via the Titles property. Each perk type can only be used once per zombie.',
                   ),
                 HelpSectionData(
                   title: l10n?.row ?? 'Row',
