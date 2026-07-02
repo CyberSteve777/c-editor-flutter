@@ -3253,6 +3253,10 @@ class _EditorScreenState extends State<EditorScreen> {
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
             onRequestZombieSelection: _openZombieSelection,
+            onOpenWaveTimeline: () {
+              Navigator.pop(context);
+              _setActiveTab(EditorTabType.timeline);
+            },
           ),
         ),
       );
