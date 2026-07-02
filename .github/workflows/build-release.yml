@@ -98,11 +98,16 @@ jobs:
           $licenseFilePath = ((Resolve-Path "dist/installer/license.txt").Path) -replace '\\', '/'
           $setupIconPath = ($iconIco -replace '\\', '/')
 
+          $versionParts = $env:VERSION.Split('.')
+          while ($versionParts.Count -lt 4) { $versionParts += '0' }
+          $versionInfo = ($versionParts[0..3] -join '.')
+
           echo "name=$baseName" >> $env:GITHUB_OUTPUT
           echo "path=dist/installer/$baseName.exe" >> $env:GITHUB_OUTPUT
           @(
             "options<<EOF"
             "/DMyAppVersion=$env:VERSION"
+            "/DVersionInfoVersion=$versionInfo"
             "/DSourcePath=$releasePath"
             "/DOutputBaseFilename=$baseName"
             "/DOutputDir=$outputDir"

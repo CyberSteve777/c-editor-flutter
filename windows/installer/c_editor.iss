@@ -22,6 +22,10 @@
   #define SetupIconPath "..\..\windows\runner\resources\app_icon.ico"
 #endif
 
+#ifndef VersionInfoVersion
+  #define VersionInfoVersion "0.0.0.0"
+#endif
+
 #define MyAppName "C-Editor"
 #define MyAppExeName "c_editor.exe"
 #define MyAppPublisher "team.international2c"
@@ -42,9 +46,16 @@ SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=lowest
 WizardStyle=modern
+VersionInfoVersion={#VersionInfoVersion}
+VersionInfoProductVersion={#VersionInfoVersion}
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoDescription={#MyAppName} Setup
+VersionInfoProductName={#MyAppName}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "chinesesimplified"; MessagesFile: "languages\ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
