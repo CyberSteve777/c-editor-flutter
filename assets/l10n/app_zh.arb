@@ -141,9 +141,9 @@
   "linksSubsection": "链接",
   "creditsSection": "致谢名单",
   "authorLabel": "作者：",
-  "authorName": "CyberSteve777",
+  "authorName": "CyberSteve777、Devourdoom、Chara",
   "thanksLabel": "特别鸣谢：",
-  "thanksNames": "Devourdoom、Chara、Evilhack28、Rebus、KL12、vi_i_guess、Haruma、nineteendo",
+  "thanksNames": "Evilhack28、Rebus、KL12、vi_i_guess、Haruma、nineteendo、EnderallyGolem、Locke",
   "sourceLabel": "代码仓库：",
   "issuesLabel": "问题反馈：",
   "zEditorAcknowledgment": "在此，我们还要向 Z-Editor 的创作者们致以诚挚的感谢。本工具的诞生离不开他们所奠定的基础。",
@@ -254,6 +254,8 @@
    }
   },
   "waveManagerGlobalParams": "波次管理器全局参数",
+  "waveContainerAliasSection": "波次容器别名",
+  "waveContainerAliasHint": "存储波次数据的 WaveManagerProperties 对象别名。",
   "waveManagerGlobalSummary": "旗帜间隔: {interval}, 刷新血线: {minPercent}% - {maxPercent}%",
   "@waveManagerGlobalSummary": {
     "placeholders": {
@@ -1077,7 +1079,8 @@
   "eventDinoTread": "事件类型：恐龙践踏",
   "eventDinoRun": "事件类型：龙潮突袭",
   "eventHelpDinoTreadBody": "雷龙的脚移动到指定区域内，并在数秒后落下，对范围内所有植物和僵尸造成伤害，留下一个持续约 7 秒的脚印，期间无法在该区域种植。",
-  "eventHelpDinoTreadRowCol": "GridY 表示行，GridXMin/GridXMax 表示列范围，行和列均从0开始计数。海底世界地图的范围为：行0–5，列0–9。",
+  "eventHelpDinoTreadRowCol": "GridY 表示践踏中心的行；GridXMin/GridXMax 表示可能的中心列范围（均从 0 开始）。每次践踏覆盖中心周围 3×3 的区域。预览中高亮显示这些中心位置可能波及的所有格子。海底世界地图：行 0–5，列 0–9。",
+  "dinoTreadPreview": "践踏范围预览",
   "dinoTreadRowLabel": "行 (GridY)",
   "dinoTreadColMinLabel": "最左列 (GridXMin)",
   "dinoTreadColMaxLabel": "最右列 (GridXMax)",
@@ -1085,7 +1088,8 @@
   "columnStartLabel": "起始列 (ColumnStart)",
   "columnEndLabel": "结束列 (ColumnEnd)",
   "eventHelpDinoRunBody": "触发该事件时，会在2－3行的范围内聚集起恐龙。这些恐龙不会发动能力，而是直接向场内发起冲锋，踩死植物或僵尸。不同的恐龙可以踩死的植物或僵尸数目不同。",
-  "eventHelpDinoRunRow": "DinoRow表示龙潮中心的行数，从0开始计数。在海底世界地图中，该值可设置为5。",
+  "eventHelpDinoRunRow": "DinoRow表示龙潮中心的行数（预览中为红色）。相邻行（预览中为黄色）也可能聚集恐龙。从0开始计数。海底世界地图可设置为5。",
+  "dinoRunPreview": "龙潮预览",
   "positionAndArea": "位置与区域",
   "positionAndDuration": "位置与持续时间",
   "rowCol0Index": "行/列（从0开始计数）",
@@ -1451,6 +1455,77 @@
   "eventHelpStandardOverview": "最基础的生成僵尸事件。可以配置每一只僵尸的阶数和行号，0阶表示随地图阶级，庭院模式下即为1阶。\n掉落物默认情况下配置的是携带能量豆的僵尸个数，启用掉落植物功能后会随机从配置的植物库里掉落植物卡片。",
   "eventHelpStandardRow": "僵尸可出现在第1–5行中的任意一行，或随机选择一行出现。",
   "eventHelpStandardRowDeepSea": "僵尸可出现在第1–6行中的任意一行，或随机选择一行出现。",
+  "ztPerksSectionTitle": "僵局逃脱增益",
+  "ztPerksSectionHint": "每种增益类型对同一僵尸只能应用一次。",
+  "ztPerksNone": "未分配增益。",
+  "ztPerksAdd": "添加增益",
+  "ztPerksTypeAlreadyAssigned": "该类型的增益已分配。",
+  "eventHelpJitteredZtPerks": "为单个僵尸分配僵局逃脱（Ztalemate）增益，保存在僵尸的 Titles 数组中。同一僵尸不能同时拥有同类型的多个增益（例如不能同时有 Crystal I 和 Crystal II）。",
+  "ztPerkCategoryCrystal": "水晶",
+  "ztPerkCategoryAttack": "攻击",
+  "ztPerkCategorySpeed": "速度",
+  "ztPerkCategoryShield": "护盾",
+  "ztPerkCategoryGravity": "重力",
+  "ztPerkCategoryImmuneControl": "控制免疫",
+  "ztPerkCategoryAntiControl": "控制抗性",
+  "ztPerksViewStats": "查看数值",
+  "ztPerkPropDamageTakenInterval": "受伤间隔",
+  "ztPerkPropDamageTotalTaken": "累计受伤",
+  "ztPerkPropDamageTakenPerTime": "每次受伤",
+  "ztPerkPropHpReduced": "生命削减",
+  "ztPerkPropShieldNum": "护盾层数",
+  "ztPerkPropReducedControlPercent": "控制减免",
+  "ztPerkPropReducedDamagePercent": "伤害减免",
+  "ztPerkPropImprovedDamagePercent": "攻击提升",
+  "ztPerkPropImprovedSpeedPercent": "速度提升",
+  "ztPerkDescCrystal": "免疫秒杀效果，在 {interval} 秒内只会受到 1 次伤害，每次受到的伤害变为 {damagePerHit} 点，生命值降低 {hpReduced}。",
+  "@ztPerkDescCrystal": {
+    "placeholders": {
+      "interval": {"type": "String"},
+      "damagePerHit": {"type": "String"},
+      "hpReduced": {"type": "String"}
+    }
+  },
+  "ztPerkDescGravity": "不会受到击退和击飞效果影响。",
+  "ztPerkDescShield": "前 {shieldNum} 次伤害无效，持续期间免疫秒杀效果。",
+  "@ztPerkDescShield": {
+    "placeholders": {
+      "shieldNum": {"type": "String"}
+    }
+  },
+  "ztPerkDescImmuneControl": "受到的控制效果降低 {percent}。",
+  "@ztPerkDescImmuneControl": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerkDescAntiControl": "处于控制效果影响时，受到的伤害降低 {percent}。",
+  "@ztPerkDescAntiControl": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerkDescAttack": "攻击力增加 {percent}。",
+  "@ztPerkDescAttack": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerkDescSpeed": "移动速度增加 {percent}。",
+  "@ztPerkDescSpeed": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerksCategoryInfoTitle": "增益说明",
+  "ztPerkCategoryDescNumericHint": "A、B、X、N、P 等字母代表随等级变化的数值。",
+  "ztPerkCategoryDescCrystal": "免疫秒杀效果，在 A 秒内只会受到 1 次伤害，每次受到的伤害变为 B 点，生命值降低 X。",
+  "ztPerkCategoryDescGravity": "不会受到击退和击飞效果影响。",
+  "ztPerkCategoryDescShield": "前 N 次伤害无效，持续期间免疫秒杀效果。",
+  "ztPerkCategoryDescImmuneControl": "受到的控制效果降低 P%。",
+  "ztPerkCategoryDescAntiControl": "处于控制效果影响时，受到的伤害降低 P%。",
+  "ztPerkCategoryDescAttack": "攻击力增加 P%。",
+  "ztPerkCategoryDescSpeed": "移动速度增加 P%。",
   "warningStageSwitchedTo5Rows": "当前关卡的地图只有5行，但部分数据引用了第6行。这些对象在关卡中可能无法正确显示。",
   "warningObjectsOutsideArea": "部分对象在场外（场地范围为{rows}×{cols}）。",
   "@warningObjectsOutsideArea": {"placeholders": {"rows": {"type": "int"}, "cols": {"type": "int"}}},

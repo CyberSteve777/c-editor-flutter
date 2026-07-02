@@ -901,13 +901,13 @@ abstract class AppLocalizations {
   /// No description provided for @authorLabel.
   ///
   /// In en, this message translates to:
-  /// **'Author:'**
+  /// **'Authors:'**
   String get authorLabel;
 
   /// No description provided for @authorName.
   ///
   /// In en, this message translates to:
-  /// **'CyberSteve777'**
+  /// **'CyberSteve777, Devourdoom, Chara'**
   String get authorName;
 
   /// No description provided for @thanksLabel.
@@ -919,7 +919,7 @@ abstract class AppLocalizations {
   /// No description provided for @thanksNames.
   ///
   /// In en, this message translates to:
-  /// **'Devourdoom, Chara, Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo'**
+  /// **'Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo, EnderallyGolem, Locke'**
   String get thanksNames;
 
   /// No description provided for @sourceLabel.
@@ -1935,6 +1935,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wave Manager Parameters'**
   String get waveManagerGlobalParams;
+
+  /// No description provided for @waveContainerAliasSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave container alias'**
+  String get waveContainerAliasSection;
+
+  /// No description provided for @waveContainerAliasHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Alias for the WaveManagerProperties object that stores wave data.'**
+  String get waveContainerAliasHint;
 
   /// No description provided for @waveManagerGlobalSummary.
   ///
@@ -5995,8 +6007,14 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpDinoTreadRowCol.
   ///
   /// In en, this message translates to:
-  /// **'GridY represents the row, and GridXMin/GridXMax represent the column range. Both rows and columns start counting from 0. In Underwater World, rows range from 0–5 and columns from 0–9.'**
+  /// **'GridY is the stomp center row; GridXMin and GridXMax bound the possible center columns (all 0-based). Each stomp covers a 3×3 area around its center. The preview highlights every cell that can be stomped across those positions. Underwater World: rows 0–5, columns 0–9.'**
   String get eventHelpDinoTreadRowCol;
+
+  /// No description provided for @dinoTreadPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Stomp area preview'**
+  String get dinoTreadPreview;
 
   /// No description provided for @dinoTreadRowLabel.
   ///
@@ -6043,8 +6061,14 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpDinoRunRow.
   ///
   /// In en, this message translates to:
-  /// **'DinoRow defines the center row of the dino rush. Rows are 0-based. Underwater World supports up to 5.'**
+  /// **'DinoRow defines the center row of the dino rush (red in the preview). Stampede dinosaurs may also spawn on the rows directly above and below (yellow). Rows are 0-based. Underwater World supports up to 5.'**
   String get eventHelpDinoRunRow;
+
+  /// No description provided for @dinoRunPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Stampede preview'**
+  String get dinoRunPreview;
 
   /// No description provided for @positionAndArea.
   ///
@@ -8091,6 +8115,244 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Zombies can spawn in any row from 1–6, or in a random row.'**
   String get eventHelpStandardRowDeepSea;
+
+  /// No description provided for @ztPerksSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ztalemate perks'**
+  String get ztPerksSectionTitle;
+
+  /// No description provided for @ztPerksSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Each perk type can only be applied once per zombie.'**
+  String get ztPerksSectionHint;
+
+  /// No description provided for @ztPerksNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No perks assigned.'**
+  String get ztPerksNone;
+
+  /// No description provided for @ztPerksAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add perk'**
+  String get ztPerksAdd;
+
+  /// No description provided for @ztPerksTypeAlreadyAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Another perk of this type is already assigned.'**
+  String get ztPerksTypeAlreadyAssigned;
+
+  /// No description provided for @eventHelpJitteredZtPerks.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Ztalemate Escape buffs to individual zombies. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).'**
+  String get eventHelpJitteredZtPerks;
+
+  /// No description provided for @ztPerkCategoryCrystal.
+  ///
+  /// In en, this message translates to:
+  /// **'Crystal'**
+  String get ztPerkCategoryCrystal;
+
+  /// No description provided for @ztPerkCategoryAttack.
+  ///
+  /// In en, this message translates to:
+  /// **'Attack'**
+  String get ztPerkCategoryAttack;
+
+  /// No description provided for @ztPerkCategorySpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get ztPerkCategorySpeed;
+
+  /// No description provided for @ztPerkCategoryShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Shield'**
+  String get ztPerkCategoryShield;
+
+  /// No description provided for @ztPerkCategoryGravity.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity'**
+  String get ztPerkCategoryGravity;
+
+  /// No description provided for @ztPerkCategoryImmuneControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Control immunity'**
+  String get ztPerkCategoryImmuneControl;
+
+  /// No description provided for @ztPerkCategoryAntiControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Control resistance'**
+  String get ztPerkCategoryAntiControl;
+
+  /// No description provided for @ztPerksViewStats.
+  ///
+  /// In en, this message translates to:
+  /// **'View stats'**
+  String get ztPerksViewStats;
+
+  /// No description provided for @ztPerkPropDamageTakenInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage taken interval'**
+  String get ztPerkPropDamageTakenInterval;
+
+  /// No description provided for @ztPerkPropDamageTotalTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage total taken'**
+  String get ztPerkPropDamageTotalTaken;
+
+  /// No description provided for @ztPerkPropDamageTakenPerTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage taken per time'**
+  String get ztPerkPropDamageTakenPerTime;
+
+  /// No description provided for @ztPerkPropHpReduced.
+  ///
+  /// In en, this message translates to:
+  /// **'HP reduced'**
+  String get ztPerkPropHpReduced;
+
+  /// No description provided for @ztPerkPropShieldNum.
+  ///
+  /// In en, this message translates to:
+  /// **'Shield layers'**
+  String get ztPerkPropShieldNum;
+
+  /// No description provided for @ztPerkPropReducedControlPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Control reduction'**
+  String get ztPerkPropReducedControlPercent;
+
+  /// No description provided for @ztPerkPropReducedDamagePercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage reduction'**
+  String get ztPerkPropReducedDamagePercent;
+
+  /// No description provided for @ztPerkPropImprovedDamagePercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage boost'**
+  String get ztPerkPropImprovedDamagePercent;
+
+  /// No description provided for @ztPerkPropImprovedSpeedPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed boost'**
+  String get ztPerkPropImprovedSpeedPercent;
+
+  /// No description provided for @ztPerkDescCrystal.
+  ///
+  /// In en, this message translates to:
+  /// **'Grants immunity against instant-kill effects. Damage can only be received once every {interval} seconds, each hit deals {damagePerHit} damage, and health is reduced by {hpReduced}.'**
+  String ztPerkDescCrystal(
+    String interval,
+    String damagePerHit,
+    String hpReduced,
+  );
+
+  /// No description provided for @ztPerkDescGravity.
+  ///
+  /// In en, this message translates to:
+  /// **'Knockback or knockoff effects are no longer effective.'**
+  String get ztPerkDescGravity;
+
+  /// No description provided for @ztPerkDescShield.
+  ///
+  /// In en, this message translates to:
+  /// **'The first {shieldNum} instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.'**
+  String ztPerkDescShield(String shieldNum);
+
+  /// No description provided for @ztPerkDescImmuneControl.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} more resistance against control effects.'**
+  String ztPerkDescImmuneControl(String percent);
+
+  /// No description provided for @ztPerkDescAntiControl.
+  ///
+  /// In en, this message translates to:
+  /// **'When under the influence of a control effect, received damage is reduced by {percent}.'**
+  String ztPerkDescAntiControl(String percent);
+
+  /// No description provided for @ztPerkDescAttack.
+  ///
+  /// In en, this message translates to:
+  /// **'Attack power increased by {percent}.'**
+  String ztPerkDescAttack(String percent);
+
+  /// No description provided for @ztPerkDescSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking speed increased by {percent}.'**
+  String ztPerkDescSpeed(String percent);
+
+  /// No description provided for @ztPerksCategoryInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Perk descriptions'**
+  String get ztPerksCategoryInfoTitle;
+
+  /// No description provided for @ztPerkCategoryDescNumericHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.'**
+  String get ztPerkCategoryDescNumericHint;
+
+  /// No description provided for @ztPerkCategoryDescCrystal.
+  ///
+  /// In en, this message translates to:
+  /// **'Grants immunity against instant-kill effects. Damage can only be received once every A seconds, each hit deals B damage, and health is reduced by X.'**
+  String get ztPerkCategoryDescCrystal;
+
+  /// No description provided for @ztPerkCategoryDescGravity.
+  ///
+  /// In en, this message translates to:
+  /// **'Knockback or knockoff effects are no longer effective.'**
+  String get ztPerkCategoryDescGravity;
+
+  /// No description provided for @ztPerkCategoryDescShield.
+  ///
+  /// In en, this message translates to:
+  /// **'The first N instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.'**
+  String get ztPerkCategoryDescShield;
+
+  /// No description provided for @ztPerkCategoryDescImmuneControl.
+  ///
+  /// In en, this message translates to:
+  /// **'P% more resistance against control effects.'**
+  String get ztPerkCategoryDescImmuneControl;
+
+  /// No description provided for @ztPerkCategoryDescAntiControl.
+  ///
+  /// In en, this message translates to:
+  /// **'When under the influence of a control effect, received damage is reduced by P%.'**
+  String get ztPerkCategoryDescAntiControl;
+
+  /// No description provided for @ztPerkCategoryDescAttack.
+  ///
+  /// In en, this message translates to:
+  /// **'Attack power increased by P%.'**
+  String get ztPerkCategoryDescAttack;
+
+  /// No description provided for @ztPerkCategoryDescSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking speed increased by P%.'**
+  String get ztPerkCategoryDescSpeed;
 
   /// No description provided for @warningStageSwitchedTo5Rows.
   ///

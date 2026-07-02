@@ -434,14 +434,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authorLabel => '作者：';
 
   @override
-  String get authorName => 'CyberSteve777';
+  String get authorName => 'CyberSteve777、Devourdoom、Chara';
 
   @override
   String get thanksLabel => '特别鸣谢：';
 
   @override
   String get thanksNames =>
-      'Devourdoom、Chara、Evilhack28、Rebus、KL12、vi_i_guess、Haruma、nineteendo';
+      'Evilhack28、Rebus、KL12、vi_i_guess、Haruma、nineteendo、EnderallyGolem、Locke';
 
   @override
   String get sourceLabel => '代码仓库：';
@@ -967,6 +967,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveManagerGlobalParams => '波次管理器全局参数';
+
+  @override
+  String get waveContainerAliasSection => '波次容器别名';
+
+  @override
+  String get waveContainerAliasHint => '存储波次数据的 WaveManagerProperties 对象别名。';
 
   @override
   String waveManagerGlobalSummary(
@@ -3131,7 +3137,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpDinoTreadRowCol =>
-      'GridY 表示行，GridXMin/GridXMax 表示列范围，行和列均从0开始计数。海底世界地图的范围为：行0–5，列0–9。';
+      'GridY 表示践踏中心的行；GridXMin/GridXMax 表示可能的中心列范围（均从 0 开始）。每次践踏覆盖中心周围 3×3 的区域。预览中高亮显示这些中心位置可能波及的所有格子。海底世界地图：行 0–5，列 0–9。';
+
+  @override
+  String get dinoTreadPreview => '践踏范围预览';
 
   @override
   String get dinoTreadRowLabel => '行 (GridY)';
@@ -3156,7 +3165,11 @@ class AppLocalizationsZh extends AppLocalizations {
       '触发该事件时，会在2－3行的范围内聚集起恐龙。这些恐龙不会发动能力，而是直接向场内发起冲锋，踩死植物或僵尸。不同的恐龙可以踩死的植物或僵尸数目不同。';
 
   @override
-  String get eventHelpDinoRunRow => 'DinoRow表示龙潮中心的行数，从0开始计数。在海底世界地图中，该值可设置为5。';
+  String get eventHelpDinoRunRow =>
+      'DinoRow表示龙潮中心的行数（预览中为红色）。相邻行（预览中为黄色）也可能聚集恐龙。从0开始计数。海底世界地图可设置为5。';
+
+  @override
+  String get dinoRunPreview => '龙潮预览';
 
   @override
   String get positionAndArea => '位置与区域';
@@ -4278,6 +4291,141 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpStandardRowDeepSea => '僵尸可出现在第1–6行中的任意一行，或随机选择一行出现。';
+
+  @override
+  String get ztPerksSectionTitle => '僵局逃脱增益';
+
+  @override
+  String get ztPerksSectionHint => '每种增益类型对同一僵尸只能应用一次。';
+
+  @override
+  String get ztPerksNone => '未分配增益。';
+
+  @override
+  String get ztPerksAdd => '添加增益';
+
+  @override
+  String get ztPerksTypeAlreadyAssigned => '该类型的增益已分配。';
+
+  @override
+  String get eventHelpJitteredZtPerks =>
+      '为单个僵尸分配僵局逃脱（Ztalemate）增益，保存在僵尸的 Titles 数组中。同一僵尸不能同时拥有同类型的多个增益（例如不能同时有 Crystal I 和 Crystal II）。';
+
+  @override
+  String get ztPerkCategoryCrystal => '水晶';
+
+  @override
+  String get ztPerkCategoryAttack => '攻击';
+
+  @override
+  String get ztPerkCategorySpeed => '速度';
+
+  @override
+  String get ztPerkCategoryShield => '护盾';
+
+  @override
+  String get ztPerkCategoryGravity => '重力';
+
+  @override
+  String get ztPerkCategoryImmuneControl => '控制免疫';
+
+  @override
+  String get ztPerkCategoryAntiControl => '控制抗性';
+
+  @override
+  String get ztPerksViewStats => '查看数值';
+
+  @override
+  String get ztPerkPropDamageTakenInterval => '受伤间隔';
+
+  @override
+  String get ztPerkPropDamageTotalTaken => '累计受伤';
+
+  @override
+  String get ztPerkPropDamageTakenPerTime => '每次受伤';
+
+  @override
+  String get ztPerkPropHpReduced => '生命削减';
+
+  @override
+  String get ztPerkPropShieldNum => '护盾层数';
+
+  @override
+  String get ztPerkPropReducedControlPercent => '控制减免';
+
+  @override
+  String get ztPerkPropReducedDamagePercent => '伤害减免';
+
+  @override
+  String get ztPerkPropImprovedDamagePercent => '攻击提升';
+
+  @override
+  String get ztPerkPropImprovedSpeedPercent => '速度提升';
+
+  @override
+  String ztPerkDescCrystal(
+    String interval,
+    String damagePerHit,
+    String hpReduced,
+  ) {
+    return '免疫秒杀效果，在 $interval 秒内只会受到 1 次伤害，每次受到的伤害变为 $damagePerHit 点，生命值降低 $hpReduced。';
+  }
+
+  @override
+  String get ztPerkDescGravity => '不会受到击退和击飞效果影响。';
+
+  @override
+  String ztPerkDescShield(String shieldNum) {
+    return '前 $shieldNum 次伤害无效，持续期间免疫秒杀效果。';
+  }
+
+  @override
+  String ztPerkDescImmuneControl(String percent) {
+    return '受到的控制效果降低 $percent。';
+  }
+
+  @override
+  String ztPerkDescAntiControl(String percent) {
+    return '处于控制效果影响时，受到的伤害降低 $percent。';
+  }
+
+  @override
+  String ztPerkDescAttack(String percent) {
+    return '攻击力增加 $percent。';
+  }
+
+  @override
+  String ztPerkDescSpeed(String percent) {
+    return '移动速度增加 $percent。';
+  }
+
+  @override
+  String get ztPerksCategoryInfoTitle => '增益说明';
+
+  @override
+  String get ztPerkCategoryDescNumericHint => 'A、B、X、N、P 等字母代表随等级变化的数值。';
+
+  @override
+  String get ztPerkCategoryDescCrystal =>
+      '免疫秒杀效果，在 A 秒内只会受到 1 次伤害，每次受到的伤害变为 B 点，生命值降低 X。';
+
+  @override
+  String get ztPerkCategoryDescGravity => '不会受到击退和击飞效果影响。';
+
+  @override
+  String get ztPerkCategoryDescShield => '前 N 次伤害无效，持续期间免疫秒杀效果。';
+
+  @override
+  String get ztPerkCategoryDescImmuneControl => '受到的控制效果降低 P%。';
+
+  @override
+  String get ztPerkCategoryDescAntiControl => '处于控制效果影响时，受到的伤害降低 P%。';
+
+  @override
+  String get ztPerkCategoryDescAttack => '攻击力增加 P%。';
+
+  @override
+  String get ztPerkCategoryDescSpeed => '移动速度增加 P%。';
 
   @override
   String get warningStageSwitchedTo5Rows =>

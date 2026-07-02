@@ -140,10 +140,10 @@
   "cEditorInviteLabel": "Ссылка-приглашение на Discord-сервер C-Editor:",
   "linksSubsection": "Ссылки",
   "creditsSection": "Благодарности",
-  "authorLabel": "Автор:",
-  "authorName": "CyberSteve777",
+  "authorLabel": "Авторы:",
+  "authorName": "CyberSteve777, Devourdoom, Chara",
   "thanksLabel": "Особая благодарность:",
-  "thanksNames": "Devourdoom, Chara, Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo",
+  "thanksNames": "Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo, EnderallyGolem, Locke",
   "sourceLabel": "Исходный код:",
   "issuesLabel": "Проблемы:",
   "zEditorAcknowledgment": "Без создателей Z-Editor создание этого инструмента было бы невозможным.",
@@ -254,6 +254,8 @@
    }
   },
   "waveManagerGlobalParams": "Глобальные параметры волн",
+  "waveContainerAliasSection": "Псевдоним контейнера волн",
+  "waveContainerAliasHint": "Псевдоним объекта WaveManagerProperties, в котором хранятся данные волн.",
   "waveManagerGlobalSummary": "Интервал флага: {interval}, порог здоровья: {minPercent}% - {maxPercent}%",
   "@waveManagerGlobalSummary": {
     "placeholders": {
@@ -1077,7 +1079,8 @@
   "eventDinoTread": "Событие: Шаг динозавра",
   "eventDinoRun": "Событие: Бег динозавра",
   "eventHelpDinoTreadBody": "Динозавр наступает на область сетки (ряд Y, столбцы XMin–XMax), нанося урон растениям.",
-  "eventHelpDinoTreadRowCol": "GridY = ряд (с 0). GridXMin/GridXMax = диапазон столбцов (с 0). Глубокое море: ряды 0–5, столбцы 0–9.",
+  "eventHelpDinoTreadRowCol": "GridY — ряд центра удара; GridXMin и GridXMax задают диапазон возможных центральных столбцов (с 0). Каждый удар покрывает область 3×3 вокруг центра. На предпросмотре выделены все клетки, которые могут быть затронуты. Глубокое море: ряды 0–5, столбцы 0–9.",
+  "dinoTreadPreview": "Предпросмотр области удара",
   "dinoTreadRowLabel": "Ряд [GridY]",
   "dinoTreadColMinLabel": "Столбец мин [GridXMin]",
   "dinoTreadColMaxLabel": "Столбец макс [GridXMax]",
@@ -1085,7 +1088,8 @@
   "columnStartLabel": "Начало [ColumnStart]",
   "columnEndLabel": "Конец [ColumnEnd]",
   "eventHelpDinoRunBody": "Динозавр бежит по ряду, нанося урон растениям.",
-  "eventHelpDinoRunRow": "DinoRow = индекс ряда (с 0). Глубокое море поддерживает ряд 5.",
+  "eventHelpDinoRunRow": "DinoRow — центральный ряд бега (красный на предпросмотре). Стадо может появиться и в соседних рядах сверху и снизу (жёлтые). Нумерация с 0. Глубокое море поддерживает ряд 5.",
+  "dinoRunPreview": "Предпросмотр стада",
   "positionAndArea": "Позиция и область",
   "positionAndDuration": "Позиция и время",
   "rowCol0Index": "Ряд/столбец (с 0)",
@@ -1452,6 +1456,77 @@
   "eventHelpStandardOverview": "Настройка зомби этой волны. Уровень 0 — по уровню карты.",
   "eventHelpStandardRow": "Ряды 0–4. Пусто — случайный ряд.",
   "eventHelpStandardRowDeepSea": "Ряды 0–5 (6 рядов). Пусто — случайный ряд.",
+  "ztPerksSectionTitle": "Баффы Ztalemate",
+  "ztPerksSectionHint": "Каждый тип баффа можно назначить зомби только один раз.",
+  "ztPerksNone": "Баффы не назначены.",
+  "ztPerksAdd": "Добавить бафф",
+  "ztPerksTypeAlreadyAssigned": "Бафф этого типа уже назначен.",
+  "eventHelpJitteredZtPerks": "Назначайте баффы Ztalemate Escape отдельным зомби. Они сохраняются в массиве Titles. На одного зомби можно назначить только один бафф каждого типа (например, Crystal I и Crystal II вместе нельзя).",
+  "ztPerkCategoryCrystal": "Кристалл",
+  "ztPerkCategoryAttack": "Атака",
+  "ztPerkCategorySpeed": "Скорость",
+  "ztPerkCategoryShield": "Щит",
+  "ztPerkCategoryGravity": "Гравитация",
+  "ztPerkCategoryImmuneControl": "Иммунитет к контролю",
+  "ztPerkCategoryAntiControl": "Сопротивление контролю",
+  "ztPerksViewStats": "Показать параметры",
+  "ztPerkPropDamageTakenInterval": "Интервал получения урона",
+  "ztPerkPropDamageTotalTaken": "Всего получено урона",
+  "ztPerkPropDamageTakenPerTime": "Урон за интервал",
+  "ztPerkPropHpReduced": "Снижение HP",
+  "ztPerkPropShieldNum": "Слоёв щита",
+  "ztPerkPropReducedControlPercent": "Снижение контроля",
+  "ztPerkPropReducedDamagePercent": "Снижение урона",
+  "ztPerkPropImprovedDamagePercent": "Усиление урона",
+  "ztPerkPropImprovedSpeedPercent": "Усиление скорости",
+  "ztPerkDescCrystal": "Даёт иммунитет к мгновенному убийству. Урон можно получать не чаще одного раза в {interval} с, каждый удар наносит {damagePerHit} урона, а здоровье снижается на {hpReduced}.",
+  "@ztPerkDescCrystal": {
+    "placeholders": {
+      "interval": {"type": "String"},
+      "damagePerHit": {"type": "String"},
+      "hpReduced": {"type": "String"}
+    }
+  },
+  "ztPerkDescGravity": "Отбрасывание и подбрасывание больше не действуют.",
+  "ztPerkDescShield": "Первые {shieldNum} получения урона игнорируются; иммунитет к мгновенному убийству сохраняется на всё время действия баффа.",
+  "@ztPerkDescShield": {
+    "placeholders": {
+      "shieldNum": {"type": "String"}
+    }
+  },
+  "ztPerkDescImmuneControl": "Сопротивление контролю увеличено на {percent}.",
+  "@ztPerkDescImmuneControl": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerkDescAntiControl": "Под контролем получаемый урон снижается на {percent}.",
+  "@ztPerkDescAntiControl": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerkDescAttack": "Сила атаки увеличена на {percent}.",
+  "@ztPerkDescAttack": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerkDescSpeed": "Скорость передвижения увеличена на {percent}.",
+  "@ztPerkDescSpeed": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "ztPerksCategoryInfoTitle": "Описание баффов",
+  "ztPerkCategoryDescNumericHint": "Буквы A, B, X, N, P и т. п. обозначают числовые значения, которые меняются по уровню баффа.",
+  "ztPerkCategoryDescCrystal": "Даёт иммунитет к мгновенному убийству. Урон можно получать не чаще одного раза в A секунд, каждый удар наносит B урона, а здоровье снижается на X.",
+  "ztPerkCategoryDescGravity": "Отбрасывание и подбрасывание больше не действуют.",
+  "ztPerkCategoryDescShield": "Первые N получения урона игнорируются; иммунитет к мгновенному убийству сохраняется на всё время действия баффа.",
+  "ztPerkCategoryDescImmuneControl": "Сопротивление контролю увеличено на P%.",
+  "ztPerkCategoryDescAntiControl": "Под контролем получаемый урон снижается на P%.",
+  "ztPerkCategoryDescAttack": "Сила атаки увеличена на P%.",
+  "ztPerkCategoryDescSpeed": "Скорость передвижения увеличена на P%.",
   "warningStageSwitchedTo5Rows": "Этап использует 5 рядов, но часть данных ссылается на 6-й ряд. Объекты могут отображаться некорректно.",
   "warningObjectsOutsideArea": "Некоторые объекты вне игровой области ({rows}×{cols}).",
   "@warningObjectsOutsideArea": {"placeholders": {"rows": {"type": "int"}, "cols": {"type": "int"}}},

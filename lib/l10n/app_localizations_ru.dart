@@ -445,17 +445,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get creditsSection => 'Благодарности';
 
   @override
-  String get authorLabel => 'Автор:';
+  String get authorLabel => 'Авторы:';
 
   @override
-  String get authorName => 'CyberSteve777';
+  String get authorName => 'CyberSteve777, Devourdoom, Chara';
 
   @override
   String get thanksLabel => 'Особая благодарность:';
 
   @override
   String get thanksNames =>
-      'Devourdoom, Chara, Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo';
+      'Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo, EnderallyGolem, Locke';
 
   @override
   String get sourceLabel => 'Исходный код:';
@@ -990,6 +990,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveManagerGlobalParams => 'Глобальные параметры волн';
+
+  @override
+  String get waveContainerAliasSection => 'Псевдоним контейнера волн';
+
+  @override
+  String get waveContainerAliasHint =>
+      'Псевдоним объекта WaveManagerProperties, в котором хранятся данные волн.';
 
   @override
   String waveManagerGlobalSummary(
@@ -3278,7 +3285,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpDinoTreadRowCol =>
-      'GridY = ряд (с 0). GridXMin/GridXMax = диапазон столбцов (с 0). Глубокое море: ряды 0–5, столбцы 0–9.';
+      'GridY — ряд центра удара; GridXMin и GridXMax задают диапазон возможных центральных столбцов (с 0). Каждый удар покрывает область 3×3 вокруг центра. На предпросмотре выделены все клетки, которые могут быть затронуты. Глубокое море: ряды 0–5, столбцы 0–9.';
+
+  @override
+  String get dinoTreadPreview => 'Предпросмотр области удара';
 
   @override
   String get dinoTreadRowLabel => 'Ряд [GridY]';
@@ -3304,7 +3314,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpDinoRunRow =>
-      'DinoRow = индекс ряда (с 0). Глубокое море поддерживает ряд 5.';
+      'DinoRow — центральный ряд бега (красный на предпросмотре). Стадо может появиться и в соседних рядах сверху и снизу (жёлтые). Нумерация с 0. Глубокое море поддерживает ряд 5.';
+
+  @override
+  String get dinoRunPreview => 'Предпросмотр стада';
 
   @override
   String get positionAndArea => 'Позиция и область';
@@ -4441,6 +4454,149 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get eventHelpStandardRowDeepSea =>
       'Ряды 0–5 (6 рядов). Пусто — случайный ряд.';
+
+  @override
+  String get ztPerksSectionTitle => 'Баффы Ztalemate';
+
+  @override
+  String get ztPerksSectionHint =>
+      'Каждый тип баффа можно назначить зомби только один раз.';
+
+  @override
+  String get ztPerksNone => 'Баффы не назначены.';
+
+  @override
+  String get ztPerksAdd => 'Добавить бафф';
+
+  @override
+  String get ztPerksTypeAlreadyAssigned => 'Бафф этого типа уже назначен.';
+
+  @override
+  String get eventHelpJitteredZtPerks =>
+      'Назначайте баффы Ztalemate Escape отдельным зомби. Они сохраняются в массиве Titles. На одного зомби можно назначить только один бафф каждого типа (например, Crystal I и Crystal II вместе нельзя).';
+
+  @override
+  String get ztPerkCategoryCrystal => 'Кристалл';
+
+  @override
+  String get ztPerkCategoryAttack => 'Атака';
+
+  @override
+  String get ztPerkCategorySpeed => 'Скорость';
+
+  @override
+  String get ztPerkCategoryShield => 'Щит';
+
+  @override
+  String get ztPerkCategoryGravity => 'Гравитация';
+
+  @override
+  String get ztPerkCategoryImmuneControl => 'Иммунитет к контролю';
+
+  @override
+  String get ztPerkCategoryAntiControl => 'Сопротивление контролю';
+
+  @override
+  String get ztPerksViewStats => 'Показать параметры';
+
+  @override
+  String get ztPerkPropDamageTakenInterval => 'Интервал получения урона';
+
+  @override
+  String get ztPerkPropDamageTotalTaken => 'Всего получено урона';
+
+  @override
+  String get ztPerkPropDamageTakenPerTime => 'Урон за интервал';
+
+  @override
+  String get ztPerkPropHpReduced => 'Снижение HP';
+
+  @override
+  String get ztPerkPropShieldNum => 'Слоёв щита';
+
+  @override
+  String get ztPerkPropReducedControlPercent => 'Снижение контроля';
+
+  @override
+  String get ztPerkPropReducedDamagePercent => 'Снижение урона';
+
+  @override
+  String get ztPerkPropImprovedDamagePercent => 'Усиление урона';
+
+  @override
+  String get ztPerkPropImprovedSpeedPercent => 'Усиление скорости';
+
+  @override
+  String ztPerkDescCrystal(
+    String interval,
+    String damagePerHit,
+    String hpReduced,
+  ) {
+    return 'Даёт иммунитет к мгновенному убийству. Урон можно получать не чаще одного раза в $interval с, каждый удар наносит $damagePerHit урона, а здоровье снижается на $hpReduced.';
+  }
+
+  @override
+  String get ztPerkDescGravity =>
+      'Отбрасывание и подбрасывание больше не действуют.';
+
+  @override
+  String ztPerkDescShield(String shieldNum) {
+    return 'Первые $shieldNum получения урона игнорируются; иммунитет к мгновенному убийству сохраняется на всё время действия баффа.';
+  }
+
+  @override
+  String ztPerkDescImmuneControl(String percent) {
+    return 'Сопротивление контролю увеличено на $percent.';
+  }
+
+  @override
+  String ztPerkDescAntiControl(String percent) {
+    return 'Под контролем получаемый урон снижается на $percent.';
+  }
+
+  @override
+  String ztPerkDescAttack(String percent) {
+    return 'Сила атаки увеличена на $percent.';
+  }
+
+  @override
+  String ztPerkDescSpeed(String percent) {
+    return 'Скорость передвижения увеличена на $percent.';
+  }
+
+  @override
+  String get ztPerksCategoryInfoTitle => 'Описание баффов';
+
+  @override
+  String get ztPerkCategoryDescNumericHint =>
+      'Буквы A, B, X, N, P и т. п. обозначают числовые значения, которые меняются по уровню баффа.';
+
+  @override
+  String get ztPerkCategoryDescCrystal =>
+      'Даёт иммунитет к мгновенному убийству. Урон можно получать не чаще одного раза в A секунд, каждый удар наносит B урона, а здоровье снижается на X.';
+
+  @override
+  String get ztPerkCategoryDescGravity =>
+      'Отбрасывание и подбрасывание больше не действуют.';
+
+  @override
+  String get ztPerkCategoryDescShield =>
+      'Первые N получения урона игнорируются; иммунитет к мгновенному убийству сохраняется на всё время действия баффа.';
+
+  @override
+  String get ztPerkCategoryDescImmuneControl =>
+      'Сопротивление контролю увеличено на P%.';
+
+  @override
+  String get ztPerkCategoryDescAntiControl =>
+      'Под контролем получаемый урон снижается на P%.';
+
+  @override
+  String get ztPerkCategoryDescAttack => 'Сила атаки увеличена на P%.';
+
+  @override
+  String get ztPerkCategoryDescSpeed =>
+      'Скорость передвижения увеличена на P%.';
 
   @override
   String get warningStageSwitchedTo5Rows =>
