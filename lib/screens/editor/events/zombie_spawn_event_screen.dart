@@ -419,11 +419,34 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<int>(
+                            isExpanded: true,
                             initialValue: rowValue,
                             decoration: InputDecoration(
                               labelText: l10n?.row ?? 'Row',
                               border: const OutlineInputBorder(),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                             ),
+                            selectedItemBuilder: (context) => [
+                              Text(
+                                l10n?.random ?? 'Random',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              ...List.generate(
+                                _isDeepSeaLawn ? 6 : 5,
+                                (i) => i + 1,
+                              ).map(
+                                (v) => Text(
+                                  l10n?.rowN(v) ?? 'Row $v',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                             items: [
                               DropdownMenuItem(
                                 value: 0,
@@ -454,9 +477,16 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: OutlinedButton.icon(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                              visualDensity: VisualDensity.compact,
+                            ),
                             onPressed: () {
                               Navigator.pop(ctx);
                               Future.microtask(() {
@@ -483,8 +513,17 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                                 });
                               });
                             },
-                            icon: const Icon(Icons.swap_horiz),
-                            label: Text(l10n?.change ?? 'Change'),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.swap_horiz, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(l10n?.change ?? 'Change'),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -994,13 +1033,17 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
               children: [
                 Icon(Icons.layers, color: theme.colorScheme.secondary),
                 const SizedBox(width: 8),
-                Text(
-                  l10n?.batchLevel ?? 'Batch level',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n?.batchLevel ?? 'Batch level',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Text(
                   '${_batchLevel.round()}',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -1011,48 +1054,44 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Slider(
-                    value: _batchLevel,
-                    min: 1,
-                    max: 10,
-                    divisions: 9,
-                    label: _batchLevel.round().toString(),
-                    onChanged: (v) => setState(() => _batchLevel = v),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                FilledButton(
-                  onPressed: () async {
-                    final ok = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: Text(
-                          l10n?.applyBatchLevel ?? 'Apply batch level?',
-                        ),
-                        content: Text(
-                          l10n?.applyBatchLevelContent(_batchLevel.round()) ??
-                              'Set all zombies in this wave to level ${_batchLevel.round()} (elite unchanged).',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, false),
-                            child: Text(l10n?.cancel ?? 'Cancel'),
-                          ),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            child: Text(l10n?.apply ?? 'Apply'),
-                          ),
-                        ],
+            Slider(
+              value: _batchLevel,
+              min: 1,
+              max: 10,
+              divisions: 9,
+              label: _batchLevel.round().toString(),
+              onChanged: (v) => setState(() => _batchLevel = v),
+            ),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: FilledButton(
+                onPressed: () async {
+                  final ok = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text(
+                        l10n?.applyBatchLevel ?? 'Apply batch level?',
                       ),
-                    );
-                    if (ok == true) _applyBatchLevel();
-                  },
-                  child: Text(l10n?.apply ?? 'Apply'),
-                ),
-              ],
+                      content: Text(
+                        l10n?.applyBatchLevelContent(_batchLevel.round()) ??
+                            'Set all zombies in this wave to level ${_batchLevel.round()} (elite unchanged).',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: Text(l10n?.cancel ?? 'Cancel'),
+                        ),
+                        FilledButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: Text(l10n?.apply ?? 'Apply'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (ok == true) _applyBatchLevel();
+                },
+                child: Text(l10n?.apply ?? 'Apply'),
+              ),
             ),
             Text(
               l10n?.appliesToAllNonElite ??
@@ -1095,13 +1134,17 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
               children: [
                 Icon(Icons.eco, color: theme.colorScheme.secondary),
                 const SizedBox(width: 8),
-                Text(
-                  isDroppingPlants
-                      ? (l10n?.dropConfigPlants ?? 'Drop config (Plants)')
-                      : (l10n?.dropConfigPlantFood ??
-                            'Drop config (Plant Food)'),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    isDroppingPlants
+                        ? (l10n?.dropConfigPlants ?? 'Drop config (Plants)')
+                        : (l10n?.dropConfigPlantFood ??
+                              'Drop config (Plant Food)'),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ),
               ],
@@ -1129,6 +1172,8 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                         : (l10n?.zombiesCarryingPlantFood ??
                               'Zombies carrying plant food'),
                     style: theme.textTheme.bodySmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

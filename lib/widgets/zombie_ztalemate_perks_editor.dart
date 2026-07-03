@@ -112,73 +112,84 @@ class ZombieZtalematePerksEditor extends StatelessWidget {
     final picked = await showDialog<String>(
       context: context,
       builder: (ctx) {
-        final dialogWidth = (MediaQuery.sizeOf(ctx).width - 32).clamp(
-          360.0,
-          560.0,
-        );
-        return AlertDialog(
-          title: Text(l10n?.ztPerksAdd ?? 'Add perk'),
-          content: SizedBox(
-            width: dialogWidth,
-            child: ListView(
-            shrinkWrap: true,
-            children: [
-              for (final type in typeOrder) ...[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _categoryLabel(ctx, type),
-                          style: Theme.of(ctx).textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Builder(
-                        builder: (infoContext) => IconButton(
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                          tooltip: l10n?.ztPerksCategoryInfoTitle ??
-                              'Perk descriptions',
-                          onPressed: () => _showCategoryDescriptions(
-                            infoContext,
-                            type,
-                          ),
-                          icon: Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: Theme.of(ctx).colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    ],
+        final size = MediaQuery.sizeOf(ctx);
+        final theme = Theme.of(ctx);
+        // Explicit box: avoids AlertDialog/Dialog intrinsic sizing, which was
+        // collapsing width (~66px) and overflowing height.
+        final width = (size.width - 32).clamp(280.0, 560.0);
+        final height = (size.height * 0.75).clamp(320.0, 640.0);
+
+        return SafeArea(
+          child: Center(
+            child: Material(
+              color: theme.dialogTheme.backgroundColor ??
+                  theme.colorScheme.surface,
+              elevation: theme.dialogTheme.elevation ?? 6,
+              shape: theme.dialogTheme.shape ??
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-                for (final entry in grouped[type]!)
-                  _PerkPickerTile(
-                    entry: entry,
-                    isSelected: selectedTitles.contains(entry.alias),
-                    isTypeBlocked:
-                        selectedTypes.contains(entry.type) &&
-                        !selectedTitles.contains(entry.alias),
-                    onTap: () => Navigator.pop(ctx, entry.alias),
+              clipBehavior: Clip.antiAlias,
+              child: SizedBox(
+                width: width,
+                height: height,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+                    child: Text(
+                      l10n?.ztPerksAdd ?? 'Add perk',
+                      style: theme.textTheme.headlineSmall,
+                    ),
                   ),
-              ],
-            ],
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      children: [
+                        for (final type in typeOrder) ...[
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
+                            child: _TextWithInfoRow(
+                              text: _categoryLabel(ctx, type),
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              infoTooltip: l10n?.ztPerksCategoryInfoTitle ??
+                                  'Perk descriptions',
+                              onInfoPressed: (infoContext) =>
+                                  _showCategoryDescriptions(infoContext, type),
+                            ),
+                          ),
+                          for (final entry in grouped[type]!)
+                            _PerkPickerTile(
+                              entry: entry,
+                              isSelected:
+                                  selectedTitles.contains(entry.alias),
+                              isTypeBlocked:
+                                  selectedTypes.contains(entry.type) &&
+                                  !selectedTitles.contains(entry.alias),
+                              onTap: () => Navigator.pop(ctx, entry.alias),
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                    child: Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(l10n?.cancel ?? 'Cancel'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-        ],
         );
       },
     );
@@ -329,9 +340,8 @@ class _PerkPickerTile extends StatelessWidget {
       child: InkWell(
         onTap: isTypeBlocked ? null : onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
@@ -344,61 +354,27 @@ class _PerkPickerTile extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                flex: 3,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        name,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: nameColor,
-                        ),
-                      ),
-                    ),
-                    Builder(
-                      builder: (infoContext) => IconButton(
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
-                        tooltip: l10n?.ztPerksViewStats ?? 'View stats',
-                        onPressed: hasStats
-                            ? () => _showPerkNumericProperties(
-                                  infoContext,
-                                  entry,
-                                )
-                            : null,
-                        icon: Icon(
-                          Icons.info_outline,
-                          size: 18,
-                          color: hasStats
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant.withValues(
-                                  alpha: 0.4,
-                                ),
-                        ),
-                      ),
-                    ),
-                  ],
+                child: _TextWithInfoRow(
+                  text: name,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: nameColor,
+                  ),
+                  infoTooltip: l10n?.ztPerksViewStats ?? 'View stats',
+                  infoEnabled: hasStats,
+                  onInfoPressed: hasStats
+                      ? (infoContext) =>
+                            _showPerkNumericProperties(infoContext, entry)
+                      : null,
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: isSelected
-                      ? Icon(
-                          Icons.check_circle,
-                          color: theme.colorScheme.primary,
-                          size: 22,
-                        )
-                      : const SizedBox.shrink(),
+              if (isSelected) ...[
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.check_circle,
+                  color: theme.colorScheme.primary,
+                  size: 22,
                 ),
-              ),
+              ],
             ],
           ),
         ),
@@ -476,5 +452,102 @@ class _PerkPickerTile extends StatelessWidget {
     if (value == value.roundToDouble()) return value.round().toString();
     final text = value.toStringAsFixed(2);
     return text.replaceFirst(RegExp(r'\.?0+$'), '');
+  }
+}
+
+/// Label with a trailing info button that hugs the text (wrap-content width).
+///
+/// Children are always sized to fit [constraints]; never asserts on overflow,
+/// including during dialog open animations when width is briefly tiny.
+class _TextWithInfoRow extends StatelessWidget {
+  const _TextWithInfoRow({
+    required this.text,
+    required this.style,
+    required this.infoTooltip,
+    this.infoEnabled = true,
+    this.onInfoPressed,
+  });
+
+  final String text;
+  final TextStyle? style;
+  final String infoTooltip;
+  final bool infoEnabled;
+  final void Function(BuildContext infoContext)? onInfoPressed;
+
+  static const double _infoExtent = 28;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final infoColor = infoEnabled
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+
+        // Scale the info control down if the slot is narrower than 28px.
+        final infoWidth = maxWidth <= 0
+            ? 0.0
+            : (maxWidth < _infoExtent ? maxWidth : _infoExtent);
+        final textMaxWidth =
+            (maxWidth - infoWidth).clamp(0.0, double.infinity);
+
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (textMaxWidth > 0)
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: textMaxWidth),
+                  child: Text(
+                    text,
+                    style: style,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                  ),
+                ),
+              if (infoWidth > 0)
+                SizedBox(
+                  width: infoWidth,
+                  height: infoWidth,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: SizedBox(
+                      width: _infoExtent,
+                      height: _infoExtent,
+                      child: Builder(
+                        builder: (infoContext) => IconButton(
+                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: _infoExtent,
+                            minHeight: _infoExtent,
+                          ),
+                          tooltip: infoTooltip,
+                          onPressed: infoEnabled && onInfoPressed != null
+                              ? () => onInfoPressed!(infoContext)
+                              : null,
+                          icon: Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: infoColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
