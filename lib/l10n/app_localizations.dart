@@ -11192,6 +11192,30 @@ abstract class AppLocalizations {
   /// **'Clear unused objects'**
   String get tooltipClearUnused;
 
+  /// No description provided for @tooltipCopyJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy level JSON'**
+  String get tooltipCopyJson;
+
+  /// No description provided for @tooltipCopyObject.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy object JSON'**
+  String get tooltipCopyObject;
+
+  /// No description provided for @tooltipMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get tooltipMore;
+
+  /// No description provided for @jsonViewerCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON copied to clipboard'**
+  String get jsonViewerCopied;
+
   /// No description provided for @tooltipJsonViewer.
   ///
   /// In en, this message translates to:

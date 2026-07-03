@@ -5948,6 +5948,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tooltipClearUnused => '清除未使用对象';
 
   @override
+  String get tooltipCopyJson => '复制关卡 JSON';
+
+  @override
+  String get tooltipCopyObject => '复制对象 JSON';
+
+  @override
+  String get tooltipMore => '更多';
+
+  @override
+  String get jsonViewerCopied => 'JSON 已复制到剪贴板';
+
+  @override
   String get tooltipJsonViewer => '查看/编辑 JSON文件';
 
   @override

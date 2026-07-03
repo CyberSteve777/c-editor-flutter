@@ -6271,6 +6271,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooltipClearUnused => 'Clear unused objects';
 
   @override
+  String get tooltipCopyJson => 'Copy level JSON';
+
+  @override
+  String get tooltipCopyObject => 'Copy object JSON';
+
+  @override
+  String get tooltipMore => 'More';
+
+  @override
+  String get jsonViewerCopied => 'JSON copied to clipboard';
+
+  @override
   String get tooltipJsonViewer => 'View/edit JSON';
 
   @override

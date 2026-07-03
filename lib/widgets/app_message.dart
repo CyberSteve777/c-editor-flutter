@@ -9,7 +9,7 @@ class AppMessage {
 
   static final AppMessageController controller = AppMessageController();
 
-  static const displayDuration = Duration(seconds: 3);
+  static const displayDuration = Duration(milliseconds: 750);
   static const animDuration = Duration(milliseconds: 320);
 
   static Color backgroundColor(Brightness brightness) {

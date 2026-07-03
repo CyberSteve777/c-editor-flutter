@@ -6210,6 +6210,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tooltipClearUnused => 'Удалить неиспользуемые объекты';
 
   @override
+  String get tooltipCopyJson => 'Копировать JSON уровня';
+
+  @override
+  String get tooltipCopyObject => 'Копировать JSON объекта';
+
+  @override
+  String get tooltipMore => 'Ещё';
+
+  @override
+  String get jsonViewerCopied => 'JSON скопирован в буфер обмена';
+
+  @override
   String get tooltipJsonViewer => 'Просмотр/редактирование JSON';
 
   @override
