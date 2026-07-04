@@ -92,23 +92,57 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
     setState(() => _alias = newAlias);
   }
 
-  Widget _buildDinoTypePreview(BuildContext context) {
-    final theme = Theme.of(context);
-    return AspectRatio(
-      aspectRatio: 2.2,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: theme.colorScheme.secondary.withValues(alpha: 0.3),
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(4),
+  /// Icon edge length: 20% of [availableWidth], reduced when the field is narrow.
+  double _dinoIconSizeForWidth(double availableWidth) {
+    const minIcon = 28.0;
+    const maxIcon = 72.0;
+    // Padding + gap + chevron + minimum text run.
+    const reserved = 14 + 14 + 10 + 32 + 40;
+    final preferred = availableWidth * 0.2;
+    final maxFit = (availableWidth - reserved).clamp(minIcon, maxIcon);
+    return preferred.clamp(minIcon, maxFit);
+  }
+
+  Widget _dinoLeadingIcon(String typeId, double size) {
+    final px = (size * MediaQuery.devicePixelRatioOf(context)).round();
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(4),
         child: AssetImageWidget(
-          assetPath: dinoSpawnImageAsset(_data.dinoType),
-          altCandidates: dinoSpawnImageCandidates(_data.dinoType),
-          fit: BoxFit.contain,
+          assetPath: dinoSpawnImageAsset(typeId),
+          altCandidates: dinoSpawnImageCandidates(typeId),
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          cacheWidth: px,
+          cacheHeight: px,
         ),
+      ),
+    );
+  }
+
+  Widget _dinoDropdownLabel(String typeId, double iconSize) {
+    return SizedBox(
+      height: iconSize,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _dinoLeadingIcon(typeId, iconSize),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _dinoTypeLabel(context, typeId),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -253,52 +287,99 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final iconSize = _dinoIconSizeForWidth(
+                        constraints.maxWidth,
+                      );
+                      // Menu rows must be >= kMinInteractiveDimension.
+                      final itemHeight = iconSize < kMinInteractiveDimension
+                          ? kMinInteractiveDimension
+                          : iconSize + 8;
+                      final selectedId =
+                          kDinoSpawnTypeIds.contains(_data.dinoType)
+                          ? _data.dinoType
+                          : kDinoSpawnTypeIds.first;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Icon(Icons.pets, color: theme.colorScheme.secondary),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n?.dinoType ?? 'Dinosaur type',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.pets,
+                                color: theme.colorScheme.secondary,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  l10n?.dinoType ?? 'Dinosaur type',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          // Avoid DropdownButtonFormField: it clamps the
+                          // selected row to a text-field height and squashes
+                          // square icons. InputDecorator sizes to the child.
+                          SizedBox(
+                            width: constraints.maxWidth,
+                            child: PopupMenuButton<String>(
+                              initialValue: selectedId,
+                              position: PopupMenuPosition.under,
+                              padding: EdgeInsets.zero,
+                              tooltip:
+                                  l10n?.dinoType ?? 'Dinosaur type',
+                              constraints: BoxConstraints(
+                                minWidth: constraints.maxWidth,
+                                maxWidth: constraints.maxWidth,
+                              ),
+                              onSelected: (v) {
+                                _data = DinoWaveActionPropsData(
+                                  dinoRow: _data.dinoRow,
+                                  dinoType: v,
+                                  dinoWaveDuration: _data.dinoWaveDuration,
+                                );
+                                _sync();
+                              },
+                              itemBuilder: (context) => [
+                                for (final id in kDinoSpawnTypeIds)
+                                  PopupMenuItem<String>(
+                                    value: id,
+                                    height: itemHeight,
+                                    child: _dinoDropdownLabel(id, iconSize),
+                                  ),
+                              ],
+                              child: InputDecorator(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  contentPadding: const EdgeInsets.fromLTRB(
+                                    14,
+                                    12,
+                                    8,
+                                    12,
+                                  ),
+                                  suffixIcon: const Icon(
+                                    Icons.arrow_drop_down,
+                                  ),
+                                ),
+                                child: _dinoDropdownLabel(
+                                  selectedId,
+                                  iconSize,
+                                ),
+                              ),
                             ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        initialValue: kDinoSpawnTypeIds.contains(_data.dinoType)
-                            ? _data.dinoType
-                            : null,
-                        decoration: InputDecoration(
-                          labelText: l10n?.dinoType ?? 'Dinosaur type',
-                          border: const OutlineInputBorder(),
-                        ),
-                        items: kDinoSpawnTypeIds
-                            .map(
-                              (id) => DropdownMenuItem(
-                                value: id,
-                                child: Text(_dinoTypeLabel(context, id)),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (v) {
-                          if (v != null) {
-                            _data = DinoWaveActionPropsData(
-                              dinoRow: _data.dinoRow,
-                              dinoType: v,
-                              dinoWaveDuration: _data.dinoWaveDuration,
-                            );
-                            _sync();
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildDinoTypePreview(context),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),
