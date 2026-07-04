@@ -919,7 +919,7 @@ abstract class AppLocalizations {
   /// No description provided for @thanksNames.
   ///
   /// In en, this message translates to:
-  /// **'Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo, EnderallyGolem, Locke'**
+  /// **'Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo'**
   String get thanksNames;
 
   /// No description provided for @sourceLabel.
