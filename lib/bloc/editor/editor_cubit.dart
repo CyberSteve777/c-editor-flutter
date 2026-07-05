@@ -7,6 +7,7 @@ import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/repository/resilience_config_repository.dart';
+import 'package:c_editor/data/repository/zombie_title_catalog_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
@@ -42,6 +43,7 @@ class EditorCubit extends Cubit<EditorState> {
     await ReferenceRepository.init();
     await ZombiePropertiesRepository.init();
     await ResilienceConfigRepository.init();
+    await ZombieTitleCatalogRepository.init();
     await PlantRepository().init();
     await ZombieRepository().init();
     await FishTypeRepository().init();

@@ -462,14 +462,14 @@ class _SeedRainRowCard extends StatelessWidget {
   final VoidCallback onDelete;
   final String Function(BuildContext, SeedRainItem) getItemName;
 
-  String _getDisplayType(SeedRainItem item) {
+  String _localizedDropType(AppLocalizations? l10n, SeedRainItem item) {
     switch (item.seedRainType) {
       case 0:
-        return 'Plant';
+        return l10n?.plant ?? 'Plant';
       case 1:
-        return 'Zombie';
+        return l10n?.zombie ?? 'Zombie';
       case 2:
-        return 'Collectable';
+        return l10n?.collectable ?? 'Collectible';
       default:
         return 'Unknown';
     }
@@ -504,9 +504,11 @@ class _SeedRainRowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final typeName = getItemName(context, item);
-    final displayType = _getDisplayType(item);
+    final dropType = _localizedDropType(l10n, item);
     final iconPath = _getIconPath(item);
+    final metaStyle = theme.textTheme.bodySmall;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -551,18 +553,24 @@ class _SeedRainRowCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Row(
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
                       children: [
-                        Text(displayType, style: theme.textTheme.bodySmall),
-                        const SizedBox(width: 12),
                         Text(
-                          'Weight: ${item.weight}',
-                          style: theme.textTheme.bodySmall,
+                          l10n?.seedRainTypeLabel(dropType) ??
+                              'Type: $dropType',
+                          style: metaStyle,
                         ),
-                        const SizedBox(width: 12),
                         Text(
-                          'Max: ${item.maxCount}',
-                          style: theme.textTheme.bodySmall,
+                          l10n?.seedRainWeightLabel(item.weight) ??
+                              'Weight: ${item.weight}',
+                          style: metaStyle,
+                        ),
+                        Text(
+                          l10n?.seedRainMaxLabel(item.maxCount) ??
+                              'Max: ${item.maxCount}',
+                          style: metaStyle,
                         ),
                       ],
                     ),

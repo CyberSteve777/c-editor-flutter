@@ -73,6 +73,7 @@ class EditorAliasInputField extends StatefulWidget {
     required this.onAliasChanged,
     this.accentColor,
     this.onChanged,
+    this.wrapInCard = true,
   });
 
   final String alias;
@@ -80,6 +81,7 @@ class EditorAliasInputField extends StatefulWidget {
   final ValueChanged<String> onAliasChanged;
   final Color? accentColor;
   final VoidCallback? onChanged;
+  final bool wrapInCard;
 
   @override
   State<EditorAliasInputField> createState() => _EditorAliasInputFieldState();
@@ -114,16 +116,19 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
   }
 
   void _handleFocusChange() {
-    if (!_focusNode.hasFocus) {
+    if (!_focusNode.hasFocus && mounted) {
       _commit();
     }
   }
 
   Future<void> _commit() async {
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     final next = _controller.text.trim();
     if (next.isEmpty || next == widget.alias) {
-      _controller.text = widget.alias;
+      if (mounted) {
+        _controller.text = widget.alias;
+      }
       return;
     }
     if (!PvzAliasUtils.isAliasAvailable(
@@ -131,12 +136,15 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
       next,
       excludeAlias: widget.alias,
     )) {
+      if (!mounted) return;
       AppMessage.show(
         context,
         l10n?.aliasAlreadyExists ?? 'Alias already exists in this level.',
         icon: Icons.warning_amber_rounded,
       );
-      _controller.text = widget.alias;
+      if (mounted) {
+        _controller.text = widget.alias;
+      }
       return;
     }
     final confirm = await showDialog<bool>(
@@ -159,7 +167,8 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
         ],
       ),
     );
-    if (confirm != true || !mounted) {
+    if (!mounted) return;
+    if (confirm != true) {
       _controller.text = widget.alias;
       return;
     }
@@ -177,38 +186,44 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
     );
     final isDirty = _controller.text.trim() != widget.alias;
 
+    final field = TextField(
+      controller: _controller,
+      focusNode: _focusNode,
+      textInputAction: TextInputAction.done,
+      onSubmitted: (_) => _commit(),
+      decoration: InputDecoration(
+        labelText: l10n?.aliasLabel ?? 'Alias',
+        isDense: true,
+        border: const OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: isDirty
+                ? accent
+                : theme.colorScheme.outline.withValues(alpha: 0.5),
+            width: isDirty ? 1.5 : 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: accent, width: 2),
+        ),
+        labelStyle: TextStyle(
+          color: isDirty ? accent : null,
+        ),
+      ),
+      onChanged: (_) => setState(() {}),
+    );
+
+    if (!widget.wrapInCard) {
+      return SizedBox(width: double.infinity, child: field);
+    }
+
     return SizedBox(
       width: double.infinity,
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _commit(),
-            decoration: InputDecoration(
-              labelText: l10n?.aliasLabel ?? 'Alias',
-              isDense: true,
-              border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isDirty
-                      ? accent
-                      : theme.colorScheme.outline.withValues(alpha: 0.5),
-                  width: isDirty ? 1.5 : 1,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: accent, width: 2),
-              ),
-              labelStyle: TextStyle(
-                color: isDirty ? accent : null,
-              ),
-            ),
-            onChanged: (_) => setState(() {}),
-          ),
+          child: field,
         ),
       ),
     );
@@ -222,84 +237,107 @@ Future<String?> showPvzAliasInputDialog(
   required String title,
   required String objClass,
   required PvzLevelFile levelFile,
-}) async {
-  final l10n = AppLocalizations.of(context);
-  final controller = TextEditingController(text: defaultAlias);
-  String? errorText;
-
-  final result = await showDialog<String>(
+}) {
+  return showDialog<String>(
     context: context,
-    builder: (ctx) => StatefulBuilder(
-      builder: (ctx, setDialogState) => AlertDialog(
-        title: Text(title),
-        content: Column(
+    builder: (ctx) => _PvzAliasInputDialog(
+      defaultAlias: defaultAlias,
+      title: title,
+      objClass: objClass,
+      levelFile: levelFile,
+    ),
+  );
+}
+
+class _PvzAliasInputDialog extends StatefulWidget {
+  const _PvzAliasInputDialog({
+    required this.defaultAlias,
+    required this.title,
+    required this.objClass,
+    required this.levelFile,
+  });
+
+  final String defaultAlias;
+  final String title;
+  final String objClass;
+  final PvzLevelFile levelFile;
+
+  @override
+  State<_PvzAliasInputDialog> createState() => _PvzAliasInputDialogState();
+}
+
+class _PvzAliasInputDialogState extends State<_PvzAliasInputDialog> {
+  late final TextEditingController _controller;
+  String? _errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.defaultAlias);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final l10n = AppLocalizations.of(context);
+    final alias = _controller.text.trim();
+    if (alias.isEmpty ||
+        !PvzAliasUtils.isAliasAvailable(widget.levelFile, alias)) {
+      setState(
+        () => _errorText =
+            l10n?.aliasAlreadyExists ??
+            'Alias already exists in this level.',
+      );
+      return;
+    }
+    Navigator.pop(context, alias);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(widget.title),
+      content: SingleChildScrollView(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              objClass,
-              style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              widget.objClass,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 12),
             TextField(
-              controller: controller,
+              controller: _controller,
               autofocus: true,
               decoration: InputDecoration(
                 labelText: l10n?.aliasLabel ?? 'Alias',
-                errorText: errorText,
+                errorText: _errorText,
               ),
-              onSubmitted: (_) {
-                final alias = controller.text.trim();
-                if (alias.isEmpty) {
-                  setDialogState(
-                    () => errorText =
-                        l10n?.aliasAlreadyExists ??
-                        'Alias already exists in this level.',
-                  );
-                  return;
-                }
-                if (!PvzAliasUtils.isAliasAvailable(levelFile, alias)) {
-                  setDialogState(
-                    () => errorText =
-                        l10n?.aliasAlreadyExists ??
-                        'Alias already exists in this level.',
-                  );
-                  return;
-                }
-                Navigator.pop(ctx, alias);
-              },
+              onSubmitted: (_) => _submit(),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final alias = controller.text.trim();
-              if (alias.isEmpty ||
-                  !PvzAliasUtils.isAliasAvailable(levelFile, alias)) {
-                setDialogState(
-                  () => errorText =
-                      l10n?.aliasAlreadyExists ??
-                      'Alias already exists in this level.',
-                );
-                return;
-              }
-              Navigator.pop(ctx, alias);
-            },
-            child: Text(l10n?.add ?? 'Add'),
-          ),
-        ],
       ),
-    ),
-  );
-  controller.dispose();
-  return result;
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n?.cancel ?? 'Cancel'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(l10n?.add ?? 'Add'),
+        ),
+      ],
+    );
+  }
 }
 
 /// Commits an alias rename for a level object referenced by [rtid].

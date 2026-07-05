@@ -480,17 +480,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creditsSection => 'Credits';
 
   @override
-  String get authorLabel => 'Author:';
+  String get authorLabel => 'Authors:';
 
   @override
-  String get authorName => 'CyberSteve777';
+  String get authorName => 'CyberSteve777, Devourdoom, Chara';
 
   @override
   String get thanksLabel => 'Special thanks:';
 
   @override
   String get thanksNames =>
-      'Devourdoom, Chara, Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo';
+      'Evilhack28, Rebus, KL12, vi_i_guess, Haruma, nineteendo';
 
   @override
   String get sourceLabel => 'GitHub Repository:';
@@ -1024,6 +1024,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveManagerGlobalParams => 'Wave Manager Parameters';
+
+  @override
+  String get waveContainerAliasSection => 'Wave container alias';
+
+  @override
+  String get waveContainerAliasHint =>
+      'Alias for the WaveManagerProperties object that stores wave data.';
 
   @override
   String waveManagerGlobalSummary(
@@ -3351,7 +3358,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpDinoTreadRowCol =>
-      'GridY represents the row, and GridXMin/GridXMax represent the column range. Both rows and columns start counting from 0. In Underwater World, rows range from 0–5 and columns from 0–9.';
+      'GridY is the stomp center row; GridXMin and GridXMax bound the possible center columns (all 0-based). Each stomp covers a 3×3 area around its center. The preview highlights every cell that can be stomped across those positions. Underwater World: rows 0–5, columns 0–9.';
+
+  @override
+  String get dinoTreadPreview => 'Stomp area preview';
 
   @override
   String get dinoTreadRowLabel => 'Row (GridY)';
@@ -3377,7 +3387,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpDinoRunRow =>
-      'DinoRow defines the center row of the dino rush. Rows are 0-based. Underwater World supports up to 5.';
+      'DinoRow defines the center row of the dino rush (red in the preview). Stampede dinosaurs may also spawn on the rows directly above and below (yellow). Rows are 0-based. Underwater World supports up to 5.';
+
+  @override
+  String get dinoRunPreview => 'Stampede preview';
 
   @override
   String get positionAndArea => 'Position & area';
@@ -4324,6 +4337,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String seedRainTypeLabel(String type) {
+    return 'Type: $type';
+  }
+
+  @override
+  String seedRainWeightLabel(int weight) {
+    return 'Weight: $weight';
+  }
+
+  @override
+  String seedRainMaxLabel(int max) {
+    return 'Max: $max';
+  }
+
+  @override
   String get random => 'Random';
 
   @override
@@ -4514,6 +4542,149 @@ class AppLocalizationsEn extends AppLocalizations {
       'Zombies can spawn in any row from 1–6, or in a random row.';
 
   @override
+  String get ztPerksSectionTitle => 'Ztalemate perks';
+
+  @override
+  String get ztPerksSectionHint =>
+      'Each perk type can only be applied once per zombie.';
+
+  @override
+  String get ztPerksNone => 'No perks assigned.';
+
+  @override
+  String get ztPerksAdd => 'Add perk';
+
+  @override
+  String get ztPerksTypeAlreadyAssigned =>
+      'Another perk of this type is already assigned.';
+
+  @override
+  String get eventHelpJitteredZtPerks =>
+      'Assign Ztalemate Escape buffs to individual zombies. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
+
+  @override
+  String get ztPerkCategoryCrystal => 'Crystal';
+
+  @override
+  String get ztPerkCategoryAttack => 'Attack';
+
+  @override
+  String get ztPerkCategorySpeed => 'Speed';
+
+  @override
+  String get ztPerkCategoryShield => 'Shield';
+
+  @override
+  String get ztPerkCategoryGravity => 'Gravity';
+
+  @override
+  String get ztPerkCategoryImmuneControl => 'Control immunity';
+
+  @override
+  String get ztPerkCategoryAntiControl => 'Control resistance';
+
+  @override
+  String get ztPerksViewStats => 'View stats';
+
+  @override
+  String get ztPerkPropDamageTakenInterval => 'Damage taken interval';
+
+  @override
+  String get ztPerkPropDamageTotalTaken => 'Damage total taken';
+
+  @override
+  String get ztPerkPropDamageTakenPerTime => 'Damage taken per time';
+
+  @override
+  String get ztPerkPropHpReduced => 'HP reduced';
+
+  @override
+  String get ztPerkPropShieldNum => 'Shield layers';
+
+  @override
+  String get ztPerkPropReducedControlPercent => 'Control reduction';
+
+  @override
+  String get ztPerkPropReducedDamagePercent => 'Damage reduction';
+
+  @override
+  String get ztPerkPropImprovedDamagePercent => 'Damage boost';
+
+  @override
+  String get ztPerkPropImprovedSpeedPercent => 'Speed boost';
+
+  @override
+  String ztPerkDescCrystal(
+    String interval,
+    String damagePerHit,
+    String hpReduced,
+  ) {
+    return 'Grants immunity against instant-kill effects. Damage can only be received once every $interval seconds, each hit deals $damagePerHit damage, and health is reduced by $hpReduced.';
+  }
+
+  @override
+  String get ztPerkDescGravity =>
+      'Knockback or knockoff effects are no longer effective.';
+
+  @override
+  String ztPerkDescShield(String shieldNum) {
+    return 'The first $shieldNum instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.';
+  }
+
+  @override
+  String ztPerkDescImmuneControl(String percent) {
+    return '$percent more resistance against control effects.';
+  }
+
+  @override
+  String ztPerkDescAntiControl(String percent) {
+    return 'When under the influence of a control effect, received damage is reduced by $percent.';
+  }
+
+  @override
+  String ztPerkDescAttack(String percent) {
+    return 'Attack power increased by $percent.';
+  }
+
+  @override
+  String ztPerkDescSpeed(String percent) {
+    return 'Walking speed increased by $percent.';
+  }
+
+  @override
+  String get ztPerksCategoryInfoTitle => 'Perk descriptions';
+
+  @override
+  String get ztPerkCategoryDescNumericHint =>
+      'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.';
+
+  @override
+  String get ztPerkCategoryDescCrystal =>
+      'Grants immunity against instant-kill effects. Damage can only be received once every A seconds, each hit deals B damage, and health is reduced by X.';
+
+  @override
+  String get ztPerkCategoryDescGravity =>
+      'Knockback or knockoff effects are no longer effective.';
+
+  @override
+  String get ztPerkCategoryDescShield =>
+      'The first N instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.';
+
+  @override
+  String get ztPerkCategoryDescImmuneControl =>
+      'P% more resistance against control effects.';
+
+  @override
+  String get ztPerkCategoryDescAntiControl =>
+      'When under the influence of a control effect, received damage is reduced by P%.';
+
+  @override
+  String get ztPerkCategoryDescAttack => 'Attack power increased by P%.';
+
+  @override
+  String get ztPerkCategoryDescSpeed => 'Walking speed increased by P%.';
+
+  @override
   String get warningStageSwitchedTo5Rows =>
       'The lawn only has 5 rows, but some data references row 6. These objects may not appear correctly in-game.';
 
@@ -4660,6 +4831,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reservedColumnCountHint =>
       'Number of columns reserved on the right where planting is disabled. Typically 2 or more columns are reserved.';
+
+  @override
+  String get reservedColumnPreview => 'Reserved column preview';
 
   @override
   String get protectedList => 'Protected Targets';
@@ -6134,6 +6308,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tooltipClearUnused => 'Clear unused objects';
+
+  @override
+  String get tooltipCopyJson => 'Copy level JSON';
+
+  @override
+  String get tooltipCopyObject => 'Copy object JSON';
+
+  @override
+  String get tooltipMore => 'More';
+
+  @override
+  String get jsonViewerCopied => 'JSON copied to clipboard';
 
   @override
   String get tooltipJsonViewer => 'View/edit JSON';

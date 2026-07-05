@@ -20,8 +20,10 @@ void main() async {
   FlutterError.onError = (details) {
     final message = details.exceptionAsString();
     final isKnownHardwareKeyboardAssertion =
-        message.contains('A KeyDownEvent is dispatched') &&
-        message.contains('physical key is already pressed');
+        (message.contains('A KeyDownEvent is dispatched') &&
+            message.contains('physical key is already pressed')) ||
+        (message.contains('Attempted to send a key down event') &&
+            message.contains('no keys are in keysPressed'));
     if (isKnownHardwareKeyboardAssertion) {
       debugPrint('Ignored known Flutter keyboard assertion: $message');
       return;

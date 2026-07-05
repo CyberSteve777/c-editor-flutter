@@ -17,6 +17,10 @@ const _searchHistoryKey = 'json_viewer_search_history';
 const _replaceHistoryKey = 'json_viewer_replace_history';
 const _maxSearchHistory = 10;
 
+/// Indent for on-screen JSON (view, edit, copy). Files still save with `\t`.
+const _jsonIndent = '    ';
+final _jsonEncoder = const JsonEncoder.withIndent(_jsonIndent);
+
 class _EscapeIntent extends Intent {
   const _EscapeIntent();
 }
@@ -172,8 +176,29 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     );
   }
 
-  String _rawPrettyText() =>
-      const JsonEncoder.withIndent('  ').convert(widget.levelFile.toJson());
+  String _rawPrettyText() => _jsonEncoder.convert(widget.levelFile.toJson());
+
+  Future<void> _copyTextToClipboard(String text, {required String successMessage}) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    if (!mounted) return;
+    AppMessage.show(context, successMessage, icon: Icons.check_circle);
+  }
+
+  Future<void> _copyLevelJson() async {
+    final l10n = AppLocalizations.of(context);
+    await _copyTextToClipboard(
+      _rawPrettyText(),
+      successMessage: l10n?.jsonViewerCopied ?? 'JSON copied to clipboard',
+    );
+  }
+
+  Future<void> _copyObjectJson(PvzObject obj) async {
+    final l10n = AppLocalizations.of(context);
+    await _copyTextToClipboard(
+      _jsonEncoder.convert(obj.toJson()),
+      successMessage: l10n?.jsonViewerCopied ?? 'JSON copied to clipboard',
+    );
+  }
 
   void _runSearch() {
     final query = _searchController.text;
@@ -209,9 +234,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     } else if (_viewMode == _JsonViewMode.structured) {
       final objects = widget.levelFile.objects;
       for (var i = 0; i < objects.length; i++) {
-        final json = const JsonEncoder.withIndent(
-          '  ',
-        ).convert(objects[i].objData);
+        final json = _jsonEncoder.convert(objects[i].objData);
         final objectMatches = findJsonViewerMatches(json, query, opts);
         if (objectMatches.isNotEmpty) {
           _objectMatches[i] = objectMatches;
@@ -376,10 +399,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   void _startEdit() {
-    final pretty = const JsonEncoder.withIndent(
-      '  ',
-    ).convert(widget.levelFile.toJson());
-    _editController.text = pretty;
+    _editController.text = _rawPrettyText();
     setState(() {
       _isEditing = true;
       _syntaxError = null;
@@ -437,9 +457,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         Theme.of(context).platform == TargetPlatform.windows ||
         Theme.of(context).platform == TargetPlatform.macOS ||
         Theme.of(context).platform == TargetPlatform.linux;
-    final pretty = _isEditing
-        ? ''
-        : const JsonEncoder.withIndent('  ').convert(widget.levelFile.toJson());
+    final pretty = _isEditing ? '' : _rawPrettyText();
 
     Widget child = PopScope(
       canPop: !_isEditing,
@@ -507,14 +525,41 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.cleaning_services),
-                tooltip: l10n?.tooltipClearUnused ?? 'Clear unused objects',
-                onPressed: _showClearUnusedDialog,
+                icon: const Icon(Icons.copy),
+                tooltip: l10n?.tooltipCopyJson ?? 'Copy level JSON',
+                onPressed: _copyLevelJson,
               ),
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: l10n?.tooltipEdit ?? 'Edit',
-                onPressed: _startEdit,
+              PopupMenuButton<String>(
+                tooltip: l10n?.tooltipMore ?? 'More',
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  switch (value) {
+                    case 'clear_unused':
+                      _showClearUnusedDialog();
+                    case 'edit':
+                      _startEdit();
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'clear_unused',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.cleaning_services),
+                      title: Text(
+                        l10n?.tooltipClearUnused ?? 'Clear unused objects',
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.edit),
+                      title: Text(l10n?.tooltipEdit ?? 'Edit'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ],
@@ -705,7 +750,9 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                 _expandedStates[index] = !(_expandedStates[index] ?? false);
               });
             },
+            onCopy: () => _copyObjectJson(objects[index]),
             onDelete: () => _deleteObjectAtIndex(index),
+            copyTooltip: l10n?.tooltipCopyObject ?? 'Copy object JSON',
             deleteTooltip: l10n?.delete ?? 'Delete',
             objectMatches: _objectMatches[index] ?? const [],
             activeMatchIndex: _activeMatchIndexForObject(index),
@@ -922,28 +969,33 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width: gutterW,
-                          child: row.isContinuation
-                              ? Text(
-                                  contSymbol,
-                                  textAlign: TextAlign.right,
-                                  style: baseStyle.copyWith(
-                                    fontFamily: _codeFontFamily,
-                                    color: muted,
-                                    fontSize: _fontSize * 0.92,
+                        // Exclude gutter from SelectionArea so copy is plain JSON.
+                        SelectionContainer.disabled(
+                          child: SizedBox(
+                            width: gutterW,
+                            child: row.isContinuation
+                                ? Text(
+                                    contSymbol,
+                                    textAlign: TextAlign.right,
+                                    style: baseStyle.copyWith(
+                                      fontFamily: _codeFontFamily,
+                                      color: muted,
+                                      fontSize: _fontSize * 0.92,
+                                    ),
+                                  )
+                                : Text(
+                                    '${row.logicalLineOneBased}',
+                                    textAlign: TextAlign.right,
+                                    style: baseStyle.copyWith(
+                                      fontFamily: _codeFontFamily,
+                                      color: muted,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  '${row.logicalLineOneBased}',
-                                  textAlign: TextAlign.right,
-                                  style: baseStyle.copyWith(
-                                    fontFamily: _codeFontFamily,
-                                    color: muted,
-                                  ),
-                                ),
+                          ),
                         ),
-                        SizedBox(width: gutterTextGap),
+                        SelectionContainer.disabled(
+                          child: SizedBox(width: gutterTextGap),
+                        ),
                         Expanded(
                           child: _matches.isEmpty
                               ? Text(
@@ -1083,7 +1135,9 @@ class _ObjectCodeCard extends StatelessWidget {
     required this.fontSize,
     required this.expanded,
     required this.onToggle,
+    required this.onCopy,
     required this.onDelete,
+    required this.copyTooltip,
     required this.deleteTooltip,
     required this.objectMatches,
     required this.activeMatchIndex,
@@ -1094,19 +1148,52 @@ class _ObjectCodeCard extends StatelessWidget {
   final double fontSize;
   final bool expanded;
   final VoidCallback onToggle;
+  final VoidCallback onCopy;
   final VoidCallback onDelete;
+  final String copyTooltip;
   final String deleteTooltip;
   final List<JsonViewerTextMatch> objectMatches;
   final int? activeMatchIndex;
+
+  Widget _headerActionButton({
+    required Color backgroundColor,
+    required Color foregroundColor,
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onPressed,
+  }) {
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(6),
+      child: IconButton(
+        icon: Icon(icon),
+        tooltip: tooltip,
+        onPressed: onPressed,
+        color: foregroundColor,
+        iconSize: 20,
+        padding: const EdgeInsets.all(6),
+        constraints: const BoxConstraints(),
+        style: IconButton.styleFrom(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isLevelDef = obj.objClass == 'LevelDefinition';
-    final jsonContent = const JsonEncoder.withIndent('  ').convert(obj.objData);
+    // Display objdata only; copy uses full object (aliases/objclass/objdata).
+    final jsonContent = _jsonEncoder.convert(obj.objData);
     final headerBg = isDark ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50);
     final deleteBtnBg = theme.colorScheme.error;
+    // Light blue, tuned per theme so it stays readable on the green header.
+    final copyBtnBg =
+        isDark ? const Color(0xFF4FC3F7) : const Color(0xFF81D4FA);
+    final copyBtnFg =
+        isDark ? const Color(0xFF01579B) : const Color(0xFF0277BD);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -1156,21 +1243,20 @@ class _ObjectCodeCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Material(
-                    color: deleteBtnBg,
-                    borderRadius: BorderRadius.circular(6),
-                    child: IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      tooltip: deleteTooltip,
-                      onPressed: onDelete,
-                      color: theme.colorScheme.onError,
-                      iconSize: 20,
-                      padding: const EdgeInsets.all(6),
-                      constraints: const BoxConstraints(),
-                      style: IconButton.styleFrom(
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                    ),
+                  _headerActionButton(
+                    backgroundColor: copyBtnBg,
+                    foregroundColor: copyBtnFg,
+                    icon: Icons.copy,
+                    tooltip: copyTooltip,
+                    onPressed: onCopy,
+                  ),
+                  const SizedBox(width: 6),
+                  _headerActionButton(
+                    backgroundColor: deleteBtnBg,
+                    foregroundColor: theme.colorScheme.onError,
+                    icon: Icons.delete_outline,
+                    tooltip: deleteTooltip,
+                    onPressed: onDelete,
                   ),
                   const SizedBox(width: 4),
                   Icon(

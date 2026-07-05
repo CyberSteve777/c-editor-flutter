@@ -54,6 +54,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Release metadata
+        id: release
+        run: bash .github/scripts/release-vars.sh
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -162,8 +166,13 @@ jobs:
       - name: Build IPA
         env:
           PROJECT_TYPE: ${{ steps.detect.outputs.type }}
+          VERSION: ${{ steps.release.outputs.version }}
+          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
           set -e
+
+          ARTIFACT_BASE="c_editor-${VERSION}+${SHORT_SHA}-ios-ipa"
+          echo "ARTIFACT_NAME=${ARTIFACT_BASE}" >> "$GITHUB_ENV"
 
           REPO_ROOT="$GITHUB_WORKSPACE"
           IOS_DIR="$REPO_ROOT/$IOS_PATH"
@@ -297,8 +306,8 @@ jobs:
               -exportPath build/export
 
             # Move IPA to expected location
-            mv build/export/*.ipa "build/$BUILD_ID.ipa"
-            echo "Created signed IPA: build/$BUILD_ID.ipa"
+            mv build/export/*.ipa "build/${ARTIFACT_BASE}.ipa"
+            echo "Created signed IPA: build/${ARTIFACT_BASE}.ipa"
           else
             # For unsigned builds, find .app and create IPA
             if [ "$PROJECT_TYPE" = "flutter" ]; then
@@ -318,16 +327,16 @@ jobs:
             mkdir -p build/Payload
             cp -R "$APP_PATH" build/Payload/
             cd build
-            zip -rq "$BUILD_ID.ipa" Payload
+            zip -rq "${ARTIFACT_BASE}.ipa" Payload
             rm -rf Payload
-            echo "Created unsigned IPA: build/$BUILD_ID.ipa"
+            echo "Created unsigned IPA: build/${ARTIFACT_BASE}.ipa"
           fi
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ipa
-          path: build/*.ipa
+          name: ${{ env.ARTIFACT_NAME }}
+          path: build/${{ env.ARTIFACT_NAME }}.ipa
           retention-days: 7
           if-no-files-found: error
 
@@ -361,7 +370,7 @@ jobs:
           else
             echo "- **Signing:** Unsigned (sign locally with AltStore/Sideloadly)" >> $GITHUB_STEP_SUMMARY
           fi
-          if [ -f build/*.ipa ]; then
-            IPA_PATH=$(find build -name "*.ipa" -type f | head -1)
-            echo "- **IPA Size:** $(ls -lh "$IPA_PATH" | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${ARTIFACT_NAME:-}" ] && [ -f "build/${ARTIFACT_NAME}.ipa" ]; then
+            echo "- **IPA:** ${ARTIFACT_NAME}.ipa" >> $GITHUB_STEP_SUMMARY
+            echo "- **IPA Size:** $(ls -lh "build/${ARTIFACT_NAME}.ipa" | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
           fi
