@@ -361,60 +361,40 @@ EditorAliasInputField(
                               ),
                             ),
                             child: count > 0
-                                ? Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      Positioned.fill(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(2),
-                                          child: FittedBox(
-                                            fit: BoxFit.contain,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              child: Image.asset(
-                                                GridItemRepository.getIconPath(
-                                                  _gridItemType,
-                                                ),
+                                ? LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Positioned.fill(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(2),
+                                              child: FittedBox(
                                                 fit: BoxFit.contain,
-                                                filterQuality:
-                                                    FilterQuality.medium,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      if (count > 1)
-                                        Positioned(
-                                          top: 3,
-                                          right: 3,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 3,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                    bottomLeft: Radius.circular(
-                                                      6,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  child: Image.asset(
+                                                    GridItemRepository
+                                                        .getIconPath(
+                                                      _gridItemType,
                                                     ),
+                                                    fit: BoxFit.contain,
+                                                    filterQuality:
+                                                        FilterQuality.medium,
                                                   ),
-                                            ),
-                                            child: Text(
-                                              '+${count - 1}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                    ],
+                                          if (count > 1)
+                                            GridCellCountBadge(
+                                              label: '+${count - 1}',
+                                              cellWidth: constraints.maxWidth,
+                                            ),
+                                        ],
+                                      );
+                                    },
                                   )
                                 : null,
                           ),

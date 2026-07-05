@@ -330,54 +330,33 @@ class _InitialPlantEntryScreenState extends State<InitialPlantEntryScreen> {
                               ),
                             ),
                             child: count > 0 && firstPlant != null
-                                ? Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      Positioned.fill(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(2),
-                                          child: FittedBox(
-                                            fit: BoxFit.contain,
-                                            child: _PlantIconSmall(
-                                              firstPlant
-                                                      .plantTypes
-                                                      .firstOrNull ??
-                                                  '',
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      if (count > 1)
-                                        Positioned(
-                                          top: 3,
-                                          right: 3,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 3,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                    bottomLeft: Radius.circular(
-                                                      6,
-                                                    ),
-                                                  ),
-                                            ),
-                                            child: Text(
-                                              '+${count - 1}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
+                                ? LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Positioned.fill(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(2),
+                                              child: FittedBox(
+                                                fit: BoxFit.contain,
+                                                child: _PlantIconSmall(
+                                                  firstPlant
+                                                          .plantTypes
+                                                          .firstOrNull ??
+                                                      '',
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                    ],
+                                          if (count > 1)
+                                            GridCellCountBadge(
+                                              label: '+${count - 1}',
+                                              cellWidth: constraints.maxWidth,
+                                            ),
+                                        ],
+                                      );
+                                    },
                                   )
                                 : null,
                           ),

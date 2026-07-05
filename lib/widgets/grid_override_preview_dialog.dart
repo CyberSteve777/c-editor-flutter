@@ -5,9 +5,32 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/drop_ship_area_preview_grid.dart';
+import 'package:c_editor/widgets/editor_preview_dialog.dart';
 import 'package:c_editor/widgets/grid_override_preview_grid.dart';
 
 const _energyGridTileAsset = 'assets/images/griditems/energyGrid.webp';
+
+List<Widget> _gridPreviewDialogActions(
+  BuildContext context, {
+  required AppLocalizations? l10n,
+  VoidCallback? onOpenModuleSettings,
+}) {
+  return [
+    if (onOpenModuleSettings != null)
+      FilledButton(
+        style: FilledButton.styleFrom(backgroundColor: Colors.green),
+        onPressed: () {
+          Navigator.pop(context);
+          onOpenModuleSettings();
+        },
+        child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
+      ),
+    TextButton(
+      onPressed: () => Navigator.pop(context),
+      child: Text(l10n?.close ?? 'Close'),
+    ),
+  ];
+}
 
 Future<void> showArmrackGridPreviewDialog(
   BuildContext context, {
@@ -25,45 +48,31 @@ Future<void> showArmrackGridPreviewDialog(
     return null;
   }
 
-  return showDialog<void>(
+  return showEditorPreviewDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(
-        title ??
-            l10n?.gridOverridePreviewArmrackTitle ??
-            'Weapon stand placement',
-      ),
-      content: SingleChildScrollView(
-        child: GridOverridePreviewGrid(
-          gridRows: rows,
-          gridCols: cols,
-          cellImageAt: (col, row) {
-            final item = itemAt(col, row);
-            if (item == null) return null;
-            return armrackIconAsset(item.type);
-          },
-          cellImageScaleAt: (col, row) {
-            final item = itemAt(col, row);
-            if (item == null) return 1.0;
-            return armrackGridScale(item.type);
-          },
-        ),
-      ),
-      actions: [
-        if (onOpenModuleSettings != null)
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
-              Navigator.pop(ctx);
-              onOpenModuleSettings();
-            },
-            child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-          ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l10n?.close ?? 'Close'),
-        ),
-      ],
+    title: Text(
+      title ??
+          l10n?.gridOverridePreviewArmrackTitle ??
+          'Weapon stand placement',
+    ),
+    content: GridOverridePreviewGrid(
+      gridRows: rows,
+      gridCols: cols,
+      cellImageAt: (col, row) {
+        final item = itemAt(col, row);
+        if (item == null) return null;
+        return armrackIconAsset(item.type);
+      },
+      cellImageScaleAt: (col, row) {
+        final item = itemAt(col, row);
+        if (item == null) return 1.0;
+        return armrackGridScale(item.type);
+      },
+    ),
+    actions: _gridPreviewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
     ),
   );
 }
@@ -82,38 +91,24 @@ Future<void> showEnergyGridPreviewDialog(
     return items.any((item) => item.mX == col && item.mY == row);
   }
 
-  return showDialog<void>(
+  return showEditorPreviewDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(
-        title ??
-            l10n?.gridOverridePreviewEnergyGridTitle ??
-            'Taiji tile placement',
-      ),
-      content: SingleChildScrollView(
-        child: GridOverridePreviewGrid(
-          gridRows: rows,
-          gridCols: cols,
-          cellImageAt: (col, row) =>
-              hasTileAt(col, row) ? _energyGridTileAsset : null,
-          cellImageScaleAt: (col, row) => 0.92,
-        ),
-      ),
-      actions: [
-        if (onOpenModuleSettings != null)
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
-              Navigator.pop(ctx);
-              onOpenModuleSettings();
-            },
-            child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-          ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l10n?.close ?? 'Close'),
-        ),
-      ],
+    title: Text(
+      title ??
+          l10n?.gridOverridePreviewEnergyGridTitle ??
+          'Taiji tile placement',
+    ),
+    content: GridOverridePreviewGrid(
+      gridRows: rows,
+      gridCols: cols,
+      cellImageAt: (col, row) =>
+          hasTileAt(col, row) ? _energyGridTileAsset : null,
+      cellImageScaleAt: (col, row) => 0.92,
+    ),
+    actions: _gridPreviewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
     ),
   );
 }
@@ -128,52 +123,38 @@ Future<void> showDropShipGridPreviewDialog(
   final l10n = AppLocalizations.of(context);
   final (rows, cols) = LevelParser.getGridDimensionsFromFile(levelFile);
 
-  return showDialog<void>(
+  return showEditorPreviewDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(
-        title ?? l10n?.airDropShipModuleDropAreaPreview ?? 'Drop area preview',
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              '${l10n?.airDropShipModuleExtraImpCount ?? 'Extra imp count (Imp)'}: ${wave.imp}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              l10n?.airDropShipModuleAreaDropPreviewLabel ??
-                  'Area drop preview:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            DropShipAreaPreviewGrid(
-              gridRows: rows,
-              gridCols: cols,
-              rowRange: wave.rowRange,
-              colRange: wave.colRange,
-            ),
-          ],
+    title: Text(
+      title ?? l10n?.airDropShipModuleDropAreaPreview ?? 'Drop area preview',
+    ),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          '${l10n?.airDropShipModuleExtraImpCount ?? 'Extra imp count (Imp)'}: ${wave.imp}',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-      ),
-      actions: [
-        if (onOpenModuleSettings != null)
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
-              Navigator.pop(ctx);
-              onOpenModuleSettings();
-            },
-            child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-          ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l10n?.close ?? 'Close'),
+        const SizedBox(height: 12),
+        Text(
+          l10n?.airDropShipModuleAreaDropPreviewLabel ??
+              'Area drop preview:',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        DropShipAreaPreviewGrid(
+          gridRows: rows,
+          gridCols: cols,
+          rowRange: wave.rowRange,
+          colRange: wave.colRange,
         ),
       ],
+    ),
+    actions: _gridPreviewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
     ),
   );
 }

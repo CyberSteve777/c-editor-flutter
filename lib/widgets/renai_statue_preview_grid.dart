@@ -38,98 +38,78 @@ class RenaiStatuePreviewGrid extends StatelessWidget {
             ? EditorItemCardLayout.gridPreviewMaxWidth(context)
             : renaiStatuePreviewMaxWidth(context));
 
-    final grid = AspectRatio(
-      aspectRatio: cols / rows,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.brightness == Brightness.dark
-              ? const Color(0xFF31383B)
-              : const Color(0xFFD7ECF1),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: const Color(0xFF6B899A)),
-        ),
-        child: Column(
-          children: List.generate(rows, (row) {
-            return Expanded(
-              child: Row(
-                children: List.generate(cols, (col) {
-                  final cellItems = _statuesAt(col, row);
-                  final firstItem = cellItems.firstOrNull;
-                  final count = cellItems.length;
-                  return Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.all(0.5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: const Color(0xFF6B899A),
-                          width: 0.5,
+    final grid = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: resolvedMaxWidth),
+      child: AspectRatio(
+        aspectRatio: cols / rows,
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.brightness == Brightness.dark
+                ? const Color(0xFF31383B)
+                : const Color(0xFFD7ECF1),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: const Color(0xFF6B899A)),
+          ),
+          child: Column(
+            children: List.generate(rows, (row) {
+              return Expanded(
+                child: Row(
+                  children: List.generate(cols, (col) {
+                    final cellItems = _statuesAt(col, row);
+                    final firstItem = cellItems.firstOrNull;
+                    final count = cellItems.length;
+                    return Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.all(0.5),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color(0xFF6B899A),
+                            width: 0.5,
+                          ),
                         ),
+                        child: count > 0 && firstItem != null
+                            ? LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Positioned.fill(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(2),
+                                          child: FittedBox(
+                                            fit: BoxFit.contain,
+                                            child: RenaiStatueIcon(
+                                              typeName: firstItem.typeName,
+                                              size: 32,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      if (count > 1)
+                                        GridCellCountBadge(
+                                          label: '+${count - 1}',
+                                          cellWidth: constraints.maxWidth,
+                                        ),
+                                    ],
+                                  );
+                                },
+                              )
+                            : null,
                       ),
-                      child: count > 0 && firstItem != null
-                          ? Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                Positioned.fill(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2),
-                                    child: FittedBox(
-                                      fit: BoxFit.contain,
-                                      child: RenaiStatueIcon(
-                                        typeName: firstItem.typeName,
-                                        size: 32,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                if (count > 1)
-                                  Positioned(
-                                    top: 3,
-                                    right: 3,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 3,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant,
-                                        borderRadius: const BorderRadius.only(
-                                          bottomLeft: Radius.circular(6),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        '+${count - 1}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            )
-                          : null,
-                    ),
-                  );
-                }),
-              ),
-            );
-          }),
+                    );
+                  }),
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );
 
     if (shrinkOnDesktop) {
-      return scaleTableForDesktop(
-        context: context,
-        child: Container(
-          constraints: BoxConstraints(maxWidth: resolvedMaxWidth),
-          child: grid,
-        ),
-      );
+      return scaleTableForDesktop(context: context, child: grid);
     }
 
-    return SizedBox(width: resolvedMaxWidth, child: grid);
+    return grid;
   }
 }

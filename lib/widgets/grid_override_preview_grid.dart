@@ -24,8 +24,8 @@ class GridOverridePreviewGrid extends StatelessWidget {
     final theme = Theme.of(context);
     final resolvedMaxWidth = maxWidth ?? gridOverridePreviewMaxWidth(context);
 
-    return SizedBox(
-      width: resolvedMaxWidth,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: resolvedMaxWidth),
       child: AspectRatio(
         aspectRatio: gridCols / gridRows,
         child: Container(
@@ -56,17 +56,17 @@ class GridOverridePreviewGrid extends StatelessWidget {
                         child: imagePath != null
                             ? LayoutBuilder(
                                 builder: (context, constraints) {
-                                  final w = constraints.maxWidth * scale;
-                                  final h = constraints.maxHeight * scale;
+                                  final cellWidth = constraints.maxWidth;
+                                  final cellHeight = constraints.maxHeight;
                                   return Align(
                                     alignment: Alignment.bottomCenter,
                                     child: SizedBox(
-                                      width: w,
-                                      height: h,
+                                      width: cellWidth * scale,
+                                      height: cellHeight * scale,
                                       child: AssetImageWidget(
                                         assetPath: imagePath,
-                                        width: w,
-                                        height: h,
+                                        width: cellWidth * scale,
+                                        height: cellHeight * scale,
                                         fit: BoxFit.contain,
                                       ),
                                     ),
@@ -88,8 +88,11 @@ class GridOverridePreviewGrid extends StatelessWidget {
 }
 
 double gridOverridePreviewMaxWidth(BuildContext context) {
-  if (isDesktopPlatform(context)) return 480;
-  return (MediaQuery.sizeOf(context).width - 48).clamp(260.0, 400.0);
+  final width = MediaQuery.sizeOf(context).width;
+  if (isDesktopPlatform(context)) {
+    return (width - 96).clamp(320.0, 624.0);
+  }
+  return (width - 48).clamp(260.0, 400.0);
 }
 
 /// Drop-ship area previews are shown 30% larger than other grid previews.
