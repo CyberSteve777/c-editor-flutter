@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/condition_l10n.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/plant_conditions.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/theme/app_theme.dart';
@@ -616,7 +618,12 @@ class _PlacementCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      placement.condition ?? l10n.noConditions,
+                      placement.condition == null
+                          ? l10n.noConditions
+                          : ConditionL10n.plantLabel(
+                              context,
+                              placement.condition!,
+                            ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -718,10 +725,13 @@ class _PlacementEditDialogState extends State<_PlacementEditDialog> {
                 value: null,
                 child: Text(l10n.frozenPlantPlacementConditionNull),
               ),
-              const DropdownMenuItem<String?>(
-                value: 'icecubed',
-                child: Text('icecubed'),
-              ),
+              for (final id in PlantConditions.ids)
+                DropdownMenuItem<String?>(
+                  value: id,
+                  child: Text(
+                    ConditionL10n.plantLabel(context, id),
+                  ),
+                ),
             ],
             onChanged: (v) => setState(() => _condition = v),
           ),

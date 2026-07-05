@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
+import 'package:c_editor/data/condition_l10n.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/zombie_conditions.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
@@ -30,6 +32,9 @@ class InitialZombieEntryScreen extends StatefulWidget {
   final VoidCallback onBack;
   final EditorCubit? editorCubit;
 
+  /// Preset conditions for initial zombies (subset of [ZombieConditions.allIds]).
+  static const presetConditionIds = ['icecubed', 'freeze', 'stun'];
+
   @override
   State<InitialZombieEntryScreen> createState() =>
       _InitialZombieEntryScreenState();
@@ -41,12 +46,6 @@ class _InitialZombieEntryScreenState extends State<InitialZombieEntryScreen> {
   int _selectedX = 0;
   int _selectedY = 0;
   InitialZombieData? _editingPlacement;
-
-  static const _zombieConditions = [
-    ('icecubed', 'Icecubed (icecubed)'),
-    ('freeze', 'Frozen (freeze)'),
-    ('stun', 'Stunned (stun)'),
-  ];
 
   @override
   void initState() {
@@ -532,7 +531,10 @@ class _InitialZombieCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      item.condition,
+                      ConditionL10n.zombieLabel(
+                        context,
+                        item.condition,
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -599,8 +601,8 @@ class _InitialZombieEditDialogState extends State<_InitialZombieEditDialog> {
   void initState() {
     super.initState();
     _condition = widget.placement.condition;
-    _isCustomInput = !_InitialZombieEntryScreenState._zombieConditions.any(
-      (e) => e.$1 == _condition,
+    _isCustomInput = !InitialZombieEntryScreen.presetConditionIds.contains(
+      _condition,
     );
     _conditionController = TextEditingController(text: _condition);
   }
@@ -657,22 +659,26 @@ class _InitialZombieEditDialogState extends State<_InitialZombieEditDialog> {
             ] else ...[
               DropdownButtonFormField<String>(
                 initialValue:
-                    _InitialZombieEntryScreenState._zombieConditions.any(
-                      (e) => e.$1 == _condition,
+                    InitialZombieEntryScreen.presetConditionIds.contains(
+                      _condition,
                     )
                     ? _condition
-                    : _InitialZombieEntryScreenState._zombieConditions.first.$1,
+                    : InitialZombieEntryScreen.presetConditionIds.first,
                 decoration: InputDecoration(
                   labelText:
                       AppLocalizations.of(context)?.presetConditions ??
                       'Preset conditions',
                   border: const OutlineInputBorder(),
                 ),
-                items: _InitialZombieEntryScreenState._zombieConditions
-                    .map(
-                      (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)),
-                    )
-                    .toList(),
+                items: [
+                  for (final id in InitialZombieEntryScreen.presetConditionIds)
+                    DropdownMenuItem(
+                      value: id,
+                      child: Text(
+                        ConditionL10n.zombieLabel(context, id),
+                      ),
+                    ),
+                ],
                 onChanged: (v) {
                   if (v != null) setState(() => _condition = v);
                 },
