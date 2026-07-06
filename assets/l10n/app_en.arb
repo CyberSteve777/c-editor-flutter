@@ -88,6 +88,17 @@
   "selectFolderPrompt": "Please select a folder as the level storage directory.",
   "selectFolderButton": "Select folder",
   "uploadToWebsite": "Upload to website",
+  "importFiles": "Import files",
+  "importFolders": "Import folders",
+  "importFoldersPickerHint": "Select a folder to import. Pick another folder or cancel when done.",
+  "importFolderEmpty": "No level files found in the selected folder",
+  "importFoldersSuccess": "Imported {count} level(s) from {folders} folder(s)",
+  "@importFoldersSuccess": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "folders": { "type": "int" }
+    }
+  },
   "uploadLevelPickerTitle": "Select one or multiple levels to upload",
   "smartUploadTitle": "Duplicate file",
   "smartUploadFileMessage": "This file already exists in your library:\n\n{fileName}\n\nWhat should be done?",

@@ -215,6 +215,28 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     return _directoryName;
   }
 
+  @override
+  Future<WebFolderImport?> pickWebFolderForImport() async {
+    await _ensureReady();
+    if (!_fsa.isSupported) {
+      return null;
+    }
+
+    final handle = await _fsa.pickDirectory();
+    if (handle == null) {
+      return null;
+    }
+    if (!await _fsa.ensurePermission(handle)) {
+      return null;
+    }
+
+    final files = await _fsa.readAllLevelFiles(handle);
+    return WebFolderImport(
+      name: _fsa.getHandleName(handle),
+      files: files,
+    );
+  }
+
   Future<void> _putFile(
     String key,
     Uint8List bytes, {

@@ -79,6 +79,17 @@
   "selectFolderPrompt": "Выберите папку для хранения уровней.",
   "selectFolderButton": "Выбрать папку",
   "uploadToWebsite": "Загрузить на сайт",
+  "importFiles": "Импортировать файлы",
+  "importFolders": "Импортировать папки",
+  "importFoldersPickerHint": "Выберите папку для импорта. Можно выбрать ещё одну или отменить, когда закончите.",
+  "importFolderEmpty": "В выбранной папке нет файлов уровней",
+  "importFoldersSuccess": "Импортировано уровней: {count} из папок: {folders}",
+  "@importFoldersSuccess": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "folders": { "type": "int" }
+    }
+  },
   "uploadLevelPickerTitle": "Выберите один или несколько уровней для загрузки",
   "smartUploadTitle": "Дубликат файла",
   "smartUploadFileMessage": "Этот файл уже есть в вашей библиотеке:\n\n{fileName}\n\nЧто сделать?",

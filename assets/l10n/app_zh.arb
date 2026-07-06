@@ -95,6 +95,17 @@
   "selectFolderPrompt": "请选择一个文件夹作为关卡存储目录。",
   "selectFolderButton": "选择文件夹",
   "uploadToWebsite": "上传到网站",
+  "importFiles": "导入文件",
+  "importFolders": "导入文件夹",
+  "importFoldersPickerHint": "选择要导入的文件夹。可继续选择其他文件夹，取消即完成。",
+  "importFolderEmpty": "所选文件夹中没有关卡文件",
+  "importFoldersSuccess": "已从 {folders} 个文件夹导入 {count} 个关卡",
+  "@importFoldersSuccess": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "folders": { "type": "int" }
+    }
+  },
   "uploadLevelPickerTitle": "选择一个或多个要上传的关卡",
   "smartUploadTitle": "重复文件",
   "smartUploadFileMessage": "此文件已存在于关卡库中：\n\n{fileName}\n\n如何处理？",

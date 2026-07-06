@@ -5,7 +5,8 @@ import 'level_repository_web.dart'
     as impl;
 
 export '../pvz_models.dart' show PvzLevelFile;
-export 'level_repository_base.dart' show FileItem, LevelRepositoryBase;
+export 'level_repository_base.dart'
+    show FileItem, LevelRepositoryBase, WebFolderImport;
 
 class LevelRepository {
   static final LevelRepositoryBase _impl = impl.createLevelRepository();
@@ -140,6 +141,9 @@ class LevelRepository {
       _impl.getWebLibraryDisplayName();
 
   static Future<String?> connectLocalFolder() => _impl.connectLocalFolder();
+
+  static Future<WebFolderImport?> pickWebFolderForImport() =>
+      _impl.pickWebFolderForImport();
 
   static Future<bool> isLocalFolderConnected() =>
       _impl.isLocalFolderConnected();

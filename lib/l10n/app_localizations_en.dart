@@ -251,6 +251,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploadToWebsite => 'Upload to website';
 
   @override
+  String get importFiles => 'Import files';
+
+  @override
+  String get importFolders => 'Import folders';
+
+  @override
+  String get importFoldersPickerHint =>
+      'Select a folder to import. Pick another folder or cancel when done.';
+
+  @override
+  String get importFolderEmpty => 'No level files found in the selected folder';
+
+  @override
+  String importFoldersSuccess(int count, int folders) {
+    return 'Imported $count level(s) from $folders folder(s)';
+  }
+
+  @override
   String get uploadLevelPickerTitle =>
       'Select one or multiple levels to upload';
 

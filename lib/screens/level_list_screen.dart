@@ -293,47 +293,119 @@ class _LevelListScreenState extends State<LevelListScreen> {
       withData: true,
       type: FileType.custom,
       allowedExtensions: ['json', 'hujson', 'rton'],
-      dialogTitle: l10n.uploadLevelPickerTitle,
+      dialogTitle: l10n.importFiles,
     );
     if (result == null || result.files.isEmpty || !mounted) return;
 
     const webPath = 'web://';
     final currentDir = _pathStack.isNotEmpty ? _pathStack.last.path : webPath;
-    final pending = <({String name, List<int> bytes})>[];
-    final conflicts = <({String name, List<int> bytes})>[];
+    final files = <({String storageKey, List<int> bytes})>[];
 
     for (final file in result.files) {
       if (file.name.isEmpty) continue;
       final bytes = file.bytes;
       if (bytes == null) continue;
-      final exists = await LevelRepository.fileExistsInDirectory(
-        currentDir,
-        file.name,
-      );
-      final entry = (name: file.name, bytes: bytes);
+      files.add((
+        storageKey: _webStorageKey(currentDir, file.name),
+        bytes: bytes,
+      ));
+    }
+
+    if (files.isEmpty) return;
+    await _importFilesWithSmartUpload(files);
+  }
+
+  /// Web-only: recursively import one or more folders (cancel picker when done).
+  Future<void> _pickAndImportFolders() async {
+    final l10n = AppLocalizations.of(context)!;
+    await LevelRepository.ensureWebStorageReady();
+    if (!mounted) return;
+
+    _showMessage(l10n.importFoldersPickerHint);
+
+    final folders = <WebFolderImport>[];
+    while (mounted) {
+      final folder = await LevelRepository.pickWebFolderForImport();
+      if (folder == null) break;
+      if (folder.files.isEmpty) {
+        if (!mounted) return;
+        _showWarningMessage(l10n.importFolderEmpty);
+        continue;
+      }
+      folders.add(folder);
+    }
+
+    if (folders.isEmpty || !mounted) return;
+
+    final files = <({String storageKey, List<int> bytes})>[];
+    final useFolderPrefix = folders.length > 1;
+    for (final folder in folders) {
+      final folderName = _sanitizeImportFolderName(folder.name);
+      for (final entry in folder.files.entries) {
+        final storageKey = useFolderPrefix
+            ? '$folderName/${entry.key}'
+            : entry.key;
+        files.add((storageKey: storageKey, bytes: entry.value));
+      }
+    }
+
+    final imported = await _importFilesWithSmartUpload(files);
+    if (!mounted || imported == 0) return;
+    _showSuccessMessage(
+      l10n.importFoldersSuccess(imported, folders.length),
+    );
+  }
+
+  String _sanitizeImportFolderName(String name) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return 'Imported folder';
+    return trimmed.replaceAll(RegExp(r'[/\\]'), '_');
+  }
+
+  Future<bool> _webStorageKeyExists(String storageKey) async {
+    const webPath = 'web://';
+    final slash = storageKey.lastIndexOf('/');
+    if (slash < 0) {
+      return LevelRepository.fileExistsInDirectory(webPath, storageKey);
+    }
+    final parentKey = storageKey.substring(0, slash);
+    final leaf = storageKey.substring(slash + 1);
+    return LevelRepository.fileExistsInDirectory('$webPath$parentKey', leaf);
+  }
+
+  Future<int> _importFilesWithSmartUpload(
+    List<({String storageKey, List<int> bytes})> files,
+  ) async {
+    if (files.isEmpty || !mounted) return 0;
+
+    final pending = <({String storageKey, List<int> bytes})>[];
+    final conflicts = <({String storageKey, List<int> bytes})>[];
+
+    for (final file in files) {
+      final exists = await _webStorageKeyExists(file.storageKey);
       if (exists) {
-        conflicts.add(entry);
+        conflicts.add(file);
       } else {
-        pending.add(entry);
+        pending.add(file);
       }
     }
 
     if (conflicts.isNotEmpty) {
-      await _resolveSmartUploadConflicts(currentDir, conflicts, pending);
-      if (!mounted) return;
+      await _resolveSmartUploadConflicts(conflicts, pending);
+      if (!mounted) return 0;
     }
 
-    if (pending.isEmpty) return;
+    if (pending.isEmpty) return 0;
 
     for (final file in pending) {
-      final storageKey = _webStorageKey(currentDir, file.name);
       await LevelRepository.prepareInternalCacheFromBytes(
-        storageKey,
+        file.storageKey,
         file.bytes,
       );
     }
 
-    if (!mounted) return;
+    if (!mounted) return 0;
+    const webPath = 'web://';
     setState(() {
       _rootFolderPath ??= webPath;
       if (_pathStack.isEmpty) {
@@ -341,15 +413,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
       }
     });
     _loadCurrentDirectory();
+    return pending.length;
   }
 
   Future<void> _resolveSmartUploadConflicts(
-    String currentDir,
-    List<({String name, List<int> bytes})> conflicts,
-    List<({String name, List<int> bytes})> pending,
+    List<({String storageKey, List<int> bytes})> conflicts,
+    List<({String storageKey, List<int> bytes})> pending,
   ) async {
     _WebUploadConflictStrategy? bulkStrategy;
-    final reservedNames = pending.map((e) => e.name.toLowerCase()).toSet();
+    final reservedKeys = pending.map((e) => e.storageKey.toLowerCase()).toSet();
 
     for (final conflict in conflicts) {
       if (!mounted) return;
@@ -358,7 +430,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       if (bulkStrategy != null) {
         strategy = bulkStrategy;
       } else {
-        final choice = await _showSmartUploadFileDialog(conflict.name);
+        final choice = await _showSmartUploadFileDialog(conflict.storageKey);
         if (!mounted) return;
         if (choice == null) continue;
 
@@ -386,41 +458,47 @@ class _LevelListScreenState extends State<LevelListScreen> {
           break;
         case _WebUploadConflictStrategy.overwrite:
           pending.add(conflict);
-          reservedNames.add(conflict.name.toLowerCase());
+          reservedKeys.add(conflict.storageKey.toLowerCase());
         case _WebUploadConflictStrategy.copy:
-          final copyName = await _nextSmartUploadCopyName(
-            currentDir,
-            conflict.name,
-            reservedNames,
+          final copyKey = await _nextSmartUploadCopyStorageKey(
+            conflict.storageKey,
+            reservedKeys,
           );
-          pending.add((name: copyName, bytes: conflict.bytes));
-          reservedNames.add(copyName.toLowerCase());
+          pending.add((storageKey: copyKey, bytes: conflict.bytes));
+          reservedKeys.add(copyKey.toLowerCase());
       }
     }
   }
 
-  Future<String> _nextSmartUploadCopyName(
-    String currentDir,
-    String originalName,
-    Set<String> reservedNames,
+  Future<String> _nextSmartUploadCopyStorageKey(
+    String storageKey,
+    Set<String> reservedKeys,
   ) async {
-    final baseName = LevelRepository.baseNameWithoutLevelExtension(originalName);
-    final ext = originalName.substring(baseName.length);
+    final slash = storageKey.lastIndexOf('/');
+    final parentKey = slash >= 0 ? storageKey.substring(0, slash) : '';
+    final leaf = slash >= 0 ? storageKey.substring(slash + 1) : storageKey;
 
-    Future<bool> isTaken(String candidate) async {
-      return reservedNames.contains(candidate.toLowerCase()) ||
-          await LevelRepository.fileExistsInDirectory(currentDir, candidate);
+    Future<bool> isTaken(String candidateKey) async {
+      return reservedKeys.contains(candidateKey.toLowerCase()) ||
+          await _webStorageKeyExists(candidateKey);
     }
 
+    final baseName = LevelRepository.baseNameWithoutLevelExtension(leaf);
+    final ext = leaf.substring(baseName.length);
+
     var copyBase = '${baseName}_copy';
-    var candidate = '$copyBase$ext';
-    if (!await isTaken(candidate)) return candidate;
+    var candidateLeaf = '$copyBase$ext';
+    var candidateKey =
+        parentKey.isEmpty ? candidateLeaf : '$parentKey/$candidateLeaf';
+    if (!await isTaken(candidateKey)) return candidateKey;
 
     var n = 1;
     while (true) {
       copyBase = '${baseName}_copy$n';
-      candidate = '$copyBase$ext';
-      if (!await isTaken(candidate)) return candidate;
+      candidateLeaf = '$copyBase$ext';
+      candidateKey =
+          parentKey.isEmpty ? candidateLeaf : '$parentKey/$candidateLeaf';
+      if (!await isTaken(candidateKey)) return candidateKey;
       n++;
     }
   }
@@ -875,7 +953,16 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   value: 'import_files',
                   child: ListTile(
                     leading: const Icon(Icons.file_open),
-                    title: Text(l10n.uploadToWebsite),
+                    title: Text(l10n.importFiles),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              if (kIsWeb)
+                PopupMenuItem(
+                  value: 'import_folders',
+                  child: ListTile(
+                    leading: const Icon(Icons.drive_folder_upload_outlined),
+                    title: Text(l10n.importFolders),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -938,6 +1025,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 context.read<SettingsCubit>().cycleTheme();
               } else if (value == 'import_files') {
                 await _pickAndAddFile();
+              } else if (value == 'import_folders') {
+                await _pickAndImportFolders();
               } else if (value == 'download_all') {
                 await LevelRepository.downloadAllLevelsAsZip();
               } else if (value == 'cache') {
@@ -991,7 +1080,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
                             TextButton.icon(
                               onPressed: _pickAndAddFile,
                               icon: const Icon(Icons.file_open),
-                              label: Text(l10n.uploadToWebsite),
+                              label: Text(l10n.importFiles),
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton.icon(
+                              onPressed: _pickAndImportFolders,
+                              icon: const Icon(
+                                Icons.drive_folder_upload_outlined,
+                              ),
+                              label: Text(l10n.importFolders),
                             ),
                           ],
                           if (!kIsWeb && Platform.isIOS) ...[
