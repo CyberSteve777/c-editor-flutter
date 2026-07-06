@@ -1,11 +1,11 @@
 {
-    "name": "c_editor",
-    "short_name": "c_editor",
+    "name": "C-Editor",
+    "short_name": "C-Editor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#1976d2",
-    "description": "A new Flutter project.",
+    "description": "Level Editor for Plants vs. Zombies 2 Chinese",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
