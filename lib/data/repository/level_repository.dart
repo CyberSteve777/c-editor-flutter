@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
 import 'level_repository_web.dart'
@@ -6,7 +8,7 @@ import 'level_repository_web.dart'
 
 export '../pvz_models.dart' show PvzLevelFile;
 export 'level_repository_base.dart'
-    show FileItem, LevelRepositoryBase, WebFolderImport;
+    show FileItem, LevelRepositoryBase, WebFolderFileImport, WebFolderImport;
 
 class LevelRepository {
   static final LevelRepositoryBase _impl = impl.createLevelRepository();
@@ -141,6 +143,26 @@ class LevelRepository {
       _impl.getWebLibraryDisplayName();
 
   static Future<String?> connectLocalFolder() => _impl.connectLocalFolder();
+
+  static Future<Map<String, Uint8List>> snapshotStoredFiles() =>
+      _impl.snapshotStoredFiles();
+
+  static Future<WebFolderImport?> stageNativeFolderConnect() =>
+      _impl.stageNativeFolderConnect();
+
+  static Future<void> cancelNativeFolderStaging() =>
+      _impl.cancelNativeFolderStaging();
+
+  static Future<String?> finalizeNativeFolderConnect({
+    required Set<String> discardKeys,
+    required Map<String, Uint8List> keptLocalFiles,
+    required List<WebFolderFileImport> imports,
+  }) =>
+      _impl.finalizeNativeFolderConnect(
+        discardKeys: discardKeys,
+        keptLocalFiles: keptLocalFiles,
+        imports: imports,
+      );
 
   static Future<WebFolderImport?> pickWebFolderForImport() =>
       _impl.pickWebFolderForImport();

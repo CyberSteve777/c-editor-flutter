@@ -30,6 +30,15 @@ enum _SmartUploadChoice {
   copyAll,
 }
 
+enum _LocalFileKeepStrategy { keep, discard }
+
+enum _LocalFileKeepChoice {
+  keepThis,
+  discardThis,
+  keepAll,
+  discardAll,
+}
+
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
     super.key,
@@ -224,18 +233,22 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     await _ensureStoragePermission();
     if (kIsWeb) {
-      final folderName = await LevelRepository.connectLocalFolder();
-      if (folderName == null || !mounted) return;
-      const webPath = 'web://';
-      await LevelRepository.setSavedFolderPath(webPath);
-      setState(() {
-        _rootFolderPath = webPath;
-        _pathStack = [(name: folderName, path: webPath)];
-      });
-      _loadCurrentDirectory();
-      if (await LevelRepository.isWebFolderImportMode()) {
-        if (!mounted) return;
-        _showMessage(l10n.webFolderImportNotice);
+      if (_webSupportsFolderSync) {
+        await _connectWebNativeFolder();
+      } else {
+        final folderName = await LevelRepository.connectLocalFolder();
+        if (folderName == null || !mounted) return;
+        const webPath = 'web://';
+        await LevelRepository.setSavedFolderPath(webPath);
+        setState(() {
+          _rootFolderPath = webPath;
+          _pathStack = [(name: folderName, path: webPath)];
+        });
+        _loadCurrentDirectory();
+        if (await LevelRepository.isWebFolderImportMode()) {
+          if (!mounted) return;
+          _showMessage(l10n.webFolderImportNotice);
+        }
       }
       return;
     }
@@ -245,6 +258,158 @@ class _LevelListScreenState extends State<LevelListScreen> {
     );
     if (result == null || !mounted) return;
     await _applyLibraryFolder(result);
+  }
+
+  Future<void> _connectWebNativeFolder() async {
+    await LevelRepository.ensureWebStorageReady();
+    if (!mounted) return;
+
+    try {
+      final staged = await LevelRepository.stageNativeFolderConnect();
+      if (staged == null || !mounted) return;
+
+      final existing = await LevelRepository.snapshotStoredFiles();
+      final kept = <String, Uint8List>{};
+      final discard = <String>{};
+
+      if (existing.isNotEmpty) {
+        await _resolveLocalOnlyFileKeep(existing, kept, discard);
+        if (!mounted) return;
+      }
+
+      final pending = <({String storageKey, List<int> bytes})>[];
+      final conflicts = <({String storageKey, List<int> bytes})>[];
+
+      for (final entry in staged.files.entries) {
+        final file = (storageKey: entry.key, bytes: entry.value);
+        if (kept.containsKey(entry.key)) {
+          conflicts.add(file);
+        } else {
+          pending.add(file);
+        }
+      }
+
+      if (conflicts.isNotEmpty) {
+        await _resolveSmartUploadConflicts(conflicts, pending);
+        if (!mounted) return;
+      }
+
+      for (final file in pending) {
+        kept.remove(file.storageKey);
+      }
+
+      final imports = pending
+          .map(
+            (file) => WebFolderFileImport(
+              storageKey: file.storageKey,
+              bytes: Uint8List.fromList(file.bytes),
+            ),
+          )
+          .toList();
+
+      final folderName = await LevelRepository.finalizeNativeFolderConnect(
+        discardKeys: discard,
+        keptLocalFiles: kept,
+        imports: imports,
+      );
+      if (folderName == null || !mounted) return;
+
+      const webPath = 'web://';
+      await LevelRepository.setSavedFolderPath(webPath);
+      setState(() {
+        _webSupportsFolderSync = true;
+        _rootFolderPath = webPath;
+        _pathStack = [(name: folderName, path: webPath)];
+      });
+      _loadCurrentDirectory();
+    } finally {
+      await LevelRepository.cancelNativeFolderStaging();
+    }
+  }
+
+  Future<void> _resolveLocalOnlyFileKeep(
+    Map<String, Uint8List> existing,
+    Map<String, Uint8List> kept,
+    Set<String> discard,
+  ) async {
+    _LocalFileKeepStrategy? bulkStrategy;
+    final sortedKeys = existing.keys.toList()..sort();
+
+    for (final key in sortedKeys) {
+      if (!mounted) return;
+
+      late final _LocalFileKeepStrategy strategy;
+      if (bulkStrategy != null) {
+        strategy = bulkStrategy;
+      } else {
+        final choice = await _showKeepLocalFileDialog(key);
+        if (!mounted) return;
+        if (choice == null) {
+          discard.add(key);
+          continue;
+        }
+
+        switch (choice) {
+          case _LocalFileKeepChoice.keepThis:
+            strategy = _LocalFileKeepStrategy.keep;
+          case _LocalFileKeepChoice.keepAll:
+            bulkStrategy = _LocalFileKeepStrategy.keep;
+            strategy = bulkStrategy;
+          case _LocalFileKeepChoice.discardThis:
+            strategy = _LocalFileKeepStrategy.discard;
+          case _LocalFileKeepChoice.discardAll:
+            bulkStrategy = _LocalFileKeepStrategy.discard;
+            strategy = bulkStrategy;
+        }
+      }
+
+      switch (strategy) {
+        case _LocalFileKeepStrategy.keep:
+          kept[key] = existing[key]!;
+        case _LocalFileKeepStrategy.discard:
+          discard.add(key);
+      }
+    }
+  }
+
+  Future<_LocalFileKeepChoice?> _showKeepLocalFileDialog(String fileName) async {
+    final l10n = AppLocalizations.of(context)!;
+    return showDialog<_LocalFileKeepChoice>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.localFileKeepTitle),
+        content: Text(l10n.localFileKeepMessage(fileName)),
+        actions: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _LocalFileKeepChoice.discardThis),
+                child: Text(l10n.localFileDiscard),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _LocalFileKeepChoice.keepThis),
+                child: Text(l10n.localFileKeep),
+              ),
+              const Divider(height: 1),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _LocalFileKeepChoice.discardAll),
+                child: Text(l10n.localFileDiscardAll),
+              ),
+              FilledButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _LocalFileKeepChoice.keepAll),
+                child: Text(l10n.localFileKeepAll),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _useDefaultIosLibraryFolder() async {

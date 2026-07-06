@@ -16,6 +16,14 @@ class WebFolderImport {
   final Map<String, Uint8List> files;
 }
 
+/// One level file to import during native folder connect.
+class WebFolderFileImport {
+  const WebFolderFileImport({required this.storageKey, required this.bytes});
+
+  final String storageKey;
+  final Uint8List bytes;
+}
+
 class FileItem {
   FileItem({
     required this.name,
@@ -109,6 +117,15 @@ abstract class LevelRepositoryBase {
   Future<void> ensureWebStorageReady() async {}
   Future<String?> getWebLibraryDisplayName() async => null;
   Future<String?> connectLocalFolder() async => null;
+  Future<Map<String, Uint8List>> snapshotStoredFiles() async => {};
+  Future<WebFolderImport?> stageNativeFolderConnect() async => null;
+  Future<void> cancelNativeFolderStaging() async {}
+  Future<String?> finalizeNativeFolderConnect({
+    required Set<String> discardKeys,
+    required Map<String, Uint8List> keptLocalFiles,
+    required List<WebFolderFileImport> imports,
+  }) async =>
+      null;
   Future<WebFolderImport?> pickWebFolderForImport() async => null;
   Future<bool> isLocalFolderConnected() async => false;
   Future<bool> isWebFolderImportMode() async => false;

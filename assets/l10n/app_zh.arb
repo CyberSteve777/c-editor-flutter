@@ -118,6 +118,17 @@
   "smartUploadSkipAll": "全部跳过",
   "smartUploadOverwriteAll": "全部覆盖",
   "smartUploadCopyAll": "全部作为副本上传",
+  "localFileKeepTitle": "保留浏览器中的关卡？",
+  "localFileKeepMessage": "此关卡仅保存在浏览器中：\n\n{fileName}\n\n连接本地文件夹时是否保留？",
+  "@localFileKeepMessage": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
+  "localFileKeep": "保留",
+  "localFileDiscard": "丢弃",
+  "localFileKeepAll": "全部保留",
+  "localFileDiscardAll": "全部丢弃",
   "openFolder": "打开文件夹",
   "levelLibraryPath": "关卡库文件夹",
   "levelLibraryPathHint": "关卡保存在此文件夹。在 iOS 上可选择任意文件夹，访问权限会保存并在重启后仍然有效。",

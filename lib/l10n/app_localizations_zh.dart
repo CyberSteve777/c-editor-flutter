@@ -291,6 +291,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get smartUploadCopyAll => '全部作为副本上传';
 
   @override
+  String get localFileKeepTitle => '保留浏览器中的关卡？';
+
+  @override
+  String localFileKeepMessage(String fileName) {
+    return '此关卡仅保存在浏览器中：\n\n$fileName\n\n连接本地文件夹时是否保留？';
+  }
+
+  @override
+  String get localFileKeep => '保留';
+
+  @override
+  String get localFileDiscard => '丢弃';
+
+  @override
+  String get localFileKeepAll => '全部保留';
+
+  @override
+  String get localFileDiscardAll => '全部丢弃';
+
+  @override
   String get openFolder => '打开文件夹';
 
   @override

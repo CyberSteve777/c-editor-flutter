@@ -111,6 +111,17 @@
   "smartUploadSkipAll": "Skip all",
   "smartUploadOverwriteAll": "Overwrite all",
   "smartUploadCopyAll": "Copy all",
+  "localFileKeepTitle": "Keep browser level?",
+  "localFileKeepMessage": "This level is stored in the browser only:\n\n{fileName}\n\nKeep it when connecting a local folder?",
+  "@localFileKeepMessage": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
+  "localFileKeep": "Keep",
+  "localFileDiscard": "Discard",
+  "localFileKeepAll": "Keep all",
+  "localFileDiscardAll": "Discard all",
   "openFolder": "Open folder",
   "levelLibraryPath": "Level library folder",
   "levelLibraryPathHint": "Levels are stored in this folder. On iOS you can pick any folder; access is saved so it persists after restart.",

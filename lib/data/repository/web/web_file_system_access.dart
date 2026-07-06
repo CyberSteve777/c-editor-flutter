@@ -10,6 +10,7 @@ extension type _CEditorFsa._(JSObject _) implements JSObject {
   external String getHandleKind(JSObject handle);
   external String getHandleName(JSObject handle);
   external JSPromise<JSAny?> pickDirectory();
+  external JSPromise<JSAny?> pickDirectoryForImport();
   external JSPromise<JSBoolean> ensurePermission(JSObject handle);
   external JSPromise<JSObject> readAllLevelFiles(JSObject handle);
   external JSPromise<JSAny?> writeFile(
@@ -44,6 +45,18 @@ class WebFileSystemAccess {
       return null;
     }
     final handle = await api.pickDirectory().toDart;
+    if (handle == null) {
+      return null;
+    }
+    return handle as JSObject;
+  }
+
+  Future<JSObject?> pickDirectoryForImport() async {
+    final api = _cEditorFsa;
+    if (api == null || !api.isSupported()) {
+      return null;
+    }
+    final handle = await api.pickDirectoryForImport().toDart;
     if (handle == null) {
       return null;
     }
