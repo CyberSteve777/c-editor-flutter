@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:c_editor/widgets/resistant_wave_row_slidable.dart';
 import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/renai_wave_preview_utils.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
@@ -615,17 +617,32 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     );
   }
 
-  Widget _buildSwipeBackground(
-    BuildContext context, {
-    required Alignment alignment,
-    required Color color,
-    required IconData icon,
+  Widget _buildMobileWaveRow({
+    required BuildContext context,
+    required int index,
+    required int waveIndex,
+    required int eventCount,
+    required Widget rowWidget,
+    required VoidCallback onDeleteConfirmed,
   }) {
-    return Container(
-      color: color,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      alignment: alignment,
-      child: Icon(icon, color: Colors.white),
+    return Column(
+      children: [
+        ResistantWaveRowSlidable(
+          rowKey: ValueKey('wave_row_$index'),
+          onManage: () => _showWaveManageSheet(context, waveIndex),
+          onDeleteConfirm: () => _showDeleteWaveConfirmDialog(
+            context,
+            waveIndex,
+            eventCount,
+          ),
+          onDeleteConfirmed: onDeleteConfirmed,
+          child: rowWidget,
+        ),
+        Divider(
+          height: 1,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        ),
+      ],
     );
   }
 
@@ -637,6 +654,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     required Map<String, PvzObject> objectMap,
     required List<({String label, VoidCallback onTap})> actionButtons,
     required VoidCallback? onRowTap,
+    bool includeDivider = true,
   }) {
     final l10n = AppLocalizations.of(context);
     final color = Theme.of(context).colorScheme.onSurfaceVariant;
@@ -745,6 +763,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         ),
       ],
     );
+    if (!includeDivider) {
+      return rowContent;
+    }
     return Column(
       children: [
         rowContent,
@@ -2213,7 +2234,8 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final customFishes = _collectCustomFishes();
     final isDeepSeaLawn = LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
 
-    return ListView(
+    return SlidableAutoCloseBehavior(
+      child: ListView(
       padding: const EdgeInsets.only(bottom: 80),
       children: [
         _buildHintCard(context),
@@ -2281,48 +2303,23 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               onRowTap: isDesktop
                   ? () => _showWaveManageSheet(context, waveIndex)
                   : null,
+              includeDivider: isDesktop,
             );
             if (isDesktop) {
               return rowWidget;
             }
-            return Dismissible(
-              key: ValueKey('wave_row_$index'),
-              direction: DismissDirection.horizontal,
-              confirmDismiss: (dir) async {
-                if (dir == DismissDirection.startToEnd) {
-                  _showWaveManageSheet(context, waveIndex);
-                  return false;
-                }
-                if (dir == DismissDirection.endToStart) {
-                  return await _showDeleteWaveConfirmDialog(
-                    context,
-                    waveIndex,
-                    waveEvents.length,
-                  );
-                }
-                return false;
+            return _buildMobileWaveRow(
+              context: context,
+              index: index,
+              waveIndex: waveIndex,
+              eventCount: waveEvents.length,
+              rowWidget: rowWidget,
+              onDeleteConfirmed: () {
+                wm.waves.removeAt(index);
+                wm.waveCount = wm.waves.length;
+                _syncWaves();
+                setState(() {});
               },
-              onDismissed: (dir) {
-                if (dir == DismissDirection.endToStart) {
-                  wm.waves.removeAt(index);
-                  wm.waveCount = wm.waves.length;
-                  _syncWaves();
-                  setState(() {});
-                }
-              },
-              background: _buildSwipeBackground(
-                context,
-                alignment: Alignment.centerLeft,
-                color: Theme.of(context).colorScheme.primary,
-                icon: Icons.settings,
-              ),
-              secondaryBackground: _buildSwipeBackground(
-                context,
-                alignment: Alignment.centerRight,
-                color: Theme.of(context).colorScheme.error,
-                icon: Icons.delete,
-              ),
-              child: rowWidget,
             );
           }),
         ],
@@ -2337,6 +2334,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           ),
         ),
       ],
+      ),
     );
   }
 
