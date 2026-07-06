@@ -1,17 +1,19 @@
-name: Build release (Windows, Linux, Android)
+name: Build dev (Windows, Linux, Android)
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
+  pull_request:
+    branches: [dev]
   workflow_dispatch:
 
 concurrency:
-  group: build-release-${{ github.workflow }}-${{ github.ref }}
+  group: build-dev-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   FLUTTER_VERSION: stable
-  ARTIFACT_CHANNEL: release
+  ARTIFACT_CHANNEL: dev
 
 jobs:
   build-windows:
@@ -183,7 +185,6 @@ jobs:
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage@v1.3
         env:
-          # The 1.1.0 builder image ships mksquashfs inside appimagetool but not on PATH.
           PATH: /opt/appimagetool.AppDir/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         with:
           recipe: linux/AppImageBuilder.yml
@@ -191,7 +192,7 @@ jobs:
 
       - name: Package Linux AppImage
         run: |
-          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-executable release)"
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-executable dev)"
           APPIMAGE="$(find . -maxdepth 1 -name '*.AppImage' -type f | head -1)"
           if [ -z "$APPIMAGE" ]; then
             echo "AppImage not found in workspace root."
@@ -206,7 +207,7 @@ jobs:
 
       - name: Package Linux portable
         run: |
-          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-portable release)"
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-portable dev)"
           mkdir -p "dist/portable/c_editor"
           cp -a build/linux/x64/release/bundle/. "dist/portable/c_editor/"
           (cd dist/portable && zip -r "../${BASE_NAME}.zip" c_editor)
@@ -235,7 +236,6 @@ jobs:
   build-android:
     name: Android APK (signed)
     runs-on: ubuntu-latest
-    # Release keystore secrets are not available to workflows triggered from fork PRs.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v7
@@ -287,7 +287,6 @@ jobs:
 
       - name: Build signed release APK
         env:
-          # Path is relative to the android/ Gradle root (rootProject.file), not the repo root.
           ANDROID_KEYSTORE_FILE: app/release-keystore.jks
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -296,7 +295,7 @@ jobs:
 
       - name: Stage APK artifact
         run: |
-          BASE_NAME="$(bash .github/scripts/artifact-name.sh android-apk release)"
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh android-apk dev)"
           mkdir -p dist
           cp build/app/outputs/flutter-apk/app-release.apk "dist/${BASE_NAME}.apk"
           echo "ARTIFACT_PATH=dist/${BASE_NAME}.apk" >> "$GITHUB_ENV"
