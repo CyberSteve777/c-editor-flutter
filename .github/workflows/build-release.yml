@@ -210,11 +210,19 @@ jobs:
           export PATH="$DEPLOY_DIR:$PATH"
           export DEPLOY_GTK_VERSION=3
 
+          # linuxdeploy is strict about path resolution; pass canonical absolute paths.
+          EXECUTABLE_PATH="$(realpath "$APP_DIR/usr/bin/C-Editor")"
+          DESKTOP_FILE_PATH="$(realpath "$DESKTOP_FILE")"
+          ICON_PATH="$(realpath "$APP_DIR/usr/share/icons/hicolor/256x256/apps/c_editor.png")"
+          test -x "$EXECUTABLE_PATH"
+          test -f "$DESKTOP_FILE_PATH"
+          test -f "$ICON_PATH"
+
           "$DEPLOY_DIR/linuxdeploy.AppImage" \
             --appdir "$APP_DIR" \
-            --executable usr/bin/C-Editor \
-            --desktop-file "$DESKTOP_FILE" \
-            --icon-file=assets/meta/icon.png \
+            --executable "$EXECUTABLE_PATH" \
+            --desktop-file "$DESKTOP_FILE_PATH" \
+            --icon-file "$ICON_PATH" \
             --plugin gtk \
             --output appimage
 
