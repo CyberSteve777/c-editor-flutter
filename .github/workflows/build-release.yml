@@ -185,6 +185,9 @@ jobs:
 
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage@v1.3
+        env:
+          # The 1.1.0 builder image ships mksquashfs inside appimagetool but not on PATH.
+          PATH: /opt/appimagetool.AppDir/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         with:
           recipe: linux/AppImageBuilder.yml
           args: --skip-test
