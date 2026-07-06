@@ -90,8 +90,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get smartUploadTitle => '重复文件';
 
   @override
-  String smartUploadMessage(String fileNames) {
-    return '以下文件已存在于关卡库中：\n\n$fileNames\n\n如何处理重复文件？';
+  String smartUploadFileMessage(String fileName) {
+    return '此文件已存在于关卡库中：\n\n$fileName\n\n如何处理？';
   }
 
   @override
@@ -102,6 +102,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get smartUploadAsCopy => '作为副本上传';
+
+  @override
+  String get smartUploadSkipAll => '全部跳过';
+
+  @override
+  String get smartUploadOverwriteAll => '全部覆盖';
+
+  @override
+  String get smartUploadCopyAll => '全部作为副本上传';
 
   @override
   String get openFolder => '打开文件夹';

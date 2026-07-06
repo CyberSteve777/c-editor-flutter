@@ -253,14 +253,14 @@ abstract class AppLocalizations {
   /// No description provided for @smartUploadTitle.
   ///
   /// In en, this message translates to:
-  /// **'Duplicate files'**
+  /// **'Duplicate file'**
   String get smartUploadTitle;
 
-  /// No description provided for @smartUploadMessage.
+  /// No description provided for @smartUploadFileMessage.
   ///
   /// In en, this message translates to:
-  /// **'These files already exist in your library:\n\n{fileNames}\n\nHow should duplicates be handled?'**
-  String smartUploadMessage(String fileNames);
+  /// **'This file already exists in your library:\n\n{fileName}\n\nWhat should be done?'**
+  String smartUploadFileMessage(String fileName);
 
   /// No description provided for @smartUploadSkip.
   ///
@@ -279,6 +279,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upload as copy'**
   String get smartUploadAsCopy;
+
+  /// No description provided for @smartUploadSkipAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip all'**
+  String get smartUploadSkipAll;
+
+  /// No description provided for @smartUploadOverwriteAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite all'**
+  String get smartUploadOverwriteAll;
+
+  /// No description provided for @smartUploadCopyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy all'**
+  String get smartUploadCopyAll;
 
   /// No description provided for @openFolder.
   ///

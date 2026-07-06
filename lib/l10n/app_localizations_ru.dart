@@ -90,11 +90,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выберите один или несколько уровней для загрузки';
 
   @override
-  String get smartUploadTitle => 'Дубликаты файлов';
+  String get smartUploadTitle => 'Дубликат файла';
 
   @override
-  String smartUploadMessage(String fileNames) {
-    return 'Эти файлы уже есть в вашей библиотеке:\n\n$fileNames\n\nКак поступить с дубликатами?';
+  String smartUploadFileMessage(String fileName) {
+    return 'Этот файл уже есть в вашей библиотеке:\n\n$fileName\n\nЧто сделать?';
   }
 
   @override
@@ -105,6 +105,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get smartUploadAsCopy => 'Загрузить как копию';
+
+  @override
+  String get smartUploadSkipAll => 'Не загружать все';
+
+  @override
+  String get smartUploadOverwriteAll => 'Перезаписать все';
+
+  @override
+  String get smartUploadCopyAll => 'Загрузить все как копии';
 
   @override
   String get openFolder => 'Открыть папку';

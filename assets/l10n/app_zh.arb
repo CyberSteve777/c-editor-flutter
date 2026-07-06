@@ -39,15 +39,18 @@
   "uploadToWebsite": "上传到网站",
   "uploadLevelPickerTitle": "选择一个或多个要上传的关卡",
   "smartUploadTitle": "重复文件",
-  "smartUploadMessage": "以下文件已存在于关卡库中：\n\n{fileNames}\n\n如何处理重复文件？",
-  "@smartUploadMessage": {
+  "smartUploadFileMessage": "此文件已存在于关卡库中：\n\n{fileName}\n\n如何处理？",
+  "@smartUploadFileMessage": {
     "placeholders": {
-      "fileNames": { "type": "String" }
+      "fileName": { "type": "String" }
     }
   },
   "smartUploadSkip": "不上传",
   "smartUploadOverwrite": "覆盖",
   "smartUploadAsCopy": "作为副本上传",
+  "smartUploadSkipAll": "全部跳过",
+  "smartUploadOverwriteAll": "全部覆盖",
+  "smartUploadCopyAll": "全部作为副本上传",
   "openFolder": "打开文件夹",
   "levelLibraryPath": "关卡库文件夹",
   "levelLibraryPathHint": "关卡保存在此文件夹。在 iOS 上可选择任意文件夹，访问权限会保存并在重启后仍然有效。",
