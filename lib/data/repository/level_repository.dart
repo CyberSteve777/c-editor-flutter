@@ -133,6 +133,23 @@ class LevelRepository {
   static Future<void> downloadAllLevelsAsZip() =>
       _impl.downloadAllLevelsAsZip();
 
+  static Future<void> ensureWebStorageReady() =>
+      _impl.ensureWebStorageReady();
+
+  static Future<String?> getWebLibraryDisplayName() =>
+      _impl.getWebLibraryDisplayName();
+
+  static Future<String?> connectLocalFolder() => _impl.connectLocalFolder();
+
+  static Future<bool> isLocalFolderConnected() =>
+      _impl.isLocalFolderConnected();
+
+  static Future<bool> isWebFolderImportMode() =>
+      _impl.isWebFolderImportMode();
+
+  static Future<bool> supportsWebFolderWriteSync() =>
+      _impl.supportsWebFolderWriteSync();
+
   static Future<List<String>> getTemplateList() => _impl.getTemplateList();
 
   static List<String> parseTemplateManifest(String jsonString) =>

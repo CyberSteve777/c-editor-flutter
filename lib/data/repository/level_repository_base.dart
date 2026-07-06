@@ -98,6 +98,12 @@ abstract class LevelRepositoryBase {
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData);
   Future<void> downloadLevel(String fileName);
   Future<void> downloadAllLevelsAsZip();
+  Future<void> ensureWebStorageReady() async {}
+  Future<String?> getWebLibraryDisplayName() async => null;
+  Future<String?> connectLocalFolder() async => null;
+  Future<bool> isLocalFolderConnected() async => false;
+  Future<bool> isWebFolderImportMode() async => false;
+  Future<bool> supportsWebFolderWriteSync() async => false;
   Future<bool> createLevelFromTemplate(
     String currentDirPath,
     String templateName,

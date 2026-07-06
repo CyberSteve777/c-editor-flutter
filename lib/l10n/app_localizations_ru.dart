@@ -318,6 +318,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get download => 'Скачать';
 
   @override
+  String get downloadAllLevels => 'Экспортировать все уровни';
+
+  @override
+  String get webFolderImportNotice =>
+      'Папка импортирована в хранилище браузера. В этом браузере изменения не записываются на диск автоматически — используйте «Экспорт».';
+
+  @override
   String get favorite => 'В избранное';
 
   @override

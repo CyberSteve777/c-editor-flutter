@@ -168,20 +168,21 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   Future<void> _loadSavedPathAndList() async {
     await _ensureStoragePermission();
-    final path = await LevelRepository.getSavedFolderPath();
-    final lastLevelDir = kIsWeb
-        ? null
-        : await LevelRepository.getLastOpenedLevelDirectory();
     if (kIsWeb) {
+      await LevelRepository.ensureWebStorageReady();
       const webPath = 'web://';
+      final libraryLabel =
+          await LevelRepository.getWebLibraryDisplayName() ?? 'My levels';
       if (!mounted) return;
       setState(() {
         _rootFolderPath = webPath;
-        _pathStack = [(name: 'My levels', path: webPath)];
+        _pathStack = [(name: libraryLabel, path: webPath)];
       });
       _loadCurrentDirectory();
       return;
     }
+    final path = await LevelRepository.getSavedFolderPath();
+    final lastLevelDir = await LevelRepository.getLastOpenedLevelDirectory();
     var resolvedPath = path;
     if (resolvedPath != null && mounted) {
       final libraryPath = resolvedPath;
@@ -218,7 +219,19 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     await _ensureStoragePermission();
     if (kIsWeb) {
-      await _pickAndAddFile();
+      final folderName = await LevelRepository.connectLocalFolder();
+      if (folderName == null || !mounted) return;
+      const webPath = 'web://';
+      await LevelRepository.setSavedFolderPath(webPath);
+      setState(() {
+        _rootFolderPath = webPath;
+        _pathStack = [(name: folderName, path: webPath)];
+      });
+      _loadCurrentDirectory();
+      if (await LevelRepository.isWebFolderImportMode()) {
+        if (!mounted) return;
+        _showMessage(l10n.webFolderImportNotice);
+      }
       return;
     }
     if (!mounted) return;
@@ -254,6 +267,22 @@ class _LevelListScreenState extends State<LevelListScreen> {
       _pathStack = [(name: name.isEmpty ? 'Root' : name, path: path)];
     });
     _loadCurrentDirectory();
+  }
+
+  /// Builds a storage key relative to the virtual web library root.
+  String _webStorageKey(String currentDir, String fileName) {
+    const webPath = 'web://';
+    if (currentDir == webPath) {
+      return fileName;
+    }
+    if (!currentDir.startsWith(webPath)) {
+      return fileName;
+    }
+    final rel = currentDir.substring(webPath.length);
+    if (rel.isEmpty) {
+      return fileName;
+    }
+    return '$rel/$fileName';
   }
 
   /// Web-only: pick one or more level files and add them to the virtual workspace.
@@ -297,8 +326,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
     if (pending.isEmpty) return;
 
     for (final file in pending) {
+      final storageKey = _webStorageKey(currentDir, file.name);
       await LevelRepository.prepareInternalCacheFromBytes(
-        file.name,
+        storageKey,
         file.bytes,
       );
     }
@@ -833,20 +863,28 @@ class _LevelListScreenState extends State<LevelListScreen> {
             tooltip: l10n.refresh,
             onPressed: _loadCurrentDirectory,
           ),
-          if (!kIsWeb)
-            IconButton(
-              icon: const Icon(Icons.folder_open),
-              tooltip: l10n.switchFolder,
-              onPressed: _pickFolder,
-            ),
+          IconButton(
+            icon: const Icon(Icons.folder_open),
+            tooltip: l10n.switchFolder,
+            onPressed: _pickFolder,
+          ),
           PopupMenuButton<String>(
             itemBuilder: (context) => [
+              if (kIsWeb)
+                PopupMenuItem(
+                  value: 'import_files',
+                  child: ListTile(
+                    leading: const Icon(Icons.file_open),
+                    title: Text(l10n.uploadToWebsite),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
               if (kIsWeb)
                 PopupMenuItem(
                   value: 'download_all',
                   child: ListTile(
                     leading: const Icon(Icons.download),
-                    title: const Text('Download all levels'),
+                    title: Text(l10n.downloadAllLevels),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -898,6 +936,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
             onSelected: (value) async {
               if (value == 'theme') {
                 context.read<SettingsCubit>().cycleTheme();
+              } else if (value == 'import_files') {
+                await _pickAndAddFile();
               } else if (value == 'download_all') {
                 await LevelRepository.downloadAllLevelsAsZip();
               } else if (value == 'cache') {
@@ -937,21 +977,23 @@ class _LevelListScreenState extends State<LevelListScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            kIsWeb
-                                ? 'Open a level file (.json) to get started.'
-                                : l10n.selectFolderPrompt,
+                            l10n.selectFolderPrompt,
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
                           FilledButton.icon(
                             onPressed: _pickFolder,
-                            icon: Icon(
-                              kIsWeb ? Icons.file_open : Icons.folder_open,
-                            ),
-                              label: Text(
-                                kIsWeb ? l10n.uploadToWebsite : l10n.selectFolderButton,
-                              ),
+                            icon: const Icon(Icons.folder_open),
+                            label: Text(l10n.selectFolderButton),
                           ),
+                          if (kIsWeb) ...[
+                            const SizedBox(height: 8),
+                            TextButton.icon(
+                              onPressed: _pickAndAddFile,
+                              icon: const Icon(Icons.file_open),
+                              label: Text(l10n.uploadToWebsite),
+                            ),
+                          ],
                           if (!kIsWeb && Platform.isIOS) ...[
                             const SizedBox(height: 8),
                             TextButton(
@@ -1301,7 +1343,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                 onShare: actionsDisabled || item.isDirectory || kIsWeb
                                     ? null
                                     : () => _handleShare(item),
-                                showMove: !item.isDirectory && !kIsWeb,
+                                showMove: !item.isDirectory,
                               ),
                             );
                           },
@@ -1310,7 +1352,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ],
             ],
           ),
-          if (!kIsWeb && _rootFolderPath != null && _itemToMove == null)
+          if (_rootFolderPath != null && _itemToMove == null)
             Positioned(
               right: 16,
               bottom: 16,
@@ -1369,46 +1411,30 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 ),
                 child: Row(
                   children: [
-                    if (!kIsWeb)
-                      _buildBottomNavButton(
-                        onPressed: _canGoBack ? _goToParentDirectory : null,
-                        icon: Icons.arrow_upward,
-                        label: l10n.back,
-                        fgColor: fabFgColor,
-                        disabledFgColor: fabFgColor.withValues(alpha: 0.45),
-                      ),
-                    if (kIsWeb)
-                      _buildBottomNavButton(
-                        onPressed: _pickAndAddFile,
-                        icon: Icons.file_open,
-                        label: l10n.uploadToWebsite,
-                        fgColor: fabFgColor,
-                      ),
-                    if (kIsWeb)
-                      _buildBottomNavButton(
-                        onPressed: _uploadLevel,
-                        icon: Icons.cloud_upload,
-                        label: l10n.uploadLevel,
-                        fgColor: fabFgColor,
-                      ),
+                    _buildBottomNavButton(
+                      onPressed: _canGoBack ? _goToParentDirectory : null,
+                      icon: Icons.arrow_upward,
+                      label: l10n.back,
+                      fgColor: fabFgColor,
+                      disabledFgColor: fabFgColor.withValues(alpha: 0.45),
+                    ),
                     _buildBottomNavButton(
                       onPressed: _openTemplateSelector,
                       icon: Icons.add,
                       label: l10n.newLevel,
                       fgColor: fabFgColor,
                     ),
-                    if (!kIsWeb)
-                      _buildBottomNavButton(
-                        onPressed: () {
-                          setState(() => _showNewFolderDialog = true);
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) => _showNewFolderDialogImpl(),
-                          );
-                        },
-                        icon: Icons.create_new_folder,
-                        label: l10n.newFolder,
-                        fgColor: fabFgColor,
-                      ),
+                    _buildBottomNavButton(
+                      onPressed: () {
+                        setState(() => _showNewFolderDialog = true);
+                        WidgetsBinding.instance.addPostFrameCallback(
+                          (_) => _showNewFolderDialogImpl(),
+                        );
+                      },
+                      icon: Icons.create_new_folder,
+                      label: l10n.newFolder,
+                      fgColor: fabFgColor,
+                    ),
                   ],
                 ),
               ),

@@ -682,6 +682,18 @@ abstract class AppLocalizations {
   /// **'Download'**
   String get download;
 
+  /// No description provided for @downloadAllLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'Export all levels'**
+  String get downloadAllLevels;
+
+  /// No description provided for @webFolderImportNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.'**
+  String get webFolderImportNotice;
+
   /// No description provided for @favorite.
   ///
   /// In en, this message translates to:
