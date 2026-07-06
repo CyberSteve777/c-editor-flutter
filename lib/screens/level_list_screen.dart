@@ -67,8 +67,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
   bool _showUiScaleDialog = false;
   final ScrollController _listScrollController = ScrollController();
   bool _listScrollAtTop = true;
+  bool _webSupportsFolderSync = false;
 
   bool get _canGoBack => _pathStack.length > 1;
+
+  bool get _showSwitchFolderButton => !kIsWeb || _webSupportsFolderSync;
 
   void _showMessage(String message, {IconData? icon}) {
     AppMessage.show(context, message, icon: icon ?? Icons.info_outline);
@@ -145,11 +148,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await _ensureStoragePermission();
     if (kIsWeb) {
       await LevelRepository.ensureWebStorageReady();
+      final supportsSync = await LevelRepository.supportsWebFolderWriteSync();
       const webPath = 'web://';
       final libraryLabel =
           await LevelRepository.getWebLibraryDisplayName() ?? 'My levels';
       if (!mounted) return;
       setState(() {
+        _webSupportsFolderSync = supportsSync;
         _rootFolderPath = webPath;
         _pathStack = [(name: libraryLabel, path: webPath)];
       });
@@ -290,51 +295,32 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await _importFilesWithSmartUpload(files);
   }
 
-  /// Web-only: recursively import one or more folders (cancel picker when done).
-  Future<void> _pickAndImportFolders() async {
+  /// Web-only: recursively import a folder and all subfolders into the library.
+  Future<void> _pickAndImportFolder() async {
     final l10n = AppLocalizations.of(context)!;
     await LevelRepository.ensureWebStorageReady();
     if (!mounted) return;
 
-    _showMessage(l10n.importFoldersPickerHint);
+    final folder = await LevelRepository.pickWebFolderForImport();
+    if (folder == null || !mounted) return;
 
-    final folders = <WebFolderImport>[];
-    while (mounted) {
-      final folder = await LevelRepository.pickWebFolderForImport();
-      if (folder == null) break;
-      if (folder.files.isEmpty) {
-        if (!mounted) return;
-        _showWarningMessage(l10n.importFolderEmpty);
-        continue;
-      }
-      folders.add(folder);
+    if (folder.files.isEmpty) {
+      _showWarningMessage(l10n.importFolderEmpty);
+      return;
     }
 
-    if (folders.isEmpty || !mounted) return;
-
-    final files = <({String storageKey, List<int> bytes})>[];
-    final useFolderPrefix = folders.length > 1;
-    for (final folder in folders) {
-      final folderName = _sanitizeImportFolderName(folder.name);
-      for (final entry in folder.files.entries) {
-        final storageKey = useFolderPrefix
-            ? '$folderName/${entry.key}'
-            : entry.key;
-        files.add((storageKey: storageKey, bytes: entry.value));
-      }
-    }
+    final files = folder.files.entries
+        .map(
+          (entry) => (
+            storageKey: entry.key,
+            bytes: entry.value,
+          ),
+        )
+        .toList();
 
     final imported = await _importFilesWithSmartUpload(files);
     if (!mounted || imported == 0) return;
-    _showSuccessMessage(
-      l10n.importFoldersSuccess(imported, folders.length),
-    );
-  }
-
-  String _sanitizeImportFolderName(String name) {
-    final trimmed = name.trim();
-    if (trimmed.isEmpty) return 'Imported folder';
-    return trimmed.replaceAll(RegExp(r'[/\\]'), '_');
+    _showSuccessMessage(l10n.importFolderSuccess(imported));
   }
 
   Future<bool> _webStorageKeyExists(String storageKey) async {
@@ -916,11 +902,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
             tooltip: l10n.refresh,
             onPressed: _loadCurrentDirectory,
           ),
-          IconButton(
-            icon: const Icon(Icons.folder_open),
-            tooltip: l10n.switchFolder,
-            onPressed: _pickFolder,
-          ),
+          if (_showSwitchFolderButton)
+            IconButton(
+              icon: const Icon(Icons.folder_open),
+              tooltip: l10n.switchFolder,
+              onPressed: _pickFolder,
+            ),
           PopupMenuButton<String>(
             itemBuilder: (context) => [
               if (kIsWeb)
@@ -937,7 +924,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   value: 'import_folders',
                   child: ListTile(
                     leading: const Icon(Icons.drive_folder_upload_outlined),
-                    title: Text(l10n.importFolders),
+                    title: Text(l10n.importFolder),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -1001,7 +988,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               } else if (value == 'import_files') {
                 await _pickAndAddFile();
               } else if (value == 'import_folders') {
-                await _pickAndImportFolders();
+                await _pickAndImportFolder();
               } else if (value == 'download_all') {
                 await LevelRepository.downloadAllLevelsAsZip();
               } else if (value == 'cache') {
@@ -1045,11 +1032,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
-                          FilledButton.icon(
-                            onPressed: _pickFolder,
-                            icon: const Icon(Icons.folder_open),
-                            label: Text(l10n.selectFolderButton),
-                          ),
+                          if (_showSwitchFolderButton)
+                            FilledButton.icon(
+                              onPressed: _pickFolder,
+                              icon: const Icon(Icons.folder_open),
+                              label: Text(l10n.selectFolderButton),
+                            ),
                           if (kIsWeb) ...[
                             const SizedBox(height: 8),
                             TextButton.icon(
@@ -1059,11 +1047,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
                             ),
                             const SizedBox(height: 8),
                             TextButton.icon(
-                              onPressed: _pickAndImportFolders,
+                              onPressed: _pickAndImportFolder,
                               icon: const Icon(
                                 Icons.drive_folder_upload_outlined,
                               ),
-                              label: Text(l10n.importFolders),
+                              label: Text(l10n.importFolder),
                             ),
                           ],
                           if (!kIsWeb && Platform.isIOS) ...[

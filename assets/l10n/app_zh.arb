@@ -38,14 +38,12 @@
   "selectFolderButton": "选择文件夹",
   "uploadToWebsite": "上传到网站",
   "importFiles": "导入文件",
-  "importFolders": "导入文件夹",
-  "importFoldersPickerHint": "选择要导入的文件夹。可继续选择其他文件夹，取消即完成。",
+  "importFolder": "导入文件夹",
   "importFolderEmpty": "所选文件夹中没有关卡文件",
-  "importFoldersSuccess": "已从 {folders} 个文件夹导入 {count} 个关卡",
-  "@importFoldersSuccess": {
+  "importFolderSuccess": "已导入 {count} 个关卡",
+  "@importFolderSuccess": {
     "placeholders": {
-      "count": { "type": "int" },
-      "folders": { "type": "int" }
+      "count": { "type": "int" }
     }
   },
   "uploadLevelPickerTitle": "选择一个或多个要上传的关卡",

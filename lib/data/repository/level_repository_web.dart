@@ -160,11 +160,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   @override
   Future<bool> supportsWebFolderWriteSync() async {
     await _ensureReady();
-    if (_directoryHandle != null) {
-      return _fsa.isNativeHandle(_directoryHandle!);
-    }
-    return _directoryMode == WebFileSystemAccess.kindNative &&
-        _fsa.supportsNativeWrite;
+    return _fsa.supportsNativeWrite;
   }
 
   @override
