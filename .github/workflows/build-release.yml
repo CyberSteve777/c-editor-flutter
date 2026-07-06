@@ -162,7 +162,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev \
-            libstdc++-14-dev zip libfuse2t64 wget librsvg2-bin
+            libstdc++-14-dev zip
           sudo ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6 \
             /usr/lib/x86_64-linux-gnu/libstdc++.so
 
@@ -184,47 +184,10 @@ jobs:
       - run: flutter build linux --release
 
       - name: Build AppImage
-        env:
-          APPIMAGE_EXTRACT_AND_RUN: 1
-        run: |
-          set -euo pipefail
-          APP_DIR=linux/AppImage/AppDir
-          DESKTOP_FILE=linux/AppImage/c_editor.desktop
-          DEPLOY_DIR=/tmp/linuxdeploy
-
-          rm -rf "$APP_DIR"
-          mkdir -p "$APP_DIR/usr/bin" "$APP_DIR/usr/share/icons/hicolor/256x256/apps"
-          cp -a build/linux/x64/release/bundle/. "$APP_DIR/usr/bin/"
-          chmod +x "$APP_DIR/usr/bin/C-Editor"
-          cp assets/meta/icon.png "$APP_DIR/usr/share/icons/hicolor/256x256/apps/c_editor.png"
-
-          mkdir -p "$DEPLOY_DIR"
-          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage \
-            -O "$DEPLOY_DIR/linuxdeploy.AppImage"
-          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-gtk/releases/download/continuous/linuxdeploy-plugin-gtk-x86_64.AppImage \
-            -O "$DEPLOY_DIR/linuxdeploy-plugin-gtk"
-          chmod +x "$DEPLOY_DIR/linuxdeploy.AppImage" "$DEPLOY_DIR/linuxdeploy-plugin-gtk"
-          test -s "$DEPLOY_DIR/linuxdeploy.AppImage"
-          test -s "$DEPLOY_DIR/linuxdeploy-plugin-gtk"
-
-          export PATH="$DEPLOY_DIR:$PATH"
-          export DEPLOY_GTK_VERSION=3
-
-          # linuxdeploy is strict about path resolution; pass canonical absolute paths.
-          EXECUTABLE_PATH="$(realpath "$APP_DIR/usr/bin/C-Editor")"
-          DESKTOP_FILE_PATH="$(realpath "$DESKTOP_FILE")"
-          ICON_PATH="$(realpath "$APP_DIR/usr/share/icons/hicolor/256x256/apps/c_editor.png")"
-          test -x "$EXECUTABLE_PATH"
-          test -f "$DESKTOP_FILE_PATH"
-          test -f "$ICON_PATH"
-
-          "$DEPLOY_DIR/linuxdeploy.AppImage" \
-            --appdir "$APP_DIR" \
-            --executable "$EXECUTABLE_PATH" \
-            --desktop-file "$DESKTOP_FILE_PATH" \
-            --icon-file "$ICON_PATH" \
-            --plugin gtk \
-            --output appimage
+        uses: AppImageCrafters/build-appimage@v1.3
+        with:
+          recipe: linux/AppImageBuilder.yml
+          args: --skip-test
 
       - name: Package Linux AppImage
         env:
@@ -232,7 +195,7 @@ jobs:
           SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
           BASE_NAME="c_editor-${VERSION}+${SHORT_SHA}-linux-executable"
-          APPIMAGE="$(find . -maxdepth 2 -name '*.AppImage' -type f | head -1)"
+          APPIMAGE="$(find . -maxdepth 1 -name '*.AppImage' -type f | head -1)"
           if [ -z "$APPIMAGE" ]; then
             echo "AppImage not found in workspace root."
             ls -la

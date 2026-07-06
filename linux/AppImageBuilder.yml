@@ -1,0 +1,47 @@
+# AppImage recipe for the Flutter Linux bundle.
+# See: https://appimage-builder.readthedocs.io/en/stable/examples/flutter.html
+
+version: 1
+
+script:
+  - rm -rf AppDir || true
+  - cp -r build/linux/x64/release/bundle AppDir
+  - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
+  - cp assets/meta/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/c_editor.png
+
+AppDir:
+  path: ./AppDir
+  app_info:
+    id: team.international2c.c_editor
+    name: C-Editor
+    icon: c_editor
+    version: latest
+    exec: C-Editor
+    exec_args: $@
+  apt:
+    arch: amd64
+    allow_unauthenticated: true
+    sources:
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble-backports main restricted universe multiverse
+      - sourceline: deb http://security.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+    include:
+      - libgtk-3-0
+    exclude:
+      - humanity-icon-theme
+      - hicolor-icon-theme
+      - adwaita-icon-theme
+      - ubuntu-mono
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
+
+AppImage:
+  arch: x86_64
+  update-information: None
+  sign-key: None
