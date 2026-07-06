@@ -234,6 +234,13 @@ jobs:
           path: ${{ env.APPIMAGE_PATH }}
           if-no-files-found: error
 
+      - name: Clean up AppImage builder outputs
+        if: always()
+        run: |
+          sudo rm -rf AppDir .bundle.yml
+          sudo find . -maxdepth 1 -name '*.AppImage' -exec rm -f {} +
+          sudo chown -R "$(id -u):$(id -g)" "${{ github.workspace }}"
+
   build-android:
     name: Android APK (signed)
     runs-on: ubuntu-latest
