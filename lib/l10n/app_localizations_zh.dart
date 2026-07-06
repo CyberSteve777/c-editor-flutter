@@ -251,17 +251,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importFiles => '导入文件';
 
   @override
-  String get importFolders => '导入文件夹';
-
-  @override
-  String get importFoldersPickerHint => '选择要导入的文件夹。可继续选择其他文件夹，取消即完成。';
+  String get importFolder => '导入文件夹';
 
   @override
   String get importFolderEmpty => '所选文件夹中没有关卡文件';
 
   @override
-  String importFoldersSuccess(int count, int folders) {
-    return '已从 $folders 个文件夹导入 $count 个关卡';
+  String importFolderSuccess(int count) {
+    return '已导入 $count 个关卡';
   }
 
   @override

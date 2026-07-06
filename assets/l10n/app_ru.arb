@@ -80,14 +80,12 @@
   "selectFolderButton": "Выбрать папку",
   "uploadToWebsite": "Загрузить на сайт",
   "importFiles": "Импортировать файлы",
-  "importFolders": "Импортировать папки",
-  "importFoldersPickerHint": "Выберите папку для импорта. Можно выбрать ещё одну или отменить, когда закончите.",
+  "importFolder": "Импортировать папку",
   "importFolderEmpty": "В выбранной папке нет файлов уровней",
-  "importFoldersSuccess": "Импортировано уровней: {count} из папок: {folders}",
-  "@importFoldersSuccess": {
+  "importFolderSuccess": "Импортировано уровней: {count}",
+  "@importFolderSuccess": {
     "placeholders": {
-      "count": { "type": "int" },
-      "folders": { "type": "int" }
+      "count": { "type": "int" }
     }
   },
   "uploadLevelPickerTitle": "Выберите один или несколько уровней для загрузки",

@@ -254,18 +254,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importFiles => 'Import files';
 
   @override
-  String get importFolders => 'Import folders';
-
-  @override
-  String get importFoldersPickerHint =>
-      'Select a folder to import. Pick another folder or cancel when done.';
+  String get importFolder => 'Import folder';
 
   @override
   String get importFolderEmpty => 'No level files found in the selected folder';
 
   @override
-  String importFoldersSuccess(int count, int folders) {
-    return 'Imported $count level(s) from $folders folder(s)';
+  String importFolderSuccess(int count) {
+    return 'Imported $count level(s)';
   }
 
   @override

@@ -61,28 +61,46 @@
       input.multiple = true;
       input.style.display = 'none';
 
-      const cleanup = () => {
+      let settled = false;
+      let selectionStarted = false;
+
+      const settle = (value) => {
+        if (settled) return;
+        settled = true;
         input.remove();
+        resolve(value);
       };
 
-      input.addEventListener('change', async () => {
-        cleanup();
+      input.addEventListener('change', () => {
+        selectionStarted = true;
         const files = Array.from(input.files || []);
         if (!files.length) {
-          resolve(null);
+          settle(null);
           return;
         }
-        resolve({
-          __cEditorKind: KIND_IMPORT,
-          name: folderNameFromWebkitFiles(files),
-          files: await filesToLevelMap(files),
+        filesToLevelMap(files).then((levelFiles) => {
+          settle({
+            __cEditorKind: KIND_IMPORT,
+            name: folderNameFromWebkitFiles(files),
+            files: levelFiles,
+          });
         });
       });
 
       input.addEventListener('cancel', () => {
-        cleanup();
-        resolve(null);
+        settle(null);
       });
+
+      // Firefox and older browsers: no reliable cancel event on file inputs.
+      const onWindowFocus = () => {
+        window.removeEventListener('focus', onWindowFocus);
+        window.setTimeout(() => {
+          if (!settled && !selectionStarted) {
+            settle(null);
+          }
+        }, 400);
+      };
+      window.addEventListener('focus', onWindowFocus);
 
       document.body.appendChild(input);
       input.click();

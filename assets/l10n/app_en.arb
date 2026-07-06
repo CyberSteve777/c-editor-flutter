@@ -89,14 +89,12 @@
   "selectFolderButton": "Select folder",
   "uploadToWebsite": "Upload to website",
   "importFiles": "Import files",
-  "importFolders": "Import folders",
-  "importFoldersPickerHint": "Select a folder to import. Pick another folder or cancel when done.",
+  "importFolder": "Import folder",
   "importFolderEmpty": "No level files found in the selected folder",
-  "importFoldersSuccess": "Imported {count} level(s) from {folders} folder(s)",
-  "@importFoldersSuccess": {
+  "importFolderSuccess": "Imported {count} level(s)",
+  "@importFolderSuccess": {
     "placeholders": {
-      "count": { "type": "int" },
-      "folders": { "type": "int" }
+      "count": { "type": "int" }
     }
   },
   "uploadLevelPickerTitle": "Select one or multiple levels to upload",
