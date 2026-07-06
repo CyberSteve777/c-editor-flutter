@@ -89,6 +89,8 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   JSObject? _directoryHandle;
   String? _directoryName;
   String? _directoryMode;
+  JSObject? _stagingConnectHandle;
+  String? _stagingConnectName;
   Future<void>? _readyFuture;
 
   Future<void> _ensureReady() => _readyFuture ??= _initialize();
@@ -164,9 +166,132 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   }
 
   @override
+  Future<Map<String, Uint8List>> snapshotStoredFiles() async {
+    await _ensureReady();
+    return Map<String, Uint8List>.from(_memoryCache);
+  }
+
+  @override
+  Future<void> cancelNativeFolderStaging() async {
+    _stagingConnectHandle = null;
+    _stagingConnectName = null;
+  }
+
+  @override
+  Future<WebFolderImport?> stageNativeFolderConnect() async {
+    await _ensureReady();
+    if (!_fsa.supportsNativeWrite) {
+      return null;
+    }
+
+    final handle = await _fsa.pickDirectory();
+    if (handle == null || !_fsa.isNativeHandle(handle)) {
+      return null;
+    }
+    if (!await _fsa.ensurePermission(handle)) {
+      return null;
+    }
+
+    final files = await _fsa.readAllLevelFiles(handle);
+    _stagingConnectHandle = handle;
+    _stagingConnectName = _fsa.getHandleName(handle);
+    return WebFolderImport(
+      name: _stagingConnectName!,
+      files: files,
+    );
+  }
+
+  @override
+  Future<String?> finalizeNativeFolderConnect({
+    required Set<String> discardKeys,
+    required Map<String, Uint8List> keptLocalFiles,
+    required List<WebFolderFileImport> imports,
+  }) async {
+    await _ensureReady();
+    final handle = _stagingConnectHandle;
+    final folderName = _stagingConnectName;
+    if (handle == null || folderName == null) {
+      return null;
+    }
+
+    for (final key in discardKeys) {
+      _memoryCache.remove(key);
+      await _idb.deleteFile(key);
+      _pruneEmptyDirectoriesForKey(key);
+    }
+
+    _directoryHandle = handle;
+    _directoryName = folderName;
+    _directoryMode = WebFileSystemAccess.kindNative;
+    _stagingConnectHandle = null;
+    _stagingConnectName = null;
+
+    await _idb.putMeta(
+      WebLevelIdbStore.metaDirectoryNameKey,
+      _directoryName,
+    );
+    await _idb.putMeta(
+      WebLevelIdbStore.metaDirectoryModeKey,
+      _directoryMode,
+    );
+    final persistedHandle = _fsa.storageHandleForPersistence(handle);
+    await _idb.putMeta(
+      WebLevelIdbStore.metaDirectoryHandleKey,
+      persistedHandle,
+    );
+
+    for (final file in imports) {
+      await _putFile(file.storageKey, file.bytes, syncFolder: false);
+    }
+
+    for (final entry in keptLocalFiles.entries) {
+      if (discardKeys.contains(entry.key)) {
+        continue;
+      }
+      if (!_memoryCache.containsKey(entry.key)) {
+        await _putFile(entry.key, entry.value, syncFolder: false);
+      }
+    }
+
+    await _persistDirectories();
+
+    for (final file in imports) {
+      await _syncWriteToFolder(file.storageKey, file.bytes);
+    }
+    for (final entry in keptLocalFiles.entries) {
+      if (discardKeys.contains(entry.key)) {
+        continue;
+      }
+      final bytes = _memoryCache[entry.key];
+      if (bytes != null) {
+        await _syncWriteToFolder(entry.key, bytes);
+      }
+    }
+
+    return folderName;
+  }
+
+  void _pruneEmptyDirectoriesForKey(String key) {
+    var dir = _parentWebDir('$_webPathPrefix$key');
+    while (dir != _webPathPrefix) {
+      final hasChildDir = _directories.any(
+        (d) => d != dir && d.startsWith('$dir/'),
+      );
+      final hasChildFile = _memoryCache.keys.any(
+        (fileKey) => _parentWebDir('$_webPathPrefix$fileKey') == dir,
+      );
+      if (hasChildDir || hasChildFile) {
+        break;
+      }
+      _directories.remove(dir);
+      dir = _parentWebDir(dir);
+    }
+  }
+
+  @override
   Future<String?> connectLocalFolder() async {
     await _ensureReady();
-    if (!_fsa.isSupported) {
+    if (!_fsa.isSupported || _fsa.supportsNativeWrite) {
       return null;
     }
 
@@ -180,9 +305,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
     _directoryHandle = handle;
     _directoryName = _fsa.getHandleName(handle);
-    final isImport = _fsa.isImportHandle(handle);
-    _directoryMode =
-        isImport ? WebFileSystemAccess.kindImport : WebFileSystemAccess.kindNative;
+    _directoryMode = WebFileSystemAccess.kindImport;
 
     await _idb.putMeta(
       WebLevelIdbStore.metaDirectoryNameKey,
@@ -192,11 +315,9 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       WebLevelIdbStore.metaDirectoryModeKey,
       _directoryMode,
     );
-
-    final persistedHandle = _fsa.storageHandleForPersistence(handle);
     await _idb.putMeta(
       WebLevelIdbStore.metaDirectoryHandleKey,
-      persistedHandle,
+      null,
     );
 
     final imported = await _fsa.readAllLevelFiles(handle);
@@ -204,10 +325,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       await _putFile(entry.key, entry.value, syncFolder: false);
     }
     await _persistDirectories();
-
-    for (final entry in imported.entries) {
-      await _syncWriteToFolder(entry.key, entry.value);
-    }
     return _directoryName;
   }
 
@@ -218,7 +335,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       return null;
     }
 
-    final handle = await _fsa.pickDirectory();
+    final handle = await _fsa.pickDirectoryForImport();
     if (handle == null) {
       return null;
     }

@@ -322,6 +322,42 @@ abstract class AppLocalizations {
   /// **'Copy all'**
   String get smartUploadCopyAll;
 
+  /// No description provided for @localFileKeepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep browser level?'**
+  String get localFileKeepTitle;
+
+  /// No description provided for @localFileKeepMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This level is stored in the browser only:\n\n{fileName}\n\nKeep it when connecting a local folder?'**
+  String localFileKeepMessage(String fileName);
+
+  /// No description provided for @localFileKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get localFileKeep;
+
+  /// No description provided for @localFileDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get localFileDiscard;
+
+  /// No description provided for @localFileKeepAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep all'**
+  String get localFileKeepAll;
+
+  /// No description provided for @localFileDiscardAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard all'**
+  String get localFileDiscardAll;
+
   /// No description provided for @openFolder.
   ///
   /// In en, this message translates to:

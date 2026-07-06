@@ -84,6 +84,8 @@
             name: folderNameFromWebkitFiles(files),
             files: levelFiles,
           });
+        }).catch(() => {
+          settle(null);
         });
       });
 
@@ -95,10 +97,17 @@
       const onWindowFocus = () => {
         window.removeEventListener('focus', onWindowFocus);
         window.setTimeout(() => {
-          if (!settled && !selectionStarted) {
+          if (settled) {
+            return;
+          }
+          if (selectionStarted) {
+            return;
+          }
+          const files = input.files ? Array.from(input.files) : [];
+          if (!files.length) {
             settle(null);
           }
-        }, 400);
+        }, 800);
       };
       window.addEventListener('focus', onWindowFocus);
 
@@ -172,6 +181,30 @@
       }
       if (hasWebkitDirectoryInput()) {
         return await pickDirectoryWebkit();
+      }
+      return null;
+    },
+
+    async pickDirectoryForImport() {
+      if (hasWebkitDirectoryInput()) {
+        return await pickDirectoryWebkit();
+      }
+      if (hasNativeDirectoryPicker()) {
+        try {
+          const handle = await window.showDirectoryPicker({ mode: 'read' });
+          const files = {};
+          await walkNativeDirectory(handle, '', files);
+          return {
+            __cEditorKind: KIND_IMPORT,
+            name: handle.name || 'Folder',
+            files,
+          };
+        } catch (error) {
+          if (error && error.name === 'AbortError') {
+            return null;
+          }
+          throw error;
+        }
       }
       return null;
     },

@@ -130,6 +130,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smartUploadCopyAll => 'Copy all';
 
   @override
+  String get localFileKeepTitle => 'Keep browser level?';
+
+  @override
+  String localFileKeepMessage(String fileName) {
+    return 'This level is stored in the browser only:\n\n$fileName\n\nKeep it when connecting a local folder?';
+  }
+
+  @override
+  String get localFileKeep => 'Keep';
+
+  @override
+  String get localFileDiscard => 'Discard';
+
+  @override
+  String get localFileKeepAll => 'Keep all';
+
+  @override
+  String get localFileDiscardAll => 'Discard all';
+
+  @override
   String get openFolder => 'Open folder';
 
   @override

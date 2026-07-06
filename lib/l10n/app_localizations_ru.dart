@@ -130,6 +130,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get smartUploadCopyAll => 'Загрузить все как копии';
 
   @override
+  String get localFileKeepTitle => 'Сохранить уровень из браузера?';
+
+  @override
+  String localFileKeepMessage(String fileName) {
+    return 'Этот уровень хранится только в браузере:\n\n$fileName\n\nСохранить его при подключении локальной папки?';
+  }
+
+  @override
+  String get localFileKeep => 'Сохранить';
+
+  @override
+  String get localFileDiscard => 'Удалить';
+
+  @override
+  String get localFileKeepAll => 'Сохранить все';
+
+  @override
+  String get localFileDiscardAll => 'Удалить все';
+
+  @override
   String get openFolder => 'Открыть папку';
 
   @override

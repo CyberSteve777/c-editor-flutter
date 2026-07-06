@@ -44,6 +44,17 @@
   "smartUploadSkipAll": "Не загружать все",
   "smartUploadOverwriteAll": "Перезаписать все",
   "smartUploadCopyAll": "Загрузить все как копии",
+  "localFileKeepTitle": "Сохранить уровень из браузера?",
+  "localFileKeepMessage": "Этот уровень хранится только в браузере:\n\n{fileName}\n\nСохранить его при подключении локальной папки?",
+  "@localFileKeepMessage": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
+  "localFileKeep": "Сохранить",
+  "localFileDiscard": "Удалить",
+  "localFileKeepAll": "Сохранить все",
+  "localFileDiscardAll": "Удалить все",
   "openFolder": "Открыть папку",
   "levelLibraryPath": "Папка библиотеки уровней",
   "levelLibraryPathHint": "Уровни хранятся в этой папке. На iOS можно выбрать любую папку — доступ сохраняется после перезапуска.",
