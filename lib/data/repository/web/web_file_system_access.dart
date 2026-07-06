@@ -15,7 +15,7 @@ extension type _CEditorFsa._(JSObject _) implements JSObject {
   external JSPromise<JSAny?> writeFile(
     JSObject handle,
     String relativePath,
-    Uint8List bytes,
+    JSUint8Array bytes,
   );
   external JSPromise<JSAny?> deleteFile(JSObject handle, String relativePath);
   external JSObject? storageHandleForPersistence(JSObject handle);
@@ -113,7 +113,7 @@ class WebFileSystemAccess {
     if (api == null) {
       return;
     }
-    await api.writeFile(handle, relativePath, bytes).toDart;
+    await api.writeFile(handle, relativePath, bytes.toJS).toDart;
   }
 
   Future<void> deleteFile(JSObject handle, String relativePath) async {
