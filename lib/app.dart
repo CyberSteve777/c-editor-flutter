@@ -14,6 +14,7 @@ import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/screens/level_list_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/locale_flag_icon.dart';
 
 /// Wraps child and handles Escape key on desktop to trigger back/pop.
 /// Uses HardwareKeyboard.addHandler for immediate, global Escape handling.
@@ -249,7 +250,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.language),
+              leading: const LocaleFlagIcon('en'),
               title: Text(languageEnglish),
               onTap: () {
                 context.read<SettingsCubit>().setLocale(const Locale('en'));
@@ -257,7 +258,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.translate),
+              leading: const LocaleFlagIcon('zh'),
               title: Text(languageChinese),
               onTap: () {
                 context.read<SettingsCubit>().setLocale(const Locale('zh'));
@@ -265,7 +266,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.translate),
+              leading: const LocaleFlagIcon('ru'),
               title: Text(languageRussian),
               onTap: () {
                 context.read<SettingsCubit>().setLocale(const Locale('ru'));
