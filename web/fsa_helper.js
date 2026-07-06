@@ -62,7 +62,6 @@
       input.style.display = 'none';
 
       let settled = false;
-      let selectionStarted = false;
 
       const settle = (value) => {
         if (settled) return;
@@ -72,7 +71,6 @@
       };
 
       input.addEventListener('change', () => {
-        selectionStarted = true;
         const files = Array.from(input.files || []);
         if (!files.length) {
           settle(null);
@@ -93,27 +91,22 @@
         settle(null);
       });
 
-      // Firefox and older browsers: no reliable cancel event on file inputs.
-      const onWindowFocus = () => {
-        window.removeEventListener('focus', onWindowFocus);
-        window.setTimeout(() => {
-          if (settled) {
-            return;
-          }
-          if (selectionStarted) {
-            return;
-          }
-          const files = input.files ? Array.from(input.files) : [];
-          if (!files.length) {
-            settle(null);
-          }
-        }, 800);
-      };
-      window.addEventListener('focus', onWindowFocus);
-
       document.body.appendChild(input);
       input.click();
     });
+  }
+
+  function readImportFileEntries(handle) {
+    if (!handle || !isImportHandle(handle)) {
+      return [];
+    }
+    const files = handle.files || {};
+    return Object.entries(files).map(([path, bytes]) => ({
+      path,
+      bytes: Array.from(
+        bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []),
+      ),
+    }));
   }
 
   async function walkNativeDirectory(dirHandle, prefix, out) {
@@ -235,6 +228,10 @@
       const inner = nativeInner(rootHandle);
       await walkNativeDirectory(inner, '', out);
       return out;
+    },
+
+    readImportFileEntries(handle) {
+      return readImportFileEntries(handle);
     },
 
     async writeFile(rootHandle, relativePath, bytes) {
