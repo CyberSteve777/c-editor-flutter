@@ -8,11 +8,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/data/app_links.dart';
+import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
 enum LevelViewMode { all, favorites }
@@ -414,7 +414,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final links = await AppLinks.load();
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
-    final url = Uri.parse(links.levelUpload);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -433,8 +432,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
       ),
     );
 
-    if (ok == true && await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+    if (ok == true) {
+      await launchExternalUrl(links.levelUpload);
     }
   }
 
