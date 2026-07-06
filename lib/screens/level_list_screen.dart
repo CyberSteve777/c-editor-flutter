@@ -19,6 +19,15 @@ enum LevelViewMode { all, favorites }
 
 enum _WebUploadConflictStrategy { skip, overwrite, copy }
 
+enum _SmartUploadChoice {
+  skipThis,
+  overwriteThis,
+  copyThis,
+  skipAll,
+  overwriteAll,
+  copyAll,
+}
+
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
     super.key,
@@ -256,27 +265,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     }
 
     if (conflicts.isNotEmpty) {
-      final strategy = await _showSmartUploadDialog(
-        conflicts.map((e) => e.name).toList(),
-      );
+      await _resolveSmartUploadConflicts(currentDir, conflicts, pending);
       if (!mounted) return;
-      if (strategy == null || strategy == _WebUploadConflictStrategy.skip) {
-        // Skip all conflicting files.
-      } else if (strategy == _WebUploadConflictStrategy.overwrite) {
-        pending.addAll(conflicts);
-      } else {
-        for (final conflict in conflicts) {
-          final baseName = LevelRepository.baseNameWithoutLevelExtension(
-            conflict.name,
-          );
-          final copyBase = await LevelRepository.getNextAvailableCopyName(
-            currentDir,
-            baseName,
-          );
-          final ext = conflict.name.substring(baseName.length);
-          pending.add((name: '$copyBase$ext', bytes: conflict.bytes));
-        }
-      }
     }
 
     if (pending.isEmpty) return;
@@ -298,34 +288,132 @@ class _LevelListScreenState extends State<LevelListScreen> {
     _loadCurrentDirectory();
   }
 
-  Future<_WebUploadConflictStrategy?> _showSmartUploadDialog(
-    List<String> fileNames,
+  Future<void> _resolveSmartUploadConflicts(
+    String currentDir,
+    List<({String name, List<int> bytes})> conflicts,
+    List<({String name, List<int> bytes})> pending,
   ) async {
+    _WebUploadConflictStrategy? bulkStrategy;
+    final reservedNames = pending.map((e) => e.name.toLowerCase()).toSet();
+
+    for (final conflict in conflicts) {
+      if (!mounted) return;
+
+      late final _WebUploadConflictStrategy strategy;
+      if (bulkStrategy != null) {
+        strategy = bulkStrategy;
+      } else {
+        final choice = await _showSmartUploadFileDialog(conflict.name);
+        if (!mounted) return;
+        if (choice == null) continue;
+
+        switch (choice) {
+          case _SmartUploadChoice.skipThis:
+            strategy = _WebUploadConflictStrategy.skip;
+          case _SmartUploadChoice.skipAll:
+            bulkStrategy = _WebUploadConflictStrategy.skip;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.overwriteThis:
+            strategy = _WebUploadConflictStrategy.overwrite;
+          case _SmartUploadChoice.overwriteAll:
+            bulkStrategy = _WebUploadConflictStrategy.overwrite;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.copyThis:
+            strategy = _WebUploadConflictStrategy.copy;
+          case _SmartUploadChoice.copyAll:
+            bulkStrategy = _WebUploadConflictStrategy.copy;
+            strategy = bulkStrategy;
+        }
+      }
+
+      switch (strategy) {
+        case _WebUploadConflictStrategy.skip:
+          break;
+        case _WebUploadConflictStrategy.overwrite:
+          pending.add(conflict);
+          reservedNames.add(conflict.name.toLowerCase());
+        case _WebUploadConflictStrategy.copy:
+          final copyName = await _nextSmartUploadCopyName(
+            currentDir,
+            conflict.name,
+            reservedNames,
+          );
+          pending.add((name: copyName, bytes: conflict.bytes));
+          reservedNames.add(copyName.toLowerCase());
+      }
+    }
+  }
+
+  Future<String> _nextSmartUploadCopyName(
+    String currentDir,
+    String originalName,
+    Set<String> reservedNames,
+  ) async {
+    final baseName = LevelRepository.baseNameWithoutLevelExtension(originalName);
+    final ext = originalName.substring(baseName.length);
+
+    Future<bool> isTaken(String candidate) async {
+      return reservedNames.contains(candidate.toLowerCase()) ||
+          await LevelRepository.fileExistsInDirectory(currentDir, candidate);
+    }
+
+    var copyBase = '${baseName}_copy';
+    var candidate = '$copyBase$ext';
+    if (!await isTaken(candidate)) return candidate;
+
+    var n = 1;
+    while (true) {
+      copyBase = '${baseName}_copy$n';
+      candidate = '$copyBase$ext';
+      if (!await isTaken(candidate)) return candidate;
+      n++;
+    }
+  }
+
+  Future<_SmartUploadChoice?> _showSmartUploadFileDialog(String fileName) async {
     final l10n = AppLocalizations.of(context)!;
-    return showDialog<_WebUploadConflictStrategy>(
+    return showDialog<_SmartUploadChoice>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.smartUploadTitle),
-        content: SingleChildScrollView(
-          child: Text(
-            l10n.smartUploadMessage(fileNames.join('\n')),
-          ),
-        ),
+        content: Text(l10n.smartUploadFileMessage(fileName)),
         actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(ctx, _WebUploadConflictStrategy.skip),
-            child: Text(l10n.smartUploadSkip),
-          ),
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(ctx, _WebUploadConflictStrategy.overwrite),
-            child: Text(l10n.smartUploadOverwrite),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.pop(ctx, _WebUploadConflictStrategy.copy),
-            child: Text(l10n.smartUploadAsCopy),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.skipThis),
+                child: Text(l10n.smartUploadSkip),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.overwriteThis),
+                child: Text(l10n.smartUploadOverwrite),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.copyThis),
+                child: Text(l10n.smartUploadAsCopy),
+              ),
+              const Divider(height: 1),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.skipAll),
+                child: Text(l10n.smartUploadSkipAll),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.overwriteAll),
+                child: Text(l10n.smartUploadOverwriteAll),
+              ),
+              FilledButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.copyAll),
+                child: Text(l10n.smartUploadCopyAll),
+              ),
+            ],
           ),
         ],
       ),
