@@ -35,6 +35,8 @@ dependencies:
   flutter_layout_grid: ^2.0.8
   flutter_slidable: ^4.0.3
   country_flags: ^4.1.2
+  idb_shim: ^2.9.2
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

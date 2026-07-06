@@ -55,6 +55,8 @@
   "delete": "Delete",
   "copy": "Copy",
   "download": "Download",
+  "downloadAllLevels": "Export all levels",
+  "webFolderImportNotice": "Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.",
   "favorite": "Favorite",
   "unfavorite": "Unfavorite",
   "move": "Move",

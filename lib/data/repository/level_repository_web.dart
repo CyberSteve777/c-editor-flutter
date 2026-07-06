@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
@@ -8,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
+import 'web/web_file_system_access.dart';
+import 'web/web_level_idb_store.dart';
 
 /// Virtual path prefix for web - files opened via picker have no real path.
 const String _webPathPrefix = 'web://';
@@ -75,9 +79,223 @@ LevelRepositoryBase createLevelRepository() => LevelRepositoryWebImpl();
 class LevelRepositoryWebImpl extends LevelRepositoryBase {
   static const _prefsFolderKey = 'folder_path';
   static const _prefsLastLevelDirKey = 'last_level_directory';
+  static const _defaultLibraryLabel = 'My levels';
 
   final Map<String, Uint8List> _memoryCache = {};
   final Set<String> _directories = {_webPathPrefix};
+  final WebLevelIdbStore _idb = WebLevelIdbStore.instance;
+  final WebFileSystemAccess _fsa = WebFileSystemAccess.instance;
+
+  JSObject? _directoryHandle;
+  String? _directoryName;
+  String? _directoryMode;
+  Future<void>? _readyFuture;
+
+  Future<void> _ensureReady() => _readyFuture ??= _initialize();
+
+  Future<void> _initialize() async {
+    final files = await _idb.loadFiles();
+    _memoryCache
+      ..clear()
+      ..addAll(files);
+
+    final directories = await _idb.loadDirectories();
+    _directories
+      ..clear()
+      ..add(_webPathPrefix)
+      ..addAll(directories);
+
+    _directoryName = await _idb.getMeta<String>(
+      WebLevelIdbStore.metaDirectoryNameKey,
+    );
+    _directoryMode = await _idb.getMeta<String>(
+      WebLevelIdbStore.metaDirectoryModeKey,
+    );
+
+    _directoryHandle = null;
+    if (_directoryMode == WebFileSystemAccess.kindNative) {
+      final storedHandle = await _idb.getMeta(
+        WebLevelIdbStore.metaDirectoryHandleKey,
+      );
+      if (storedHandle != null) {
+        final handle = storedHandle as JSObject;
+        if (await _fsa.ensurePermission(handle)) {
+          _directoryHandle = handle;
+        } else {
+          await _idb.putMeta(WebLevelIdbStore.metaDirectoryHandleKey, null);
+          _directoryMode = null;
+        }
+      }
+    }
+  }
+
+  @override
+  Future<void> ensureWebStorageReady() => _ensureReady();
+
+  @override
+  Future<String?> getWebLibraryDisplayName() async {
+    await _ensureReady();
+    return _directoryName ?? _defaultLibraryLabel;
+  }
+
+  @override
+  Future<bool> isLocalFolderConnected() async {
+    await _ensureReady();
+    if (_directoryHandle != null) {
+      return true;
+    }
+    return _directoryMode == WebFileSystemAccess.kindImport &&
+        (_directoryName?.isNotEmpty ?? false);
+  }
+
+  @override
+  Future<bool> isWebFolderImportMode() async {
+    await _ensureReady();
+    if (_directoryHandle != null) {
+      return _fsa.isImportHandle(_directoryHandle!);
+    }
+    return _directoryMode == WebFileSystemAccess.kindImport;
+  }
+
+  @override
+  Future<bool> supportsWebFolderWriteSync() async {
+    await _ensureReady();
+    if (_directoryHandle != null) {
+      return _fsa.isNativeHandle(_directoryHandle!);
+    }
+    return _directoryMode == WebFileSystemAccess.kindNative &&
+        _fsa.supportsNativeWrite;
+  }
+
+  @override
+  Future<String?> connectLocalFolder() async {
+    await _ensureReady();
+    if (!_fsa.isSupported) {
+      return null;
+    }
+
+    final handle = await _fsa.pickDirectory();
+    if (handle == null) {
+      return null;
+    }
+    if (!await _fsa.ensurePermission(handle)) {
+      return null;
+    }
+
+    _directoryHandle = handle;
+    _directoryName = _fsa.getHandleName(handle);
+    final isImport = _fsa.isImportHandle(handle);
+    _directoryMode =
+        isImport ? WebFileSystemAccess.kindImport : WebFileSystemAccess.kindNative;
+
+    await _idb.putMeta(
+      WebLevelIdbStore.metaDirectoryNameKey,
+      _directoryName,
+    );
+    await _idb.putMeta(
+      WebLevelIdbStore.metaDirectoryModeKey,
+      _directoryMode,
+    );
+
+    final persistedHandle = _fsa.storageHandleForPersistence(handle);
+    await _idb.putMeta(
+      WebLevelIdbStore.metaDirectoryHandleKey,
+      persistedHandle,
+    );
+
+    final imported = await _fsa.readAllLevelFiles(handle);
+    for (final entry in imported.entries) {
+      await _putFile(entry.key, entry.value, syncFolder: false);
+    }
+    await _persistDirectories();
+
+    for (final entry in imported.entries) {
+      await _syncWriteToFolder(entry.key, entry.value);
+    }
+    return _directoryName;
+  }
+
+  Future<void> _putFile(
+    String key,
+    Uint8List bytes, {
+    bool syncFolder = true,
+  }) async {
+    await _ensureReady();
+    _memoryCache[key] = bytes;
+    await _idb.putFile(key, bytes);
+    if (syncFolder) {
+      await _syncWriteToFolder(key, bytes);
+    }
+    _registerParentDirectories(key);
+  }
+
+  Future<void> _removeFileKey(String key) async {
+    await _ensureReady();
+    _memoryCache.remove(key);
+    await _idb.deleteFile(key);
+    await _syncDeleteFromFolder(key);
+  }
+
+  Future<void> _renameFileKey(String oldKey, String newKey) async {
+    await _ensureReady();
+    final bytes = _memoryCache.remove(oldKey);
+    if (bytes == null) {
+      return;
+    }
+    await _idb.deleteFile(oldKey);
+    await _syncDeleteFromFolder(oldKey);
+    _memoryCache[newKey] = bytes;
+    await _idb.putFile(newKey, bytes);
+    await _syncWriteToFolder(newKey, bytes);
+    _registerParentDirectories(newKey);
+  }
+
+  void _registerParentDirectories(String key) {
+    var dir = _parentWebDir('$_webPathPrefix$key');
+    while (true) {
+      _directories.add(dir);
+      if (dir == _webPathPrefix) {
+        break;
+      }
+      dir = _parentWebDir(dir);
+    }
+  }
+
+  Future<void> _persistDirectories() async {
+    await _idb.saveDirectories(_directories);
+  }
+
+  Future<void> _syncWriteToFolder(String key, Uint8List bytes) async {
+    final handle = _directoryHandle;
+    if (handle == null || _fsa.isImportHandle(handle)) {
+      return;
+    }
+    if (!await _fsa.ensurePermission(handle)) {
+      return;
+    }
+    await _fsa.writeFile(handle, key, bytes);
+  }
+
+  Future<void> _syncDeleteFromFolder(String key) async {
+    final handle = _directoryHandle;
+    if (handle == null || _fsa.isImportHandle(handle)) {
+      return;
+    }
+    if (!await _fsa.ensurePermission(handle)) {
+      return;
+    }
+    await _fsa.deleteFile(handle, key);
+  }
+
+  @override
+  Future<bool> ensureFolderAccess() async {
+    await _ensureReady();
+    final handle = _directoryHandle;
+    if (handle == null) {
+      return true;
+    }
+    return _fsa.ensurePermission(handle);
+  }
 
   @override
   Future<String?> getSavedFolderPath() async {
@@ -147,6 +365,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   @override
   Future<List<FileItem>> getDirectoryContents(String dirPath) async {
+    await _ensureReady();
     if (!dirPath.startsWith(_webPathPrefix)) return [];
     final normalized = _normalizeWebDirPath(dirPath);
     _directories.add(_webPathPrefix);
@@ -211,6 +430,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final newKey = _relativeFromWebPath(newDir);
     if (_memoryCache.containsKey(newKey)) return false;
     _directories.add(newDir);
+    await _persistDirectories();
     return true;
   }
 
@@ -259,16 +479,15 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       }
 
       for (final e in filesToRename) {
-        _memoryCache.remove(e.key);
-      }
-      for (final e in filesToRename) {
         final full = '$_webPathPrefix${e.key}';
         final renamedFull = full == oldPath
             ? newPath
             : '$newPath/${full.substring(oldPrefix.length)}';
-        _memoryCache[_relativeFromWebPath(renamedFull)] = e.value;
+        final renamedKey = _relativeFromWebPath(renamedFull);
+        await _renameFileKey(e.key, renamedKey);
       }
       await moveFavoriteLevelPathPrefix(oldPath, newPath);
+      await _persistDirectories();
       return true;
     }
 
@@ -278,8 +497,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     if (_memoryCache.containsKey(newKey) || _directories.contains(newPath)) {
       return false;
     }
-    final content = _memoryCache.remove(oldKey)!;
-    _memoryCache[newKey] = content;
+    await _renameFileKey(oldKey, newKey);
     await moveFavoriteLevelPath(oldPath, newPath);
     return true;
   }
@@ -294,16 +512,22 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final targetPath = _webJoin(currentDir, fileName);
     if (isDirectory) {
       final prefix = '$targetPath/';
+      final keysToRemove = _memoryCache.keys
+          .where((k) {
+            final full = '$_webPathPrefix$k';
+            return full == targetPath || full.startsWith(prefix);
+          })
+          .toList();
+      for (final key in keysToRemove) {
+        await _removeFileKey(key);
+      }
       _directories.removeWhere((d) => d == targetPath || d.startsWith(prefix));
-      _memoryCache.removeWhere((k, _) {
-        final full = '$_webPathPrefix$k';
-        return full == targetPath || full.startsWith(prefix);
-      });
       _directories.add(_webPathPrefix);
+      await _persistDirectories();
       await removeFavoriteLevelPathPrefix(targetPath);
       return;
     }
-    _memoryCache.remove(_relativeFromWebPath(targetPath));
+    await _removeFileKey(_relativeFromWebPath(targetPath));
     await removeFavoriteLevelPath(targetPath);
   }
 
@@ -318,7 +542,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final targetKey = _relativeFromWebPath(targetPath);
     if (!_memoryCache.containsKey(srcName)) return false;
     if (_memoryCache.containsKey(targetKey)) return false;
-    _memoryCache[targetKey] = _memoryCache[srcName]!;
+    await _putFile(targetKey, _memoryCache[srcName]!);
     await removeFavoriteLevelPath(targetPath);
     return true;
   }
@@ -335,7 +559,10 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     if (!_memoryCache.containsKey(srcKey) || _memoryCache.containsKey(dstKey)) {
       return false;
     }
-    _memoryCache[dstKey] = _memoryCache.remove(srcKey)!;
+    final bytes = _memoryCache.remove(srcKey)!;
+    await _idb.deleteFile(srcKey);
+    await _syncDeleteFromFolder(srcKey);
+    await _putFile(dstKey, bytes);
     await moveFavoriteLevelPath(
       _webJoin(srcDirPath, fileName),
       _webJoin(destDirPath, fileName),
@@ -355,8 +582,11 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final srcKey = _relativeFromWebPath(_webJoin(srcDirPath, fileName));
     final dstKey = _relativeFromWebPath(_webJoin(destDirPath, fileName));
     if (!_memoryCache.containsKey(srcKey)) return false;
-    _memoryCache.remove(dstKey);
-    _memoryCache[dstKey] = _memoryCache.remove(srcKey)!;
+    await _removeFileKey(dstKey);
+    final bytes = _memoryCache.remove(srcKey)!;
+    await _idb.deleteFile(srcKey);
+    await _syncDeleteFromFolder(srcKey);
+    await _putFile(dstKey, bytes);
     await moveFavoriteLevelPath(srcPath, destPath, clearDestination: true);
     return true;
   }
@@ -375,18 +605,26 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final dstKey = _relativeFromWebPath(_webJoin(destDirPath, newFileName));
     if (!_memoryCache.containsKey(srcKey)) return null;
     if (_memoryCache.containsKey(dstKey)) return null;
-    _memoryCache[dstKey] = _memoryCache.remove(srcKey)!;
+    final bytes = _memoryCache.remove(srcKey)!;
+    await _idb.deleteFile(srcKey);
+    await _syncDeleteFromFolder(srcKey);
+    await _putFile(dstKey, bytes);
     await moveFavoriteLevelPath(srcPath, destPath);
     return newFileName;
   }
 
   @override
   Future<int> clearAllInternalCache() async {
+    await _ensureReady();
     final count = _memoryCache.length;
     _memoryCache.clear();
     _directories
       ..clear()
       ..add(_webPathPrefix);
+    _directoryHandle = null;
+    _directoryName = null;
+    _directoryMode = null;
+    await _idb.clearAll();
     return count;
   }
 
@@ -403,13 +641,8 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String fileName,
     String content,
   ) async {
-    _memoryCache[fileName] = Uint8List.fromList(utf8.encode(content));
-    var dir = _parentWebDir('$_webPathPrefix$fileName');
-    while (true) {
-      _directories.add(dir);
-      if (dir == _webPathPrefix) break;
-      dir = _parentWebDir(dir);
-    }
+    await _putFile(fileName, Uint8List.fromList(utf8.encode(content)));
+    await _persistDirectories();
     return true;
   }
 
@@ -418,18 +651,14 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String fileName,
     List<int> bytes,
   ) async {
-    _memoryCache[fileName] = Uint8List.fromList(bytes);
-    var dir = _parentWebDir('$_webPathPrefix$fileName');
-    while (true) {
-      _directories.add(dir);
-      if (dir == _webPathPrefix) break;
-      dir = _parentWebDir(dir);
-    }
+    await _putFile(fileName, Uint8List.fromList(bytes));
+    await _persistDirectories();
     return true;
   }
 
   @override
   Future<PvzLevelFile?> loadLevel(String fileName) async {
+    await _ensureReady();
     final content = _memoryCache[fileName];
     if (content == null) return null;
     return decodeLevelBytes(fileName, content);
@@ -444,7 +673,8 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   @override
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData) async {
     final fileName = _fileNameFromPath(filePath);
-    _memoryCache[fileName] = encodeLevelBytes(fileName, levelData);
+    await _putFile(fileName, encodeLevelBytes(fileName, levelData));
+    await _persistDirectories();
   }
 
   @override
@@ -506,7 +736,8 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final filePath = _webJoin(currentDirPath, newFileName);
     final key = _relativeFromWebPath(filePath);
     if (_memoryCache.containsKey(key)) return false;
-    _memoryCache[key] = Uint8List.fromList(utf8.encode(assetContent));
+    await _putFile(key, Uint8List.fromList(utf8.encode(assetContent)));
+    await _persistDirectories();
     await removeFavoriteLevelPath(filePath);
     return true;
   }
@@ -530,7 +761,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final targetPath = _webJoin(sourceDir, targetNameOnly);
     final target = _relativeFromWebPath(targetPath);
     if (_memoryCache.containsKey(target)) return null;
-    _memoryCache[target] = encodeLevelBytes(target, level);
+    await _putFile(target, encodeLevelBytes(target, level));
     await removeFavoriteLevelPath(targetPath);
     return target;
   }

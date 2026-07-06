@@ -150,6 +150,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get download => '下载';
 
   @override
+  String get downloadAllLevels => '导出全部关卡';
+
+  @override
+  String get webFolderImportNotice =>
+      '文件夹已导入到浏览器存储。在此浏览器上，编辑不会自动写回磁盘——请使用“导出”保存文件。';
+
+  @override
   String get favorite => '收藏';
 
   @override

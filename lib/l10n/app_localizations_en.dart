@@ -153,6 +153,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get download => 'Download';
 
   @override
+  String get downloadAllLevels => 'Export all levels';
+
+  @override
+  String get webFolderImportNotice =>
+      'Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.';
+
+  @override
   String get favorite => 'Favorite';
 
   @override
