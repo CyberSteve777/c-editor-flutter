@@ -86,6 +86,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get uploadToWebsite => 'Загрузить на сайт';
 
   @override
+  String get importFiles => 'Импортировать файлы';
+
+  @override
+  String get importFolders => 'Импортировать папки';
+
+  @override
+  String get importFoldersPickerHint =>
+      'Выберите папку для импорта. Можно выбрать ещё одну или отменить, когда закончите.';
+
+  @override
+  String get importFolderEmpty => 'В выбранной папке нет файлов уровней';
+
+  @override
+  String importFoldersSuccess(int count, int folders) {
+    return 'Импортировано уровней: $count из папок: $folders';
+  }
+
+  @override
   String get uploadLevelPickerTitle =>
       'Выберите один или несколько уровней для загрузки';
 

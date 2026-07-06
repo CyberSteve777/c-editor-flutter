@@ -9,8 +9,27 @@ class AppMessage {
 
   static final AppMessageController controller = AppMessageController();
 
-  static const displayDuration = Duration(milliseconds: 750);
+  static const baseDisplayDuration = Duration(milliseconds: 750);
   static const animDuration = Duration(milliseconds: 320);
+  static const _minDisplayMs = 750;
+  static const _maxDisplayMs = 5500;
+  /// Roughly 1–3 short words; longer copy gets more time.
+  static const _shortTextMaxLength = 18;
+  static const _msPerExtraCharacter = 45;
+
+  /// Display time scaled to message length (750 ms for brief text).
+  static Duration durationForMessage(String message) {
+    final length = message.trim().length;
+    if (length <= _shortTextMaxLength) {
+      return baseDisplayDuration;
+    }
+    final extra = length - _shortTextMaxLength;
+    final ms = (_minDisplayMs + extra * _msPerExtraCharacter).clamp(
+      _minDisplayMs,
+      _maxDisplayMs,
+    );
+    return Duration(milliseconds: ms);
+  }
 
   static Color backgroundColor(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
@@ -33,7 +52,7 @@ class AppMessage {
       message,
       brightness: Theme.of(context).brightness,
       icon: icon,
-      duration: duration ?? displayDuration,
+      duration: duration ?? durationForMessage(message),
     );
   }
 

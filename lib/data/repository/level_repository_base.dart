@@ -8,6 +8,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pvz_models.dart';
 
+/// One folder picked for web import (recursive level files, relative paths).
+class WebFolderImport {
+  const WebFolderImport({required this.name, required this.files});
+
+  final String name;
+  final Map<String, Uint8List> files;
+}
+
 class FileItem {
   FileItem({
     required this.name,
@@ -101,6 +109,7 @@ abstract class LevelRepositoryBase {
   Future<void> ensureWebStorageReady() async {}
   Future<String?> getWebLibraryDisplayName() async => null;
   Future<String?> connectLocalFolder() async => null;
+  Future<WebFolderImport?> pickWebFolderForImport() async => null;
   Future<bool> isLocalFolderConnected() async => false;
   Future<bool> isWebFolderImportMode() async => false;
   Future<bool> supportsWebFolderWriteSync() async => false;

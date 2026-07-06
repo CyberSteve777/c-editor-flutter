@@ -244,6 +244,36 @@ abstract class AppLocalizations {
   /// **'Upload to website'**
   String get uploadToWebsite;
 
+  /// No description provided for @importFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Import files'**
+  String get importFiles;
+
+  /// No description provided for @importFolders.
+  ///
+  /// In en, this message translates to:
+  /// **'Import folders'**
+  String get importFolders;
+
+  /// No description provided for @importFoldersPickerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a folder to import. Pick another folder or cancel when done.'**
+  String get importFoldersPickerHint;
+
+  /// No description provided for @importFolderEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No level files found in the selected folder'**
+  String get importFolderEmpty;
+
+  /// No description provided for @importFoldersSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} level(s) from {folders} folder(s)'**
+  String importFoldersSuccess(int count, int folders);
+
   /// No description provided for @uploadLevelPickerTitle.
   ///
   /// In en, this message translates to:
