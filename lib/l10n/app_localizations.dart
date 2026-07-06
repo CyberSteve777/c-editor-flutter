@@ -250,6 +250,36 @@ abstract class AppLocalizations {
   /// **'Select one or multiple levels to upload'**
   String get uploadLevelPickerTitle;
 
+  /// No description provided for @smartUploadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate files'**
+  String get smartUploadTitle;
+
+  /// No description provided for @smartUploadMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'These files already exist in your library:\n\n{fileNames}\n\nHow should duplicates be handled?'**
+  String smartUploadMessage(String fileNames);
+
+  /// No description provided for @smartUploadSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t upload'**
+  String get smartUploadSkip;
+
+  /// No description provided for @smartUploadOverwrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite'**
+  String get smartUploadOverwrite;
+
+  /// No description provided for @smartUploadAsCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload as copy'**
+  String get smartUploadAsCopy;
+
   /// No description provided for @openFolder.
   ///
   /// In en, this message translates to:

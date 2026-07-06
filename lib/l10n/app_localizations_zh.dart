@@ -87,6 +87,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get uploadLevelPickerTitle => '选择一个或多个要上传的关卡';
 
   @override
+  String get smartUploadTitle => '重复文件';
+
+  @override
+  String smartUploadMessage(String fileNames) {
+    return '以下文件已存在于关卡库中：\n\n$fileNames\n\n如何处理重复文件？';
+  }
+
+  @override
+  String get smartUploadSkip => '不上传';
+
+  @override
+  String get smartUploadOverwrite => '覆盖';
+
+  @override
+  String get smartUploadAsCopy => '作为副本上传';
+
+  @override
   String get openFolder => '打开文件夹';
 
   @override

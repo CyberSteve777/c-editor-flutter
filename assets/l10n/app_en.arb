@@ -30,6 +30,16 @@
   "selectFolderButton": "Select folder",
   "uploadToWebsite": "Upload to website",
   "uploadLevelPickerTitle": "Select one or multiple levels to upload",
+  "smartUploadTitle": "Duplicate files",
+  "smartUploadMessage": "These files already exist in your library:\n\n{fileNames}\n\nHow should duplicates be handled?",
+  "@smartUploadMessage": {
+    "placeholders": {
+      "fileNames": { "type": "String" }
+    }
+  },
+  "smartUploadSkip": "Don't upload",
+  "smartUploadOverwrite": "Overwrite",
+  "smartUploadAsCopy": "Upload as copy",
   "openFolder": "Open folder",
   "levelLibraryPath": "Level library folder",
   "levelLibraryPathHint": "Levels are stored in this folder. On iOS you can pick any folder; access is saved so it persists after restart.",

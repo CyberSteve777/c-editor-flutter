@@ -90,6 +90,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select one or multiple levels to upload';
 
   @override
+  String get smartUploadTitle => 'Duplicate files';
+
+  @override
+  String smartUploadMessage(String fileNames) {
+    return 'These files already exist in your library:\n\n$fileNames\n\nHow should duplicates be handled?';
+  }
+
+  @override
+  String get smartUploadSkip => 'Don\'t upload';
+
+  @override
+  String get smartUploadOverwrite => 'Overwrite';
+
+  @override
+  String get smartUploadAsCopy => 'Upload as copy';
+
+  @override
   String get openFolder => 'Open folder';
 
   @override

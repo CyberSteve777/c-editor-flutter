@@ -22,6 +22,16 @@
   "selectFolderButton": "Выбрать папку",
   "uploadToWebsite": "Загрузить на сайт",
   "uploadLevelPickerTitle": "Выберите один или несколько уровней для загрузки",
+  "smartUploadTitle": "Дубликаты файлов",
+  "smartUploadMessage": "Эти файлы уже есть в вашей библиотеке:\n\n{fileNames}\n\nКак поступить с дубликатами?",
+  "@smartUploadMessage": {
+    "placeholders": {
+      "fileNames": { "type": "String" }
+    }
+  },
+  "smartUploadSkip": "Не загружать",
+  "smartUploadOverwrite": "Перезаписать",
+  "smartUploadAsCopy": "Загрузить как копию",
   "openFolder": "Открыть папку",
   "levelLibraryPath": "Папка библиотеки уровней",
   "levelLibraryPathHint": "Уровни хранятся в этой папке. На iOS можно выбрать любую папку — доступ сохраняется после перезапуска.",
