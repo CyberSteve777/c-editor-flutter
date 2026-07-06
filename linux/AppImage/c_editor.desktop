@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=C-Editor
+Exec=C-Editor
+Icon=c_editor
+Categories=Game;Utility;
+Terminal=false

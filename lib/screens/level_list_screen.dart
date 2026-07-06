@@ -223,6 +223,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final result = await FilePicker.pickFiles(
       allowMultiple: true,
+      withData: true,
       type: FileType.custom,
       allowedExtensions: ['json', 'hujson', 'rton'],
       dialogTitle: l10n.uploadLevelPickerTitle,
