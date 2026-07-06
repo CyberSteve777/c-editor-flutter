@@ -18,30 +18,28 @@ AppDir:
     version: latest
     exec: C-Editor
     exec_args: $@
-
-apt:
-  arch: amd64
-  allow_unauthenticated: true
-  sources:
-    - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
-    - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
-    - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble-backports main restricted universe multiverse
-    - sourceline: deb http://security.ubuntu.com/ubuntu noble-security main restricted universe multiverse
-  include:
-    - libgtk-3-0
-  exclude:
-    - humanity-icon-theme
-    - hicolor-icon-theme
-    - adwaita-icon-theme
-    - ubuntu-mono
-
-files:
-  exclude:
-    - usr/share/man
-    - usr/share/doc/*/README.*
-    - usr/share/doc/*/changelog.*
-    - usr/share/doc/*/NEWS.*
-    - usr/share/doc/*/TODO.*
+  apt:
+    arch: amd64
+    allow_unauthenticated: true
+    sources:
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ noble-backports main restricted universe multiverse
+      - sourceline: deb http://security.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+    include:
+      - libgtk-3-0
+    exclude:
+      - humanity-icon-theme
+      - hicolor-icon-theme
+      - adwaita-icon-theme
+      - ubuntu-mono
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
 
 AppImage:
   arch: x86_64
