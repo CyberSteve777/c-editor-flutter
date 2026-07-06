@@ -181,13 +181,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _pickFolder() async {
+    final l10n = AppLocalizations.of(context)!;
     await _ensureStoragePermission();
     if (kIsWeb) {
       await _pickAndAddFile();
       return;
     }
+    if (!mounted) return;
     final result = await FilePicker.getDirectoryPath(
-      dialogTitle: AppLocalizations.of(context)!.openFolder,
+      dialogTitle: l10n.openFolder,
     );
     if (result == null || !mounted) return;
     await _applyLibraryFolder(result);
