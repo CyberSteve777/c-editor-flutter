@@ -168,7 +168,8 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: EditorAliasInputField(
+            child: ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,

@@ -945,21 +945,21 @@ class _EditorScreenState extends State<EditorScreen> {
     if (meta != null) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
-      var suggestedAlias = meta.effectiveAlias;
+      String? chosenAlias;
       if (meta.defaultSource == 'CurrentLevel') {
-        suggestedAlias = PvzAliasUtils.uniqueAlias(
+        var suggestedAlias = PvzAliasUtils.uniqueAlias(
           _ec.state.levelFile!,
-          suggestedAlias,
+          meta.effectiveAlias,
         );
+        chosenAlias = await showPvzAliasInputDialog(
+          context,
+          defaultAlias: suggestedAlias,
+          title: l10n.addModuleAliasTitle,
+          objClass: meta.objClass,
+          levelFile: _ec.state.levelFile!,
+        );
+        if (chosenAlias == null || !mounted) return;
       }
-      final chosenAlias = await showPvzAliasInputDialog(
-        context,
-        defaultAlias: suggestedAlias,
-        title: l10n.addModuleAliasTitle,
-        objClass: meta.objClass,
-        levelFile: _ec.state.levelFile!,
-      );
-      if (chosenAlias == null || !mounted) return;
       _addModule(meta, aliasOverride: chosenAlias);
     }
   }
