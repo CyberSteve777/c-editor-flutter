@@ -10,7 +10,7 @@ C-Editor can also be accessed from we
 
 - **Latest stable version available at:** [pvz2c-level-editor.vercel.app](https://pvz2c-level-editor.vercel.app/) (from `main`)
 
-- **Preview available at:** [pvz2c-level-editor-git-dev-international2c.vercel.app](https://pvz2c-level-editor-git-dev-international2c.vercel.app/) — unstable, built from `dev`.
+- **Preview available at:** [c-editor-git-dev-international2c.vercel.app](https://pvz2c-level-editor-git-dev-international2c.vercel.app/) — unstable, built from `dev`.
 
 ## Initial setup
 Prerequisites: `Android Studio, Flutter SDK, Other sdks that first two might ask`
