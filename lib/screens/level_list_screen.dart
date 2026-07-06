@@ -218,11 +218,14 @@ class _LevelListScreenState extends State<LevelListScreen> {
     _loadCurrentDirectory();
   }
 
-  /// Web-only: pick a .json file and add to virtual workspace.
+  /// Web-only: pick one or more level files and add them to the virtual workspace.
   Future<void> _pickAndAddFile() async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await FilePicker.pickFiles(
+      allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: ['json', 'hujson', 'rton'],
+      dialogTitle: l10n.uploadLevelPickerTitle,
     );
     if (result == null || result.files.isEmpty || !mounted) return;
     for (final file in result.files) {
@@ -748,9 +751,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                             icon: Icon(
                               kIsWeb ? Icons.file_open : Icons.folder_open,
                             ),
-                            label: Text(
-                              kIsWeb ? 'Open file' : l10n.selectFolderButton,
-                            ),
+                              label: Text(
+                                kIsWeb ? l10n.uploadToWebsite : l10n.selectFolderButton,
+                              ),
                           ),
                           if (!kIsWeb && Platform.isIOS) ...[
                             const SizedBox(height: 8),
@@ -1122,13 +1125,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
                     onPressed: _uploadLevel,
                     label: l10n.uploadLevel,
                   ),
-                  if (_listScrollAtTop && kIsWeb) const SizedBox(height: 12),
-                  if (kIsWeb)
-                    FloatingActionButton(
-                      heroTag: 'addFile',
-                      onPressed: _pickAndAddFile,
-                      child: const Icon(Icons.file_open),
-                    ),
                 ],
               ),
             ),
@@ -1182,6 +1178,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
                       fgColor: fabFgColor,
                       disabledFgColor: fabFgColor.withValues(alpha: 0.45),
                     ),
+                    if (kIsWeb)
+                      _buildBottomNavButton(
+                        onPressed: _pickAndAddFile,
+                        icon: Icons.file_open,
+                        label: l10n.uploadToWebsite,
+                        fgColor: fabFgColor,
+                      ),
                     _buildBottomNavButton(
                       onPressed: _openTemplateSelector,
                       icon: Icons.add,

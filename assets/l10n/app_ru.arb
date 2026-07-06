@@ -20,6 +20,8 @@
   "initSetup": "Начальная настройка",
   "selectFolderPrompt": "Выберите папку для хранения уровней.",
   "selectFolderButton": "Выбрать папку",
+  "uploadToWebsite": "Загрузить на сайт",
+  "uploadLevelPickerTitle": "Выберите один или несколько уровней для загрузки",
   "openFolder": "Открыть папку",
   "levelLibraryPath": "Папка библиотеки уровней",
   "levelLibraryPathHint": "Уровни хранятся в этой папке. На iOS можно выбрать любую папку — доступ сохраняется после перезапуска.",

@@ -83,6 +83,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectFolderButton => 'Select folder';
 
   @override
+  String get uploadToWebsite => 'Upload to website';
+
+  @override
+  String get uploadLevelPickerTitle =>
+      'Select one or multiple levels to upload';
+
+  @override
   String get openFolder => 'Open folder';
 
   @override

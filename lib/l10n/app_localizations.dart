@@ -238,6 +238,18 @@ abstract class AppLocalizations {
   /// **'Select folder'**
   String get selectFolderButton;
 
+  /// No description provided for @uploadToWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload to website'**
+  String get uploadToWebsite;
+
+  /// No description provided for @uploadLevelPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select one or multiple levels to upload'**
+  String get uploadLevelPickerTitle;
+
   /// No description provided for @openFolder.
   ///
   /// In en, this message translates to:

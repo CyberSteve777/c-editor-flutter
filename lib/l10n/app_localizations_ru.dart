@@ -83,6 +83,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectFolderButton => 'Выбрать папку';
 
   @override
+  String get uploadToWebsite => 'Загрузить на сайт';
+
+  @override
+  String get uploadLevelPickerTitle =>
+      'Выберите один или несколько уровней для загрузки';
+
+  @override
   String get openFolder => 'Открыть папку';
 
   @override
