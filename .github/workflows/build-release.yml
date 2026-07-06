@@ -183,6 +183,30 @@ jobs:
       - run: flutter pub get
       - run: flutter build linux --release
 
+      - name: Build AppImage
+        uses: AppImageCrafters/build-appimage@v1.3
+        with:
+          recipe: linux/AppImageBuilder.yml
+          args: --skip-test
+
+      - name: Package Linux AppImage
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
+        run: |
+          BASE_NAME="c_editor-${VERSION}+${SHORT_SHA}-linux-executable"
+          APPIMAGE="$(find . -maxdepth 1 -name '*.AppImage' -type f | head -1)"
+          if [ -z "$APPIMAGE" ]; then
+            echo "AppImage not found in workspace root."
+            ls -la
+            exit 1
+          fi
+          mkdir -p dist
+          cp "$APPIMAGE" "dist/${BASE_NAME}.AppImage"
+          chmod +x "dist/${BASE_NAME}.AppImage"
+          echo "APPIMAGE_PATH=dist/${BASE_NAME}.AppImage" >> "$GITHUB_ENV"
+          echo "APPIMAGE_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
+
       - name: Package Linux portable
         env:
           VERSION: ${{ steps.release.outputs.version }}
@@ -199,6 +223,12 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.APPIMAGE_NAME }}
+          path: ${{ env.APPIMAGE_PATH }}
           if-no-files-found: error
 
   build-android:
