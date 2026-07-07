@@ -62,7 +62,6 @@
       input.style.display = 'none';
 
       let settled = false;
-      let selectionStarted = false;
 
       const settle = (value) => {
         if (settled) return;
@@ -72,7 +71,6 @@
       };
 
       input.addEventListener('change', () => {
-        selectionStarted = true;
         const files = Array.from(input.files || []);
         if (!files.length) {
           settle(null);
@@ -84,6 +82,8 @@
             name: folderNameFromWebkitFiles(files),
             files: levelFiles,
           });
+        }).catch(() => {
+          settle(null);
         });
       });
 
@@ -91,20 +91,22 @@
         settle(null);
       });
 
-      // Firefox and older browsers: no reliable cancel event on file inputs.
-      const onWindowFocus = () => {
-        window.removeEventListener('focus', onWindowFocus);
-        window.setTimeout(() => {
-          if (!settled && !selectionStarted) {
-            settle(null);
-          }
-        }, 400);
-      };
-      window.addEventListener('focus', onWindowFocus);
-
       document.body.appendChild(input);
       input.click();
     });
+  }
+
+  function readImportFileEntries(handle) {
+    if (!handle || !isImportHandle(handle)) {
+      return [];
+    }
+    const files = handle.files || {};
+    return Object.entries(files).map(([path, bytes]) => ({
+      path,
+      bytes: Array.from(
+        bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []),
+      ),
+    }));
   }
 
   async function walkNativeDirectory(dirHandle, prefix, out) {
@@ -176,6 +178,31 @@
       return null;
     },
 
+    // Import-only picker: webkitdirectory (Firefox, Safari, Chromium) or FSA read.
+    async pickDirectoryForImport() {
+      if (hasWebkitDirectoryInput()) {
+        return await pickDirectoryWebkit();
+      }
+      if (hasNativeDirectoryPicker()) {
+        try {
+          const handle = await window.showDirectoryPicker({ mode: 'read' });
+          const files = {};
+          await walkNativeDirectory(handle, '', files);
+          return {
+            __cEditorKind: KIND_IMPORT,
+            name: handle.name || 'Folder',
+            files,
+          };
+        } catch (error) {
+          if (error && error.name === 'AbortError') {
+            return null;
+          }
+          throw error;
+        }
+      }
+      return null;
+    },
+
     async ensurePermission(handle, mode = 'readwrite') {
       if (!handle) {
         return false;
@@ -202,6 +229,10 @@
       const inner = nativeInner(rootHandle);
       await walkNativeDirectory(inner, '', out);
       return out;
+    },
+
+    readImportFileEntries(handle) {
+      return readImportFileEntries(handle);
     },
 
     async writeFile(rootHandle, relativePath, bytes) {
