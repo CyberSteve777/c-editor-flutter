@@ -180,29 +180,46 @@ jobs:
       - run: flutter pub get
       - run: flutter build linux --release
 
-      - name: Build AppImage
-        uses: AppImageCrafters/build-appimage@v1.3
-        env:
-          # The 1.1.0 builder image ships mksquashfs inside appimagetool but not on PATH.
-          PATH: /opt/appimagetool.AppDir/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-        with:
-          recipe: linux/AppImageBuilder.yml
-          args: --skip-test
+      - name: Prepare Linux package root
+        run: bash .github/scripts/prepare-linux-package-root.sh
 
-      - name: Package Linux AppImage
+      - name: Build Linux .deb
+        id: deb_build
+        uses: jiro4989/build-deb-action@v4
+        with:
+          package: c-editor
+          package_root: .linux-pkg-root
+          maintainer: team.international2c
+          version: ${{ steps.release.outputs.version }}
+          depends: libgtk-3-0, libblkid1, liblzma5
+          section: utils
+          priority: optional
+          desc: Level Editor for Plants vs. Zombies 2 Chinese
+          homepage: https://github.com/CyberSteve777/c-editor-flutter
+
+      - name: Stage Linux .deb
+        id: deb
+        run: bash .github/scripts/stage-linux-package-artifact.sh release linux-deb "${{ steps.deb_build.outputs.file_name }}"
+
+      - name: Patch RPM spec version
+        run: sed -i "s/@VERSION@/${{ steps.release.outputs.version }}/" linux/packaging/rpm/c-editor.spec
+
+      - name: Build Linux .rpm
+        id: rpm_build
+        uses: naveenrajm7/rpmbuild@v1.0.0
+        with:
+          spec_file: linux/packaging/rpm/c-editor.spec
+
+      - name: Stage Linux .rpm
+        id: rpm
         run: |
-          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-executable release)"
-          APPIMAGE="$(find . -maxdepth 1 -name '*.AppImage' -type f | head -1)"
-          if [ -z "$APPIMAGE" ]; then
-            echo "AppImage not found in workspace root."
-            ls -la
+          RPM_FILE="$(find "${{ steps.rpm_build.outputs.rpm_dir_path }}" -name 'c-editor-*.rpm' -type f ! -name '*.src.rpm' | head -1)"
+          if [ -z "$RPM_FILE" ]; then
+            echo "RPM file not found under ${{ steps.rpm_build.outputs.rpm_dir_path }}" >&2
+            find "${{ steps.rpm_build.outputs.rpm_dir_path }}" -type f >&2 || true
             exit 1
           fi
-          mkdir -p dist
-          cp "$APPIMAGE" "dist/${BASE_NAME}.AppImage"
-          chmod +x "dist/${BASE_NAME}.AppImage"
-          echo "APPIMAGE_PATH=dist/${BASE_NAME}.AppImage" >> "$GITHUB_ENV"
-          echo "APPIMAGE_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
+          bash .github/scripts/stage-linux-package-artifact.sh release linux-rpm "$RPM_FILE"
 
       - name: Package Linux portable
         run: |
@@ -221,16 +238,15 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.APPIMAGE_NAME }}
-          path: ${{ env.APPIMAGE_PATH }}
+          name: ${{ steps.deb.outputs.name }}
+          path: ${{ steps.deb.outputs.path }}
           if-no-files-found: error
 
-      - name: Clean up AppImage builder outputs
-        if: always()
-        run: |
-          sudo rm -rf AppDir .bundle.yml
-          sudo find . -maxdepth 1 -name '*.AppImage' -exec rm -f {} +
-          sudo chown -R "$(id -u):$(id -g)" "${{ github.workspace }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.rpm.outputs.name }}
+          path: ${{ steps.rpm.outputs.path }}
+          if-no-files-found: error
 
   build-android:
     name: Android APK (signed)
