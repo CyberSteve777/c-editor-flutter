@@ -751,7 +751,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadFolder.
   ///
   /// In en, this message translates to:
-  /// **'Download folder'**
+  /// **'Download this directory'**
   String get downloadFolder;
 
   /// No description provided for @importProgressTitle.

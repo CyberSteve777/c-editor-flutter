@@ -2523,6 +2523,14 @@ class _FileItemRow extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (onDownloadFolder != null)
+          IconButton(
+            icon: Icon(Icons.download, color: theme.colorScheme.onSurfaceVariant),
+            tooltip: l10n.downloadFolder,
+            onPressed: onDownloadFolder,
+            iconSize: 22,
+            style: _iconBtnStyle,
+          ),
         IconButton(
           icon: Icon(Icons.edit, color: theme.colorScheme.onSurfaceVariant),
           tooltip: l10n.rename,

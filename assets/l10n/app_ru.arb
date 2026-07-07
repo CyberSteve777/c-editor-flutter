@@ -126,7 +126,7 @@
   "copy": "Копировать",
   "download": "Скачать",
   "downloadAllLevels": "Экспортировать все уровни",
-  "downloadFolder": "Скачать папку",
+  "downloadFolder": "Скачать эту папку",
   "importProgressTitle": "Импорт уровней…",
   "exportProgressTitle": "Подготовка экспорта…",
   "transferProgressCount": "{completed} / {total}",
