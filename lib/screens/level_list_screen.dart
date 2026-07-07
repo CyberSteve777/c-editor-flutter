@@ -13,6 +13,7 @@ import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -28,15 +29,6 @@ enum _SmartUploadChoice {
   skipAll,
   overwriteAll,
   copyAll,
-}
-
-enum _LocalFileKeepStrategy { keep, discard }
-
-enum _LocalFileKeepChoice {
-  keepThis,
-  discardThis,
-  keepAll,
-  discardAll,
 }
 
 class LevelListScreen extends StatefulWidget {
@@ -78,11 +70,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
   bool _showUiScaleDialog = false;
   final ScrollController _listScrollController = ScrollController();
   bool _listScrollAtTop = true;
-  bool _webSupportsFolderSync = false;
 
   bool get _canGoBack => _pathStack.length > 1;
-
-  bool get _showSwitchFolderButton => !kIsWeb || _webSupportsFolderSync;
 
   void _showMessage(String message, {IconData? icon}) {
     AppMessage.show(context, message, icon: icon ?? Icons.info_outline);
@@ -182,13 +171,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await _ensureStoragePermission();
     if (kIsWeb) {
       await LevelRepository.ensureWebStorageReady();
-      final supportsSync = await LevelRepository.supportsWebFolderWriteSync();
       const webPath = 'web://';
       final libraryLabel =
           await LevelRepository.getWebLibraryDisplayName() ?? 'My levels';
       if (!mounted) return;
       setState(() {
-        _webSupportsFolderSync = supportsSync;
         _rootFolderPath = webPath;
         _pathStack = [(name: libraryLabel, path: webPath)];
       });
@@ -230,183 +217,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _pickFolder() async {
-    final l10n = AppLocalizations.of(context)!;
+    if (kIsWeb) return;
     await _ensureStoragePermission();
-    if (kIsWeb) {
-      if (_webSupportsFolderSync) {
-        await _connectWebNativeFolder();
-      } else {
-        final folderName = await LevelRepository.connectLocalFolder();
-        if (folderName == null || !mounted) return;
-        const webPath = 'web://';
-        await LevelRepository.setSavedFolderPath(webPath);
-        setState(() {
-          _rootFolderPath = webPath;
-          _pathStack = [(name: folderName, path: webPath)];
-        });
-        _loadCurrentDirectory();
-        if (await LevelRepository.isWebFolderImportMode()) {
-          if (!mounted) return;
-          _showMessage(l10n.webFolderImportNotice);
-        }
-      }
-      return;
-    }
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     final result = await FilePicker.getDirectoryPath(
       dialogTitle: l10n.openFolder,
     );
     if (result == null || !mounted) return;
     await _applyLibraryFolder(result);
-  }
-
-  Future<void> _connectWebNativeFolder() async {
-    try {
-      final staged = await LevelRepository.stageNativeFolderConnect();
-      if (staged == null || !mounted) return;
-
-      final existing = await LevelRepository.snapshotStoredFiles();
-      final kept = <String, Uint8List>{};
-      final discard = <String>{};
-
-      if (existing.isNotEmpty) {
-        await _resolveLocalOnlyFileKeep(existing, kept, discard);
-        if (!mounted) return;
-      }
-
-      final pending = <({String storageKey, List<int> bytes})>[];
-      final conflicts = <({String storageKey, List<int> bytes})>[];
-
-      for (final entry in staged.files.entries) {
-        final file = (storageKey: entry.key, bytes: entry.value);
-        if (kept.containsKey(entry.key)) {
-          conflicts.add(file);
-        } else {
-          pending.add(file);
-        }
-      }
-
-      if (conflicts.isNotEmpty) {
-        await _resolveSmartUploadConflicts(conflicts, pending);
-        if (!mounted) return;
-      }
-
-      for (final file in pending) {
-        kept.remove(file.storageKey);
-      }
-
-      final imports = pending
-          .map(
-            (file) => WebFolderFileImport(
-              storageKey: file.storageKey,
-              bytes: Uint8List.fromList(file.bytes),
-            ),
-          )
-          .toList();
-
-      final folderName = await LevelRepository.finalizeNativeFolderConnect(
-        discardKeys: discard,
-        keptLocalFiles: kept,
-        imports: imports,
-      );
-      if (folderName == null || !mounted) return;
-
-      const webPath = 'web://';
-      await LevelRepository.setSavedFolderPath(webPath);
-      setState(() {
-        _webSupportsFolderSync = true;
-        _rootFolderPath = webPath;
-        _pathStack = [(name: folderName, path: webPath)];
-      });
-      _loadCurrentDirectory();
-    } finally {
-      await LevelRepository.cancelNativeFolderStaging();
-    }
-  }
-
-  Future<void> _resolveLocalOnlyFileKeep(
-    Map<String, Uint8List> existing,
-    Map<String, Uint8List> kept,
-    Set<String> discard,
-  ) async {
-    _LocalFileKeepStrategy? bulkStrategy;
-    final sortedKeys = existing.keys.toList()..sort();
-
-    for (final key in sortedKeys) {
-      if (!mounted) return;
-
-      late final _LocalFileKeepStrategy strategy;
-      if (bulkStrategy != null) {
-        strategy = bulkStrategy;
-      } else {
-        final choice = await _showKeepLocalFileDialog(key);
-        if (!mounted) return;
-        if (choice == null) {
-          discard.add(key);
-          continue;
-        }
-
-        switch (choice) {
-          case _LocalFileKeepChoice.keepThis:
-            strategy = _LocalFileKeepStrategy.keep;
-          case _LocalFileKeepChoice.keepAll:
-            bulkStrategy = _LocalFileKeepStrategy.keep;
-            strategy = bulkStrategy;
-          case _LocalFileKeepChoice.discardThis:
-            strategy = _LocalFileKeepStrategy.discard;
-          case _LocalFileKeepChoice.discardAll:
-            bulkStrategy = _LocalFileKeepStrategy.discard;
-            strategy = bulkStrategy;
-        }
-      }
-
-      switch (strategy) {
-        case _LocalFileKeepStrategy.keep:
-          kept[key] = existing[key]!;
-        case _LocalFileKeepStrategy.discard:
-          discard.add(key);
-      }
-    }
-  }
-
-  Future<_LocalFileKeepChoice?> _showKeepLocalFileDialog(String fileName) async {
-    final l10n = AppLocalizations.of(context)!;
-    return showDialog<_LocalFileKeepChoice>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.localFileKeepTitle),
-        content: Text(l10n.localFileKeepMessage(fileName)),
-        actions: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _LocalFileKeepChoice.discardThis),
-                child: Text(l10n.localFileDiscard),
-              ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _LocalFileKeepChoice.keepThis),
-                child: Text(l10n.localFileKeep),
-              ),
-              const Divider(height: 1),
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _LocalFileKeepChoice.discardAll),
-                child: Text(l10n.localFileDiscardAll),
-              ),
-              FilledButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _LocalFileKeepChoice.keepAll),
-                child: Text(l10n.localFileKeepAll),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   Future<void> _useDefaultIosLibraryFolder() async {
@@ -479,7 +298,24 @@ class _LevelListScreenState extends State<LevelListScreen> {
     }
 
     if (files.isEmpty) return;
-    await _importFilesWithSmartUpload(files);
+    await _importFilesWithSmartUpload(
+      files,
+      progressTitle: l10n.importProgressTitle,
+    );
+  }
+
+  String _sanitizeFolderImportName(String name) {
+    final trimmed = name.trim().replaceAll('\\', '/');
+    if (trimmed.isEmpty) {
+      return 'Imported folder';
+    }
+    final parts = trimmed.split('/').where((part) {
+      return part.isNotEmpty && part != '.';
+    }).toList();
+    if (parts.isEmpty) {
+      return 'Imported folder';
+    }
+    return parts.last;
   }
 
   /// Web-only: recursively import a folder and all subfolders into the library.
@@ -493,16 +329,23 @@ class _LevelListScreenState extends State<LevelListScreen> {
       return;
     }
 
+    const webPath = 'web://';
+    final currentDir = _pathStack.isNotEmpty ? _pathStack.last.path : webPath;
+    final folderName = _sanitizeFolderImportName(folder.name);
+
     final files = folder.files.entries
         .map(
           (entry) => (
-            storageKey: entry.key,
+            storageKey: _webStorageKey(currentDir, '$folderName/${entry.key}'),
             bytes: entry.value,
           ),
         )
         .toList();
 
-    final imported = await _importFilesWithSmartUpload(files);
+    final imported = await _importFilesWithSmartUpload(
+      files,
+      progressTitle: l10n.importProgressTitle,
+    );
     if (!mounted || imported == 0) return;
     _showSuccessMessage(l10n.importFolderSuccess(imported));
   }
@@ -519,8 +362,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<int> _importFilesWithSmartUpload(
-    List<({String storageKey, List<int> bytes})> files,
-  ) async {
+    List<({String storageKey, List<int> bytes})> files, {
+    String? progressTitle,
+  }) async {
     if (files.isEmpty || !mounted) return 0;
 
     final pending = <({String storageKey, List<int> bytes})>[];
@@ -542,14 +386,21 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
     if (pending.isEmpty) return 0;
 
-    for (final file in pending) {
-      await LevelRepository.prepareInternalCacheFromBytes(
-        file.storageKey,
-        file.bytes,
-      );
-    }
+    final batched = pending
+        .map(
+          (file) => (
+            storageKey: file.storageKey,
+            bytes: Uint8List.fromList(file.bytes),
+          ),
+        )
+        .toList();
 
-    if (!mounted) return 0;
+    if (!context.mounted) return 0;
+    final imported = progressTitle == null
+        ? await LevelRepository.importWebFilesBatched(batched)
+        : await _runWebImportProgress(progressTitle, batched) ?? 0;
+
+    if (!mounted || imported == 0) return 0;
     const webPath = 'web://';
     setState(() {
       _rootFolderPath ??= webPath;
@@ -558,7 +409,36 @@ class _LevelListScreenState extends State<LevelListScreen> {
       }
     });
     _loadCurrentDirectory();
-    return pending.length;
+    return imported;
+  }
+
+  Future<int?> _runWebImportProgress(
+    String title,
+    List<({String storageKey, Uint8List bytes})> files,
+  ) {
+    if (!context.mounted) {
+      return Future.value(null);
+    }
+    return runWebTransferWithProgress<int>(
+      context,
+      title: title,
+      task: (report) => LevelRepository.importWebFilesBatched(
+        files,
+        onProgress: report,
+      ),
+    );
+  }
+
+  Future<void> _downloadFolderZip(FileItem folder) async {
+    final l10n = AppLocalizations.of(context)!;
+    await runWebTransferWithProgress<void>(
+      context,
+      title: l10n.exportProgressTitle,
+      task: (report) => LevelRepository.downloadFolderAsZip(
+        folder.path,
+        onProgress: report,
+      ),
+    );
   }
 
   Future<void> _resolveSmartUploadConflicts(
@@ -1055,6 +935,18 @@ class _LevelListScreenState extends State<LevelListScreen> {
     }
   }
 
+  Future<void> _downloadAllLevels() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (!context.mounted) return;
+    await runWebTransferWithProgress<void>(
+      context,
+      title: l10n.exportProgressTitle,
+      task: (report) => LevelRepository.downloadAllLevelsAsZip(
+        onProgress: report,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsCubit>().state;
@@ -1081,46 +973,37 @@ class _LevelListScreenState extends State<LevelListScreen> {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: l10n.refresh,
-            onPressed: _loadCurrentDirectory,
-          ),
-          if (_showSwitchFolderButton)
+          if (!kIsWeb)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: l10n.refresh,
+              onPressed: _loadCurrentDirectory,
+            ),
+          if (!kIsWeb)
             IconButton(
               icon: const Icon(Icons.folder_open),
               tooltip: l10n.switchFolder,
               onPressed: _pickFolder,
             ),
+          if (kIsWeb) ...[
+            IconButton(
+              icon: const Icon(Icons.file_open),
+              tooltip: l10n.importFiles,
+              onPressed: _pickAndAddFile,
+            ),
+            IconButton(
+              icon: const Icon(Icons.drive_folder_upload_outlined),
+              tooltip: l10n.importFolder,
+              onPressed: _pickAndImportFolder,
+            ),
+            IconButton(
+              icon: const Icon(Icons.download),
+              tooltip: l10n.downloadAllLevels,
+              onPressed: _downloadAllLevels,
+            ),
+          ],
           PopupMenuButton<String>(
             itemBuilder: (context) => [
-              if (kIsWeb)
-                PopupMenuItem(
-                  value: 'import_files',
-                  child: ListTile(
-                    leading: const Icon(Icons.file_open),
-                    title: Text(l10n.importFiles),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              if (kIsWeb)
-                PopupMenuItem(
-                  value: 'import_folders',
-                  child: ListTile(
-                    leading: const Icon(Icons.drive_folder_upload_outlined),
-                    title: Text(l10n.importFolder),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              if (kIsWeb)
-                PopupMenuItem(
-                  value: 'download_all',
-                  child: ListTile(
-                    leading: const Icon(Icons.download),
-                    title: Text(l10n.downloadAllLevels),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
               PopupMenuItem(
                 value: 'theme',
                 child: ListTile(
@@ -1169,12 +1052,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
             onSelected: (value) async {
               if (value == 'theme') {
                 context.read<SettingsCubit>().cycleTheme();
-              } else if (value == 'import_files') {
-                await _pickAndAddFile();
-              } else if (value == 'import_folders') {
-                await _pickAndImportFolder();
-              } else if (value == 'download_all') {
-                await LevelRepository.downloadAllLevelsAsZip();
               } else if (value == 'cache') {
                 final count = await LevelRepository.clearAllInternalCache();
                 if (context.mounted) {
@@ -1216,7 +1093,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
-                          if (_showSwitchFolderButton)
+                          if (!kIsWeb)
                             FilledButton.icon(
                               onPressed: _pickFolder,
                               icon: const Icon(Icons.folder_open),
@@ -1538,6 +1415,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                     ? () => LevelRepository.downloadLevel(
                                         item.name,
                                       )
+                                    : null,
+                                onDownloadFolder: kIsWeb && item.isDirectory
+                                    ? () => _downloadFolderZip(item)
                                     : null,
                                 onCopy: actionsDisabled
                                     ? () {}
@@ -2423,6 +2303,7 @@ class _FileItemRow extends StatelessWidget {
     this.onPreview,
     this.rootFolderPath,
     this.onDownload,
+    this.onDownloadFolder,
     this.onConvert,
     this.onToggleFavorite,
     this.onShare,
@@ -2439,6 +2320,7 @@ class _FileItemRow extends StatelessWidget {
   final bool showMove;
   final String? rootFolderPath;
   final VoidCallback? onDownload;
+  final VoidCallback? onDownloadFolder;
   final VoidCallback? onConvert;
   final VoidCallback? onToggleFavorite;
   final VoidCallback? onShare;
@@ -2602,6 +2484,14 @@ class _FileItemRow extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(6),
       itemBuilder: (_) => [
+        if (onDownloadFolder != null)
+          PopupMenuItem(
+            value: 'download',
+            child: _popupMenuTile(
+              icon: Icons.download,
+              label: l10n.downloadFolder,
+            ),
+          ),
         PopupMenuItem(
           value: 'rename',
           child: _popupMenuTile(icon: Icons.edit, label: l10n.rename),
@@ -2618,6 +2508,8 @@ class _FileItemRow extends StatelessWidget {
       ],
       onSelected: (v) {
         switch (v) {
+          case 'download':
+            onDownloadFolder?.call();
           case 'rename':
             onRename();
           case 'delete':

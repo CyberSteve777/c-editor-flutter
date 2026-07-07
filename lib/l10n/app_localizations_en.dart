@@ -355,6 +355,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadAllLevels => 'Export all levels';
 
   @override
+  String get downloadFolder => 'Download folder';
+
+  @override
+  String get importProgressTitle => 'Importing levels…';
+
+  @override
+  String get exportProgressTitle => 'Building export…';
+
+  @override
+  String transferProgressCount(int completed, int total) {
+    return '$completed / $total';
+  }
+
+  @override
   String get webFolderImportNotice =>
       'Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.';
 

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:js_interop';
 import 'dart:typed_data';
 
-import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +10,8 @@ import '../pvz_models.dart';
 import 'level_repository_base.dart';
 import 'web/web_file_system_access.dart';
 import 'web/web_level_idb_store.dart';
+import 'web/web_transfer_progress.dart';
+import 'web/web_zip_builder.dart';
 
 /// Virtual path prefix for web - files opened via picker have no real path.
 const String _webPathPrefix = 'web://';
@@ -86,11 +86,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   final WebLevelIdbStore _idb = WebLevelIdbStore.instance;
   final WebFileSystemAccess _fsa = WebFileSystemAccess.instance;
 
-  JSObject? _directoryHandle;
-  String? _directoryName;
-  String? _directoryMode;
-  JSObject? _stagingConnectHandle;
-  String? _stagingConnectName;
   Future<void>? _readyFuture;
 
   Future<void> _ensureReady() => _readyFuture ??= _initialize();
@@ -106,29 +101,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       ..clear()
       ..add(_webPathPrefix)
       ..addAll(directories);
-
-    _directoryName = await _idb.getMeta<String>(
-      WebLevelIdbStore.metaDirectoryNameKey,
-    );
-    _directoryMode = await _idb.getMeta<String>(
-      WebLevelIdbStore.metaDirectoryModeKey,
-    );
-
-    _directoryHandle = null;
-    if (_directoryMode == WebFileSystemAccess.kindNative) {
-      final storedHandle = await _idb.getMeta(
-        WebLevelIdbStore.metaDirectoryHandleKey,
-      );
-      if (storedHandle != null) {
-        final handle = storedHandle as JSObject;
-        if (await _fsa.ensurePermission(handle)) {
-          _directoryHandle = handle;
-        } else {
-          await _idb.putMeta(WebLevelIdbStore.metaDirectoryHandleKey, null);
-          _directoryMode = null;
-        }
-      }
-    }
   }
 
   @override
@@ -137,196 +109,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   @override
   Future<String?> getWebLibraryDisplayName() async {
     await _ensureReady();
-    return _directoryName ?? _defaultLibraryLabel;
-  }
-
-  @override
-  Future<bool> isLocalFolderConnected() async {
-    await _ensureReady();
-    if (_directoryHandle != null) {
-      return true;
-    }
-    return _directoryMode == WebFileSystemAccess.kindImport &&
-        (_directoryName?.isNotEmpty ?? false);
-  }
-
-  @override
-  Future<bool> isWebFolderImportMode() async {
-    await _ensureReady();
-    if (_directoryHandle != null) {
-      return _fsa.isImportHandle(_directoryHandle!);
-    }
-    return _directoryMode == WebFileSystemAccess.kindImport;
-  }
-
-  @override
-  Future<bool> supportsWebFolderWriteSync() async {
-    await _ensureReady();
-    return _fsa.supportsNativeWrite;
-  }
-
-  @override
-  Future<Map<String, Uint8List>> snapshotStoredFiles() async {
-    await _ensureReady();
-    return Map<String, Uint8List>.from(_memoryCache);
-  }
-
-  @override
-  Future<void> cancelNativeFolderStaging() async {
-    _stagingConnectHandle = null;
-    _stagingConnectName = null;
-  }
-
-  @override
-  Future<WebFolderImport?> stageNativeFolderConnect() async {
-    if (!_fsa.supportsNativeWrite) {
-      return null;
-    }
-
-    final handle = await _fsa.pickDirectory();
-    if (handle == null || !_fsa.isNativeHandle(handle)) {
-      return null;
-    }
-    if (!await _fsa.ensurePermission(handle)) {
-      return null;
-    }
-
-    await _ensureReady();
-
-    final files = await _fsa.readAllLevelFiles(handle);
-    _stagingConnectHandle = handle;
-    _stagingConnectName = _fsa.getHandleName(handle);
-    return WebFolderImport(
-      name: _stagingConnectName!,
-      files: files,
-    );
-  }
-
-  @override
-  Future<String?> finalizeNativeFolderConnect({
-    required Set<String> discardKeys,
-    required Map<String, Uint8List> keptLocalFiles,
-    required List<WebFolderFileImport> imports,
-  }) async {
-    await _ensureReady();
-    final handle = _stagingConnectHandle;
-    final folderName = _stagingConnectName;
-    if (handle == null || folderName == null) {
-      return null;
-    }
-
-    for (final key in discardKeys) {
-      _memoryCache.remove(key);
-      await _idb.deleteFile(key);
-      _pruneEmptyDirectoriesForKey(key);
-    }
-
-    _directoryHandle = handle;
-    _directoryName = folderName;
-    _directoryMode = WebFileSystemAccess.kindNative;
-    _stagingConnectHandle = null;
-    _stagingConnectName = null;
-
-    await _idb.putMeta(
-      WebLevelIdbStore.metaDirectoryNameKey,
-      _directoryName,
-    );
-    await _idb.putMeta(
-      WebLevelIdbStore.metaDirectoryModeKey,
-      _directoryMode,
-    );
-    final persistedHandle = _fsa.storageHandleForPersistence(handle);
-    await _idb.putMeta(
-      WebLevelIdbStore.metaDirectoryHandleKey,
-      persistedHandle,
-    );
-
-    for (final file in imports) {
-      await _putFile(file.storageKey, file.bytes, syncFolder: false);
-    }
-
-    for (final entry in keptLocalFiles.entries) {
-      if (discardKeys.contains(entry.key)) {
-        continue;
-      }
-      if (!_memoryCache.containsKey(entry.key)) {
-        await _putFile(entry.key, entry.value, syncFolder: false);
-      }
-    }
-
-    await _persistDirectories();
-
-    for (final file in imports) {
-      await _syncWriteToFolder(file.storageKey, file.bytes);
-    }
-    for (final entry in keptLocalFiles.entries) {
-      if (discardKeys.contains(entry.key)) {
-        continue;
-      }
-      final bytes = _memoryCache[entry.key];
-      if (bytes != null) {
-        await _syncWriteToFolder(entry.key, bytes);
-      }
-    }
-
-    return folderName;
-  }
-
-  void _pruneEmptyDirectoriesForKey(String key) {
-    var dir = _parentWebDir('$_webPathPrefix$key');
-    while (dir != _webPathPrefix) {
-      final hasChildDir = _directories.any(
-        (d) => d != dir && d.startsWith('$dir/'),
-      );
-      final hasChildFile = _memoryCache.keys.any(
-        (fileKey) => _parentWebDir('$_webPathPrefix$fileKey') == dir,
-      );
-      if (hasChildDir || hasChildFile) {
-        break;
-      }
-      _directories.remove(dir);
-      dir = _parentWebDir(dir);
-    }
-  }
-
-  @override
-  Future<String?> connectLocalFolder() async {
-    await _ensureReady();
-    if (!_fsa.isSupported || _fsa.supportsNativeWrite) {
-      return null;
-    }
-
-    final handle = await _fsa.pickDirectory();
-    if (handle == null) {
-      return null;
-    }
-    if (!await _fsa.ensurePermission(handle)) {
-      return null;
-    }
-
-    _directoryHandle = handle;
-    _directoryName = _fsa.getHandleName(handle);
-    _directoryMode = WebFileSystemAccess.kindImport;
-
-    await _idb.putMeta(
-      WebLevelIdbStore.metaDirectoryNameKey,
-      _directoryName,
-    );
-    await _idb.putMeta(
-      WebLevelIdbStore.metaDirectoryModeKey,
-      _directoryMode,
-    );
-    await _idb.putMeta(
-      WebLevelIdbStore.metaDirectoryHandleKey,
-      null,
-    );
-
-    final imported = await _fsa.readAllLevelFiles(handle);
-    for (final entry in imported.entries) {
-      await _putFile(entry.key, entry.value, syncFolder: false);
-    }
-    await _persistDirectories();
-    return _directoryName;
+    return _defaultLibraryLabel;
   }
 
   @override
@@ -345,17 +128,10 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     return WebFolderImport(name: picked.name, files: picked.files);
   }
 
-  Future<void> _putFile(
-    String key,
-    Uint8List bytes, {
-    bool syncFolder = true,
-  }) async {
+  Future<void> _putFile(String key, Uint8List bytes) async {
     await _ensureReady();
     _memoryCache[key] = bytes;
     await _idb.putFile(key, bytes);
-    if (syncFolder) {
-      await _syncWriteToFolder(key, bytes);
-    }
     _registerParentDirectories(key);
   }
 
@@ -363,7 +139,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     await _ensureReady();
     _memoryCache.remove(key);
     await _idb.deleteFile(key);
-    await _syncDeleteFromFolder(key);
   }
 
   Future<void> _renameFileKey(String oldKey, String newKey) async {
@@ -373,10 +148,8 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       return;
     }
     await _idb.deleteFile(oldKey);
-    await _syncDeleteFromFolder(oldKey);
     _memoryCache[newKey] = bytes;
     await _idb.putFile(newKey, bytes);
-    await _syncWriteToFolder(newKey, bytes);
     _registerParentDirectories(newKey);
   }
 
@@ -395,36 +168,10 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     await _idb.saveDirectories(_directories);
   }
 
-  Future<void> _syncWriteToFolder(String key, Uint8List bytes) async {
-    final handle = _directoryHandle;
-    if (handle == null || _fsa.isImportHandle(handle)) {
-      return;
-    }
-    if (!await _fsa.ensurePermission(handle)) {
-      return;
-    }
-    await _fsa.writeFile(handle, key, bytes);
-  }
-
-  Future<void> _syncDeleteFromFolder(String key) async {
-    final handle = _directoryHandle;
-    if (handle == null || _fsa.isImportHandle(handle)) {
-      return;
-    }
-    if (!await _fsa.ensurePermission(handle)) {
-      return;
-    }
-    await _fsa.deleteFile(handle, key);
-  }
-
   @override
   Future<bool> ensureFolderAccess() async {
     await _ensureReady();
-    final handle = _directoryHandle;
-    if (handle == null) {
-      return true;
-    }
-    return _fsa.ensurePermission(handle);
+    return true;
   }
 
   @override
@@ -691,7 +438,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     }
     final bytes = _memoryCache.remove(srcKey)!;
     await _idb.deleteFile(srcKey);
-    await _syncDeleteFromFolder(srcKey);
     await _putFile(dstKey, bytes);
     await moveFavoriteLevelPath(
       _webJoin(srcDirPath, fileName),
@@ -715,7 +461,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     await _removeFileKey(dstKey);
     final bytes = _memoryCache.remove(srcKey)!;
     await _idb.deleteFile(srcKey);
-    await _syncDeleteFromFolder(srcKey);
     await _putFile(dstKey, bytes);
     await moveFavoriteLevelPath(srcPath, destPath, clearDestination: true);
     return true;
@@ -737,7 +482,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     if (_memoryCache.containsKey(dstKey)) return null;
     final bytes = _memoryCache.remove(srcKey)!;
     await _idb.deleteFile(srcKey);
-    await _syncDeleteFromFolder(srcKey);
     await _putFile(dstKey, bytes);
     await moveFavoriteLevelPath(srcPath, destPath);
     return newFileName;
@@ -751,9 +495,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     _directories
       ..clear()
       ..add(_webPathPrefix);
-    _directoryHandle = null;
-    _directoryName = null;
-    _directoryMode = null;
     await _idb.clearAll();
     return count;
   }
@@ -836,14 +577,80 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   }
 
   @override
-  Future<void> downloadAllLevelsAsZip() async {
-    if (_memoryCache.isEmpty) return;
-    final archive = Archive();
-    for (final entry in _memoryCache.entries) {
-      archive.addFile(ArchiveFile(entry.key, entry.value.length, entry.value));
+  Future<int> importWebFilesBatched(
+    List<({String storageKey, Uint8List bytes})> files, {
+    WebTransferProgress? onProgress,
+  }) async {
+    if (files.isEmpty) {
+      return 0;
     }
-    final zipBytes = ZipEncoder().encode(archive);
-    await _triggerDownloadBytes('levels.zip', Uint8List.fromList(zipBytes));
+    await _ensureReady();
+    const batchSize = 8;
+    for (var i = 0; i < files.length; i++) {
+      final file = files[i];
+      await _putFile(file.storageKey, file.bytes);
+      onProgress?.call(i + 1, files.length, file.storageKey);
+      if (i % batchSize == batchSize - 1) {
+        await yieldToUi();
+      }
+    }
+    await _persistDirectories();
+    return files.length;
+  }
+
+  @override
+  Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress}) async {
+    await _ensureReady();
+    if (_memoryCache.isEmpty) {
+      return;
+    }
+    final files = _memoryCache.entries
+        .map((entry) => (path: entry.key, bytes: entry.value))
+        .toList()
+      ..sort((a, b) => a.path.compareTo(b.path));
+    final zipBytes = await buildZipBytes(files, onProgress: onProgress);
+    if (zipBytes.isEmpty) {
+      return;
+    }
+    await _triggerDownloadBytes('levels.zip', zipBytes);
+  }
+
+  @override
+  Future<void> downloadFolderAsZip(
+    String folderVirtualPath, {
+    WebTransferProgress? onProgress,
+  }) async {
+    await _ensureReady();
+    final normalized = _normalizeWebDirPath(folderVirtualPath);
+    final prefix = _relativeFromWebPath(normalized);
+    final folderName = _leafNameFromWebPath(normalized);
+
+    final files = <({String path, Uint8List bytes})>[];
+    for (final entry in _memoryCache.entries) {
+      final key = entry.key;
+      final String relInFolder;
+      if (prefix.isEmpty) {
+        relInFolder = key;
+      } else if (key.startsWith('$prefix/')) {
+        relInFolder = key.substring(prefix.length + 1);
+      } else {
+        continue;
+      }
+      if (relInFolder.isEmpty) {
+        continue;
+      }
+      files.add((path: '$folderName/$relInFolder', bytes: entry.value));
+    }
+
+    if (files.isEmpty) {
+      return;
+    }
+    files.sort((a, b) => a.path.compareTo(b.path));
+    final zipBytes = await buildZipBytes(files, onProgress: onProgress);
+    if (zipBytes.isEmpty) {
+      return;
+    }
+    await _triggerDownloadBytes('$folderName.zip', zipBytes);
   }
 
   Future<void> _triggerDownloadBytes(String fileName, Uint8List bytes) async {

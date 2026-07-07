@@ -1,10 +1,6 @@
-// Cross-browser folder access for C-Editor.
-// Chromium: File System Access API (read/write).
-// Firefox, Safari, etc.: <input webkitdirectory> import (read on connect; export via app).
+// Cross-browser folder import for C-Editor (read-only; levels persist in IndexedDB).
 (function () {
   const LEVEL_PATTERN = /\.(json|hujson|rton|zlib|bin)$/i;
-  const KIND_NATIVE = 'native';
-  const KIND_IMPORT = 'import';
 
   function hasNativeDirectoryPicker() {
     return typeof window.showDirectoryPicker === 'function';
@@ -13,18 +9,6 @@
   function hasWebkitDirectoryInput() {
     const input = document.createElement('input');
     return 'webkitdirectory' in input;
-  }
-
-  function isImportHandle(handle) {
-    return handle && handle.__cEditorKind === KIND_IMPORT;
-  }
-
-  function isNativeHandle(handle) {
-    return handle && handle.__cEditorKind === KIND_NATIVE;
-  }
-
-  function nativeInner(handle) {
-    return isNativeHandle(handle) ? handle.handle : handle;
   }
 
   function folderNameFromWebkitFiles(files) {
@@ -53,7 +37,16 @@
     return out;
   }
 
-  function pickDirectoryWebkit() {
+  function entriesFromLevelMap(files) {
+    return Object.entries(files || {}).map(([path, bytes]) => ({
+      path,
+      bytes: Array.from(
+        bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []),
+      ),
+    }));
+  }
+
+  function pickFolderWebkit() {
     return new Promise((resolve) => {
       const input = document.createElement('input');
       input.type = 'file';
@@ -76,15 +69,16 @@
           settle(null);
           return;
         }
-        filesToLevelMap(files).then((levelFiles) => {
-          settle({
-            __cEditorKind: KIND_IMPORT,
-            name: folderNameFromWebkitFiles(files),
-            files: levelFiles,
+        filesToLevelMap(files)
+          .then((levelFiles) => {
+            settle({
+              name: folderNameFromWebkitFiles(files),
+              entries: entriesFromLevelMap(levelFiles),
+            });
+          })
+          .catch(() => {
+            settle(null);
           });
-        }).catch(() => {
-          settle(null);
-        });
       });
 
       input.addEventListener('cancel', () => {
@@ -94,15 +88,6 @@
       document.body.appendChild(input);
       input.click();
     });
-  }
-
-  function entriesFromLevelMap(files) {
-    return Object.entries(files || {}).map(([path, bytes]) => ({
-      path,
-      bytes: Array.from(
-        bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []),
-      ),
-    }));
   }
 
   async function walkNativeDirectory(dirHandle, prefix, out) {
@@ -118,73 +103,13 @@
   }
 
   window.cEditorFsa = {
-    KIND_NATIVE,
-    KIND_IMPORT,
-
     isSupported() {
       return hasNativeDirectoryPicker() || hasWebkitDirectoryInput();
     },
 
-    supportsNativeWrite() {
-      return hasNativeDirectoryPicker();
-    },
-
-    getHandleKind(handle) {
-      if (!handle) {
-        return '';
-      }
-      if (isImportHandle(handle)) {
-        return KIND_IMPORT;
-      }
-      if (isNativeHandle(handle)) {
-        return KIND_NATIVE;
-      }
-      if (typeof handle.entries === 'function') {
-        return KIND_NATIVE;
-      }
-      return '';
-    },
-
-    getHandleName(handle) {
-      if (!handle) {
-        return '';
-      }
-      if (isImportHandle(handle)) {
-        return handle.name || 'Imported folder';
-      }
-      const inner = nativeInner(handle);
-      return inner.name || 'Folder';
-    },
-
-    async pickDirectory() {
-      if (hasNativeDirectoryPicker()) {
-        try {
-          const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
-          return { __cEditorKind: KIND_NATIVE, handle };
-        } catch (error) {
-          if (error && error.name === 'AbortError') {
-            return null;
-          }
-          throw error;
-        }
-      }
-      if (hasWebkitDirectoryInput()) {
-        return await pickDirectoryWebkit();
-      }
-      return null;
-    },
-
-    // Import-only: pick folder and return serializable file list for Dart.
     async pickFolderForImport() {
       if (hasWebkitDirectoryInput()) {
-        const handle = await pickDirectoryWebkit();
-        if (!handle) {
-          return null;
-        }
-        return {
-          name: handle.name || 'Imported folder',
-          entries: entriesFromLevelMap(handle.files),
-        };
+        return await pickFolderWebkit();
       }
       if (hasNativeDirectoryPicker()) {
         try {
@@ -203,89 +128,6 @@
         }
       }
       return null;
-    },
-
-    async ensurePermission(handle, mode = 'readwrite') {
-      if (!handle) {
-        return false;
-      }
-      if (isImportHandle(handle)) {
-        return true;
-      }
-      const inner = nativeInner(handle);
-      const opts = { mode };
-      if ((await inner.queryPermission(opts)) === 'granted') {
-        return true;
-      }
-      return (await inner.requestPermission(opts)) === 'granted';
-    },
-
-    async readAllLevelFiles(rootHandle) {
-      if (!rootHandle) {
-        return {};
-      }
-      if (isImportHandle(rootHandle)) {
-        return rootHandle.files || {};
-      }
-      const out = {};
-      const inner = nativeInner(rootHandle);
-      await walkNativeDirectory(inner, '', out);
-      return out;
-    },
-
-    async writeFile(rootHandle, relativePath, bytes) {
-      if (!rootHandle) {
-        return;
-      }
-      if (isImportHandle(rootHandle)) {
-        if (!rootHandle.files) {
-          rootHandle.files = {};
-        }
-        rootHandle.files[relativePath] = bytes;
-        return;
-      }
-      const parts = relativePath.split('/').filter(Boolean);
-      if (!parts.length) {
-        return;
-      }
-      let dir = nativeInner(rootHandle);
-      for (let i = 0; i < parts.length - 1; i++) {
-        dir = await dir.getDirectoryHandle(parts[i], { create: true });
-      }
-      const fileHandle = await dir.getFileHandle(parts[parts.length - 1], {
-        create: true,
-      });
-      const writable = await fileHandle.createWritable();
-      await writable.write(bytes);
-      await writable.close();
-    },
-
-    async deleteFile(rootHandle, relativePath) {
-      if (!rootHandle) {
-        return;
-      }
-      if (isImportHandle(rootHandle)) {
-        if (rootHandle.files) {
-          delete rootHandle.files[relativePath];
-        }
-        return;
-      }
-      const parts = relativePath.split('/').filter(Boolean);
-      if (!parts.length) {
-        return;
-      }
-      let dir = nativeInner(rootHandle);
-      for (let i = 0; i < parts.length - 1; i++) {
-        dir = await dir.getDirectoryHandle(parts[i]);
-      }
-      await dir.removeEntry(parts[parts.length - 1]);
-    },
-
-    storageHandleForPersistence(handle) {
-      if (!handle || isImportHandle(handle)) {
-        return null;
-      }
-      return isNativeHandle(handle) ? handle.handle : handle;
     },
   };
 })();

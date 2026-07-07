@@ -351,6 +351,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadAllLevels => '导出全部关卡';
 
   @override
+  String get downloadFolder => '下载文件夹';
+
+  @override
+  String get importProgressTitle => '正在导入关卡…';
+
+  @override
+  String get exportProgressTitle => '正在生成导出…';
+
+  @override
+  String transferProgressCount(int completed, int total) {
+    return '$completed / $total';
+  }
+
+  @override
   String get webFolderImportNotice =>
       '文件夹已导入到浏览器存储。在此浏览器上，编辑不会自动写回磁盘——请使用“导出”保存文件。';
 

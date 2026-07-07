@@ -7,6 +7,7 @@ import 'package:c_editor/utils/pvz2c_crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pvz_models.dart';
+import 'web/web_transfer_progress.dart';
 
 /// One folder picked for web import (recursive level files, relative paths).
 class WebFolderImport {
@@ -14,14 +15,6 @@ class WebFolderImport {
 
   final String name;
   final Map<String, Uint8List> files;
-}
-
-/// One level file to import during native folder connect.
-class WebFolderFileImport {
-  const WebFolderFileImport({required this.storageKey, required this.bytes});
-
-  final String storageKey;
-  final Uint8List bytes;
 }
 
 class FileItem {
@@ -113,23 +106,27 @@ abstract class LevelRepositoryBase {
   Future<PvzLevelFile?> loadLevelFromPath(String filePath);
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData);
   Future<void> downloadLevel(String fileName);
-  Future<void> downloadAllLevelsAsZip();
+  Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress});
+  Future<void> downloadFolderAsZip(
+    String folderVirtualPath, {
+    WebTransferProgress? onProgress,
+  }) async {}
   Future<void> ensureWebStorageReady() async {}
   Future<String?> getWebLibraryDisplayName() async => null;
-  Future<String?> connectLocalFolder() async => null;
-  Future<Map<String, Uint8List>> snapshotStoredFiles() async => {};
-  Future<WebFolderImport?> stageNativeFolderConnect() async => null;
-  Future<void> cancelNativeFolderStaging() async {}
-  Future<String?> finalizeNativeFolderConnect({
-    required Set<String> discardKeys,
-    required Map<String, Uint8List> keptLocalFiles,
-    required List<WebFolderFileImport> imports,
-  }) async =>
-      null;
   Future<WebFolderImport?> pickWebFolderForImport() async => null;
-  Future<bool> isLocalFolderConnected() async => false;
-  Future<bool> isWebFolderImportMode() async => false;
-  Future<bool> supportsWebFolderWriteSync() async => false;
+  Future<int> importWebFilesBatched(
+    List<({String storageKey, Uint8List bytes})> files, {
+    WebTransferProgress? onProgress,
+  }) async {
+    for (var i = 0; i < files.length; i++) {
+      await prepareInternalCacheFromBytes(
+        files[i].storageKey,
+        files[i].bytes,
+      );
+      onProgress?.call(i + 1, files.length, files[i].storageKey);
+    }
+    return files.length;
+  }
   Future<bool> createLevelFromTemplate(
     String currentDirPath,
     String templateName,

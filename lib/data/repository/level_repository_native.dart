@@ -9,6 +9,7 @@ import 'package:c_editor/utils/apple_folder_access.dart';
 
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
+import 'web/web_transfer_progress.dart';
 
 LevelRepositoryBase createLevelRepository() => LevelRepositoryNativeImpl();
 
@@ -432,7 +433,7 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   Future<void> downloadLevel(String fileName) async {}
 
   @override
-  Future<void> downloadAllLevelsAsZip() async {}
+  Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress}) async {}
 
   @override
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData) async {

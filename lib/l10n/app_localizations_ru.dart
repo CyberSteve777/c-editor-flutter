@@ -355,6 +355,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get downloadAllLevels => 'Экспортировать все уровни';
 
   @override
+  String get downloadFolder => 'Скачать папку';
+
+  @override
+  String get importProgressTitle => 'Импорт уровней…';
+
+  @override
+  String get exportProgressTitle => 'Подготовка экспорта…';
+
+  @override
+  String transferProgressCount(int completed, int total) {
+    return '$completed / $total';
+  }
+
+  @override
   String get webFolderImportNotice =>
       'Папка импортирована в хранилище браузера. В этом браузере изменения не записываются на диск автоматически — используйте «Экспорт».';
 
