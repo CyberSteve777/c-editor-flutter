@@ -84,7 +84,7 @@
   "copy": "复制",
   "download": "下载",
   "downloadAllLevels": "导出全部关卡",
-  "downloadFolder": "下载文件夹",
+  "downloadFolder": "下载此文件夹",
   "importProgressTitle": "正在导入关卡…",
   "exportProgressTitle": "正在生成导出…",
   "transferProgressCount": "{completed} / {total}",

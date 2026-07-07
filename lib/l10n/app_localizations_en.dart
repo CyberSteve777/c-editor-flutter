@@ -190,7 +190,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadAllLevels => 'Export all levels';
 
   @override
-  String get downloadFolder => 'Download folder';
+  String get downloadFolder => 'Download this directory';
 
   @override
   String get importProgressTitle => 'Importing levels…';

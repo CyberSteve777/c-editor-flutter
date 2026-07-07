@@ -76,7 +76,7 @@
   "copy": "Copy",
   "download": "Download",
   "downloadAllLevels": "Export all levels",
-  "downloadFolder": "Download folder",
+  "downloadFolder": "Download this directory",
   "importProgressTitle": "Importing levels…",
   "exportProgressTitle": "Building export…",
   "transferProgressCount": "{completed} / {total}",

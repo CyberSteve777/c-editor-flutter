@@ -190,7 +190,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get downloadAllLevels => 'Экспортировать все уровни';
 
   @override
-  String get downloadFolder => 'Скачать папку';
+  String get downloadFolder => 'Скачать эту папку';
 
   @override
   String get importProgressTitle => 'Импорт уровней…';

@@ -187,7 +187,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadAllLevels => '导出全部关卡';
 
   @override
-  String get downloadFolder => '下载文件夹';
+  String get downloadFolder => '下载此文件夹';
 
   @override
   String get importProgressTitle => '正在导入关卡…';
