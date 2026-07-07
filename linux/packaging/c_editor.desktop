@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=C-Editor
+Comment=Level Editor for Plants vs. Zombies 2 Chinese
+Exec=c-editor
+Icon=c_editor
+Categories=Game;Utility;
+Terminal=false
+StartupNotify=true
