@@ -96,12 +96,8 @@
     });
   }
 
-  function readImportFileEntries(handle) {
-    if (!handle || !isImportHandle(handle)) {
-      return [];
-    }
-    const files = handle.files || {};
-    return Object.entries(files).map(([path, bytes]) => ({
+  function entriesFromLevelMap(files) {
+    return Object.entries(files || {}).map(([path, bytes]) => ({
       path,
       bytes: Array.from(
         bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []),
@@ -178,10 +174,17 @@
       return null;
     },
 
-    // Import-only picker: webkitdirectory (Firefox, Safari, Chromium) or FSA read.
-    async pickDirectoryForImport() {
+    // Import-only: pick folder and return serializable file list for Dart.
+    async pickFolderForImport() {
       if (hasWebkitDirectoryInput()) {
-        return await pickDirectoryWebkit();
+        const handle = await pickDirectoryWebkit();
+        if (!handle) {
+          return null;
+        }
+        return {
+          name: handle.name || 'Imported folder',
+          entries: entriesFromLevelMap(handle.files),
+        };
       }
       if (hasNativeDirectoryPicker()) {
         try {
@@ -189,9 +192,8 @@
           const files = {};
           await walkNativeDirectory(handle, '', files);
           return {
-            __cEditorKind: KIND_IMPORT,
             name: handle.name || 'Folder',
-            files,
+            entries: entriesFromLevelMap(files),
           };
         } catch (error) {
           if (error && error.name === 'AbortError') {
@@ -229,10 +231,6 @@
       const inner = nativeInner(rootHandle);
       await walkNativeDirectory(inner, '', out);
       return out;
-    },
-
-    readImportFileEntries(handle) {
-      return readImportFileEntries(handle);
     },
 
     async writeFile(rootHandle, relativePath, bytes) {

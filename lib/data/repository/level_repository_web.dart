@@ -331,22 +331,18 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   @override
   Future<WebFolderImport?> pickWebFolderForImport() async {
-    await _ensureReady();
     if (!_fsa.isSupported) {
       return null;
     }
 
-    // Use webkitdirectory on Firefox/Safari (and Chromium) — not FSA connect.
-    final handle = await _fsa.pickDirectoryForImport();
-    if (handle == null) {
+    // Pick and read in one JS call while the user-gesture is still active.
+    final picked = await _fsa.pickFolderForImport();
+    if (picked == null) {
       return null;
     }
 
-    final files = await _fsa.readImportFiles(handle);
-    return WebFolderImport(
-      name: _fsa.getHandleName(handle),
-      files: files,
-    );
+    await _ensureReady();
+    return WebFolderImport(name: picked.name, files: picked.files);
   }
 
   Future<void> _putFile(

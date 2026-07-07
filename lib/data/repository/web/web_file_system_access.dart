@@ -10,8 +10,7 @@ extension type _CEditorFsa._(JSObject _) implements JSObject {
   external String getHandleKind(JSObject handle);
   external String getHandleName(JSObject handle);
   external JSPromise<JSAny?> pickDirectory();
-  external JSPromise<JSAny?> pickDirectoryForImport();
-  external JSPromise<JSAny?> readImportFileEntries(JSObject handle);
+  external JSPromise<JSAny?> pickFolderForImport();
   external JSPromise<JSBoolean> ensurePermission(JSObject handle);
   external JSPromise<JSObject> readAllLevelFiles(JSObject handle);
   external JSPromise<JSAny?> writeFile(
@@ -52,16 +51,41 @@ class WebFileSystemAccess {
     return handle as JSObject;
   }
 
-  Future<JSObject?> pickDirectoryForImport() async {
+  /// Pick a folder for import and read all level files in one JS call.
+  Future<({String name, Map<String, Uint8List> files})?> pickFolderForImport() async {
     final api = _cEditorFsa;
     if (api == null || !api.isSupported()) {
       return null;
     }
-    final handle = await api.pickDirectoryForImport().toDart;
-    if (handle == null) {
+    final raw = await api.pickFolderForImport().toDart;
+    if (raw == null) {
       return null;
     }
-    return handle as JSObject;
+    final dartified = raw.dartify();
+    if (dartified is! Map) {
+      return null;
+    }
+
+    final name = dartified['name'];
+    final entries = dartified['entries'];
+    if (name is! String || entries is! List) {
+      return null;
+    }
+
+    final files = <String, Uint8List>{};
+    for (final item in entries) {
+      if (item is! Map) {
+        continue;
+      }
+      final path = item['path'];
+      final bytes = item['bytes'];
+      if (path is! String || bytes is! List) {
+        continue;
+      }
+      files[path] = Uint8List.fromList(bytes.cast<int>());
+    }
+
+    return (name: name, files: files);
   }
 
   String getHandleKind(JSObject handle) =>
@@ -91,36 +115,7 @@ class WebFileSystemAccess {
     return result.toDart;
   }
 
-  Future<Map<String, Uint8List>> readImportFiles(JSObject handle) async {
-    final api = _cEditorFsa;
-    if (api == null) {
-      return {};
-    }
-    final raw = await api.readImportFileEntries(handle).toDart;
-    final dartified = raw.dartify();
-    if (dartified is! List) {
-      return {};
-    }
-
-    final result = <String, Uint8List>{};
-    for (final item in dartified) {
-      if (item is! Map) {
-        continue;
-      }
-      final path = item['path'];
-      final bytes = item['bytes'];
-      if (path is! String || bytes is! List) {
-        continue;
-      }
-      result[path] = Uint8List.fromList(bytes.cast<int>());
-    }
-    return result;
-  }
-
   Future<Map<String, Uint8List>> readAllLevelFiles(JSObject handle) async {
-    if (isImportHandle(handle)) {
-      return readImportFiles(handle);
-    }
     final api = _cEditorFsa;
     if (api == null) {
       return {};
