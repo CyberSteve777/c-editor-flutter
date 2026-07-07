@@ -201,25 +201,24 @@ jobs:
         id: deb
         run: bash .github/scripts/stage-linux-package-artifact.sh release linux-deb "${{ steps.deb_build.outputs.file_name }}"
 
-      - name: Patch RPM spec version
-        run: sed -i "s/@VERSION@/${{ steps.release.outputs.version }}/" linux/packaging/rpm/c-editor.spec
-
       - name: Build Linux .rpm
         id: rpm_build
-        uses: naveenrajm7/rpmbuild@v1.0.0
+        uses: jiro4989/build-rpm-action@v2
         with:
-          spec_file: linux/packaging/rpm/c-editor.spec
+          summary: Level Editor for Plants vs. Zombies 2 Chinese
+          package: c-editor
+          package_root: .linux-pkg-root
+          maintainer: team.international2c
+          vendor: team.international2c
+          version: ${{ steps.release.outputs.version }}
+          arch: x86_64
+          desc: Level Editor for Plants vs. Zombies 2 Chinese
+          license: MIT
+          requires: gtk3, liblzma
 
       - name: Stage Linux .rpm
         id: rpm
-        run: |
-          RPM_FILE="$(find "${{ steps.rpm_build.outputs.rpm_dir_path }}" -name 'c-editor-*.rpm' -type f ! -name '*.src.rpm' | head -1)"
-          if [ -z "$RPM_FILE" ]; then
-            echo "RPM file not found under ${{ steps.rpm_build.outputs.rpm_dir_path }}" >&2
-            find "${{ steps.rpm_build.outputs.rpm_dir_path }}" -type f >&2 || true
-            exit 1
-          fi
-          bash .github/scripts/stage-linux-package-artifact.sh release linux-rpm "$RPM_FILE"
+        run: bash .github/scripts/stage-linux-package-artifact.sh release linux-rpm "${{ steps.rpm_build.outputs.file_name }}"
 
       - name: Package Linux portable
         run: |
