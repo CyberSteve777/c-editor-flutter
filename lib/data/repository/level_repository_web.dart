@@ -331,20 +331,20 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   @override
   Future<WebFolderImport?> pickWebFolderForImport() async {
+    await _ensureReady();
     if (!_fsa.isSupported) {
       return null;
     }
 
-    // Open the folder picker immediately while the browser user gesture is
-    // still active (awaiting IDB init first would block the picker on web).
-    final handle = await _fsa.pickDirectoryForImport();
+    final handle = await _fsa.pickDirectory();
     if (handle == null) {
       return null;
     }
+    if (!await _fsa.ensurePermission(handle)) {
+      return null;
+    }
 
-    await _ensureReady();
-
-    final files = await _fsa.readImportFiles(handle);
+    final files = await _fsa.readAllLevelFiles(handle);
     return WebFolderImport(
       name: _fsa.getHandleName(handle),
       files: files,
