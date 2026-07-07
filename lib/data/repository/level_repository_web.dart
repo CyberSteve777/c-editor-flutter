@@ -336,15 +336,13 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       return null;
     }
 
-    final handle = await _fsa.pickDirectory();
+    // Use webkitdirectory on Firefox/Safari (and Chromium) — not FSA connect.
+    final handle = await _fsa.pickDirectoryForImport();
     if (handle == null) {
       return null;
     }
-    if (!await _fsa.ensurePermission(handle)) {
-      return null;
-    }
 
-    final files = await _fsa.readAllLevelFiles(handle);
+    final files = await _fsa.readImportFiles(handle);
     return WebFolderImport(
       name: _fsa.getHandleName(handle),
       files: files,
