@@ -2,13 +2,14 @@ import 'dart:typed_data';
 
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
+import 'web/web_transfer_progress.dart';
 import 'level_repository_web.dart'
     if (dart.library.io) 'level_repository_native.dart'
     as impl;
 
 export '../pvz_models.dart' show PvzLevelFile;
 export 'level_repository_base.dart'
-    show FileItem, LevelRepositoryBase, WebFolderFileImport, WebFolderImport;
+    show FileItem, LevelRepositoryBase, WebFolderImport;
 
 class LevelRepository {
   static final LevelRepositoryBase _impl = impl.createLevelRepository();
@@ -133,8 +134,14 @@ class LevelRepository {
   static Future<void> downloadLevel(String fileName) =>
       _impl.downloadLevel(fileName);
 
-  static Future<void> downloadAllLevelsAsZip() =>
-      _impl.downloadAllLevelsAsZip();
+  static Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress}) =>
+      _impl.downloadAllLevelsAsZip(onProgress: onProgress);
+
+  static Future<void> downloadFolderAsZip(
+    String folderVirtualPath, {
+    WebTransferProgress? onProgress,
+  }) =>
+      _impl.downloadFolderAsZip(folderVirtualPath, onProgress: onProgress);
 
   static Future<void> ensureWebStorageReady() =>
       _impl.ensureWebStorageReady();
@@ -142,39 +149,14 @@ class LevelRepository {
   static Future<String?> getWebLibraryDisplayName() =>
       _impl.getWebLibraryDisplayName();
 
-  static Future<String?> connectLocalFolder() => _impl.connectLocalFolder();
-
-  static Future<Map<String, Uint8List>> snapshotStoredFiles() =>
-      _impl.snapshotStoredFiles();
-
-  static Future<WebFolderImport?> stageNativeFolderConnect() =>
-      _impl.stageNativeFolderConnect();
-
-  static Future<void> cancelNativeFolderStaging() =>
-      _impl.cancelNativeFolderStaging();
-
-  static Future<String?> finalizeNativeFolderConnect({
-    required Set<String> discardKeys,
-    required Map<String, Uint8List> keptLocalFiles,
-    required List<WebFolderFileImport> imports,
-  }) =>
-      _impl.finalizeNativeFolderConnect(
-        discardKeys: discardKeys,
-        keptLocalFiles: keptLocalFiles,
-        imports: imports,
-      );
-
   static Future<WebFolderImport?> pickWebFolderForImport() =>
       _impl.pickWebFolderForImport();
 
-  static Future<bool> isLocalFolderConnected() =>
-      _impl.isLocalFolderConnected();
-
-  static Future<bool> isWebFolderImportMode() =>
-      _impl.isWebFolderImportMode();
-
-  static Future<bool> supportsWebFolderWriteSync() =>
-      _impl.supportsWebFolderWriteSync();
+  static Future<int> importWebFilesBatched(
+    List<({String storageKey, Uint8List bytes})> files, {
+    WebTransferProgress? onProgress,
+  }) =>
+      _impl.importWebFilesBatched(files, onProgress: onProgress);
 
   static Future<List<String>> getTemplateList() => _impl.getTemplateList();
 

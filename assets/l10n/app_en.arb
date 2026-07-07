@@ -76,6 +76,16 @@
   "copy": "Copy",
   "download": "Download",
   "downloadAllLevels": "Export all levels",
+  "downloadFolder": "Download folder",
+  "importProgressTitle": "Importing levels…",
+  "exportProgressTitle": "Building export…",
+  "transferProgressCount": "{completed} / {total}",
+  "@transferProgressCount": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "webFolderImportNotice": "Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.",
   "favorite": "Favorite",
   "unfavorite": "Unfavorite",

@@ -436,6 +436,30 @@ abstract class AppLocalizations {
   /// **'Export all levels'**
   String get downloadAllLevels;
 
+  /// No description provided for @downloadFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Download folder'**
+  String get downloadFolder;
+
+  /// No description provided for @importProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing levels…'**
+  String get importProgressTitle;
+
+  /// No description provided for @exportProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building export…'**
+  String get exportProgressTitle;
+
+  /// No description provided for @transferProgressCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} / {total}'**
+  String transferProgressCount(int completed, int total);
+
   /// No description provided for @webFolderImportNotice.
   ///
   /// In en, this message translates to:
