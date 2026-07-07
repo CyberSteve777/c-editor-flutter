@@ -203,6 +203,14 @@ jobs:
         id: deb
         run: bash .github/scripts/stage-linux-package-artifact.sh dev linux-deb "${{ steps.deb_build.outputs.file_name }}"
 
+      - name: Load RPM postinstall script
+        id: rpm_post
+        run: |
+          delimiter="$(openssl rand -hex 16)"
+          echo "script<<${delimiter}" >> "$GITHUB_OUTPUT"
+          cat linux/packaging/postinstall.sh >> "$GITHUB_OUTPUT"
+          echo "${delimiter}" >> "$GITHUB_OUTPUT"
+
       - name: Build Linux .rpm
         id: rpm_build
         uses: jiro4989/build-rpm-action@v2
@@ -217,6 +225,7 @@ jobs:
           desc: Level Editor for Plants vs. Zombies 2 Chinese
           license: MIT
           requires: gtk3, liblzma
+          post: ${{ steps.rpm_post.outputs.script }}
 
       - name: Stage Linux .rpm
         id: rpm
