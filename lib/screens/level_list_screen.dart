@@ -460,9 +460,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
   /// Web-only: recursively import a folder and all subfolders into the library.
   Future<void> _pickAndImportFolder() async {
     final l10n = AppLocalizations.of(context)!;
-    await LevelRepository.ensureWebStorageReady();
-    if (!mounted) return;
-
     final folder = await LevelRepository.pickWebFolderForImport();
     if (folder == null || !mounted) return;
 
