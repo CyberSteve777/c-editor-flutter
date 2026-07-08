@@ -9,13 +9,178 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get error => 'Error';
+
+  @override
+  String get warning => 'Warning';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get levelPreview => 'Level Preview';
+
+  @override
+  String get previewStartingPlantFood => 'Starting Plant Food';
+
+  @override
+  String get previewTabPlants => 'Plants';
+
+  @override
+  String get previewTabZombies => 'Zombies';
+
+  @override
+  String get previewTabGridItems => 'Grid Items';
+
+  @override
+  String get previewPrePlaced => 'Placement';
+
+  @override
+  String get previewRegularPlants => 'Regular Plants';
+
+  @override
+  String get previewFrozenPlants => 'Frozen Plants';
+
+  @override
+  String get previewLevelContent => 'Level Content';
+
+  @override
+  String get previewSeedBank => 'Seed Bank';
+
+  @override
+  String get previewFeatures => 'Level Features';
+
+  @override
+  String get sunBombFalling => 'Sun Bombs are falling';
+
+  @override
+  String get sunDroppingActive => 'Sun falls from the sky';
+
+  @override
+  String get sunDroppingInactive => 'Sun does not fall from the sky';
+
+  @override
+  String get conveyorChanges => 'Changes in the conveyor';
+
+  @override
+  String get willBeAdded => 'will be added';
+
+  @override
+  String get willBeRemoved => 'will be removed';
+
+  @override
+  String get waveNumberLegend => 'Number indicates the wave number';
+
+  @override
+  String get expand => 'Expand';
+
+  @override
+  String get obtainableInLevel => 'Can be obtained in the level';
+
+  @override
+  String get allZombiesInLevel => 'All zombies in the level';
+
+  @override
+  String get allObjectsInLevel => 'All objects in the level';
+
+  @override
+  String get allEventsInLevel => 'All events in the level';
+
+  @override
+  String get previewInitial => 'Initial';
+
+  @override
+  String get overwhelmLabel => 'Column Like You See \'Em';
+
+  @override
+  String get fastEntryLabel => 'Fast Entry';
+
+  @override
+  String get zombieRushLabel => 'Level Timer';
+
+  @override
+  String get spermWhaleLabel => 'Whale Approaching';
+
+  @override
+  String get witchLabel => 'Fright Witch';
+
+  @override
+  String get lawnMowerLabel => 'Lawn Mower';
+
+  @override
+  String get lawnMowerTypeLabel => 'Lawn mower type';
+
+  @override
+  String get renaissanceStatues => 'Renaissance Statues';
+
+  @override
+  String get zomboss => 'Zomboss';
+
+  @override
+  String get boss => 'Boss';
+
+  @override
+  String get zombossData => 'Zomboss Data';
+
+  @override
+  String get contentsLabel => 'Contents:';
+
+  @override
+  String get vaseSpawnArea => 'Vase spawn area';
+
+  @override
+  String get guessWhoIAm => 'Guess Who I Am';
+
+  @override
+  String get plantBlackList => 'Plant blacklist';
+
+  @override
+  String get zombieWhiteList => 'Zombie whitelist';
+
+  @override
+  String get zombieWeight => 'Zombie weight';
+
+  @override
+  String get rainContent => 'Rain content';
+
+  @override
+  String get heianWind => 'Heian Wind';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get impLv => 'Imp Lv.';
+
+  @override
+  String impsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count imps',
+      one: '1 imp',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dropShip => 'Drop Ship';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get totalPlantFoodTooltip =>
+      'Total Plant Food (including drops, events, etc.)';
+
+  @override
   String get appTitle => 'My Level Library';
 
   @override
   String get about => 'About';
-
-  @override
-  String get back => 'Back';
 
   @override
   String get refresh => 'Refresh';
@@ -81,6 +246,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectFolderButton => 'Select folder';
+
+  @override
+  String get uploadToWebsite => 'Upload to website';
+
+  @override
+  String get uploadLevelPickerTitle =>
+      'Select one or multiple levels to upload';
+
+  @override
+  String get smartUploadTitle => 'Duplicate file';
+
+  @override
+  String smartUploadFileMessage(String fileName) {
+    return 'This file already exists in your library:\n\n$fileName\n\nWhat should be done?';
+  }
+
+  @override
+  String get smartUploadSkip => 'Don\'t upload';
+
+  @override
+  String get smartUploadOverwrite => 'Overwrite';
+
+  @override
+  String get smartUploadAsCopy => 'Upload as copy';
+
+  @override
+  String get smartUploadSkipAll => 'Skip all';
+
+  @override
+  String get smartUploadOverwriteAll => 'Overwrite all';
+
+  @override
+  String get smartUploadCopyAll => 'Copy all';
 
   @override
   String get openFolder => 'Open folder';
@@ -181,43 +379,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
 
   @override
-  String get levelPreview => 'Level Preview';
-
-  @override
-  String get previewLevelSummary => 'Level Summary';
-
-  @override
-  String get previewStartingSun => 'Starting Sun';
-
-  @override
-  String get previewStartingPlantFood => 'Starting Plant Food';
-
-  @override
-  String get previewSeedBank => 'Seed Bank';
-
-  @override
-  String get previewPrePlaced => 'Pre-placed';
-
-  @override
-  String get previewTabPlants => 'Plants';
-
-  @override
-  String get previewTabZombies => 'Zombies';
-
-  @override
-  String get previewTabGridItems => 'Objects';
-
-  @override
-  String get previewRegularPlants => 'Regular';
-
-  @override
-  String get previewFrozenPlants => 'Frozen/Legacy';
-
-  @override
-  String get previewZombiesAndEvents => 'Zombies & Events';
-
-  @override
-  String get previewChallengesAndThemes => 'Challenges & Themes';
+  String get back => 'Back';
 
   @override
   String get noLevelsFound => 'No levels found';
@@ -1268,9 +1430,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get name => 'Level name';
-
-  @override
-  String get description => 'Level description';
 
   @override
   String get levelNumber => 'Level number';
@@ -2402,9 +2561,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieVaseOption => 'Zombie Vase (Purple)';
 
   @override
-  String get selectZombie => 'Select zombie';
-
-  @override
   String get searchZombie => 'Search zombie';
 
   @override
@@ -2843,9 +2999,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get addItem => 'Add item';
-
-  @override
   String get addWind => 'Add wind';
 
   @override
@@ -2882,12 +3035,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieCount => 'Total count (Total)';
-
-  @override
-  String get groupSize => 'Zombies per group (GroupSize)';
-
-  @override
-  String get timeBetweenGroups => 'Group Interval (TimeBetweenGroups; seconds)';
 
   @override
   String get timeBeforeSpawn => 'Time before full spawn (seconds)';
@@ -3633,10 +3780,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This is the last barrel. Deleting it will leave this event without any barrels. Continue?';
 
   @override
-  String get eventHelpGraveSpawnBody =>
-      'Spawns zombies from specific grid item types. Commonly used for Dark Ages Necromancy ambushes.';
-
-  @override
   String get eventHelpGraveSpawnWait =>
       'Delay between wave start and zombie spawn. If the next wave begins before the timer ends, no zombies will spawn.';
 
@@ -3759,9 +3902,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attractionConfig => 'Attraction config';
 
   @override
-  String get selectedPosition => 'Selected position';
-
-  @override
   String get placePlant => 'Place plant';
 
   @override
@@ -3787,6 +3927,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventParachuteRain => 'Event: Parachute/Bass/Jetpack/Imp rain';
+
+  @override
+  String get selectZombie => 'Select zombie';
 
   @override
   String get manholePipeline => 'Manhole Pipeline module';
@@ -3966,13 +4109,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addGridItem => 'Add grid item';
 
   @override
-  String get spawnTimer => 'Spawn Interval (PotionSpawnTimer)';
-
-  @override
   String get plantLevels => 'Plant levels';
-
-  @override
-  String get globalPlantLevels => 'Global plant levels';
 
   @override
   String get scope => 'Scope';
@@ -4278,12 +4415,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxSec => 'Max (seconds)';
 
   @override
-  String get potionTypes => 'Potion Types (PotionTypes)';
-
-  @override
-  String get noPotionTypes => 'No potion types configured; add one to continue';
-
-  @override
   String get ignoreGravestoneSubtitle =>
       'Enable to spawn regardless of grid items';
 
@@ -4469,6 +4600,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventStormSpawnSubtitle => 'Event: Storm Raid';
 
   @override
+  String get eventHelpGraveSpawnBody =>
+      'Spawns zombies from specific grid item types. Commonly used for Dark Ages Necromancy ambushes.';
+
+  @override
   String get eventHelpGraveSpawnZombieWait =>
       'Delay between wave start and zombie spawn. Zombies won\'t spawn if the next wave has already begun.';
 
@@ -4501,6 +4636,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get columnEnd => 'End column (ColumnEnd)';
+
+  @override
+  String get groupSize => 'Zombies per group (GroupSize)';
+
+  @override
+  String get timeBetweenGroups => 'Group Interval (TimeBetweenGroups; seconds)';
 
   @override
   String applyBatchLevelContent(int level) {
@@ -4889,6 +5030,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectFromPresetHint => 'Select from preset condition list';
 
   @override
+  String get spawnTimer => 'Spawn Interval (PotionSpawnTimer)';
+
+  @override
+  String get potionTypes => 'Potion Types (PotionTypes)';
+
+  @override
+  String get noPotionTypes => 'No potion types configured; add one to continue';
+
+  @override
   String get conveyorCardPool => 'Conveyor Pool';
 
   @override
@@ -4968,6 +5118,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pointsSection => 'Points';
 
   @override
+  String get globalPlantLevels => 'Global plant levels';
+
+  @override
   String get globalPlantLevelsOverview =>
       'Defines plant levels globally within the level. This setting overrides seed packet levels and allows individual customization for specific plants.';
 
@@ -5034,6 +5187,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombiesCarryingPlantFood => 'Zombies carrying Plant Food';
 
   @override
+  String get description => 'Level description';
+
+  @override
   String get descriptiveName => 'Descriptive Name';
 
   @override
@@ -5093,11 +5249,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mustProtectCountAll => 'Required to Protect (0 = protect all)';
-
-  @override
-  String mustProtectCount(int count) {
-    return 'Current protected target count: $count';
-  }
 
   @override
   String get gridItemType => 'Grid item type';
@@ -5424,6 +5575,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get recommendedTunnelDefendBody =>
       'The tiles in Underground Palace Secret Realm lawns must be placed through the \"Underground Palace Pathways\" module. If this module is not added, the lawns may appear overly empty in-game.';
+
+  @override
+  String get selectedPosition => 'Selected position';
+
+  @override
+  String get addItem => 'Add item';
 
   @override
   String get itemListRowFirst => 'Item(s) in selected tile';
@@ -7191,6 +7348,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get protectGridItemChallengeHelpOperationGuide =>
       'Click a position in the grid above, then click the \"Add item\" button to select the type of item to protect.';
+
+  @override
+  String mustProtectCount(int count) {
+    return 'Current protected target count: $count';
+  }
 
   @override
   String get customStageProperties => 'Custom stage properties';

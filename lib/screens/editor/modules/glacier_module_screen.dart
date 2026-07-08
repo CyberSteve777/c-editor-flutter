@@ -33,7 +33,6 @@ class GlacierModuleScreen extends StatefulWidget {
 }
 
 class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
-  static const _defaultAlias = 'GlacierModule';
   static const _objClass = 'GlacierModuleProperties';
   late String _alias;
   static const _levelMin = 0;
@@ -200,7 +199,8 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-EditorAliasInputField(
+ModuleAliasInputField(
+              rtid: widget.rtid,
           alias: _alias,
           levelFile: widget.levelFile,
           onAliasChanged: _handleAliasChanged,

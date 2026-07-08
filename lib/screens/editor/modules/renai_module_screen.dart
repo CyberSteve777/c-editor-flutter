@@ -219,7 +219,6 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.renaiModuleTitle ?? 'Renaissance module';
     final helpTitle = l10n?.renaiModuleHelpTitle ?? 'Renaissance module help';
 
     return Scaffold(
@@ -267,7 +266,8 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-EditorAliasInputField(
+ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,
@@ -510,66 +510,43 @@ EditorAliasInputField(
                                                 child:
                                                     count > 0 &&
                                                         firstItem != null
-                                                    ? Stack(
-                                                        fit: StackFit.expand,
-                                                        children: [
-                                                          Positioned.fill(
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets.all(
-                                                                    2,
-                                                                  ),
-                                                              child: FittedBox(
-                                                                fit: BoxFit
-                                                                    .contain,
-                                                                child: RenaiStatueIcon(
-                                                                  typeName:
-                                                                      firstItem
-                                                                          .typeName,
-                                                                  size: 32,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          if (count > 1)
-                                                            Positioned(
-                                                              top: 3,
-                                                              right: 3,
-                                                              child: Container(
-                                                                padding:
-                                                                    const EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          6,
-                                                                      vertical:
-                                                                          3,
-                                                                    ),
-                                                                decoration: BoxDecoration(
-                                                                  color: theme
-                                                                      .colorScheme
-                                                                      .onSurfaceVariant,
-                                                                  borderRadius:
-                                                                      const BorderRadius.only(
-                                                                        bottomLeft:
-                                                                            Radius.circular(
-                                                                              6,
-                                                                            ),
+                                                    ? LayoutBuilder(
+                                                        builder: (
+                                                          context,
+                                                          constraints,
+                                                        ) {
+                                                          return Stack(
+                                                            fit: StackFit.expand,
+                                                            children: [
+                                                              Positioned.fill(
+                                                                child: Padding(
+                                                                  padding:
+                                                                      const EdgeInsets.all(
+                                                                        2,
                                                                       ),
-                                                                ),
-                                                                child: Text(
-                                                                  '+${count - 1}',
-                                                                  style: const TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize:
-                                                                        12,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                  child: FittedBox(
+                                                                    fit: BoxFit
+                                                                        .contain,
+                                                                    child: RenaiStatueIcon(
+                                                                      typeName:
+                                                                          firstItem
+                                                                              .typeName,
+                                                                      size: 32,
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                        ],
+                                                              if (count > 1)
+                                                                GridCellCountBadge(
+                                                                  label:
+                                                                      '+${count - 1}',
+                                                                  cellWidth:
+                                                                      constraints
+                                                                          .maxWidth,
+                                                                ),
+                                                            ],
+                                                          );
+                                                        },
                                                       )
                                                     : null,
                                               ),

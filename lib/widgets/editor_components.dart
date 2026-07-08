@@ -150,9 +150,58 @@ abstract final class EditorItemCardLayout {
   static double gridPreviewMaxWidth(BuildContext context) =>
       compact(context) ? 360 : 480;
 
-  /// Scales overlay badges (+N count, zomboss Z) in lawn preview cells.
-  static double gridCellBadgeScale(BuildContext context) =>
-      compact(context) ? 0.72 : 1.0;
+  /// Scales +N count badges from rendered lawn cell width (cells are square).
+  static double gridCellBadgeScaleForCell(double cellWidth) {
+    if (cellWidth <= 0 || !cellWidth.isFinite) return 1.0;
+    const referenceCell = 52.0;
+    return (cellWidth / referenceCell).clamp(0.4, 1.0);
+  }
+}
+
+/// +N overlay badge for interactive lawn grid cells.
+/// Tight "borderless" pill: background hugs the label with minimal padding.
+class GridCellCountBadge extends StatelessWidget {
+  const GridCellCountBadge({
+    super.key,
+    required this.label,
+    required this.cellWidth,
+  });
+
+  final String label;
+  final double cellWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = EditorItemCardLayout.gridCellBadgeScaleForCell(cellWidth);
+    final inset = 1.0 * scale;
+    return Positioned(
+      top: inset,
+      right: inset,
+      child: Transform.scale(
+        scale: scale,
+        alignment: Alignment.topRight,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                height: 1.0,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// Responsive grid metrics for asset picker screens (tools, grid items, statues).

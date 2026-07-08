@@ -100,6 +100,324 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warning;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @levelPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Preview'**
+  String get levelPreview;
+
+  /// No description provided for @previewStartingPlantFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Plant Food'**
+  String get previewStartingPlantFood;
+
+  /// No description provided for @previewTabPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Plants'**
+  String get previewTabPlants;
+
+  /// No description provided for @previewTabZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombies'**
+  String get previewTabZombies;
+
+  /// No description provided for @previewTabGridItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid Items'**
+  String get previewTabGridItems;
+
+  /// No description provided for @previewPrePlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Placement'**
+  String get previewPrePlaced;
+
+  /// No description provided for @previewRegularPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular Plants'**
+  String get previewRegularPlants;
+
+  /// No description provided for @previewFrozenPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Frozen Plants'**
+  String get previewFrozenPlants;
+
+  /// No description provided for @previewLevelContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Content'**
+  String get previewLevelContent;
+
+  /// No description provided for @previewSeedBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Seed Bank'**
+  String get previewSeedBank;
+
+  /// No description provided for @previewFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Features'**
+  String get previewFeatures;
+
+  /// No description provided for @sunBombFalling.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun Bombs are falling'**
+  String get sunBombFalling;
+
+  /// No description provided for @sunDroppingActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun falls from the sky'**
+  String get sunDroppingActive;
+
+  /// No description provided for @sunDroppingInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun does not fall from the sky'**
+  String get sunDroppingInactive;
+
+  /// No description provided for @conveyorChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes in the conveyor'**
+  String get conveyorChanges;
+
+  /// No description provided for @willBeAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'will be added'**
+  String get willBeAdded;
+
+  /// No description provided for @willBeRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'will be removed'**
+  String get willBeRemoved;
+
+  /// No description provided for @waveNumberLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Number indicates the wave number'**
+  String get waveNumberLegend;
+
+  /// No description provided for @expand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get expand;
+
+  /// No description provided for @obtainableInLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Can be obtained in the level'**
+  String get obtainableInLevel;
+
+  /// No description provided for @allZombiesInLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'All zombies in the level'**
+  String get allZombiesInLevel;
+
+  /// No description provided for @allObjectsInLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'All objects in the level'**
+  String get allObjectsInLevel;
+
+  /// No description provided for @allEventsInLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'All events in the level'**
+  String get allEventsInLevel;
+
+  /// No description provided for @previewInitial.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial'**
+  String get previewInitial;
+
+  /// No description provided for @overwhelmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Column Like You See \'Em'**
+  String get overwhelmLabel;
+
+  /// No description provided for @fastEntryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast Entry'**
+  String get fastEntryLabel;
+
+  /// No description provided for @zombieRushLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Timer'**
+  String get zombieRushLabel;
+
+  /// No description provided for @spermWhaleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Whale Approaching'**
+  String get spermWhaleLabel;
+
+  /// No description provided for @witchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fright Witch'**
+  String get witchLabel;
+
+  /// No description provided for @lawnMowerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lawn Mower'**
+  String get lawnMowerLabel;
+
+  /// No description provided for @lawnMowerTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lawn mower type'**
+  String get lawnMowerTypeLabel;
+
+  /// No description provided for @renaissanceStatues.
+  ///
+  /// In en, this message translates to:
+  /// **'Renaissance Statues'**
+  String get renaissanceStatues;
+
+  /// No description provided for @zomboss.
+  ///
+  /// In en, this message translates to:
+  /// **'Zomboss'**
+  String get zomboss;
+
+  /// No description provided for @boss.
+  ///
+  /// In en, this message translates to:
+  /// **'Boss'**
+  String get boss;
+
+  /// No description provided for @zombossData.
+  ///
+  /// In en, this message translates to:
+  /// **'Zomboss Data'**
+  String get zombossData;
+
+  /// No description provided for @contentsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contents:'**
+  String get contentsLabel;
+
+  /// No description provided for @vaseSpawnArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Vase spawn area'**
+  String get vaseSpawnArea;
+
+  /// No description provided for @guessWhoIAm.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess Who I Am'**
+  String get guessWhoIAm;
+
+  /// No description provided for @plantBlackList.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant blacklist'**
+  String get plantBlackList;
+
+  /// No description provided for @zombieWhiteList.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie whitelist'**
+  String get zombieWhiteList;
+
+  /// No description provided for @zombieWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie weight'**
+  String get zombieWeight;
+
+  /// No description provided for @rainContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain content'**
+  String get rainContent;
+
+  /// No description provided for @heianWind.
+  ///
+  /// In en, this message translates to:
+  /// **'Heian Wind'**
+  String get heianWind;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @impLv.
+  ///
+  /// In en, this message translates to:
+  /// **'Imp Lv.'**
+  String get impLv;
+
+  /// No description provided for @impsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 imp} other{{count} imps}}'**
+  String impsCount(int count);
+
+  /// No description provided for @dropShip.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop Ship'**
+  String get dropShip;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @totalPlantFoodTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Plant Food (including drops, events, etc.)'**
+  String get totalPlantFoodTooltip;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
@@ -111,12 +429,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About'**
   String get about;
-
-  /// No description provided for @back.
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get back;
 
   /// No description provided for @refresh.
   ///
@@ -237,6 +549,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select folder'**
   String get selectFolderButton;
+
+  /// No description provided for @uploadToWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload to website'**
+  String get uploadToWebsite;
+
+  /// No description provided for @uploadLevelPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select one or multiple levels to upload'**
+  String get uploadLevelPickerTitle;
+
+  /// No description provided for @smartUploadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate file'**
+  String get smartUploadTitle;
+
+  /// No description provided for @smartUploadFileMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This file already exists in your library:\n\n{fileName}\n\nWhat should be done?'**
+  String smartUploadFileMessage(String fileName);
+
+  /// No description provided for @smartUploadSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t upload'**
+  String get smartUploadSkip;
+
+  /// No description provided for @smartUploadOverwrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite'**
+  String get smartUploadOverwrite;
+
+  /// No description provided for @smartUploadAsCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload as copy'**
+  String get smartUploadAsCopy;
+
+  /// No description provided for @smartUploadSkipAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip all'**
+  String get smartUploadSkipAll;
+
+  /// No description provided for @smartUploadOverwriteAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite all'**
+  String get smartUploadOverwriteAll;
+
+  /// No description provided for @smartUploadCopyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy all'**
+  String get smartUploadCopyAll;
 
   /// No description provided for @openFolder.
   ///
@@ -424,83 +796,11 @@ abstract class AppLocalizations {
   /// **'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
   String get uploadLevelConfirm;
 
-  /// No description provided for @levelPreview.
+  /// No description provided for @back.
   ///
   /// In en, this message translates to:
-  /// **'Level Preview'**
-  String get levelPreview;
-
-  /// No description provided for @previewLevelSummary.
-  ///
-  /// In en, this message translates to:
-  /// **'Level Summary'**
-  String get previewLevelSummary;
-
-  /// No description provided for @previewStartingSun.
-  ///
-  /// In en, this message translates to:
-  /// **'Starting Sun'**
-  String get previewStartingSun;
-
-  /// No description provided for @previewStartingPlantFood.
-  ///
-  /// In en, this message translates to:
-  /// **'Starting Plant Food'**
-  String get previewStartingPlantFood;
-
-  /// No description provided for @previewSeedBank.
-  ///
-  /// In en, this message translates to:
-  /// **'Seed Bank'**
-  String get previewSeedBank;
-
-  /// No description provided for @previewPrePlaced.
-  ///
-  /// In en, this message translates to:
-  /// **'Pre-placed'**
-  String get previewPrePlaced;
-
-  /// No description provided for @previewTabPlants.
-  ///
-  /// In en, this message translates to:
-  /// **'Plants'**
-  String get previewTabPlants;
-
-  /// No description provided for @previewTabZombies.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombies'**
-  String get previewTabZombies;
-
-  /// No description provided for @previewTabGridItems.
-  ///
-  /// In en, this message translates to:
-  /// **'Objects'**
-  String get previewTabGridItems;
-
-  /// No description provided for @previewRegularPlants.
-  ///
-  /// In en, this message translates to:
-  /// **'Regular'**
-  String get previewRegularPlants;
-
-  /// No description provided for @previewFrozenPlants.
-  ///
-  /// In en, this message translates to:
-  /// **'Frozen/Legacy'**
-  String get previewFrozenPlants;
-
-  /// No description provided for @previewZombiesAndEvents.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombies & Events'**
-  String get previewZombiesAndEvents;
-
-  /// No description provided for @previewChallengesAndThemes.
-  ///
-  /// In en, this message translates to:
-  /// **'Challenges & Themes'**
-  String get previewChallengesAndThemes;
+  /// **'Back'**
+  String get back;
 
   /// No description provided for @noLevelsFound.
   ///
@@ -2446,12 +2746,6 @@ abstract class AppLocalizations {
   /// **'Level name'**
   String get name;
 
-  /// No description provided for @description.
-  ///
-  /// In en, this message translates to:
-  /// **'Level description'**
-  String get description;
-
   /// No description provided for @levelNumber.
   ///
   /// In en, this message translates to:
@@ -4378,12 +4672,6 @@ abstract class AppLocalizations {
   /// **'Zombie Vase (Purple)'**
   String get zombieVaseOption;
 
-  /// No description provided for @selectZombie.
-  ///
-  /// In en, this message translates to:
-  /// **'Select zombie'**
-  String get selectZombie;
-
   /// No description provided for @searchZombie.
   ///
   /// In en, this message translates to:
@@ -5182,12 +5470,6 @@ abstract class AppLocalizations {
   /// **'Row {n}'**
   String rowN(int n);
 
-  /// No description provided for @addItem.
-  ///
-  /// In en, this message translates to:
-  /// **'Add item'**
-  String get addItem;
-
   /// No description provided for @addWind.
   ///
   /// In en, this message translates to:
@@ -5259,18 +5541,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total count (Total)'**
   String get zombieCount;
-
-  /// No description provided for @groupSize.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombies per group (GroupSize)'**
-  String get groupSize;
-
-  /// No description provided for @timeBetweenGroups.
-  ///
-  /// In en, this message translates to:
-  /// **'Group Interval (TimeBetweenGroups; seconds)'**
-  String get timeBetweenGroups;
 
   /// No description provided for @timeBeforeSpawn.
   ///
@@ -6568,12 +6838,6 @@ abstract class AppLocalizations {
   /// **'This is the last barrel. Deleting it will leave this event without any barrels. Continue?'**
   String get barrelWaveDeleteLastHint;
 
-  /// No description provided for @eventHelpGraveSpawnBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Spawns zombies from specific grid item types. Commonly used for Dark Ages Necromancy ambushes.'**
-  String get eventHelpGraveSpawnBody;
-
   /// No description provided for @eventHelpGraveSpawnWait.
   ///
   /// In en, this message translates to:
@@ -6784,12 +7048,6 @@ abstract class AppLocalizations {
   /// **'Attraction config'**
   String get attractionConfig;
 
-  /// No description provided for @selectedPosition.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected position'**
-  String get selectedPosition;
-
   /// No description provided for @placePlant.
   ///
   /// In en, this message translates to:
@@ -6843,6 +7101,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event: Parachute/Bass/Jetpack/Imp rain'**
   String get eventParachuteRain;
+
+  /// No description provided for @selectZombie.
+  ///
+  /// In en, this message translates to:
+  /// **'Select zombie'**
+  String get selectZombie;
 
   /// No description provided for @manholePipeline.
   ///
@@ -7186,23 +7450,11 @@ abstract class AppLocalizations {
   /// **'Add grid item'**
   String get addGridItem;
 
-  /// No description provided for @spawnTimer.
-  ///
-  /// In en, this message translates to:
-  /// **'Spawn Interval (PotionSpawnTimer)'**
-  String get spawnTimer;
-
   /// No description provided for @plantLevels.
   ///
   /// In en, this message translates to:
   /// **'Plant levels'**
   String get plantLevels;
-
-  /// No description provided for @globalPlantLevels.
-  ///
-  /// In en, this message translates to:
-  /// **'Global plant levels'**
-  String get globalPlantLevels;
 
   /// No description provided for @scope.
   ///
@@ -7768,18 +8020,6 @@ abstract class AppLocalizations {
   /// **'Max (seconds)'**
   String get maxSec;
 
-  /// No description provided for @potionTypes.
-  ///
-  /// In en, this message translates to:
-  /// **'Potion Types (PotionTypes)'**
-  String get potionTypes;
-
-  /// No description provided for @noPotionTypes.
-  ///
-  /// In en, this message translates to:
-  /// **'No potion types configured; add one to continue'**
-  String get noPotionTypes;
-
   /// No description provided for @ignoreGravestoneSubtitle.
   ///
   /// In en, this message translates to:
@@ -8074,6 +8314,12 @@ abstract class AppLocalizations {
   /// **'Event: Storm Raid'**
   String get eventStormSpawnSubtitle;
 
+  /// No description provided for @eventHelpGraveSpawnBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawns zombies from specific grid item types. Commonly used for Dark Ages Necromancy ambushes.'**
+  String get eventHelpGraveSpawnBody;
+
   /// No description provided for @eventHelpGraveSpawnZombieWait.
   ///
   /// In en, this message translates to:
@@ -8133,6 +8379,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'End column (ColumnEnd)'**
   String get columnEnd;
+
+  /// No description provided for @groupSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombies per group (GroupSize)'**
+  String get groupSize;
+
+  /// No description provided for @timeBetweenGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Interval (TimeBetweenGroups; seconds)'**
+  String get timeBetweenGroups;
 
   /// No description provided for @applyBatchLevelContent.
   ///
@@ -8774,6 +9032,24 @@ abstract class AppLocalizations {
   /// **'Select from preset condition list'**
   String get selectFromPresetHint;
 
+  /// No description provided for @spawnTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Interval (PotionSpawnTimer)'**
+  String get spawnTimer;
+
+  /// No description provided for @potionTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Potion Types (PotionTypes)'**
+  String get potionTypes;
+
+  /// No description provided for @noPotionTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'No potion types configured; add one to continue'**
+  String get noPotionTypes;
+
   /// No description provided for @conveyorCardPool.
   ///
   /// In en, this message translates to:
@@ -8912,6 +9188,12 @@ abstract class AppLocalizations {
   /// **'Points'**
   String get pointsSection;
 
+  /// No description provided for @globalPlantLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'Global plant levels'**
+  String get globalPlantLevels;
+
   /// No description provided for @globalPlantLevelsOverview.
   ///
   /// In en, this message translates to:
@@ -9026,6 +9308,12 @@ abstract class AppLocalizations {
   /// **'Zombies carrying Plant Food'**
   String get zombiesCarryingPlantFood;
 
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Level description'**
+  String get description;
+
   /// No description provided for @descriptiveName.
   ///
   /// In en, this message translates to:
@@ -9139,12 +9427,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Required to Protect (0 = protect all)'**
   String get mustProtectCountAll;
-
-  /// No description provided for @mustProtectCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Current protected target count: {count}'**
-  String mustProtectCount(int count);
 
   /// No description provided for @gridItemType.
   ///
@@ -9727,6 +10009,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The tiles in Underground Palace Secret Realm lawns must be placed through the \"Underground Palace Pathways\" module. If this module is not added, the lawns may appear overly empty in-game.'**
   String get recommendedTunnelDefendBody;
+
+  /// No description provided for @selectedPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected position'**
+  String get selectedPosition;
+
+  /// No description provided for @addItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addItem;
 
   /// No description provided for @itemListRowFirst.
   ///
@@ -12865,6 +13159,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Click a position in the grid above, then click the \"Add item\" button to select the type of item to protect.'**
   String get protectGridItemChallengeHelpOperationGuide;
+
+  /// No description provided for @mustProtectCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Current protected target count: {count}'**
+  String mustProtectCount(int count);
 
   /// No description provided for @customStageProperties.
   ///

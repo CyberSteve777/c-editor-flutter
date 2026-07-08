@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge condition_<id> keys into resource_*.json."""
+"""Generate plantCondition_* / zombieCondition_* keys in resource_*.json."""
 
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONDITIONS_PATH = ROOT / "conditions.txt"
 RESOURCE_DIR = ROOT / "assets/l10n"
+
+PLANT_CONDITION_IDS = ("icecubed",)
 
 CONDITION_EN: dict[str, str] = {
     "chill": "Chill (slow)",
@@ -172,19 +174,29 @@ def parse_conditions_zh() -> dict[str, str]:
     return out
 
 
-def build_locale_entries(locale: str) -> dict[str, str]:
+def label_for(locale: str, cid: str, zh: dict[str, str]) -> str:
+    if locale == "zh":
+        return zh.get(cid, CONDITION_EN.get(cid, cid))
+    if locale == "ru":
+        return CONDITION_RU.get(cid, CONDITION_EN.get(cid, cid))
+    return CONDITION_EN.get(cid, cid)
+
+
+def build_zombie_entries(locale: str) -> dict[str, str]:
     zh = parse_conditions_zh()
     entries: dict[str, str] = {}
     ids = sorted(set(zh) | set(CONDITION_EN))
     for cid in ids:
-        key = f"condition_{cid}"
-        if locale == "zh":
-            entries[key] = zh.get(cid, CONDITION_EN.get(cid, cid))
-        elif locale == "ru":
-            entries[key] = CONDITION_RU.get(cid, CONDITION_EN.get(cid, cid))
-        else:
-            entries[key] = CONDITION_EN.get(cid, cid)
+        entries[f"zombieCondition_{cid}"] = label_for(locale, cid, zh)
     return entries
+
+
+def build_plant_entries(locale: str) -> dict[str, str]:
+    zh = parse_conditions_zh()
+    return {
+        f"plantCondition_{cid}": label_for(locale, cid, zh)
+        for cid in PLANT_CONDITION_IDS
+    }
 
 
 def load_json(path: Path) -> dict[str, str]:
@@ -198,30 +210,53 @@ def save_json(path: Path, data: dict[str, str]) -> None:
         f.write("\n")
 
 
-def main() -> None:
-    en_values = build_locale_entries("en")
-    zh_values = build_locale_entries("zh")
+def migrate_locale(path: Path, locale: str) -> tuple[int, int]:
+    existing = load_json(path)
+    removed = 0
     updated = 0
+
+    # Prefer existing condition_* translations over legacy zombieCondition_*.
+    for key, value in list(existing.items()):
+        if key.startswith("condition_"):
+            cid = key.removeprefix("condition_")
+            zombie_key = f"zombieCondition_{cid}"
+            if existing.get(zombie_key) != value:
+                existing[zombie_key] = value
+                updated += 1
+            del existing[key]
+            removed += 1
+
+    for cid in PLANT_CONDITION_IDS:
+        plant_key = f"plantCondition_{cid}"
+        zombie_key = f"zombieCondition_{cid}"
+        if zombie_key in existing and plant_key not in existing:
+            existing[plant_key] = existing[zombie_key]
+            updated += 1
+
+    for key, value in build_zombie_entries(locale).items():
+        if key not in existing:
+            existing[key] = value
+            updated += 1
+
+    for key, value in build_plant_entries(locale).items():
+        if key not in existing:
+            existing[key] = value
+            updated += 1
+
+    save_json(path, existing)
+    return removed, updated
+
+
+def main() -> None:
+    total_removed = 0
+    total_updated = 0
     for locale in ("en", "ru", "zh"):
         path = RESOURCE_DIR / f"resource_{locale}.json"
-        existing = load_json(path)
-        generated = build_locale_entries(locale)
-        for key, value in generated.items():
-            cid = key.removeprefix("condition_")
-            legacy = f"zombieCondition_{cid}"
-            stale = (
-                key not in existing
-                or existing[key] == legacy
-                or (locale != "zh" and existing.get(key) == zh_values.get(key))
-                or (locale == "en" and existing.get(key) == existing.get(legacy))
-            )
-            if stale:
-                if existing.get(key) != value:
-                    existing[key] = value
-                    updated += 1
-        save_json(path, existing)
-        print(f"{path.name}: {len(existing)} keys")
-    print(f"Updated {updated} condition entries")
+        removed, updated = migrate_locale(path, locale)
+        total_removed += removed
+        total_updated += updated
+        print(f"{path.name}: removed {removed} condition_* keys, updated {updated} entries")
+    print(f"Done: {total_removed} legacy keys removed, {total_updated} values written")
 
 
 if __name__ == "__main__":

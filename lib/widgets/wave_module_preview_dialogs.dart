@@ -6,9 +6,31 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/renai_wave_preview_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/drop_ship_area_preview_grid.dart';
-import 'package:c_editor/widgets/grid_override_preview_grid.dart';
+import 'package:c_editor/widgets/editor_preview_dialog.dart';
 import 'package:c_editor/widgets/heian_wind_preview_text.dart';
 import 'package:c_editor/widgets/renai_statue_preview_grid.dart';
+
+List<Widget> _previewDialogActions(
+  BuildContext context, {
+  required AppLocalizations? l10n,
+  VoidCallback? onOpenModuleSettings,
+}) {
+  return [
+    if (onOpenModuleSettings != null)
+      FilledButton(
+        style: FilledButton.styleFrom(backgroundColor: Colors.green),
+        onPressed: () {
+          Navigator.pop(context);
+          onOpenModuleSettings();
+        },
+        child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
+      ),
+    TextButton(
+      onPressed: () => Navigator.pop(context),
+      child: Text(l10n?.close ?? 'Close'),
+    ),
+  ];
+}
 
 Future<void> showDropShipWavePreviewDialog(
   BuildContext context, {
@@ -23,53 +45,39 @@ Future<void> showDropShipWavePreviewDialog(
       '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.airDropShipModuleExpectationLabel ?? 'Airdropped Imps'}';
   final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(levelFile);
 
-  return showDialog<void>(
+  return showEditorPreviewDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(title),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final w in waves) ...[
-              Text(
-                '${l10n?.airDropShipModuleExtraImpCount ?? 'Extra imp count (Imp)'}: ${w.imp}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.airDropShipModuleAreaDropPreviewLabel ??
-                    'Area drop preview:',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              DropShipAreaPreviewGrid(
-                gridRows: gridRows,
-                gridCols: gridCols,
-                rowRange: w.rowRange,
-                colRange: w.colRange,
-              ),
-              const SizedBox(height: 16),
-            ],
-          ],
-        ),
-      ),
-      actions: [
-        if (onOpenModuleSettings != null)
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
-              Navigator.pop(ctx);
-              onOpenModuleSettings();
-            },
-            child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
+    title: Text(title),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final w in waves) ...[
+          Text(
+            '${l10n?.airDropShipModuleExtraImpCount ?? 'Extra imp count (Imp)'}: ${w.imp}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l10n?.close ?? 'Close'),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            l10n?.airDropShipModuleAreaDropPreviewLabel ??
+                'Area drop preview:',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          DropShipAreaPreviewGrid(
+            gridRows: gridRows,
+            gridCols: gridCols,
+            rowRange: w.rowRange,
+            colRange: w.colRange,
+          ),
+          const SizedBox(height: 16),
+        ],
       ],
+    ),
+    actions: _previewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
     ),
   );
 }
@@ -83,47 +91,33 @@ Future<void> showHeianWindWavePreviewDialog(
   if (waves.isEmpty) return Future.value();
   final l10n = AppLocalizations.of(context);
 
-  return showDialog<void>(
+  return showEditorPreviewDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(
-        '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.heianWindModuleExpectationLabel ?? 'Divine Wind'}',
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final w in waves) ...[
-              Text(
-                '${l10n?.heianWindModuleWindDelay ?? 'Time between wind spawns (WindDelay)'}: ${w.windDelay}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              for (final wind in w.windInfos)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8, top: 4),
-                  child: Text(heianWindEntryPreviewLine(context, wind)),
-                ),
-              const SizedBox(height: 8),
-            ],
-          ],
-        ),
-      ),
-      actions: [
-        if (onOpenModuleSettings != null)
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
-              Navigator.pop(ctx);
-              onOpenModuleSettings();
-            },
-            child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
+    title: Text(
+      '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.heianWindModuleExpectationLabel ?? 'Divine Wind'}',
+    ),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final w in waves) ...[
+          Text(
+            '${l10n?.heianWindModuleWindDelay ?? 'Time between wind spawns (WindDelay)'}: ${w.windDelay}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(l10n?.close ?? 'Close'),
-        ),
+          for (final wind in w.windInfos)
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 4),
+              child: Text(heianWindEntryPreviewLine(context, wind)),
+            ),
+          const SizedBox(height: 8),
+        ],
       ],
+    ),
+    actions: _previewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
     ),
   );
 }
@@ -158,115 +152,98 @@ Future<void> showRenaiWavePreviewDialog(
   final hasWaveEvents =
       nightStarts || nightSpawnStatues.isNotEmpty || revivingStatues.isNotEmpty;
 
-  return showDialog<void>(
-    context: context,
-    builder: (ctx) {
-      final previewGridWidth = renaiStatuePreviewMaxWidth(ctx);
-      final children = <Widget>[];
+  final children = <Widget>[];
 
-      if (isEmpty) {
-        children.add(
-          Text(
-            'Empty (roller/tiles only)',
-            style: Theme.of(ctx).textTheme.bodyMedium,
-          ),
-        );
-      } else {
-        if (nightStarts) {
-          children.add(
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.nightlight_round,
-                  size: 16,
-                  color: Theme.of(ctx).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(l10n?.renaiModuleNightStarts ?? 'Night begins'),
-              ],
+  if (isEmpty) {
+    children.add(
+      Text(
+        'Empty (roller/tiles only)',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
+  } else {
+    if (nightStarts) {
+      children.add(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.nightlight_round,
+              size: 16,
+              color: Theme.of(context).colorScheme.primary,
             ),
-          );
-          children.add(const SizedBox(height: 12));
-        }
-        if (nightSpawnStatues.isNotEmpty) {
-          children.add(
-            Text(
-              l10n?.renaiModulePreviewNightStatues ?? 'Night statues:',
-              style: Theme.of(
-                ctx,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          );
-          children.add(const SizedBox(height: 8));
-          children.add(
-            RenaiStatuePreviewGrid(
-              levelFile: levelFile,
-              statues: nightSpawnStatues,
-              maxWidth: previewGridWidth,
-              shrinkOnDesktop: false,
-            ),
-          );
-          children.add(const SizedBox(height: 12));
-        }
-        if (revivingStatues.isNotEmpty) {
-          children.add(
-            Text(
-              l10n?.renaiModulePreviewRevivingStatues ?? 'Reviving statues:',
-              style: Theme.of(
-                ctx,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          );
-          children.add(const SizedBox(height: 8));
-          children.add(
-            RenaiStatuePreviewGrid(
-              levelFile: levelFile,
-              statues: revivingStatues,
-              maxWidth: previewGridWidth,
-              shrinkOnDesktop: false,
-            ),
-          );
-        }
-      }
-
-      return AlertDialog(
-        title: Text(
-          '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.renaiModuleExpectationLabel ?? 'Renaissance event preview'}',
+            const SizedBox(width: 8),
+            Text(l10n?.renaiModuleNightStarts ?? 'Night begins'),
+          ],
         ),
-        content: SingleChildScrollView(
-          child: !hasWaveEvents && !isEmpty
-              ? Text(
-                  l10n?.noDynamicZombies ?? 'No events',
-                  style: Theme.of(ctx).textTheme.bodySmall,
-                )
-              : children.isEmpty
-              ? Text(
-                  l10n?.noDynamicZombies ?? 'No events',
-                  style: Theme.of(ctx).textTheme.bodySmall,
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: children,
-                ),
-        ),
-        actions: [
-          if (onOpenModuleSettings != null)
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: Colors.green),
-              onPressed: () {
-                Navigator.pop(ctx);
-                onOpenModuleSettings();
-              },
-              child: Text(l10n?.openModuleSettings ?? 'Open module settings'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
       );
-    },
+      children.add(const SizedBox(height: 12));
+    }
+    if (nightSpawnStatues.isNotEmpty) {
+      children.add(
+        Text(
+          l10n?.renaiModulePreviewNightStatues ?? 'Night statues:',
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      );
+      children.add(const SizedBox(height: 8));
+      children.add(
+        RenaiStatuePreviewGrid(
+          levelFile: levelFile,
+          statues: nightSpawnStatues,
+          shrinkOnDesktop: false,
+        ),
+      );
+      children.add(const SizedBox(height: 12));
+    }
+    if (revivingStatues.isNotEmpty) {
+      children.add(
+        Text(
+          l10n?.renaiModulePreviewRevivingStatues ?? 'Reviving statues:',
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      );
+      children.add(const SizedBox(height: 8));
+      children.add(
+        RenaiStatuePreviewGrid(
+          levelFile: levelFile,
+          statues: revivingStatues,
+          shrinkOnDesktop: false,
+        ),
+      );
+    }
+  }
+
+  final content = !hasWaveEvents && !isEmpty
+      ? Text(
+          l10n?.noDynamicZombies ?? 'No events',
+          style: Theme.of(context).textTheme.bodySmall,
+        )
+      : children.isEmpty
+      ? Text(
+          l10n?.noDynamicZombies ?? 'No events',
+          style: Theme.of(context).textTheme.bodySmall,
+        )
+      : Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        );
+
+  return showEditorPreviewDialog<void>(
+    context: context,
+    title: Text(
+      '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.renaiModuleExpectationLabel ?? 'Renaissance event preview'}',
+    ),
+    content: content,
+    actions: _previewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
+    ),
   );
 }

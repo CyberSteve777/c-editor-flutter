@@ -219,7 +219,7 @@
       "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_SUMMER_NIGHT",
       "LevelPowerupSet": "LevelPowerupsDefault",
       "BasicZombieTypeName": "summer_basic",
-      "FlagZombieTypeName": "future_flag",
+      "FlagZombieTypeName": "summer_flag",
       "Armor1ZombieTypeName": "summer_armor1",
       "Armor2ZombieTypeName": "summer_armor2",
       "RailcartDefaultTypeName": "railcart_egypt",

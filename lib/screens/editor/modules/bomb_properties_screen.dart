@@ -155,7 +155,8 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-EditorAliasInputField(
+ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,

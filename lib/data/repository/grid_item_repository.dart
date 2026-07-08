@@ -104,6 +104,12 @@ class GridItemRepository {
 
   /// Returns asset path for icon, or unknown placeholder if no icon.
   static String getIconPath(String aliases) {
+    if (aliases == 'gulliver_tunnel') {
+      return 'assets/images/tunnels/GULLIVERTUNNEL_ORIENTATION_BIG_ON_LEFT.webp';
+    }
+    if (aliases == 'pumpkin_house') {
+      return 'assets/images/griditems/pumpkin_house.png';
+    }
     final typeName = aliases == 'gravestone' ? 'gravestone_egypt' : aliases;
     try {
       final item = allItems.firstWhere((i) => i.typeName == typeName);
@@ -126,6 +132,7 @@ class GridItemRepository {
       allItems.where((i) => isRenaiStatue(i.typeName)).toList();
 
   static bool isValid(String typeName) {
+    if (typeName == 'pumpkin_house') return true;
     if (allItems.any((i) => i.typeName == typeName)) return true;
     return ReferenceRepository.instance.isValidGridItem(typeName);
   }

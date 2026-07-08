@@ -64,14 +64,4 @@ abstract class ChallengeResourceL10n {
     final localized = ResourceNames.lookup(context, key);
     return localized != key ? localized : professionId;
   }
-
-  static String condition(BuildContext context, String conditionId) {
-    final key = 'condition_$conditionId';
-    final localized = ResourceNames.lookup(context, key);
-    if (localized != key) return localized;
-    final legacyKey = 'zombieCondition_$conditionId';
-    final legacy = ResourceNames.lookup(context, legacyKey);
-    if (legacy != legacyKey) return legacy;
-    return conditionId;
-  }
 }

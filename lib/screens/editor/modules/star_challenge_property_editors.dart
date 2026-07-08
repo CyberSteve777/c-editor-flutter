@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/challenge_resource_l10n.dart';
+import 'package:c_editor/data/condition_l10n.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
@@ -328,7 +329,7 @@ class _ApplyZombieConditionsChallengeEditorState
               margin: const EdgeInsets.only(bottom: 6),
               child: ListTile(
                 dense: true,
-                title: Text(ChallengeResourceL10n.condition(context, id)),
+                title: Text(ConditionL10n.zombieLabel(context, id)),
                 subtitle: Text(
                   id,
                   style: Theme.of(context).textTheme.bodySmall,

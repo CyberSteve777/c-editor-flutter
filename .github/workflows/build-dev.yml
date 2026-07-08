@@ -1,0 +1,308 @@
+name: Build dev (Windows, Linux, Android)
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: build-dev-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: stable
+  ARTIFACT_CHANNEL: dev
+
+jobs:
+  build-windows:
+    name: Windows x64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Release metadata
+        id: release
+        shell: bash
+        run: bash .github/scripts/release-vars.sh
+
+      - name: Cache Pub
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+      - name: Build Windows release
+        env:
+          CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
+        run: flutter build windows --release
+
+      - name: Package Windows portable
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          $baseName = bash .github/scripts/artifact-name.sh windows-portable $env:ARTIFACT_CHANNEL
+          $bundleDir = "dist/portable/c_editor"
+          New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
+          Copy-Item -Path "build/windows/x64/runner/Release/*" -Destination $bundleDir -Recurse -Force
+          $zipPath = "dist/$baseName.zip"
+          Compress-Archive -Path $bundleDir -DestinationPath $zipPath -Force
+          echo "ARTIFACT_PATH=$zipPath" >> $env:GITHUB_ENV
+          echo "ARTIFACT_NAME=$baseName" >> $env:GITHUB_ENV
+
+      - name: Install ImageMagick
+        run: choco install imagemagick -y --no-progress
+
+      - name: Prepare Windows installer
+        id: installer
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $baseName = bash .github/scripts/artifact-name.sh windows-installer $env:ARTIFACT_CHANNEL
+          $releasePath = ((Resolve-Path "build/windows/x64/runner/Release").Path) -replace '\\', '/'
+          $outputDir = ((Resolve-Path ".").Path + "/dist/installer") -replace '\\', '/'
+
+          New-Item -ItemType Directory -Path dist/installer -Force | Out-Null
+          Copy-Item LICENSE dist/installer/license.txt -Force
+
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+          $magick = (Get-Command magick -ErrorAction SilentlyContinue)?.Source
+          if (-not $magick) {
+            $magick = (Get-ChildItem "C:\Program Files\ImageMagick-*\magick.exe" -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+          }
+          if (-not $magick) {
+            throw "ImageMagick (magick) not found after install."
+          }
+
+          $iconPng = (Resolve-Path "assets/meta/icon.png").Path
+          $iconIco = (Resolve-Path "dist/installer").Path + "\setup_icon.ico"
+          & $magick $iconPng -define icon:auto-resize=256,128,64,48,32,16 $iconIco
+          if (-not (Test-Path $iconIco)) {
+            throw "Failed to create installer icon at $iconIco"
+          }
+
+          $licenseFilePath = ((Resolve-Path "dist/installer/license.txt").Path) -replace '\\', '/'
+          $setupIconPath = ($iconIco -replace '\\', '/')
+
+          $versionParts = $env:VERSION.Split('.')
+          while ($versionParts.Count -lt 4) { $versionParts += '0' }
+          $versionInfo = ($versionParts[0..3] -join '.')
+
+          echo "name=$baseName" >> $env:GITHUB_OUTPUT
+          echo "path=dist/installer/$baseName.exe" >> $env:GITHUB_OUTPUT
+          @(
+            "options<<EOF"
+            "/DMyAppVersion=$env:VERSION"
+            "/DVersionInfoVersion=$versionInfo"
+            "/DSourcePath=$releasePath"
+            "/DOutputBaseFilename=$baseName"
+            "/DOutputDir=$outputDir"
+            "/DLicenseFilePath=$licenseFilePath"
+            "/DSetupIconPath=$setupIconPath"
+            "EOF"
+          ) | ForEach-Object { echo $_ >> $env:GITHUB_OUTPUT }
+
+      - name: Build Windows installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        with:
+          path: windows/installer/c_editor.iss
+          options: ${{ steps.installer.outputs.options }}
+
+      - name: Verify Windows installer
+        shell: pwsh
+        run: |
+          $installerPath = "${{ steps.installer.outputs.path }}"
+          if (-not (Test-Path $installerPath)) {
+            Write-Error "Installer not found at $installerPath"
+            if (Test-Path dist/installer) {
+              Write-Host "Contents of dist/installer:"
+              Get-ChildItem dist/installer | Format-Table -AutoSize
+            }
+            exit 1
+          }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.installer.outputs.name }}
+          path: ${{ steps.installer.outputs.path }}
+          if-no-files-found: error
+
+  build-linux:
+    name: Linux x64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Release metadata
+        id: release
+        run: bash .github/scripts/release-vars.sh
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev \
+            libstdc++-14-dev zip
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6 \
+            /usr/lib/x86_64-linux-gnu/libstdc++.so
+
+      - name: Cache Pub
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter build linux --release
+
+      - name: Build AppImage
+        uses: AppImageCrafters/build-appimage@v1.3
+        env:
+          PATH: /opt/appimagetool.AppDir/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        with:
+          recipe: linux/AppImageBuilder.yml
+          args: --skip-test
+
+      - name: Package Linux AppImage
+        run: |
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-executable dev)"
+          APPIMAGE="$(find . -maxdepth 1 -name '*.AppImage' -type f | head -1)"
+          if [ -z "$APPIMAGE" ]; then
+            echo "AppImage not found in workspace root."
+            ls -la
+            exit 1
+          fi
+          mkdir -p dist
+          cp "$APPIMAGE" "dist/${BASE_NAME}.AppImage"
+          chmod +x "dist/${BASE_NAME}.AppImage"
+          echo "APPIMAGE_PATH=dist/${BASE_NAME}.AppImage" >> "$GITHUB_ENV"
+          echo "APPIMAGE_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
+
+      - name: Package Linux portable
+        run: |
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-portable dev)"
+          mkdir -p "dist/portable/c_editor"
+          cp -a build/linux/x64/release/bundle/. "dist/portable/c_editor/"
+          (cd dist/portable && zip -r "../${BASE_NAME}.zip" c_editor)
+          echo "ARTIFACT_PATH=dist/${BASE_NAME}.zip" >> "$GITHUB_ENV"
+          echo "ARTIFACT_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.APPIMAGE_NAME }}
+          path: ${{ env.APPIMAGE_PATH }}
+          if-no-files-found: error
+
+      - name: Clean up AppImage builder outputs
+        if: always()
+        run: |
+          sudo rm -rf AppDir .bundle.yml
+          sudo find . -maxdepth 1 -name '*.AppImage' -exec rm -f {} +
+          sudo chown -R "$(id -u):$(id -g)" "${{ github.workspace }}"
+
+  build-android:
+    name: Android APK (signed)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Release metadata
+        id: release
+        run: bash .github/scripts/release-vars.sh
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Cache Pub
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - name: Cache Gradle
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Decode release keystore
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+        run: |
+          if [ -z "$KEYSTORE" ]; then
+            echo "Missing repository secret KEYSTORE (base64-encoded keystore)."
+            exit 1
+          fi
+          echo "$KEYSTORE" | base64 -d > android/app/release-keystore.jks
+
+      - run: flutter pub get
+
+      - name: Build signed release APK
+        env:
+          ANDROID_KEYSTORE_FILE: app/release-keystore.jks
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
+        run: flutter build apk --release
+
+      - name: Stage APK artifact
+        run: |
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh android-apk dev)"
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/${BASE_NAME}.apk"
+          echo "ARTIFACT_PATH=dist/${BASE_NAME}.apk" >> "$GITHUB_ENV"
+          echo "ARTIFACT_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error

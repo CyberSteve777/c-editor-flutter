@@ -148,7 +148,6 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.airDropShipModuleTitle ?? 'Air Drop Ship';
     final helpTitle = l10n?.airDropShipModuleHelpTitle ?? 'Air Drop Ship help';
     final selectedWave =
         _selectedIndex >= 0 && _selectedIndex < _data.appearWaves.length
@@ -200,7 +199,8 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-EditorAliasInputField(
+ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,

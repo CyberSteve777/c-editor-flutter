@@ -8,16 +8,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/data/app_links.dart';
+import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/data/level_parser.dart';
 
 enum LevelViewMode { all, favorites }
+
+enum _WebUploadConflictStrategy { skip, overwrite, copy }
+
+enum _SmartUploadChoice {
+  skipThis,
+  overwriteThis,
+  copyThis,
+  skipAll,
+  overwriteAll,
+  copyAll,
+}
 
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
@@ -143,15 +154,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (ctx) => LevelPreviewDialog(
-            levelFile: file,
-            parsed: parsed,
-            fileName: item.name,
-            onBack: () => Navigator.pop(ctx),
-          ),
+      showDialog(
+        context: context,
+        builder: (ctx) => LevelPreviewDialog(
+          levelFile: file,
+          parsed: parsed,
+          fileName: item.name,
+          onBack: () => Navigator.pop(ctx),
         ),
       );
     });
@@ -206,13 +215,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _pickFolder() async {
+    final l10n = AppLocalizations.of(context)!;
     await _ensureStoragePermission();
     if (kIsWeb) {
       await _pickAndAddFile();
       return;
     }
+    if (!mounted) return;
     final result = await FilePicker.getDirectoryPath(
-      dialogTitle: AppLocalizations.of(context)!.openFolder,
+      dialogTitle: l10n.openFolder,
     );
     if (result == null || !mounted) return;
     await _applyLibraryFolder(result);
@@ -245,31 +256,193 @@ class _LevelListScreenState extends State<LevelListScreen> {
     _loadCurrentDirectory();
   }
 
-  /// Web-only: pick a .json file and add to virtual workspace.
+  /// Web-only: pick one or more level files and add them to the virtual workspace.
   Future<void> _pickAndAddFile() async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await FilePicker.pickFiles(
+      allowMultiple: true,
+      withData: true,
       type: FileType.custom,
       allowedExtensions: ['json', 'hujson', 'rton'],
+      dialogTitle: l10n.uploadLevelPickerTitle,
     );
     if (result == null || result.files.isEmpty || !mounted) return;
+
+    const webPath = 'web://';
+    final currentDir = _pathStack.isNotEmpty ? _pathStack.last.path : webPath;
+    final pending = <({String name, List<int> bytes})>[];
+    final conflicts = <({String name, List<int> bytes})>[];
+
     for (final file in result.files) {
       if (file.name.isEmpty) continue;
       final bytes = file.bytes;
       if (bytes == null) continue;
-      final ok = await LevelRepository.prepareInternalCacheFromBytes(
+      final exists = await LevelRepository.fileExistsInDirectory(
+        currentDir,
         file.name,
-        bytes,
       );
-      if (!ok) continue;
+      final entry = (name: file.name, bytes: bytes);
+      if (exists) {
+        conflicts.add(entry);
+      } else {
+        pending.add(entry);
+      }
     }
-    if (mounted) {
-      const webPath = 'web://';
-      setState(() {
-        _rootFolderPath = webPath;
+
+    if (conflicts.isNotEmpty) {
+      await _resolveSmartUploadConflicts(currentDir, conflicts, pending);
+      if (!mounted) return;
+    }
+
+    if (pending.isEmpty) return;
+
+    for (final file in pending) {
+      await LevelRepository.prepareInternalCacheFromBytes(
+        file.name,
+        file.bytes,
+      );
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _rootFolderPath ??= webPath;
+      if (_pathStack.isEmpty) {
         _pathStack = [(name: 'My levels', path: webPath)];
-      });
-      _loadCurrentDirectory();
+      }
+    });
+    _loadCurrentDirectory();
+  }
+
+  Future<void> _resolveSmartUploadConflicts(
+    String currentDir,
+    List<({String name, List<int> bytes})> conflicts,
+    List<({String name, List<int> bytes})> pending,
+  ) async {
+    _WebUploadConflictStrategy? bulkStrategy;
+    final reservedNames = pending.map((e) => e.name.toLowerCase()).toSet();
+
+    for (final conflict in conflicts) {
+      if (!mounted) return;
+
+      late final _WebUploadConflictStrategy strategy;
+      if (bulkStrategy != null) {
+        strategy = bulkStrategy;
+      } else {
+        final choice = await _showSmartUploadFileDialog(conflict.name);
+        if (!mounted) return;
+        if (choice == null) continue;
+
+        switch (choice) {
+          case _SmartUploadChoice.skipThis:
+            strategy = _WebUploadConflictStrategy.skip;
+          case _SmartUploadChoice.skipAll:
+            bulkStrategy = _WebUploadConflictStrategy.skip;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.overwriteThis:
+            strategy = _WebUploadConflictStrategy.overwrite;
+          case _SmartUploadChoice.overwriteAll:
+            bulkStrategy = _WebUploadConflictStrategy.overwrite;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.copyThis:
+            strategy = _WebUploadConflictStrategy.copy;
+          case _SmartUploadChoice.copyAll:
+            bulkStrategy = _WebUploadConflictStrategy.copy;
+            strategy = bulkStrategy;
+        }
+      }
+
+      switch (strategy) {
+        case _WebUploadConflictStrategy.skip:
+          break;
+        case _WebUploadConflictStrategy.overwrite:
+          pending.add(conflict);
+          reservedNames.add(conflict.name.toLowerCase());
+        case _WebUploadConflictStrategy.copy:
+          final copyName = await _nextSmartUploadCopyName(
+            currentDir,
+            conflict.name,
+            reservedNames,
+          );
+          pending.add((name: copyName, bytes: conflict.bytes));
+          reservedNames.add(copyName.toLowerCase());
+      }
     }
+  }
+
+  Future<String> _nextSmartUploadCopyName(
+    String currentDir,
+    String originalName,
+    Set<String> reservedNames,
+  ) async {
+    final baseName = LevelRepository.baseNameWithoutLevelExtension(originalName);
+    final ext = originalName.substring(baseName.length);
+
+    Future<bool> isTaken(String candidate) async {
+      return reservedNames.contains(candidate.toLowerCase()) ||
+          await LevelRepository.fileExistsInDirectory(currentDir, candidate);
+    }
+
+    var copyBase = '${baseName}_copy';
+    var candidate = '$copyBase$ext';
+    if (!await isTaken(candidate)) return candidate;
+
+    var n = 1;
+    while (true) {
+      copyBase = '${baseName}_copy$n';
+      candidate = '$copyBase$ext';
+      if (!await isTaken(candidate)) return candidate;
+      n++;
+    }
+  }
+
+  Future<_SmartUploadChoice?> _showSmartUploadFileDialog(String fileName) async {
+    final l10n = AppLocalizations.of(context)!;
+    return showDialog<_SmartUploadChoice>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.smartUploadTitle),
+        content: Text(l10n.smartUploadFileMessage(fileName)),
+        actions: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.skipThis),
+                child: Text(l10n.smartUploadSkip),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.overwriteThis),
+                child: Text(l10n.smartUploadOverwrite),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.copyThis),
+                child: Text(l10n.smartUploadAsCopy),
+              ),
+              const Divider(height: 1),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.skipAll),
+                child: Text(l10n.smartUploadSkipAll),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.overwriteAll),
+                child: Text(l10n.smartUploadOverwriteAll),
+              ),
+              FilledButton(
+                onPressed: () =>
+                    Navigator.pop(ctx, _SmartUploadChoice.copyAll),
+                child: Text(l10n.smartUploadCopyAll),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadCurrentDirectory() async {
@@ -441,7 +614,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final links = await AppLinks.load();
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
-    final url = Uri.parse(links.levelUpload);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -460,8 +632,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
       ),
     );
 
-    if (ok == true && await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+    if (ok == true) {
+      await launchExternalUrl(links.levelUpload);
     }
   }
 
@@ -776,9 +948,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                             icon: Icon(
                               kIsWeb ? Icons.file_open : Icons.folder_open,
                             ),
-                            label: Text(
-                              kIsWeb ? 'Open file' : l10n.selectFolderButton,
-                            ),
+                              label: Text(
+                                kIsWeb ? l10n.uploadToWebsite : l10n.selectFolderButton,
+                              ),
                           ),
                           if (!kIsWeb && Platform.isIOS) ...[
                             const SizedBox(height: 8),
@@ -1138,7 +1310,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ],
             ],
           ),
-          if (_rootFolderPath != null && _itemToMove == null)
+          if (!kIsWeb && _rootFolderPath != null && _itemToMove == null)
             Positioned(
               right: 16,
               bottom: 16,
@@ -1151,13 +1323,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
                     onPressed: _uploadLevel,
                     label: l10n.uploadLevel,
                   ),
-                  if (_listScrollAtTop && kIsWeb) const SizedBox(height: 12),
-                  if (kIsWeb)
-                    FloatingActionButton(
-                      heroTag: 'addFile',
-                      onPressed: _pickAndAddFile,
-                      child: const Icon(Icons.file_open),
-                    ),
                 ],
               ),
             ),
@@ -1204,32 +1369,46 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 ),
                 child: Row(
                   children: [
-                    _buildBottomNavButton(
-                      onPressed: _canGoBack ? _goToParentDirectory : null,
-                      icon: Icons.arrow_upward,
-                      label: l10n.back,
-                      fgColor: fabFgColor,
-                      disabledFgColor: fabFgColor.withValues(alpha: 0.45),
-                    ),
+                    if (!kIsWeb)
+                      _buildBottomNavButton(
+                        onPressed: _canGoBack ? _goToParentDirectory : null,
+                        icon: Icons.arrow_upward,
+                        label: l10n.back,
+                        fgColor: fabFgColor,
+                        disabledFgColor: fabFgColor.withValues(alpha: 0.45),
+                      ),
+                    if (kIsWeb)
+                      _buildBottomNavButton(
+                        onPressed: _pickAndAddFile,
+                        icon: Icons.file_open,
+                        label: l10n.uploadToWebsite,
+                        fgColor: fabFgColor,
+                      ),
+                    if (kIsWeb)
+                      _buildBottomNavButton(
+                        onPressed: _uploadLevel,
+                        icon: Icons.cloud_upload,
+                        label: l10n.uploadLevel,
+                        fgColor: fabFgColor,
+                      ),
                     _buildBottomNavButton(
                       onPressed: _openTemplateSelector,
                       icon: Icons.add,
                       label: l10n.newLevel,
                       fgColor: fabFgColor,
                     ),
-                    _buildBottomNavButton(
-                      onPressed: kIsWeb
-                          ? null
-                          : () {
-                              setState(() => _showNewFolderDialog = true);
-                              WidgetsBinding.instance.addPostFrameCallback(
-                                (_) => _showNewFolderDialogImpl(),
-                              );
-                            },
-                      icon: Icons.create_new_folder,
-                      label: l10n.newFolder,
-                      fgColor: fabFgColor,
-                    ),
+                    if (!kIsWeb)
+                      _buildBottomNavButton(
+                        onPressed: () {
+                          setState(() => _showNewFolderDialog = true);
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) => _showNewFolderDialogImpl(),
+                          );
+                        },
+                        icon: Icons.create_new_folder,
+                        label: l10n.newFolder,
+                        fgColor: fabFgColor,
+                      ),
                   ],
                 ),
               ),
@@ -1353,10 +1532,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
             children: [
               Text(
                 l10n.confirmDeleteMessage(
+                  target.name,
                   target.isDirectory
                       ? l10n.folderDeleteDetail
                       : l10n.levelDeleteDetail,
-                  target.name,
                 ),
               ),
               const SizedBox(height: 16),
@@ -2053,10 +2232,11 @@ class _FileItemRow extends StatelessWidget {
               iconColor: item.isFavorite ? theme.colorScheme.error : null,
             ),
           ),
-        PopupMenuItem(
-          value: 'preview',
-          child: _popupMenuTile(icon: Icons.remove_red_eye, label: l10n.levelPreview),
-        ),
+        if (item.name.toLowerCase().endsWith('.json'))
+          PopupMenuItem(
+            value: 'preview',
+            child: _popupMenuTile(icon: Icons.remove_red_eye, label: l10n.levelPreview),
+          ),
         PopupMenuItem(
           value: 'rename',
           child: _popupMenuTile(icon: Icons.edit, label: l10n.rename),

@@ -3,8 +3,6 @@ name: Build release (Windows, Linux, Android)
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -13,6 +11,7 @@ concurrency:
 
 env:
   FLUTTER_VERSION: stable
+  ARTIFACT_CHANNEL: release
 
 jobs:
   build-windows:
@@ -50,9 +49,8 @@ jobs:
         shell: pwsh
         env:
           VERSION: ${{ steps.release.outputs.version }}
-          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
-          $baseName = "c_editor-$env:VERSION+$env:SHORT_SHA-windows-portable"
+          $baseName = bash .github/scripts/artifact-name.sh windows-portable $env:ARTIFACT_CHANNEL
           $bundleDir = "dist/portable/c_editor"
           New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
           Copy-Item -Path "build/windows/x64/runner/Release/*" -Destination $bundleDir -Recurse -Force
@@ -69,10 +67,9 @@ jobs:
         shell: pwsh
         env:
           VERSION: ${{ steps.release.outputs.version }}
-          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
           $ErrorActionPreference = "Stop"
-          $baseName = "c_editor-$env:VERSION+$env:SHORT_SHA-windows-installer"
+          $baseName = bash .github/scripts/artifact-name.sh windows-installer $env:ARTIFACT_CHANNEL
           $releasePath = ((Resolve-Path "build/windows/x64/runner/Release").Path) -replace '\\', '/'
           $outputDir = ((Resolve-Path ".").Path + "/dist/installer") -replace '\\', '/'
 
@@ -183,12 +180,33 @@ jobs:
       - run: flutter pub get
       - run: flutter build linux --release
 
-      - name: Package Linux portable
+      - name: Build AppImage
+        uses: AppImageCrafters/build-appimage@v1.3
         env:
-          VERSION: ${{ steps.release.outputs.version }}
-          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
+          # The 1.1.0 builder image ships mksquashfs inside appimagetool but not on PATH.
+          PATH: /opt/appimagetool.AppDir/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        with:
+          recipe: linux/AppImageBuilder.yml
+          args: --skip-test
+
+      - name: Package Linux AppImage
         run: |
-          BASE_NAME="c_editor-${VERSION}+${SHORT_SHA}-linux-portable"
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-executable release)"
+          APPIMAGE="$(find . -maxdepth 1 -name '*.AppImage' -type f | head -1)"
+          if [ -z "$APPIMAGE" ]; then
+            echo "AppImage not found in workspace root."
+            ls -la
+            exit 1
+          fi
+          mkdir -p dist
+          cp "$APPIMAGE" "dist/${BASE_NAME}.AppImage"
+          chmod +x "dist/${BASE_NAME}.AppImage"
+          echo "APPIMAGE_PATH=dist/${BASE_NAME}.AppImage" >> "$GITHUB_ENV"
+          echo "APPIMAGE_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
+
+      - name: Package Linux portable
+        run: |
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-portable release)"
           mkdir -p "dist/portable/c_editor"
           cp -a build/linux/x64/release/bundle/. "dist/portable/c_editor/"
           (cd dist/portable && zip -r "../${BASE_NAME}.zip" c_editor)
@@ -200,6 +218,19 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_PATH }}
           if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.APPIMAGE_NAME }}
+          path: ${{ env.APPIMAGE_PATH }}
+          if-no-files-found: error
+
+      - name: Clean up AppImage builder outputs
+        if: always()
+        run: |
+          sudo rm -rf AppDir .bundle.yml
+          sudo find . -maxdepth 1 -name '*.AppImage' -exec rm -f {} +
+          sudo chown -R "$(id -u):$(id -g)" "${{ github.workspace }}"
 
   build-android:
     name: Android APK (signed)
@@ -264,11 +295,8 @@ jobs:
         run: flutter build apk --release
 
       - name: Stage APK artifact
-        env:
-          VERSION: ${{ steps.release.outputs.version }}
-          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
-          BASE_NAME="c_editor-${VERSION}+${SHORT_SHA}-android-apk"
+          BASE_NAME="$(bash .github/scripts/artifact-name.sh android-apk release)"
           mkdir -p dist
           cp build/app/outputs/flutter-apk/app-release.apk "dist/${BASE_NAME}.apk"
           echo "ARTIFACT_PATH=dist/${BASE_NAME}.apk" >> "$GITHUB_ENV"

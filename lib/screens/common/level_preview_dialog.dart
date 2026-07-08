@@ -1,3 +1,5 @@
+import 'package:c_editor/widgets/editor_components.dart' show isDesktopPlatform;
+import 'package:c_editor/data/zombie_conditions.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -7,16 +9,25 @@ import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
+import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
+import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/armrack_type_catalog.dart';
-import 'package:c_editor/data/repository/tool_repository.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
+import 'package:c_editor/screens/common/level_preview_widgets.dart';
+import 'package:c_editor/widgets/lawn_grid.dart';
 import 'package:c_editor/widgets/asset_image.dart' show AssetImageWidget, imageAltCandidates;
-import 'package:c_editor/widgets/editor_components.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/gestures.dart';
+import 'package:c_editor/data/zombie_discovery.dart';
+import 'package:c_editor/data/grid_item_discovery.dart';
+import 'package:c_editor/data/plant_food_discovery.dart';
+import 'package:c_editor/data/challenge_resource_l10n.dart';
+import 'package:c_editor/data/repository/challenge_repository.dart';
+import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/repository/rift_theme_repository.dart';
+import 'package:c_editor/screens/select/event_selection_screen.dart';
 
 class LevelPreviewDialog extends StatefulWidget {
   final PvzLevelFile levelFile;
@@ -42,8 +53,42 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   String? _gridItemCategoryKey;
   bool _isLoadingRepos = true;
 
+  List<String> _cachedZombies = [];
+  List<String> _cachedGridItems = [];
+  List<String> _cachedEvents = [];
+  int _cachedTotalPfCount = 0;
+  List<GridPreviewCategoryOption> _cachedGridCategories = [];
+
   bool _blackListExpanded = false;
   bool _whiteListExpanded = false;
+
+  bool _copycatBlackListExpanded = false;
+  bool _copycatWhiteListExpanded = false;
+  bool _seedRainExpanded = false;
+
+  bool _encounterZombiesExpanded = false;
+  bool _encounterGridItemsExpanded = false;
+  bool _encounterEventsExpanded = false;
+  bool _riftThemesExpanded = false;
+  bool _challengesExpanded = false;
+
+  int? _selectedX;
+  int? _selectedY;
+  List<String> _selectedIds = [];
+
+  final ScrollController _subCategoryScrollController = ScrollController();
+  final ScrollController _sidebarScrollController = ScrollController();
+  final ScrollController _prePlacedTabScrollController = ScrollController();
+  final ScrollController _plantTypeTabScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _subCategoryScrollController.dispose();
+    _sidebarScrollController.dispose();
+    _prePlacedTabScrollController.dispose();
+    _plantTypeTabScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -53,19 +98,48 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
   Future<void> _initData() async {
     await Future.wait([
+      ReferenceRepository.init(),
       PlantRepository().init(),
       ZombieRepository().init(),
       GridItemRepository.init(),
       StageRepository.init(),
+      ZombossMechRepository.ensureLoaded(),
+      ZombossBattleRepository.init(),
     ]);
+
+    _cachedZombies = ZombieDiscovery.discoverZombies(widget.levelFile, widget.parsed).toList();
+    _cachedGridItems = GridItemDiscovery.discoverGridItems(widget.levelFile).toList();
+    _cachedEvents = ZombieDiscovery.discoverEvents(widget.parsed).toList();
+    _cachedTotalPfCount = PlantFoodDiscovery.calculateTotalPlantFood(widget.levelFile, widget.parsed);
+
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      final cats = collectGridPreviewCategories(context, widget.levelFile, l10n);
+      _cachedGridCategories = cats;
+
+      if (cats.isNotEmpty) {
+        if (cats.any((c) => c.kind == GridPreviewModuleKind.plants)) {
+          _prePlacedTabIndex = 0;
+        } else if (cats.any((c) => c.kind == GridPreviewModuleKind.zombies || c.kind == GridPreviewModuleKind.dropShip)) {
+          _prePlacedTabIndex = 1;
+        } else if (cats.any((c) => c.kind == GridPreviewModuleKind.zombossMech)) {
+          _prePlacedTabIndex = 3;
+        } else if (cats.any((c) => c.kind == GridPreviewModuleKind.zomboss)) {
+          _prePlacedTabIndex = 4;
+        } else {
+          _prePlacedTabIndex = 2;
+        }
+      }
+
       setState(() => _isLoadingRepos = false);
     }
   }
 
   String _getModuleLabel(GridPreviewModuleKind kind, AppLocalizations l10n) {
     switch (kind) {
-      case GridPreviewModuleKind.common: return l10n.previewRegularPlants;
+      case GridPreviewModuleKind.plants: return l10n.previewTabPlants;
+      case GridPreviewModuleKind.zombies: return l10n.previewInitial;
+      case GridPreviewModuleKind.common: return l10n.previewInitial;
       case GridPreviewModuleKind.piratePlank: return l10n.moduleTitle_PiratePlankProperties;
       case GridPreviewModuleKind.railcart: return l10n.moduleTitle_RailcartProperties;
       case GridPreviewModuleKind.mechanismPlank: return l10n.moduleTitle_MechanismPlankProperties;
@@ -77,10 +151,20 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       case GridPreviewModuleKind.tideSystem: return l10n.moduleTitle_TideProperties;
       case GridPreviewModuleKind.smokePollution: return l10n.moduleTitle_SmokePollutionModuleProperties;
       case GridPreviewModuleKind.manholePipeline: return l10n.moduleTitle_ManholePipelineModuleProperties;
-      case GridPreviewModuleKind.renaissance: return l10n.moduleTitle_RenaiModuleProperties;
       case GridPreviewModuleKind.roofProperties: return l10n.moduleTitle_RoofProperties;
       case GridPreviewModuleKind.tunnelDefend: return l10n.moduleTitle_TunnelDefendModuleProperties;
       case GridPreviewModuleKind.gulliverTunnel: return l10n.moduleTitle_InitialGridItemGulliverTunnelProperties;
+      case GridPreviewModuleKind.renaissance: return l10n.renaissanceStatues;
+      case GridPreviewModuleKind.vases: return l10n.vaseBreaker;
+      case GridPreviewModuleKind.explosiveBarrels: return l10n.moduleTitle_BombProperties;
+      case GridPreviewModuleKind.portalFight: return l10n.moduleTitle_PVZ1PassageModuleProperties;
+      case GridPreviewModuleKind.dropShip: return l10n.moduleTitle_DropShipProperties;
+      case GridPreviewModuleKind.protectPlants: return l10n.moduleTitle_ProtectThePlantChallengeProperties;
+      case GridPreviewModuleKind.protectItems: return l10n.moduleTitle_ProtectTheGridItemChallengeProperties;
+      case GridPreviewModuleKind.flowers: return ChallengeResourceL10n.title(context, 'StarChallengeZombieDistanceProps');
+      case GridPreviewModuleKind.zombossMech: return l10n.zomboss;
+      case GridPreviewModuleKind.zomboss: return l10n.boss;
+      case GridPreviewModuleKind.empty: return l10n.previewInitial;
     }
   }
 
@@ -102,58 +186,101 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final levelDef = widget.parsed.levelDef;
+    final isDesktop = isDesktopPlatform(context);
 
     if (_isLoadingRepos) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF141414),
-        body: Center(child: CircularProgressIndicator()),
+      return const AlertDialog(
+        content: SizedBox(
+          height: 100,
+          child: Center(child: CircularProgressIndicator()),
+        ),
       );
     }
 
     if (levelDef == null) {
-      return Scaffold(
-        appBar: AppBar(title: Text(widget.fileName)),
-        body: const Center(child: Text('Error: No level definition found.')),
+      return AlertDialog(
+        title: Text(widget.fileName),
+        content: Text(l10n.noLevelDefinitionHint),
+        actions: [
+          TextButton(onPressed: widget.onBack, child: Text(l10n.back)),
+        ],
       );
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF141414),
-      appBar: AppBar(
-        title: Text(l10n.levelPreview),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: widget.onBack),
+    return AlertDialog(
+      backgroundColor: theme.colorScheme.surface,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? 40 : 12,
+        vertical: isDesktop ? 40 : 20,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildSummaryCard(context, levelDef, theme, l10n),
-            const SizedBox(height: 12),
-            _buildSeedBankCard(context, theme, l10n),
-            const SizedBox(height: 12),
-            _buildConveyorCard(context, theme, l10n),
-            const SizedBox(height: 12),
-            _buildPrePlacedCard(context, theme, l10n),
-            const SizedBox(height: 12),
-            _buildEncounterCard(context, theme, l10n),
-            const SizedBox(height: 12),
-            _buildModulesCard(context, theme, l10n),
-          ],
+      titlePadding: const EdgeInsets.fromLTRB(24, 16, 16, 8),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '${l10n.levelPreview}: ${widget.fileName}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: widget.onBack,
+            tooltip: l10n.back,
+          ),
+        ],
+      ),
+      contentPadding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+      content: SizedBox(
+        width: isDesktop ? 900 : double.maxFinite,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildSummaryCard(context, levelDef, theme, l10n),
+              const SizedBox(height: 12),
+              _buildSeedBankCard(context, theme, l10n),
+              const SizedBox(height: 12),
+              _buildConveyorCard(context, theme, l10n),
+              const SizedBox(height: 12),
+              _buildCopycatCard(context, theme, l10n),
+              const SizedBox(height: 12),
+              _buildSeedRainCard(context, theme, l10n),
+              const SizedBox(height: 12),
+              _buildHeianWindCard(context, theme, l10n),
+              const SizedBox(height: 12),
+              _buildPrePlacedCard(context, theme, l10n),
+              const SizedBox(height: 12),
+              _buildEncounterCard(context, theme, l10n),
+              const SizedBox(height: 12),
+              _buildModulesCard(context, theme, l10n),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildSectionTitle(String title, ThemeData theme, {Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 4),
-      child: Text(
-        title,
-        style: theme.textTheme.titleMedium?.copyWith(
-          color: color ?? theme.colorScheme.primary.withValues(alpha: 0.9),
-          fontWeight: FontWeight.bold,
-        ),
+    return Text(
+      title,
+      style: theme.textTheme.titleMedium?.copyWith(
+        color: color ?? theme.colorScheme.primary.withValues(alpha: 0.9),
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildSubSectionTitle(String title, ThemeData theme) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 14,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+        fontWeight: FontWeight.bold,
       ),
     );
   }
@@ -172,11 +299,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       final stageObj = CustomStageLevelUtils.findStageObject(widget.levelFile, stageAlias);
       if (stageObj != null && stageObj.objData is Map) {
         final objDataMap = Map<String, dynamic>.from(stageObj.objData as Map);
-        final nameKey = CustomStageLevelUtils.displayStageBaseNameKey(
+        worldName = ResourceNames.lookup(context, CustomStageLevelUtils.displayStageBaseNameKey(
           objclass: stageObj.objClass,
           objdata: objDataMap,
-        );
-        worldName = ResourceNames.lookup(context, nameKey);
+        ));
         stageIconFile = CustomStageLevelUtils.displayIconFileName(
           objclass: stageObj.objClass,
           objdata: objDataMap,
@@ -194,7 +320,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final stageIconPath = stageIconFile != null ? 'assets/images/round_icons/$stageIconFile' : null;
 
     int startingSun = def.startingSun ?? 0;
-    int pfCount = 0;
+    int pfCount = PlantFoodDiscovery.getStartingPlantFood(widget.levelFile, widget.parsed);
 
     bool skySunEnabled = widget.levelFile.objects.any((o) =>
     o.objClass == 'SunDropperProperties' ||
@@ -206,91 +332,297 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     o.objClass == 'SunBombChallengeProperties'
     ) || def.modules.any((m) => m.contains('SunBomb'));
 
-    // Бомбы активны только если есть и дождь, и модуль бомб
     bool sunBombsActive = skySunEnabled && hasSunBombModule;
+
+    bool hasOverwhelm = levelHasModule(widget.levelFile, 'PVZ1OverwhelmModuleProperties');
+    bool hasFastEntry = levelHasModule(widget.levelFile, 'ZombieMoveFastModuleProperties');
+    bool hasWeather = levelHasWeather(widget.levelFile);
+    bool hasSpermWhale = levelHasModule(widget.levelFile, 'SpermWhaleModuleProperties');
+    bool hasWitch = levelHasModule(widget.levelFile, 'WitchModuleProperties');
+    bool hasZombieRush = levelHasModule(widget.levelFile, 'ZombieRushModuleProperties');
+
+    int? rushTime;
+    if (hasZombieRush) {
+      final rushObj = widget.levelFile.objects.firstWhereOrNull((o) => o.objClass == 'ZombieRushModuleProperties');
+      if (rushObj != null && rushObj.objData is Map) {
+        final data = rushObj.objData as Map;
+        rushTime = (data['TimeCountDown'] ?? data['LevelCountdown'] ?? 120).toInt();
+      }
+    }
+
+    final mowerAlias = findLawnMowerAlias(def);
+    String? mowerName;
+    if (mowerAlias != null) {
+      final key = 'lawnMower_$mowerAlias';
+      final localized = ResourceNames.lookup(context, key);
+      mowerName = localized != key ? localized : mowerAlias;
+    }
 
     for (var o in widget.levelFile.objects) {
       final data = o.objData;
       if (data is Map) {
         if (o.objClass == 'LevelMutatorStartingPlantfoodProps') {
-          pfCount = data['StartingPlantfoodOverride'] ?? data['StartingPlantfood'] ?? 0;
+          pfCount = (data['StartingPlantfoodOverride'] ?? data['StartingPlantfood'] ?? pfCount).toInt();
         } else if (o.objClass == 'LastStandMinigameProperties' || o.objClass == 'ZombossLastStandMinigameProperties') {
-          if (data['StartingSun'] != null) startingSun = data['StartingSun'];
-          if (data['StartingPlantfood'] != null) pfCount = data['StartingPlantfood'];
+          if (data['StartingSun'] != null) startingSun = (data['StartingSun'] as num).toInt();
+          if (data['StartingPlantfood'] != null) pfCount = (data['StartingPlantfood'] as num).toInt();
         }
       }
     }
 
-    return Card(
-      color: Colors.white.withValues(alpha: 0.04),
+    final isDesktop = isDesktopPlatform(context);
+    final List<({String title, IconData? icon, String? iconId, Color color})> summaryLegends = [];
+    summaryLegends.add((title: l10n.startingSun, icon: null, iconId: 'sun', color: Colors.orange));
+    summaryLegends.add((title: l10n.previewStartingPlantFood, icon: null, iconId: 'plantfood', color: Colors.greenAccent));
+    summaryLegends.add((
+      title: sunBombsActive ? l10n.sunBombFalling : (skySunEnabled ? l10n.sunDroppingActive : l10n.sunDroppingInactive),
+      icon: sunBombsActive ? Icons.wb_iridescent : (skySunEnabled ? Icons.wb_sunny_outlined : Icons.sunny_snowing),
+      iconId: null,
+      color: sunBombsActive ? Colors.deepPurpleAccent : (skySunEnabled ? Colors.lightBlueAccent : Colors.redAccent),
+    ));
+    if (hasOverwhelm) summaryLegends.add((title: l10n.overwhelmLabel, icon: Icons.view_column, iconId: null, color: Colors.blueGrey));
+    if (hasFastEntry) summaryLegends.add((title: l10n.fastEntryLabel, icon: Icons.fast_forward, iconId: null, color: Colors.limeAccent));
+    if (hasWeather) {
+      final weather = getLevelWeatherType(widget.levelFile);
+      if (weather != null) {
+        summaryLegends.add((
+          title: getWeatherLabel(weather, l10n) ?? '',
+          icon: switch (weather) {
+            LevelWeatherType.snow => Icons.ac_unit,
+            LevelWeatherType.lightning => Icons.thunderstorm,
+            LevelWeatherType.rain => Icons.cloud,
+          },
+          iconId: null,
+          color: Colors.blueAccent,
+        ));
+      }
+    }
+    if (hasSpermWhale) summaryLegends.add((title: l10n.spermWhaleLabel, icon: Icons.waves, iconId: null, color: Colors.cyanAccent));
+    if (hasWitch) summaryLegends.add((title: l10n.witchLabel, icon: Icons.auto_fix_high, iconId: null, color: Colors.purpleAccent));
+    if (hasZombieRush && rushTime != null) summaryLegends.add((title: l10n.zombieRushLabel, icon: Icons.timer, iconId: null, color: Colors.redAccent));
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(l10n.levelBasicInfo, theme),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.info_outline, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildSectionTitle(l10n.levelBasicInfo, theme)),
+                ],
+              ),
+            ),
+            LayoutBuilder(builder: (context, constraints) {
+              final content = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${l10n.name}: ${def.name.isEmpty ? widget.fileName : def.name}',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (def.description.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${l10n.description}: ${def.description}',
+                      style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.8), fontSize: 14),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+                  Text(
+                    '${l10n.stageModule}: $worldName$customSuffix',
+                    style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.8), fontSize: 14),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
                     children: [
-                      Text(
-                        '${l10n.name}: ${def.name.isEmpty ? widget.fileName : def.name}',
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      _buildSummaryAssetChip(
+                        iconId: 'sun',
+                        label: '$startingSun',
+                        color: Colors.orange,
+                        tooltip: l10n.startingSun,
                       ),
-                      if (def.description.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          '${l10n.description}: ${def.description}',
-                          style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 14),
-                        ),
-                      ],
-                      const SizedBox(height: 6),
-                      Text(
-                        '${l10n.stageModule}: $worldName$customSuffix',
-                        style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 14),
+                      _buildSummaryAssetChip(
+                        iconId: 'plantfood',
+                        label: '$pfCount',
+                        color: Colors.greenAccent,
+                        tooltip: l10n.previewStartingPlantFood,
                       ),
                     ],
                   ),
-                ),
-                if (stageIconPath != null)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: CircleAvatar(
-                      radius: 48,
-                      backgroundColor: Colors.white.withValues(alpha: 0.05),
-                      child: AssetImageWidget(
-                        assetPath: stageIconPath,
-                        width: 84,
-                        height: 84,
+                ],
+              );
+
+              if (constraints.maxWidth > 500) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: content),
+                    if (stageIconPath != null) ...[
+                      const SizedBox(width: 16),
+                      CircleAvatar(
+                        radius: 48,
+                        backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                        child: AssetImageWidget(
+                          assetPath: stageIconPath,
+                          width: 84,
+                          height: 84,
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (stageIconPath != null) ...[
+                    Center(
+                      child: CircleAvatar(
+                        radius: 48,
+                        backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                        child: AssetImageWidget(
+                          assetPath: stageIconPath,
+                          width: 84,
+                          height: 84,
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                    const SizedBox(height: 16),
+                  ],
+                  content,
+                ],
+              );
+            }),
             const SizedBox(height: 18),
-            Row(
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
               children: [
-                _ResourceChip(icon: Icons.wb_sunny, label: '$startingSun', color: Colors.orange),
-                const SizedBox(width: 10),
-                _ResourceChip(icon: Icons.eco, label: '$pfCount', color: Colors.greenAccent),
-                const SizedBox(width: 10),
-                _ResourceChip(
+                ResourceChip(
                   icon: sunBombsActive
                       ? Icons.wb_iridescent
                       : (skySunEnabled ? Icons.wb_sunny_outlined : Icons.sunny_snowing),
-                  label: sunBombsActive ? '!' : (skySunEnabled ? '✓' : '✕'),
+                  label: isDesktop ? '' : (sunBombsActive ? '!' : (skySunEnabled ? '✓' : '✕')),
                   color: sunBombsActive
                       ? Colors.deepPurpleAccent
                       : (skySunEnabled ? Colors.lightBlueAccent : Colors.redAccent),
                   tooltip: sunBombsActive
-                      ? 'Падают солнечные бомбы'
-                      : (skySunEnabled ? 'Солнца падают с неба' : 'Солнца не падают с неба'),
+                      ? l10n.sunBombFalling
+                      : (skySunEnabled ? l10n.sunDroppingActive : l10n.sunDroppingInactive),
+                ),
+                if (hasOverwhelm)
+                  ResourceChip(
+                    icon: Icons.view_column,
+                    label: isDesktop ? '' : '5',
+                    color: Colors.blueGrey,
+                    tooltip: l10n.overwhelmLabel,
+                  ),
+                if (hasFastEntry)
+                  ResourceChip(
+                    icon: Icons.fast_forward,
+                    label: isDesktop ? '' : '>>',
+                    color: Colors.limeAccent,
+                    tooltip: l10n.fastEntryLabel,
+                  ),
+                if (hasWeather)
+                  Builder(builder: (context) {
+                    final weather = getLevelWeatherType(widget.levelFile);
+                    if (weather == null) return const SizedBox.shrink();
+                    final icon = switch (weather) {
+                      LevelWeatherType.snow => Icons.ac_unit,
+                      LevelWeatherType.lightning => Icons.thunderstorm,
+                      LevelWeatherType.rain => Icons.cloud,
+                    };
+                    return ResourceChip(
+                      icon: icon,
+                      label: '',
+                      color: Colors.blueAccent,
+                      tooltip: getWeatherLabel(weather, l10n),
+                    );
+                  }),
+                if (hasSpermWhale)
+                  ResourceChip(
+                    icon: Icons.waves,
+                    label: '',
+                    color: Colors.cyanAccent,
+                    tooltip: l10n.spermWhaleLabel,
+                  ),
+                if (hasWitch)
+                  ResourceChip(
+                    icon: Icons.auto_fix_high,
+                    label: '',
+                    color: Colors.purpleAccent,
+                    tooltip: l10n.witchLabel,
+                  ),
+                if (hasZombieRush && rushTime != null)
+                  ResourceChip(
+                    icon: Icons.timer,
+                    label: '${rushTime}s',
+                    color: Colors.redAccent,
+                    tooltip: l10n.zombieRushLabel,
+                  ),
+              ],
+            ),
+            if (summaryLegends.isNotEmpty && !isDesktop) ...[
+              const SizedBox(height: 12),
+              const Divider(height: 1, thickness: 0.5),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 16,
+                runSpacing: 8,
+                children: summaryLegends.map((leg) => Wrap(
+                  spacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    if (leg.icon != null) Icon(leg.icon, size: 12, color: leg.color.withValues(alpha: 0.6))
+                    else if (leg.iconId != null) UniversalIcon(id: leg.iconId!, size: 12),
+                    Text(
+                      leg.title,
+                      style: TextStyle(fontSize: 10, color: theme.colorScheme.onSurface.withValues(alpha: 0.8)),
+                    ),
+                  ],
+                )).toList(),
+              ),
+            ],
+            if (mowerName != null) ...[
+              const SizedBox(height: 16),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: [
+                Icon(Icons.grass, size: 16, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  '${l10n.lawnMowerTypeLabel}: ',
+                  style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+                ),
+                Text(
+                  mowerName,
+                  style: TextStyle(fontSize: 14, color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
+            ],
           ],
         ),
       ),
@@ -331,37 +663,57 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     addList(data['PlantWhiteList'] ?? data['WhiteList'], whiteList);
 
     final bool isDataEmpty = presetPlants.isEmpty && blackList.isEmpty && whiteList.isEmpty;
-    final String levelText = plantLevel == 0 ? "как в коллекции (у игрока)" : "$plantLevel";
+    final String levelText = plantLevel == 0 ? l10n.followAccountLevel : "$plantLevel";
 
-    return Card(
-      color: Colors.white.withValues(alpha: 0.04),
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(l10n.previewSeedBank, theme),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Icon(Icons.inventory_2_outlined, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
+                  const SizedBox(width: 8),
+                  _buildSectionTitle(l10n.previewSeedBank, theme),
+                ],
+              ),
+            ),
 
             if (isDataEmpty) ...[
               if (method == 'preset')
-                const Text("Выбор игрока невозможен", style: TextStyle(fontSize: 16, color: Colors.white70))
+                Text(l10n.chooser, style: TextStyle(fontSize: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)))
               else if (!isZombieMode)
-                const Text("На выбор игрока", style: TextStyle(fontSize: 16, color: Colors.white70)),
+                Text(l10n.chooser, style: TextStyle(fontSize: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.7))),
             ],
 
             if (presetPlants.isNotEmpty) ...[
               const SizedBox(height: 8),
-              _buildPlantListSection("Заранее выданные", presetPlants, true),
+              _buildPlantListSection(
+                isZombieMode ? l10n.availableZombies : l10n.plantsAvailableAtStart,
+                presetPlants,
+                true,
+              ),
             ],
             if (whiteList.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildPlantListSection("Белый список", whiteList, _whiteListExpanded,
-                  onExpand: () => setState(() => _whiteListExpanded = true)),
+              _buildPlantListSection(l10n.whiteList, whiteList, _whiteListExpanded,
+                  onToggle: () => setState(() => _whiteListExpanded = !_whiteListExpanded)),
             ],
             if (blackList.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildPlantListSection("Чёрный список", blackList, _blackListExpanded,
-                  onExpand: () => setState(() => _blackListExpanded = true)),
+              _buildPlantListSection(l10n.blackList, blackList, _blackListExpanded,
+                  onToggle: () => setState(() => _blackListExpanded = !_blackListExpanded)),
             ],
 
             const SizedBox(height: 20),
@@ -370,7 +722,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 children: [
                   const Icon(Icons.swap_horiz, size: 18, color: Colors.blueAccent),
                   const SizedBox(width: 8),
-                  Text("${l10n.reverseZombieFactionTitle}: ", style: const TextStyle(fontSize: 15, color: Colors.blueAccent)),
+                  Expanded(
+                    child: Text(
+                      "${l10n.reverseZombieFactionTitle}: ",
+                      style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
+                    ),
+                  ),
                   Icon(isReversedFaction ? Icons.check : Icons.close, size: 18, color: isReversedFaction ? Colors.greenAccent : Colors.redAccent),
                 ],
               )
@@ -379,7 +736,13 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 children: [
                   const Icon(Icons.trending_up, size: 18, color: Colors.blueAccent),
                   const SizedBox(width: 8),
-                  Text("Уровень растений: $levelText", style: const TextStyle(fontSize: 15, color: Colors.blueAccent)),
+                  Expanded(
+                    child: Text(
+                      "${l10n.plantLevelLabel}: $levelText",
+                      style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
                 ],
               ),
           ],
@@ -451,17 +814,33 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       }
     }
 
-    return Card(
-      color: Colors.white.withValues(alpha: 0.04),
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle("Конвейер", theme),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Icon(Icons.conveyor_belt, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
+                  const SizedBox(width: 8),
+                  _buildSectionTitle(l10n.moduleTitle_ConveyorSeedBankProperties, theme),
+                ],
+              ),
+            ),
 
             if (plants.isNotEmpty)
-              _buildPlantListSection("Семена на конвейере", plants, true),
+              _buildPlantListSection(l10n.presetPlants, plants, true),
 
             if (changes.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -470,17 +849,17 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  const Text("Изменения в конвейере", style: TextStyle(fontSize: 14, color: Colors.white60, fontWeight: FontWeight.bold)),
-                  _legendItem(Colors.green, "добавится"),
-                  _legendItem(Colors.red, "удалится"),
-                  const Text("• Цифра — номер волны", style: TextStyle(fontSize: 11, color: Colors.white38)),
+                  Text(l10n.conveyorChanges, style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontWeight: FontWeight.bold)),
+                  _legendItem(Colors.green, l10n.willBeAdded, theme),
+                  _legendItem(Colors.red, l10n.willBeRemoved, theme),
+                  Text("• ${l10n.waveNumberLegend}", style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.38))),
                 ],
               ),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 12,
                 runSpacing: 12,
-                children: changes.map((c) => _ConveyorBadgeIcon(id: c.id, wave: c.wave, isAdd: c.isAdd)).toList(),
+                children: changes.map((c) => _ConveyorBadgeIcon(id: c.id, wave: c.wave, isAdd: c.isAdd, levelFile: widget.levelFile)).toList(),
               ),
             ],
           ],
@@ -489,7 +868,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
-  Widget _legendItem(Color color, String label) {
+  Widget _legendItem(Color color, String label, ThemeData theme) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -498,37 +877,115 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           decoration: BoxDecoration(color: color.withValues(alpha: 0.8), shape: BoxShape.circle),
         ),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(fontSize: 11, color: Colors.white38)),
+        Text(label, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.38))),
       ],
     );
   }
 
-  Widget _buildPlantListSection(String title, List<String> items, bool expanded, {VoidCallback? onExpand}) {
-    final bool canExpand = items.length > 8 && !expanded;
-    final displayItems = canExpand ? items.take(3).toList() : items;
+  Widget _buildPlantFoodChip(BuildContext context, int count) {
+    final l10n = AppLocalizations.of(context)!;
+    final label = l10n.totalLabel;
+    final tooltip = l10n.totalPlantFoodTooltip;
+
+    return Tooltip(
+      message: tooltip,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.greenAccent.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$label ',
+              style: const TextStyle(
+                color: Colors.greenAccent,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const UniversalIcon(id: 'plantfood', size: 16),
+            Text(
+              ': $count',
+              style: const TextStyle(
+                color: Colors.greenAccent,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryAssetChip({
+    required String iconId,
+    required String label,
+    required Color color,
+    String? tooltip,
+  }) {
+    Widget content = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Wrap(
+        spacing: 6,
+        runSpacing: 4,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          UniversalIcon(id: iconId, size: 16),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+    if (tooltip != null) {
+      content = Tooltip(message: tooltip, child: content);
+    }
+    return content;
+  }
+
+  Widget _buildPlantListSection(String title, List<String> items, bool expanded, {VoidCallback? onToggle, PvzLevelFile? levelFile}) {
+    final bool canExpand = items.length > 8;
+    final displayItems = (canExpand && !expanded) ? items.take(3).toList() : items;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 14, color: Colors.white60, fontWeight: FontWeight.bold)),
+        _buildSubSectionTitle(title, theme),
         const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            ...displayItems.where((id) => id.isNotEmpty).map((id) => _UniversalIcon(id: id, size: 40)),
-            if (canExpand)
-              InkWell(
-                onTap: onExpand,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white10),
-                  ),
-                  child: const Text("Развернуть", style: TextStyle(fontSize: 12, color: Colors.blueAccent)),
+            ...displayItems.where((id) => id.isNotEmpty).map((id) => UniversalIcon(id: id, size: 40, levelFile: levelFile)),
+            if (canExpand && onToggle != null)
+              IconButton(
+                onPressed: onToggle,
+                icon: Icon(
+                  expanded ? Icons.chevron_left : Icons.chevron_right,
+                  color: Colors.blueAccent,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(40, 40),
                 ),
               ),
           ],
@@ -538,49 +995,112 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   }
 
   Widget _buildPrePlacedCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
-    final (rows, cols) = LevelParser.getGridDimensions(widget.parsed.levelDef, widget.levelFile);
-    if (!levelHasPrePlacedGridPreview(widget.levelFile)) return const SizedBox.shrink();
-
-    final gridCategories = collectGridPreviewCategories(widget.levelFile, l10n);
-    final activeGridKey = _resolveGridItemCategoryKey(gridCategories);
+    final (rows, cols) = getGridDimensions(widget.levelFile);
+    
+    final allGridCategories = _cachedGridCategories;
     final activeTabIndex = _prePlacedTabIndex;
 
-    Color tabColor = const Color(0xFF4A5C61);
-    if (activeTabIndex == 0) tabColor = const Color(0xFF2E7D32);
-    else if (activeTabIndex == 1) tabColor = const Color(0xFF8F76BB);
-    else if (activeTabIndex == 2) tabColor = const Color(0xFFD5925E);
+    final List<GridPreviewCategoryOption> gridCategories;
+    if (activeTabIndex == 1) {
+      gridCategories = allGridCategories.where((c) => c.kind == GridPreviewModuleKind.zombies || c.kind == GridPreviewModuleKind.dropShip).toList();
+    } else if (activeTabIndex == 2) {
+      gridCategories = allGridCategories.where((c) =>
+        c.kind != GridPreviewModuleKind.zombies &&
+        c.kind != GridPreviewModuleKind.dropShip &&
+        c.kind != GridPreviewModuleKind.plants &&
+        c.kind != GridPreviewModuleKind.zombossMech &&
+        c.kind != GridPreviewModuleKind.zomboss &&
+        c.kind != GridPreviewModuleKind.protectPlants &&
+        c.kind != GridPreviewModuleKind.protectItems &&
+        c.kind != GridPreviewModuleKind.flowers
+      ).toList();
+    } else if (activeTabIndex == 3) {
+      gridCategories = allGridCategories.where((c) => c.kind == GridPreviewModuleKind.zombossMech).toList();
+    } else if (activeTabIndex == 4) {
+      gridCategories = allGridCategories.where((c) => c.kind == GridPreviewModuleKind.zomboss).toList();
+    } else if (activeTabIndex == 5) {
+      gridCategories = allGridCategories.where((c) => c.kind == GridPreviewModuleKind.protectPlants || c.kind == GridPreviewModuleKind.protectItems || c.kind == GridPreviewModuleKind.flowers).toList();
+    } else {
+      gridCategories = allGridCategories.where((c) => c.kind == GridPreviewModuleKind.plants).toList();
+    }
 
-    return Card(
-      color: Colors.white.withValues(alpha: 0.04),
+    final activeGridKey = _resolveGridItemCategoryKey(gridCategories);
+
+    Color tabColor = const Color(0xFF4A5C61); // Default grey
+    if (allGridCategories.isNotEmpty) {
+      if (activeTabIndex == 0) {
+        tabColor = const Color(0xFF2E7D32);
+      } else if (activeTabIndex == 1) {
+        tabColor = const Color(0xFF8F76BB);
+      } else if (activeTabIndex == 2) {
+        tabColor = const Color(0xFFD5925E);
+      } else if (activeTabIndex == 3 || activeTabIndex == 4) {
+        tabColor = const Color(0xFF8F9E82);
+      } else if (activeTabIndex == 5) {
+        tabColor = const Color(0xFFD32F2F);
+      }
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildSectionTitle(l10n.previewPrePlaced, theme, color: tabColor),
-                SegmentedButton<int>(
-                  segments: [
-                    ButtonSegment(value: 0, label: Text(l10n.previewTabPlants), icon: const Icon(Icons.local_florist, size: 14)),
-                    ButtonSegment(value: 1, label: Text(l10n.previewTabZombies), icon: const Icon(Icons.emoji_nature, size: 14)),
-                    ButtonSegment(value: 2, label: Text(l10n.previewTabGridItems), icon: const Icon(Icons.grid_on, size: 14)),
+            LayoutBuilder(builder: (context, constraints) {
+              final switcher = allGridCategories.isNotEmpty
+                  ? _buildPrePlacedTabSwitcher(l10n, allGridCategories)
+                  : const SizedBox.shrink();
+
+              final titlePart = Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.grid_view, size: 20, color: tabColor.withValues(alpha: 0.9)),
+                  const SizedBox(width: 8),
+                  _buildSectionTitle(l10n.previewPrePlaced, theme, color: tabColor),
+                ],
+              );
+
+              if (constraints.maxWidth > 550) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: titlePart),
+                    const SizedBox(width: 8),
+                    Flexible(child: switcher),
                   ],
-                  selected: {activeTabIndex},
-                  onSelectionChanged: (set) => setState(() => _prePlacedTabIndex = set.first),
-                  showSelectedIcon: false,
-                  style: const ButtonStyle(visualDensity: VisualDensity.compact),
-                ),
-              ],
-            ),
+                );
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  titlePart,
+                  const SizedBox(height: 8),
+                  switcher,
+                ],
+              );
+            }),
 
             const SizedBox(height: 16),
-            
-            if (activeTabIndex == 2)
-              Builder(builder: (context) {
+
+            if (activeTabIndex == 3)
+              _buildDedicatedZombossGrid(rows, cols, l10n, theme)
+            else if (activeTabIndex == 4)
+              _buildDedicatedBossGrid(rows, cols, l10n, theme)
+            else if (allGridCategories.isEmpty)
+               _buildLawnGrid([], '', activeTabIndex, isEmptyGrid: true)
+            else if (activeTabIndex == 1 || activeTabIndex == 2 || activeTabIndex == 5)
+              LayoutBuilder(builder: (context, constraints) {
                 final kinds = gridCategories.map((c) => c.kind).toSet().toList();
-                final showSidebar = kinds.length > 1;
+                final showSidebar = kinds.length > 1 || activeTabIndex == 5;
+                final useVerticalLayout = constraints.maxWidth < 450;
 
                 if (!showSidebar) {
                   return Column(
@@ -588,7 +1108,29 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     children: [
                       _buildSubCategoryHeader(gridCategories, activeGridKey, l10n, theme),
                       const SizedBox(height: 12),
-                      _buildLawnGrid(rows, cols, tabColor, gridCategories, activeGridKey, activeTabIndex),
+                      _buildLawnGrid(gridCategories, activeGridKey, activeTabIndex),
+                      if (activeTabIndex == 1 && gridCategories.any((c) => c.kind == GridPreviewModuleKind.dropShip))
+                         _buildDropShipFooter(gridCategories, activeGridKey, theme, l10n),
+                      _buildCellContentFooter(theme, l10n),
+                    ],
+                  );
+                }
+
+                if (useVerticalLayout) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 120,
+                        child: _buildModuleSidebar(gridCategories, activeGridKey, l10n, theme),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildSubCategoryHeader(gridCategories, activeGridKey, l10n, theme),
+                      const SizedBox(height: 12),
+                      _buildLawnGrid(gridCategories, activeGridKey, activeTabIndex),
+                      if (activeTabIndex == 1 && gridCategories.any((c) => c.kind == GridPreviewModuleKind.dropShip))
+                         _buildDropShipFooter(gridCategories, activeGridKey, theme, l10n),
+                      _buildCellContentFooter(theme, l10n),
                     ],
                   );
                 }
@@ -608,7 +1150,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                         children: [
                           _buildSubCategoryHeader(gridCategories, activeGridKey, l10n, theme),
                           const SizedBox(height: 12),
-                          _buildLawnGrid(rows, cols, tabColor, gridCategories, activeGridKey, activeTabIndex),
+                          _buildLawnGrid(gridCategories, activeGridKey, activeTabIndex),
+                          if (activeTabIndex == 1 && gridCategories.any((c) => c.kind == GridPreviewModuleKind.dropShip))
+                             _buildDropShipFooter(gridCategories, activeGridKey, theme, l10n),
+                          _buildCellContentFooter(theme, l10n),
                         ],
                       ),
                     ),
@@ -619,21 +1164,210 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               if (activeTabIndex == 0 && widget.levelFile.objects.any((o) => o.objClass == 'FrozenPlantPlacement' || o.objClass == 'InitialPlantProperties'))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: SegmentedButton<int>(
-                    segments: [
-                      ButtonSegment(value: 0, label: Text(l10n.previewRegularPlants)),
-                      ButtonSegment(value: 1, label: Text(l10n.previewFrozenPlants)),
-                    ],
-                    selected: {_plantTypeIndex},
-                    onSelectionChanged: (set) => setState(() => _plantTypeIndex = set.first),
-                    showSelectedIcon: false,
-                    style: const ButtonStyle(visualDensity: VisualDensity.compact),
-                  ),
+                  child: _buildPlantTypeTabSwitcher(l10n),
                 ),
-              _buildLawnGrid(rows, cols, tabColor, gridCategories, activeGridKey, activeTabIndex),
+              _buildLawnGrid(gridCategories, activeGridKey, activeTabIndex),
+              _buildCellContentFooter(theme, l10n),
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPrePlacedTabSwitcher(AppLocalizations l10n, List<GridPreviewCategoryOption> allCategories) {
+    final hasPlants = allCategories.any((c) => c.kind == GridPreviewModuleKind.plants);
+    final hasZombies = allCategories.any((c) => c.kind == GridPreviewModuleKind.zombies || c.kind == GridPreviewModuleKind.dropShip);
+    final hasObjects = allCategories.any((c) => c.kind != GridPreviewModuleKind.plants && c.kind != GridPreviewModuleKind.zombies && c.kind != GridPreviewModuleKind.dropShip && c.kind != GridPreviewModuleKind.zombossMech && c.kind != GridPreviewModuleKind.zomboss && c.kind != GridPreviewModuleKind.protectPlants && c.kind != GridPreviewModuleKind.protectItems);
+    final hasZomboss = allCategories.any((c) => c.kind == GridPreviewModuleKind.zombossMech);
+    final hasBoss = allCategories.any((c) => c.kind == GridPreviewModuleKind.zomboss);
+    final hasChallenges = allCategories.any((c) => c.kind == GridPreviewModuleKind.protectPlants || c.kind == GridPreviewModuleKind.protectItems || c.kind == GridPreviewModuleKind.flowers);
+
+    final theme = Theme.of(context);
+
+    final isDesktop = isDesktopPlatform(context);
+
+    Widget content = SingleChildScrollView(
+      controller: _prePlacedTabScrollController,
+      scrollDirection: Axis.horizontal,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+            ),
+            padding: EdgeInsets.zero,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (hasPlants) _tabItem(0, l10n.previewTabPlants, Icons.local_florist, const Color(0xFF2E7D32), theme),
+                if (hasZombies) _tabItem(1, l10n.previewTabZombies, Icons.emoji_nature, const Color(0xFF42A5F5), theme),
+                if (hasObjects) _tabItem(2, l10n.previewTabGridItems, Icons.grid_on, const Color(0xFFFFA726), theme),
+                if (hasZomboss) _tabItem(3, l10n.zomboss, Icons.face, const Color(0xFF8F9E82), theme),
+                if (hasBoss) _tabItem(4, l10n.boss, Icons.security, const Color(0xFF8F9E82), theme),
+                if (hasChallenges) _tabItem(5, l10n.starChallenges, Icons.security, const Color(0xFFD32F2F), theme),
+              ],
+            ),
+          ),
+          if (isDesktop) const SizedBox(height: 10),
+        ],
+      ),
+    );
+
+    if (isDesktop) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Scrollbar(
+            controller: _prePlacedTabScrollController,
+            thumbVisibility: true,
+            child: content,
+          ),
+        ],
+      );
+    }
+
+    return content;
+  }
+
+  Widget _tabItem(int index, String label, IconData icon, Color activeColor, ThemeData theme) {
+    final isSelected = _prePlacedTabIndex == index;
+    return InkWell(
+      onTap: () => setState(() {
+        _prePlacedTabIndex = index;
+        _selectedX = null;
+        _selectedY = null;
+      }),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? activeColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 14, color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlantTypeTabSwitcher(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final isDesktop = isDesktopPlatform(context);
+
+    Widget content = SingleChildScrollView(
+      controller: _plantTypeTabScrollController,
+      scrollDirection: Axis.horizontal,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+            ),
+            padding: EdgeInsets.zero,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _subTabItem(0, l10n.previewRegularPlants, theme),
+                _subTabItem(1, l10n.previewFrozenPlants, theme),
+              ],
+            ),
+          ),
+          if (isDesktop) const SizedBox(height: 10),
+        ],
+      ),
+    );
+
+    if (isDesktop) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Scrollbar(
+            controller: _plantTypeTabScrollController,
+            thumbVisibility: true,
+            child: content,
+          ),
+        ],
+      );
+    }
+
+    return content;
+  }
+
+  Widget _subTabItem(int index, String label, ThemeData theme) {
+    final isSelected = _plantTypeIndex == index;
+    return InkWell(
+      onTap: () => setState(() {
+        _plantTypeIndex = index;
+        _selectedX = null;
+        _selectedY = null;
+      }),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCellContentFooter(ThemeData theme, AppLocalizations l10n) {
+    if (_selectedX == null || _selectedY == null || _selectedIds.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(height: 1, thickness: 0.5),
+          const SizedBox(height: 12),
+          Text(
+            '${l10n.itemListRowFirst} (R${_selectedY! + 1}:C${_selectedX! + 1}):',
+            style: TextStyle(
+              fontSize: 13,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 12,
+            runSpacing: 10,
+            children: _selectedIds.map((id) => UniversalIcon(id: id, size: 44)).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -643,17 +1377,22 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final selectedOption = _selectedGridCategory(categories, activeKey);
     final selectedKind = selectedOption?.kind ?? kinds.first;
 
-    final isMobile = Theme.of(context).platform == TargetPlatform.android || Theme.of(context).platform == TargetPlatform.iOS;
+    final isMobile = theme.platform == TargetPlatform.android || theme.platform == TargetPlatform.iOS;
+    final sideColor = selectedKind == GridPreviewModuleKind.zombies || selectedKind == GridPreviewModuleKind.dropShip
+        ? const Color(0xFF42A5F5)
+        : (selectedKind == GridPreviewModuleKind.plants || selectedKind == GridPreviewModuleKind.protectPlants || selectedKind == GridPreviewModuleKind.protectItems ? const Color(0xFF2E7D32) : const Color(0xFFFFA726));
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.02),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
       ),
-      child: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: !isMobile), // Скрываем ползунок на мобилках
+      child: Scrollbar(
+        controller: _sidebarScrollController,
+        thumbVisibility: !isMobile,
         child: ListView.builder(
+          controller: _sidebarScrollController,
           padding: EdgeInsets.zero,
           itemCount: kinds.length,
           itemBuilder: (context, index) {
@@ -662,19 +1401,23 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             return InkWell(
               onTap: () {
                 final firstOfKind = categories.firstWhere((c) => c.kind == kind);
-                setState(() => _gridItemCategoryKey = firstOfKind.key);
+                setState(() {
+                  _gridItemCategoryKey = firstOfKind.key;
+                  _selectedX = null;
+                  _selectedY = null;
+                });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.1) : null,
-                  border: isSelected ? Border(left: BorderSide(color: theme.colorScheme.primary, width: 3)) : null,
+                  color: isSelected ? theme.colorScheme.onSurface.withValues(alpha: 0.05) : null,
+                  border: isSelected ? Border(left: BorderSide(color: sideColor, width: 3)) : null,
                 ),
                 child: Text(
                   _getModuleLabel(kind, l10n),
                   style: TextStyle(
                     fontSize: 12,
-                    color: isSelected ? theme.colorScheme.primary : Colors.white70,
+                    color: isSelected ? theme.colorScheme.onSurface : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -693,17 +1436,73 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final optionsForKind = categories.where((c) => c.kind == selectedOption.kind).toList();
     if (optionsForKind.length <= 1) return const SizedBox.shrink();
 
-    return SingleChildScrollView(
+    final isDesktop = isDesktopPlatform(context);
+
+    Widget content = SingleChildScrollView(
+      controller: _subCategoryScrollController,
       scrollDirection: Axis.horizontal,
-      child: SegmentedButton<String>(
-        segments: optionsForKind.map((option) {
-          String label = option.wave != null ? '${l10n.waveLabel} ${option.wave}' : option.label;
-          return ButtonSegment<String>(value: option.key, label: Text(label));
-        }).toList(),
-        selected: {activeKey},
-        onSelectionChanged: (set) => setState(() => _gridItemCategoryKey = set.first),
-        showSelectedIcon: false,
-        style: const ButtonStyle(visualDensity: VisualDensity.compact),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+            ),
+            padding: EdgeInsets.zero,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: optionsForKind.map((option) {
+                final isSelected = activeKey == option.key;
+                String label = option.wave != null ? '${l10n.waveLabel} ${option.wave}' : option.label;
+                return InkWell(
+                  onTap: () => setState(() {
+                    _gridItemCategoryKey = option.key;
+                    _selectedX = null;
+                    _selectedY = null;
+                  }),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          if (isDesktop) const SizedBox(height: 10),
+        ],
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isDesktop)
+            Scrollbar(
+              controller: _subCategoryScrollController,
+              thumbVisibility: true,
+              child: content,
+            )
+          else
+            content,
+        ],
       ),
     );
   }
@@ -724,8 +1523,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     return categories.firstWhereOrNull((c) => c.key == key);
   }
 
-  Widget _buildBronzeStatueGrid(int rows, int cols, Color borderColor) {
-    final result = <String, String>{};
+  Widget _buildBronzeStatueGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final result = <String, List<String>>{};
     final data = readBronzeModuleData(widget.levelFile);
     if (data != null) {
       for (var batch in data.data) {
@@ -735,71 +1534,126 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             BronzeStatueKind.mage => 'kongfu_magic_bronze',
             BronzeStatueKind.agile => 'kongfu_agile_bronze',
           };
-          result['${item.mX},${item.mY}'] = zombieId;
+          final key = '${item.mX},${item.mY}';
+          result[key] ??= [];
+          result[key]!.add(zombieId);
         }
       }
     }
-    return _buildIconLawnGrid(rows, cols, borderColor, result, 1);
+    return _buildCompositeLawnGrid(
+      rows: rows, cols: cols, style: style,
+      moduleData: result,
+      cellBuilder: (col, row) => null,
+    );
   }
 
-
-
-  Widget _buildPowerTileGrid(int rows, int cols, Color borderColor) {
-    final result = <String, String>{};
+  Widget _buildPowerTileGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final result = <String, List<String>>{};
     final data = readPowerTileModuleData(widget.levelFile);
     if (data != null) {
       for (var tile in data.linkedTiles) {
         String toolId = 'tool_powertile_${tile.group}';
-        result['${tile.location.mx},${tile.location.my}'] = toolId;
+        final key = '${tile.location.mx},${tile.location.my}';
+        result[key] ??= [];
+        result[key]!.add(toolId);
       }
     }
-    return _buildIconLawnGrid(rows, cols, borderColor, result, 2);
-  }
-
-  Widget _buildWarMistGrid(int rows, int cols, Color borderColor) {
-    final obj = widget.levelFile.objects.firstWhereOrNull((o) => o.objClass == 'WarMistProperties');
-    final mistCol = (obj?.objData as Map?)?['m_iInitMistPosX'] ?? 5;
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
-      cellBuilder: (col, row) => col >= mistCol ? Container(color: Colors.grey.withValues(alpha: 0.4)) : null,
+      rows: rows, cols: cols, style: style,
+      moduleData: result,
+      cellBuilder: (col, row) => null,
     );
   }
 
-  Widget _buildTideGrid(int rows, int cols, Color borderColor) {
-    final obj = widget.levelFile.objects.firstWhereOrNull((o) => o.objClass == 'TideProperties');
-    final tideCol = (obj?.objData as Map?)?['StartingWaveLocation'] ?? 5;
-    return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
-      cellBuilder: (col, row) => col >= tideCol ? Container(color: Colors.blue.withValues(alpha: 0.3)) : null,
-    );
-  }
+  Widget _buildWarMistGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final data = readWarMistModuleData(widget.levelFile);
+    final mistCol = data?.initMistPosX ?? 5;
+    final normVal = data?.normValX ?? 0;
+    final unitsPerTile = 64;
 
-  Widget _buildSmokeGrid(int rows, int cols, Color borderColor) {
-    final smokeData = readSmokePollutionData(widget.levelFile);
+    double fogFillFraction(int col) {
+      final startUnit = mistCol * unitsPerTile;
+      final endUnit = startUnit + normVal;
+      final colStart = col * unitsPerTile;
+      final colEnd = (col + 1) * unitsPerTile;
+      final overlapStart = startUnit > colStart ? startUnit : colStart;
+      final overlapEnd = endUnit < colEnd ? endUnit : colEnd;
+      if (overlapEnd <= overlapStart) return 0;
+      return (overlapEnd - overlapStart) / unitsPerTile;
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fogColor = isDark
+        ? Color.lerp(Colors.white, Colors.grey, 0.45)!.withValues(alpha: 0.72)
+        : Color.lerp(const Color(0xFFBDBDBD), const Color(0xFF616161), 0.55)!.withValues(alpha: 0.72);
 
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
+      rows: rows, cols: cols, style: style,
       cellBuilder: (col, row) {
-        if (smokeData == null) return null;
-
-        final isSmoke = smokeData.smokeManholeList.any((m) => m.gridColumn == col && m.gridRow == row);
-        if (!isSmoke) return null;
-
-        return _getIconForId(smokeData.gridItem, 2, isGrid: true);
+        final fill = fogFillFraction(col);
+        if (fill <= 0) return null;
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: FractionallySizedBox(
+            widthFactor: fill,
+            heightFactor: 1,
+            child: ColoredBox(color: fogColor),
+          ),
+        );
       },
     );
   }
 
-  Widget _buildManholeGrid(int rows, int cols, Color borderColor, GridPreviewCategoryOption category) {
+  Widget _buildTideGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final tideData = readTideModuleData(widget.levelFile);
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      background: tideData != null
+          ? Row(
+              children: [
+                Spacer(flex: (cols - tideData.startingWaveLocation).clamp(0, cols)),
+                Expanded(
+                  flex: tideData.startingWaveLocation.clamp(0, cols),
+                  child: Container(color: Colors.blue.withValues(alpha: 0.25)),
+                ),
+              ],
+            )
+          : null,
+      cellBuilder: (col, row) => null,
+    );
+  }
+
+  Widget _buildSmokeGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final smokeData = readSmokePollutionData(widget.levelFile);
+    final result = <String, List<String>>{};
+    if (smokeData != null) {
+      for (var m in smokeData.smokeManholeList) {
+        final key = '${m.gridColumn},${m.gridRow}';
+        result[key] ??= [];
+        result[key]!.add(smokeData.gridItem);
+      }
+    }
+
+    return _buildCompositeLawnGrid(
+      rows: rows, cols: cols, style: style,
+      moduleData: result,
+      cellBuilder: (col, row) => null,
+    );
+  }
+
+  Widget _buildManholeGrid(int rows, int cols, LevelPreviewGridStyle style, GridPreviewCategoryOption category) {
     final pipeData = readManholePipelineData(widget.levelFile);
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final selectedIndex = category.index;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildCompositeLawnGrid(
-          rows: rows, cols: cols, borderColor: borderColor,
+          rows: rows, cols: cols, style: style,
           cellBuilder: (col, row) {
             final markers = <({bool isStart, int index})>[];
             if (pipeData != null) {
@@ -817,18 +1671,18 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     (pipeData.pipelineList[selectedIndex].endX == col && pipeData.pipelineList[selectedIndex].endY == row));
 
             return Container(
-              color: isTarget ? Colors.green.withValues(alpha: 0.3) : null,
+              color: isTarget ? Theme.of(context).colorScheme.primaryContainer : null,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
                   for (final m in markers)
-                    Opacity(
-                      opacity: (selectedIndex == null || selectedIndex == m.index) ? 1.0 : 0.4,
-                      child: AssetImageWidget(
-                        assetPath: m.isStart ? 'assets/images/griditems/steam_down.webp' : 'assets/images/griditems/steam_up.webp',
-                        fit: BoxFit.cover,
+                      Opacity(
+                        opacity: (selectedIndex == null || selectedIndex == m.index) ? 1.0 : 0.4,
+                        child: AssetImageWidget(
+                          assetPath: m.isStart ? 'assets/images/griditems/steam_down.webp' : 'assets/images/griditems/steam_up.webp',
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
                 ],
               ),
             );
@@ -844,34 +1698,57 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 pipeData.pipelineList[selectedIndex].endX,
                 pipeData.pipelineList[selectedIndex].endY,
               ),
-              style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
+                      style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13, fontWeight: FontWeight.w500),
             ),
           ),
       ],
     );
   }
 
-  Widget _buildRenaiGrid(int rows, int cols, Color borderColor, GridPreviewCategoryOption category) {
-    final result = <String, String>{};
+  Widget _buildRenaiGrid(int rows, int cols, LevelPreviewGridStyle style, GridPreviewCategoryOption category) {
+    final result = <String, List<String>>{};
     final data = readRenaiModuleData(widget.levelFile);
     if (data != null) {
       final statues = category.index == 1 ? data.statueNightInfos : data.statueInfos;
       for (var s in statues) {
-        result['${s.gridX},${s.gridY}'] = s.typeName;
+        final key = '${s.gridX},${s.gridY}';
+        result[key] ??= [];
+        result[key]!.add(s.typeName);
       }
     }
-    return _buildIconLawnGrid(rows, cols, borderColor, result, 2);
+    return _buildCompositeLawnGrid(
+      rows: rows, cols: cols, style: style,
+      moduleData: result,
+      cellBuilder: (col, row) => null,
+    );
   }
 
-  Widget _buildTunnelDefendGrid(int rows, int cols, Color borderColor) {
+  Widget _buildTunnelDefendGrid(int rows, int cols, LevelPreviewGridStyle style) {
     final data = readTunnelDefendData(widget.levelFile);
+    final selectionColor =
+        style.selectionColor ?? Theme.of(context).colorScheme.primary;
+
     return _buildCompositeLawnGrid(
       rows: rows,
       cols: cols,
-      borderColor: borderColor,
-      aspectRatio: (cols * 128.0) / (rows * 152.0),
+      style: style,
+      cellDecorationBuilder: (col, row, isSelected, isStripe) {
+        final hasRoad =
+            data?.roads.any((r) => r.gridX == col && r.gridY == row) ?? false;
+        if (hasRoad) {
+          return BoxDecoration(
+            color: isSelected ? selectionColor.withValues(alpha: 0.25) : null,
+            border: isSelected
+                ? Border.all(color: selectionColor, width: 1.5)
+                : const Border(),
+          );
+        }
+        return null;
+      },
       cellBuilder: (col, row) {
-        final road = data?.roads.firstWhereOrNull((r) => r.gridX == col && r.gridY == row);
+        final road = data?.roads.firstWhereOrNull(
+          (r) => r.gridX == col && r.gridY == row,
+        );
         if (road == null) return null;
         final path = 'assets/images/tunnels/${road.img}.webp';
         return AssetImageWidget(
@@ -883,10 +1760,52 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
-  Widget _buildGulliverGrid(int rows, int cols, Color borderColor) {
+  Widget _buildProtectPlantsGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final pData = readProtectPlantData(widget.levelFile);
+    if (pData == null) return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, cellBuilder: (col, row) => null);
+
+    final data = <String, List<String>>{};
+    for (var p in pData.plants) {
+      final key = '${p.gridX},${p.gridY}';
+      data[key] ??= [];
+      data[key]!.add(_cleanId(p.plantType));
+    }
+
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      moduleData: data,
+      activeTabIndex: 5,
+      cellBuilder: (col, row) => null,
+    );
+  }
+
+  Widget _buildProtectItemsGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final iData = readProtectGridItemData(widget.levelFile);
+    if (iData == null) return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, cellBuilder: (col, row) => null);
+
+    final data = <String, List<String>>{};
+    for (var i in iData.gridItems) {
+      final key = '${i.gridX},${i.gridY}';
+      data[key] ??= [];
+      data[key]!.add(_cleanId(i.gridItemType));
+    }
+
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      moduleData: data,
+      activeTabIndex: 5,
+      cellBuilder: (col, row) => null,
+    );
+  }
+
+  Widget _buildGulliverGrid(int rows, int cols, LevelPreviewGridStyle style) {
     final data = readGulliverTunnelData(widget.levelFile);
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
+      rows: rows, cols: cols, style: style,
       cellBuilder: (col, row) {
         final t = data?.tunnelPlacements.firstWhereOrNull((p) => p.gridX == col && p.gridY == row);
         if (t == null) return null;
@@ -896,202 +1815,118 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
-  Widget _buildRoofGrid(int rows, int cols, Color borderColor) {
+  Widget _buildRoofGrid(int rows, int cols, LevelPreviewGridStyle style) {
     final data = readRoofPropertiesData(widget.levelFile);
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
+      rows: rows, cols: cols, style: style,
       cellBuilder: (col, row) {
         if (data != null && col >= data.flowerPotStartColumn && col <= data.flowerPotEndColumn) {
-          return const _GridItemIcon(id: 'flowerpot', isGrid: true);
+          return Container(
+            color: Colors.brown.withValues(alpha: 0.3),
+            child: const Center(child: GridItemIcon(id: 'flowerpot', size: 18, isGrid: true)),
+          );
         }
         return null;
       },
     );
   }
 
-  Widget _buildObjectCategorySelection(
-      List<GridPreviewCategoryOption> categories,
-      String activeGridKey,
-      AppLocalizations l10n,
-      ThemeData theme,
-      ) {
-    final selectedOption = _selectedGridCategory(categories, activeGridKey);
-    final selectedKind = selectedOption?.kind ?? categories.first.kind;
-    final scrollController = ScrollController();
+  Widget _buildLawnGrid(
+    List<GridPreviewCategoryOption> gridCategories,
+    String activeGridKey,
+    int activeTabIndex, {
+    bool isEmptyGrid = false,
+  }) {
+    final GridPreviewModuleKind activeKind;
+    final category = _selectedGridCategory(gridCategories, activeGridKey);
 
-    final kinds = categories.map((c) => c.kind).toSet().toList();
-
-    String kindLabel(GridPreviewModuleKind kind) {
-      switch (kind) {
-        case GridPreviewModuleKind.common: return l10n.previewRegularPlants;
-        case GridPreviewModuleKind.piratePlank: return l10n.moduleTitle_PiratePlankProperties;
-        case GridPreviewModuleKind.railcart: return l10n.moduleTitle_RailcartProperties;
-        case GridPreviewModuleKind.mechanismPlank: return l10n.moduleTitle_MechanismPlankProperties;
-        case GridPreviewModuleKind.armrack: return l10n.moduleTitle_ArmrackProperties;
-        case GridPreviewModuleKind.energyGrid: return l10n.moduleTitle_EnergyGridProperties;
-        case GridPreviewModuleKind.bronzeStatue: return l10n.moduleTitle_BronzeProperties;
-        case GridPreviewModuleKind.powerTile: return l10n.moduleTitle_PowerTileProperties;
-        case GridPreviewModuleKind.fogSystem: return l10n.moduleTitle_WarMistProperties;
-        case GridPreviewModuleKind.tideSystem: return l10n.moduleTitle_TideProperties;
-        case GridPreviewModuleKind.smokePollution: return l10n.moduleTitle_SmokePollutionModuleProperties;
-        case GridPreviewModuleKind.manholePipeline: return l10n.moduleTitle_ManholePipelineModuleProperties;
-        case GridPreviewModuleKind.renaissance: return l10n.moduleTitle_RenaiModuleProperties;
-        case GridPreviewModuleKind.roofProperties: return l10n.moduleTitle_RoofProperties;
-        case GridPreviewModuleKind.tunnelDefend: return l10n.moduleTitle_TunnelDefendModuleProperties;
-        case GridPreviewModuleKind.gulliverTunnel: return l10n.moduleTitle_InitialGridItemGulliverTunnelProperties;
-      }
+    if (isEmptyGrid) {
+      activeKind = GridPreviewModuleKind.empty;
+    } else if (activeTabIndex == 3) {
+      activeKind = GridPreviewModuleKind.zombossMech;
+    } else if (activeTabIndex == 4) {
+      activeKind = GridPreviewModuleKind.zomboss;
+    } else if (category != null) {
+      activeKind = category.kind;
+    } else {
+      activeKind =
+          activeTabIndex == 0
+              ? GridPreviewModuleKind.plants
+              : (activeTabIndex == 1
+                  ? GridPreviewModuleKind.zombies
+                  : GridPreviewModuleKind.common);
     }
 
-    final mainSelector = kinds.length > 1
-        ? ScrollConfiguration(
-      behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
-        ...ScrollConfiguration.of(context).dragDevices,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.touch,
-      }),
-      child: Scrollbar(
-        controller: scrollController,
-        thumbVisibility: true,
-        child: SingleChildScrollView(
-          controller: scrollController,
-          scrollDirection: Axis.horizontal,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 12, top: 4, left: 4, right: 4),
-            child: SegmentedButton<GridPreviewModuleKind>(
-              style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact),
-              segments: kinds.map((kind) {
-                return ButtonSegment<GridPreviewModuleKind>(
-                  value: kind,
-                  label: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(kindLabel(kind)),
-                  ),
-                );
-              }).toList(),
-              selected: {selectedKind},
-              onSelectionChanged: (set) {
-                final firstOfKind = categories.firstWhere((c) => c.kind == set.first);
-                setState(() => _gridItemCategoryKey = firstOfKind.key);
-              },
-              showSelectedIcon: false,
-            ),
-          ),
-        ),
-      ),
-    )
-        : null;
+    final (rows, cols) = getGridDimensions(widget.levelFile);
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final theme = Theme.of(context);
+    final isDesktop = isDesktopPlatform(context);
+    final isMobile = theme.platform == TargetPlatform.android || theme.platform == TargetPlatform.iOS;
+    final style = resolveGridStyle(context, activeKind).copyWith(
+      maxWidth: isDesktop ? 650 : (isMobile ? 550 * textScale : 400 * textScale).clamp(300.0, 1000.0),
+    );
 
-    final optionsForKind = categories.where((c) => c.kind == selectedKind).toList();
-    Widget? subSelector;
-    final isWaveModule = selectedKind == GridPreviewModuleKind.armrack ||
-        selectedKind == GridPreviewModuleKind.energyGrid;
-
-    if (optionsForKind.length > 1 || isWaveModule) {
-      subSelector = Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SegmentedButton<String>(
-            segments: optionsForKind.map((option) {
-              String label = option.wave != null
-                  ? '${l10n.waveLabel} ${option.wave}'
-                  : option.label;
-              return ButtonSegment<String>(
-                value: option.key,
-                label: Text(label),
-              );
-            }).toList(),
-            selected: {activeGridKey},
-            onSelectionChanged: (set) =>
-                setState(() => _gridItemCategoryKey = set.first),
-            showSelectedIcon: false,
-            style: const ButtonStyle(visualDensity: VisualDensity.compact),
-          ),
-        ),
+    if (activeKind != GridPreviewModuleKind.plants &&
+        activeKind != GridPreviewModuleKind.zombies &&
+        activeKind != GridPreviewModuleKind.common &&
+        activeKind != GridPreviewModuleKind.empty) {
+      return _buildGridItemCategoryGrid(
+        rows,
+        cols,
+        style,
+        category,
+        activeTabIndex,
+        forcedKind: activeKind,
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (mainSelector != null) mainSelector,
-        if (subSelector != null) subSelector,
-        if (selectedOption?.wave != null &&
-            (selectedOption!.wave ?? 1) > gridOverrideInitialWave)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              l10n.gridOverrideModuleWaveSpawnNote(
-                waveGeneratorWaveForModuleWave(selectedOption.wave!) ??
-                    selectedOption.wave! - 1,
-              ),
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
-          ),
-      ],
+    final data = _getGridData(activeTabIndex);
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      moduleData: data,
+      activeTabIndex: activeTabIndex,
+      cellBuilder: (col, row) => null,
     );
   }
 
-
-  Widget _buildLawnGrid(
-      int rows,
-      int cols,
-      Color baseColor,
-      List<GridPreviewCategoryOption> gridCategories,
-      String activeGridKey,
-      int activeTabIndex,
-      ) {
-    final borderColor = baseColor.withValues(alpha: 0.6);
-
-    if (activeTabIndex == 2) {
-      final category = _selectedGridCategory(gridCategories, activeGridKey);
-      if (category != null) {
-        return _buildGridItemCategoryGrid(rows, cols, borderColor, category);
-      }
+  Widget _buildFlowersGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final fData = readFlowersChallengeData(widget.levelFile);
+    if (fData == null) {
+      return _buildCompositeLawnGrid(
+        rows: rows,
+        cols: cols,
+        style: style,
+        cellBuilder: (col, row) => null,
+      );
     }
 
-    final data = _getGridData(activeTabIndex);
-    return _buildIconLawnGrid(rows, cols, borderColor, data, activeTabIndex);
-  }
-
-  Widget _buildIconLawnGrid(
-      int rows,
-      int cols,
-      Color borderColor,
-      Map<String, String> data,
-      int activeTabIndex,
-      ) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 550),
-        child: AspectRatio(
-          aspectRatio: cols / rows,
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1D1E),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: borderColor, width: 1.5),
-            ),
-            child: Column(
-              children: List.generate(rows, (y) => Expanded(
-                child: Row(
-                  children: List.generate(cols, (x) {
-                    final id = data['$x,$y'];
-                    return Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: borderColor.withValues(alpha: 0.2), width: 0.5),
-                        ),
-                        child: id != null ? _getIconForId(id, activeTabIndex, isGrid: true) : null,
-                      ),
-                    );
-                  }),
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      moduleData: {},
+      activeTabIndex: 5,
+      cellBuilder: (col, row) => null,
+      foreground: LayoutBuilder(
+        builder: (context, constraints) {
+          final cellWidth = constraints.maxWidth / cols;
+          final x = fData.targetDistance * cellWidth;
+          return Stack(
+            children: [
+              Positioned(
+                left: x - 2,
+                top: 0,
+                bottom: 0,
+                width: 4,
+                child: Container(
+                  color: Colors.pinkAccent,
                 ),
-              )),
-            ),
-          ),
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -1099,109 +1934,1686 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   Widget _buildGridItemCategoryGrid(
       int rows,
       int cols,
-      Color borderColor,
-      GridPreviewCategoryOption category,
-      ) {
-    switch (category.kind) {
+      LevelPreviewGridStyle style,
+      GridPreviewCategoryOption? category,
+      int activeTabIndex, {
+        GridPreviewModuleKind? forcedKind,
+      }) {
+    final kind = forcedKind ?? category?.kind ?? GridPreviewModuleKind.common;
+    switch (kind) {
+      case GridPreviewModuleKind.plants:
+        return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, moduleData: _getGridDataForCategory(category!, activeTabIndex), activeTabIndex: activeTabIndex, cellBuilder: (col, row) => null);
+      case GridPreviewModuleKind.zombies:
+        return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, moduleData: _getGridDataForCategory(category!, activeTabIndex), activeTabIndex: activeTabIndex, cellBuilder: (col, row) => null);
       case GridPreviewModuleKind.common:
-        return _buildIconLawnGrid(rows, cols, borderColor, _getCommonGridData(), 2);
+        return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, moduleData: _getCommonGridData(), activeTabIndex: 2, cellBuilder: (col, row) => null);
       case GridPreviewModuleKind.piratePlank:
-        return _buildPiratePlankGrid(rows, cols, borderColor);
+        return _buildPiratePlankGrid(rows, cols, style);
       case GridPreviewModuleKind.railcart:
-        return _buildRailcartGrid(rows, cols, borderColor);
+        return _buildRailcartGrid(rows, cols, style);
       case GridPreviewModuleKind.mechanismPlank:
-        return _buildMechanismPlankGrid(rows, cols, borderColor);
+        return _buildMechanismPlankGrid(rows, cols, style);
       case GridPreviewModuleKind.armrack:
-        return _buildArmrackGrid(rows, cols, borderColor, category.wave ?? gridOverrideInitialWave);
+        return _buildArmrackGrid(rows, cols, style, category?.wave ?? gridOverrideInitialWave);
       case GridPreviewModuleKind.energyGrid:
-        return _buildEnergyGridPreview(rows, cols, borderColor, category.wave ?? gridOverrideInitialWave);
+        return _buildEnergyGridPreview(rows, cols, style, category?.wave ?? gridOverrideInitialWave);
       case GridPreviewModuleKind.bronzeStatue:
-        return _buildBronzeStatueGrid(rows, cols, borderColor);
+        return _buildBronzeStatueGrid(rows, cols, style);
       case GridPreviewModuleKind.powerTile:
-        return _buildPowerTileGrid(rows, cols, borderColor);
+        return _buildPowerTileGrid(rows, cols, style);
       case GridPreviewModuleKind.fogSystem:
-        return _buildWarMistGrid(rows, cols, borderColor);
+        return _buildWarMistGrid(rows, cols, style);
       case GridPreviewModuleKind.tideSystem:
-        return _buildTideGrid(rows, cols, borderColor);
+        return _buildTideGrid(rows, cols, style);
       case GridPreviewModuleKind.smokePollution:
-        return _buildSmokeGrid(rows, cols, borderColor);
+        return _buildSmokeGrid(rows, cols, style);
       case GridPreviewModuleKind.manholePipeline:
-        return _buildManholeGrid(rows, cols, borderColor, category);
+        return _buildManholeGrid(rows, cols, style, category!);
       case GridPreviewModuleKind.renaissance:
-        return _buildRenaiGrid(rows, cols, borderColor, category);
+        return _buildRenaiGrid(rows, cols, style, category!);
       case GridPreviewModuleKind.roofProperties:
-        return _buildRoofGrid(rows, cols, borderColor);
+        return _buildRoofGrid(rows, cols, style);
       case GridPreviewModuleKind.tunnelDefend:
-        return _buildTunnelDefendGrid(rows, cols, borderColor);
+        return _buildTunnelDefendGrid(rows, cols, style);
       case GridPreviewModuleKind.gulliverTunnel:
-        return _buildGulliverGrid(rows, cols, borderColor);
+        return _buildGulliverGrid(rows, cols, style);
+      case GridPreviewModuleKind.protectPlants:
+        return _buildProtectPlantsGrid(rows, cols, style);
+      case GridPreviewModuleKind.protectItems:
+        return _buildProtectItemsGrid(rows, cols, style);
+      case GridPreviewModuleKind.flowers:
+        return _buildFlowersGrid(rows, cols, style);
+      case GridPreviewModuleKind.vases: return _buildVasesGrid(rows, cols, style);
+      case GridPreviewModuleKind.explosiveBarrels: return _buildExplosiveBarrelsGrid(rows, cols, style);
+      case GridPreviewModuleKind.portalFight: return _buildPassageGrid(rows, cols, style);
+      case GridPreviewModuleKind.dropShip: return _buildDropShipGrid(rows, cols, style, category!);
+      case GridPreviewModuleKind.zombossMech: return _buildZombossMechGrid(rows, cols, style);
+      case GridPreviewModuleKind.zomboss: return _buildBossGrid(rows, cols, style);
+      case GridPreviewModuleKind.empty: return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, moduleData: {}, activeTabIndex: 2, cellBuilder: (col, row) => null);
     }
   }
 
-  Widget _buildCompositeLawnGrid({
-    required int rows,
-    required int cols,
-    required Color borderColor,
-    double? aspectRatio,
-    required Widget? Function(int col, int row) cellBuilder,
-  }) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 550),
-        child: AspectRatio(
-          aspectRatio: aspectRatio ?? (cols / rows),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1D1E),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: borderColor, width: 1.5),
-            ),
-            child: Column(
-              children: List.generate(rows, (row) => Expanded(
-                child: Row(
-                  children: List.generate(cols, (col) => Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: borderColor.withValues(alpha: 0.2), width: 0.5),
-                      ),
-                      child: cellBuilder(col, row),
-                    ),
-                  )),
-                ),
-              )),
-            ),
+  Map<String, List<String>> _getGridDataForCategory(GridPreviewCategoryOption category, int activeTabIndex) {
+    if (category.kind == GridPreviewModuleKind.plants) {
+      return _getPlacementGridData(0);
+    } else if (category.kind == GridPreviewModuleKind.zombies) {
+      return _getPlacementGridData(1);
+    }
+    return {};
+  }
+
+  Widget _buildVasesGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final data = readVaseBreakerData(widget.levelFile);
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final isDesktop = isDesktopPlatform(context);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildCompositeLawnGrid(
+          rows: rows,
+          cols: cols,
+          style: style,
+          cellBuilder: (col, row) {
+            if (data == null) return null;
+            final isBlacklisted = data.gridSquareBlacklist.any((loc) => loc.x == col && loc.y == row);
+            if (isBlacklisted) {
+               return Container(
+                 color: Colors.red.withValues(alpha: 0.45),
+                 child: const Center(child: Icon(Icons.block, color: Colors.white, size: 16)),
+               );
+            }
+            if (col >= data.minColumnIndex && col <= data.maxColumnIndex) {
+              return Container(color: Colors.green.withValues(alpha: 0.35));
+            }
+            return null;
+          },
+        ),
+        if (data != null && data.vases.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            l10n.contentsLabel,
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.8), fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 8),
+          Builder(builder: (context) {
+            final Map<String, int> counts = {};
+            for (var v in data.vases) {
+              final id = v.plantTypeName ?? v.zombieTypeName ?? v.collectableTypeName;
+              if (id != null) counts[id] = (counts[id] ?? 0) + v.count;
+            }
+            return Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: counts.entries.map((e) => Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  UniversalIcon(id: e.key, size: 36),
+                  const SizedBox(width: 4),
+                  Text('x${e.value}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface.withValues(alpha: 0.9))),
+                ],
+              )).toList(),
+            );
+          }),
+          if (!isDesktop) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _legendDot(Colors.green),
+                    const SizedBox(width: 4),
+                    Text(l10n.vaseSpawnArea, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.8))),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _legendDot(Colors.red),
+                    const SizedBox(width: 4),
+                    Text(l10n.blackList, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.8))),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _legendDot(Color color) {
+    return Container(
+      width: 8, height: 8,
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.8), shape: BoxShape.circle),
+    );
+  }
+
+  Widget _buildExplosiveBarrelsGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final data = readBombPropertiesData(widget.levelFile);
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      cellBuilder: (col, row) {
+        if (data == null) return null;
+        if (row < data.fuseLengths.length) {
+          final fuseLen = int.tryParse(data.fuseLengths[row]) ?? 0;
+          if (fuseLen > 0 && col < fuseLen) {
+            return Container(
+              margin: EdgeInsets.zero,
+              alignment: Alignment.center,
+              child: Container(
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF57C00),
+                  borderRadius: BorderRadius.circular(2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFFFA726).withValues(alpha: 0.8),
+                      blurRadius: 3,
+                      spreadRadius: 0.5,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildPassageGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final data = readPassageModuleData(widget.levelFile);
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      cellBuilder: (col, row) {
+        if (data != null && col >= data.gridXMin && col <= data.gridXMax) {
+          return Container(color: Colors.orange.withValues(alpha: 0.45));
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildEncounterCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
+    final zombies = _cachedZombies;
+    final gridItems = _cachedGridItems;
+    final events = _cachedEvents;
+    final totalPfCount = _cachedTotalPfCount;
+
+    bool hasWaveModule = widget.levelFile.objects.any((o) =>
+        o.objClass == 'WaveManagerModuleProperties' ||
+        o.objClass == 'WaveManagerProperties' ||
+        o.objClass == 'WaveGeneratorProperties');
+
+    if (!hasWaveModule && zombies.isEmpty && gridItems.isEmpty && events.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final titlePart = Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.layers_outlined, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
+                    const SizedBox(width: 8),
+                    Flexible(child: _buildSectionTitle(l10n.previewLevelContent, theme)),
+                  ],
+                );
+
+                if (constraints.maxWidth > 500) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: titlePart),
+                      if (totalPfCount > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16),
+                          child: _buildPlantFoodChip(context, totalPfCount),
+                        ),
+                    ],
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titlePart,
+                    if (totalPfCount > 0) ...[
+                      const SizedBox(height: 8),
+                      _buildPlantFoodChip(context, totalPfCount),
+                    ],
+                  ],
+                );
+              }),
+            ),
+            if (zombies.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              _buildPlantListSection(
+                l10n.allZombiesInLevel,
+                zombies,
+                _encounterZombiesExpanded,
+                onToggle: () => setState(() => _encounterZombiesExpanded = !_encounterZombiesExpanded),
+                levelFile: widget.levelFile,
+              ),
+            ],
+            if (gridItems.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              _buildPlantListSection(
+                l10n.allObjectsInLevel,
+                gridItems,
+                _encounterGridItemsExpanded,
+                onToggle: () => setState(() => _encounterGridItemsExpanded = !_encounterGridItemsExpanded),
+                levelFile: widget.levelFile,
+              ),
+            ],
+            if (events.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              _buildChipListSection(
+                l10n.allEventsInLevel,
+                events,
+                _encounterEventsExpanded,
+                onToggle: () => setState(() => _encounterEventsExpanded = !_encounterEventsExpanded),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildPiratePlankGrid(int rows, int cols, Color borderColor) {
-    final plankRows = readPiratePlankModuleData(widget.levelFile)?.plankRows ?? const <int>[];
-    final plankSet = plankRows.toSet();
-    return _buildCompositeLawnGrid(
-      rows: rows,
-      cols: cols,
-      borderColor: borderColor,
-      cellBuilder: (col, row) {
-        if (!plankSet.contains(row)) return null;
-        if (col < cols - 4) return null;
-        return Container(
-          color: const Color(0xFF6D4C41).withValues(alpha: 0.55),
+  Widget _buildCopycatCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
+    final data = readCopycatsModuleData(widget.levelFile);
+    if (data == null) return const SizedBox.shrink();
+
+    final title = l10n.guessWhoIAm;
+    final blackListTitle = l10n.plantBlackList;
+    final whiteListTitle = l10n.zombieWhiteList;
+    final weightLabel = l10n.zombieWeight;
+    final levelLabel = l10n.plantLevelLabel;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.question_mark, size: 20, color: const Color(0xFF4AC380)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildSectionTitle(title, theme, color: const Color(0xFF4AC380))),
+                ],
+              ),
+            ),
+            if (data.plantBlackList.isNotEmpty) ...[
+              _buildPlantListSection(blackListTitle, data.plantBlackList, _copycatBlackListExpanded,
+                  onToggle: () => setState(() => _copycatBlackListExpanded = !_copycatBlackListExpanded)),
+              const SizedBox(height: 16),
+            ],
+            if (data.zombieWhiteList.isNotEmpty) ...[
+              _buildPlantListSection(whiteListTitle, data.zombieWhiteList, _copycatWhiteListExpanded,
+                  onToggle: () => setState(() => _copycatWhiteListExpanded = !_copycatWhiteListExpanded)),
+              const SizedBox(height: 20),
+            ],
+            Wrap(
+              spacing: 12,
+              runSpacing: 10,
+              children: [
+                _buildInfoChip(
+                  icon: Icons.person,
+                  label: '$weightLabel: ${(data.zombieWeight * 100).toInt()}%',
+                  color: Colors.orange,
+                  theme: theme,
+                ),
+                _buildInfoChip(
+                  icon: Icons.trending_up,
+                  label: '$levelLabel: ${data.spawnPlantLevel}',
+                  color: Colors.blueAccent,
+                  theme: theme,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSeedRainCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
+    final data = readSeedRainData(widget.levelFile);
+    if (data == null) return const SizedBox.shrink();
+
+    final title = l10n.seedRain;
+    final contentTitle = l10n.rainContent;
+
+    final items = data.seedRains.map((e) {
+      if (e.plantTypeName != null && e.plantTypeName!.isNotEmpty) return _cleanId(e.plantTypeName!);
+      if (e.zombieTypeName != null && e.zombieTypeName!.isNotEmpty) return _cleanId(e.zombieTypeName!);
+      if (e.seedRainType == 2) return 'tool_plantfood';
+      return '';
+    }).where((id) => id.isNotEmpty).toList();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.umbrella, size: 20, color: const Color(0xFF4CAF50)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildSectionTitle(title, theme, color: const Color(0xFF4CAF50))),
+                ],
+              ),
+            ),
+            _buildPlantListSection(contentTitle, items, _seedRainExpanded,
+                onToggle: () => setState(() => _seedRainExpanded = !_seedRainExpanded)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeianWindCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
+    final data = readHeianWindData(widget.levelFile);
+    if (data == null || data.waveWindInfos.isEmpty) return const SizedBox.shrink();
+
+    final title = l10n.heianWind;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.air, size: 20, color: const Color(0xFF607D8B)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildSectionTitle(title, theme, color: const Color(0xFF607D8B))),
+                ],
+              ),
+            ),
+            ...data.waveWindInfos.map((info) {
+              final wave = info.waveNumber + 1;
+              final rows = info.windInfos.map((w) => w.row == -1 ? l10n.all : '${w.row + 1}').join(', ');
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    const Icon(Icons.air, size: 16, color: Colors.blueGrey),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${l10n.waveLabel} $wave: ${l10n.row} $rows',
+                      style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface.withValues(alpha: 0.9)),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required ThemeData theme,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Icon(icon, size: 16, color: color),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String? _getEventTitle(String? objClass, AppLocalizations l10n) {
+    if (objClass == null) return null;
+    return EventSelectionScreen.resolveEventTitleByObjClass(
+      context,
+      objClass,
+      l10n,
+    ).replaceAll('WaveActionProps', '');
+  }
+
+  Widget _buildChipListSection(String title, List<String> items, bool expanded, {VoidCallback? onToggle}) {
+    final bool canExpand = items.length > 8;
+    final displayItems = (canExpand && !expanded) ? items.take(5).toList() : items;
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    final eventTitles = displayItems
+        .map((e) => _getEventTitle(e, l10n))
+        .whereType<String>()
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSubSectionTitle(title, theme),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            ...eventTitles.map((title) => Chip(
+                  label: Text(title, style: const TextStyle(fontSize: 10)),
+                  visualDensity: VisualDensity.compact,
+                )),
+            if (canExpand && onToggle != null)
+              IconButton(
+                onPressed: onToggle,
+                icon: Icon(
+                  expanded ? Icons.chevron_left : Icons.chevron_right,
+                  color: Colors.blueAccent,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(40, 40),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModulesCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
+    final starChallengeObjs = widget.levelFile.objects.where((o) => o.objClass == 'StarChallengeModuleProperties');
+    final List<({String title, String objClass, Map<String, dynamic> objData, IconData icon})> featureInfos = [];
+
+    for (var obj in starChallengeObjs) {
+      final data = StarChallengeModuleData.fromJson(obj.objData);
+      if (data.challenges.isNotEmpty) {
+        for (var starList in data.challenges) {
+          if (starList is! List) continue;
+          for (var rtid in starList) {
+            if (rtid is! String) continue;
+            final info = RtidParser.parse(rtid);
+            final alias = info?.alias ?? rtid;
+            final isLocal = info?.source == 'CurrentLevel';
+
+            String? objClass;
+            Map<String, dynamic>? objData;
+
+            if (isLocal) {
+              final localObj = widget.levelFile.objects
+                  .firstWhereOrNull((o) => o.aliases?.contains(alias) == true);
+              objClass = localObj?.objClass;
+              if (localObj?.objData is Map) {
+                objData = Map<String, dynamic>.from(localObj!.objData as Map);
+              }
+            } else {
+              objClass = ReferenceRepository.instance.getObjClass(alias);
+              final refObj = ReferenceRepository.instance.objectForAlias(alias);
+              if (refObj?.objData is Map) {
+                objData = Map<String, dynamic>.from(refObj!.objData as Map);
+              }
+            }
+
+            if (objClass != null && objClass.isNotEmpty) {
+              featureInfos.add((
+                title: ChallengeRepository.localizedTitle(context, objClass),
+                objClass: objClass,
+                objData: objData ?? {},
+                icon: ChallengeRepository.getInfo(objClass)?.icon ?? Icons.star,
+              ));
+            } else {
+              featureInfos.add((
+                title: alias,
+                objClass: 'Unknown',
+                objData: {},
+                icon: Icons.star,
+              ));
+            }
+          }
+        }
+      }
+    }
+
+    final otherModuleClasses = {
+      'ProtectThePlantChallengeProperties': (l10n.moduleTitle_ProtectThePlantChallengeProperties, Icons.security),
+      'ProtectTheGridItemChallengeProperties': (l10n.moduleTitle_ProtectTheGridItemChallengeProperties, Icons.security),
+      'LastStandMinigameProperties': (l10n.moduleTitle_LastStandMinigameProperties, Icons.shield),
+    };
+
+    for (var entry in otherModuleClasses.entries) {
+      final obj = widget.levelFile.objects.firstWhereOrNull((o) => o.objClass == entry.key);
+      if (obj != null) {
+        featureInfos.add((
+          title: entry.value.$1,
+          objClass: entry.key,
+          objData: obj.objData is Map ? Map<String, dynamic>.from(obj.objData as Map) : {},
+          icon: entry.value.$2,
+        ));
+      }
+    }
+
+    final List<({String title, IconData icon, Color color, String? label})> statusIcons = [];
+
+    final maxSunObj = widget.levelFile.objects.firstWhereOrNull((o) => o.objClass == 'LevelMutatorMaxSunProps');
+    if (maxSunObj != null && maxSunObj.objData is Map) {
+      final data = LevelMutatorMaxSunPropsData.fromJson(Map<String, dynamic>.from(maxSunObj.objData as Map));
+      statusIcons.add((
+        title: l10n.moduleTitle_LevelMutatorMaxSunProps,
+        icon: Icons.wb_sunny_outlined,
+        color: Colors.orangeAccent,
+        label: '${data.maxSunOverride}',
+      ));
+    }
+
+    final inflationObj = widget.levelFile.objects.firstWhereOrNull((o) => o.objClass == 'IncreasedCostModuleProperties');
+    if (inflationObj != null && inflationObj.objData is Map) {
+      final data = IncreasedCostModulePropertiesData.fromJson(Map<String, dynamic>.from(inflationObj.objData as Map));
+      statusIcons.add((
+        title: l10n.moduleTitle_IncreasedCostModuleProperties,
+        icon: Icons.trending_up,
+        color: Colors.greenAccent,
+        label: '${data.baseCostIncreased}/${data.maxIncreasedCount}',
+      ));
+    }
+
+    final statusModuleMappings = {
+      'LevelScoringModuleProperties': (l10n.moduleTitle_LevelScoringModuleProperties, Icons.scoreboard, Colors.blueGrey),
+      'LevelMutatorRiftTimedSunProps': (l10n.moduleTitle_LevelMutatorRiftTimedSunProps, Icons.sunny, Colors.orange),
+    };
+
+    for (var entry in statusModuleMappings.entries) {
+      if (widget.levelFile.objects.any((o) => o.objClass == entry.key)) {
+        statusIcons.add((
+          title: entry.value.$1,
+          icon: entry.value.$2,
+          color: entry.value.$3,
+          label: null,
+        ));
+      }
+    }
+
+    final riftThemeObjs = widget.levelFile.objects.where((o) => o.objClass == 'RiftThemeDemoModuleProperties');
+    final List<String> themeTitles = [];
+    for (var obj in riftThemeObjs) {
+      final data = RiftThemeDemoModulePropertiesData.fromJson(Map<String, dynamic>.from(obj.objData as Map));
+      for (var themeId in data.demoRiftThemeName) {
+        final key = RiftThemeRepository.nameKey(themeId);
+        final localized = ResourceNames.lookup(context, key);
+        themeTitles.add(localized != key ? localized : themeId);
+      }
+    }
+
+    if (featureInfos.isEmpty && themeTitles.isEmpty && statusIcons.isEmpty) return const SizedBox.shrink();
+
+    final bool canExpandThemes = themeTitles.length > 8;
+    final displayThemes = (canExpandThemes && !_riftThemesExpanded) ? themeTitles.take(8).toList() : themeTitles;
+
+    final targetChallengeClasses = {
+      'ApplyZombieConditionsChallengeProps',
+      'PlantDefeatZombieChallengeProps',
+      'DefeatZombiesOfTypeChallengeProps',
+      'DestroyGridItemsChallengeProps',
+    };
+
+    final featuresLabel = l10n.previewFeatures;
+
+    final isDesktop = isDesktopPlatform(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 500;
+                final titlePart = Row(
+                  children: [
+                    Icon(Icons.auto_awesome, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
+                    const SizedBox(width: 8),
+                    Flexible(child: _buildSectionTitle(featuresLabel, theme)),
+                  ],
+                );
+
+                final statusPart = statusIcons.isNotEmpty
+                    ? Wrap(
+                        spacing: 12,
+                        alignment: WrapAlignment.end,
+                        children: statusIcons.map((si) => Tooltip(
+                          message: si.title,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(si.icon, size: 20, color: si.color),
+                              if (si.label != null && !isDesktop)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    si.label!,
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      color: si.color.withValues(alpha: 0.8),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        )).toList(),
+                      )
+                    : const SizedBox.shrink();
+
+                if (isWide) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: titlePart),
+                      const SizedBox(width: 16),
+                      Flexible(child: statusPart),
+                    ],
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titlePart,
+                    if (statusIcons.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      statusPart,
+                    ],
+                  ],
+                );
+              }),
+            ),
+            if (statusIcons.isNotEmpty && !isDesktop) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 16,
+                runSpacing: 4,
+                children: statusIcons.map((si) => Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(si.icon, size: 12, color: si.color.withValues(alpha: 0.6)),
+                    const SizedBox(width: 4),
+                    Text(
+                      si.title,
+                      style: TextStyle(fontSize: 10, color: theme.colorScheme.onSurface.withValues(alpha: 0.8)),
+                    ),
+                  ],
+                )).toList(),
+              ),
+              const SizedBox(height: 12),
+              const Divider(height: 1, thickness: 0.5),
+              const SizedBox(height: 12),
+            ],
+    if (featureInfos.isNotEmpty) ...[
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: _buildSubSectionTitle(l10n.moduleTitle_StarChallengeModuleProperties, theme)),
+          if (featureInfos.length > 5)
+            IconButton(
+              onPressed: () => setState(() => _challengesExpanded = !_challengesExpanded),
+              icon: Icon(
+                _challengesExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                color: Colors.blueAccent,
+              ),
+              style: IconButton.styleFrom(
+                backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.all(4),
+                minimumSize: const Size(32, 32),
+              ),
+            ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      ...((_challengesExpanded ? featureInfos : featureInfos.take(3)).map((info) {
+        final isClickable = targetChallengeClasses.contains(info.objClass);
+        final param = _getChallengeParam(info.objClass, info.objData);
+        final title = param != null && info.objClass != 'StarChallengeDisablePlantProps' ? '${info.title} ($param)' : info.title;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Icon(info.icon, size: 16, color: info.icon == Icons.star ? Colors.amber : Colors.greenAccent),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    isClickable
+                        ? InkWell(
+                            onTap: () => _showChallengeDetails(context, info.objClass, info.objData, info.title),
+                            borderRadius: BorderRadius.circular(4),
+                            child: Text(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            title,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                    if (info.objClass == 'StarChallengeDisablePlantProps' && param != null)
+                      AssetImageWidget(
+                        assetPath: StarChallengeProfessions.iconAsset(param),
+                        width: 20,
+                        height: 20,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      })),
+    ],
+            if (themeTitles.isNotEmpty) ...[
+              if (featureInfos.isNotEmpty) const SizedBox(height: 20),
+              _buildSubSectionTitle(l10n.moduleTitle_RiftThemeDemoModuleProperties, theme),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  ...displayThemes.map((t) => Chip(
+                        label: Text(t, style: const TextStyle(fontSize: 11)),
+                        backgroundColor: Colors.blue.withValues(alpha: 0.15),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      )),
+                  if (canExpandThemes)
+                    IconButton(
+                      onPressed: () => setState(() => _riftThemesExpanded = !_riftThemesExpanded),
+                      icon: Icon(
+                        _riftThemesExpanded ? Icons.chevron_left : Icons.chevron_right,
+                        color: Colors.blueAccent,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.all(8),
+                        minimumSize: const Size(40, 40),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showChallengeDetails(BuildContext context, String objClass, Map<String, dynamic> data, String title) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: theme.colorScheme.surface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+          ),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 500,
+              minWidth: 280,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildChallengeDetailContent(context, objClass, data, theme, l10n),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.ok),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildRailcartGrid(int rows, int cols, Color borderColor) {
+  String? _getChallengeParam(String objClass, Map<String, dynamic> data) {
+    // Skip Level Hint
+    if (objClass == 'StageIntroductionModuleProperties') return null;
+
+    dynamic val;
+    switch (objClass) {
+      case 'StarChallengeZombieDistanceProps':
+        return null;
+      case 'StarChallengeKillZombiesInTimeProps':
+        final count = data['ZombiesToKill'];
+        final time = data['Time'];
+        if (count != null && time != null) {
+          return '$count/$time';
+        }
+        return null;
+      case 'StarChallengeSunProducedProps':
+        val = data['TargetSun'];
+        break;
+      case 'StarChallengeSunUsedProps':
+        val = data['MaximumSun'];
+        break;
+      case 'StarChallengeSpendSunHoldoutProps':
+        val = data['HoldoutSeconds'];
+        break;
+      case 'StarChallengePlantsLostProps':
+        val = data['MaximumPlantsLost'];
+        break;
+      case 'StarChallengeSimultaneousPlantsProps':
+        val = data['MaximumPlants'];
+        break;
+      case 'StarChallengeTargetScoreProps':
+        val = data['TargetScore'];
+        break;
+      case 'StarChallengePlantsSurviveProps':
+      case 'StarChallengeBlowZombieProps':
+      case 'StarChallengeUnfreezePlantsProps':
+      case 'StarChallengeSandstormZombieKillProps':
+      case 'StarChallengeTentZombieKillProps':
+      case 'StarChallengeBufferTileZombieKillProps':
+      case 'StarChallengePotionZombieKillProps':
+      case 'StarChallengeBarrelPowderZombieKillProps':
+      case 'StarChallengeBlowBarrelZombieProps':
+      case 'StarChallengeFirecrackerZombieKillProps':
+      case 'StarChallengeFireworksZombieKillProps':
+        val = data['Count'];
+        break;
+      case 'StarChallengeZombieSpeedProps':
+        val = data['SpeedModifier'];
+        break;
+      case 'StarChallengeSunReducedProps':
+        val = data['sunModifier'];
+        break;
+      case 'StarChallengeDisablePlantProps':
+        val = data['Profession'];
+        break;
+      case 'ZombiePerfumerChallengeProps':
+        val = data['PoisonToClean'];
+        break;
+      case 'BalletSlipChallengeProps':
+        val = data['BalletToSlip'];
+        break;
+      case 'ZombieExplodenutChallengeProps':
+        val = data['MaximumExplode'];
+        break;
+      case 'ZombieJalapenoChallengeProps':
+        val = data['MaximumJalapeno'];
+        break;
+      case 'RenaiRollerChallengeProps':
+        val = data['MaximumPlantsDied'];
+        break;
+      case 'ZombiePeaChallengeProps':
+        val = data['MaximumPlantsHitted'];
+        break;
+      case 'SteamManholeChallengeProps':
+        val = data['MaximumManholeEntered'];
+        break;
+    }
+
+    if (val == null) return null;
+    if (val is double) return val.toStringAsFixed(val.truncateToDouble() == val ? 0 : 1);
+    return val.toString();
+  }
+
+  List<Widget> _buildChallengeDetailContent(
+      BuildContext context, String objClass, Map<String, dynamic> data, ThemeData theme, AppLocalizations l10n) {
+    final List<Widget> children = [];
+
+    switch (objClass) {
+      case 'ApplyZombieConditionsChallengeProps':
+        final count = data['NumZombieConditionsToApply'] ?? 0;
+        final burned = data['IncludeBurnedToAsh'] == true;
+        final electrified = data['IncludeElectrified'] == true;
+        final conditions = data['ConditionToInflict'] as List?;
+
+        children.add(_detailItem(ChallengeResourceL10n.property(context, objClass, 'NumZombieConditionsToApply'), '$count', theme));
+        children.add(_detailSwitch(ChallengeResourceL10n.property(context, objClass, 'IncludeBurnedToAsh'), burned, theme));
+        children.add(_detailSwitch(ChallengeResourceL10n.property(context, objClass, 'IncludeElectrified'), electrified, theme));
+
+        if (conditions != null && conditions.isNotEmpty) {
+          children.add(const SizedBox(height: 12));
+          children.add(Text(
+            ChallengeResourceL10n.property(context, objClass, 'ConditionToInflict'),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+          ));
+          children.add(const SizedBox(height: 8));
+          for (var c in conditions) {
+            final id = c.toString();
+            final name = ResourceNames.lookup(context, id);
+            children.add(Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name != id ? name : id, style: const TextStyle(fontSize: 14)),
+                  Text(id, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.4))),
+                ],
+              ),
+            ));
+          }
+        }
+        break;
+
+      case 'PlantDefeatZombieChallengeProps':
+        final count = data['NumZombiesToKill'] ?? 0;
+        final plantId = data['PlantTypeName'] as String?;
+
+        children.add(_detailItem(ChallengeResourceL10n.property(context, objClass, 'NumZombiesToKill'), '$count', theme));
+        if (plantId != null) {
+          children.add(const SizedBox(height: 12));
+          children.add(Text(
+            ChallengeResourceL10n.property(context, objClass, 'PlantTypeName'),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+          ));
+          children.add(const SizedBox(height: 8));
+          children.add(Row(
+            children: [
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: UniversalIcon(id: plantId, size: 48),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                ResourceNames.lookup(context, 'plant_$plantId'),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurface),
+              ),
+            ),
+          ],
+        ));
+      }
+      break;
+
+      case 'DefeatZombiesOfTypeChallengeProps':
+        final count = data['NumZombiesToKill'] ?? 0;
+        final typesToKill = data['TypesToKill'] as Map?;
+        final listType = typesToKill?['ListType'] ?? 'whitelist';
+        final zombies = typesToKill?['List'] as List?;
+
+        children.add(_detailItem(ChallengeResourceL10n.property(context, objClass, 'NumZombiesToKill'), '$count', theme));
+        children.add(_detailItem(
+          ChallengeResourceL10n.property(context, objClass, 'ListType'),
+          ChallengeResourceL10n.listTypeOption(context, objClass, listType),
+          theme
+        ));
+
+        if (zombies != null && zombies.isNotEmpty) {
+          children.add(const SizedBox(height: 12));
+          children.add(Text(
+            ChallengeResourceL10n.property(context, objClass, 'TypesToKill'),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: theme.colorScheme.onSurface.withValues(alpha: 0.8)),
+          ));
+          children.add(const SizedBox(height: 8));
+          children.add(Wrap(
+            spacing: 12,
+            runSpacing: 10,
+            children: zombies.map((z) => UniversalIcon(id: z.toString(), size: 44)).toList(),
+          ));
+        }
+        break;
+
+      case 'DestroyGridItemsChallengeProps':
+        final count = data['GridItemsToDestroy'] ?? 0;
+        final itemType = data['GridItemType'] as String?;
+
+        children.add(_detailItem(ChallengeResourceL10n.property(context, objClass, 'GridItemsToDestroy'), '$count', theme));
+        if (itemType != null) {
+          children.add(const SizedBox(height: 12));
+          children.add(Text(
+            ChallengeResourceL10n.property(context, objClass, 'GridItemType'),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: theme.colorScheme.onSurface.withValues(alpha: 0.8)),
+          ));
+          children.add(const SizedBox(height: 8));
+          children.add(Row(
+            children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: GridItemIcon(id: itemType, size: 40, isGrid: true),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                ResourceNames.lookup(context, 'griditem_$itemType'),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurface),
+              ),
+            ),
+          ],
+        ));
+      }
+      break;
+    }
+
+    return children;
+  }
+
+  Widget _detailItem(String label, String value, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 12)),
+          const SizedBox(height: 2),
+          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailSwitch(String label, bool value, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: Text(label, style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface))),
+          Icon(
+            value ? Icons.toggle_on : Icons.toggle_off,
+            color: value ? const Color(0xFFD5925E) : theme.colorScheme.onSurface.withValues(alpha: 0.3),
+            size: 32,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDedicatedZombossGrid(
+    int rows,
+    int cols,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final theme = Theme.of(context);
+    final isMobile = theme.platform == TargetPlatform.android || theme.platform == TargetPlatform.iOS;
+    final style = resolveGridStyle(context, GridPreviewModuleKind.zombossMech).copyWith(
+      maxWidth: isDesktopPlatform(context) ? 650 : (isMobile ? 550 * textScale : 400 * textScale).clamp(300.0, 1000.0),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildZombossMechGrid(rows, cols, style),
+        const SizedBox(height: 16),
+        _buildZombossDataCard(theme, l10n),
+      ],
+    );
+  }
+
+  Widget _buildDedicatedBossGrid(
+    int rows,
+    int cols,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final theme = Theme.of(context);
+    final isMobile = theme.platform == TargetPlatform.android || theme.platform == TargetPlatform.iOS;
+    final style = resolveGridStyle(context, GridPreviewModuleKind.zomboss).copyWith(
+      maxWidth: isDesktopPlatform(context) ? 650 : (isMobile ? 550 * textScale : 400 * textScale).clamp(300.0, 1000.0),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildBossGrid(rows, cols, style),
+        const SizedBox(height: 16),
+        _buildBossDataCard(theme, l10n),
+      ],
+    );
+  }
+
+  Widget _buildZombossMechGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final data = readZombossBattleData(widget.levelFile);
+    final reserved = data?.reservedColumnCount ?? 2;
+    return _buildReservedGrid(rows, cols, style, reserved, showIcon: false);
+  }
+
+  Widget _buildBossGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final data = readZombossLastStandData(widget.levelFile);
+    final reserved = data?.reservedColumnCount ?? 3;
+    return _buildReservedGrid(rows, cols, style, reserved, showIcon: false);
+  }
+
+  Widget _buildZombossDataCard(ThemeData theme, AppLocalizations l10n) {
+    final data = readZombossBattleData(widget.levelFile);
+    if (data == null) return const SizedBox.shrink();
+
+    final base = ZombossMechRepository.findBaseForVariation(data.zombossMechType);
+    final catalog = ZombossMechRepository.findCatalogForVariation(data.zombossMechType);
+    final isCustom = ZombossMechRepository.isCustomVariation(data.zombossMechType, catalog);
+
+    String displayName = base != null
+        ? ResourceNames.lookup(context, base.id)
+        : data.zombossMechType;
+
+    if (isCustom) {
+      displayName += " (${l10n.customLabel.toLowerCase()})";
+    }
+
+    final String? iconPath = base != null ? 'assets/images/zombies/${base.icon}' : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(
+            l10n.zombossData,
+            style: const TextStyle(
+              color: Colors.redAccent,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: iconPath != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: AssetImageWidget(assetPath: iconPath, fit: BoxFit.contain),
+                      )
+                    : const Center(child: Icon(Icons.face, size: 21, color: Colors.white24)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Text(
+            '${l10n.reservedColumnCount}: ${data.reservedColumnCount}',
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBossDataCard(ThemeData theme, AppLocalizations l10n) {
+    final data = readZombossLastStandData(widget.levelFile);
+    if (data == null) return const SizedBox.shrink();
+
+    final base = ZombossBattleRepository.findBaseForVariation(data.zombossTypeName);
+    final isCustom = data.zombossTypeName.contains('@CurrentLevel') ||
+        data.zombossTypeName.endsWith('_memo');
+
+    String displayName = base != null
+        ? ResourceNames.lookup(context, base.id)
+        : data.zombossTypeName;
+
+    if (isCustom) {
+      displayName += " (${l10n.customLabel.toLowerCase()})";
+    }
+
+    final String? iconPath = base != null ? 'assets/images/zombies/${base.icon}' : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(
+            l10n.boss,
+            style: TextStyle(
+              color: theme.colorScheme.secondary,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: iconPath != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: AssetImageWidget(assetPath: iconPath, fit: BoxFit.contain),
+                      )
+                    : const Center(child: Icon(Icons.security, size: 21, color: Colors.white24)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Text(
+            '${l10n.reservedColumnCount}: ${data.reservedColumnCount}',
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReservedGrid(int rows, int cols, LevelPreviewGridStyle style, int reservedCount, {bool showIcon = true}) {
+    final reservedStart = cols - reservedCount;
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      cellBuilder: (col, row) {
+        if (col >= reservedStart) {
+          return Container(
+            color: Colors.red.withValues(alpha: 0.3),
+            child: showIcon && col == reservedStart && row == 0
+                ? const Center(child: Icon(Icons.lock, color: Colors.redAccent, size: 16))
+                : null,
+          );
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDropShipGrid(int rows, int cols, LevelPreviewGridStyle style, GridPreviewCategoryOption category) {
+    final data = readDropShipData(widget.levelFile);
+    final waveIndex = category.index;
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      cellBuilder: (col, row) {
+        if (data != null && waveIndex != null && waveIndex < data.appearWaves.length) {
+          final wave = data.appearWaves[waveIndex];
+          if (col >= wave.colRange.min && col <= wave.colRange.max &&
+              row >= wave.rowRange.min && row <= wave.rowRange.max) {
+            return Container(
+              color: Colors.orange.withValues(alpha: 0.5),
+            );
+          }
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDropShipFooter(List<GridPreviewCategoryOption> categories, String activeKey, ThemeData theme, AppLocalizations l10n) {
+    final category = _selectedGridCategory(categories, activeKey);
+    if (category == null || category.kind != GridPreviewModuleKind.dropShip) return const SizedBox.shrink();
+    final data = readDropShipData(widget.levelFile);
+    if (data == null || category.index == null || category.index! >= data.appearWaves.length) return const SizedBox.shrink();
+    
+    final wave = data.appearWaves[category.index!];
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 10,
+            children: [
+               _buildInfoChip(
+                 icon: Icons.person,
+                 label: '${l10n.impLv}: ${wave.impLv}',
+                 color: const Color(0xFF4AC380),
+                 theme: theme,
+               ),
+               _buildInfoChip(
+                 icon: Icons.group,
+                 label: '+${l10n.impsCount(wave.imp)}',
+                 color: const Color(0xFF42A5F5),
+                 theme: theme,
+               ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.circle, size: 8, color: Color(0xFF4AC380)),
+              const SizedBox(width: 8),
+              Text(l10n.dropShip, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.4))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompositeLawnGrid({
+    required int rows,
+    required int cols,
+    required LevelPreviewGridStyle style,
+    required Widget? Function(int col, int row) cellBuilder,
+    BoxDecoration? Function(int col, int row, bool isSelected, bool isStripe)?
+        cellDecorationBuilder,
+    BoxDecoration? Function(int col, int row, bool isSelected)?
+        foregroundDecorationBuilder,
+    Map<String, List<String>>? moduleData,
+    int? activeTabIndex,
+    Widget? background,
+    Widget? foreground,
+  }) {
+    return LawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      selectedX: _selectedX,
+      selectedY: _selectedY,
+      background: background,
+      foreground: foreground,
+      cellDecorationBuilder: cellDecorationBuilder,
+      foregroundDecorationBuilder: foregroundDecorationBuilder,
+      onCellTap: (col, row) {
+        final ids = moduleData?['$col,$row'] ?? [];
+        setState(() {
+          if (_selectedX == col && _selectedY == row) {
+            _selectedX = null;
+            _selectedY = null;
+            _selectedIds = [];
+          } else {
+            _selectedX = col;
+            _selectedY = row;
+            _selectedIds = ids;
+          }
+        });
+      },
+      cellBuilder: (context, col, row) {
+        final ids = moduleData?['$col,$row'] ?? [];
+
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            if (ids.isNotEmpty)
+              Stack(
+                fit: StackFit.expand,
+                children: [
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: _getIconForId(
+                          ids.first,
+                          activeTabIndex ?? 2,
+                          isGrid: true,
+                          levelFile: widget.levelFile,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (ids.length > 1)
+                    Positioned(
+                      top: 1,
+                      right: 1,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final cellWidth = constraints.maxWidth > 0 ? constraints.maxWidth : 50.0;
+
+                          final double badgeScale = (cellWidth / 50.0) * (cellWidth / 50.0);
+
+                          return Transform.scale(
+                            scale: badgeScale.clamp(0.1, 1.0),
+                            alignment: Alignment.topRight,
+                            child: ObjectCountBadge(
+                              count: ids.length - 1,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            cellBuilder(col, row) ?? const SizedBox.shrink(),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPiratePlankGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final pirateData = readPiratePlankModuleData(widget.levelFile);
+    final selectionColor =
+        style.selectionColor ?? Theme.of(context).colorScheme.primary;
+
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      background:
+          pirateData != null
+              ? Column(
+                children: List.generate(
+                  rows,
+                  (row) => Expanded(
+                    child: Row(
+                      children: [
+                        Spacer(flex: cols - 4),
+                        if (pirateData.plankRows.contains(row))
+                          Expanded(
+                            flex: 4,
+                            child: AssetImageWidget(
+                              assetPath:
+                                  'assets/images/others/Pirate_Seas_Planks.png',
+                              fit: BoxFit.fill,
+                            ),
+                          )
+                        else
+                          Spacer(flex: 4),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+              : null,
+      cellDecorationBuilder: (col, row, isSelected, isStripe) {
+        final isPlankArea =
+            pirateData != null &&
+            pirateData.plankRows.contains(row) &&
+            col >= cols - 4;
+
+        if (isPlankArea) {
+          return BoxDecoration(
+            color: isSelected ? selectionColor.withValues(alpha: 0.25) : null,
+          );
+        }
+        return null;
+      },
+      foregroundDecorationBuilder: (col, row, isSelected) {
+        final isPlankArea =
+            pirateData != null &&
+            pirateData.plankRows.contains(row) &&
+            col >= cols - 4;
+
+        if (isPlankArea) {
+          final color = isSelected ? selectionColor : style.cellBorderColor;
+          final width = isSelected ? 1.5 : 0.5;
+
+          return BoxDecoration(
+            border: Border(
+              top: BorderSide(color: color, width: width),
+              bottom: BorderSide(color: color, width: width),
+              left: col == (cols - 4)
+                  ? BorderSide(color: color, width: width)
+                  : BorderSide.none,
+              right: col == (cols - 1)
+                  ? BorderSide(color: color, width: width)
+                  : BorderSide.none,
+            ),
+          );
+        }
+        return null;
+      },
+      cellBuilder: (col, row) => null,
+    );
+  }
+
+  Widget _buildRailcartGrid(int rows, int cols, LevelPreviewGridStyle style) {
     const railsAsset = 'assets/images/others/rails.webp';
     const cartsAsset = 'assets/images/others/railcarts.webp';
     final data = readRailcartModuleData(widget.levelFile);
-    if (data == null) return _buildCompositeLawnGrid(rows: rows, cols: cols, borderColor: borderColor, cellBuilder: (_, __) => null);
+    if (data == null) return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, cellBuilder: (col, row) => null);
     final railsGrid = buildRailcartRailsGrid(data, rows, cols);
     final cartSet = buildRailcartCartSet(data);
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
+      rows: rows, cols: cols, style: style,
       cellBuilder: (col, row) {
         final hasRail = railsGrid[col][row];
         final hasCart = cartSet.contains('$col,$row');
@@ -1214,15 +3626,15 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
-  Widget _buildMechanismPlankGrid(int rows, int cols, Color borderColor) {
+  Widget _buildMechanismPlankGrid(int rows, int cols, LevelPreviewGridStyle style) {
     const railsAsset = 'assets/images/others/kongfu_minecart_tracks.webp';
     const cartLeftAsset = 'assets/images/others/kongfu_minecart_left.webp';
     const cartMiddleAsset = 'assets/images/others/kongfu_minecart_middle.webp';
     const cartRightAsset = 'assets/images/others/kongfu_minecart_right.webp';
     final state = buildMechanismPlankPreviewState(readMechanismPlankModuleData(widget.levelFile));
-    if (state == null) return _buildCompositeLawnGrid(rows: rows, cols: cols, borderColor: borderColor, cellBuilder: (_, __) => null);
+    if (state == null) return _buildCompositeLawnGrid(rows: rows, cols: cols, style: style, cellBuilder: (col, row) => null);
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
+      rows: rows, cols: cols, style: style,
       cellBuilder: (col, row) {
         final hasRail = state.hasRailAt(col, row);
         final hasCart = state.hasCartAt(col, row);
@@ -1236,10 +3648,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
-  Widget _buildArmrackGrid(int rows, int cols, Color borderColor, int wave) {
+  Widget _buildArmrackGrid(int rows, int cols, LevelPreviewGridStyle style, int wave) {
     final items = armrackItemsForModuleWave(readArmrackModuleData(widget.levelFile), wave);
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
+      rows: rows, cols: cols, style: style,
       cellBuilder: (col, row) {
         final item = items.firstWhereOrNull((e) => e.mX == col && e.mY == row);
         if (item == null) return null;
@@ -1254,12 +3666,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
-  Widget _buildEnergyGridPreview(int rows, int cols, Color borderColor, int wave) {
+  Widget _buildEnergyGridPreview(int rows, int cols, LevelPreviewGridStyle style, int wave) {
     const tileAsset = 'assets/images/griditems/energyGrid.webp';
     final items = energyGridItemsForModuleWave(readEnergyGridModuleData(widget.levelFile), wave);
     final tileSet = items.map((e) => '${e.mX},${e.mY}').toSet();
     return _buildCompositeLawnGrid(
-      rows: rows, cols: cols, borderColor: borderColor,
+      rows: rows, cols: cols, style: style,
       cellBuilder: (col, row) {
         if (!tileSet.contains('$col,$row')) return null;
         return LayoutBuilder(builder: (context, constraints) {
@@ -1272,13 +3684,13 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
-  Map<String, String> _getGridData(int activeTabIndex) {
+  Map<String, List<String>> _getGridData(int activeTabIndex) {
     if (activeTabIndex == 2) return _getCommonGridData();
     return _getPlacementGridData(activeTabIndex);
   }
 
-  Map<String, String> _getCommonGridData() {
-    final result = <String, String>{};
+  Map<String, List<String>> _getCommonGridData() {
+    final result = <String, List<String>>{};
     for (var obj in widget.levelFile.objects) {
       if (obj.objClass != 'InitialGridItemProperties') continue;
       final data = obj.objData;
@@ -1287,16 +3699,20 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     return result;
   }
 
-  Map<String, String> _getPlacementGridData(int activeTabIndex) {
-    final result = <String, String>{};
+  Map<String, List<String>> _getPlacementGridData(int activeTabIndex) {
+    final result = <String, List<String>>{};
     for (var obj in widget.levelFile.objects) {
       final data = obj.objData;
       if (data is! Map) continue;
       if (activeTabIndex == 0) {
         if (_plantTypeIndex == 0) {
-          if (obj.objClass == 'InitialPlantEntryProperties') _addPlacementsToGrid(result, data['Plants'] ?? data['Placements'], 'TypeName');
+          if (obj.objClass == 'InitialPlantEntryProperties') _addPlacementsToGrid(result, data['Plants'] ?? data['Placements'] ?? data['InitialPlantPlacements'] ?? data['InitialPlantList'], 'TypeName');
         } else {
-          if (obj.objClass == 'InitialPlantProperties' || obj.objClass == 'FrozenPlantPlacement') _addPlacementsToGrid(result, data['InitialPlantPlacements'] ?? data['InitialPlantList'], 'PlantType');
+          if (obj.objClass == 'FrozenPlantPlacement') {
+            _addPlacementsToGrid(result, data['InitialPlantPlacements'] ?? data['InitialPlantList'], 'PlantType');
+          } else if (obj.objClass == 'InitialPlantProperties') {
+             _addPlacementsToGrid(result, data['Plants'] ?? data['Placements'] ?? data['InitialPlantPlacements'] ?? data['InitialPlantList'], 'TypeName');
+          }
         }
       } else if (activeTabIndex == 1 && obj.objClass == 'InitialZombieProperties') {
         _addPlacementsToGrid(result, data['InitialZombiePlacements'] ?? data['Zombies'], 'TypeName');
@@ -1305,291 +3721,37 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     return result;
   }
 
-  void _addPlacementsToGrid(Map<String, String> result, dynamic list, String typeKey) {
+  void _addPlacementsToGrid(Map<String, List<String>> result, dynamic list, String typeKey) {
     if (list is! List) return;
     for (var e in list) {
       if (e is! Map) continue;
       final dynamic rawX = e['GridX'] ?? e['gridX'] ?? e['mX'] ?? e['X'];
       final dynamic rawY = e['GridY'] ?? e['gridY'] ?? e['mY'] ?? e['Y'];
-      dynamic rawType = e[typeKey] ?? e['TypeName'] ?? e['PlantType'] ?? e['ZombieType'];
+      dynamic rawType = e[typeKey] ?? e['TypeName'] ?? e['PlantType'] ?? e['ZombieType'] ?? e['Type'];
       if (rawType == null && e['PlantTypes'] is List && (e['PlantTypes'] as List).isNotEmpty) rawType = (e['PlantTypes'] as List).first;
       if (rawX != null && rawY != null && rawType is String) {
         final x = _parseCoord(rawX);
         final y = _parseCoord(rawY);
-        result['$x,$y'] = _cleanId(rawType);
+        final key = '$x,$y';
+        result[key] ??= [];
+        result[key]!.add(_cleanId(rawType));
       }
     }
   }
 
-  Widget _getIconForId(String id, int activeTabIndex, {bool isGrid = false}) {
-    if (id.isEmpty) return const SizedBox.shrink();
-    final clean = _cleanId(id);
-
-    if (ToolRepository.get(clean) != null) {
-      return _ToolIcon(id: clean, isGrid: isGrid);
-    }
-    if (ZombieRepository().getZombieById(clean) != null) {
-      return _ZombieIcon(id: clean, isGrid: isGrid);
-    }
-    if (PlantRepository().getPlantInfoById(clean) != null) {
-      return _PlantIcon(id: clean, isGrid: isGrid);
-    }
-
-    return _GridItemIcon(id: clean, isGrid: isGrid);
-  }
-
-
-  Widget _buildEncounterCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
-    final Set<String> zombies = {};
-    final Set<String> events = {};
-    bool hasWaveModule = widget.levelFile.objects.any((o) => o.objClass == 'WaveManagerModuleProperties' || o.objClass == 'WaveManagerProperties' || o.objClass == 'WaveGeneratorProperties');
-    final wm = widget.parsed.waveManager;
-    if (wm is WaveManagerData) {
-      for (var wave in wm.waves) {
-        for (var rtid in wave) {
-          final alias = LevelParser.extractAlias(rtid);
-          final obj = widget.parsed.objectMap[alias];
-          if (obj != null) {
-            events.add(obj.objClass.replaceAll('WaveActionProps', ''));
-            _extractZombiesFromData(obj.objData, zombies);
-          }
-        }
-      }
-    }
-    final wg = widget.parsed.waveGenerator;
-    if (wg != null) {
-      for (var wave in wg.waves) {
-        for (var z in wave.zombies) {
-          if (z.type.isNotEmpty) zombies.add(_cleanId(z.type));
-        }
-      }
-    }
-    if (!hasWaveModule && zombies.isEmpty && events.isEmpty) return const SizedBox.shrink();
-    return Card(
-      color: Colors.white.withValues(alpha: 0.04),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle(l10n.previewZombiesAndEvents, theme),
-            if (zombies.isNotEmpty) Wrap(spacing: 6, runSpacing: 6, children: zombies.map((id) => _ZombieIcon(id: id, size: 36)).toList()),
-            if (events.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Wrap(spacing: 6, children: events.map((e) => Chip(label: Text(e, style: const TextStyle(fontSize: 10)), visualDensity: VisualDensity.compact)).toList()),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _extractZombiesFromData(dynamic data, Set<String> out) {
-    if (data is Map) {
-      final t = data['TypeName'] ?? data['ZombieType'] ?? data['Type'];
-      if (t is String && t.isNotEmpty) out.add(_cleanId(t));
-      for (var v in data.values) { _extractZombiesFromData(v, out); }
-    } else if (data is List) {
-      for (var e in data) { _extractZombiesFromData(e, out); }
-    }
-  }
-
-  Widget _buildModulesCard(BuildContext context, ThemeData theme, AppLocalizations l10n) {
-    final challenges = widget.levelFile.objects.where((o) => o.objClass == 'StarChallengeModuleProperties').toList();
-    final themesObj = widget.levelFile.objects.firstWhereOrNull((o) => o.objClass == 'RiftThemeDemoModuleProperties');
-    final themes = ((themesObj?.objData as Map?)?['Themes'] as List?)?.cast<String>() ?? [];
-    if (challenges.isEmpty && themes.isEmpty) return const SizedBox.shrink();
-    return Card(
-      color: Colors.white.withValues(alpha: 0.04),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle(l10n.previewChallengesAndThemes, theme),
-            if (challenges.isNotEmpty) ...[
-              ...challenges.map((c) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(children: [const Icon(Icons.star, size: 16, color: Colors.amber), const SizedBox(width: 10), Text(c.aliases?.first ?? 'Challenge', style: const TextStyle(fontSize: 15))]),
-              )),
-            ],
-            if (themes.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Wrap(spacing: 6, children: themes.map((t) => Chip(label: Text(t, style: const TextStyle(fontSize: 11)), backgroundColor: Colors.blue.withValues(alpha: 0.15))).toList()),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ResourceChip extends StatelessWidget {
-  final IconData icon; final String label; final Color color; final String? tooltip;
-  const _ResourceChip({required this.icon, required this.label, required this.color, this.tooltip});
-  @override
-  Widget build(BuildContext context) {
-    Widget content = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12), border: Border.all(color: color.withValues(alpha: 0.2))),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 18, color: color), const SizedBox(width: 8), Text(label, style: TextStyle(color: color, fontSize: 15, fontWeight: FontWeight.bold))]),
-    );
-    if (tooltip != null) content = Tooltip(message: tooltip!, child: content);
-    return content;
-  }
-}
-
-class _UniversalIcon extends StatelessWidget {
-  final String id; final double size;
-  const _UniversalIcon({required this.id, required this.size});
-  @override
-  Widget build(BuildContext context) {
-    if (PlantRepository().getPlantInfoById(id) != null) return _PlantIcon(id: id, size: size);
-    if (ZombieRepository().getZombieById(id) != null) return _ZombieIcon(id: id, size: size);
-    if (ToolRepository.get(id) != null) return _ToolIcon(id: id, size: size);
-
-    return _GridItemIcon(id: id, size: size);
-  }
-}
-
-class _ToolIcon extends StatelessWidget {
-  final String id; final double size; final bool isGrid;
-  const _ToolIcon({required this.id, this.size = 42, this.isGrid = false});
-  @override
-  Widget build(BuildContext context) {
-    final info = ToolRepository.get(id);
-    final tooltip = ToolRepository.localizedName(context, id);
-    final asset = info?.icon != null ? 'assets/images/tools/${info!.icon}' : null;
-
-    if (isGrid) {
-      return Tooltip(
-        message: tooltip,
-        child: asset != null
-            ? AssetImageWidget(assetPath: asset, fit: BoxFit.contain)
-            : Icon(Icons.build, size: size, color: Colors.white24),
-      );
-    }
-
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        width: size, height: size,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: asset != null
-            ? AssetImageWidget(assetPath: asset, fit: BoxFit.contain)
-            : Center(child: Icon(Icons.build, size: size/2, color: Colors.white24)),
-      ),
-    );
+  Widget _getIconForId(String id, int activeTabIndex, {double size = 42, bool isGrid = false, PvzLevelFile? levelFile}) {
+    return UniversalIcon(id: id, size: size, isGrid: isGrid, levelFile: levelFile);
   }
 }
 
 class _ConveyorBadgeIcon extends StatelessWidget {
-  final String id; final int wave; final bool isAdd;
-  const _ConveyorBadgeIcon({required this.id, required this.wave, required this.isAdd});
+  final String id; final int wave; final bool isAdd; final PvzLevelFile? levelFile;
+  const _ConveyorBadgeIcon({required this.id, required this.wave, required this.isAdd, this.levelFile});
   @override
   Widget build(BuildContext context) {
     return Stack(clipBehavior: Clip.none, children: [
-      _UniversalIcon(id: id, size: 40),
+      UniversalIcon(id: id, size: 40, levelFile: levelFile),
       Positioned(top: -4, right: -4, child: Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: isAdd ? Colors.green : Colors.red, borderRadius: BorderRadius.circular(4), border: Border.all(color: Colors.white24, width: 0.5)), child: Text('$wave', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)))),
     ]);
-  }
-}
-
-class _PlantIcon extends StatelessWidget {
-  final String id; final double size; final bool isGrid;
-  const _PlantIcon({required this.id, this.size = 42, this.isGrid = false});
-  @override
-  Widget build(BuildContext context) {
-    final info = PlantRepository().getPlantInfoById(id);
-    final asset = info?.iconAssetPath;
-    final tooltip = ResourceNames.lookup(context, info?.name ?? id);
-
-    if (isGrid) {
-      return Tooltip(
-        message: tooltip,
-        child: asset != null
-            ? AssetImageWidget(assetPath: asset, fit: BoxFit.contain)
-            : Icon(Icons.help_outline, size: size, color: Colors.white24),
-      );
-    }
-
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        width: size, height: size,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: asset != null
-            ? AssetImageWidget(assetPath: asset, fit: BoxFit.contain)
-            : Center(child: Icon(Icons.help_outline, size: size/2, color: Colors.white24)),
-      ),
-    );
-  }
-}
-
-class _ZombieIcon extends StatelessWidget {
-  final String id; final double size; final bool isGrid;
-  const _ZombieIcon({required this.id, this.size = 42, this.isGrid = false});
-  @override
-  Widget build(BuildContext context) {
-    final info = ZombieRepository().getZombieById(id);
-    final tooltip = ZombieRepository().getName(id);
-    final asset = info?.icon != null ? 'assets/images/zombies/${info!.icon}' : null;
-
-    if (isGrid) {
-      return Tooltip(
-        message: tooltip,
-        child: asset != null
-            ? AssetImageWidget(assetPath: asset, fit: BoxFit.contain)
-            : Icon(Icons.person, size: size, color: Colors.white24),
-      );
-    }
-
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        width: size, height: size,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: asset != null
-            ? AssetImageWidget(assetPath: asset, fit: BoxFit.contain)
-            : Center(child: Icon(Icons.person, size: size/2, color: Colors.white24)),
-      ),
-    );
-  }
-}
-
-class _GridItemIcon extends StatelessWidget {
-  final String id; final double size; final bool isGrid;
-  const _GridItemIcon({required this.id, this.size = 42, this.isGrid = false});
-  @override
-  Widget build(BuildContext context) {
-    final path = GridItemRepository.getIconPath(id);
-
-    if (isGrid) {
-      return Tooltip(
-        message: id,
-        child: AssetImageWidget(assetPath: path, fit: BoxFit.contain),
-      );
-    }
-
-    return Tooltip(
-      message: id,
-      child: Container(
-        width: size, height: size,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: AssetImageWidget(assetPath: path, fit: BoxFit.contain),
-      ),
-    );
   }
 }

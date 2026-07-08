@@ -208,10 +208,11 @@ class _EditorScreenState extends State<EditorScreen> {
         if (k == 'PresetPlantList' ||
             k == 'PlantWhiteList' ||
             k == 'PlantBlackList') {
-          if (v is List)
+          if (v is List) {
             for (final e in v) {
               if (e is String && e.isNotEmpty) out.add(e);
             }
+          }
         } else if (k == 'PlantMap' && v is Map) {
           for (final key in v.keys) {
             if (key is String && key.isNotEmpty) out.add(key);
@@ -237,10 +238,11 @@ class _EditorScreenState extends State<EditorScreen> {
               final pt = e['PlantType'];
               if (pt is String && pt.isNotEmpty) out.add(pt);
               final pts = e['PlantTypes'];
-              if (pts is List)
+              if (pts is List) {
                 for (final p in pts) {
                   if (p is String && p.isNotEmpty) out.add(p);
                 }
+              }
             }
           }
         } else if (k == 'Vases' && v is List) {
@@ -310,8 +312,9 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   List<ModuleMetadata> _calculateMissingModules() {
-    if (_ec.state.levelFile == null || _ec.state.parsedData == null)
+    if (_ec.state.levelFile == null || _ec.state.parsedData == null) {
       return const [];
+    }
     final existingClasses = <String>{
       ..._ec.state.levelFile!.objects.map((o) => o.objClass),
       ...?_ec.state.parsedData!.levelDef?.modules.map((rtid) {
@@ -908,10 +911,13 @@ class _EditorScreenState extends State<EditorScreen> {
             }
             _markDirty();
             onStagePicked?.call();
-            if (!mounted) return;
+            if (!stageRouteContext.mounted) return;
             Navigator.pop(stageRouteContext);
           },
-          onBack: () => Navigator.pop(stageRouteContext),
+          onBack: () {
+            if (!stageRouteContext.mounted) return;
+            Navigator.pop(stageRouteContext);
+          },
         ),
       ),
     );
@@ -945,21 +951,21 @@ class _EditorScreenState extends State<EditorScreen> {
     if (meta != null) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
-      var suggestedAlias = meta.effectiveAlias;
+      String? chosenAlias;
       if (meta.defaultSource == 'CurrentLevel') {
-        suggestedAlias = PvzAliasUtils.uniqueAlias(
+        var suggestedAlias = PvzAliasUtils.uniqueAlias(
           _ec.state.levelFile!,
-          suggestedAlias,
+          meta.effectiveAlias,
         );
+        chosenAlias = await showPvzAliasInputDialog(
+          context,
+          defaultAlias: suggestedAlias,
+          title: l10n.addModuleAliasTitle,
+          objClass: meta.objClass,
+          levelFile: _ec.state.levelFile!,
+        );
+        if (chosenAlias == null || !mounted) return;
       }
-      final chosenAlias = await showPvzAliasInputDialog(
-        context,
-        defaultAlias: suggestedAlias,
-        title: l10n.addModuleAliasTitle,
-        objClass: meta.objClass,
-        levelFile: _ec.state.levelFile!,
-      );
-      if (chosenAlias == null || !mounted) return;
       _addModule(meta, aliasOverride: chosenAlias);
     }
   }

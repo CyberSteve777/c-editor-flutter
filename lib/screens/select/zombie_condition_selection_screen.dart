@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/challenge_resource_l10n.dart';
+import 'package:c_editor/data/condition_l10n.dart';
 import 'package:c_editor/data/zombie_conditions.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/utils/selection_search.dart';
@@ -40,9 +40,8 @@ class _ZombieConditionSelectionScreenState
     return ZombieConditions.allIds.where((id) {
       return matchesSelectionSearch(_query, [
         id,
-        'condition_$id',
-        'zombieCondition_$id',
-        ChallengeResourceL10n.condition(context, id),
+        ConditionL10n.zombieKey(id),
+        ConditionL10n.zombieLabel(context, id),
       ]);
     }).toList();
   }
@@ -83,7 +82,7 @@ class _ZombieConditionSelectionScreenState
               itemCount: ids.length,
               itemBuilder: (context, index) {
                 final id = ids[index];
-                final label = ChallengeResourceL10n.condition(context, id);
+                final label = ConditionL10n.zombieLabel(context, id);
                 final checked = _selected.contains(id);
                 return CheckboxListTile(
                   value: checked,

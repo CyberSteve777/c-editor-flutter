@@ -9,13 +9,177 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get error => '错误';
+
+  @override
+  String get warning => '警告';
+
+  @override
+  String get info => '信息';
+
+  @override
+  String get success => '成功';
+
+  @override
+  String get levelPreview => '关卡预览';
+
+  @override
+  String get previewStartingPlantFood => '初始能量豆';
+
+  @override
+  String get previewTabPlants => '植物';
+
+  @override
+  String get previewTabZombies => '僵尸';
+
+  @override
+  String get previewTabGridItems => '物品';
+
+  @override
+  String get previewPrePlaced => '布局/摆放';
+
+  @override
+  String get previewRegularPlants => '常规植物';
+
+  @override
+  String get previewFrozenPlants => '冰冻植物';
+
+  @override
+  String get previewLevelContent => '关卡内容';
+
+  @override
+  String get previewSeedBank => '选卡/卡槽';
+
+  @override
+  String get previewFeatures => '关卡特性';
+
+  @override
+  String get sunBombFalling => '紫光日光落地爆炸';
+
+  @override
+  String get sunDroppingActive => '空中阳光下落已开启';
+
+  @override
+  String get sunDroppingInactive => '空中阳光下落已禁用';
+
+  @override
+  String get conveyorChanges => '传送带变动';
+
+  @override
+  String get willBeAdded => '将添加';
+
+  @override
+  String get willBeRemoved => '将移除';
+
+  @override
+  String get waveNumberLegend => '数字表示波次编号';
+
+  @override
+  String get expand => 'Expand';
+
+  @override
+  String get obtainableInLevel => 'Can be obtained in the level';
+
+  @override
+  String get allZombiesInLevel => '本关所有僵尸';
+
+  @override
+  String get allObjectsInLevel => '本关所有物品';
+
+  @override
+  String get allEventsInLevel => '本关所有事件';
+
+  @override
+  String get previewInitial => '初始';
+
+  @override
+  String get overwhelmLabel => '行列填充';
+
+  @override
+  String get fastEntryLabel => '快速入场';
+
+  @override
+  String get zombieRushLabel => '关卡倒计时';
+
+  @override
+  String get spermWhaleLabel => '抹香鲸';
+
+  @override
+  String get witchLabel => '惊悚女巫';
+
+  @override
+  String get lawnMowerLabel => '小推车';
+
+  @override
+  String get lawnMowerTypeLabel => '小推车类型';
+
+  @override
+  String get renaissanceStatues => '文艺复兴雕像';
+
+  @override
+  String get zomboss => '僵尸博士';
+
+  @override
+  String get boss => '首领';
+
+  @override
+  String get zombossData => '僵尸博士数据';
+
+  @override
+  String get contentsLabel => '内容：';
+
+  @override
+  String get vaseSpawnArea => '罐子生成区域';
+
+  @override
+  String get guessWhoIAm => '猜猜我是谁';
+
+  @override
+  String get plantBlackList => '植物黑名单';
+
+  @override
+  String get zombieWhiteList => '僵尸白名单';
+
+  @override
+  String get zombieWeight => '僵尸权重';
+
+  @override
+  String get rainContent => '种子雨内容';
+
+  @override
+  String get heianWind => '平安阁之风';
+
+  @override
+  String get all => '全部';
+
+  @override
+  String get impLv => '小僵尸等级';
+
+  @override
+  String impsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个小僵尸',
+      one: '1 个小僵尸',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dropShip => '空投模块';
+
+  @override
+  String get totalLabel => '总计';
+
+  @override
+  String get totalPlantFoodTooltip => '本关能量豆总数（包括掉落、事件等）';
+
+  @override
   String get appTitle => '我的关卡库';
 
   @override
   String get about => '关于';
-
-  @override
-  String get back => '返回';
 
   @override
   String get refresh => '刷新';
@@ -79,6 +243,38 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get selectFolderButton => '选择文件夹';
+
+  @override
+  String get uploadToWebsite => '上传到网站';
+
+  @override
+  String get uploadLevelPickerTitle => '选择一个或多个要上传的关卡';
+
+  @override
+  String get smartUploadTitle => '重复文件';
+
+  @override
+  String smartUploadFileMessage(String fileName) {
+    return '此文件已存在于关卡库中：\n\n$fileName\n\n如何处理？';
+  }
+
+  @override
+  String get smartUploadSkip => '不上传';
+
+  @override
+  String get smartUploadOverwrite => '覆盖';
+
+  @override
+  String get smartUploadAsCopy => '作为副本上传';
+
+  @override
+  String get smartUploadSkipAll => '全部跳过';
+
+  @override
+  String get smartUploadOverwriteAll => '全部覆盖';
+
+  @override
+  String get smartUploadCopyAll => '全部作为副本上传';
 
   @override
   String get openFolder => '打开文件夹';
@@ -178,43 +374,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将编辑器中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？';
 
   @override
-  String get levelPreview => '关卡预览';
-
-  @override
-  String get previewLevelSummary => '关卡概览';
-
-  @override
-  String get previewStartingSun => '初始阳光';
-
-  @override
-  String get previewStartingPlantFood => '初始能量豆';
-
-  @override
-  String get previewSeedBank => '选卡/卡槽';
-
-  @override
-  String get previewPrePlaced => '初始布阵';
-
-  @override
-  String get previewTabPlants => '植物';
-
-  @override
-  String get previewTabZombies => '僵尸';
-
-  @override
-  String get previewTabGridItems => '物品';
-
-  @override
-  String get previewRegularPlants => '普通植物';
-
-  @override
-  String get previewFrozenPlants => '冰冻/旧版植物';
-
-  @override
-  String get previewZombiesAndEvents => '僵尸与事件';
-
-  @override
-  String get previewChallengesAndThemes => '挑战与主题';
+  String get back => '返回';
 
   @override
   String get noLevelsFound => '未找到关卡';
@@ -1242,9 +1402,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get name => '名称';
 
   @override
-  String get description => '描述';
-
-  @override
   String get levelNumber => '关卡序号';
 
   @override
@@ -2251,9 +2408,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieVaseOption => '僵尸罐子 (紫罐)';
 
   @override
-  String get selectZombie => '选择僵尸';
-
-  @override
   String get searchZombie => '搜索僵尸';
 
   @override
@@ -2684,9 +2838,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get addItem => '添加物品';
-
-  @override
   String get addWind => '添加寒风';
 
   @override
@@ -2723,12 +2874,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombieCount => '总数量 (Total)';
-
-  @override
-  String get groupSize => '每批数量 (GroupSize)';
-
-  @override
-  String get timeBetweenGroups => '批次间隔 (TimeBetweenGroups)';
 
   @override
   String get timeBeforeSpawn => '完全生成前摇时间（秒）';
@@ -3443,9 +3588,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get barrelWaveDeleteLastHint => '这是最后一个滚桶。删除后该事件中将不再有滚桶，确定要继续吗？';
 
   @override
-  String get eventHelpGraveSpawnBody => '此事件可以在特定障碍物类型上出怪，常用于黑暗时代的亡灵返乡。';
-
-  @override
   String get eventHelpGraveSpawnWait =>
       '从波次开始到僵尸生成之间的时间间隔，如果计时尚未结束就已经进入下一波，则不会出怪。';
 
@@ -3566,9 +3708,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get attractionConfig => '吸引配置';
 
   @override
-  String get selectedPosition => '选中位置';
-
-  @override
   String get placePlant => '放置植物';
 
   @override
@@ -3594,6 +3733,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventParachuteRain => '事件类型：空降突袭';
+
+  @override
+  String get selectZombie => '选择僵尸';
 
   @override
   String get manholePipeline => '地下管道模块';
@@ -3773,13 +3915,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addGridItem => '添加目标';
 
   @override
-  String get spawnTimer => '生成时间间隔 (PotionSpawnTimer)';
-
-  @override
   String get plantLevels => '阶级定义设置';
-
-  @override
-  String get globalPlantLevels => '阶级定义模块说明';
 
   @override
   String get scope => '范围';
@@ -4077,12 +4213,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get maxSec => '最大间隔（秒）';
 
   @override
-  String get potionTypes => '药水种类列表 (PotionTypes)';
-
-  @override
-  String get noPotionTypes => '暂无配置，请添加药水类型';
-
-  @override
   String get ignoreGravestoneSubtitle => '开启后裂缝可无视障碍物生成';
 
   @override
@@ -4261,6 +4391,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventStormSpawnSubtitle => '事件类型：风暴突袭';
 
   @override
+  String get eventHelpGraveSpawnBody => '此事件可以在特定障碍物类型上出怪，常用于黑暗时代的亡灵返乡。';
+
+  @override
   String get eventHelpGraveSpawnZombieWait =>
       '从波次开始到僵尸生成的时间间隔，如果计时尚未结束就已经进入下一波，则不会出怪。';
 
@@ -4293,6 +4426,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get columnEnd => '结束列 (ColumnEnd)';
+
+  @override
+  String get groupSize => '每批数量 (GroupSize)';
+
+  @override
+  String get timeBetweenGroups => '批次间隔 (TimeBetweenGroups)';
 
   @override
   String applyBatchLevelContent(int level) {
@@ -4650,6 +4789,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectFromPresetHint => '从预设条件列表中选择';
 
   @override
+  String get spawnTimer => '生成时间间隔 (PotionSpawnTimer)';
+
+  @override
+  String get potionTypes => '药水种类列表 (PotionTypes)';
+
+  @override
+  String get noPotionTypes => '暂无配置，请添加药水类型';
+
+  @override
   String get conveyorCardPool => '传送带卡片池';
 
   @override
@@ -4725,6 +4873,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pointsSection => '点数出怪';
 
   @override
+  String get globalPlantLevels => '阶级定义模块说明';
+
+  @override
   String get globalPlantLevelsOverview =>
       '此模块用于定义植物的全局等级。它通常优于种子库中的等级设置，且可以针对特定植物单独设置等级。';
 
@@ -4786,6 +4937,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombiesCarryingPlantFood => '携带能量豆的僵尸数量';
 
   @override
+  String get description => '描述';
+
+  @override
   String get descriptiveName => '提示名称 (DescriptiveName)';
 
   @override
@@ -4842,11 +4996,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mustProtectCountAll => '必须保护的数量（0表示全部保护）：';
-
-  @override
-  String mustProtectCount(int count) {
-    return '当前保护目标数量：$count';
-  }
 
   @override
   String get gridItemType => '物品类型';
@@ -5155,6 +5304,12 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get recommendedTunnelDefendBody =>
       '地宫秘境场地中的地砖需通过「地宫坑道」模块铺设。若未添加该模块，场地可能会显得较为空旷。';
+
+  @override
+  String get selectedPosition => '选中位置';
+
+  @override
+  String get addItem => '添加物品';
 
   @override
   String get itemListRowFirst => '当前格子中的物品';
@@ -6835,6 +6990,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get protectGridItemChallengeHelpOperationGuide =>
       '在上方网格中点击选择坐标，然后点击“添加目标”按钮选择要保护的物品类型。';
+
+  @override
+  String mustProtectCount(int count) {
+    return '当前保护目标数量：$count';
+  }
 
   @override
   String get customStageProperties => '自定义地图属性';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:c_editor/data/app_links.dart';
 import 'package:c_editor/data/app_properties.dart';
+import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 
 String _usageTextForPlatform(BuildContext context, AppLocalizations l10n) {
@@ -16,9 +16,7 @@ String _usageTextForPlatform(BuildContext context, AppLocalizations l10n) {
 }
 
 Future<void> _openUrl(String url) async {
-  final uri = Uri.parse(url);
-  if (!await canLaunchUrl(uri)) return;
-  await launchUrl(uri, mode: LaunchMode.externalApplication);
+  await launchExternalUrl(url);
 }
 
 class _AboutEscapeIntent extends Intent {

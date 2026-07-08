@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/condition_l10n.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/plant_conditions.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/theme/app_theme.dart';
@@ -245,7 +247,8 @@ class _InitialPlantPropertiesScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-EditorAliasInputField(
+ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,
@@ -435,51 +438,30 @@ EditorAliasInputField(
                               ),
                             ),
                             child: count > 0 && firstPlacement != null
-                                ? Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      Positioned.fill(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(2),
-                                          child: FittedBox(
-                                            fit: BoxFit.contain,
-                                            child: _PlantIconSmall(
-                                              firstPlacement.typeName,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      if (count > 1)
-                                        Positioned(
-                                          top: 3,
-                                          right: 3,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 3,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                    bottomLeft: Radius.circular(
-                                                      6,
-                                                    ),
-                                                  ),
-                                            ),
-                                            child: Text(
-                                              '+${count - 1}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
+                                ? LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Positioned.fill(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(2),
+                                              child: FittedBox(
+                                                fit: BoxFit.contain,
+                                                child: _PlantIconSmall(
+                                                  firstPlacement.typeName,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                    ],
+                                          if (count > 1)
+                                            GridCellCountBadge(
+                                              label: '+${count - 1}',
+                                              cellWidth: constraints.maxWidth,
+                                            ),
+                                        ],
+                                      );
+                                    },
                                   )
                                 : null,
                           ),
@@ -616,7 +598,12 @@ class _PlacementCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      placement.condition ?? l10n.noConditions,
+                      placement.condition == null
+                          ? l10n.noConditions
+                          : ConditionL10n.plantLabel(
+                              context,
+                              placement.condition!,
+                            ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -718,10 +705,13 @@ class _PlacementEditDialogState extends State<_PlacementEditDialog> {
                 value: null,
                 child: Text(l10n.frozenPlantPlacementConditionNull),
               ),
-              const DropdownMenuItem<String?>(
-                value: 'icecubed',
-                child: Text('icecubed'),
-              ),
+              for (final id in PlantConditions.ids)
+                DropdownMenuItem<String?>(
+                  value: id,
+                  child: Text(
+                    ConditionL10n.plantLabel(context, id),
+                  ),
+                ),
             ],
             onChanged: (v) => setState(() => _condition = v),
           ),

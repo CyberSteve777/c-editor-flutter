@@ -1,10 +1,10 @@
-name: iOS Build
+name: iOS Build (dev)
 
 on:
   push:
-    branches: [ main ]
+    branches: [dev]
   pull_request:
-    branches: [ main ]
+    branches: [dev]
   workflow_dispatch:
     inputs:
       build_id:
@@ -166,12 +166,10 @@ jobs:
       - name: Build IPA
         env:
           PROJECT_TYPE: ${{ steps.detect.outputs.type }}
-          VERSION: ${{ steps.release.outputs.version }}
-          SHORT_SHA: ${{ steps.release.outputs.short_sha }}
         run: |
           set -e
 
-          ARTIFACT_BASE="c_editor-${VERSION}+${SHORT_SHA}-ios-ipa"
+          ARTIFACT_BASE="$(bash .github/scripts/artifact-name.sh ios-ipa dev)"
           echo "ARTIFACT_NAME=${ARTIFACT_BASE}" >> "$GITHUB_ENV"
 
           REPO_ROOT="$GITHUB_WORKSPACE"

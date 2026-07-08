@@ -180,7 +180,6 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.heianWindModuleTitle ?? 'Heian Wind';
     final helpTitle = l10n?.heianWindModuleHelpTitle ?? 'Heian Wind help';
     final selectedWave =
         _selectedWaveIndex >= 0 &&
@@ -239,7 +238,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-EditorAliasInputField(
+ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,

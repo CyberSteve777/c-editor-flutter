@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_alias_utils.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -359,4 +360,172 @@ void renameLevelObjectAlias({
 
 String aliasFromRtid(String rtid) {
   return RtidParser.parse(rtid)?.alias ?? rtid;
+}
+
+bool isLevelModulesRtid(String rtid) {
+  return RtidParser.parse(rtid)?.source == 'LevelModules';
+}
+
+/// Whether the alias editor should appear for a module screen.
+bool moduleAliasFieldVisible({
+  required String rtid,
+  bool requiresCustomLocal = false,
+  bool customLocalEnabled = true,
+}) {
+  if (isLevelModulesRtid(rtid)) return false;
+  if (requiresCustomLocal && !customLocalEnabled) return false;
+  return true;
+}
+
+/// Alias field for module editors. Hidden for `@LevelModules` references and,
+/// when [requiresCustomLocal] is set, until custom local overrides are enabled.
+class ModuleAliasInputField extends StatelessWidget {
+  const ModuleAliasInputField({
+    super.key,
+    required this.rtid,
+    required this.alias,
+    required this.levelFile,
+    required this.onAliasChanged,
+    this.accentColor,
+    this.onChanged,
+    this.wrapInCard = true,
+    this.requiresCustomLocal = false,
+    this.customLocalEnabled = true,
+  });
+
+  final String rtid;
+  final String alias;
+  final PvzLevelFile levelFile;
+  final ValueChanged<String> onAliasChanged;
+  final Color? accentColor;
+  final VoidCallback? onChanged;
+  final bool wrapInCard;
+  final bool requiresCustomLocal;
+  final bool customLocalEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!moduleAliasFieldVisible(
+      rtid: rtid,
+      requiresCustomLocal: requiresCustomLocal,
+      customLocalEnabled: customLocalEnabled,
+    )) {
+      return const SizedBox.shrink();
+    }
+    return EditorAliasInputField(
+      alias: alias,
+      levelFile: levelFile,
+      onAliasChanged: onAliasChanged,
+      accentColor: accentColor,
+      onChanged: onChanged,
+      wrapInCard: wrapInCard,
+    );
+  }
+}
+
+int _findModuleIndex({
+  required LevelDefinitionData levelDef,
+  required String currentRtid,
+  required String currentAlias,
+  required String defaultAlias,
+}) {
+  var index = levelDef.modules.indexWhere((rtid) => rtid == currentRtid);
+  if (index != -1) return index;
+  return levelDef.modules.indexWhere((rtid) {
+    final alias = RtidParser.parse(rtid)?.alias ?? '';
+    return alias == currentAlias || alias == defaultAlias;
+  });
+}
+
+/// Switches a toggleable module back to its built-in `@LevelModules` reference.
+String revertToggleableModuleToLevelModules({
+  required PvzLevelFile levelFile,
+  required LevelDefinitionData levelDef,
+  required String currentRtid,
+  required String currentAlias,
+  required String defaultAlias,
+  required VoidCallback onAliasUpdated,
+}) {
+  final moduleIndex = _findModuleIndex(
+    levelDef: levelDef,
+    currentRtid: currentRtid,
+    currentAlias: currentAlias,
+    defaultAlias: defaultAlias,
+  );
+
+  var alias = currentAlias;
+  if (alias != defaultAlias) {
+    renameLevelObjectAlias(
+      levelFile: levelFile,
+      oldAlias: alias,
+      newAlias: defaultAlias,
+      onChanged: () {},
+    );
+    alias = defaultAlias;
+    onAliasUpdated();
+  }
+
+  levelFile.objects.removeWhere(
+    (o) => o.aliases?.contains(defaultAlias) == true,
+  );
+
+  final newRtid = RtidParser.build(defaultAlias, 'LevelModules');
+  if (moduleIndex != -1) {
+    levelDef.modules[moduleIndex] = newRtid;
+  } else {
+    levelDef.modules.add(newRtid);
+  }
+
+  final levelDefObj = levelFile.objects.firstWhereOrNull(
+    (o) => o.objClass == 'LevelDefinition',
+  );
+  if (levelDefObj != null) {
+    levelDefObj.objData = levelDef.toJson();
+  }
+  return newRtid;
+}
+
+/// Enables custom `@CurrentLevel` overrides for a toggleable module.
+String enableToggleableModuleCustomLevel({
+  required PvzLevelFile levelFile,
+  required LevelDefinitionData levelDef,
+  required String currentRtid,
+  required String currentAlias,
+  required String defaultAlias,
+  required String objClass,
+  required Map<String, dynamic> objData,
+}) {
+  final moduleIndex = _findModuleIndex(
+    levelDef: levelDef,
+    currentRtid: currentRtid,
+    currentAlias: currentAlias,
+    defaultAlias: defaultAlias,
+  );
+
+  final alias = currentAlias.isEmpty ? defaultAlias : currentAlias;
+  final newRtid = RtidParser.build(alias, 'CurrentLevel');
+  if (moduleIndex != -1) {
+    levelDef.modules[moduleIndex] = newRtid;
+  } else {
+    levelDef.modules.add(newRtid);
+  }
+
+  final existing = levelFile.objects.firstWhereOrNull(
+    (o) => o.aliases?.contains(alias) == true,
+  );
+  if (existing == null) {
+    levelFile.objects.add(
+      PvzObject(aliases: [alias], objClass: objClass, objData: objData),
+    );
+  } else {
+    existing.objData = objData;
+  }
+
+  final levelDefObj = levelFile.objects.firstWhereOrNull(
+    (o) => o.objClass == 'LevelDefinition',
+  );
+  if (levelDefObj != null) {
+    levelDefObj.objData = levelDef.toJson();
+  }
+  return newRtid;
 }

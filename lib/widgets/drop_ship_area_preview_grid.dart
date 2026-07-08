@@ -33,8 +33,8 @@ class DropShipAreaPreviewGrid extends StatelessWidget {
     final highlight = Colors.orange.withValues(alpha: 0.55);
     final empty = theme.colorScheme.surfaceContainerHighest;
 
-    return SizedBox(
-      width: resolvedMaxWidth,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: resolvedMaxWidth),
       child: AspectRatio(
         aspectRatio: gridCols / gridRows,
         child: Container(

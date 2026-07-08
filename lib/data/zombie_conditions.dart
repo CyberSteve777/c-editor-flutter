@@ -98,7 +98,7 @@ abstract class ZombieConditions {
 
   static List<String> get allIds => defaultLabelsZh.keys.toList()..sort();
 
-  static String resourceKey(String id) => 'condition_$id';
+  static String resourceKey(String id) => 'zombieCondition_$id';
 }
 
 /// Plant profession ids for [StarChallengeDisablePlantProps].

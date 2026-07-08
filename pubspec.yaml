@@ -17,7 +17,6 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.1.1
   bloc: ^9.0.0
-  flutter_layout_grid: ^2.0.8
   share_plus: ^10.1.4
   equatable: ^2.0.7
   collection: ^1.18.0
@@ -34,6 +33,8 @@ dependencies:
   rijndael: ^1.0.1
   accessing_security_scoped_resource: ^3.5.0
   flutter_layout_grid: ^2.0.8
+  flutter_slidable: ^4.0.3
+  country_flags: ^4.1.2
 
 dev_dependencies:
   flutter_test:

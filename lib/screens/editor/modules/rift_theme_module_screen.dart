@@ -30,7 +30,6 @@ class RiftThemeModuleScreen extends StatefulWidget {
 }
 
 class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
-  static const _defaultAlias = 'RiftTheme';
   static const _objClass = 'RiftThemeDemoModuleProperties';
   late String _alias;
 
@@ -168,7 +167,8 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: EditorAliasInputField(
+            child: ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,

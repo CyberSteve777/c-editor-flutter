@@ -87,56 +87,31 @@ class _WitchModulePropertiesScreenState
   }
 
   void _onToggleMode(bool enableCustom) {
-    final levelDef = widget.levelDef;
-    final objects = widget.levelFile.objects;
-
-    var moduleIndex = levelDef.modules.indexWhere((rtid) {
-      final info = RtidParser.parse(rtid);
-      return (info?.alias ?? '') == _defaultAlias;
-    });
-
     if (enableCustom) {
-      final newRtid = RtidParser.build(_defaultAlias, 'CurrentLevel');
-      if (moduleIndex != -1) {
-        levelDef.modules[moduleIndex] = newRtid;
-      } else {
-        levelDef.modules.add(newRtid);
-      }
-      final existing = objects.firstWhereOrNull(
-        (o) => o.aliases?.contains(_defaultAlias) == true,
+      final newRtid = enableToggleableModuleCustomLevel(
+        levelFile: widget.levelFile,
+        levelDef: widget.levelDef,
+        currentRtid: widget.rtid,
+        currentAlias: _alias,
+        defaultAlias: _defaultAlias,
+        objClass: _objClass,
+        objData: _data.toJson(),
       );
-      if (existing == null) {
-        objects.add(
-          PvzObject(
-            aliases: [_defaultAlias],
-            objClass: _objClass,
-            objData: _data.toJson(),
-          ),
-        );
-      } else {
-        existing.objData = _data.toJson();
-      }
-    } else {
-      final newRtid = RtidParser.build(_defaultAlias, 'LevelModules');
-      if (moduleIndex != -1) {
-        levelDef.modules[moduleIndex] = newRtid;
-      } else {
-        levelDef.modules.add(newRtid);
-      }
-      objects.removeWhere((o) => o.aliases?.contains(_defaultAlias) == true);
+      widget.onChanged();
+      widget.onModeToggled?.call(newRtid);
+      return;
     }
 
-    final levelDefObj = objects.firstWhereOrNull(
-      (o) => o.objClass == 'LevelDefinition',
+    final newRtid = revertToggleableModuleToLevelModules(
+      levelFile: widget.levelFile,
+      levelDef: widget.levelDef,
+      currentRtid: widget.rtid,
+      currentAlias: _alias,
+      defaultAlias: _defaultAlias,
+      onAliasUpdated: () => setState(() => _alias = _defaultAlias),
     );
-    if (levelDefObj != null) {
-      levelDefObj.objData = levelDef.toJson();
-    }
-
     widget.onChanged();
-    final newRtid = enableCustom
-        ? RtidParser.build(_defaultAlias, 'CurrentLevel')
-        : RtidParser.build(_defaultAlias, 'LevelModules');
+    setState(() => _alias = _defaultAlias);
     widget.onModeToggled?.call(newRtid);
   }
 
@@ -210,12 +185,15 @@ class _WitchModulePropertiesScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-EditorAliasInputField(
+            ModuleAliasInputField(
+              rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
               onAliasChanged: _handleAliasChanged,
               onChanged: widget.onChanged,
               accentColor: themeColor,
+              requiresCustomLocal: true,
+              customLocalEnabled: isCustom,
             ),
             const SizedBox(height: 16),
             Card(
