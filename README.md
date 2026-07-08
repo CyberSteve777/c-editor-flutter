@@ -1,3 +1,5 @@
+<img src="assets/meta/icon.png" alt="C-Editor logo" width="150" height="150">
+
 # C-Editor
 
 Level Editor for Plants vs. Zombies 2 Chinese
@@ -54,12 +56,12 @@ flutter build web --release
 
 Release output locations:
 
-| Platform | Output |
-|----------|--------|
-| Windows | `build/windows/x64/runner/Release/` |
-| Linux | `build/linux/x64/release/bundle/` |
-| Android | `build/app/outputs/flutter-apk/app-release.apk` |
-| Web | `build/web/` |
+| Platform | Output                                          |
+|----------|-------------------------------------------------|
+| Windows  | `build/windows/x64/runner/Release/`             |
+| Linux    | `build/linux/x64/release/bundle/`               |
+| Android  | `build/app/outputs/flutter-apk/app-release.apk` |
+| Web      | `build/web/`                                    |
 
 ### Other commands
 
