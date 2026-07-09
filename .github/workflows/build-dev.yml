@@ -56,7 +56,7 @@ jobs:
           $bundleDir = "dist/portable/c_editor"
           New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
           Copy-Item -Path "build/windows/x64/runner/Release/*" -Destination $bundleDir -Recurse -Force
-          echo "ARTIFACT_PATH=$bundleDir" >> $env:GITHUB_ENV
+          echo "ARTIFACT_PATH=dist/portable" >> $env:GITHUB_ENV
           echo "ARTIFACT_NAME=$baseName" >> $env:GITHUB_ENV
 
       - name: Install ImageMagick
@@ -234,7 +234,7 @@ jobs:
           BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-portable dev)"
           mkdir -p "dist/portable/c_editor"
           cp -a build/linux/x64/release/bundle/. "dist/portable/c_editor/"
-          echo "ARTIFACT_PATH=dist/portable/c_editor" >> "$GITHUB_ENV"
+          echo "ARTIFACT_PATH=dist/portable" >> "$GITHUB_ENV"
           echo "ARTIFACT_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v7
