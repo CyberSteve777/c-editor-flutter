@@ -39,6 +39,8 @@
       "count": { "type": "int" }
     }
   },
+  "importFilesUnreadable": "Could not read the selected file(s). Try smaller files or a different browser.",
+  "importFolderUnsupported": "Folder import is not supported in this browser.",
   "uploadLevelPickerTitle": "Select one or multiple levels to upload",
   "smartUploadTitle": "Duplicate file",
   "smartUploadFileMessage": "This file already exists in your library:\n\n{fileName}\n\nWhat should be done?",

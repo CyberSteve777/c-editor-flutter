@@ -30,6 +30,8 @@
       "count": { "type": "int" }
     }
   },
+  "importFilesUnreadable": "Не удалось прочитать выбранные файлы. Попробуйте меньшие файлы или другой браузер.",
+  "importFolderUnsupported": "Импорт папки не поддерживается в этом браузере.",
   "uploadLevelPickerTitle": "Выберите один или несколько уровней для загрузки",
   "smartUploadTitle": "Дубликат файла",
   "smartUploadFileMessage": "Этот файл уже есть в вашей библиотеке:\n\n{fileName}\n\nЧто сделать?",

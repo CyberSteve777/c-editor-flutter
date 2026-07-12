@@ -101,6 +101,12 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get importFilesUnreadable => '无法读取所选文件。请尝试较小的文件或其他浏览器。';
+
+  @override
+  String get importFolderUnsupported => '此浏览器不支持导入文件夹。';
+
+  @override
   String get uploadLevelPickerTitle => '选择一个或多个要上传的关卡';
 
   @override

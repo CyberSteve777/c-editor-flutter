@@ -103,6 +103,14 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get importFilesUnreadable =>
+      'Не удалось прочитать выбранные файлы. Попробуйте меньшие файлы или другой браузер.';
+
+  @override
+  String get importFolderUnsupported =>
+      'Импорт папки не поддерживается в этом браузере.';
+
+  @override
   String get uploadLevelPickerTitle =>
       'Выберите один или несколько уровней для загрузки';
 

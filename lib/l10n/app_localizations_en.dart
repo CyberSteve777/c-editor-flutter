@@ -103,6 +103,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get importFilesUnreadable =>
+      'Could not read the selected file(s). Try smaller files or a different browser.';
+
+  @override
+  String get importFolderUnsupported =>
+      'Folder import is not supported in this browser.';
+
+  @override
   String get uploadLevelPickerTitle =>
       'Select one or multiple levels to upload';
 

@@ -311,11 +311,17 @@ class _LevelListScreenState extends State<LevelListScreen> {
       ));
     }
 
-    if (files.isEmpty) return;
-    await _importFilesWithSmartUpload(
+    if (files.isEmpty) {
+      _showWarningMessage(l10n.importFilesUnreadable);
+      return;
+    }
+
+    final imported = await _importFilesWithSmartUpload(
       files,
       progressTitle: l10n.importProgressTitle,
     );
+    if (!mounted || imported == 0) return;
+    _showSuccessMessage(l10n.importFolderSuccess(imported));
   }
 
   String _sanitizeFolderImportName(String name) {
@@ -335,8 +341,16 @@ class _LevelListScreenState extends State<LevelListScreen> {
   /// Web-only: recursively import a folder and all subfolders into the library.
   Future<void> _pickAndImportFolder() async {
     final l10n = AppLocalizations.of(context)!;
+    if (!LevelRepository.isWebFolderImportSupported) {
+      _showWarningMessage(l10n.importFolderUnsupported);
+      return;
+    }
+
     final folder = await LevelRepository.pickWebFolderForImport();
-    if (folder == null || !mounted) return;
+    if (!mounted) return;
+    if (folder == null) {
+      return;
+    }
 
     if (folder.files.isEmpty) {
       _showWarningMessage(l10n.importFolderEmpty);
@@ -380,6 +394,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     String? progressTitle,
   }) async {
     if (files.isEmpty || !mounted) return 0;
+
+    await LevelRepository.ensureWebStorageReady();
 
     final pending = <({String storageKey, List<int> bytes})>[];
     final conflicts = <({String storageKey, List<int> bytes})>[];

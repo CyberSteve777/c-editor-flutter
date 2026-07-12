@@ -47,6 +47,8 @@
       "count": { "type": "int" }
     }
   },
+  "importFilesUnreadable": "无法读取所选文件。请尝试较小的文件或其他浏览器。",
+  "importFolderUnsupported": "此浏览器不支持导入文件夹。",
   "uploadLevelPickerTitle": "选择一个或多个要上传的关卡",
   "smartUploadTitle": "重复文件",
   "smartUploadFileMessage": "此文件已存在于关卡库中：\n\n{fileName}\n\n如何处理？",

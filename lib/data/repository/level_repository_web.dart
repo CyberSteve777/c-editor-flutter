@@ -114,19 +114,44 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   }
 
   @override
+  bool get isWebFolderImportSupported => _fsa.isSupported;
+
+  @override
   Future<WebFolderImport?> pickWebFolderForImport() async {
     if (!_fsa.isSupported) {
       return null;
     }
 
-    // Pick and read in one JS call while the user-gesture is still active.
+    // Pick while the user-gesture is still active; bytes load lazily afterward.
     final picked = await _fsa.pickFolderForImport();
     if (picked == null) {
+      _fsa.releaseFolderImport();
       return null;
     }
 
     await _ensureReady();
-    return WebFolderImport(name: picked.name, files: picked.files);
+
+    final files = <String, Uint8List>{};
+    try {
+      for (var i = 0; i < picked.paths.length; i++) {
+        final path = picked.paths[i];
+        final bytes = await _fsa.readFolderImportEntry(path);
+        if (bytes != null) {
+          files[path] = bytes;
+        }
+        if (i % 4 == 3) {
+          await yieldToUi();
+        }
+      }
+    } finally {
+      _fsa.releaseFolderImport();
+    }
+
+    if (files.isEmpty) {
+      return null;
+    }
+
+    return WebFolderImport(name: picked.name, files: files);
   }
 
   Future<void> _putFile(String key, Uint8List bytes) async {

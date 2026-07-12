@@ -7,6 +7,8 @@ external _CEditorFsa? get _cEditorFsa;
 extension type _CEditorFsa._(JSObject _) implements JSObject {
   external bool isSupported();
   external JSPromise<JSAny?> pickFolderForImport();
+  external JSPromise<JSAny?> readFolderImportEntry(String path);
+  external void releaseFolderImport();
 }
 
 /// Cross-browser folder import via [web/fsa_helper.js].
@@ -17,8 +19,8 @@ class WebFileSystemAccess {
 
   bool get isSupported => _cEditorFsa?.isSupported() ?? false;
 
-  /// Pick a folder for import and read all level files in one JS call.
-  Future<({String name, Map<String, Uint8List> files})?> pickFolderForImport() async {
+  /// Pick a folder and return only metadata; file bytes are read lazily.
+  Future<({String name, List<String> paths})?> pickFolderForImport() async {
     final api = _cEditorFsa;
     if (api == null || !api.isSupported()) {
       return null;
@@ -33,24 +35,50 @@ class WebFileSystemAccess {
     }
 
     final name = dartified['name'];
-    final entries = dartified['entries'];
-    if (name is! String || entries is! List) {
+    final paths = dartified['paths'];
+    if (name is! String || paths is! List) {
       return null;
     }
 
-    final files = <String, Uint8List>{};
-    for (final item in entries) {
-      if (item is! Map) {
-        continue;
+    final normalizedPaths = <String>[];
+    for (final path in paths) {
+      if (path is String && path.isNotEmpty) {
+        normalizedPaths.add(path);
       }
-      final path = item['path'];
-      final bytes = item['bytes'];
-      if (path is! String || bytes is! List) {
-        continue;
-      }
-      files[path] = Uint8List.fromList(bytes.cast<int>());
+    }
+    if (normalizedPaths.isEmpty) {
+      return null;
     }
 
-    return (name: name, files: files);
+    return (name: name, paths: normalizedPaths);
+  }
+
+  Future<Uint8List?> readFolderImportEntry(String path) async {
+    final api = _cEditorFsa;
+    if (api == null) {
+      return null;
+    }
+    final raw = await api.readFolderImportEntry(path).toDart;
+    if (raw == null) {
+      return null;
+    }
+
+    final dartified = raw.dartify();
+    if (dartified is! Map) {
+      return null;
+    }
+
+    final bytes = dartified['bytes'];
+    if (bytes is Uint8List) {
+      return bytes;
+    }
+    if (bytes is List) {
+      return Uint8List.fromList(bytes.cast<int>());
+    }
+    return null;
+  }
+
+  void releaseFolderImport() {
+    _cEditorFsa?.releaseFolderImport();
   }
 }

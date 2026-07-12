@@ -117,6 +117,7 @@ abstract class LevelRepositoryBase {
   }) async {}
   Future<void> ensureWebStorageReady() async {}
   Future<String?> getWebLibraryDisplayName() async => null;
+  bool get isWebFolderImportSupported => false;
   Future<WebFolderImport?> pickWebFolderForImport() async => null;
   Future<int> importWebFilesBatched(
     List<({String storageKey, Uint8List bytes})> files, {

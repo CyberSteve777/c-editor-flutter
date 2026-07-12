@@ -274,6 +274,18 @@ abstract class AppLocalizations {
   /// **'Imported {count} level(s)'**
   String importFolderSuccess(int count);
 
+  /// No description provided for @importFilesUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the selected file(s). Try smaller files or a different browser.'**
+  String get importFilesUnreadable;
+
+  /// No description provided for @importFolderUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder import is not supported in this browser.'**
+  String get importFolderUnsupported;
+
   /// No description provided for @uploadLevelPickerTitle.
   ///
   /// In en, this message translates to:

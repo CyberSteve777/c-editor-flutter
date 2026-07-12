@@ -162,6 +162,9 @@ class LevelRepository {
   static Future<WebFolderImport?> pickWebFolderForImport() =>
       _impl.pickWebFolderForImport();
 
+  static bool get isWebFolderImportSupported =>
+      _impl.isWebFolderImportSupported;
+
   static Future<int> importWebFilesBatched(
     List<({String storageKey, Uint8List bytes})> files, {
     WebTransferProgress? onProgress,
