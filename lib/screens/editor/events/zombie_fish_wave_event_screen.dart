@@ -6,10 +6,8 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
-import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
-import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
@@ -145,6 +143,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       zombies: zombies,
       fishes: _data.fishes,
     );
+    _clampDropConfigToZombieCount();
     _sync();
   }
 
@@ -342,8 +341,9 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(Icons.pets, color: theme.colorScheme.secondary),
+                          Icon(Icons.water, color: theme.colorScheme.secondary),
                           const SizedBox(width: 8),
                           Text(
                             l10n?.fishPropertiesButton ?? 'Fish properties',
@@ -396,14 +396,16 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
   }
 
   void _updateAdditionalPlantFood(int count) {
-    final plants = _data.spawnPlantName ?? [];
-    final newPlants = count <= plants.length
-        ? plants.take(count).toList()
-        : [...plants, ...List.filled(count - plants.length, 'sunflower')];
+    final maxCount = _data.zombies.length;
+    final clamped = count.clamp(0, maxCount);
+    final currentPlants = List<String>.from(_data.spawnPlantName ?? []);
+    if (currentPlants.length > clamped) {
+      currentPlants.removeRange(clamped, currentPlants.length);
+    }
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
-      additionalPlantFood: count,
-      spawnPlantName: newPlants.isEmpty ? null : newPlants,
+      additionalPlantFood: clamped == 0 ? null : clamped,
+      spawnPlantName: currentPlants.isEmpty ? null : currentPlants,
       zombies: _data.zombies,
       fishes: _data.fishes,
     );
@@ -412,10 +414,14 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
 
   void _addSpawnPlant(String id) {
     final plants = List<String>.from(_data.spawnPlantName ?? []);
+    final total = _data.additionalPlantFood ?? 0;
+    if (_data.zombies.isEmpty || total == 0 || plants.length >= total) {
+      return;
+    }
     plants.add(id);
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
-      additionalPlantFood: (_data.additionalPlantFood ?? 0) + 1,
+      additionalPlantFood: total,
       spawnPlantName: plants,
       zombies: _data.zombies,
       fishes: _data.fishes,
@@ -425,15 +431,25 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
 
   void _removeSpawnPlantAt(int index) {
     final plants = List<String>.from(_data.spawnPlantName ?? []);
-    plants.removeAt(index);
+    if (index >= 0 && index < plants.length) {
+      plants.removeAt(index);
+    }
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
-      additionalPlantFood: (plants.length) > 0 ? plants.length : null,
+      additionalPlantFood: _data.additionalPlantFood,
       spawnPlantName: plants.isEmpty ? null : plants,
       zombies: _data.zombies,
       fishes: _data.fishes,
     );
     _sync();
+  }
+
+  void _clampDropConfigToZombieCount() {
+    final maxCount = _data.zombies.length;
+    final count = _data.additionalPlantFood ?? 0;
+    if (count > maxCount) {
+      _updateAdditionalPlantFood(maxCount);
+    }
   }
 
   Widget _buildBatchLevelCard(ThemeData theme, AppLocalizations? l10n) {
@@ -447,13 +463,17 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
               children: [
                 Icon(Icons.layers, color: theme.colorScheme.secondary),
                 const SizedBox(width: 8),
-                Text(
-                  l10n?.batchLevel ?? 'Batch level',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n?.batchLevel ?? 'Batch level',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Text(
                   '${_batchLevel.round()}',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -525,105 +545,17 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     ThemeData theme,
     AppLocalizations? l10n,
   ) {
-    final count = _data.additionalPlantFood ?? 0;
-    final plants = List<String>.from(_data.spawnPlantName ?? []);
-    final isDroppingPlants = plants.length == count && plants.isNotEmpty;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.eco, color: theme.colorScheme.secondary),
-                const SizedBox(width: 8),
-                Text(
-                  isDroppingPlants
-                      ? (l10n?.dropConfigPlants ?? 'Drop config (Plants)')
-                      : (l10n?.dropConfigPlantFood ??
-                            'Drop config (Plant Food)'),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  onPressed: count > 0
-                      ? () => _updateAdditionalPlantFood(count - 1)
-                      : null,
-                ),
-                Text('$count'),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () => _updateAdditionalPlantFood(count + 1),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    isDroppingPlants
-                        ? (l10n?.zombiesCarryingPlants ??
-                              'Zombies carrying plants')
-                        : (l10n?.zombiesCarryingPlantFood ??
-                              'Zombies carrying plant food'),
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (plants.isNotEmpty)
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: plants.asMap().entries.map((entry) {
-                  final idx = entry.key;
-                  final id = entry.value;
-                  final info = PlantRepository().getPlantInfoById(id);
-                  final name = info?.name ?? id;
-                  final iconPath = info?.iconAssetPath;
-                  return InputChip(
-                    label: Text(ResourceNames.lookup(context, name)),
-                    avatar: iconPath != null
-                        ? ClipOval(
-                            child: AssetImageWidget(
-                              assetPath: iconPath,
-                              altCandidates: imageAltCandidates(iconPath),
-                              width: 20,
-                              height: 20,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : const Icon(Icons.local_florist, size: 16),
-                    onDeleted: () => _removeSpawnPlantAt(idx),
-                  );
-                }).toList(),
-              ),
-            if (widget.onRequestPlantSelection != null) ...[
-              const SizedBox(height: 8),
-              InputChip(
-                avatar: Icon(
-                  Icons.add_circle_outline,
-                  size: 18,
-                  color: theme.colorScheme.primary,
-                ),
-                label: Text(l10n?.addPlant ?? 'Add plant'),
-                onPressed: () {
-                  widget.onRequestPlantSelection!.call((id) {
-                    _addSpawnPlant(id);
-                  });
-                },
-              ),
-            ],
-          ],
-        ),
-      ),
+    return WaveDropConfigCard(
+      totalDropCount: _data.additionalPlantFood ?? 0,
+      plants: List<String>.from(_data.spawnPlantName ?? []),
+      zombieCount: _data.zombies.length,
+      onTotalDropCountChanged: _updateAdditionalPlantFood,
+      onRemovePlantAt: _removeSpawnPlantAt,
+      onAddPlant: widget.onRequestPlantSelection == null
+          ? null
+          : () {
+              widget.onRequestPlantSelection!.call(_addSpawnPlant);
+            },
     );
   }
 
@@ -714,6 +646,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
           zombies: [..._data.zombies, copy],
           fishes: _data.fishes,
         );
+        _clampDropConfigToZombieCount();
         _sync();
       },
       onDelete: (sheetContext) {

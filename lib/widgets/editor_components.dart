@@ -4,6 +4,8 @@ import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
+import 'package:c_editor/data/repository/plant_repository.dart';
+import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -875,6 +877,328 @@ class HelpSectionData {
   final String body;
 }
 
+const _kWaveDropConfigTitleIconSize = 32.0;
+const _kPlantDropIconCardSize = 56.0;
+const _kPlantFoodIconPath = 'assets/images/others/plantfood.png';
+const _kPlantDropTagIconPath = 'assets/images/tags/plants/rarity/Plant_Green.webp';
+
+/// Square plant icon with delete control, sized like [ZombieIconCard].
+class PlantDropIconCard extends StatelessWidget {
+  const PlantDropIconCard({
+    super.key,
+    required this.iconPath,
+    required this.onDelete,
+    this.size = _kPlantDropIconCardSize,
+  });
+
+  final String? iconPath;
+  final VoidCallback onDelete;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                width: 0.5,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: iconPath != null && iconPath!.isNotEmpty
+                  ? AssetImageWidget(
+                      assetPath: iconPath!,
+                      altCandidates: imageAltCandidates(iconPath!),
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                    )
+                  : Center(
+                      child: Icon(
+                        Icons.local_florist,
+                        size: 24,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+            ),
+          ),
+          Positioned(
+            top: -6,
+            right: -6,
+            child: Material(
+              color: theme.colorScheme.errorContainer,
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: onDelete,
+                customBorder: const CircleBorder(),
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
+                    color: theme.colorScheme.onErrorContainer,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Plant food / carried-plant drop settings for jittered and fish wave events.
+class WaveDropConfigCard extends StatelessWidget {
+  const WaveDropConfigCard({
+    super.key,
+    required this.totalDropCount,
+    required this.plants,
+    required this.zombieCount,
+    required this.onTotalDropCountChanged,
+    required this.onRemovePlantAt,
+    this.onAddPlant,
+  });
+
+  /// [AdditionalPlantfood] — total zombies carrying any drop (plant food and/or plants).
+  final int totalDropCount;
+  final List<String> plants;
+  final int zombieCount;
+  final ValueChanged<int> onTotalDropCountChanged;
+  final ValueChanged<int> onRemovePlantAt;
+  final VoidCallback? onAddPlant;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final leafColor = isDark ? pvzGreenLight : pvzGreenDark;
+    final plantCount = plants.length;
+    final plantFoodOnlyCount = (totalDropCount - plantCount).clamp(0, totalDropCount);
+    final canIncreaseTotal = totalDropCount < zombieCount;
+    final canAddPlant = onAddPlant != null &&
+        zombieCount > 0 &&
+        totalDropCount > 0 &&
+        plantCount < totalDropCount;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.eco,
+                  size: _kWaveDropConfigTitleIconSize,
+                  color: leafColor,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n?.waveDropConfigTitle ?? 'Drop configuration',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n?.waveDropTotalLabel ??
+                        'Total carrier zombies (AdditionalPlantfood)',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  icon: const Icon(Icons.remove),
+                  onPressed: totalDropCount > 0
+                      ? () => onTotalDropCountChanged(totalDropCount - 1)
+                      : null,
+                ),
+                Text(
+                  '$totalDropCount',
+                  style: theme.textTheme.titleMedium,
+                ),
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  icon: const Icon(Icons.add),
+                  onPressed: canIncreaseTotal
+                      ? () => onTotalDropCountChanged(totalDropCount + 1)
+                      : null,
+                ),
+              ],
+            ),
+            if (zombieCount == 0) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Add zombies to this wave before configuring drops.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ] else if (totalDropCount > 0) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  if (plantFoodOnlyCount > 0)
+                    _DropCountBadge(
+                      iconPath: _kPlantFoodIconPath,
+                      label: l10n?.waveDropPlantFoodOnlyCount(plantFoodOnlyCount) ??
+                          '$plantFoodOnlyCount plant food',
+                    ),
+                  if (plantCount > 0)
+                    _DropCountBadge(
+                      iconPath: _kPlantDropTagIconPath,
+                      label: l10n?.waveDropPlantsCount(plantCount) ??
+                          '$plantCount plants',
+                    ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: AssetImageWidget(
+                    assetPath: _kPlantDropTagIconPath,
+                    altCandidates: imageAltCandidates(_kPlantDropTagIconPath),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n?.dropConfigPlants ?? 'Drop config (Plants)',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ...plants.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final id = entry.value;
+                  final info = PlantRepository().getPlantInfoById(id);
+                  final iconPath = info?.iconAssetPath;
+                  return PlantDropIconCard(
+                    iconPath: iconPath,
+                    onDelete: () => onRemovePlantAt(idx),
+                  );
+                }),
+                if (onAddPlant != null)
+                  Opacity(
+                    opacity: canAddPlant ? 1 : 0.38,
+                    child: IgnorePointer(
+                      ignoring: !canAddPlant,
+                      child: PvzAddButton(
+                        onPressed: onAddPlant!,
+                        size: _kPlantDropIconCardSize,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            if (onAddPlant != null &&
+                totalDropCount == 0 &&
+                zombieCount > 0) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Increase total drops before adding plants.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DropCountBadge extends StatelessWidget {
+  const _DropCountBadge({required this.iconPath, required this.label});
+
+  final String iconPath;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: AssetImageWidget(
+              assetPath: iconPath,
+              altCandidates: imageAltCandidates(iconPath),
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(label, style: theme.textTheme.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+
 /// Fish icon card with blue C (custom) badge. Similar to ZombieIconCard.
 class FishIconCard extends StatelessWidget {
   const FishIconCard({
@@ -925,7 +1249,7 @@ class FishIconCard extends StatelessWidget {
                 else
                   Center(
                     child: Icon(
-                      Icons.pets,
+                      Icons.water,
                       size: 24,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
