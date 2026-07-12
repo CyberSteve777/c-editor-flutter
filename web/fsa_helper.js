@@ -1,13 +1,10 @@
 // Cross-browser folder import for C-Editor (read-only; levels persist in IndexedDB).
+// Uses <input webkitdirectory> only — never showDirectoryPicker (avoids FSA write prompts).
 (function () {
   const LEVEL_PATTERN = /\.(json|hujson|rton|zlib|bin)$/i;
 
-  /** @type {{ name: string, entries: Record<string, { bytes?: Uint8Array, file?: File, handle?: FileSystemFileHandle }> } | null} */
+  /** @type {{ name: string, entries: Record<string, { bytes?: Uint8Array, file?: File }> } | null} */
   let importCache = null;
-
-  function hasNativeDirectoryPicker() {
-    return typeof window.showDirectoryPicker === 'function';
-  }
 
   function hasWebkitDirectoryInput() {
     const input = document.createElement('input');
@@ -32,12 +29,6 @@
     return parts.join('/');
   }
 
-  function yieldToBrowser() {
-    return new Promise((resolve) => {
-      setTimeout(resolve, 0);
-    });
-  }
-
   function releaseFolderImport() {
     importCache = null;
   }
@@ -53,12 +44,6 @@
     if (entry.file) {
       entry.bytes = new Uint8Array(await entry.file.arrayBuffer());
       delete entry.file;
-      return entry.bytes;
-    }
-    if (entry.handle) {
-      const file = await entry.handle.getFile();
-      entry.bytes = new Uint8Array(await file.arrayBuffer());
-      delete entry.handle;
       return entry.bytes;
     }
     return null;
@@ -125,20 +110,9 @@
     });
   }
 
-  async function walkNativeDirectory(dirHandle, prefix, entries) {
-    for await (const [name, entry] of dirHandle.entries()) {
-      const rel = prefix ? `${prefix}/${name}` : name;
-      if (entry.kind === 'directory') {
-        await walkNativeDirectory(entry, rel, entries);
-      } else if (LEVEL_PATTERN.test(name)) {
-        entries[rel] = { handle: entry };
-      }
-    }
-  }
-
   window.cEditorFsa = {
     isSupported() {
-      return hasNativeDirectoryPicker() || hasWebkitDirectoryInput();
+      return hasWebkitDirectoryInput();
     },
 
     releaseFolderImport() {
@@ -159,41 +133,11 @@
     async pickFolderForImport() {
       releaseFolderImport();
 
-      // Prefer webkit directory input: read-only copy into memory, no FSA write
-      // permission prompt, works across Chromium / Firefox / Safari.
-      if (hasWebkitDirectoryInput()) {
-        const webkitResult = await pickFolderWebkit();
-        if (webkitResult) {
-          return webkitResult;
-        }
+      if (!hasWebkitDirectoryInput()) {
+        return null;
       }
 
-      if (hasNativeDirectoryPicker()) {
-        try {
-          const handle = await window.showDirectoryPicker({ mode: 'read' });
-          const entries = {};
-          await walkNativeDirectory(handle, '', entries);
-          const paths = Object.keys(entries);
-          if (!paths.length) {
-            return null;
-          }
-          importCache = {
-            name: handle.name || 'Folder',
-            entries,
-          };
-          return {
-            name: importCache.name,
-            paths,
-          };
-        } catch (error) {
-          if (error && error.name === 'AbortError') {
-            return null;
-          }
-          throw error;
-        }
-      }
-
-      return null;
+      return await pickFolderWebkit();
     },
   };
 })();

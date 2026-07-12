@@ -430,7 +430,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         ? await LevelRepository.importWebFilesBatched(batched)
         : await _runWebImportProgress(progressTitle, batched) ?? 0;
 
-    if (!mounted || imported == 0) return 0;
+    if (!mounted || imported == 0) return imported;
     const webPath = 'web://';
     setState(() {
       _rootFolderPath ??= webPath;
@@ -483,7 +483,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         ? await LevelRepository.importWebFolderPathsBatched(pending)
         : await _runWebFolderImportProgress(progressTitle, pending) ?? 0;
 
-    if (!mounted || imported == 0) return 0;
+    if (!mounted || imported == 0) return imported;
     const webPath = 'web://';
     setState(() {
       _rootFolderPath ??= webPath;
@@ -505,9 +505,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
     return runWebTransferWithProgress<int>(
       context,
       title: title,
-      task: (report) => LevelRepository.importWebFolderPathsBatched(
+      cancellable: true,
+      task: (report, controller) => LevelRepository.importWebFolderPathsBatched(
         entries,
         onProgress: report,
+        isCancelled: () => controller.isCancelled,
       ),
     );
   }
@@ -522,9 +524,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
     return runWebTransferWithProgress<int>(
       context,
       title: title,
-      task: (report) => LevelRepository.importWebFilesBatched(
+      cancellable: true,
+      task: (report, controller) => LevelRepository.importWebFilesBatched(
         files,
         onProgress: report,
+        isCancelled: () => controller.isCancelled,
       ),
     );
   }
@@ -534,7 +538,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await runWebTransferWithProgress<void>(
       context,
       title: l10n.exportProgressTitle,
-      task: (report) => LevelRepository.downloadFolderAsZip(
+      task: (report, controller) => LevelRepository.downloadFolderAsZip(
         folder.path,
         onProgress: report,
       ),
@@ -1098,7 +1102,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await runWebTransferWithProgress<void>(
       context,
       title: l10n.exportProgressTitle,
-      task: (report) => LevelRepository.downloadAllLevelsAsZip(
+      task: (report, controller) => LevelRepository.downloadAllLevelsAsZip(
         onProgress: report,
       ),
     );

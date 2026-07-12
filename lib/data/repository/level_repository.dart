@@ -170,14 +170,24 @@ class LevelRepository {
   static Future<int> importWebFilesBatched(
     List<({String storageKey, Uint8List bytes})> files, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) =>
-      _impl.importWebFilesBatched(files, onProgress: onProgress);
+      _impl.importWebFilesBatched(
+        files,
+        onProgress: onProgress,
+        isCancelled: isCancelled,
+      );
 
   static Future<int> importWebFolderPathsBatched(
     List<({String storageKey, String relativePath})> entries, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) =>
-      _impl.importWebFolderPathsBatched(entries, onProgress: onProgress);
+      _impl.importWebFolderPathsBatched(
+        entries,
+        onProgress: onProgress,
+        isCancelled: isCancelled,
+      );
 
   static Future<List<String>> getTemplateList() => _impl.getTemplateList();
 

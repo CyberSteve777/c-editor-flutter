@@ -142,6 +142,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<int> importWebFolderPathsBatched(
     List<({String storageKey, String relativePath})> entries, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) async {
     if (entries.isEmpty) {
       return 0;
@@ -151,18 +152,23 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     var imported = 0;
     try {
       for (var i = 0; i < entries.length; i++) {
+        if (isCancelled?.call() == true) {
+          break;
+        }
         final entry = entries[i];
         final bytes = await _fsa.readFolderImportEntry(entry.relativePath);
         if (bytes != null) {
           await _putFile(entry.storageKey, bytes);
           imported++;
         }
-        onProgress?.call(i + 1, entries.length, entry.storageKey);
+        onProgress?.call(i + 1, entries.length, null);
         if (i % batchSize == batchSize - 1) {
           await yieldToUi();
         }
       }
-      await _persistDirectories();
+      if (imported > 0) {
+        await _persistDirectories();
+      }
     } finally {
       _fsa.releaseFolderImport();
     }
@@ -633,22 +639,30 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<int> importWebFilesBatched(
     List<({String storageKey, Uint8List bytes})> files, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) async {
     if (files.isEmpty) {
       return 0;
     }
     await _ensureReady();
     const batchSize = 8;
+    var imported = 0;
     for (var i = 0; i < files.length; i++) {
+      if (isCancelled?.call() == true) {
+        break;
+      }
       final file = files[i];
       await _putFile(file.storageKey, file.bytes);
-      onProgress?.call(i + 1, files.length, file.storageKey);
+      imported++;
+      onProgress?.call(i + 1, files.length, null);
       if (i % batchSize == batchSize - 1) {
         await yieldToUi();
       }
     }
-    await _persistDirectories();
-    return files.length;
+    if (imported > 0) {
+      await _persistDirectories();
+    }
+    return imported;
   }
 
   @override

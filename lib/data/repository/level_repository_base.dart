@@ -125,20 +125,27 @@ abstract class LevelRepositoryBase {
   Future<int> importWebFilesBatched(
     List<({String storageKey, Uint8List bytes})> files, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) async {
+    var imported = 0;
     for (var i = 0; i < files.length; i++) {
+      if (isCancelled?.call() == true) {
+        break;
+      }
       await prepareInternalCacheFromBytes(
         files[i].storageKey,
         files[i].bytes,
       );
-      onProgress?.call(i + 1, files.length, files[i].storageKey);
+      imported++;
+      onProgress?.call(i + 1, files.length, null);
     }
-    return files.length;
+    return imported;
   }
 
   Future<int> importWebFolderPathsBatched(
     List<({String storageKey, String relativePath})> entries, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) async {
     return 0;
   }
