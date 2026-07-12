@@ -1119,6 +1119,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
                           showSelectedIcon: false,
                           style: SegmentedButton.styleFrom(
                             visualDensity: VisualDensity.compact,
+                            selectedBackgroundColor: fabBgColor,
+                            selectedForegroundColor: fabFgColor,
                           ),
                           segments: [
                             ButtonSegment(
@@ -1741,11 +1743,32 @@ class _LevelListScreenState extends State<LevelListScreen> {
   Future<String?> _showConversionRequiredDialog(FileItem item) async {
     if (_pathStack.isEmpty || item.isDirectory) return null;
     final l10n = AppLocalizations.of(context)!;
+    final lower = item.name.toLowerCase();
+    final formatDescription = lower.endsWith('.hujson')
+        ? l10n.hujsonFormatDescription
+        : lower.endsWith('.rton')
+        ? l10n.rtonFormatDescription
+        : null;
     final shouldConvert = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.conversionRequiredTitle),
-        content: Text(l10n.conversionRequiredMessage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.conversionRequiredMessage),
+            if (formatDescription != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                formatDescription,
+                style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -1849,11 +1872,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ListTile(
                 leading: const Icon(Icons.sync_alt),
                 title: Text(l10n.convertToHotUpdateJson),
+                subtitle: Text(l10n.hujsonFormatDescription),
+                isThreeLine: true,
                 onTap: () => Navigator.pop(ctx, '.hujson'),
               ),
               ListTile(
                 leading: const Icon(Icons.sync_alt),
                 title: Text(l10n.convertToEncryptedRton),
+                subtitle: Text(l10n.rtonFormatDescription),
+                isThreeLine: true,
                 onTap: () => Navigator.pop(ctx, '.rton'),
               ),
               if (kDebugMode)

@@ -9,11 +9,13 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
-import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/widgets/zombie_row_lane_editor.dart';
+import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
+import 'package:c_editor/widgets/zombie_selection_flow.dart';
 import 'package:c_editor/screens/editor/events/fish_properties_entry_screen.dart';
 
 /// Zombie + fish wave event for submarine levels.
@@ -127,20 +129,12 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       final rtid = RtidParser.build(aliases, 'ZombieTypes');
       final zombies = List<ZombieSpawnData>.from(_data.zombies)
         ..add(ZombieSpawnData(type: rtid, level: 1, row: row));
-      _data = SpawnZombiesFishWaveActionPropsData(
-        notificationEvents: _data.notificationEvents,
-        additionalPlantFood: _data.additionalPlantFood,
-        spawnPlantName: _data.spawnPlantName,
-        zombies: zombies,
-        fishes: _data.fishes,
-      );
-      _sync();
+      _setZombies(zombies);
     });
   }
 
-  void _updateZombie(int index, ZombieSpawnData z) {
-    final zombies = List<ZombieSpawnData>.from(_data.zombies);
-    zombies[index] = z;
+  void _setZombies(List<ZombieSpawnData> zombies) {
+    sortZombieSpawnListByRow(zombies, maxRow: _maxRow);
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
       additionalPlantFood: _data.additionalPlantFood,
@@ -149,6 +143,51 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       fishes: _data.fishes,
     );
     _sync();
+  }
+
+  void _updateZombie(int index, ZombieSpawnData z) {
+    final zombies = List<ZombieSpawnData>.from(_data.zombies);
+    zombies[index] = z;
+    _setZombies(zombies);
+  }
+
+  void _handleZombieMove(int fromIndex, int toRow, int? beforeIndex) {
+    final zombies = List<ZombieSpawnData>.from(_data.zombies);
+    moveZombieSpawnInList(
+      zombies: zombies,
+      fromIndex: fromIndex,
+      toRow: toRow,
+      maxRow: _maxRow,
+      beforeIndex: beforeIndex,
+    );
+    _setZombies(zombies);
+  }
+
+  Future<void> _changeZombieTypeFromSheet({
+    required BuildContext sheetContext,
+    required int index,
+    required ZombieSpawnData zombie,
+    required int rowValue,
+    required int levelValue,
+    required bool fromLeft,
+  }) async {
+    final selected = await pushZombieSelection(context);
+    if (!mounted) return;
+    if (selected == null) return;
+    final aliases = ZombieRepository().buildZombieAliases(selected);
+    final rtid = RtidParser.build(aliases, 'ZombieTypes');
+    _updateZombie(
+      index,
+      ZombieSpawnData(
+        type: rtid,
+        row: rowValue == 0 ? null : rowValue,
+        level: levelValue,
+        direction: fromLeft ? 'left' : null,
+      ),
+    );
+    if (sheetContext.mounted) {
+      Navigator.pop(sheetContext);
+    }
   }
 
   Future<void> _removeZombie(int index, {bool? eraseOrphanProperties}) async {
@@ -168,14 +207,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       eraseOrphan = choice;
     }
     final zombies = List<ZombieSpawnData>.from(_data.zombies)..removeAt(index);
-    _data = SpawnZombiesFishWaveActionPropsData(
-      notificationEvents: _data.notificationEvents,
-      additionalPlantFood: _data.additionalPlantFood,
-      spawnPlantName: _data.spawnPlantName,
-      zombies: zombies,
-      fishes: _data.fishes,
-    );
-    _sync();
+    _setZombies(zombies);
     if (info?.source == 'CurrentLevel' && eraseOrphan) {
       CustomZombieLevelUtils.removeTypeAndProperties(
         widget.levelFile,
@@ -292,34 +324,31 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              ...List.generate(_maxRow, (row) {
-                final rowVal = row + 1;
-                final zombies = _data.zombies
-                    .asMap()
-                    .entries
-                    .where((e) => (e.value.row ?? 0) == rowVal)
-                    .toList();
-                return _buildLaneRow(
-                  context,
-                  theme,
-                  l10n,
-                  label: l10n?.rowN(rowVal) ?? 'Row $rowVal',
-                  rowValue: rowVal,
-                  zombies: zombies,
-                );
-              }),
-              _buildLaneRow(
-                context,
-                theme,
-                l10n,
-                label: l10n?.randomRow ?? 'Random row',
-                rowValue: 0,
-                zombies: _data.zombies
-                    .asMap()
-                    .entries
-                    .where((e) => (e.value.row ?? 0) == 0)
-                    .toList(),
-                color: theme.colorScheme.onSurfaceVariant,
+              ZombieRowLaneEditor(
+                maxRow: _maxRow,
+                rowLabel: (row) => l10n?.rowN(row) ?? 'Row $row',
+                randomRowLabel: l10n?.randomRow ?? 'Random row',
+                items: _data.zombies.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final z = entry.value;
+                  final baseType = _resolveBaseTypeName(z);
+                  final zInfo = ZombieRepository().getZombieById(baseType);
+                  final isElite = _isElite(z);
+                  return ZombieLaneIconData(
+                    identity: z,
+                    listIndex: idx,
+                    rowValue: z.row ?? 0,
+                    iconPath: zInfo?.iconAssetPath,
+                    levelDisplay: isElite ? 'E' : '${z.level ?? 1}',
+                    isElite: isElite,
+                    isCustom: _isCustomZombie(z),
+                  );
+                }).toList(),
+                onTap: (index) =>
+                    _showZombieEditSheet(index, _data.zombies[index]),
+                onDelete: _removeZombie,
+                onMove: _handleZombieMove,
+                onAddToRow: (row) => _addZombie(row: row == 0 ? null : row),
               ),
               const SizedBox(height: 16),
               _buildBatchLevelCard(theme, l10n),
@@ -618,72 +647,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     );
   }
 
-  Widget _buildLaneRow(
-    BuildContext context,
-    ThemeData theme,
-    AppLocalizations? l10n, {
-    required String label,
-    required int rowValue,
-    required List<MapEntry<int, ZombieSpawnData>> zombies,
-    Color? color,
-  }) {
-    final laneColor = color ?? theme.colorScheme.primary;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  label,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: laneColor,
-                  ),
-                ),
-                const Spacer(),
-                Text('${zombies.length}', style: theme.textTheme.bodySmall),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ...zombies.map((entry) {
-                  final idx = entry.key;
-                  final z = entry.value;
-                  final baseType = _resolveBaseTypeName(z);
-                  final info = ZombieRepository().getZombieById(baseType);
-                  final iconPath = info?.iconAssetPath;
-                  final isElite = _isElite(z);
-                  return ZombieIconCard(
-                    iconPath: iconPath,
-                    levelDisplay: isElite ? 'E' : '${z.level ?? 1}',
-                    isElite: isElite,
-                    isCustom: _isCustomZombie(z),
-                    onTap: () => _showZombieEditSheet(idx, z),
-                  );
-                }),
-                PvzAddButton(
-                  onPressed: () =>
-                      _addZombie(row: rowValue == 0 ? null : rowValue),
-                  useSecondaryColor: rowValue == 0,
-                  size: 56,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showZombieEditSheet(int index, ZombieSpawnData zombie) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final baseType = _resolveBaseTypeName(zombie);
     final info = ZombieRepository().getZombieById(baseType);
@@ -704,61 +668,21 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        if (info?.iconAssetPath != null)
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: AssetImageWidget(
-                              assetPath: info!.iconAssetPath!,
-                              altCandidates: imageAltCandidates(
-                                info.iconAssetPath!,
-                              ),
-                              width: 36,
-                              height: 36,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  info != null
-                                      ? ResourceNames.lookup(context, info.name)
-                                      : baseType,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (isCustom) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: pvzOrangeLight,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    l10n?.customLabel ?? 'Custom',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ],
+                    ZombieEditSheetIdentityTile(
+                      iconPath: info?.iconAssetPath,
+                      displayName: info != null
+                          ? ResourceNames.lookup(context, info.name)
+                          : baseType,
+                      isCustom: isCustom,
+                      customLabel: l10n?.customLabel ?? 'Custom',
+                      onChange: () => _changeZombieTypeFromSheet(
+                        sheetContext: ctx,
+                        index: index,
+                        zombie: zombie,
+                        rowValue: rowValue,
+                        levelValue: levelValue,
+                        fromLeft: fromLeft,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<int>(

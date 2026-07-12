@@ -7,12 +7,13 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
-import 'package:c_editor/theme/app_theme.dart';
-import 'package:c_editor/widgets/asset_image.dart'
-    show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/widgets/zombie_flat_lane_editor.dart';
+import 'package:c_editor/widgets/zombie_row_lane_editor.dart';
+import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
+import 'package:c_editor/widgets/zombie_selection_flow.dart';
 
 /// Storm zombie spawner event editor. Ported from Z-Editor-master StormSpawnerEventEP.kt.
 /// Uses jittered-style zombie icon cards, bottom sheet editing, and button handling.
@@ -48,6 +49,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
   late PvzObject _moduleObj;
   late StormZombieSpawnerPropsData _data;
   late String _alias;
+  bool _zombieDragging = false;
 
   @override
   void initState() {
@@ -208,6 +210,46 @@ class _StormEventScreenState extends State<StormEventScreen> {
     _sync();
   }
 
+  void _handleZombieMove(int fromIndex, int? beforeIndex) {
+    final zombies = List<StormZombieData>.from(_data.zombies);
+    reorderZombieFlatList(
+      list: zombies,
+      fromIndex: fromIndex,
+      beforeIndex: beforeIndex,
+    );
+    _data = StormZombieSpawnerPropsData(
+      columnStart: _data.columnStart,
+      columnEnd: _data.columnEnd,
+      groupSize: _data.groupSize,
+      timeBetweenGroups: _data.timeBetweenGroups,
+      type: _data.type,
+      zombies: zombies,
+    );
+    _sync();
+  }
+
+  Future<void> _changeZombieTypeFromSheet({
+    required BuildContext sheetContext,
+    required int index,
+    required int levelValue,
+    required bool isElite,
+  }) async {
+    final selected = await pushZombieSelection(context);
+    if (!mounted) return;
+    if (selected == null) return;
+    final aliases = ZombieRepository().buildZombieAliases(selected);
+    final rtid = RtidParser.build(aliases, 'ZombieTypes');
+    final isEliteNew = ZombieRepository().isElite(selected);
+    _replaceZombieType(
+      index,
+      rtid,
+      isEliteNew ? null : (levelValue == 0 ? null : levelValue),
+    );
+    if (sheetContext.mounted) {
+      Navigator.pop(sheetContext);
+    }
+  }
+
   void _showZombieEditSheet(int index) {
     final l10n = AppLocalizations.of(context);
     final z = _data.zombies[index];
@@ -220,90 +262,27 @@ class _StormEventScreenState extends State<StormEventScreen> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (ctx) {
+      builder: (sheetRouteContext) {
         int levelValue = z.level ?? 0;
         return StatefulBuilder(
-          builder: (ctx, setModalState) {
+          builder: (modalContext, setModalState) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      if (iconPath != null && iconPath.isNotEmpty)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: AssetImageWidget(
-                            assetPath: iconPath,
-                            altCandidates: imageAltCandidates(iconPath),
-                            width: 36,
-                            height: 36,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                ResourceNames.lookup(context, displayName),
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (isCustom) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: pvzOrangeLight,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  l10n?.customLabel ?? 'Custom',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      Future.microtask(() {
-                        widget.onRequestZombieSelection((id) {
-                          final aliases = ZombieRepository().buildZombieAliases(
-                            id,
-                          );
-                          final rtid = RtidParser.build(aliases, 'ZombieTypes');
-                          final isEliteNew = ZombieRepository().isElite(id);
-                          _replaceZombieType(
-                            index,
-                            rtid,
-                            isEliteNew
-                                ? null
-                                : (levelValue == 0 ? null : levelValue),
-                          );
-                        });
-                      });
-                    },
-                    icon: const Icon(Icons.swap_horiz),
-                    label: Text(l10n?.change ?? 'Change'),
+                  ZombieEditSheetIdentityTile(
+                    iconPath: iconPath,
+                    displayName: ResourceNames.lookup(context, displayName),
+                    isCustom: isCustom,
+                    customLabel: l10n?.customLabel ?? 'Custom',
+                    onChange: () => _changeZombieTypeFromSheet(
+                      sheetContext: sheetRouteContext,
+                      index: index,
+                      levelValue: levelValue,
+                      isElite: isElite,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   if (isElite)
@@ -365,7 +344,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
                               zombies: [..._data.zombies, copy],
                             );
                             _sync();
-                            Navigator.pop(ctx);
+                            Navigator.pop(sheetRouteContext);
                           },
                           icon: const Icon(Icons.copy),
                           label: Text(l10n?.copy ?? 'Copy'),
@@ -381,7 +360,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
                           ),
                           onPressed: () {
                             CustomZombieLevelUtils.handleDeleteFromBottomSheet(
-                              sheetContext: ctx,
+                              sheetContext: sheetRouteContext,
                               parentContext: context,
                               levelFile: widget.levelFile,
                               zombieTypeRtid: z.type,
@@ -405,7 +384,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
                       currentRtid: z.type,
                       onEditCustomZombie: widget.onEditCustomZombie,
                       onInjectCustomZombie: widget.onInjectCustomZombie,
-                      onCloseSheet: () => Navigator.pop(ctx),
+                      onCloseSheet: () => Navigator.pop(sheetRouteContext),
                       onRtidSelected: (rtid) =>
                           _replaceZombieType(index, rtid, z.level),
                     ),
@@ -433,7 +412,6 @@ class _StormEventScreenState extends State<StormEventScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final eventTitle = resolveEventTitleByObjClass(context, _objClass, l10n);
-    final zombieRepo = ZombieRepository();
 
     return Scaffold(
       appBar: AppBar(
@@ -480,6 +458,9 @@ class _StormEventScreenState extends State<StormEventScreen> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
+          physics: _zombieDragging
+              ? const NeverScrollableScrollPhysics()
+              : null,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -651,29 +632,31 @@ class _StormEventScreenState extends State<StormEventScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ..._data.zombies.asMap().entries.map((e) {
-                    final idx = e.key;
-                    final z = e.value;
-                    final baseType = _resolveBaseTypeName(z);
-                    final info = zombieRepo.getZombieById(baseType);
-                    final iconPath = info?.iconAssetPath;
-                    final isElite = _isElite(z);
-                    return ZombieIconCard(
-                      iconPath: iconPath,
-                      levelDisplay: isElite
-                          ? 'E'
-                          : (z.level == null ? '0' : '${z.level}'),
-                      isElite: isElite,
-                      isCustom: _isCustomZombie(z),
-                      onTap: () => _showZombieEditSheet(idx),
-                    );
-                  }),
-                  PvzAddButton(onPressed: _addZombie, size: 56),
-                ],
+              ZombieFlatLaneEditor(
+                items: _data.zombies.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final z = entry.value;
+                  final baseType = _resolveBaseTypeName(z);
+                  final info = ZombieRepository().getZombieById(baseType);
+                  final isElite = _isElite(z);
+                  return ZombieLaneIconData(
+                    identity: z,
+                    listIndex: idx,
+                    rowValue: 0,
+                    iconPath: info?.iconAssetPath,
+                    levelDisplay: isElite
+                        ? 'E'
+                        : (z.level == null ? '0' : '${z.level}'),
+                    isElite: isElite,
+                    isCustom: _isCustomZombie(z),
+                  );
+                }).toList(),
+                onTap: _showZombieEditSheet,
+                onDelete: (index) => _removeZombie(index),
+                onMove: _handleZombieMove,
+                onAdd: _addZombie,
+                onDraggingChanged: (dragging) =>
+                    setState(() => _zombieDragging = dragging),
               ),
               const SizedBox(height: 32),
             ],

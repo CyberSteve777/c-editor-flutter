@@ -104,7 +104,7 @@ abstract final class CustomZombieLevelUtils {
       var sum = 0;
       for (final entry in value.entries) {
         if (_zombieReferenceKeys.contains(entry.key) &&
-            _isZombieReference(entry.value, rtid, alias)) {
+            _isZombieReference(entry.value, rtid)) {
           sum++;
         } else {
           sum += _countZombieUseInValue(entry.value, rtid, alias);
@@ -115,8 +115,8 @@ abstract final class CustomZombieLevelUtils {
     return 0;
   }
 
-  static bool _isZombieReference(dynamic value, String rtid, String alias) {
-    return value == rtid || value == alias;
+  static bool _isZombieReference(dynamic value, String rtid) {
+    return value == rtid;
   }
 
   /// Removes [ZombieType] and its [CurrentLevel] property sheet, if present.
@@ -215,13 +215,13 @@ abstract final class CustomZombieLevelUtils {
     required String zombieTypeRtid,
     required Future<void> Function(bool eraseOrphanProperties) onRemove,
   }) async {
-    final alias = aliasFromRtid(zombieTypeRtid);
+    final info = RtidParser.parse(zombieTypeRtid);
     var eraseOrphan = false;
-    if (alias != null) {
+    if (info?.source == _currentLevel) {
       final choice = await maybePromptDeleteOrphanBeforeRemove(
         context: parentContext,
         levelFile: levelFile,
-        alias: alias,
+        alias: info!.alias,
       );
       if (choice == null) return;
       eraseOrphan = choice;

@@ -7,11 +7,12 @@ import 'package:c_editor/data/wave_generator_level_utils.dart';
 import 'package:c_editor/data/wave_generator_point_analysis.dart';
 import 'package:c_editor/data/zombie_display_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/widgets/asset_image.dart'
-    show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/wave_generator_expectation_dialog.dart';
 import 'package:c_editor/widgets/wave_generator_zombie_tile.dart';
+import 'package:c_editor/widgets/zombie_row_lane_editor.dart';
+import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
+import 'package:c_editor/widgets/zombie_selection_flow.dart';
 
 /// Full-screen editor for a single wave inside [WaveGeneratorProperties].
 class WaveGeneratorWaveScreen extends StatefulWidget {
@@ -45,6 +46,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   late TextEditingController _pointIncrementCtrl;
   late TextEditingController _blackHoleCtrl;
   Map<int, int?> _zombieLevels = {};
+  bool _zombieDragging = false;
 
   int get _rowCount {
     final (rows, _) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
@@ -398,6 +400,69 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return int.tryParse(row) ?? 0;
   }
 
+  void _handleZombieMove(int fromIndex, int toRow, int? beforeIndex) {
+    final zombies = List<WaveGeneratorZombieEntryData>.from(_wave.zombies);
+    final parallelLevels = List<int?>.generate(
+      zombies.length,
+      (i) => _zombieLevels[i],
+    );
+    moveWaveGeneratorZombieInList(
+      zombies: zombies,
+      fromIndex: fromIndex,
+      toRow: toRow,
+      maxRow: _rowCount,
+      beforeIndex: beforeIndex,
+      parallelLevels: parallelLevels,
+    );
+    _zombieLevels = {};
+    for (var i = 0; i < parallelLevels.length; i++) {
+      final level = parallelLevels[i];
+      if (level != null) {
+        _zombieLevels[i] = level;
+      }
+    }
+    _wave = _copyWave(zombies: zombies);
+    _sync();
+  }
+
+  Future<void> _changeZombieTypeFromSheet({
+    required BuildContext sheetContext,
+    required int index,
+    required String currentRow,
+    required int levelValue,
+    required bool isElite,
+  }) async {
+    final selected = await pushZombieSelection(context);
+    if (!mounted) return;
+    if (selected == null) return;
+    final rtid = RtidParser.build(
+      ZombieRepository().buildZombieAliases(selected),
+      'ZombieTypes',
+    );
+    if (RtidParser.parse(rtid)?.source == 'CurrentLevel') {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n?.waveGeneratorCustomZombieBlocked ??
+                'Custom zombies are not supported in wave generator levels.',
+          ),
+        ),
+      );
+      return;
+    }
+    final isEliteNew = ZombieRepository().isElite(selected);
+    _updateZombie(
+      index,
+      WaveGeneratorZombieEntryData(type: rtid, row: currentRow),
+      level: isEliteNew ? null : (levelValue == 0 ? null : levelValue),
+      replaceLevel: true,
+    );
+    if (sheetContext.mounted) {
+      Navigator.pop(sheetContext);
+    }
+  }
+
   void _setZombieRow(int index, int rowValue) {
     final zombie = _wave.zombies[index];
     final rowStr = rowValue == 0 ? '?' : '$rowValue';
@@ -609,6 +674,9 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
+          physics: _zombieDragging
+              ? const NeverScrollableScrollPhysics()
+              : null,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -865,101 +933,31 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     ThemeData theme,
     AppLocalizations? l10n,
   ) {
-    return Column(
-      children: [
-        for (var row = 1; row <= _rowCount; row++) ...[
-          _buildLaneRow(
-            context,
-            theme,
-            label: l10n?.rowN(row) ?? 'Row $row',
-            rowValue: row,
-            zombies: _wave.zombies
-                .asMap()
-                .entries
-                .where((e) => _rowValue(e.value.row) == row)
-                .toList(),
-          ),
-          const SizedBox(height: 8),
-        ],
-        _buildLaneRow(
-          context,
-          theme,
-          label: l10n?.randomRow ?? l10n?.random ?? 'Random row',
-          rowValue: 0,
-          zombies: _wave.zombies
-              .asMap()
-              .entries
-              .where((e) => _rowValue(e.value.row) == 0)
-              .toList(),
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLaneRow(
-    BuildContext context,
-    ThemeData theme, {
-    required String label,
-    required int rowValue,
-    required List<MapEntry<int, WaveGeneratorZombieEntryData>> zombies,
-    Color? color,
-  }) {
-    final laneColor = color ?? theme.colorScheme.primary;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  label,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: laneColor,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  '${zombies.length}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ...zombies.map((entry) {
-                  final idx = entry.key;
-                  final z = entry.value;
-                  final isElite = _isEliteRtid(z.type);
-                  final level = _levelForZombie(idx);
-                  return ZombieIconCard(
-                    iconPath: _zombieIcon(z.type),
-                    levelDisplay: isElite
-                        ? 'E'
-                        : (level == null ? '0' : '$level'),
-                    isElite: isElite,
-                    isCustom: false,
-                    onTap: () => _showZombieEditSheet(idx),
-                  );
-                }),
-                PvzAddButton(
-                  onPressed: () => _addZombie(rowValue: rowValue),
-                  useSecondaryColor: rowValue == 0,
-                  size: 56,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+    return ZombieRowLaneEditor(
+      maxRow: _rowCount,
+      rowLabel: (row) => l10n?.rowN(row) ?? 'Row $row',
+      randomRowLabel: l10n?.randomRow ?? l10n?.random ?? 'Random row',
+      items: _wave.zombies.asMap().entries.map((entry) {
+        final idx = entry.key;
+        final z = entry.value;
+        final isElite = _isEliteRtid(z.type);
+        final level = _levelForZombie(idx);
+        return ZombieLaneIconData(
+          identity: z,
+          listIndex: idx,
+          rowValue: _rowValue(z.row),
+          iconPath: _zombieIcon(z.type),
+          levelDisplay: isElite ? 'E' : (level == null ? '0' : '$level'),
+          isElite: isElite,
+          isCustom: false,
+        );
+      }).toList(),
+      onTap: _showZombieEditSheet,
+      onDelete: _removeZombie,
+      onMove: _handleZombieMove,
+      onAddToRow: (row) => _addZombie(rowValue: row),
+      onDraggingChanged: (dragging) =>
+          setState(() => _zombieDragging = dragging),
     );
   }
 
@@ -985,96 +983,43 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        if (iconPath != null)
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: AssetImageWidget(
-                              assetPath: iconPath,
-                              altCandidates: imageAltCandidates(iconPath),
-                              width: 36,
-                              height: 36,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            displayName,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                    ZombieEditSheetIdentityTile(
+                      iconPath: iconPath,
+                      displayName: displayName,
+                      isCustom: false,
+                      onChange: () => _changeZombieTypeFromSheet(
+                        sheetContext: ctx,
+                        index: index,
+                        currentRow: rowValue == 0 ? '?' : '$rowValue',
+                        levelValue: levelValue,
+                        isElite: isElite,
+                      ),
                     ),
                     const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButtonFormField<int>(
-                            initialValue: rowValue,
-                            decoration: InputDecoration(
-                              labelText: l10n?.row ?? 'Row',
-                              border: const OutlineInputBorder(),
-                            ),
-                            items: [
-                              DropdownMenuItem(
-                                value: 0,
-                                child: Text(l10n?.random ?? 'Random'),
-                              ),
-                              ...List.generate(_rowCount, (i) => i + 1).map(
-                                (v) => DropdownMenuItem(
-                                  value: v,
-                                  child: Text(l10n?.rowN(v) ?? 'Row $v'),
-                                ),
-                              ),
-                            ],
-                            onChanged: (v) {
-                              if (v == null) return;
-                              setModalState(() => rowValue = v);
-                              _setZombieRow(index, v);
-                            },
-                          ),
+                    DropdownButtonFormField<int>(
+                      isExpanded: true,
+                      initialValue: rowValue,
+                      decoration: InputDecoration(
+                        labelText: l10n?.row ?? 'Row',
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 0,
+                          child: Text(l10n?.random ?? 'Random'),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              Future.microtask(() {
-                                widget.onRequestZombieSelection((id) {
-                                  final rtid = RtidParser.build(
-                                    ZombieRepository().buildZombieAliases(id),
-                                    'ZombieTypes',
-                                  );
-                                  if (RtidParser.parse(rtid)?.source ==
-                                      'CurrentLevel') {
-                                    return;
-                                  }
-                                  final isEliteNew = ZombieRepository().isElite(
-                                    id,
-                                  );
-                                  _updateZombie(
-                                    index,
-                                    WaveGeneratorZombieEntryData(
-                                      type: rtid,
-                                      row: zombie.row,
-                                    ),
-                                    level: isEliteNew
-                                        ? null
-                                        : _levelForZombie(index),
-                                    replaceLevel: true,
-                                  );
-                                });
-                              });
-                            },
-                            icon: const Icon(Icons.swap_horiz),
-                            label: Text(l10n?.change ?? 'Change'),
+                        ...List.generate(_rowCount, (i) => i + 1).map(
+                          (v) => DropdownMenuItem(
+                            value: v,
+                            child: Text(l10n?.rowN(v) ?? 'Row $v'),
                           ),
                         ),
                       ],
+                      onChanged: (v) {
+                        if (v == null) return;
+                        setModalState(() => rowValue = v);
+                        _setZombieRow(index, v);
+                      },
                     ),
                     const SizedBox(height: 12),
                     if (isElite)
