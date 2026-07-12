@@ -159,6 +159,15 @@
     async pickFolderForImport() {
       releaseFolderImport();
 
+      // Prefer webkit directory input: read-only copy into memory, no FSA write
+      // permission prompt, works across Chromium / Firefox / Safari.
+      if (hasWebkitDirectoryInput()) {
+        const webkitResult = await pickFolderWebkit();
+        if (webkitResult) {
+          return webkitResult;
+        }
+      }
+
       if (hasNativeDirectoryPicker()) {
         try {
           const handle = await window.showDirectoryPicker({ mode: 'read' });
@@ -182,10 +191,6 @@
           }
           throw error;
         }
-      }
-
-      if (hasWebkitDirectoryInput()) {
-        return await pickFolderWebkit();
       }
 
       return null;

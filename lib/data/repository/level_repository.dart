@@ -156,6 +156,8 @@ class LevelRepository {
   static Future<void> ensureWebStorageReady() =>
       _impl.ensureWebStorageReady();
 
+  static void releaseWebFolderImport() => _impl.releaseWebFolderImport();
+
   static Future<String?> getWebLibraryDisplayName() =>
       _impl.getWebLibraryDisplayName();
 
@@ -170,6 +172,12 @@ class LevelRepository {
     WebTransferProgress? onProgress,
   }) =>
       _impl.importWebFilesBatched(files, onProgress: onProgress);
+
+  static Future<int> importWebFolderPathsBatched(
+    List<({String storageKey, String relativePath})> entries, {
+    WebTransferProgress? onProgress,
+  }) =>
+      _impl.importWebFolderPathsBatched(entries, onProgress: onProgress);
 
   static Future<List<String>> getTemplateList() => _impl.getTemplateList();
 

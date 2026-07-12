@@ -108,6 +108,11 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<void> ensureWebStorageReady() => _ensureReady();
 
   @override
+  void releaseWebFolderImport() {
+    _fsa.releaseFolderImport();
+  }
+
+  @override
   Future<String?> getWebLibraryDisplayName() async {
     await _ensureReady();
     return _defaultLibraryLabel;
@@ -122,7 +127,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       return null;
     }
 
-    // Pick while the user-gesture is still active; bytes load lazily afterward.
+    // Pick while the user-gesture is still active; bytes load during import.
     final picked = await _fsa.pickFolderForImport();
     if (picked == null) {
       _fsa.releaseFolderImport();
@@ -130,28 +135,38 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     }
 
     await _ensureReady();
+    return WebFolderImport(name: picked.name, paths: picked.paths);
+  }
 
-    final files = <String, Uint8List>{};
+  @override
+  Future<int> importWebFolderPathsBatched(
+    List<({String storageKey, String relativePath})> entries, {
+    WebTransferProgress? onProgress,
+  }) async {
+    if (entries.isEmpty) {
+      return 0;
+    }
+    await _ensureReady();
+    const batchSize = 4;
+    var imported = 0;
     try {
-      for (var i = 0; i < picked.paths.length; i++) {
-        final path = picked.paths[i];
-        final bytes = await _fsa.readFolderImportEntry(path);
+      for (var i = 0; i < entries.length; i++) {
+        final entry = entries[i];
+        final bytes = await _fsa.readFolderImportEntry(entry.relativePath);
         if (bytes != null) {
-          files[path] = bytes;
+          await _putFile(entry.storageKey, bytes);
+          imported++;
         }
-        if (i % 4 == 3) {
+        onProgress?.call(i + 1, entries.length, entry.storageKey);
+        if (i % batchSize == batchSize - 1) {
           await yieldToUi();
         }
       }
+      await _persistDirectories();
     } finally {
       _fsa.releaseFolderImport();
     }
-
-    if (files.isEmpty) {
-      return null;
-    }
-
-    return WebFolderImport(name: picked.name, files: files);
+    return imported;
   }
 
   Future<void> _putFile(String key, Uint8List bytes) async {

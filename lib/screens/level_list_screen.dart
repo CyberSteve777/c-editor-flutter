@@ -352,7 +352,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       return;
     }
 
-    if (folder.files.isEmpty) {
+    if (folder.paths.isEmpty) {
       _showWarningMessage(l10n.importFolderEmpty);
       return;
     }
@@ -361,17 +361,17 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final currentDir = _pathStack.isNotEmpty ? _pathStack.last.path : webPath;
     final folderName = _sanitizeFolderImportName(folder.name);
 
-    final files = folder.files.entries
+    final entries = folder.paths
         .map(
-          (entry) => (
-            storageKey: _webStorageKey(currentDir, '$folderName/${entry.key}'),
-            bytes: entry.value,
+          (path) => (
+            storageKey: _webStorageKey(currentDir, '$folderName/$path'),
+            relativePath: path,
           ),
         )
         .toList();
 
-    final imported = await _importFilesWithSmartUpload(
-      files,
+    final imported = await _importFolderPathsWithSmartUpload(
+      entries,
       progressTitle: l10n.importProgressTitle,
     );
     if (!mounted || imported == 0) return;
@@ -440,6 +440,76 @@ class _LevelListScreenState extends State<LevelListScreen> {
     });
     _loadCurrentDirectory();
     return imported;
+  }
+
+  Future<int> _importFolderPathsWithSmartUpload(
+    List<({String storageKey, String relativePath})> entries, {
+    String? progressTitle,
+  }) async {
+    if (entries.isEmpty || !mounted) return 0;
+
+    await LevelRepository.ensureWebStorageReady();
+
+    final pending = <({String storageKey, String relativePath})>[];
+    final conflicts = <({String storageKey, String relativePath})>[];
+
+    for (final entry in entries) {
+      final exists = await _webStorageKeyExists(entry.storageKey);
+      if (exists) {
+        conflicts.add(entry);
+      } else {
+        pending.add(entry);
+      }
+    }
+
+    if (conflicts.isNotEmpty) {
+      await _resolveSmartUploadPathConflicts(conflicts, pending);
+      if (!mounted) {
+        LevelRepository.releaseWebFolderImport();
+        return 0;
+      }
+    }
+
+    if (pending.isEmpty) {
+      LevelRepository.releaseWebFolderImport();
+      return 0;
+    }
+
+    if (!context.mounted) {
+      LevelRepository.releaseWebFolderImport();
+      return 0;
+    }
+    final imported = progressTitle == null
+        ? await LevelRepository.importWebFolderPathsBatched(pending)
+        : await _runWebFolderImportProgress(progressTitle, pending) ?? 0;
+
+    if (!mounted || imported == 0) return 0;
+    const webPath = 'web://';
+    setState(() {
+      _rootFolderPath ??= webPath;
+      if (_pathStack.isEmpty) {
+        _pathStack = [(name: 'My levels', path: webPath)];
+      }
+    });
+    _loadCurrentDirectory();
+    return imported;
+  }
+
+  Future<int?> _runWebFolderImportProgress(
+    String title,
+    List<({String storageKey, String relativePath})> entries,
+  ) {
+    if (!context.mounted) {
+      return Future.value(null);
+    }
+    return runWebTransferWithProgress<int>(
+      context,
+      title: title,
+      task: (report) => LevelRepository.importWebFolderPathsBatched(
+        entries,
+        onProgress: report,
+      ),
+    );
   }
 
   Future<int?> _runWebImportProgress(
@@ -520,6 +590,63 @@ class _LevelListScreenState extends State<LevelListScreen> {
             reservedKeys,
           );
           pending.add((storageKey: copyKey, bytes: conflict.bytes));
+          reservedKeys.add(copyKey.toLowerCase());
+      }
+    }
+  }
+
+  Future<void> _resolveSmartUploadPathConflicts(
+    List<({String storageKey, String relativePath})> conflicts,
+    List<({String storageKey, String relativePath})> pending,
+  ) async {
+    _WebUploadConflictStrategy? bulkStrategy;
+    final reservedKeys = pending.map((e) => e.storageKey.toLowerCase()).toSet();
+
+    for (final conflict in conflicts) {
+      if (!mounted) return;
+
+      late final _WebUploadConflictStrategy strategy;
+      if (bulkStrategy != null) {
+        strategy = bulkStrategy;
+      } else {
+        final choice = await _showSmartUploadFileDialog(conflict.storageKey);
+        if (!mounted) return;
+        if (choice == null) continue;
+
+        switch (choice) {
+          case _SmartUploadChoice.skipThis:
+            strategy = _WebUploadConflictStrategy.skip;
+          case _SmartUploadChoice.skipAll:
+            bulkStrategy = _WebUploadConflictStrategy.skip;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.overwriteThis:
+            strategy = _WebUploadConflictStrategy.overwrite;
+          case _SmartUploadChoice.overwriteAll:
+            bulkStrategy = _WebUploadConflictStrategy.overwrite;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.copyThis:
+            strategy = _WebUploadConflictStrategy.copy;
+          case _SmartUploadChoice.copyAll:
+            bulkStrategy = _WebUploadConflictStrategy.copy;
+            strategy = bulkStrategy;
+        }
+      }
+
+      switch (strategy) {
+        case _WebUploadConflictStrategy.skip:
+          break;
+        case _WebUploadConflictStrategy.overwrite:
+          pending.add(conflict);
+          reservedKeys.add(conflict.storageKey.toLowerCase());
+        case _WebUploadConflictStrategy.copy:
+          final copyKey = await _nextSmartUploadCopyStorageKey(
+            conflict.storageKey,
+            reservedKeys,
+          );
+          pending.add((
+            storageKey: copyKey,
+            relativePath: conflict.relativePath,
+          ));
           reservedKeys.add(copyKey.toLowerCase());
       }
     }
