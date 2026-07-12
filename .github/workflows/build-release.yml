@@ -17,6 +17,8 @@ jobs:
   build-windows:
     name: Windows x64
     runs-on: windows-latest
+    env:
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
     steps:
       - uses: actions/checkout@v7
 
@@ -41,9 +43,10 @@ jobs:
 
       - run: flutter pub get
       - name: Build Windows release
+        shell: bash
         env:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
-        run: flutter build windows --release
+        run: flutter build windows --release $(bash .github/scripts/flutter-dart-defines.sh)
 
       - name: Package Windows portable
         shell: pwsh
@@ -145,6 +148,8 @@ jobs:
   build-linux:
     name: Linux x64
     runs-on: ubuntu-latest
+    env:
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
     steps:
       - uses: actions/checkout@v7
 
@@ -176,7 +181,7 @@ jobs:
           cache: true
 
       - run: flutter pub get
-      - run: flutter build linux --release
+      - run: flutter build linux --release $(bash .github/scripts/flutter-dart-defines.sh)
 
       - name: Prepare Linux package root
         run: bash .github/scripts/prepare-linux-package-root.sh
@@ -256,6 +261,8 @@ jobs:
   build-android:
     name: Android APK (signed)
     runs-on: ubuntu-latest
+    env:
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
     # Release keystore secrets are not available to workflows triggered from fork PRs.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
@@ -313,7 +320,7 @@ jobs:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
-        run: flutter build apk --release
+        run: flutter build apk --release $(bash .github/scripts/flutter-dart-defines.sh)
 
       - name: Stage APK artifact
         run: |

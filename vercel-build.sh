@@ -12,4 +12,5 @@ export PATH="${FLUTTER_DIR}/bin:${PATH}"
 flutter config --enable-web
 flutter precache --web
 flutter pub get
-flutter build web --release --no-wasm-dry-run
+DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
+flutter build web --release --wasm ${DART_DEFINES}
