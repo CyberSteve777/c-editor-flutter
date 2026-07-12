@@ -304,6 +304,32 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     );
   }
 
+  void _assignWaveZombies(
+    List<WaveGeneratorZombieEntryData> zombies, {
+    bool sortRows = false,
+  }) {
+    if (sortRows) {
+      final parallelLevels = List<int?>.generate(
+        zombies.length,
+        (i) => _zombieLevels[i],
+      );
+      sortWaveGeneratorZombieListByRow(
+        zombies,
+        maxRow: _rowCount,
+        parallelLevels: parallelLevels,
+      );
+      _zombieLevels = {};
+      for (var i = 0; i < parallelLevels.length; i++) {
+        final level = parallelLevels[i];
+        if (level != null) {
+          _zombieLevels[i] = level;
+        }
+      }
+    }
+    _wave = _copyWave(zombies: zombies);
+    _sync();
+  }
+
   void _sync() {
     final obj = WaveGeneratorLevelUtils.findObject(widget.levelFile);
     if (obj == null) return;
@@ -425,8 +451,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
         _zombieLevels[i] = level;
       }
     }
-    _wave = _copyWave(zombies: zombies);
-    _sync();
+    _assignWaveZombies(zombies);
   }
 
   Future<void> _changeZombieTypeFromSheet({
@@ -483,14 +508,14 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     bool replaceLevel = false,
   }) {
     final list = List<WaveGeneratorZombieEntryData>.from(_wave.zombies);
+    final rowChanged = list[index].row != updated.row;
     list[index] = updated;
     _setZombieLevelInMemory(
       index,
       updated.type,
       replaceLevel ? level : _zombieLevels[index],
     );
-    _wave = _copyWave(zombies: list);
-    _sync();
+    _assignWaveZombies(list, sortRows: rowChanged);
   }
 
   void _setZombieLevel(int index, int? level) {
@@ -511,8 +536,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       }
     });
     _zombieLevels = shiftedLevels;
-    _wave = _copyWave(zombies: list);
-    _sync();
+    _assignWaveZombies(list);
   }
 
   void _addZombie({required int rowValue}) {
@@ -536,13 +560,13 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       final rowStr = rowValue == 0 ? '?' : '$rowValue';
       final newIndex = _wave.zombies.length;
       _setZombieLevelInMemory(newIndex, rtid, null);
-      _wave = _copyWave(
-        zombies: [
+      _assignWaveZombies(
+        [
           ..._wave.zombies,
           WaveGeneratorZombieEntryData(type: rtid, row: rowStr),
         ],
+        sortRows: true,
       );
-      _sync();
     });
   }
 

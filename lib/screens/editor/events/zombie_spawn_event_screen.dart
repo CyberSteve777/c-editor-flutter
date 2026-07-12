@@ -168,11 +168,14 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
       final rtid = RtidParser.build(aliases, 'ZombieTypes');
       final zombies = List<ZombieSpawnData>.from(_zombies)
         ..add(ZombieSpawnData(type: rtid, level: null, row: row));
-      _updateZombies(zombies);
+      _updateZombies(zombies, sortRows: true);
     });
   }
 
-  void _updateZombies(List<ZombieSpawnData> zombies, {bool sortRows = true}) {
+  void _updateZombies(
+    List<ZombieSpawnData> zombies, {
+    bool sortRows = false,
+  }) {
     if (sortRows) {
       sortZombieSpawnListByRow(zombies, maxRow: _isDeepSeaLawn ? 6 : 5);
     }
@@ -275,8 +278,9 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
 
   void _updateZombie(int index, ZombieSpawnData zombie) {
     final zombies = List<ZombieSpawnData>.from(_zombies);
+    final rowChanged = zombies[index].row != zombie.row;
     zombies[index] = zombie;
-    _updateZombies(zombies);
+    _updateZombies(zombies, sortRows: rowChanged);
   }
 
   void _applyBatchLevel() {
@@ -598,7 +602,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                               );
                               final list = List<ZombieSpawnData>.from(_zombies)
                                 ..add(copy);
-                              _updateZombies(list);
+                              _updateZombies(list, sortRows: true);
                               Navigator.pop(ctx);
                             },
                             icon: const Icon(Icons.copy),

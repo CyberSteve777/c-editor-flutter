@@ -130,12 +130,14 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       final rtid = RtidParser.build(aliases, 'ZombieTypes');
       final zombies = List<ZombieSpawnData>.from(_data.zombies)
         ..add(ZombieSpawnData(type: rtid, level: 1, row: row));
-      _setZombies(zombies);
+      _setZombies(zombies, sortRows: true);
     });
   }
 
-  void _setZombies(List<ZombieSpawnData> zombies) {
-    sortZombieSpawnListByRow(zombies, maxRow: _maxRow);
+  void _setZombies(List<ZombieSpawnData> zombies, {bool sortRows = false}) {
+    if (sortRows) {
+      sortZombieSpawnListByRow(zombies, maxRow: _maxRow);
+    }
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
       additionalPlantFood: _data.additionalPlantFood,
@@ -148,8 +150,9 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
 
   void _updateZombie(int index, ZombieSpawnData z) {
     final zombies = List<ZombieSpawnData>.from(_data.zombies);
+    final rowChanged = zombies[index].row != z.row;
     zombies[index] = z;
-    _setZombies(zombies);
+    _setZombies(zombies, sortRows: rowChanged);
   }
 
   void _handleZombieDragDropMove(
