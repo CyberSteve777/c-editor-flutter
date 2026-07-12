@@ -184,6 +184,12 @@ abstract class AppLocalizations {
   /// **'Level file: {name}'**
   String shareLevelFileText(String name);
 
+  /// No description provided for @shareLevelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share level file'**
+  String get shareLevelFailed;
+
   /// No description provided for @selectFolder.
   ///
   /// In en, this message translates to:

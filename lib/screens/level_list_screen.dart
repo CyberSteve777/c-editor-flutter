@@ -14,7 +14,6 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
-import 'package:share_plus/share_plus.dart';
 
 enum LevelViewMode { all, favorites }
 
@@ -1510,9 +1509,16 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                     actionsDisabled || item.isDirectory
                                     ? null
                                     : () => _toggleFavorite(item),
-                                onShare: actionsDisabled || item.isDirectory || kIsWeb
+                                onShare: actionsDisabled ||
+                                        item.isDirectory ||
+                                        !isLevelFileShareSupported
                                     ? null
-                                    : () => _handleShare(item),
+                                    : () {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          if (mounted) _handleShare(item);
+                                        });
+                                      },
                                 showMove: !item.isDirectory,
                               ),
                             );
@@ -2197,12 +2203,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _handleShare(FileItem item) async {
-    if (item.isDirectory) return;
+    if (item.isDirectory || !mounted || !isLevelFileShareSupported) return;
     final l10n = AppLocalizations.of(context)!;
 
-    await Share.shareXFiles(
-      [XFile(item.path)],
-      text: l10n.shareLevelFileText(item.name),
+    await shareLevelFile(
+      context: context,
+      itemPath: item.path,
+      caption: l10n.shareLevelFileText(item.name),
+      failureMessage: l10n.shareLevelFailed,
+      onFailure: _showMessage,
     );
   }
 

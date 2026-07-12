@@ -20,6 +20,7 @@
       "name": { "type": "String" }
     }
   },
+  "shareLevelFailed": "无法分享关卡文件",
   "storagePermissionHint": "需要存储权限。请在设置中开启「允许访问以管理所有文件」来打开关卡文件。",
   "storagePermissionDialogTitle": "需要存储权限",
   "storagePermissionDialogMessage": "本应用需要访问外部存储以打开和保存关卡文件。请在设置中授予「允许访问以管理所有文件」权限。",

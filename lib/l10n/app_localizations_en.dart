@@ -53,6 +53,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get shareLevelFailed => 'Could not share level file';
+
+  @override
   String get selectFolder => 'Select folder';
 
   @override
