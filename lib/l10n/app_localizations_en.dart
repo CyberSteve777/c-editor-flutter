@@ -613,6 +613,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get convertToEncryptedRton => 'Convert to encrypted rton';
 
   @override
+  String get hujsonFormatDescription =>
+      'Hot-update readable format. Wraps level JSON in PopCap CompiledText internally (zlib compression + Rijndael encryption). Rename to .json before importing into the game.';
+
+  @override
+  String get rtonFormatDescription =>
+      'PopCap RTON binary serialization format (Rijndael-encrypted). Used as level data inside dynamic.rsb.smf.';
+
+  @override
   String get conversionRequiredTitle => 'Conversion required';
 
   @override
@@ -669,15 +677,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextDesktop =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextMobile =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON or encrypted RTON, after which the files can be imported into the game using other tools for testing (remember to manually change the file extension from .hujson back to .json before importing).\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageRecommendedLevelsLabel =>
@@ -1412,7 +1420,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFirstWave => 'Add the first wave.';
 
   @override
-  String get deleteWave => 'Delete';
+  String get deleteWave => 'Delete wave';
 
   @override
   String deleteWaveConfirm(int count) {
@@ -1676,6 +1684,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noModulesInCategory => 'No modules in this category';
+
+  @override
+  String get noEventsInCategory => 'No events in this category';
+
+  @override
+  String get eventCategoryZombieSpawn => 'Zombie spawn';
+
+  @override
+  String get eventCategoryGridItemSpawn => 'Grid item spawn';
+
+  @override
+  String get eventCategoryEnvironmental => 'Environmental';
+
+  @override
+  String get eventCategoryOther => 'Other';
 
   @override
   String addEventForWave(int wave) {

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:c_editor/widgets/resistant_wave_row_slidable.dart';
 import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/renai_wave_preview_utils.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
@@ -27,13 +25,9 @@ import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
 
 String _waveGuideBodyForPlatform(BuildContext context, AppLocalizations? l10n) {
   if (l10n == null) {
-    return isDesktopPlatform(context)
-        ? 'Right-click wave: manage events\nSwipe or use delete to remove wave\nClick points: view expectation'
-        : 'Swipe right: manage wave events\nSwipe left: delete wave\nTap points: view expectation';
+    return 'Tap a wave: Manage wave events\nTap delete: Remove a wave\nTap points: View spawn expectations';
   }
-  return isDesktopPlatform(context)
-      ? l10n.waveTimelineGuideBodyDesktop
-      : l10n.waveTimelineGuideBodyMobile;
+  return l10n.waveTimelineGuideBodyDesktop;
 }
 
 String _waveEmptyRowHintForPlatform(
@@ -41,13 +35,9 @@ String _waveEmptyRowHintForPlatform(
   AppLocalizations? l10n,
 ) {
   if (l10n == null) {
-    return isDesktopPlatform(context)
-        ? 'Empty wave (click to manage)'
-        : 'Empty wave (swipe left/right)';
+    return 'Empty wave (tap to manage)';
   }
-  return isDesktopPlatform(context)
-      ? l10n.waveEmptyRowHintDesktop
-      : l10n.waveEmptyRowHintMobile;
+  return l10n.waveEmptyRowHintDesktop;
 }
 
 const _kUnknownIconPath = 'assets/images/others/unknown.webp';
@@ -613,35 +603,6 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildMobileWaveRow({
-    required BuildContext context,
-    required int index,
-    required int waveIndex,
-    required int eventCount,
-    required Widget rowWidget,
-    required VoidCallback onDeleteConfirmed,
-  }) {
-    return Column(
-      children: [
-        ResistantWaveRowSlidable(
-          rowKey: ValueKey('wave_row_$index'),
-          onManage: () => _showWaveManageSheet(context, waveIndex),
-          onDeleteConfirm: () => _showDeleteWaveConfirmDialog(
-            context,
-            waveIndex,
-            eventCount,
-          ),
-          onDeleteConfirmed: onDeleteConfirmed,
-          child: rowWidget,
-        ),
-        Divider(
-          height: 1,
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        ),
-      ],
     );
   }
 
@@ -2233,8 +2194,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final customFishes = _collectCustomFishes();
     final isDeepSeaLawn = LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
 
-    return SlidableAutoCloseBehavior(
-      child: ListView(
+    return ListView(
       padding: const EdgeInsets.only(bottom: 80),
       children: [
         _buildHintCard(context),
@@ -2291,7 +2251,6 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 onTap: () => _showHeianWindInfoDialog(context, waveIndex),
               ));
             }
-            final isDesktop = isDesktopPlatform(context);
             final rowWidget = _buildWaveRowItem(
               context,
               waveIndex: waveIndex,
@@ -2299,27 +2258,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               rtidList: waveEvents,
               objectMap: objectMap,
               actionButtons: actionButtons,
-              onRowTap: isDesktop
-                  ? () => _showWaveManageSheet(context, waveIndex)
-                  : null,
-              includeDivider: isDesktop,
+              onRowTap: () => _showWaveManageSheet(context, waveIndex),
             );
-            if (isDesktop) {
-              return rowWidget;
-            }
-            return _buildMobileWaveRow(
-              context: context,
-              index: index,
-              waveIndex: waveIndex,
-              eventCount: waveEvents.length,
-              rowWidget: rowWidget,
-              onDeleteConfirmed: () {
-                wm.waves.removeAt(index);
-                wm.waveCount = wm.waves.length;
-                _syncWaves();
-                setState(() {});
-              },
-            );
+            return rowWidget;
           }),
         ],
         Padding(
@@ -2333,7 +2274,6 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           ),
         ),
       ],
-      ),
     );
   }
 

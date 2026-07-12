@@ -945,7 +945,7 @@ class FishIconCard extends StatelessWidget {
   }
 }
 
-/// Zombie icon card with C (custom) badge in top-left, level badge in top-right.
+/// Zombie icon card with custom badge top-left and level badge top-right.
 /// Reused by jittered, storm, grid item spawn and similar zombie editors.
 class ZombieIconCard extends StatelessWidget {
   const ZombieIconCard({
@@ -1057,6 +1057,97 @@ class ZombieIconCard extends StatelessWidget {
                   ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Clickable zombie identity row for spawn edit bottom sheets (icon, name, custom tag, change).
+class ZombieEditSheetIdentityTile extends StatelessWidget {
+  const ZombieEditSheetIdentityTile({
+    super.key,
+    required this.iconPath,
+    required this.displayName,
+    required this.isCustom,
+    required this.onChange,
+    this.customLabel = 'Custom',
+  });
+
+  final String? iconPath;
+  final String displayName;
+  final bool isCustom;
+  final VoidCallback onChange;
+  final String customLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onChange,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              if (iconPath != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: AssetImageWidget(
+                    assetPath: iconPath!,
+                    altCandidates: imageAltCandidates(iconPath!),
+                    width: 36,
+                    height: 36,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        displayName,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (isCustom) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: pvzOrangeLight,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          customLabel,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.edit_outlined,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+            ],
           ),
         ),
       ),

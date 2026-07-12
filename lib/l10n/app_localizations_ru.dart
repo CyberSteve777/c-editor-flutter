@@ -392,7 +392,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get convertHelpTooltip =>
-      'Преобразование между JSON, HUJSON и зашифрованным RTON для импорта через хот-апдейт.';
+      'Преобразование между JSON, HUJSON (хот-апдейт) и зашифрованным RTON (dynamic.rsb.smf).';
 
   @override
   String get create => 'Создать';
@@ -615,6 +615,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get convertToEncryptedRton => 'Преобразовать в зашифрованный rton';
 
   @override
+  String get hujsonFormatDescription =>
+      'Формат для хот-апдейта. Внутри использует PopCap CompiledText (JSON уровня с zlib-сжатием и шифрованием Rijndael). Перед импортом в игру переименуйте расширение с .hujson на .json.';
+
+  @override
+  String get rtonFormatDescription =>
+      'Бинарный формат PopCap RTON (шифрование Rijndael). Используется для данных уровней в dynamic.rsb.smf.';
+
+  @override
   String get conversionRequiredTitle => 'Требуется преобразование';
 
   @override
@@ -672,15 +680,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageTextDesktop =>
-      '1. Папка: щёлкните по иконке папки для выбора каталога уровней.\n2. Открыть/Создать: щёлкните по уровню для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: щёлкните «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: щёлкните по иконке папки для выбора каталога уровней.\n2. Открыть/Создать: щёлкните по уровню для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: щёлкните «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageTextMobile =>
-      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта или в зашифрованный RTON, затем импортировать в игру другими инструментами (перед импортом вручную смените расширение с .hujson на .json).\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageRecommendedLevelsLabel =>
@@ -1418,7 +1426,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addFirstWave => 'Добавьте первую волну.';
 
   @override
-  String get deleteWave => 'Удалить';
+  String get deleteWave => 'Удалить волну';
 
   @override
   String deleteWaveConfirm(int count) {
@@ -1681,6 +1689,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noModulesInCategory => 'Нет модулей в этой категории';
+
+  @override
+  String get noEventsInCategory => 'Нет событий в этой категории';
+
+  @override
+  String get eventCategoryZombieSpawn => 'Появление зомби';
+
+  @override
+  String get eventCategoryGridItemSpawn => 'Появление предметов на поле';
+
+  @override
+  String get eventCategoryEnvironmental => 'Окружение';
+
+  @override
+  String get eventCategoryOther => 'Прочее';
 
   @override
   String addEventForWave(int wave) {

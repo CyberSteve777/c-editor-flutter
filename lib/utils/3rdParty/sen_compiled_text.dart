@@ -9,7 +9,7 @@ import 'package:c_editor/utils/pvz2c_crypto.dart';
 import 'sen_buffer.dart';
 import 'sen_popcap_zlib.dart';
 
-/// Hot-update style asset: base64( `[0x10, 0x00]` + AES-CBC(PopCap-zlib(payload)) ).
+  /// Hot-update style asset: base64( `[0x10, 0x00]` + Rijndael-CBC(PopCap-zlib(payload)) ).
 class CompiledText {
   RijndaelCbc _cipher(RijndaelC cfg) => RijndaelCbc(
     cfg.keyBytes,

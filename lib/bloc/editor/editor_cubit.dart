@@ -13,6 +13,7 @@ import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
+import 'package:c_editor/data/app_bootstrap.dart';
 import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/bloc/editor/editor_tab_type.dart';
@@ -40,14 +41,16 @@ class EditorCubit extends Cubit<EditorState> {
   Future<void> loadLevel() async {
     if (isClosed) return;
     emit(state.copyWith(isLoading: true));
-    await ReferenceRepository.init();
-    await ZombiePropertiesRepository.init();
-    await ResilienceConfigRepository.init();
-    await ZombieTitleCatalogRepository.init();
-    await PlantRepository().init();
-    await ZombieRepository().init();
-    await FishTypeRepository().init();
-    await FishPropertiesRepository.init();
+    if (!AppBootstrap.isComplete) {
+      await ReferenceRepository.init();
+      await ZombiePropertiesRepository.init();
+      await ResilienceConfigRepository.init();
+      await ZombieTitleCatalogRepository.init();
+      await PlantRepository().init();
+      await ZombieRepository().init();
+      await FishTypeRepository().init();
+      await FishPropertiesRepository.init();
+    }
     if (isClosed) return;
     var level = await LevelRepository.loadLevel(fileName);
     if (level == null && filePath.isNotEmpty) {

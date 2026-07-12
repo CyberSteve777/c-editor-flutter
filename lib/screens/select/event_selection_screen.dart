@@ -3,9 +3,11 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 /// Event selection for wave timeline. Ported from Z-Editor-master EventSelectionScreen.kt
-class EventSelectionScreen extends StatelessWidget {
+class EventSelectionScreen extends StatefulWidget {
   const EventSelectionScreen({
     super.key,
     required this.waveIndex,
@@ -20,95 +22,7 @@ class EventSelectionScreen extends StatelessWidget {
   final VoidCallback onBack;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final levelDef = LevelParser.parseLevel(levelFile).levelDef;
-    final events = EventRegistry.getAll()
-        .where(
-          (meta) => LevelParser.isWaveEventAvailable(
-            meta.defaultObjClass,
-            levelDef,
-            levelFile,
-          ),
-        )
-        .toList();
-
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: onBack,
-        ),
-        title: Text(
-          l10n?.addEventForWave(waveIndex) ?? 'Add event for wave $waveIndex',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: events.length,
-        itemBuilder: (context, index) {
-          final meta = events[index];
-          final isDark = theme.brightness == Brightness.dark;
-          final bgColor = isDark ? meta.darkColor : meta.color;
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: InkWell(
-              onTap: () => onEventSelected(meta),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: bgColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(meta.icon, color: bgColor, size: 24),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _getTitle(context, meta, l10n),
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _getDescription(context, meta, l10n),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  String _getTitle(
-    BuildContext context,
-    EventMetadata meta,
-    AppLocalizations? l10n,
-  ) {
-    return resolveEventTitle(context, meta, l10n);
-  }
+  State<EventSelectionScreen> createState() => _EventSelectionScreenState();
 
   /// Resolves event metadata to a localized display title. Shared for wave timeline and event chips.
   static String resolveEventTitle(
@@ -128,6 +42,14 @@ class EventSelectionScreen extends StatelessWidget {
     final meta = EventRegistry.getByObjClass(objClass);
     if (meta != null) return resolveEventTitle(context, meta, l10n);
     return objClass;
+  }
+
+  static String resolveEventDescription(
+    BuildContext context,
+    EventMetadata meta,
+    AppLocalizations? l10n,
+  ) {
+    return _resolveEventKeyStatic(meta.descriptionKey, 'eventDesc_', l10n);
   }
 
   static String _resolveEventKeyStatic(
@@ -268,12 +190,239 @@ class EventSelectionScreen extends StatelessWidget {
       return key.replaceAll(prefix, '');
     }
   }
+}
 
-  String _getDescription(
-    BuildContext context,
-    EventMetadata meta,
-    AppLocalizations? l10n,
-  ) {
-    return _resolveEventKeyStatic(meta.descriptionKey, 'eventDesc_', l10n);
+class _EventSelectionScreenState extends State<EventSelectionScreen> {
+  String _searchQuery = '';
+  EventCategory? _selectedCategory;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final levelDef = LevelParser.parseLevel(widget.levelFile).levelDef;
+    final allEvents = EventRegistry.getAll()
+        .where(
+          (meta) => LevelParser.isWaveEventAvailable(
+            meta.defaultObjClass,
+            levelDef,
+            widget.levelFile,
+          ),
+        )
+        .toList();
+
+    final filteredEvents = allEvents.where((meta) {
+      final categoryMatch =
+          _selectedCategory == null || meta.category == _selectedCategory;
+      final title = EventSelectionScreen.resolveEventTitle(context, meta, l10n);
+      final description = EventSelectionScreen.resolveEventDescription(
+        context,
+        meta,
+        l10n,
+      );
+      final categoryLabel = _categoryLabel(meta.category, l10n);
+      final searchMatch = matchesSelectionSearch(_searchQuery, [
+        title,
+        description,
+        meta.defaultAlias,
+        meta.defaultObjClass,
+        meta.titleKey,
+        meta.descriptionKey,
+        categoryLabel,
+      ]);
+      return categoryMatch && searchMatch;
+    }).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: widget.onBack,
+        ),
+        title: Text(
+          l10n?.addEventForWave(widget.waveIndex) ??
+              'Add event for wave ${widget.waveIndex}',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          overflow: TextOverflow.ellipsis,
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(100),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: SelectionSearchField(
+                  hintText: l10n?.search ?? 'Search',
+                  query: _searchQuery,
+                  onChanged: (v) => setState(() => _searchQuery = v),
+                  onClear: () => setState(() => _searchQuery = ''),
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Row(
+                  children: [
+                    AccentBarChoiceChip(
+                      label: l10n?.stageTypeAll ?? 'All',
+                      selected: _selectedCategory == null,
+                      onSelected: (_) =>
+                          setState(() => _selectedCategory = null),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                    ),
+                    ...EventCategory.values.map((cat) {
+                      return AccentBarChoiceChip(
+                        label: _categoryLabel(cat, l10n),
+                        selected: _selectedCategory == cat,
+                        onSelected: (_) =>
+                            setState(() => _selectedCategory = cat),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: filteredEvents.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 64,
+                    color: theme.colorScheme.outline,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    _searchQuery.isNotEmpty
+                        ? (l10n?.noResultsFor(_searchQuery) ??
+                              'No results for "$_searchQuery"')
+                        : (l10n?.noEventsInCategory ??
+                              'No events in this category'),
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: filteredEvents.length,
+              itemBuilder: (context, index) {
+                final meta = filteredEvents[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _EventSelectionCard(
+                    meta: meta,
+                    onTap: () => widget.onEventSelected(meta),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+
+  String _categoryLabel(EventCategory cat, AppLocalizations? l10n) {
+    if (l10n == null) {
+      switch (cat) {
+        case EventCategory.zombieSpawn:
+          return 'Zombie spawn';
+        case EventCategory.gridItemSpawn:
+          return 'Grid item spawn';
+        case EventCategory.environmental:
+          return 'Environmental';
+        case EventCategory.other:
+          return 'Other';
+      }
+    }
+    switch (cat) {
+      case EventCategory.zombieSpawn:
+        return l10n.eventCategoryZombieSpawn;
+      case EventCategory.gridItemSpawn:
+        return l10n.eventCategoryGridItemSpawn;
+      case EventCategory.environmental:
+        return l10n.eventCategoryEnvironmental;
+      case EventCategory.other:
+        return l10n.eventCategoryOther;
+    }
+  }
+}
+
+class _EventSelectionCard extends StatelessWidget {
+  const _EventSelectionCard({
+    required this.meta,
+    required this.onTap,
+  });
+
+  final EventMetadata meta;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final accentColor = isDark ? meta.darkColor : meta.color;
+
+    return Card(
+      elevation: 2,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(meta.icon, size: 28, color: accentColor),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      EventSelectionScreen.resolveEventTitle(
+                        context,
+                        meta,
+                        l10n,
+                      ),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      EventSelectionScreen.resolveEventDescription(
+                        context,
+                        meta,
+                        l10n,
+                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
