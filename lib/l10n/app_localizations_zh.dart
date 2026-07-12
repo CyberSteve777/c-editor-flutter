@@ -217,6 +217,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get shareLevelFailed => '无法分享关卡文件';
+
+  @override
   String get selectFolder => '选择文件夹';
 
   @override

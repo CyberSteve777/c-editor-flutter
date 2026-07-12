@@ -13,10 +13,7 @@ import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
-import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:c_editor/screens/common/level_preview_dialog.dart';
-import 'package:c_editor/data/level_parser.dart';
 
 enum LevelViewMode { all, favorites }
 
@@ -1536,10 +1533,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                     actionsDisabled || item.isDirectory
                                     ? null
                                     : () => _toggleFavorite(item),
-                                onShare: actionsDisabled || item.isDirectory || kIsWeb
+                                onShare: actionsDisabled ||
+                                        item.isDirectory ||
+                                        !isLevelFileShareSupported
                                     ? null
                                     : () => _handleShare(item),
-                                showMove: !item.isDirectory,
+                                showMove: !item.isDirectory && !kIsWeb,
                               ),
                             );
                           },
@@ -2223,12 +2222,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _handleShare(FileItem item) async {
-    if (item.isDirectory) return;
+    if (item.isDirectory || !mounted || !isLevelFileShareSupported) return;
     final l10n = AppLocalizations.of(context)!;
 
-    await Share.shareXFiles(
-      [XFile(item.path)],
-      text: l10n.shareLevelFileText(item.name),
+    await shareLevelFile(
+      context: context,
+      itemPath: item.path,
+      caption: l10n.shareLevelFileText(item.name),
+      failureMessage: l10n.shareLevelFailed,
+      onFailure: _showMessage,
     );
   }
 

@@ -218,6 +218,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get shareLevelFailed => 'Не удалось поделиться файлом уровня';
+
+  @override
   String get selectFolder => 'Выбрать папку';
 
   @override

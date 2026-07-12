@@ -78,6 +78,7 @@
       "name": { "type": "String" }
     }
   },
+  "shareLevelFailed": "Could not share level file",
   "selectFolder": "Select folder",
   "storagePermissionHint": "Storage permission required. Enable \"Allow access to manage all files\" in Settings to open level files.",
   "storagePermissionDialogTitle": "Storage Permission Required",
