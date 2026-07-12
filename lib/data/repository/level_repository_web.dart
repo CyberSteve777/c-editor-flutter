@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
 import 'web/web_file_system_access.dart';
@@ -172,6 +173,18 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<bool> ensureFolderAccess() async {
     await _ensureReady();
     return true;
+  }
+
+  @override
+  Future<LevelLibraryStartupCache> preloadLibrarySettings(
+    SharedPreferences prefs,
+  ) async {
+    await _ensureReady();
+    return LevelLibraryStartupCache(
+      savedFolderPath: _webPathPrefix,
+      webLibraryDisplayName: _defaultLibraryLabel,
+      webReady: true,
+    );
   }
 
   @override

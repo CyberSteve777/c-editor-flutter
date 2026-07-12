@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
 import 'web/web_transfer_progress.dart';
@@ -13,6 +16,13 @@ export 'level_repository_base.dart'
 
 class LevelRepository {
   static final LevelRepositoryBase _impl = impl.createLevelRepository();
+  static LevelLibraryStartupCache? _startupCache;
+
+  static LevelLibraryStartupCache? get startupCache => _startupCache;
+
+  static Future<void> preloadLibrarySettings(SharedPreferences prefs) async {
+    _startupCache = await _impl.preloadLibrarySettings(prefs);
+  }
 
   static Future<String?> getSavedFolderPath() => _impl.getSavedFolderPath();
 

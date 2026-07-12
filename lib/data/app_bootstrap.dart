@@ -1,4 +1,6 @@
 import 'package:c_editor/data/ambient_audio_catalog.dart';
+import 'package:c_editor/data/asset_image_preloader.dart';
+import 'package:c_editor/data/bootstrap_loading_category.dart';
 import 'package:c_editor/data/music_suffix_catalog.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
@@ -13,10 +15,10 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/repository/zombie_title_catalog_repository.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
-import 'package:c_editor/data/asset_image_preloader.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 
-typedef BootstrapProgressCallback = void Function(double progress, String? label);
+export 'package:c_editor/data/bootstrap_loading_category.dart'
+    show BootstrapLoadingCategory, BootstrapProgressCallback;
 
 /// Loads app data and image assets once before the main UI is shown.
 abstract final class AppBootstrap {
@@ -29,47 +31,71 @@ abstract final class AppBootstrap {
 
     const dataSteps = 16;
     var dataStep = 0;
-    void dataTick(String label) {
+    void dataTick(BootstrapLoadingCategory category) {
       dataStep++;
-      onProgress?.call((dataStep / dataSteps) * 0.25, label);
+      onProgress?.call((dataStep / dataSteps) * 0.25, category);
     }
 
+    onProgress?.call(0, BootstrapLoadingCategory.localization);
     await ResourceNames.ensureLoaded();
-    dataTick('Resources');
+    dataTick(BootstrapLoadingCategory.localization);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.stages);
     await StageRepository.init();
-    dataTick('Stages');
+    dataTick(BootstrapLoadingCategory.stages);
+
     await CustomStagePresetRepository.init();
-    dataTick('Stage presets');
+    dataTick(BootstrapLoadingCategory.stages);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.audio);
     await MusicSuffixCatalog.init();
-    dataTick('Music');
+    dataTick(BootstrapLoadingCategory.audio);
+
     await AmbientAudioCatalog.init();
-    dataTick('Audio');
+    dataTick(BootstrapLoadingCategory.audio);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.gridItems);
     await GridItemRepository.init();
-    dataTick('Grid items');
+    dataTick(BootstrapLoadingCategory.gridItems);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.zomboss);
     await ZombossMechRepository.init();
-    dataTick('Zomboss mechs');
+    dataTick(BootstrapLoadingCategory.zomboss);
+
     await ZombossBattleRepository.init();
-    dataTick('Zomboss battles');
+    dataTick(BootstrapLoadingCategory.zomboss);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.reference);
     await ReferenceRepository.init();
-    dataTick('Reference data');
+    dataTick(BootstrapLoadingCategory.reference);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.zombies);
     await ZombiePropertiesRepository.init();
-    dataTick('Zombie properties');
+    dataTick(BootstrapLoadingCategory.zombies);
+
     await ResilienceConfigRepository.init();
-    dataTick('Resilience');
+    dataTick(BootstrapLoadingCategory.reference);
+
     await ZombieTitleCatalogRepository.init();
-    dataTick('Zombie titles');
+    dataTick(BootstrapLoadingCategory.zombies);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.plants);
     await PlantRepository().init();
-    dataTick('Plants');
+    dataTick(BootstrapLoadingCategory.plants);
+
     await ZombieRepository().init();
-    dataTick('Zombies');
+    dataTick(BootstrapLoadingCategory.zombies);
+
+    onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.fish);
     await FishTypeRepository().init();
-    dataTick('Fish types');
+    dataTick(BootstrapLoadingCategory.fish);
+
     await FishPropertiesRepository.init();
-    dataTick('Fish properties');
+    dataTick(BootstrapLoadingCategory.fish);
 
     await AssetImagePreloader.preloadAll(
-      onProgress: (progress, label) {
-        onProgress?.call(0.25 + progress * 0.75, label);
+      onProgress: (progress, category) {
+        onProgress?.call(0.25 + progress * 0.75, category);
       },
     );
 

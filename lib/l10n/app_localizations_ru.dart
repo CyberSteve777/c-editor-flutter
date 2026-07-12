@@ -7551,4 +7551,39 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get editCustomStage => 'Редактировать пользовательский газон';
+
+  @override
+  String get startupLoadingLocalization => 'Локализация';
+
+  @override
+  String get startupLoadingStages => 'Карты';
+
+  @override
+  String get startupLoadingAudio => 'Аудио';
+
+  @override
+  String get startupLoadingGridItems => 'Объекты сетки';
+
+  @override
+  String get startupLoadingZomboss => 'Зомбосс';
+
+  @override
+  String get startupLoadingReference => 'Справочные данные';
+
+  @override
+  String get startupLoadingZombies => 'Зомби';
+
+  @override
+  String get startupLoadingPlants => 'Растения';
+
+  @override
+  String get startupLoadingFish => 'Рыбы';
+
+  @override
+  String get startupLoadingImages => 'Изображения';
+
+  @override
+  String startupLoadingCategoryProgress(String category) {
+    return 'Загрузка $category...';
+  }
 }

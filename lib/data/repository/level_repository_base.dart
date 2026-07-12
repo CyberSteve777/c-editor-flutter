@@ -7,6 +7,7 @@ import 'package:c_editor/utils/pvz2c_crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pvz_models.dart';
+import '../level_library_startup_cache.dart';
 import 'web/web_transfer_progress.dart';
 
 /// One folder picked for web import (recursive level files, relative paths).
@@ -61,6 +62,9 @@ abstract class LevelRepositoryBase {
 
   Future<String?> getSavedFolderPath();
   Future<void> setSavedFolderPath(String path);
+  Future<LevelLibraryStartupCache> preloadLibrarySettings(
+    SharedPreferences prefs,
+  );
   Future<String> ensureIosLibraryPath();
   Future<bool> ensureFolderAccess() async => true;
   Future<void> setLastOpenedLevelDirectory(String path);

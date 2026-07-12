@@ -637,30 +637,49 @@ class AccentBarChoiceChip extends StatelessWidget {
         : const Color(0xFF212121);
     final unselectedBg = Colors.black.withValues(alpha: isDark ? 0.32 : 0.24);
     const unselectedFg = Colors.white;
+    final borderColor = selected
+        ? (isDark ? const Color(0xFFBDBDBD) : const Color(0xFF9E9E9E))
+        : Colors.white.withValues(alpha: isDark ? 0.45 : 0.55);
+    final borderWidth = selected ? 1.5 : 1.0;
 
     return Padding(
       padding: padding,
-      child: ChoiceChip(
-        label: Text(
-          label,
-          style: TextStyle(
-            color: selected ? selectedFg : unselectedFg,
-            fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+      child: Material(
+        color: selected ? selectedBg : unselectedBg,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: borderColor, width: borderWidth),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => onSelected(true),
+          mouseCursor: SystemMouseCursors.click,
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return (selected ? selectedFg : unselectedFg)
+                  .withValues(alpha: 0.12);
+            }
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused)) {
+              return (selected ? selectedFg : unselectedFg)
+                  .withValues(alpha: 0.08);
+            }
+            return null;
+          }),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selected ? selectedFg : unselectedFg,
+                fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+              ),
+            ),
           ),
         ),
-        selected: selected,
-        onSelected: onSelected,
-        showCheckmark: false,
-        selectedColor: selectedBg,
-        backgroundColor: unselectedBg,
-        side: BorderSide(
-          color: selected
-              ? (isDark ? const Color(0xFFBDBDBD) : const Color(0xFF9E9E9E))
-              : Colors.white.withValues(alpha: isDark ? 0.45 : 0.55),
-          width: selected ? 1.5 : 1,
-        ),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        visualDensity: VisualDensity.compact,
       ),
     );
   }

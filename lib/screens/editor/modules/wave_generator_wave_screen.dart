@@ -10,7 +10,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/wave_generator_expectation_dialog.dart';
 import 'package:c_editor/widgets/wave_generator_zombie_tile.dart';
-import 'package:c_editor/widgets/zombie_row_lane_editor.dart';
+import 'package:c_editor/widgets/zombie_row_lane_drag_drop_editor.dart';
 import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
 import 'package:c_editor/widgets/zombie_selection_flow.dart';
 
@@ -400,18 +400,22 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return int.tryParse(row) ?? 0;
   }
 
-  void _handleZombieMove(int fromIndex, int toRow, int? beforeIndex) {
+  void _handleZombieDragDropMove(
+    int fromIndex,
+    int toRow,
+    int rowInsertIndex,
+  ) {
     final zombies = List<WaveGeneratorZombieEntryData>.from(_wave.zombies);
     final parallelLevels = List<int?>.generate(
       zombies.length,
       (i) => _zombieLevels[i],
     );
-    moveWaveGeneratorZombieInList(
+    moveWaveGeneratorZombieInListByRowSlot(
       zombies: zombies,
       fromIndex: fromIndex,
       toRow: toRow,
       maxRow: _rowCount,
-      beforeIndex: beforeIndex,
+      rowInsertIndex: rowInsertIndex,
       parallelLevels: parallelLevels,
     );
     _zombieLevels = {};
@@ -933,7 +937,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     ThemeData theme,
     AppLocalizations? l10n,
   ) {
-    return ZombieRowLaneEditor(
+    return ZombieRowLaneDragDropEditor(
       maxRow: _rowCount,
       rowLabel: (row) => l10n?.rowN(row) ?? 'Row $row',
       randomRowLabel: l10n?.randomRow ?? l10n?.random ?? 'Random row',
@@ -953,8 +957,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
         );
       }).toList(),
       onTap: _showZombieEditSheet,
-      onDelete: _removeZombie,
-      onMove: _handleZombieMove,
+      onMove: _handleZombieDragDropMove,
       onAddToRow: (row) => _addZombie(rowValue: row),
       onDraggingChanged: (dragging) =>
           setState(() => _zombieDragging = dragging),

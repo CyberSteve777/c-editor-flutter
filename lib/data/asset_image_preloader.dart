@@ -1,9 +1,10 @@
 import 'package:flutter/services.dart';
+import 'package:c_editor/data/bootstrap_loading_category.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 
 typedef AssetPreloadProgressCallback = void Function(
   double progress,
-  String? label,
+  BootstrapLoadingCategory? category,
 );
 
 /// Preloads image assets listed in the Flutter asset manifest.
@@ -31,11 +32,16 @@ abstract final class AssetImagePreloader {
       return;
     }
 
+    onProgress?.call(0, BootstrapLoadingCategory.images);
+
     for (var i = 0; i < assets.length; i++) {
       final path = assets[i];
       await rootBundle.load(path);
       AssetImageWidget.registerManifestPath(path);
-      onProgress?.call((i + 1) / assets.length, path);
+      onProgress?.call(
+        (i + 1) / assets.length,
+        BootstrapLoadingCategory.images,
+      );
     }
 
     _complete = true;

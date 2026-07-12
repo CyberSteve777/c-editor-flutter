@@ -1,5 +1,6 @@
 import 'package:c_editor/data/repository/web/web_transfer_progress.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/labeled_progress_bar.dart';
 import 'package:flutter/material.dart';
 
 /// Runs [task] while showing a non-dismissible progress dialog.
@@ -28,14 +29,14 @@ Future<T?> runWebTransferWithProgress<T>(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (progress != null) ...[
-                LinearProgressIndicator(value: progress),
+                LabeledProgressBar(value: progress),
                 const SizedBox(height: 12),
                 Text(
                   l10n.transferProgressCount(completed, total),
                   textAlign: TextAlign.center,
                 ),
               ] else
-                const LinearProgressIndicator(),
+                const LabeledProgressBar(value: null),
               if (currentLabel != null && currentLabel!.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(

@@ -13621,6 +13621,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit custom lawn'**
   String get editCustomStage;
+
+  /// No description provided for @startupLoadingLocalization.
+  ///
+  /// In en, this message translates to:
+  /// **'Localization'**
+  String get startupLoadingLocalization;
+
+  /// No description provided for @startupLoadingStages.
+  ///
+  /// In en, this message translates to:
+  /// **'Stages'**
+  String get startupLoadingStages;
+
+  /// No description provided for @startupLoadingAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get startupLoadingAudio;
+
+  /// No description provided for @startupLoadingGridItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid items'**
+  String get startupLoadingGridItems;
+
+  /// No description provided for @startupLoadingZomboss.
+  ///
+  /// In en, this message translates to:
+  /// **'Zomboss'**
+  String get startupLoadingZomboss;
+
+  /// No description provided for @startupLoadingReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference data'**
+  String get startupLoadingReference;
+
+  /// No description provided for @startupLoadingZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombies'**
+  String get startupLoadingZombies;
+
+  /// No description provided for @startupLoadingPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Plants'**
+  String get startupLoadingPlants;
+
+  /// No description provided for @startupLoadingFish.
+  ///
+  /// In en, this message translates to:
+  /// **'Fish'**
+  String get startupLoadingFish;
+
+  /// No description provided for @startupLoadingImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get startupLoadingImages;
+
+  /// No description provided for @startupLoadingCategoryProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading {category}...'**
+  String startupLoadingCategoryProgress(String category);
 }
 
 class _AppLocalizationsDelegate

@@ -115,6 +115,18 @@ void reorderZombieFlatList<T>({
   list.insert(insertAt.clamp(0, list.length), item);
 }
 
+/// Flat lane slot move — [insertIndex] is 0-based within the visible lane.
+void reorderZombieFlatListByInsertIndex<T>({
+  required List<T> list,
+  required int fromIndex,
+  required int insertIndex,
+}) {
+  if (fromIndex < 0 || fromIndex >= list.length) return;
+  final item = list.removeAt(fromIndex);
+  final adjusted = insertIndex > fromIndex ? insertIndex - 1 : insertIndex;
+  list.insert(adjusted.clamp(0, list.length), item);
+}
+
 int _waveGenRowSortKey(String? row, int maxRow) {
   if (row == null || row.isEmpty || row == '?') return maxRow + 1;
   return int.tryParse(row) ?? maxRow + 1;
@@ -191,4 +203,55 @@ void moveWaveGeneratorZombieInList({
     zombies.insert(safe, moved);
     parallelLevels?.insert(safe, movedLevel);
   }
+}
+
+int _waveGenGlobalInsertAtForRow(
+  List<WaveGeneratorZombieEntryData> zombies,
+  int toRow,
+  int maxRow,
+) {
+  final targetKey = _waveGenRowSortKey(toRow == 0 ? '?' : '$toRow', maxRow);
+  for (var i = 0; i < zombies.length; i++) {
+    if (_waveGenRowSortKey(zombies[i].row, maxRow) > targetKey) return i;
+  }
+  return zombies.length;
+}
+
+/// Row-local slot move for wave-generator zombies.
+void moveWaveGeneratorZombieInListByRowSlot({
+  required List<WaveGeneratorZombieEntryData> zombies,
+  required int fromIndex,
+  required int toRow,
+  required int maxRow,
+  required int rowInsertIndex,
+  List<int?>? parallelLevels,
+}) {
+  if (fromIndex < 0 || fromIndex >= zombies.length) return;
+  int? movedLevel;
+  if (parallelLevels != null) {
+    movedLevel = parallelLevels.removeAt(fromIndex);
+  }
+  final moved = zombies.removeAt(fromIndex);
+  moved.row = toRow == 0 ? '?' : '$toRow';
+
+  final targetKey = _waveGenRowSortKey(toRow == 0 ? '?' : '$toRow', maxRow);
+  final rowPositions = <int>[];
+  for (var i = 0; i < zombies.length; i++) {
+    if (_waveGenRowSortKey(zombies[i].row, maxRow) == targetKey) {
+      rowPositions.add(i);
+    }
+  }
+
+  final int insertAt;
+  if (rowPositions.isEmpty) {
+    insertAt = _waveGenGlobalInsertAtForRow(zombies, toRow, maxRow);
+  } else if (rowInsertIndex >= rowPositions.length) {
+    insertAt = rowPositions.last + 1;
+  } else {
+    insertAt = rowPositions[rowInsertIndex];
+  }
+
+  final safe = insertAt.clamp(0, zombies.length);
+  zombies.insert(safe, moved);
+  parallelLevels?.insert(safe, movedLevel);
 }

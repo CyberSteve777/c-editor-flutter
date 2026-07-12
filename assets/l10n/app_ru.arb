@@ -2519,5 +2519,21 @@
   "customStageDeleteTitle": "Удалить пользовательский газон?",
   "customStageDeleteMessage": "Это навсегда удалит данные пользовательского газона из этого уровня. Если он сейчас активен, уровень переключится на встроенный газон по умолчанию.",
   "customStagePresetSectionTitle": "Preset custom lawns",
-  "editCustomStage": "Редактировать пользовательский газон"
+  "editCustomStage": "Редактировать пользовательский газон",
+  "startupLoadingLocalization": "Локализация",
+  "startupLoadingStages": "Карты",
+  "startupLoadingAudio": "Аудио",
+  "startupLoadingGridItems": "Объекты сетки",
+  "startupLoadingZomboss": "Зомбосс",
+  "startupLoadingReference": "Справочные данные",
+  "startupLoadingZombies": "Зомби",
+  "startupLoadingPlants": "Растения",
+  "startupLoadingFish": "Рыбы",
+  "startupLoadingImages": "Изображения",
+  "startupLoadingCategoryProgress": "Загрузка {category}...",
+  "@startupLoadingCategoryProgress": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  }
 }
