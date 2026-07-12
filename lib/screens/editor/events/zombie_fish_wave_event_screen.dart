@@ -145,17 +145,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     final zombies = List<ZombieSpawnData>.from(_data.zombies);
     final rowChanged = zombies[index].row != z.row;
     zombies[index] = z;
-    _data = SpawnZombiesFishWaveActionPropsData(
-      notificationEvents: _data.notificationEvents,
-      additionalPlantFood: _data.additionalPlantFood,
-      spawnPlantName: _data.spawnPlantName,
-      zombies: zombies,
-      fromIndex: fromIndex,
-      toRow: toRow,
-      maxRow: _maxRow,
-      rowInsertIndex: rowInsertIndex,
-    );
-    _setZombies(zombies);
+    _setZombies(zombies, sortRows: rowChanged);
   }
 
   Future<void> _removeZombie(int index, {bool? eraseOrphanProperties}) async {
@@ -410,12 +400,42 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     _sync();
   }
 
+  void _setZombies(List<ZombieSpawnData> zombies, {bool sortRows = false}) {
+    if (sortRows) {
+      sortZombieSpawnListByRow(zombies, maxRow: _maxRow);
+    }
+    _data = SpawnZombiesFishWaveActionPropsData(
+      notificationEvents: _data.notificationEvents,
+      additionalPlantFood: _data.additionalPlantFood,
+      spawnPlantName: _data.spawnPlantName,
+      zombies: zombies,
+      fishes: _data.fishes,
+    );
+    _sync();
+  }
+
+  void _handleZombieDragDropMove(
+      int fromIndex,
+      int toRow,
+      int rowInsertIndex,
+      ) {
+    final zombies = List<ZombieSpawnData>.from(_data.zombies);
+    moveZombieSpawnInListByRowSlot(
+      zombies: zombies,
+      fromIndex: fromIndex,
+      toRow: toRow,
+      maxRow: _maxRow,
+      rowInsertIndex: rowInsertIndex,
+    );
+    _setZombies(zombies);
+  }
+
   void _removeSpawnPlantAt(int index) {
     final plants = List<String>.from(_data.spawnPlantName ?? []);
     plants.removeAt(index);
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
-      additionalPlantFood: (plants.length) > 0 ? plants.length : null,
+      additionalPlantFood: plants.isNotEmpty ? plants.length : null,
       spawnPlantName: plants.isEmpty ? null : plants,
       zombies: _data.zombies,
       fishes: _data.fishes,
@@ -639,6 +659,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       fromLeft: zombie.direction == 'left',
       onChangeType: () {
         Future.microtask(() async {
+          if (!mounted) return;
           final selected = await pushZombieSelection(context);
           if (!mounted || selected == null) return;
           final aliases = ZombieRepository().buildZombieAliases(selected);
@@ -723,7 +744,9 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
               currentRtid: zombie.type,
               onEditCustomZombie: widget.onEditCustomZombie,
               onInjectCustomZombie: widget.onInjectCustomZombie,
-              onCloseSheet: () => Navigator.of(context).pop(),
+              onCloseSheet: () {
+                if (mounted) Navigator.of(context).pop();
+              },
               onRtidSelected: (rtid) {
                 _updateZombie(
                   index,

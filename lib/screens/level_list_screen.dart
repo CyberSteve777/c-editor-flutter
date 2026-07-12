@@ -13,7 +13,9 @@ import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/screens/common/level_preview_dialog.dart';
+import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 
 enum LevelViewMode { all, favorites }
 
@@ -2794,7 +2796,7 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
   Widget build(BuildContext context) {
     return SizeTransition(
       sizeFactor: _reveal,
-      alignment: Alignment.bottomCenter,
+      axisAlignment: 1.0,
       child: FadeTransition(
         opacity: _reveal,
         child: SlideTransition(

@@ -172,13 +172,15 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
     });
   }
 
-  void _updateZombies(List<ZombieSpawnData> zombies) {
+  void _updateZombies(List<ZombieSpawnData> zombies, {bool sortRows = false}) {
+    if (sortRows) {
+      sortZombieSpawnListByRow(zombies, maxRow: _isDeepSeaLawn ? 6 : 5);
+    }
     if (widget.isGroundSpawner) {
       _data = SpawnZombiesFromGroundData(
         columnStart: (_data as SpawnZombiesFromGroundData).columnStart,
         columnEnd: (_data as SpawnZombiesFromGroundData).columnEnd,
-        additionalPlantFood:
-            (_data as SpawnZombiesFromGroundData).additionalPlantFood,
+        additionalPlantFood: (_data as SpawnZombiesFromGroundData).additionalPlantFood,
         spawnPlantName: (_data as SpawnZombiesFromGroundData).spawnPlantName,
         zombies: zombies,
       );
