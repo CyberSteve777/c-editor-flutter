@@ -1085,11 +1085,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Column(
-            children: [
-              if (_rootFolderPath == null)
+          if (_rootFolderPath == null)
                 Expanded(
                   child: Center(
                     child: Padding(
@@ -1142,197 +1140,187 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   ),
                 )
               else ...[
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (_viewMode != LevelViewMode.favorites)
-                          _BreadcrumbBar(
-                            pathStack: _pathStack,
-                            onBreadcrumbClick: _breadcrumbTap,
+                if (_viewMode != LevelViewMode.favorites)
+                  _BreadcrumbBar(
+                    pathStack: _pathStack,
+                    onBreadcrumbClick: _breadcrumbTap,
+                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final compact = constraints.maxWidth < 240;
+                      return SizedBox(
+                        width: double.infinity,
+                        child: SegmentedButton<LevelViewMode>(
+                          showSelectedIcon: false,
+                          style: SegmentedButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            selectedBackgroundColor: fabBgColor,
+                            selectedForegroundColor: fabFgColor,
                           ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final compact = constraints.maxWidth < 240;
-                              return SizedBox(
-                                width: double.infinity,
-                                child: SegmentedButton<LevelViewMode>(
-                                  showSelectedIcon: false,
-                                  style: SegmentedButton.styleFrom(
-                                    visualDensity: VisualDensity.compact,
-                                    selectedBackgroundColor: fabBgColor,
-                                    selectedForegroundColor: fabFgColor,
-                                  ),
-                                  segments: [
-                                    ButtonSegment(
-                                      value: LevelViewMode.all,
-                                      icon: const Icon(
-                                        Icons.folder_outlined,
-                                        size: 20,
-                                      ),
-                                      label: compact
-                                          ? null
-                                          : Text(l10n.allLevelsCategory),
-                                      tooltip: l10n.allLevelsCategory,
-                                    ),
-                                    ButtonSegment(
-                                      value: LevelViewMode.favorites,
-                                      icon: const Icon(
-                                        Icons.favorite_outline,
-                                        size: 20,
-                                      ),
-                                      label: compact
-                                          ? null
-                                          : Text(l10n.favoritesCategory),
-                                      tooltip: l10n.favoritesCategory,
-                                    ),
-                                  ],
-                                  selected: {_viewMode},
-                                  onSelectionChanged: (newSelection) {
-                                    setState(() {
-                                      _viewMode = newSelection.first;
-                                      if (_viewMode == LevelViewMode.favorites &&
-                                          _pathStack.isNotEmpty) {
-                                        _pathStack = [_pathStack.first];
-                                        _resetListScrollToTop();
-                                      }
-                                      _loadCurrentDirectory();
-                                    });
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) =>
-                                setState(() => _searchQuery = value),
-                            decoration: InputDecoration(
-                              hintText: l10n.searchLevel,
-                              prefixIcon: const Icon(Icons.search),
-                              suffixIcon: _searchQuery.isNotEmpty
-                                  ? IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        setState(() => _searchQuery = '');
-                                      },
-                                    )
-                                  : null,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          segments: [
+                            ButtonSegment(
+                              value: LevelViewMode.all,
+                              icon: const Icon(
+                                Icons.folder_outlined,
+                                size: 20,
                               ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 0),
+                              label: compact
+                                  ? null
+                                  : Text(l10n.allLevelsCategory),
+                              tooltip: l10n.allLevelsCategory,
                             ),
-                          ),
-                        ),
-                        if (_canGoBack)
-                          Card(
-                            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: InkWell(
-                              onTap: _goToParentDirectory,
-                              borderRadius: BorderRadius.circular(12),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      alignment: Alignment.center,
-                                      child: const Icon(
-                                        Icons.arrow_back,
-                                        size: 30,
-                                        color: Color(0xFFFFC107),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Text(
-                                        l10n.returnUp,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            ButtonSegment(
+                              value: LevelViewMode.favorites,
+                              icon: const Icon(
+                                Icons.favorite_outline,
+                                size: 20,
                               ),
+                              label: compact
+                                  ? null
+                                  : Text(l10n.favoritesCategory),
+                              tooltip: l10n.favoritesCategory,
                             ),
-                          ),
-                        if (_itemToMove != null)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            color: theme.colorScheme.secondaryContainer,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.drive_file_move,
-                                  color: theme.colorScheme.onSecondaryContainer,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        l10n.moving(_itemToMove!.name),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: theme
-                                              .colorScheme
-                                              .onSecondaryContainer,
-                                        ),
-                                      ),
-                                      Text(
-                                        l10n.movePrompt,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: theme
-                                              .colorScheme
-                                              .onSecondaryContainer
-                                              .withAlpha(204),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
+                          ],
+                          selected: {_viewMode},
+                          onSelectionChanged: (newSelection) {
+                            setState(() {
+                              _viewMode = newSelection.first;
+                              if (_viewMode == LevelViewMode.favorites &&
+                                  _pathStack.isNotEmpty) {
+                                _pathStack = [_pathStack.first];
+                                _resetListScrollToTop();
+                              }
+                              _loadCurrentDirectory();
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) =>
+                        setState(() => _searchQuery = value),
+                    decoration: InputDecoration(
+                      hintText: l10n.searchLevel,
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 0),
                     ),
                   ),
                 ),
+                if (_canGoBack)
+                  Card(
+                    margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: InkWell(
+                      onTap: _goToParentDirectory,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              alignment: Alignment.center,
+                              child: const Icon(
+                                Icons.arrow_back,
+                                size: 30,
+                                color: Color(0xFFFFC107),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                l10n.returnUp,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                if (_itemToMove != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    color: theme.colorScheme.secondaryContainer,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.drive_file_move,
+                          color: theme.colorScheme.onSecondaryContainer,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                l10n.moving(_itemToMove!.name),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: theme
+                                      .colorScheme
+                                      .onSecondaryContainer,
+                                ),
+                              ),
+                              Text(
+                                l10n.movePrompt,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme
+                                      .colorScheme
+                                      .onSecondaryContainer
+                                      .withAlpha(204),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
@@ -1361,13 +1349,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                       : ListView.builder(
                           controller: _listScrollController,
                           padding: const EdgeInsets.all(16),
-                          itemCount: filteredItems.length + 1,
+                          itemCount: filteredItems.length,
                           itemBuilder: (context, index) {
-                            final itemIndex = index;
-                            if (itemIndex >= filteredItems.length) {
-                              return const SizedBox(height: 80);
-                            }
-                            final item = filteredItems[itemIndex];
+                            final item = filteredItems[index];
                             final isMovingMode = _itemToMove != null;
                             final isSelfMoving =
                                 isMovingMode && _itemToMove == item;
@@ -1526,54 +1510,42 @@ class _LevelListScreenState extends State<LevelListScreen> {
                         ),
                 ),
               ],
-            ],
-          ),
-          if (_rootFolderPath != null && _itemToMove == null)
-            Positioned(
-              right: 16,
-              bottom: 16,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _AnimatedUploadFab(
-                    visible: _listScrollAtTop,
-                    onPressed: _uploadLevel,
-                    label: l10n.uploadLevel,
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: _rootFolderPath != null && _itemToMove != null
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                FloatingActionButton.extended(
-                  heroTag: 'moveCancel',
-                  onPressed: () {
-                    setState(() {
-                      _itemToMove = null;
-                      _moveSourcePath = null;
-                    });
-                  },
-                  backgroundColor: theme.colorScheme.error,
-                  foregroundColor: theme.colorScheme.onError,
-                  icon: const Icon(Icons.close),
-                  label: Text(l10n.cancel),
-                ),
-                const SizedBox(height: 12),
-                FloatingActionButton.extended(
-                  heroTag: 'movePaste',
-                  onPressed: _handleMoveConfirm,
-                  icon: const Icon(Icons.content_paste),
-                  label: Text(l10n.paste),
-                ),
-              ],
-            )
+      floatingActionButton: _rootFolderPath != null
+          ? _itemToMove != null
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    FloatingActionButton.extended(
+                      heroTag: 'moveCancel',
+                      onPressed: () {
+                        setState(() {
+                          _itemToMove = null;
+                          _moveSourcePath = null;
+                        });
+                      },
+                      backgroundColor: theme.colorScheme.error,
+                      foregroundColor: theme.colorScheme.onError,
+                      icon: const Icon(Icons.close),
+                      label: Text(l10n.cancel),
+                    ),
+                    const SizedBox(height: 12),
+                    FloatingActionButton.extended(
+                      heroTag: 'movePaste',
+                      onPressed: _handleMoveConfirm,
+                      icon: const Icon(Icons.content_paste),
+                      label: Text(l10n.paste),
+                    ),
+                  ],
+                )
+              : _AnimatedUploadFab(
+                  visible: _listScrollAtTop,
+                  onPressed: _uploadLevel,
+                  label: l10n.uploadLevel,
+                )
           : null,
       bottomNavigationBar: _rootFolderPath == null || _itemToMove != null
           ? null
@@ -2765,7 +2737,7 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
   Widget build(BuildContext context) {
     return SizeTransition(
       sizeFactor: _reveal,
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.bottomRight,
       child: FadeTransition(
         opacity: _reveal,
         child: SlideTransition(
