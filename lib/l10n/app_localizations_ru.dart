@@ -5059,6 +5059,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dropConfigPlantFood => 'Настройка дропа (растительная еда)';
 
   @override
+  String get waveDropConfigTitle => 'Настройка дропа';
+
+  @override
+  String get waveDropTotalLabel => 'Всего зомби с дропом (AdditionalPlantfood)';
+
+  @override
+  String waveDropPlantFoodOnlyCount(int count) {
+    return '$count растительной еды';
+  }
+
+  @override
+  String waveDropPlantsCount(int count) {
+    return '$count растений';
+  }
+
+  @override
   String get zombiesCarryingPlants => 'Зомби с растениями';
 
   @override

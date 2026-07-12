@@ -1684,6 +1684,24 @@
   "appliesToAllNonElite": "将本波次所有僵尸设为指定等级（精英僵尸不受影响，保持默认等级）",
   "dropConfigPlants": "掉落物配置（植物卡片）",
   "dropConfigPlantFood": "掉落物配置（能量豆）",
+  "waveDropConfigTitle": "掉落物配置",
+  "waveDropTotalLabel": "携带掉落物的僵尸总数（AdditionalPlantfood）",
+  "waveDropPlantFoodOnlyCount": "{count} 个能量豆",
+  "@waveDropPlantFoodOnlyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waveDropPlantsCount": "{count} 张植物卡片",
+  "@waveDropPlantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "zombiesCarryingPlants": "携带植物卡片的僵尸数量",
   "zombiesCarryingPlantFood": "携带能量豆的僵尸数量",
   "description": "描述",

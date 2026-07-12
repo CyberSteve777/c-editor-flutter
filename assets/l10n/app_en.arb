@@ -1684,6 +1684,24 @@
   "appliesToAllNonElite": "Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level)",
   "dropConfigPlants": "Drop Configuration (seed packets)",
   "dropConfigPlantFood": "Drop config (Plant Food)",
+  "waveDropConfigTitle": "Drop configuration",
+  "waveDropTotalLabel": "Total carrier zombies (AdditionalPlantfood)",
+  "waveDropPlantFoodOnlyCount": "{count} plant food",
+  "@waveDropPlantFoodOnlyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waveDropPlantsCount": "{count} plants",
+  "@waveDropPlantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "zombiesCarryingPlants": "Zombies carrying seed packets",
   "zombiesCarryingPlantFood": "Zombies carrying Plant Food",
   "description": "Level description",

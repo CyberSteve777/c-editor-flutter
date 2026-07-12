@@ -5111,6 +5111,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dropConfigPlantFood => 'Drop config (Plant Food)';
 
   @override
+  String get waveDropConfigTitle => 'Drop configuration';
+
+  @override
+  String get waveDropTotalLabel =>
+      'Total carrier zombies (AdditionalPlantfood)';
+
+  @override
+  String waveDropPlantFoodOnlyCount(int count) {
+    return '$count plant food';
+  }
+
+  @override
+  String waveDropPlantsCount(int count) {
+    return '$count plants';
+  }
+
+  @override
   String get zombiesCarryingPlants => 'Zombies carrying seed packets';
 
   @override

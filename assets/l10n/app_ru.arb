@@ -1685,6 +1685,24 @@
   "appliesToAllNonElite": "Применяется ко всем неэлитным зомби в этой волне.",
   "dropConfigPlants": "Настройка дропа (растения)",
   "dropConfigPlantFood": "Настройка дропа (растительная еда)",
+  "waveDropConfigTitle": "Настройка дропа",
+  "waveDropTotalLabel": "Всего зомби с дропом (AdditionalPlantfood)",
+  "waveDropPlantFoodOnlyCount": "{count} растительной еды",
+  "@waveDropPlantFoodOnlyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waveDropPlantsCount": "{count} растений",
+  "@waveDropPlantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "zombiesCarryingPlants": "Зомби с растениями",
   "zombiesCarryingPlantFood": "Зомби с растительной едой",
   "description": "Описание",
