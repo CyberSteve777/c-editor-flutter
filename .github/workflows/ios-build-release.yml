@@ -47,6 +47,7 @@ jobs:
       SCHEME: ${{ inputs.scheme }}
       CONFIGURATION: ${{ inputs.configuration || 'Release' }}
       USE_SIGNING: ${{ inputs.use_signing && 'true' || 'false' }}
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
 
     steps:
       - name: Checkout repository
@@ -212,12 +213,13 @@ jobs:
 
           if [ "$PROJECT_TYPE" = "flutter" ]; then
             cd "$REPO_ROOT"
+            DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
             if [ "$CONFIGURATION" = "Debug" ]; then
               echo "Building Flutter iOS Debug..."
-              flutter build ios --debug --no-codesign
+              flutter build ios --debug --no-codesign ${DART_DEFINES}
             else
               echo "Building Flutter iOS Release..."
-              flutter build ios --release --no-codesign
+              flutter build ios --release --no-codesign ${DART_DEFINES}
             fi
           elif [ "$PROJECT_TYPE" = "reactnative" ] || [ "$PROJECT_TYPE" = "expo" ]; then
             # Use xcodebuild directly for React Native/Expo
