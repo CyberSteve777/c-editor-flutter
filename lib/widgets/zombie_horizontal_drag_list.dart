@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:c_editor/widgets/zombie_lane_drag_item.dart';
+import 'package:c_editor/widgets/zombie_lane_drag_scope.dart';
 import 'package:c_editor/widgets/zombie_lane_drag_widgets.dart';
 import 'package:c_editor/widgets/zombie_lane_editor_common.dart';
 
@@ -53,71 +54,27 @@ class ZombieHorizontalLaneRow extends StatelessWidget {
     final theme = Theme.of(context);
     final visible = _visible;
     final dragging = isDragging;
-    final isCommitRow =
-        dragging && commitRowValue == rowValue && commitInsertIndex != null;
-    final insertAt = isCommitRow
+    final showPreview = dragging &&
+        commitRowValue == rowValue &&
+        commitInsertIndex != null &&
+        previewWidget != null;
+    final insertAt = showPreview
         ? commitInsertIndex!.clamp(0, visible.length)
         : null;
+    final laneWidth = laneContentWidth(visible.length, insertAt);
 
-    final laneChildren = <Widget>[];
-
-    for (var i = 0; i < visible.length; i++) {
-      if (i > 0) {
-        laneChildren.add(zombieLaneSpacingBox);
-      }
-      if (dragging && insertAt == i && previewWidget != null) {
-        laneChildren.add(ZombieLanePreviewGap(previewWidget: previewWidget!));
-        laneChildren.add(zombieLaneSpacingBox);
-      }
-      laneChildren.add(
-        ZombieLaneDraggableCard(
-          key: ValueKey<(Object, int)>((visible[i].identity, visible[i].rowValue)),
-          item: visible[i],
-          feedback: buildZombieLaneDragFeedback(visible[i]),
-          onDragStarted: onDragStarted,
-          onDragEnded: onDragEnded,
-          child: buildZombieLaneCard(
-            item: visible[i],
-            onTap: () => onTap(visible[i].listIndex),
-          ),
-        ),
-      );
-    }
-
-    if (dragging) {
-      if (visible.isNotEmpty) {
-        laneChildren.add(zombieLaneSpacingBox);
-      }
-      if (insertAt == visible.length && previewWidget != null) {
-        laneChildren.add(ZombieLanePreviewGap(previewWidget: previewWidget!));
-      }
-    } else if (addButton != null) {
-      if (visible.isNotEmpty) {
-        laneChildren.add(zombieLaneSpacingBox);
-      }
-      laneChildren.add(addButton!);
-    } else if (visible.isEmpty && dragging && previewWidget != null) {
-      laneChildren.add(ZombieLanePreviewGap(previewWidget: previewWidget!));
-    }
-
-    final laneContent = AnimatedSize(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeInOut,
-      alignment: Alignment.centerLeft,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: laneChildren,
-      ),
-    );
+    final shiftDuration = dragging ? zombieLaneShiftDuration : Duration.zero;
+    final idleWidth = laneContentWidth(visible.length, null) +
+        (addButton != null
+            ? zombieLaneCardSize + (visible.isNotEmpty ? zombieLaneSpacing : 0)
+            : 0);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         labelSide,
         Expanded(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 280),
-            curve: Curves.easeInOut,
+          child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -142,7 +99,63 @@ class ZombieHorizontalLaneRow extends StatelessWidget {
                       physics: dragging
                           ? const NeverScrollableScrollPhysics()
                           : const ClampingScrollPhysics(),
-                      child: laneContent,
+                      child: AnimatedContainer(
+                        duration: shiftDuration,
+                        curve: zombieLaneShiftCurve,
+                        width: dragging ? laneWidth : idleWidth,
+                        height: zombieLaneCardSize,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            for (var i = 0; i < visible.length; i++)
+                              AnimatedPositioned(
+                                key: ValueKey<(Object, int)>(
+                                  (visible[i].identity, visible[i].rowValue),
+                                ),
+                                duration: shiftDuration,
+                                curve: zombieLaneShiftCurve,
+                                left: dragging
+                                    ? laneCardLeft(i, insertAt)
+                                    : laneCardLeft(i, null),
+                                top: 0,
+                                width: zombieLaneCardSize,
+                                height: zombieLaneCardSize,
+                                child: ZombieLaneDraggableCard(
+                                  item: visible[i],
+                                  feedback: buildZombieLaneDragFeedback(visible[i]),
+                                  onDragStarted: onDragStarted,
+                                  onDragEnded: onDragEnded,
+                                  child: buildZombieLaneCard(
+                                    item: visible[i],
+                                    onTap: () => onTap(visible[i].listIndex),
+                                  ),
+                                ),
+                              ),
+                            if (showPreview)
+                              AnimatedPositioned(
+                                duration: shiftDuration,
+                                curve: zombieLaneShiftCurve,
+                                left: lanePreviewLeft(insertAt!),
+                                top: 0,
+                                width: zombieLaneCardSize,
+                                height: zombieLaneCardSize,
+                                child: ZombieLanePreviewGap(
+                                  previewWidget: previewWidget!,
+                                ),
+                              ),
+                            if (!dragging && addButton != null)
+                              AnimatedPositioned(
+                                duration: Duration.zero,
+                                left: laneContentWidth(visible.length, null) +
+                                    (visible.isNotEmpty ? zombieLaneSpacing : 0),
+                                top: 0,
+                                width: zombieLaneCardSize,
+                                height: zombieLaneCardSize,
+                                child: addButton!,
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   if (dragging)

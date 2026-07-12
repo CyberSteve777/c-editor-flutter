@@ -13,8 +13,9 @@ import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
-import 'package:c_editor/widgets/zombie_row_lane_editor.dart';
+import 'package:c_editor/widgets/zombie_row_lane_drag_drop_editor.dart';
 import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
+import 'package:c_editor/widgets/zombie_spawn_edit_sheet.dart';
 import 'package:c_editor/widgets/zombie_selection_flow.dart';
 import 'package:c_editor/screens/editor/events/fish_properties_entry_screen.dart';
 
@@ -151,43 +152,20 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     _setZombies(zombies);
   }
 
-  void _handleZombieMove(int fromIndex, int toRow, int? beforeIndex) {
+  void _handleZombieDragDropMove(
+    int fromIndex,
+    int toRow,
+    int rowInsertIndex,
+  ) {
     final zombies = List<ZombieSpawnData>.from(_data.zombies);
-    moveZombieSpawnInList(
+    moveZombieSpawnInListByRowSlot(
       zombies: zombies,
       fromIndex: fromIndex,
       toRow: toRow,
       maxRow: _maxRow,
-      beforeIndex: beforeIndex,
+      rowInsertIndex: rowInsertIndex,
     );
     _setZombies(zombies);
-  }
-
-  Future<void> _changeZombieTypeFromSheet({
-    required BuildContext sheetContext,
-    required int index,
-    required ZombieSpawnData zombie,
-    required int rowValue,
-    required int levelValue,
-    required bool fromLeft,
-  }) async {
-    final selected = await pushZombieSelection(context);
-    if (!mounted) return;
-    if (selected == null) return;
-    final aliases = ZombieRepository().buildZombieAliases(selected);
-    final rtid = RtidParser.build(aliases, 'ZombieTypes');
-    _updateZombie(
-      index,
-      ZombieSpawnData(
-        type: rtid,
-        row: rowValue == 0 ? null : rowValue,
-        level: levelValue,
-        direction: fromLeft ? 'left' : null,
-      ),
-    );
-    if (sheetContext.mounted) {
-      Navigator.pop(sheetContext);
-    }
   }
 
   Future<void> _removeZombie(int index, {bool? eraseOrphanProperties}) async {
@@ -324,7 +302,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              ZombieRowLaneEditor(
+              ZombieRowLaneDragDropEditor(
                 maxRow: _maxRow,
                 rowLabel: (row) => l10n?.rowN(row) ?? 'Row $row',
                 randomRowLabel: l10n?.randomRow ?? 'Random row',
@@ -346,8 +324,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                 }).toList(),
                 onTap: (index) =>
                     _showZombieEditSheet(index, _data.zombies[index]),
-                onDelete: _removeZombie,
-                onMove: _handleZombieMove,
+                onMove: _handleZombieDragDropMove,
                 onAddToRow: (row) => _addZombie(row: row == 0 ? null : row),
               ),
               const SizedBox(height: 16),
@@ -648,171 +625,128 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
   }
 
   void _showZombieEditSheet(int index, ZombieSpawnData zombie) {
-    final l10n = AppLocalizations.of(context);
     final baseType = _resolveBaseTypeName(zombie);
     final info = ZombieRepository().getZombieById(baseType);
     final isCustom = _isCustomZombie(zombie);
-    showModalBottomSheet<void>(
+    final isElite = _isElite(zombie);
+
+    showZombieSpawnEditSheet(
       context: context,
-      showDragHandle: true,
-      builder: (ctx) {
-        int rowValue = zombie.row ?? 0;
-        int levelValue = zombie.level ?? 1;
-        bool fromLeft = zombie.direction == 'left';
-        return StatefulBuilder(
-          builder: (ctx, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ZombieEditSheetIdentityTile(
-                      iconPath: info?.iconAssetPath,
-                      displayName: info != null
-                          ? ResourceNames.lookup(context, info.name)
-                          : baseType,
-                      isCustom: isCustom,
-                      customLabel: l10n?.customLabel ?? 'Custom',
-                      onChange: () => _changeZombieTypeFromSheet(
-                        sheetContext: ctx,
-                        index: index,
-                        zombie: zombie,
-                        rowValue: rowValue,
-                        levelValue: levelValue,
-                        fromLeft: fromLeft,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<int>(
-                      initialValue: rowValue.clamp(0, _maxRow),
-                      decoration: const InputDecoration(
-                        labelText: 'Row',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 0,
-                          child: Text(l10n?.random ?? 'Random'),
-                        ),
-                        ...List.generate(_maxRow, (i) => i + 1).map(
-                          (v) => DropdownMenuItem(value: v, child: Text('$v')),
-                        ),
-                      ],
-                      onChanged: (v) {
-                        if (v == null) return;
-                        setModalState(() => rowValue = v);
-                        _updateZombie(
-                          index,
-                          ZombieSpawnData(
-                            type: zombie.type,
-                            row: v == 0 ? null : v,
-                            level: levelValue,
-                            direction: fromLeft ? 'left' : null,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    SwitchListTile(
-                      title: Text(l10n?.zombieFromLeft ?? 'From left'),
-                      value: fromLeft,
-                      onChanged: (v) {
-                        setModalState(() => fromLeft = v);
-                        _updateZombie(
-                          index,
-                          ZombieSpawnData(
-                            type: zombie.type,
-                            row: rowValue == 0 ? null : rowValue,
-                            level: levelValue,
-                            direction: v ? 'left' : null,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              final copy = ZombieSpawnData(
-                                type: zombie.type,
-                                row: rowValue == 0 ? null : rowValue,
-                                level: levelValue,
-                                direction: fromLeft ? 'left' : null,
-                              );
-                              _data = SpawnZombiesFishWaveActionPropsData(
-                                notificationEvents: _data.notificationEvents,
-                                additionalPlantFood: _data.additionalPlantFood,
-                                spawnPlantName: _data.spawnPlantName,
-                                zombies: [..._data.zombies, copy],
-                                fishes: _data.fishes,
-                              );
-                              _sync();
-                              Navigator.pop(ctx);
-                            },
-                            icon: const Icon(Icons.copy),
-                            label: Text(l10n?.copy ?? 'Copy'),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: FilledButton.icon(
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.error,
-                            ),
-                            onPressed: () {
-                              CustomZombieLevelUtils.handleDeleteFromBottomSheet(
-                                sheetContext: ctx,
-                                parentContext: context,
-                                levelFile: widget.levelFile,
-                                zombieTypeRtid: zombie.type,
-                                onRemove: (eraseOrphan) => _removeZombie(
-                                  index,
-                                  eraseOrphanProperties: eraseOrphan,
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.delete),
-                            label: Text(l10n?.delete ?? 'Delete'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (widget.onEditCustomZombie != null ||
-                        widget.onInjectCustomZombie != null)
-                      CustomZombiePropertiesSheetActions(
-                        levelFile: widget.levelFile,
-                        baseType: baseType,
-                        currentRtid: zombie.type,
-                        onEditCustomZombie: widget.onEditCustomZombie,
-                        onInjectCustomZombie: widget.onInjectCustomZombie,
-                        onCloseSheet: () => Navigator.pop(ctx),
-                        onRtidSelected: (rtid) {
-                          _updateZombie(
-                            index,
-                            ZombieSpawnData(
-                              type: rtid,
-                              row: zombie.row,
-                              level: zombie.level,
-                              direction: zombie.direction == 'left'
-                                  ? 'left'
-                                  : null,
-                            ),
-                          );
-                        },
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
+      options: ZombieSpawnEditSheetOptions(
+        showRow: true,
+        maxRow: _maxRow,
+        showDirection: true,
+        showLevel: true,
+      ),
+      iconPath: info?.iconAssetPath,
+      displayName: info != null
+          ? ResourceNames.lookup(context, info.name)
+          : baseType,
+      isCustom: isCustom,
+      isElite: isElite,
+      rowValue: zombie.row ?? 0,
+      levelValue: zombie.level ?? 1,
+      fromLeft: zombie.direction == 'left',
+      onChangeType: () {
+        Future.microtask(() async {
+          final selected = await pushZombieSelection(context);
+          if (!mounted || selected == null) return;
+          final aliases = ZombieRepository().buildZombieAliases(selected);
+          final rtid = RtidParser.build(aliases, 'ZombieTypes');
+          _updateZombie(
+            index,
+            ZombieSpawnData(
+              type: rtid,
+              row: zombie.row,
+              level: zombie.level,
+              direction: zombie.direction == 'left' ? 'left' : null,
+            ),
+          );
+        });
+      },
+      onRowChanged: (row) {
+        _updateZombie(
+          index,
+          ZombieSpawnData(
+            type: zombie.type,
+            row: row == 0 ? null : row,
+            level: zombie.level,
+            direction: zombie.direction == 'left' ? 'left' : null,
+          ),
         );
       },
+      onDirectionChanged: (fromLeft) {
+        _updateZombie(
+          index,
+          ZombieSpawnData(
+            type: zombie.type,
+            row: zombie.row,
+            level: zombie.level,
+            direction: fromLeft ? 'left' : null,
+          ),
+        );
+      },
+      onLevelChanged: (level) {
+        _updateZombie(
+          index,
+          ZombieSpawnData(
+            type: zombie.type,
+            row: zombie.row,
+            level: level == 0 ? null : level,
+            direction: zombie.direction == 'left' ? 'left' : null,
+          ),
+        );
+      },
+      onCopy: () {
+        final copy = ZombieSpawnData(
+          type: zombie.type,
+          row: zombie.row,
+          level: zombie.level,
+          direction: zombie.direction == 'left' ? 'left' : null,
+        );
+        _data = SpawnZombiesFishWaveActionPropsData(
+          notificationEvents: _data.notificationEvents,
+          additionalPlantFood: _data.additionalPlantFood,
+          spawnPlantName: _data.spawnPlantName,
+          zombies: [..._data.zombies, copy],
+          fishes: _data.fishes,
+        );
+        _sync();
+      },
+      onDelete: (sheetContext) {
+        CustomZombieLevelUtils.handleDeleteFromBottomSheet(
+          sheetContext: sheetContext,
+          parentContext: context,
+          levelFile: widget.levelFile,
+          zombieTypeRtid: zombie.type,
+          onRemove: (eraseOrphan) => _removeZombie(
+            index,
+            eraseOrphanProperties: eraseOrphan,
+          ),
+        );
+      },
+      customPropertiesActions: widget.onEditCustomZombie != null ||
+              widget.onInjectCustomZombie != null
+          ? CustomZombiePropertiesSheetActions(
+              levelFile: widget.levelFile,
+              baseType: baseType,
+              currentRtid: zombie.type,
+              onEditCustomZombie: widget.onEditCustomZombie,
+              onInjectCustomZombie: widget.onInjectCustomZombie,
+              onCloseSheet: () => Navigator.of(context).pop(),
+              onRtidSelected: (rtid) {
+                _updateZombie(
+                  index,
+                  ZombieSpawnData(
+                    type: rtid,
+                    row: zombie.row,
+                    level: zombie.level,
+                    direction: zombie.direction == 'left' ? 'left' : null,
+                  ),
+                );
+              },
+            )
+          : null,
     );
   }
 }

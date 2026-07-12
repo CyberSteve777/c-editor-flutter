@@ -14,7 +14,6 @@ import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/zombie_row_lane_drag_drop_editor.dart';
-import 'package:c_editor/widgets/zombie_row_lane_editor.dart';
 import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
 import 'package:c_editor/widgets/zombie_selection_flow.dart';
 import 'package:c_editor/widgets/zombie_ztalemate_perks_editor.dart';
@@ -222,18 +221,6 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
       );
       widget.onChanged();
     }
-  }
-
-  void _handleZombieMove(int fromIndex, int toRow, int? beforeIndex) {
-    final zombies = List<ZombieSpawnData>.from(_zombies);
-    moveZombieSpawnInList(
-      zombies: zombies,
-      fromIndex: fromIndex,
-      toRow: toRow,
-      maxRow: _isDeepSeaLawn ? 6 : 5,
-      beforeIndex: beforeIndex,
-    );
-    _updateZombies(zombies);
   }
 
   void _handleZombieDragDropMove(
@@ -927,7 +914,6 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
         randomRowLabel: l10n?.randomRow ?? 'Random row',
         items: laneItems,
         onTap: _showZombieEditSheet,
-        onDelete: (index) => _removeZombie(index),
         onMove: _handleZombieDragDropMove,
         onAddToRow: (row) => _addZombie(row: row == 0 ? null : row),
         onDraggingChanged: (dragging) =>
@@ -935,14 +921,13 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
       );
     }
 
-    return ZombieRowLaneEditor(
+    return ZombieRowLaneDragDropEditor(
       maxRow: maxRow,
       rowLabel: (row) => l10n?.rowN(row) ?? 'Row $row',
       randomRowLabel: l10n?.randomRow ?? 'Random row',
       items: laneItems,
       onTap: _showZombieEditSheet,
-      onDelete: (index) => _removeZombie(index),
-      onMove: _handleZombieMove,
+      onMove: _handleZombieDragDropMove,
       onAddToRow: (row) => _addZombie(row: row == 0 ? null : row),
       onDraggingChanged: (dragging) =>
           setState(() => _zombieDragging = dragging),

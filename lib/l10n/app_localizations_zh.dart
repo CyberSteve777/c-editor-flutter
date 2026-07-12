@@ -7073,4 +7073,39 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get editCustomStage => '编辑自定义地图';
+
+  @override
+  String get startupLoadingLocalization => '本地化';
+
+  @override
+  String get startupLoadingStages => '地图';
+
+  @override
+  String get startupLoadingAudio => '音频';
+
+  @override
+  String get startupLoadingGridItems => '网格物品';
+
+  @override
+  String get startupLoadingZomboss => '僵王';
+
+  @override
+  String get startupLoadingReference => '参考数据';
+
+  @override
+  String get startupLoadingZombies => '僵尸';
+
+  @override
+  String get startupLoadingPlants => '植物';
+
+  @override
+  String get startupLoadingFish => '鱼类';
+
+  @override
+  String get startupLoadingImages => '图片';
+
+  @override
+  String startupLoadingCategoryProgress(String category) {
+    return '正在加载$category...';
+  }
 }

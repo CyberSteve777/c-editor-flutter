@@ -2480,5 +2480,21 @@
   "customStageDeleteTitle": "Delete custom lawn?",
   "customStageDeleteMessage": "This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.",
   "customStagePresetSectionTitle": "Preset custom lawns",
-  "editCustomStage": "Edit custom lawn"
+  "editCustomStage": "Edit custom lawn",
+  "startupLoadingLocalization": "Localization",
+  "startupLoadingStages": "Stages",
+  "startupLoadingAudio": "Audio",
+  "startupLoadingGridItems": "Grid items",
+  "startupLoadingZomboss": "Zomboss",
+  "startupLoadingReference": "Reference data",
+  "startupLoadingZombies": "Zombies",
+  "startupLoadingPlants": "Plants",
+  "startupLoadingFish": "Fish",
+  "startupLoadingImages": "Images",
+  "startupLoadingCategoryProgress": "Loading {category}...",
+  "@startupLoadingCategoryProgress": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  }
 }

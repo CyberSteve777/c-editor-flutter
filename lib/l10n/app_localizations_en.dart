@@ -7437,4 +7437,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editCustomStage => 'Edit custom lawn';
+
+  @override
+  String get startupLoadingLocalization => 'Localization';
+
+  @override
+  String get startupLoadingStages => 'Stages';
+
+  @override
+  String get startupLoadingAudio => 'Audio';
+
+  @override
+  String get startupLoadingGridItems => 'Grid items';
+
+  @override
+  String get startupLoadingZomboss => 'Zomboss';
+
+  @override
+  String get startupLoadingReference => 'Reference data';
+
+  @override
+  String get startupLoadingZombies => 'Zombies';
+
+  @override
+  String get startupLoadingPlants => 'Plants';
+
+  @override
+  String get startupLoadingFish => 'Fish';
+
+  @override
+  String get startupLoadingImages => 'Images';
+
+  @override
+  String startupLoadingCategoryProgress(String category) {
+    return 'Loading $category...';
+  }
 }

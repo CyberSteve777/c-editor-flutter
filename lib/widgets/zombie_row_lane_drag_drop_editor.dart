@@ -16,7 +16,7 @@ class ZombieRowLaneDragDropEditor extends StatefulWidget {
     required this.rowLabel,
     required this.randomRowLabel,
     required this.onTap,
-    required this.onDelete,
+    this.onDelete,
     required this.onMove,
     required this.onAddToRow,
     this.onDraggingChanged,
@@ -27,7 +27,7 @@ class ZombieRowLaneDragDropEditor extends StatefulWidget {
   final String Function(int row) rowLabel;
   final String randomRowLabel;
   final void Function(int index) onTap;
-  final void Function(int index) onDelete;
+  final void Function(int index)? onDelete;
 
   /// [rowInsertIndex] is 0-based within the target row (visible slots while dragging).
   final void Function(int fromIndex, int toRow, int rowInsertIndex) onMove;
@@ -124,9 +124,8 @@ class _ZombieRowLaneDragDropEditorState extends State<ZombieRowLaneDragDropEdito
       _endingDrag = false;
       _dragging = true;
       _draggingIdentity = identity;
-      _commitRow = source.rowValue;
-      _commitInsertIndex =
-          _visibleInsertIndexForIdentity(source.rowValue, identity);
+      _commitRow = null;
+      _commitInsertIndex = null;
       _previewWidget = buildZombieLaneDragFeedback(source);
     });
     widget.onDraggingChanged?.call(true);
@@ -183,11 +182,13 @@ class _ZombieRowLaneDragDropEditorState extends State<ZombieRowLaneDragDropEdito
                 items: _itemsForRow(rowValue),
                 highlighted: _dragging && _commitRow == rowValue,
                 labelSide: _rowLabelSide(rowValue),
-                addButton: PvzAddButton(
-                  onPressed: () => widget.onAddToRow(rowValue),
-                  useSecondaryColor: rowValue == 0,
-                  size: zombieLaneCardSize,
-                ),
+                addButton: _dragging
+                    ? null
+                    : PvzAddButton(
+                        onPressed: () => widget.onAddToRow(rowValue),
+                        useSecondaryColor: rowValue == 0,
+                        size: zombieLaneCardSize,
+                      ),
                 onTap: widget.onTap,
                 onDragStarted: _onDragStarted,
                 onDragEnded: _onDragEnded,

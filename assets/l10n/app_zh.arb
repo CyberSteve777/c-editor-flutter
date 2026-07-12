@@ -2473,5 +2473,21 @@
   "customStageDeleteTitle": "确定要删除自定义地图吗？",
   "customStageDeleteMessage": "将在关卡中永久删除该自定义地图的相关数据，并将当前地图切换为默认的教程庭院地图。",
   "customStagePresetSectionTitle": "预设自定义地图",
-  "editCustomStage": "编辑自定义地图"
+  "editCustomStage": "编辑自定义地图",
+  "startupLoadingLocalization": "本地化",
+  "startupLoadingStages": "地图",
+  "startupLoadingAudio": "音频",
+  "startupLoadingGridItems": "网格物品",
+  "startupLoadingZomboss": "僵王",
+  "startupLoadingReference": "参考数据",
+  "startupLoadingZombies": "僵尸",
+  "startupLoadingPlants": "植物",
+  "startupLoadingFish": "鱼类",
+  "startupLoadingImages": "图片",
+  "startupLoadingCategoryProgress": "正在加载{category}...",
+  "@startupLoadingCategoryProgress": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  }
 }

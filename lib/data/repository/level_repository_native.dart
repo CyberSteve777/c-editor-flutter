@@ -7,6 +7,7 @@ import 'package:c_editor/utils/3rdParty/sen_popcap_zlib.dart';
 import 'package:c_editor/utils/3rdParty/sen_buffer.dart';
 import 'package:c_editor/utils/apple_folder_access.dart';
 
+import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
 import 'web/web_transfer_progress.dart';
@@ -87,6 +88,19 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     }
 
     return path;
+  }
+
+  @override
+  Future<LevelLibraryStartupCache> preloadLibrarySettings(
+    SharedPreferences prefs,
+  ) async {
+    final savedFolderPath = !Platform.isIOS
+        ? prefs.getString(_prefsFolderKey)
+        : await _resolveIosFolderPath(prefs);
+    return LevelLibraryStartupCache(
+      savedFolderPath: savedFolderPath,
+      lastOpenedLevelDirectory: prefs.getString(_prefsLastLevelDirKey),
+    );
   }
 
   @override

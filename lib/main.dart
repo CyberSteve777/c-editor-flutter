@@ -5,6 +5,7 @@ import 'package:c_editor/app.dart';
 import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/data/app_bootstrap.dart';
+import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/screens/startup_loading_screen.dart';
 
 void main() async {
@@ -34,6 +35,19 @@ void main() async {
   runApp(BootstrapApp(prefs: prefs));
 }
 
+Locale resolveStartupLocale(SharedPreferences prefs) {
+  final savedLocale = prefs.getString('locale');
+  if (savedLocale != null) {
+    return Locale(savedLocale);
+  }
+
+  const supported = ['en', 'ru', 'zh'];
+  final systemCode =
+      WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+  final code = supported.contains(systemCode) ? systemCode : 'en';
+  return Locale(code);
+}
+
 class BootstrapApp extends StatefulWidget {
   const BootstrapApp({super.key, required this.prefs});
 
@@ -45,8 +59,9 @@ class BootstrapApp extends StatefulWidget {
 
 class _BootstrapAppState extends State<BootstrapApp> {
   double _progress = 0;
-  String? _statusLabel;
+  BootstrapLoadingCategory? _loadingCategory;
   bool _ready = false;
+  late final Locale _startupLocale = resolveStartupLocale(widget.prefs);
 
   @override
   void initState() {
@@ -55,12 +70,15 @@ class _BootstrapAppState extends State<BootstrapApp> {
   }
 
   Future<void> _load() async {
+    await LevelRepository.preloadLibrarySettings(widget.prefs);
     await AppBootstrap.load(
-      onProgress: (progress, label) {
+      onProgress: (progress, category) {
         if (!mounted) return;
         setState(() {
           _progress = progress;
-          _statusLabel = label;
+          if (category != null) {
+            _loadingCategory = category;
+          }
         });
       },
     );
@@ -73,7 +91,8 @@ class _BootstrapAppState extends State<BootstrapApp> {
     if (!_ready) {
       return StartupLoadingScreen(
         progress: _progress,
-        statusLabel: _statusLabel,
+        locale: _startupLocale,
+        loadingCategory: _loadingCategory,
       );
     }
 
