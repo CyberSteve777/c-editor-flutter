@@ -91,7 +91,17 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   Future<void> _ensureReady() => _readyFuture ??= _initialize();
 
+  Future<void> _clearLegacyDirectoryHandleMeta() async {
+    // Older builds persisted a File System Access directory handle (often
+    // "levels-web") and prompted for write permission on import. Web storage
+    // is IndexedDB-only now; drop stale meta so cached SW bundles cannot sync.
+    await _idb.putMeta(WebLevelIdbStore.metaDirectoryHandleKey, null);
+    await _idb.putMeta(WebLevelIdbStore.metaDirectoryNameKey, null);
+    await _idb.putMeta(WebLevelIdbStore.metaDirectoryModeKey, null);
+  }
+
   Future<void> _initialize() async {
+    await _clearLegacyDirectoryHandleMeta();
     final files = await _idb.loadFiles();
     _memoryCache
       ..clear()
