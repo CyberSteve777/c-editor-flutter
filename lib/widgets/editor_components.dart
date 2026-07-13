@@ -1129,6 +1129,11 @@ class WaveDropConfigCard extends StatelessWidget {
                     ),
                   ],
                 );
+                final counterControls = FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: counterRow,
+                );
                 final labelText = Text(
                   l10n?.waveDropTotalLabel ??
                       'Total carrier zombies (AdditionalPlantfood)',
@@ -1145,7 +1150,7 @@ class WaveDropConfigCard extends StatelessWidget {
                     children: [
                       labelText,
                       const SizedBox(height: 4),
-                      counterRow,
+                      counterControls,
                     ],
                   );
                 }
@@ -1154,7 +1159,7 @@ class WaveDropConfigCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(child: labelText),
-                    counterRow,
+                    counterControls,
                   ],
                 );
               },

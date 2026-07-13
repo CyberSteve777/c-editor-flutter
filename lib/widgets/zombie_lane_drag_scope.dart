@@ -118,7 +118,7 @@ const double zombieLaneWrapRunSpacing = 8;
 const double zombieLaneHorizontalPadding = 4;
 
 /// Pointer must move this far past a slot boundary before the insert index changes.
-const double zombieLaneInsertHysteresis = 12;
+const double zombieLaneInsertHysteresis = 16;
 
 double effectiveWrapContentWidth(double laneOuterWidth) =>
     math.max(0, laneOuterWidth - zombieLaneHorizontalPadding);
@@ -254,54 +254,30 @@ int insertIndexForWrappedPoint(
   if (maxWidth <= 0) return 0;
   if (visibleCount <= 0) return 0;
 
-  final cardRects = wrapLaneSlotRects(maxWidth, visibleCount);
-  for (var i = 0; i < cardRects.length; i++) {
-    if (!cardRects[i].contains(local)) continue;
-
-    final center = cardRects[i].center;
-    if (currentInsert == i && local.dx < center.dx + zombieLaneInsertHysteresis) {
-      return i;
-    }
-    if (currentInsert == i + 1 &&
-        local.dx > center.dx - zombieLaneInsertHysteresis) {
-      return i + 1;
-    }
-    if (local.dx < center.dx) {
-      return i;
-    }
-    return i + 1;
-  }
-
-  var bestIndex = currentInsert ?? visibleCount;
-  if (currentInsert != null) {
-    final currentCenter =
-        previewRectForInsertIndex(maxWidth, visibleCount, currentInsert).center;
-    var candidate = currentInsert;
-    var candidateDist = (local - currentCenter).distanceSquared;
-    final switchMargin = zombieLaneInsertHysteresis * zombieLaneInsertHysteresis;
-
-    for (var i = 0; i <= visibleCount; i++) {
-      if (i == currentInsert) continue;
-      final center = previewRectForInsertIndex(maxWidth, visibleCount, i).center;
-      final distance = (local - center).distanceSquared;
-      if (distance + switchMargin < candidateDist) {
-        candidateDist = distance;
-        candidate = i;
-      }
-    }
-    return candidate.clamp(0, visibleCount);
-  }
-
-  var bestDistance = double.infinity;
+  var ideal = 0;
+  var idealDist = double.infinity;
   for (var i = 0; i <= visibleCount; i++) {
     final center = previewRectForInsertIndex(maxWidth, visibleCount, i).center;
     final distance = (local - center).distanceSquared;
-    if (distance < bestDistance) {
-      bestDistance = distance;
-      bestIndex = i;
+    if (distance < idealDist) {
+      idealDist = distance;
+      ideal = i;
     }
   }
-  return bestIndex.clamp(0, visibleCount);
+
+  if (currentInsert == null || ideal == currentInsert) {
+    return ideal;
+  }
+
+  final currentCenter =
+      previewRectForInsertIndex(maxWidth, visibleCount, currentInsert).center;
+  final currentDist = (local - currentCenter).distanceSquared;
+  final switchMargin = zombieLaneInsertHysteresis * zombieLaneInsertHysteresis;
+
+  if (idealDist + switchMargin < currentDist) {
+    return ideal;
+  }
+  return currentInsert;
 }
 
 /// Height of a wrapped lane with [slotCount] square slots.
