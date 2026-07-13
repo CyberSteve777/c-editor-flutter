@@ -244,7 +244,172 @@ Rect previewRectForInsertIndex(
   return Rect.fromLTWH(0, 0, zombieLaneCardSize, zombieLaneCardSize);
 }
 
+/// Height of a wrapped lane with [slotCount] square slots.
+double wrapLaneHeight(double maxWidth, int slotCount) {
+  final rects = wrapLaneSlotRects(maxWidth, math.max(slotCount, 1));
+  if (rects.isEmpty) return zombieLaneCardSize;
+  return rects.last.bottom;
+}
+
+class _WrapDisplayRow {
+  const _WrapDisplayRow({required this.top, required this.cardIndices});
+
+  final double top;
+  final List<int> cardIndices;
+}
+
+List<_WrapDisplayRow> _groupCardsByDisplayRow(List<Rect> cardRects) {
+  if (cardRects.isEmpty) return const [];
+
+  final rows = <_WrapDisplayRow>[];
+  var currentTop = cardRects[0].top;
+  var indices = <int>[0];
+
+  for (var i = 1; i < cardRects.length; i++) {
+    if ((cardRects[i].top - currentTop).abs() < 0.5) {
+      indices.add(i);
+    } else {
+      rows.add(_WrapDisplayRow(top: currentTop, cardIndices: indices));
+      currentTop = cardRects[i].top;
+      indices = [i];
+    }
+  }
+  rows.add(_WrapDisplayRow(top: currentTop, cardIndices: indices));
+  return rows;
+}
+
+double _distanceToDisplayRowBand(double localY, _WrapDisplayRow row) {
+  final top = row.top;
+  final bottom = top + zombieLaneCardSize;
+  if (localY < top) return top - localY;
+  if (localY > bottom) return localY - bottom;
+  return 0;
+}
+
+int _pickDisplayRowIndex(List<_WrapDisplayRow> rows, double localY) {
+  if (rows.isEmpty) return 0;
+  if (rows.length == 1) return 0;
+
+  var best = 0;
+  var bestDist = double.infinity;
+  for (var r = 0; r < rows.length; r++) {
+    final dist = _distanceToDisplayRowBand(localY, rows[r]);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = r;
+    }
+  }
+  return best;
+}
+
+int _horizontalInsertOnDisplayRow(
+  _WrapDisplayRow row,
+  List<Rect> cardRects,
+  double localX,
+) {
+  final indices = row.cardIndices;
+  if (indices.isEmpty) return 0;
+
+  final firstRect = cardRects[indices.first];
+  if (localX < firstRect.left + zombieLaneCardSize / 2) {
+    return indices.first;
+  }
+
+  for (var i = 0; i < indices.length - 1; i++) {
+    final leftRect = cardRects[indices[i]];
+    final rightRect = cardRects[indices[i + 1]];
+    final boundary = (leftRect.right + rightRect.left) / 2;
+    if (localX < boundary) {
+      return indices[i + 1];
+    }
+  }
+
+  return indices.last + 1;
+}
+
+int _rawInsertIndexForWrappedPoint(
+  Offset local,
+  double maxWidth,
+  int visibleCount, {
+  int? layoutInsert,
+}) {
+  if (visibleCount <= 0) return 0;
+
+  final cardRects = List<Rect>.generate(
+    visibleCount,
+    (i) => wrapCardRect(i, layoutInsert, maxWidth, visibleCount),
+  );
+  final displayRows = _groupCardsByDisplayRow(cardRects);
+  if (displayRows.isEmpty) return 0;
+
+  final rowIndex = _pickDisplayRowIndex(displayRows, local.dy);
+  return _horizontalInsertOnDisplayRow(
+    displayRows[rowIndex],
+    cardRects,
+    local.dx,
+  );
+}
+
+bool _crossedSchmittBoundary({
+  required double pointer,
+  required double idealAnchor,
+  required double currentAnchor,
+  required double margin,
+}) {
+  final boundary = (idealAnchor + currentAnchor) / 2;
+  if (idealAnchor > currentAnchor) {
+    return pointer >= boundary + margin / 2;
+  }
+  if (idealAnchor < currentAnchor) {
+    return pointer <= boundary - margin / 2;
+  }
+  return false;
+}
+
+int _applyWrappedInsertHysteresis({
+  required int ideal,
+  required int current,
+  required Offset local,
+  required double maxWidth,
+  required int visibleCount,
+}) {
+  if (ideal == current) return ideal;
+
+  final idealPreview = wrapPreviewRect(ideal, maxWidth, visibleCount);
+  final currentPreview = wrapPreviewRect(current, maxWidth, visibleCount);
+  final margin = zombieLaneInsertHysteresis;
+  final onSameDisplayRow = (idealPreview.top - currentPreview.top).abs() < 0.5;
+
+  if (!onSameDisplayRow) {
+    final idealRowCenter = idealPreview.top + zombieLaneCardSize / 2;
+    final currentRowCenter = currentPreview.top + zombieLaneCardSize / 2;
+    if (_crossedSchmittBoundary(
+      pointer: local.dy,
+      idealAnchor: idealRowCenter,
+      currentAnchor: currentRowCenter,
+      margin: margin,
+    )) {
+      return ideal;
+    }
+    return current;
+  }
+
+  final idealX = idealPreview.left + zombieLaneCardSize / 2;
+  final currentX = currentPreview.left + zombieLaneCardSize / 2;
+  if (_crossedSchmittBoundary(
+    pointer: local.dx,
+    idealAnchor: idealX,
+    currentAnchor: currentX,
+    margin: margin,
+  )) {
+    return ideal;
+  }
+  return current;
+}
+
 /// Maps a pointer inside a wrapped lane to an insert index (0..visibleCount).
+///
+/// Picks the display row (Y) first, then the horizontal slot (X) within it.
 int insertIndexForWrappedPoint(
   Offset local,
   double maxWidth,
@@ -254,35 +419,22 @@ int insertIndexForWrappedPoint(
   if (maxWidth <= 0) return 0;
   if (visibleCount <= 0) return 0;
 
-  var ideal = 0;
-  var idealDist = double.infinity;
-  for (var i = 0; i <= visibleCount; i++) {
-    final center = previewRectForInsertIndex(maxWidth, visibleCount, i).center;
-    final distance = (local - center).distanceSquared;
-    if (distance < idealDist) {
-      idealDist = distance;
-      ideal = i;
-    }
-  }
+  final ideal = _rawInsertIndexForWrappedPoint(
+    local,
+    maxWidth,
+    visibleCount,
+    layoutInsert: currentInsert,
+  );
 
-  if (currentInsert == null || ideal == currentInsert) {
+  if (currentInsert == null) {
     return ideal;
   }
 
-  final currentCenter =
-      previewRectForInsertIndex(maxWidth, visibleCount, currentInsert).center;
-  final currentDist = (local - currentCenter).distanceSquared;
-  final switchMargin = zombieLaneInsertHysteresis * zombieLaneInsertHysteresis;
-
-  if (idealDist + switchMargin < currentDist) {
-    return ideal;
-  }
-  return currentInsert;
-}
-
-/// Height of a wrapped lane with [slotCount] square slots.
-double wrapLaneHeight(double maxWidth, int slotCount) {
-  final rects = wrapLaneSlotRects(maxWidth, math.max(slotCount, 1));
-  if (rects.isEmpty) return zombieLaneCardSize;
-  return rects.last.bottom;
+  return _applyWrappedInsertHysteresis(
+    ideal: ideal,
+    current: currentInsert,
+    local: local,
+    maxWidth: maxWidth,
+    visibleCount: visibleCount,
+  );
 }
