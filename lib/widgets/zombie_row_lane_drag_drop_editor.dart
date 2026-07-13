@@ -124,8 +124,9 @@ class _ZombieRowLaneDragDropEditorState extends State<ZombieRowLaneDragDropEdito
       _endingDrag = false;
       _dragging = true;
       _draggingIdentity = identity;
-      _commitRow = null;
-      _commitInsertIndex = null;
+      _commitRow = source.rowValue;
+      _commitInsertIndex =
+          _visibleInsertIndexForIdentity(source.rowValue, identity);
       _previewWidget = buildZombieLaneDragFeedback(source);
     });
     widget.onDraggingChanged?.call(true);

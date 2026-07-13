@@ -73,7 +73,7 @@ class _ZombieFlatLaneDragDropEditorState
       _endingDrag = false;
       _dragging = true;
       _draggingIdentity = identity;
-      _commitInsertIndex = null;
+      _commitInsertIndex = _visibleInsertIndexForIdentity(identity);
       _previewWidget = buildZombieLaneDragFeedback(source);
     });
     widget.onDraggingChanged?.call(true);

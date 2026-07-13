@@ -117,8 +117,8 @@ const double zombieLaneWrapRunSpacing = 8;
 /// Horizontal padding inside [ZombieHorizontalLaneRow] lane container (2 + 2).
 const double zombieLaneHorizontalPadding = 4;
 
-/// Pointer must move this far past a slot boundary before the insert index changes.
-const double zombieLaneInsertHysteresis = 16;
+/// Fraction of the half-gap past a virtual border before the insert index changes.
+const double zombieLaneBorderCrossFraction = 0.5;
 
 double effectiveWrapContentWidth(double laneOuterWidth) =>
     math.max(0, laneOuterWidth - zombieLaneHorizontalPadding);
@@ -278,138 +278,147 @@ List<_WrapDisplayRow> _groupCardsByDisplayRow(List<Rect> cardRects) {
   return rows;
 }
 
-double _distanceToDisplayRowBand(double localY, _WrapDisplayRow row) {
-  final top = row.top;
-  final bottom = top + zombieLaneCardSize;
-  if (localY < top) return top - localY;
-  if (localY > bottom) return localY - bottom;
+List<Rect> _stableCardRects(double maxWidth, int visibleCount) {
+  return List<Rect>.generate(
+    visibleCount,
+    (i) => wrapCardRect(i, null, maxWidth, visibleCount),
+  );
+}
+
+List<Rect> _stableInsertSlotRects(double maxWidth, int visibleCount) {
+  return List<Rect>.generate(
+    visibleCount + 1,
+    (i) => wrapPreviewRect(i, maxWidth, visibleCount),
+  );
+}
+
+/// Virtual border between insert slots [leftIndex] and [leftIndex + 1] (gap midpoint).
+double _horizontalGapBorder(int leftIndex, List<Rect> slotRects) {
+  return (slotRects[leftIndex].right + slotRects[leftIndex + 1].left) / 2;
+}
+
+/// Virtual border between display rows [upperRow] and [upperRow + 1] (gap midpoint).
+double _verticalGapBorder(
+  int upperRow,
+  List<_WrapDisplayRow> rows,
+  List<Rect> cardRects,
+) {
+  final upperLast = cardRects[rows[upperRow].cardIndices.last].bottom;
+  final lowerFirst = cardRects[rows[upperRow + 1].cardIndices.first].top;
+  return (upperLast + lowerFirst) / 2;
+}
+
+int _displayRowForInsertIndex(
+  int insertIndex,
+  List<_WrapDisplayRow> rows,
+  List<Rect> slotRects,
+) {
+  final slotTop = slotRects[insertIndex].top;
+  for (var r = 0; r < rows.length; r++) {
+    if ((slotTop - rows[r].top).abs() < 0.5) return r;
+  }
   return 0;
 }
 
-int _pickDisplayRowIndex(List<_WrapDisplayRow> rows, double localY) {
-  if (rows.isEmpty) return 0;
-  if (rows.length == 1) return 0;
-
-  var best = 0;
-  var bestDist = double.infinity;
-  for (var r = 0; r < rows.length; r++) {
-    final dist = _distanceToDisplayRowBand(localY, rows[r]);
-    if (dist < bestDist) {
-      bestDist = dist;
-      best = r;
-    }
-  }
-  return best;
-}
-
-int _horizontalInsertOnDisplayRow(
+bool _insertIndexOnDisplayRow(
+  int insertIndex,
   _WrapDisplayRow row,
-  List<Rect> cardRects,
-  double localX,
+  List<Rect> slotRects,
 ) {
-  final indices = row.cardIndices;
-  if (indices.isEmpty) return 0;
-
-  final firstRect = cardRects[indices.first];
-  if (localX < firstRect.left + zombieLaneCardSize / 2) {
-    return indices.first;
-  }
-
-  for (var i = 0; i < indices.length - 1; i++) {
-    final leftRect = cardRects[indices[i]];
-    final rightRect = cardRects[indices[i + 1]];
-    final boundary = (leftRect.right + rightRect.left) / 2;
-    if (localX < boundary) {
-      return indices[i + 1];
-    }
-  }
-
-  return indices.last + 1;
+  final slotTop = slotRects[insertIndex].top;
+  return (slotTop - row.top).abs() < 0.5;
 }
 
-int _rawInsertIndexForWrappedPoint(
-  Offset local,
-  double maxWidth,
-  int visibleCount, {
-  int? layoutInsert,
-}) {
-  if (visibleCount <= 0) return 0;
+int _idealDisplayRowIndex(
+  double localY,
+  List<_WrapDisplayRow> rows,
+  List<Rect> cardRects,
+) {
+  if (rows.length <= 1) return 0;
 
-  final cardRects = List<Rect>.generate(
-    visibleCount,
-    (i) => wrapCardRect(i, layoutInsert, maxWidth, visibleCount),
-  );
-  final displayRows = _groupCardsByDisplayRow(cardRects);
-  if (displayRows.isEmpty) return 0;
-
-  final rowIndex = _pickDisplayRowIndex(displayRows, local.dy);
-  return _horizontalInsertOnDisplayRow(
-    displayRows[rowIndex],
-    cardRects,
-    local.dx,
-  );
+  for (var r = 0; r < rows.length - 1; r++) {
+    if (localY < _verticalGapBorder(r, rows, cardRects)) return r;
+  }
+  return rows.length - 1;
 }
 
-bool _crossedSchmittBoundary({
-  required double pointer,
-  required double idealAnchor,
-  required double currentAnchor,
-  required double margin,
-}) {
-  final boundary = (idealAnchor + currentAnchor) / 2;
-  if (idealAnchor > currentAnchor) {
-    return pointer >= boundary + margin / 2;
+int _stickyDisplayRowIndex(
+  double localY,
+  int currentInsert,
+  List<_WrapDisplayRow> rows,
+  List<Rect> cardRects,
+  List<Rect> slotRects,
+) {
+  if (rows.length <= 1) return 0;
+
+  var row = _displayRowForInsertIndex(currentInsert, rows, slotRects);
+  final fraction = zombieLaneBorderCrossFraction;
+
+  while (row < rows.length - 1) {
+    final border = _verticalGapBorder(row, rows, cardRects);
+    final halfGap = border - cardRects[rows[row].cardIndices.last].bottom;
+    if (localY - border <= fraction * halfGap) break;
+    row++;
   }
-  if (idealAnchor < currentAnchor) {
-    return pointer <= boundary - margin / 2;
+
+  while (row > 0) {
+    final border = _verticalGapBorder(row - 1, rows, cardRects);
+    final halfGap = border - cardRects[rows[row - 1].cardIndices.last].bottom;
+    if (border - localY <= fraction * halfGap) break;
+    row--;
   }
-  return false;
+
+  return row;
 }
 
-int _applyWrappedInsertHysteresis({
-  required int ideal,
-  required int current,
-  required Offset local,
-  required double maxWidth,
-  required int visibleCount,
-}) {
-  if (ideal == current) return ideal;
+int _idealInsertOnDisplayRow(
+  double localX,
+  _WrapDisplayRow row,
+  List<Rect> slotRects,
+) {
+  final first = row.cardIndices.first;
+  final last = row.cardIndices.last;
 
-  final idealPreview = wrapPreviewRect(ideal, maxWidth, visibleCount);
-  final currentPreview = wrapPreviewRect(current, maxWidth, visibleCount);
-  final margin = zombieLaneInsertHysteresis;
-  final onSameDisplayRow = (idealPreview.top - currentPreview.top).abs() < 0.5;
+  for (var i = first; i <= last; i++) {
+    if (localX < _horizontalGapBorder(i, slotRects)) return i;
+  }
+  return last + 1;
+}
 
-  if (!onSameDisplayRow) {
-    final idealRowCenter = idealPreview.top + zombieLaneCardSize / 2;
-    final currentRowCenter = currentPreview.top + zombieLaneCardSize / 2;
-    if (_crossedSchmittBoundary(
-      pointer: local.dy,
-      idealAnchor: idealRowCenter,
-      currentAnchor: currentRowCenter,
-      margin: margin,
-    )) {
-      return ideal;
-    }
-    return current;
+int _stickyInsertOnDisplayRow(
+  double localX,
+  int currentInsert,
+  _WrapDisplayRow row,
+  List<Rect> slotRects,
+) {
+  final first = row.cardIndices.first;
+  final last = row.cardIndices.last;
+  var index = currentInsert.clamp(first, last + 1);
+  final fraction = zombieLaneBorderCrossFraction;
+
+  while (index < last + 1) {
+    final border = _horizontalGapBorder(index, slotRects);
+    final halfGap = border - slotRects[index].right;
+    if (localX - border <= fraction * halfGap) break;
+    index++;
   }
 
-  final idealX = idealPreview.left + zombieLaneCardSize / 2;
-  final currentX = currentPreview.left + zombieLaneCardSize / 2;
-  if (_crossedSchmittBoundary(
-    pointer: local.dx,
-    idealAnchor: idealX,
-    currentAnchor: currentX,
-    margin: margin,
-  )) {
-    return ideal;
+  while (index > first) {
+    final border = _horizontalGapBorder(index - 1, slotRects);
+    final halfGap = border - slotRects[index - 1].right;
+    if (border - localX <= fraction * halfGap) break;
+    index--;
   }
-  return current;
+
+  return index;
 }
 
 /// Maps a pointer inside a wrapped lane to an insert index (0..visibleCount).
 ///
-/// Picks the display row (Y) first, then the horizontal slot (X) within it.
+/// Picks the display row (Y) first, then horizontal slot (X). End-of-line empty
+/// space on a row inserts after the last card on that display row. Otherwise
+/// the preview only moves once the pointer has crossed a gap border between
+/// icons by more than [zombieLaneBorderCrossFraction] of the half-gap.
 int insertIndexForWrappedPoint(
   Offset local,
   double maxWidth,
@@ -419,22 +428,35 @@ int insertIndexForWrappedPoint(
   if (maxWidth <= 0) return 0;
   if (visibleCount <= 0) return 0;
 
-  final ideal = _rawInsertIndexForWrappedPoint(
-    local,
-    maxWidth,
-    visibleCount,
-    layoutInsert: currentInsert,
-  );
+  final cardRects = _stableCardRects(maxWidth, visibleCount);
+  final slotRects = _stableInsertSlotRects(maxWidth, visibleCount);
+  final displayRows = _groupCardsByDisplayRow(cardRects);
+  if (displayRows.isEmpty) return 0;
 
-  if (currentInsert == null) {
-    return ideal;
+  final rowIndex = currentInsert == null
+      ? _idealDisplayRowIndex(local.dy, displayRows, cardRects)
+      : _stickyDisplayRowIndex(
+          local.dy,
+          currentInsert,
+          displayRows,
+          cardRects,
+          slotRects,
+        );
+  final row = displayRows[rowIndex];
+  if (row.cardIndices.isEmpty) return 0;
+
+  final lastCardIndex = row.cardIndices.last;
+  final endInsertIndex = lastCardIndex + 1;
+
+  // Trailing empty space on the picked display row.
+  if (local.dx >= cardRects[lastCardIndex].right) {
+    return endInsertIndex;
   }
 
-  return _applyWrappedInsertHysteresis(
-    ideal: ideal,
-    current: currentInsert,
-    local: local,
-    maxWidth: maxWidth,
-    visibleCount: visibleCount,
-  );
+  if (currentInsert != null &&
+      _insertIndexOnDisplayRow(currentInsert, row, slotRects)) {
+    return _stickyInsertOnDisplayRow(local.dx, currentInsert, row, slotRects);
+  }
+
+  return _idealInsertOnDisplayRow(local.dx, row, slotRects);
 }
