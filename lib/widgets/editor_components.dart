@@ -902,6 +902,7 @@ class PlantDropIconCard extends StatelessWidget {
   final double size;
 
   static const _removeStripWidth = 44.0;
+  static const _maxLabelWidth = 200.0;
 
   @override
   Widget build(BuildContext context) {
@@ -911,126 +912,98 @@ class PlantDropIconCard extends StatelessWidget {
         ? '${l10n?.remove ?? 'Remove'} $label'
         : (l10n?.remove ?? 'Remove');
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final maxChipWidth = constraints.hasBoundedWidth && constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : size + _removeStripWidth + 236;
-        const labelHorizontalPadding = 16.0;
-        final maxLabelWidth = math.max(
-          0.0,
-          maxChipWidth - size - _removeStripWidth - labelHorizontalPadding,
-        );
-
-        final boundedWidth = constraints.hasBoundedWidth && constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : null;
-
-        final chipRow = Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: size,
-              height: size,
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: iconPath != null && iconPath!.isNotEmpty
-                      ? AssetImageWidget(
-                          assetPath: iconPath!,
-                          altCandidates: imageAltCandidates(iconPath!),
-                          width: size - 8,
-                          height: size - 8,
-                          fit: BoxFit.cover,
-                        )
-                      : Center(
-                          child: Icon(
-                            Icons.local_florist,
-                            size: 24,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                ),
-              ),
-            ),
-            if (label != null && label!.isNotEmpty && maxLabelWidth > 0)
-              Tooltip(
-                message: label!,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: maxLabelWidth),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      label!,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ),
-            Tooltip(
-              message: removeHint,
-              child: Semantics(
-                button: true,
-                label: removeHint,
-                child: Material(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  child: InkWell(
-                    onTap: onDelete,
-                    child: SizedBox(
-                      width: _removeStripWidth,
-                      height: size,
-                      child: Center(
-                        child: Icon(
-                          Icons.close,
-                          size: 22,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+    final chipRow = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: size,
+          height: size,
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: iconPath != null && iconPath!.isNotEmpty
+                  ? AssetImageWidget(
+                      assetPath: iconPath!,
+                      altCandidates: imageAltCandidates(iconPath!),
+                      width: size - 8,
+                      height: size - 8,
+                      fit: BoxFit.cover,
+                    )
+                  : Center(
+                      child: Icon(
+                        Icons.local_florist,
+                        size: 24,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-
-        return Material(
-          color: theme.colorScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(
-              color: theme.colorScheme.outline.withValues(alpha: 0.5),
-              width: 0.5,
             ),
           ),
-          clipBehavior: Clip.antiAlias,
-          child: boundedWidth != null
-              ? SizedBox(
-                  width: boundedWidth,
+        ),
+        if (label != null && label!.isNotEmpty)
+          Tooltip(
+            message: label!,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: _maxLabelWidth),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  label!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ),
+        Tooltip(
+          message: removeHint,
+          child: Semantics(
+            button: true,
+            label: removeHint,
+            child: Material(
+              color: theme.colorScheme.surfaceContainerHighest,
+              child: InkWell(
+                onTap: onDelete,
+                child: SizedBox(
+                  width: _removeStripWidth,
                   height: size,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: UnconstrainedBox(
-                      alignment: Alignment.centerLeft,
-                      constrainedAxis: Axis.vertical,
-                      clipBehavior: Clip.hardEdge,
-                      child: chipRow,
+                  child: Center(
+                    child: Icon(
+                      Icons.close,
+                      size: 22,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                )
-              : SizedBox(
-                  height: size,
-                  child: chipRow,
                 ),
-        );
-      },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return Material(
+      color: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: theme.colorScheme.outline.withValues(alpha: 0.5),
+          width: 0.5,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        height: size,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: chipRow,
+        ),
+      ),
     );
   }
 }
