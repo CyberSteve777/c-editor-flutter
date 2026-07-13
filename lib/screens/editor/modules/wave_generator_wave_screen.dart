@@ -124,6 +124,73 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return result;
   }
 
+  void _handleZombieDragDropMove(
+      int fromIndex,
+      int toRow,
+      int rowInsertIndex,
+      ) {
+    final zombies = List<WaveGeneratorZombieEntryData>.from(_wave.zombies);
+    final parallelLevels = List<int?>.generate(
+      zombies.length,
+          (i) => _zombieLevels[i],
+    );
+    moveWaveGeneratorZombieInListByRowSlot(
+      zombies: zombies,
+      fromIndex: fromIndex,
+      toRow: toRow,
+      maxRow: _rowCount,
+      rowInsertIndex: rowInsertIndex,
+      parallelLevels: parallelLevels,
+    );
+    // Обновляем уровни в памяти после перемещения
+    _zombieLevels = {};
+    for (var i = 0; i < parallelLevels.length; i++) {
+      final level = parallelLevels[i];
+      if (level != null) {
+        _zombieLevels[i] = level;
+      }
+    }
+    _assignWaveZombies(zombies);
+  }
+
+  Future<void> _changeZombieTypeFromSheet({
+    required BuildContext sheetContext,
+    required int index,
+    required String currentRow,
+    required int levelValue,
+    required bool isElite,
+  }) async {
+    final selected = await pushZombieSelection(context);
+    if (!mounted || selected == null) return;
+
+    final rtid = RtidParser.build(
+      ZombieRepository().buildZombieAliases(selected),
+      'ZombieTypes',
+    );
+
+    final l10n = AppLocalizations.of(context);
+    if (RtidParser.parse(rtid)?.source == 'CurrentLevel') {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n?.waveGeneratorCustomZombieBlocked ?? 'Custom zombies not supported')),
+        );
+      }
+      return;
+    }
+
+    final isEliteNew = ZombieRepository().isElite(selected);
+    _updateZombie(
+      index,
+      WaveGeneratorZombieEntryData(type: rtid, row: currentRow),
+      level: isEliteNew ? null : (levelValue == 0 ? null : levelValue),
+      replaceLevel: true,
+    );
+
+    if (sheetContext.mounted) {
+      Navigator.pop(sheetContext);
+    }
+  }
+
   void _applyWaveZombieLevels(
     dynamic objData,
     Map<int, Map<int, int?>> levelsByWave,
@@ -424,72 +491,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       return 0;
     }
     return int.tryParse(row) ?? 0;
-  }
-
-  void _handleZombieDragDropMove(
-    int fromIndex,
-    int toRow,
-    int rowInsertIndex,
-  ) {
-    final zombies = List<WaveGeneratorZombieEntryData>.from(_wave.zombies);
-    final parallelLevels = List<int?>.generate(
-      zombies.length,
-      (i) => _zombieLevels[i],
-    );
-    moveWaveGeneratorZombieInListByRowSlot(
-      zombies: zombies,
-      fromIndex: fromIndex,
-      toRow: toRow,
-      maxRow: _rowCount,
-      rowInsertIndex: rowInsertIndex,
-      parallelLevels: parallelLevels,
-    );
-    _zombieLevels = {};
-    for (var i = 0; i < parallelLevels.length; i++) {
-      final level = parallelLevels[i];
-      if (level != null) {
-        _zombieLevels[i] = level;
-      }
-    }
-    _assignWaveZombies(zombies);
-  }
-
-  Future<void> _changeZombieTypeFromSheet({
-    required BuildContext sheetContext,
-    required int index,
-    required String currentRow,
-    required int levelValue,
-    required bool isElite,
-  }) async {
-    final selected = await pushZombieSelection(context);
-    if (!mounted) return;
-    if (selected == null) return;
-    final rtid = RtidParser.build(
-      ZombieRepository().buildZombieAliases(selected),
-      'ZombieTypes',
-    );
-    if (RtidParser.parse(rtid)?.source == 'CurrentLevel') {
-      final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n?.waveGeneratorCustomZombieBlocked ??
-                'Custom zombies are not supported in wave generator levels.',
-          ),
-        ),
-      );
-      return;
-    }
-    final isEliteNew = ZombieRepository().isElite(selected);
-    _updateZombie(
-      index,
-      WaveGeneratorZombieEntryData(type: rtid, row: currentRow),
-      level: isEliteNew ? null : (levelValue == 0 ? null : levelValue),
-      replaceLevel: true,
-    );
-    if (sheetContext.mounted) {
-      Navigator.pop(sheetContext);
-    }
   }
 
   void _setZombieRow(int index, int rowValue) {

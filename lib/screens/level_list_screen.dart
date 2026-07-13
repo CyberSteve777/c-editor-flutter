@@ -13,6 +13,8 @@ import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 
 enum LevelViewMode { all, favorites }
@@ -179,6 +181,29 @@ class _LevelListScreenState extends State<LevelListScreen> {
     if (kIsWeb) return;
     if (!mounted) return;
     await ensureStoragePermission(context);
+  }
+
+  Future<void> _handlePreview(FileItem item) async {
+    if (item.isDirectory) return;
+
+    final file = await LevelRepository.loadLevelFromPath(item.path);
+    if (file == null || !mounted) return;
+
+    final parsed = LevelParser.parseLevel(file);
+    if (!mounted) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => LevelPreviewDialog(
+          levelFile: file,
+          parsed: parsed,
+          fileName: item.name,
+          onBack: () => Navigator.pop(ctx),
+        ),
+      );
+    });
   }
 
   Future<void> _loadSavedPathAndList() async {
@@ -1537,6 +1562,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                 item: item,
                                 l10n: l10n,
                                 rootFolderPath: _rootFolderPath,
+                                onPreview: () => _handlePreview(item),
                                 onTap: () async {
                                   if (isMovingMode) {
                                     if (item.isDirectory) {
@@ -1668,13 +1694,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                         item.isDirectory ||
                                         !isLevelFileShareSupported
                                     ? null
-                                    : () {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          if (mounted) _handleShare(item);
-                                        });
-                                      },
-                                showMove: !item.isDirectory,
+                                    : () => _handleShare(item),
+                                showMove: !item.isDirectory && !kIsWeb,
                               ),
                             );
                           },
@@ -1881,10 +1902,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
             children: [
               Text(
                 l10n.confirmDeleteMessage(
+                  target.name,
                   target.isDirectory
                       ? l10n.folderDeleteDetail
                       : l10n.levelDeleteDetail,
-                  target.name,
                 ),
               ),
               const SizedBox(height: 16),
@@ -2527,6 +2548,7 @@ class _FileItemRow extends StatelessWidget {
     required this.onCopy,
     required this.onMove,
     required this.showMove,
+    this.onPreview,
     this.rootFolderPath,
     this.onDownload,
     this.onDownloadFolder,
@@ -2538,6 +2560,7 @@ class _FileItemRow extends StatelessWidget {
   final FileItem item;
   final AppLocalizations l10n;
   final VoidCallback onTap;
+  final VoidCallback? onPreview;
   final VoidCallback onRename;
   final VoidCallback onDelete;
   final VoidCallback onCopy;
@@ -2609,6 +2632,11 @@ class _FileItemRow extends StatelessWidget {
               iconColor: item.isFavorite ? theme.colorScheme.error : null,
             ),
           ),
+        if (item.name.toLowerCase().endsWith('.json'))
+          PopupMenuItem(
+            value: 'preview',
+            child: _popupMenuTile(icon: Icons.remove_red_eye, label: l10n.levelPreview),
+          ),
         PopupMenuItem(
           value: 'rename',
           child: _popupMenuTile(icon: Icons.edit, label: l10n.rename),
@@ -2660,6 +2688,9 @@ class _FileItemRow extends StatelessWidget {
         switch (v) {
           case 'favorite':
             onToggleFavorite?.call();
+          case 'preview':
+            onPreview?.call();
+            break;
           case 'rename':
             onRename();
           case 'copy':
@@ -2910,20 +2941,44 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
 
   @override
   Widget build(BuildContext context) {
-    return SizeTransition(
-      sizeFactor: _reveal,
-      alignment: Alignment.bottomRight,
-      child: FadeTransition(
-        opacity: _reveal,
+    return FadeTransition(
+      opacity: _reveal,
+      child: ScaleTransition(
+        scale: _reveal,
         child: SlideTransition(
           position: _slide,
           child: IgnorePointer(
             ignoring: !widget.visible,
-            child: FloatingActionButton.extended(
-              heroTag: 'uploadLevel',
-              onPressed: widget.onPressed,
-              icon: const Icon(Icons.cloud_upload),
-              label: Text(widget.label),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final screenWidth = MediaQuery.sizeOf(context).width;
+                final isNarrow = screenWidth < 500;
+
+                if (isNarrow) {
+                  return FloatingActionButton(
+                    heroTag: 'uploadLevel',
+                    onPressed: widget.onPressed,
+                    tooltip: widget.label,
+                    child: const Icon(Icons.cloud_upload),
+                  );
+                }
+
+                return FloatingActionButton.extended(
+                  heroTag: 'uploadLevel',
+                  onPressed: widget.onPressed,
+                  icon: const Icon(Icons.cloud_upload),
+                  label: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: (screenWidth - 160).clamp(0, double.infinity),
+                    ),
+                    child: Text(
+                      widget.label,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),

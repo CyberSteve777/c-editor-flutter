@@ -129,6 +129,7 @@ import 'package:c_editor/data/custom_stage_level_utils.dart';
 import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/screens/editor/others/custom_stage_properties_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 
@@ -208,10 +209,11 @@ class _EditorScreenState extends State<EditorScreen> {
         if (k == 'PresetPlantList' ||
             k == 'PlantWhiteList' ||
             k == 'PlantBlackList') {
-          if (v is List)
+          if (v is List) {
             for (final e in v) {
               if (e is String && e.isNotEmpty) out.add(e);
             }
+          }
         } else if (k == 'PlantMap' && v is Map) {
           for (final key in v.keys) {
             if (key is String && key.isNotEmpty) out.add(key);
@@ -237,10 +239,11 @@ class _EditorScreenState extends State<EditorScreen> {
               final pt = e['PlantType'];
               if (pt is String && pt.isNotEmpty) out.add(pt);
               final pts = e['PlantTypes'];
-              if (pts is List)
+              if (pts is List) {
                 for (final p in pts) {
                   if (p is String && p.isNotEmpty) out.add(p);
                 }
+              }
             }
           }
         } else if (k == 'Vases' && v is List) {
@@ -310,8 +313,9 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   List<ModuleMetadata> _calculateMissingModules() {
-    if (_ec.state.levelFile == null || _ec.state.parsedData == null)
+    if (_ec.state.levelFile == null || _ec.state.parsedData == null) {
       return const [];
+    }
     final existingClasses = <String>{
       ..._ec.state.levelFile!.objects.map((o) => o.objClass),
       ...?_ec.state.parsedData!.levelDef?.modules.map((rtid) {
@@ -908,10 +912,13 @@ class _EditorScreenState extends State<EditorScreen> {
             }
             _markDirty();
             onStagePicked?.call();
-            if (!mounted) return;
+            if (!stageRouteContext.mounted) return;
             Navigator.pop(stageRouteContext);
           },
-          onBack: () => Navigator.pop(stageRouteContext),
+          onBack: () {
+            if (!stageRouteContext.mounted) return;
+            Navigator.pop(stageRouteContext);
+          },
         ),
       ),
     );
@@ -3323,6 +3330,23 @@ class _EditorScreenState extends State<EditorScreen> {
               },
             ),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.remove_red_eye),
+                tooltip: l10n?.levelPreview ?? 'Preview',
+                onPressed: _ec.state.levelFile != null && _ec.state.parsedData != null
+                    ? () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => LevelPreviewDialog(
+                      levelFile: _ec.state.levelFile!,
+                      parsed: _ec.state.parsedData!,
+                      fileName: _ec.fileName,
+                      onBack: () => Navigator.pop(ctx),
+                    ),
+                  );
+                }
+                    : null,
+              ),
               IconButton(
                 icon: const Icon(Icons.code),
                 tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',

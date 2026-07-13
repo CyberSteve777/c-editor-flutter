@@ -43,14 +43,9 @@ jobs:
 
       - run: flutter pub get
       - name: Build Windows release
-        shell: pwsh
         env:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
-        run: |
-          if (-not $env:PVZ2C_ENCRYPTION_KEY) {
-            throw 'PVZ2C_ENCRYPTION_KEY must be set for release builds.'
-          }
-          flutter build windows --release --dart-define=PVZ2C_ENCRYPTION_KEY=$env:PVZ2C_ENCRYPTION_KEY
+        run: flutter build windows --release
 
       - name: Package Windows portable
         shell: pwsh

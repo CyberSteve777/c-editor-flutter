@@ -198,7 +198,6 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.armrackModuleTitle ?? 'Weapon Stands';
     final helpTitle = l10n?.armrackModuleHelpTitle ?? 'Weapon Stands module';
     final selected = _selectedOverride;
 
@@ -488,7 +487,7 @@ ModuleAliasInputField(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
         l10n?.removeItemConfirm(
-              '${l10n?.airDropShipGroupLabel ?? "Group"} ${index + 1}',
+              '${l10n.airDropShipGroupLabel} ${index + 1}',
             ) ??
             'Remove group ${index + 1}?',
       ),

@@ -195,7 +195,6 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.bronzeModuleTitle ?? 'Bronze Properties';
     final helpTitle = l10n?.bronzeModuleHelpTitle ?? 'Bronze Properties';
 
     return Scaffold(

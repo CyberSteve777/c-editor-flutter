@@ -159,7 +159,6 @@ class _SmokePollutionModuleScreenState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.smokePollutionModuleTitle ?? 'Smoke pollution module';
     final helpTitle =
         l10n?.smokePollutionModuleHelpTitle ?? 'Smoke pollution module help';
 

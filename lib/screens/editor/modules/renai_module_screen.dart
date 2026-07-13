@@ -219,7 +219,6 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.renaiModuleTitle ?? 'Renaissance module';
     final helpTitle = l10n?.renaiModuleHelpTitle ?? 'Renaissance module help';
 
     return Scaffold(

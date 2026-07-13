@@ -63,6 +63,15 @@ class _BootstrapAppState extends State<BootstrapApp> {
   bool _ready = false;
   late final Locale _startupLocale = resolveStartupLocale(widget.prefs);
 
+  late final ThemeMode _startupThemeMode = _resolveThemeMode(widget.prefs);
+
+  ThemeMode _resolveThemeMode(SharedPreferences prefs) {
+    final mode = prefs.getString('theme_mode');
+    if (mode == 'dark') return ThemeMode.dark;
+    if (mode == 'light') return ThemeMode.light;
+    return ThemeMode.system;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -92,6 +101,7 @@ class _BootstrapAppState extends State<BootstrapApp> {
       return StartupLoadingScreen(
         progress: _progress,
         locale: _startupLocale,
+        themeMode: _startupThemeMode,
         loadingCategory: _loadingCategory,
       );
     }

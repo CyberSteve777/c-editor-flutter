@@ -148,7 +148,6 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.airDropShipModuleTitle ?? 'Air Drop Ship';
     final helpTitle = l10n?.airDropShipModuleHelpTitle ?? 'Air Drop Ship help';
     final selectedWave =
         _selectedIndex >= 0 && _selectedIndex < _data.appearWaves.length

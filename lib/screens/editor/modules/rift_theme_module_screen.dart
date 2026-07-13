@@ -30,7 +30,6 @@ class RiftThemeModuleScreen extends StatefulWidget {
 }
 
 class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
-  static const _defaultAlias = 'RiftTheme';
   static const _objClass = 'RiftThemeDemoModuleProperties';
   late String _alias;
 

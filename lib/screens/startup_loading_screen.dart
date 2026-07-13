@@ -10,11 +10,13 @@ class StartupLoadingScreen extends StatelessWidget {
     super.key,
     required this.progress,
     required this.locale,
+    required this.themeMode,
     this.loadingCategory,
   });
 
   final double progress;
   final Locale locale;
+  final ThemeMode themeMode;
   final BootstrapLoadingCategory? loadingCategory;
 
   static const _barHeight = 6.0;
@@ -27,7 +29,7 @@ class StartupLoadingScreen extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

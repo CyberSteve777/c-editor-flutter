@@ -33,7 +33,6 @@ class GlacierModuleScreen extends StatefulWidget {
 }
 
 class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
-  static const _defaultAlias = 'GlacierModule';
   static const _objClass = 'GlacierModuleProperties';
   late String _alias;
   static const _levelMin = 0;

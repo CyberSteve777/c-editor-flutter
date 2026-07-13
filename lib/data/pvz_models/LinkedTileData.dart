@@ -23,6 +23,7 @@ class LinkedTileData extends PvzModel {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
     'Group': group,
     'PropagationDelay': propagationDelay,

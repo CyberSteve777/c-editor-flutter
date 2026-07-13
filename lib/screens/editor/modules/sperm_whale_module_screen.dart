@@ -35,16 +35,6 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
   late TextEditingController _swallowDurationCtrl;
   late TextEditingController _poisonTriggerCountCtrl;
 
-  int get _gridRows {
-    final (rows, _) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
-    return rows;
-  }
-
-  int get _gridCols {
-    final (_, cols) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
-    return cols;
-  }
-
   bool get _isDeepSea => LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
 
   @override
@@ -261,56 +251,6 @@ ModuleAliasInputField(
               ),
             ),
             const SizedBox(height: 24),
-            Text(
-              l10n?.spermWhaleModuleLawnPreview ??
-                  'Lawn grid (for layout reference)',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n?.spermWhaleModuleLawnPreviewHint ??
-                  'Row/column count follows the level stage (Deep Sea: 6×10).',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 12),
-            scaleTableForDesktop(
-              context: context,
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: AspectRatio(
-                  aspectRatio: _gridCols / _gridRows,
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: _gridCols,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: _gridCols * _gridRows,
-                    itemBuilder: (context, i) {
-                      final col = i % _gridCols;
-                      final row = i ~/ _gridCols;
-                      final stripe = (col + row).isEven;
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: stripe
-                              ? theme.colorScheme.primaryContainer.withValues(
-                                  alpha: 0.35,
-                                )
-                              : theme.colorScheme.surfaceContainerHighest,
-                          border: Border.all(
-                            color: theme.colorScheme.outlineVariant,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
