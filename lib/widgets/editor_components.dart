@@ -6,6 +6,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -882,80 +883,115 @@ const _kPlantDropIconCardSize = 56.0;
 const _kPlantFoodIconPath = 'assets/images/others/plantfood.png';
 const _kPlantDropTagIconPath = 'assets/images/tags/plants/rarity/Plant_Green.webp';
 
-/// Square plant icon with delete control, sized like [ZombieIconCard].
+/// Plant drop token: icon plus a full-height remove strip (easier to tap than a
+/// corner overlay on a small square).
 class PlantDropIconCard extends StatelessWidget {
   const PlantDropIconCard({
     super.key,
     required this.iconPath,
     required this.onDelete,
+    this.label,
     this.size = _kPlantDropIconCardSize,
   });
 
   final String? iconPath;
+  final String? label;
   final VoidCallback onDelete;
   final double size;
+
+  static const _removeStripWidth = 44.0;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: theme.colorScheme.outline.withValues(alpha: 0.5),
-                width: 0.5,
+    final l10n = AppLocalizations.of(context);
+    final removeHint = label != null && label!.isNotEmpty
+        ? '${l10n?.remove ?? 'Remove'} $label'
+        : (l10n?.remove ?? 'Remove');
+
+    return Material(
+      color: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: theme.colorScheme.outline.withValues(alpha: 0.5),
+          width: 0.5,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        height: size,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: size,
+              height: size,
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: iconPath != null && iconPath!.isNotEmpty
+                      ? AssetImageWidget(
+                          assetPath: iconPath!,
+                          altCandidates: imageAltCandidates(iconPath!),
+                          width: size - 8,
+                          height: size - 8,
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.local_florist,
+                            size: 24,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                ),
               ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: iconPath != null && iconPath!.isNotEmpty
-                  ? AssetImageWidget(
-                      assetPath: iconPath!,
-                      altCandidates: imageAltCandidates(iconPath!),
-                      width: size,
+            if (label != null && label!.isNotEmpty)
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 140),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 0, 8, 0),
+                  child: Text(
+                    label!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      height: 1.15,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            Tooltip(
+              message: removeHint,
+              child: Semantics(
+                button: true,
+                label: removeHint,
+                child: Material(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: InkWell(
+                    onTap: onDelete,
+                    child: SizedBox(
+                      width: _removeStripWidth,
                       height: size,
-                      fit: BoxFit.cover,
-                    )
-                  : Center(
-                      child: Icon(
-                        Icons.local_florist,
-                        size: 24,
-                        color: theme.colorScheme.onSurfaceVariant,
+                      child: Center(
+                        child: Icon(
+                          Icons.close,
+                          size: 22,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-            ),
-          ),
-          Positioned(
-            top: -6,
-            right: -6,
-            child: Material(
-              color: theme.colorScheme.errorContainer,
-              shape: const CircleBorder(),
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: onDelete,
-                customBorder: const CircleBorder(),
-                child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: Icon(
-                    Icons.close,
-                    size: 16,
-                    color: theme.colorScheme.onErrorContainer,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1128,8 +1164,13 @@ class WaveDropConfigCard extends StatelessWidget {
                   final id = entry.value;
                   final info = PlantRepository().getPlantInfoById(id);
                   final iconPath = info?.iconAssetPath;
+                  final localizedName = ResourceNames.lookup(
+                    context,
+                    PlantRepository().getName(id),
+                  );
                   return PlantDropIconCard(
                     iconPath: iconPath,
+                    label: localizedName,
                     onDelete: () => onRemovePlantAt(idx),
                   );
                 }),
