@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
@@ -909,19 +911,22 @@ class PlantDropIconCard extends StatelessWidget {
         ? '${l10n?.remove ?? 'Remove'} $label'
         : (l10n?.remove ?? 'Remove');
 
-    return Material(
-      color: theme.colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: theme.colorScheme.outline.withValues(alpha: 0.5),
-          width: 0.5,
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        height: size,
-        child: Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxChipWidth = constraints.hasBoundedWidth && constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : size + _removeStripWidth + 236;
+        const labelHorizontalPadding = 16.0;
+        final maxLabelWidth = math.max(
+          0.0,
+          maxChipWidth - size - _removeStripWidth - labelHorizontalPadding,
+        );
+
+        final boundedWidth = constraints.hasBoundedWidth && constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : null;
+
+        final chipRow = Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -950,19 +955,21 @@ class PlantDropIconCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (label != null && label!.isNotEmpty)
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 140),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(2, 0, 8, 0),
-                  child: Text(
-                    label!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      height: 1.15,
+            if (label != null && label!.isNotEmpty && maxLabelWidth > 0)
+              Tooltip(
+                message: label!,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxLabelWidth),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      label!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
@@ -991,8 +998,39 @@ class PlantDropIconCard extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
+        );
+
+        return Material(
+          color: theme.colorScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(
+              color: theme.colorScheme.outline.withValues(alpha: 0.5),
+              width: 0.5,
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: boundedWidth != null
+              ? SizedBox(
+                  width: boundedWidth,
+                  height: size,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: UnconstrainedBox(
+                      alignment: Alignment.centerLeft,
+                      constrainedAxis: Axis.vertical,
+                      clipBehavior: Clip.hardEdge,
+                      child: chipRow,
+                    ),
+                  ),
+                )
+              : SizedBox(
+                  height: size,
+                  child: chipRow,
+                ),
+        );
+      },
     );
   }
 }
@@ -1059,43 +1097,67 @@ class WaveDropConfigCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n?.waveDropTotalLabel ??
-                        'Total carrier zombies (AdditionalPlantfood)',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final counterRow = Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints(minWidth: 36, minHeight: 36),
+                      icon: const Icon(Icons.remove),
+                      onPressed: totalDropCount > 0
+                          ? () => onTotalDropCountChanged(totalDropCount - 1)
+                          : null,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    Text(
+                      '$totalDropCount',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints(minWidth: 36, minHeight: 36),
+                      icon: const Icon(Icons.add),
+                      onPressed: canIncreaseTotal
+                          ? () => onTotalDropCountChanged(totalDropCount + 1)
+                          : null,
+                    ),
+                  ],
+                );
+                final labelText = Text(
+                  l10n?.waveDropTotalLabel ??
+                      'Total carrier zombies (AdditionalPlantfood)',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                ),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  icon: const Icon(Icons.remove),
-                  onPressed: totalDropCount > 0
-                      ? () => onTotalDropCountChanged(totalDropCount - 1)
-                      : null,
-                ),
-                Text(
-                  '$totalDropCount',
-                  style: theme.textTheme.titleMedium,
-                ),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  icon: const Icon(Icons.add),
-                  onPressed: canIncreaseTotal
-                      ? () => onTotalDropCountChanged(totalDropCount + 1)
-                      : null,
-                ),
-              ],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                );
+
+                if (constraints.maxWidth < 280) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      labelText,
+                      const SizedBox(height: 4),
+                      counterRow,
+                    ],
+                  );
+                }
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: labelText),
+                    counterRow,
+                  ],
+                );
+              },
             ),
             if (zombieCount == 0) ...[
               const SizedBox(height: 8),
@@ -1214,28 +1276,51 @@ class _DropCountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 20,
-            height: 20,
-            child: AssetImageWidget(
-              assetPath: iconPath,
-              altCandidates: imageAltCandidates(iconPath),
-              fit: BoxFit.contain,
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const iconSize = 20.0;
+        const gap = 6.0;
+        const horizontalPadding = 20.0;
+        final maxWidth = constraints.hasBoundedWidth && constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : double.infinity;
+        final maxLabelWidth = math.max(
+          0.0,
+          maxWidth - iconSize - gap - horizontalPadding,
+        );
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(20),
           ),
-          const SizedBox(width: 6),
-          Text(label, style: theme.textTheme.bodyMedium),
-        ],
-      ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: iconSize,
+                height: iconSize,
+                child: AssetImageWidget(
+                  assetPath: iconPath,
+                  altCandidates: imageAltCandidates(iconPath),
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(width: gap),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxLabelWidth),
+                child: Text(
+                  label,
+                  style: theme.textTheme.bodyMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

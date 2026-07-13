@@ -65,36 +65,28 @@ class ZombieLaneDraggableCard extends StatelessWidget {
 class ZombieLaneRowDropZone extends StatelessWidget {
   const ZombieLaneRowDropZone({
     super.key,
-    required this.rowValue,
-    required this.visibleCount,
     required this.onDrop,
-    required this.onPreviewInsert,
-    required this.commitRowValue,
-    required this.commitInsertIndex,
+    required this.onPointerMove,
+    this.onDragEntered,
   });
 
-  final int rowValue;
-  final int visibleCount;
   final VoidCallback onDrop;
-  final void Function(int rowValue, int insertIndex) onPreviewInsert;
-  final int? commitRowValue;
-  final int? commitInsertIndex;
+  final void Function(double localX, double localY, double viewportWidth)
+      onPointerMove;
+  final VoidCallback? onDragEntered;
 
   @override
   Widget build(BuildContext context) {
     return DragTarget<Object>(
-      onWillAcceptWithDetails: (_) => true,
+      onWillAcceptWithDetails: (_) {
+        onDragEntered?.call();
+        return true;
+      },
       onMove: (details) {
         final box = context.findRenderObject() as RenderBox?;
         if (box == null) return;
         final local = box.globalToLocal(details.offset);
-        final previewAt = commitRowValue == rowValue ? commitInsertIndex : null;
-        final insert = insertIndexForLaneX(
-          local.dx,
-          visibleCount,
-          previewAt: previewAt,
-        );
-        onPreviewInsert(rowValue, insert);
+        onPointerMove(local.dx, local.dy, box.size.width);
       },
       onLeave: (_) {},
       onAcceptWithDetails: (_) => onDrop(),
