@@ -268,6 +268,14 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get importFilesUnreadable =>
+      'Не удалось прочитать выбранные файлы. Попробуйте меньшие файлы или другой браузер.';
+
+  @override
+  String get importFolderUnsupported =>
+      'Импорт папки не поддерживается в этом браузере.';
+
+  @override
   String get uploadLevelPickerTitle =>
       'Выберите один или несколько уровней для загрузки';
 
@@ -5208,6 +5216,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get dropConfigPlantFood => 'Настройка дропа (растительная еда)';
+
+  @override
+  String get waveDropConfigTitle => 'Настройка дропа';
+
+  @override
+  String get waveDropTotalLabel => 'Всего зомби с дропом (AdditionalPlantfood)';
+
+  @override
+  String waveDropPlantFoodOnlyCount(int count) {
+    return '$count растительной еды';
+  }
+
+  @override
+  String waveDropPlantsCount(int count) {
+    return '$count растений';
+  }
 
   @override
   String get zombiesCarryingPlants => 'Зомби с растениями';

@@ -98,6 +98,8 @@
       "count": { "type": "int" }
     }
   },
+  "importFilesUnreadable": "Could not read the selected file(s). Try smaller files or a different browser.",
+  "importFolderUnsupported": "Folder import is not supported in this browser.",
   "uploadLevelPickerTitle": "Select one or multiple levels to upload",
   "smartUploadTitle": "Duplicate file",
   "smartUploadFileMessage": "This file already exists in your library:\n\n{fileName}\n\nWhat should be done?",
@@ -1730,6 +1732,24 @@
   "appliesToAllNonElite": "Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level)",
   "dropConfigPlants": "Drop Configuration (seed packets)",
   "dropConfigPlantFood": "Drop config (Plant Food)",
+  "waveDropConfigTitle": "Drop configuration",
+  "waveDropTotalLabel": "Total carrier zombies (AdditionalPlantfood)",
+  "waveDropPlantFoodOnlyCount": "{count} plant food",
+  "@waveDropPlantFoodOnlyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "waveDropPlantsCount": "{count} plants",
+  "@waveDropPlantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "zombiesCarryingPlants": "Zombies carrying seed packets",
   "zombiesCarryingPlantFood": "Zombies carrying Plant Food",
   "description": "Level description",

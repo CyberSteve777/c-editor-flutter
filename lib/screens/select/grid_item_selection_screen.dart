@@ -241,7 +241,7 @@ class _GridItemCard extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     child: GridItemIcon(
                       typeName: item.typeName,
-                      size: 72,
+                      size: 100,
                       fit: BoxFit.contain,
                     ),
                   ),

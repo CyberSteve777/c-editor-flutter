@@ -265,6 +265,12 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get importFilesUnreadable => '无法读取所选文件。请尝试较小的文件或其他浏览器。';
+
+  @override
+  String get importFolderUnsupported => '此浏览器不支持导入文件夹。';
+
+  @override
   String get uploadLevelPickerTitle => '选择一个或多个要上传的关卡';
 
   @override
@@ -5010,6 +5016,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get dropConfigPlantFood => '掉落物配置（能量豆）';
+
+  @override
+  String get waveDropConfigTitle => '掉落物配置';
+
+  @override
+  String get waveDropTotalLabel => '携带掉落物的僵尸总数（AdditionalPlantfood）';
+
+  @override
+  String waveDropPlantFoodOnlyCount(int count) {
+    return '$count 个能量豆';
+  }
+
+  @override
+  String waveDropPlantsCount(int count) {
+    return '$count 张植物卡片';
+  }
 
   @override
   String get zombiesCarryingPlants => '携带植物卡片的僵尸数量';

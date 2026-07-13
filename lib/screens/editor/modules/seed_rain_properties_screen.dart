@@ -496,7 +496,7 @@ class _SeedRainRowCard extends StatelessWidget {
         if (info?.icon != null) return 'assets/images/zombies/${info!.icon}';
         return null;
       case 2:
-        return 'assets/images/others/plantfood.webp';
+        return 'assets/images/others/plantfood.png';
       default:
         return null;
     }

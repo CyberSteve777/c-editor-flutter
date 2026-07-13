@@ -12,10 +12,12 @@ import 'web/web_transfer_progress.dart';
 
 /// One folder picked for web import (recursive level files, relative paths).
 class WebFolderImport {
-  const WebFolderImport({required this.name, required this.files});
+  const WebFolderImport({required this.name, required this.paths});
 
   final String name;
-  final Map<String, Uint8List> files;
+
+  /// Relative paths inside the picked folder (bytes loaded lazily on web).
+  final List<String> paths;
 }
 
 class FileItem {
@@ -116,20 +118,36 @@ abstract class LevelRepositoryBase {
     WebTransferProgress? onProgress,
   }) async {}
   Future<void> ensureWebStorageReady() async {}
+  void releaseWebFolderImport() {}
   Future<String?> getWebLibraryDisplayName() async => null;
+  bool get isWebFolderImportSupported => false;
   Future<WebFolderImport?> pickWebFolderForImport() async => null;
   Future<int> importWebFilesBatched(
     List<({String storageKey, Uint8List bytes})> files, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) async {
+    var imported = 0;
     for (var i = 0; i < files.length; i++) {
+      if (isCancelled?.call() == true) {
+        break;
+      }
       await prepareInternalCacheFromBytes(
         files[i].storageKey,
         files[i].bytes,
       );
-      onProgress?.call(i + 1, files.length, files[i].storageKey);
+      imported++;
+      onProgress?.call(i + 1, files.length, null);
     }
-    return files.length;
+    return imported;
+  }
+
+  Future<int> importWebFolderPathsBatched(
+    List<({String storageKey, String relativePath})> entries, {
+    WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
+  }) async {
+    return 0;
   }
   Future<bool> createLevelFromTemplate(
     String currentDirPath,

@@ -91,7 +91,17 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   Future<void> _ensureReady() => _readyFuture ??= _initialize();
 
+  Future<void> _clearLegacyDirectoryHandleMeta() async {
+    // Older builds persisted a File System Access directory handle (often
+    // "levels-web") and prompted for write permission on import. Web storage
+    // is IndexedDB-only now; drop stale meta so cached SW bundles cannot sync.
+    await _idb.putMeta(WebLevelIdbStore.metaDirectoryHandleKey, null);
+    await _idb.putMeta(WebLevelIdbStore.metaDirectoryNameKey, null);
+    await _idb.putMeta(WebLevelIdbStore.metaDirectoryModeKey, null);
+  }
+
   Future<void> _initialize() async {
+    await _clearLegacyDirectoryHandleMeta();
     final files = await _idb.loadFiles();
     _memoryCache
       ..clear()
@@ -108,10 +118,18 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<void> ensureWebStorageReady() => _ensureReady();
 
   @override
+  void releaseWebFolderImport() {
+    _fsa.releaseFolderImport();
+  }
+
+  @override
   Future<String?> getWebLibraryDisplayName() async {
     await _ensureReady();
     return _defaultLibraryLabel;
   }
+
+  @override
+  bool get isWebFolderImportSupported => _fsa.isSupported;
 
   @override
   Future<WebFolderImport?> pickWebFolderForImport() async {
@@ -119,14 +137,52 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       return null;
     }
 
-    // Pick and read in one JS call while the user-gesture is still active.
+    // Pick while the user-gesture is still active; bytes load during import.
     final picked = await _fsa.pickFolderForImport();
     if (picked == null) {
+      _fsa.releaseFolderImport();
       return null;
     }
 
     await _ensureReady();
-    return WebFolderImport(name: picked.name, files: picked.files);
+    return WebFolderImport(name: picked.name, paths: picked.paths);
+  }
+
+  @override
+  Future<int> importWebFolderPathsBatched(
+    List<({String storageKey, String relativePath})> entries, {
+    WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
+  }) async {
+    if (entries.isEmpty) {
+      return 0;
+    }
+    await _ensureReady();
+    const batchSize = 4;
+    var imported = 0;
+    try {
+      for (var i = 0; i < entries.length; i++) {
+        if (isCancelled?.call() == true) {
+          break;
+        }
+        final entry = entries[i];
+        final bytes = await _fsa.readFolderImportEntry(entry.relativePath);
+        if (bytes != null) {
+          await _putFile(entry.storageKey, bytes);
+          imported++;
+        }
+        onProgress?.call(i + 1, entries.length, null);
+        if (i % batchSize == batchSize - 1) {
+          await yieldToUi();
+        }
+      }
+      if (imported > 0) {
+        await _persistDirectories();
+      }
+    } finally {
+      _fsa.releaseFolderImport();
+    }
+    return imported;
   }
 
   Future<void> _putFile(String key, Uint8List bytes) async {
@@ -593,22 +649,30 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<int> importWebFilesBatched(
     List<({String storageKey, Uint8List bytes})> files, {
     WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
   }) async {
     if (files.isEmpty) {
       return 0;
     }
     await _ensureReady();
     const batchSize = 8;
+    var imported = 0;
     for (var i = 0; i < files.length; i++) {
+      if (isCancelled?.call() == true) {
+        break;
+      }
       final file = files[i];
       await _putFile(file.storageKey, file.bytes);
-      onProgress?.call(i + 1, files.length, file.storageKey);
+      imported++;
+      onProgress?.call(i + 1, files.length, null);
       if (i % batchSize == batchSize - 1) {
         await yieldToUi();
       }
     }
-    await _persistDirectories();
-    return files.length;
+    if (imported > 0) {
+      await _persistDirectories();
+    }
+    return imported;
   }
 
   @override

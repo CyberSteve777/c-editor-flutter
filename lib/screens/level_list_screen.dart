@@ -336,11 +336,17 @@ class _LevelListScreenState extends State<LevelListScreen> {
       ));
     }
 
-    if (files.isEmpty) return;
-    await _importFilesWithSmartUpload(
+    if (files.isEmpty) {
+      _showWarningMessage(l10n.importFilesUnreadable);
+      return;
+    }
+
+    final imported = await _importFilesWithSmartUpload(
       files,
       progressTitle: l10n.importProgressTitle,
     );
+    if (!mounted || imported == 0) return;
+    _showSuccessMessage(l10n.importFolderSuccess(imported));
   }
 
   String _sanitizeFolderImportName(String name) {
@@ -360,10 +366,18 @@ class _LevelListScreenState extends State<LevelListScreen> {
   /// Web-only: recursively import a folder and all subfolders into the library.
   Future<void> _pickAndImportFolder() async {
     final l10n = AppLocalizations.of(context)!;
-    final folder = await LevelRepository.pickWebFolderForImport();
-    if (folder == null || !mounted) return;
+    if (!LevelRepository.isWebFolderImportSupported) {
+      _showWarningMessage(l10n.importFolderUnsupported);
+      return;
+    }
 
-    if (folder.files.isEmpty) {
+    final folder = await LevelRepository.pickWebFolderForImport();
+    if (!mounted) return;
+    if (folder == null) {
+      return;
+    }
+
+    if (folder.paths.isEmpty) {
       _showWarningMessage(l10n.importFolderEmpty);
       return;
     }
@@ -372,17 +386,17 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final currentDir = _pathStack.isNotEmpty ? _pathStack.last.path : webPath;
     final folderName = _sanitizeFolderImportName(folder.name);
 
-    final files = folder.files.entries
+    final entries = folder.paths
         .map(
-          (entry) => (
-            storageKey: _webStorageKey(currentDir, '$folderName/${entry.key}'),
-            bytes: entry.value,
+          (path) => (
+            storageKey: _webStorageKey(currentDir, '$folderName/$path'),
+            relativePath: path,
           ),
         )
         .toList();
 
-    final imported = await _importFilesWithSmartUpload(
-      files,
+    final imported = await _importFolderPathsWithSmartUpload(
+      entries,
       progressTitle: l10n.importProgressTitle,
     );
     if (!mounted || imported == 0) return;
@@ -405,6 +419,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     String? progressTitle,
   }) async {
     if (files.isEmpty || !mounted) return 0;
+
+    await LevelRepository.ensureWebStorageReady();
 
     final pending = <({String storageKey, List<int> bytes})>[];
     final conflicts = <({String storageKey, List<int> bytes})>[];
@@ -439,7 +455,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         ? await LevelRepository.importWebFilesBatched(batched)
         : await _runWebImportProgress(progressTitle, batched) ?? 0;
 
-    if (!mounted || imported == 0) return 0;
+    if (!mounted || imported == 0) return imported;
     const webPath = 'web://';
     setState(() {
       _rootFolderPath ??= webPath;
@@ -449,6 +465,78 @@ class _LevelListScreenState extends State<LevelListScreen> {
     });
     _loadCurrentDirectory();
     return imported;
+  }
+
+  Future<int> _importFolderPathsWithSmartUpload(
+    List<({String storageKey, String relativePath})> entries, {
+    String? progressTitle,
+  }) async {
+    if (entries.isEmpty || !mounted) return 0;
+
+    await LevelRepository.ensureWebStorageReady();
+
+    final pending = <({String storageKey, String relativePath})>[];
+    final conflicts = <({String storageKey, String relativePath})>[];
+
+    for (final entry in entries) {
+      final exists = await _webStorageKeyExists(entry.storageKey);
+      if (exists) {
+        conflicts.add(entry);
+      } else {
+        pending.add(entry);
+      }
+    }
+
+    if (conflicts.isNotEmpty) {
+      await _resolveSmartUploadPathConflicts(conflicts, pending);
+      if (!mounted) {
+        LevelRepository.releaseWebFolderImport();
+        return 0;
+      }
+    }
+
+    if (pending.isEmpty) {
+      LevelRepository.releaseWebFolderImport();
+      return 0;
+    }
+
+    if (!context.mounted) {
+      LevelRepository.releaseWebFolderImport();
+      return 0;
+    }
+    final imported = progressTitle == null
+        ? await LevelRepository.importWebFolderPathsBatched(pending)
+        : await _runWebFolderImportProgress(progressTitle, pending) ?? 0;
+
+    if (!mounted || imported == 0) return imported;
+    const webPath = 'web://';
+    setState(() {
+      _rootFolderPath ??= webPath;
+      if (_pathStack.isEmpty) {
+        _pathStack = [(name: 'My levels', path: webPath)];
+      }
+    });
+    _loadCurrentDirectory();
+    return imported;
+  }
+
+  Future<int?> _runWebFolderImportProgress(
+    String title,
+    List<({String storageKey, String relativePath})> entries,
+  ) {
+    if (!context.mounted) {
+      return Future.value(null);
+    }
+    return runWebTransferWithProgress<int>(
+      context,
+      title: title,
+      cancellable: true,
+      task: (report, controller) => LevelRepository.importWebFolderPathsBatched(
+        entries,
+        onProgress: report,
+        isCancelled: () => controller.isCancelled,
+      ),
+    );
   }
 
   Future<int?> _runWebImportProgress(
@@ -461,9 +549,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
     return runWebTransferWithProgress<int>(
       context,
       title: title,
-      task: (report) => LevelRepository.importWebFilesBatched(
+      cancellable: true,
+      task: (report, controller) => LevelRepository.importWebFilesBatched(
         files,
         onProgress: report,
+        isCancelled: () => controller.isCancelled,
       ),
     );
   }
@@ -473,7 +563,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await runWebTransferWithProgress<void>(
       context,
       title: l10n.exportProgressTitle,
-      task: (report) => LevelRepository.downloadFolderAsZip(
+      task: (report, controller) => LevelRepository.downloadFolderAsZip(
         folder.path,
         onProgress: report,
       ),
@@ -529,6 +619,63 @@ class _LevelListScreenState extends State<LevelListScreen> {
             reservedKeys,
           );
           pending.add((storageKey: copyKey, bytes: conflict.bytes));
+          reservedKeys.add(copyKey.toLowerCase());
+      }
+    }
+  }
+
+  Future<void> _resolveSmartUploadPathConflicts(
+    List<({String storageKey, String relativePath})> conflicts,
+    List<({String storageKey, String relativePath})> pending,
+  ) async {
+    _WebUploadConflictStrategy? bulkStrategy;
+    final reservedKeys = pending.map((e) => e.storageKey.toLowerCase()).toSet();
+
+    for (final conflict in conflicts) {
+      if (!mounted) return;
+
+      late final _WebUploadConflictStrategy strategy;
+      if (bulkStrategy != null) {
+        strategy = bulkStrategy;
+      } else {
+        final choice = await _showSmartUploadFileDialog(conflict.storageKey);
+        if (!mounted) return;
+        if (choice == null) continue;
+
+        switch (choice) {
+          case _SmartUploadChoice.skipThis:
+            strategy = _WebUploadConflictStrategy.skip;
+          case _SmartUploadChoice.skipAll:
+            bulkStrategy = _WebUploadConflictStrategy.skip;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.overwriteThis:
+            strategy = _WebUploadConflictStrategy.overwrite;
+          case _SmartUploadChoice.overwriteAll:
+            bulkStrategy = _WebUploadConflictStrategy.overwrite;
+            strategy = bulkStrategy;
+          case _SmartUploadChoice.copyThis:
+            strategy = _WebUploadConflictStrategy.copy;
+          case _SmartUploadChoice.copyAll:
+            bulkStrategy = _WebUploadConflictStrategy.copy;
+            strategy = bulkStrategy;
+        }
+      }
+
+      switch (strategy) {
+        case _WebUploadConflictStrategy.skip:
+          break;
+        case _WebUploadConflictStrategy.overwrite:
+          pending.add(conflict);
+          reservedKeys.add(conflict.storageKey.toLowerCase());
+        case _WebUploadConflictStrategy.copy:
+          final copyKey = await _nextSmartUploadCopyStorageKey(
+            conflict.storageKey,
+            reservedKeys,
+          );
+          pending.add((
+            storageKey: copyKey,
+            relativePath: conflict.relativePath,
+          ));
           reservedKeys.add(copyKey.toLowerCase());
       }
     }
@@ -980,10 +1127,189 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await runWebTransferWithProgress<void>(
       context,
       title: l10n.exportProgressTitle,
-      task: (report) => LevelRepository.downloadAllLevelsAsZip(
+      task: (report, controller) => LevelRepository.downloadAllLevelsAsZip(
         onProgress: report,
       ),
     );
+  }
+
+  static const _compactHeaderBreakpoint = 300.0;
+
+  List<Widget> _buildLevelListHeaderChildren({
+    required ThemeData theme,
+    required AppLocalizations l10n,
+    required Color fabBgColor,
+    required Color fabFgColor,
+  }) {
+    return [
+      if (_viewMode != LevelViewMode.favorites)
+        _BreadcrumbBar(
+          pathStack: _pathStack,
+          onBreadcrumbClick: _breadcrumbTap,
+        ),
+      Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < 240;
+            return SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<LevelViewMode>(
+                showSelectedIcon: false,
+                style: SegmentedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  selectedBackgroundColor: fabBgColor,
+                  selectedForegroundColor: fabFgColor,
+                ),
+                segments: [
+                  ButtonSegment(
+                    value: LevelViewMode.all,
+                    icon: const Icon(
+                      Icons.folder_outlined,
+                      size: 20,
+                    ),
+                    label: compact ? null : Text(l10n.allLevelsCategory),
+                    tooltip: l10n.allLevelsCategory,
+                  ),
+                  ButtonSegment(
+                    value: LevelViewMode.favorites,
+                    icon: const Icon(
+                      Icons.favorite_outline,
+                      size: 20,
+                    ),
+                    label: compact ? null : Text(l10n.favoritesCategory),
+                    tooltip: l10n.favoritesCategory,
+                  ),
+                ],
+                selected: {_viewMode},
+                onSelectionChanged: (newSelection) {
+                  setState(() {
+                    _viewMode = newSelection.first;
+                    if (_viewMode == LevelViewMode.favorites &&
+                        _pathStack.isNotEmpty) {
+                      _pathStack = [_pathStack.first];
+                      _resetListScrollToTop();
+                    }
+                    _loadCurrentDirectory();
+                  });
+                },
+              ),
+            );
+          },
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        child: TextField(
+          controller: _searchController,
+          onChanged: (value) => setState(() => _searchQuery = value),
+          decoration: InputDecoration(
+            hintText: l10n.searchLevel,
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                  )
+                : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 0),
+          ),
+        ),
+      ),
+      if (_canGoBack)
+        Card(
+          margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: InkWell(
+            onTap: _goToParentDirectory,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                      color: Color(0xFFFFC107),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      l10n.returnUp,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      if (_itemToMove != null)
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+          color: theme.colorScheme.secondaryContainer,
+          child: Row(
+            children: [
+              Icon(
+                Icons.drive_file_move,
+                color: theme.colorScheme.onSecondaryContainer,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.moving(_itemToMove!.name),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: theme.colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                    Text(
+                      l10n.movePrompt,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.colorScheme.onSecondaryContainer
+                            .withAlpha(204),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+    ];
   }
 
   @override
@@ -1110,11 +1436,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Column(
-            children: [
-              if (_rootFolderPath == null)
+          if (_rootFolderPath == null)
                 Expanded(
                   child: Center(
                     child: Padding(
@@ -1166,199 +1490,34 @@ class _LevelListScreenState extends State<LevelListScreen> {
                     ),
                   ),
                 )
-              else ...[
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (_viewMode != LevelViewMode.favorites)
-                          _BreadcrumbBar(
-                            pathStack: _pathStack,
-                            onBreadcrumbClick: _breadcrumbTap,
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final compact = constraints.maxWidth < 240;
-                              return SizedBox(
-                                width: double.infinity,
-                                child: SegmentedButton<LevelViewMode>(
-                                  showSelectedIcon: false,
-                                  style: SegmentedButton.styleFrom(
-                                    visualDensity: VisualDensity.compact,
-                                    selectedBackgroundColor: fabBgColor,
-                                    selectedForegroundColor: fabFgColor,
-                                  ),
-                                  segments: [
-                                    ButtonSegment(
-                                      value: LevelViewMode.all,
-                                      icon: const Icon(
-                                        Icons.folder_outlined,
-                                        size: 20,
-                                      ),
-                                      label: compact
-                                          ? null
-                                          : Text(l10n.allLevelsCategory),
-                                      tooltip: l10n.allLevelsCategory,
-                                    ),
-                                    ButtonSegment(
-                                      value: LevelViewMode.favorites,
-                                      icon: const Icon(
-                                        Icons.favorite_outline,
-                                        size: 20,
-                                      ),
-                                      label: compact
-                                          ? null
-                                          : Text(l10n.favoritesCategory),
-                                      tooltip: l10n.favoritesCategory,
-                                    ),
-                                  ],
-                                  selected: {_viewMode},
-                                  onSelectionChanged: (newSelection) {
-                                    setState(() {
-                                      _viewMode = newSelection.first;
-                                      if (_viewMode == LevelViewMode.favorites &&
-                                          _pathStack.isNotEmpty) {
-                                        _pathStack = [_pathStack.first];
-                                        _resetListScrollToTop();
-                                      }
-                                      _loadCurrentDirectory();
-                                    });
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) =>
-                                setState(() => _searchQuery = value),
-                            decoration: InputDecoration(
-                              hintText: l10n.searchLevel,
-                              prefixIcon: const Icon(Icons.search),
-                              suffixIcon: _searchQuery.isNotEmpty
-                                  ? IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        setState(() => _searchQuery = '');
-                                      },
-                                    )
-                                  : null,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 0),
-                            ),
-                          ),
-                        ),
-                        if (_canGoBack)
-                          Card(
-                            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: InkWell(
-                              onTap: _goToParentDirectory,
-                              borderRadius: BorderRadius.circular(12),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      alignment: Alignment.center,
-                                      child: const Icon(
-                                        Icons.arrow_back,
-                                        size: 30,
-                                        color: Color(0xFFFFC107),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Text(
-                                        l10n.returnUp,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        if (_itemToMove != null)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            color: theme.colorScheme.secondaryContainer,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.drive_file_move,
-                                  color: theme.colorScheme.onSecondaryContainer,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        l10n.moving(_itemToMove!.name),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: theme
-                                              .colorScheme
-                                              .onSecondaryContainer,
-                                        ),
-                                      ),
-                                      Text(
-                                        l10n.movePrompt,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: theme
-                                              .colorScheme
-                                              .onSecondaryContainer
-                                              .withAlpha(204),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
+              else
                 Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final useScrollableHeader =
+                          constraints.maxHeight < _compactHeaderBreakpoint;
+                      final headerChildren = _buildLevelListHeaderChildren(
+                        theme: theme,
+                        l10n: l10n,
+                        fabBgColor: fabBgColor,
+                        fabFgColor: fabFgColor,
+                      );
+
+                      return Column(
+                        children: [
+                          if (useScrollableHeader)
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: ListView(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                physics: const ClampingScrollPhysics(),
+                                children: headerChildren,
+                              ),
+                            )
+                          else
+                            ...headerChildren,
+                          Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : filteredItems.isEmpty
@@ -1386,13 +1545,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                       : ListView.builder(
                           controller: _listScrollController,
                           padding: const EdgeInsets.all(16),
-                          itemCount: filteredItems.length + 1,
+                          itemCount: filteredItems.length,
                           itemBuilder: (context, index) {
-                            final itemIndex = index;
-                            if (itemIndex >= filteredItems.length) {
-                              return const SizedBox(height: 80);
-                            }
-                            final item = filteredItems[itemIndex];
+                            final item = filteredItems[index];
                             final isMovingMode = _itemToMove != null;
                             final isSelfMoving =
                                 isMovingMode && _itemToMove == item;
@@ -1545,56 +1700,48 @@ class _LevelListScreenState extends State<LevelListScreen> {
                             );
                           },
                         ),
-                ),
-              ],
-            ],
-          ),
-          if (_rootFolderPath != null && _itemToMove == null)
-            Positioned(
-              right: 16,
-              bottom: 16,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _AnimatedUploadFab(
-                    visible: _listScrollAtTop,
-                    onPressed: _uploadLevel,
-                    label: l10n.uploadLevel,
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                ],
-              ),
-            ),
+                ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: _rootFolderPath != null && _itemToMove != null
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                FloatingActionButton.extended(
-                  heroTag: 'moveCancel',
-                  onPressed: () {
-                    setState(() {
-                      _itemToMove = null;
-                      _moveSourcePath = null;
-                    });
-                  },
-                  backgroundColor: theme.colorScheme.error,
-                  foregroundColor: theme.colorScheme.onError,
-                  icon: const Icon(Icons.close),
-                  label: Text(l10n.cancel),
-                ),
-                const SizedBox(height: 12),
-                FloatingActionButton.extended(
-                  heroTag: 'movePaste',
-                  onPressed: _handleMoveConfirm,
-                  icon: const Icon(Icons.content_paste),
-                  label: Text(l10n.paste),
-                ),
-              ],
-            )
+      floatingActionButton: _rootFolderPath != null
+          ? _itemToMove != null
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    FloatingActionButton.extended(
+                      heroTag: 'moveCancel',
+                      onPressed: () {
+                        setState(() {
+                          _itemToMove = null;
+                          _moveSourcePath = null;
+                        });
+                      },
+                      backgroundColor: theme.colorScheme.error,
+                      foregroundColor: theme.colorScheme.onError,
+                      icon: const Icon(Icons.close),
+                      label: Text(l10n.cancel),
+                    ),
+                    const SizedBox(height: 12),
+                    FloatingActionButton.extended(
+                      heroTag: 'movePaste',
+                      onPressed: _handleMoveConfirm,
+                      icon: const Icon(Icons.content_paste),
+                      label: Text(l10n.paste),
+                    ),
+                  ],
+                )
+              : _AnimatedUploadFab(
+                  visible: _listScrollAtTop,
+                  onPressed: _uploadLevel,
+                  label: l10n.uploadLevel,
+                )
           : null,
       bottomNavigationBar: _rootFolderPath == null || _itemToMove != null
           ? null

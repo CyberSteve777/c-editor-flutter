@@ -586,6 +586,18 @@ abstract class AppLocalizations {
   /// **'Imported {count} level(s)'**
   String importFolderSuccess(int count);
 
+  /// No description provided for @importFilesUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the selected file(s). Try smaller files or a different browser.'**
+  String get importFilesUnreadable;
+
+  /// No description provided for @importFolderUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder import is not supported in this browser.'**
+  String get importFolderUnsupported;
+
   /// No description provided for @uploadLevelPickerTitle.
   ///
   /// In en, this message translates to:
@@ -9439,6 +9451,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drop config (Plant Food)'**
   String get dropConfigPlantFood;
+
+  /// No description provided for @waveDropConfigTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop configuration'**
+  String get waveDropConfigTitle;
+
+  /// No description provided for @waveDropTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total carrier zombies (AdditionalPlantfood)'**
+  String get waveDropTotalLabel;
+
+  /// No description provided for @waveDropPlantFoodOnlyCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} plant food'**
+  String waveDropPlantFoodOnlyCount(int count);
+
+  /// No description provided for @waveDropPlantsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} plants'**
+  String waveDropPlantsCount(int count);
 
   /// No description provided for @zombiesCarryingPlants.
   ///

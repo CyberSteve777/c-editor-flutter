@@ -1,10 +1,10 @@
 // Cross-browser folder import for C-Editor (read-only; levels persist in IndexedDB).
+// Uses <input webkitdirectory> only — never showDirectoryPicker (avoids FSA write prompts).
 (function () {
   const LEVEL_PATTERN = /\.(json|hujson|rton|zlib|bin)$/i;
 
-  function hasNativeDirectoryPicker() {
-    return typeof window.showDirectoryPicker === 'function';
-  }
+  /** @type {{ name: string, entries: Record<string, { bytes?: Uint8Array, file?: File }> } | null} */
+  let importCache = null;
 
   function hasWebkitDirectoryInput() {
     const input = document.createElement('input');
@@ -20,30 +20,33 @@
     return slash >= 0 ? rel.substring(0, slash) : 'Imported folder';
   }
 
-  async function filesToLevelMap(files) {
-    const out = {};
-    for (const file of files) {
-      if (!LEVEL_PATTERN.test(file.name)) {
-        continue;
-      }
-      const rel = file.webkitRelativePath || file.name;
-      const parts = rel.split('/');
-      if (parts.length > 1) {
-        parts.shift();
-      }
-      const key = parts.join('/');
-      out[key] = new Uint8Array(await file.arrayBuffer());
+  function relativeLevelPath(file) {
+    const rel = file.webkitRelativePath || file.name;
+    const parts = rel.split('/');
+    if (parts.length > 1) {
+      parts.shift();
     }
-    return out;
+    return parts.join('/');
   }
 
-  function entriesFromLevelMap(files) {
-    return Object.entries(files || {}).map(([path, bytes]) => ({
-      path,
-      bytes: Array.from(
-        bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []),
-      ),
-    }));
+  function releaseFolderImport() {
+    importCache = null;
+  }
+
+  async function readCachedEntry(path) {
+    const entry = importCache?.entries?.[path];
+    if (!entry) {
+      return null;
+    }
+    if (entry.bytes) {
+      return entry.bytes;
+    }
+    if (entry.file) {
+      entry.bytes = new Uint8Array(await entry.file.arrayBuffer());
+      delete entry.file;
+      return entry.bytes;
+    }
+    return null;
   }
 
   function pickFolderWebkit() {
@@ -69,16 +72,33 @@
           settle(null);
           return;
         }
-        filesToLevelMap(files)
-          .then((levelFiles) => {
-            settle({
-              name: folderNameFromWebkitFiles(files),
-              entries: entriesFromLevelMap(levelFiles),
-            });
-          })
-          .catch(() => {
-            settle(null);
-          });
+
+        const entries = {};
+        for (const file of files) {
+          if (!LEVEL_PATTERN.test(file.name)) {
+            continue;
+          }
+          const key = relativeLevelPath(file);
+          if (!key) {
+            continue;
+          }
+          entries[key] = { file };
+        }
+
+        const paths = Object.keys(entries);
+        if (!paths.length) {
+          settle(null);
+          return;
+        }
+
+        importCache = {
+          name: folderNameFromWebkitFiles(files),
+          entries,
+        };
+        settle({
+          name: importCache.name,
+          paths,
+        });
       });
 
       input.addEventListener('cancel', () => {
@@ -90,44 +110,34 @@
     });
   }
 
-  async function walkNativeDirectory(dirHandle, prefix, out) {
-    for await (const [name, entry] of dirHandle.entries()) {
-      const rel = prefix ? `${prefix}/${name}` : name;
-      if (entry.kind === 'directory') {
-        await walkNativeDirectory(entry, rel, out);
-      } else if (LEVEL_PATTERN.test(name)) {
-        const file = await entry.getFile();
-        out[rel] = new Uint8Array(await file.arrayBuffer());
-      }
-    }
-  }
-
   window.cEditorFsa = {
     isSupported() {
-      return hasNativeDirectoryPicker() || hasWebkitDirectoryInput();
+      return hasWebkitDirectoryInput();
+    },
+
+    releaseFolderImport() {
+      releaseFolderImport();
+    },
+
+    async readFolderImportEntry(path) {
+      if (!importCache || typeof path !== 'string') {
+        return null;
+      }
+      const bytes = await readCachedEntry(path);
+      if (!bytes) {
+        return null;
+      }
+      return { path, bytes };
     },
 
     async pickFolderForImport() {
-      if (hasWebkitDirectoryInput()) {
-        return await pickFolderWebkit();
+      releaseFolderImport();
+
+      if (!hasWebkitDirectoryInput()) {
+        return null;
       }
-      if (hasNativeDirectoryPicker()) {
-        try {
-          const handle = await window.showDirectoryPicker({ mode: 'read' });
-          const files = {};
-          await walkNativeDirectory(handle, '', files);
-          return {
-            name: handle.name || 'Folder',
-            entries: entriesFromLevelMap(files),
-          };
-        } catch (error) {
-          if (error && error.name === 'AbortError') {
-            return null;
-          }
-          throw error;
-        }
-      }
-      return null;
+
+      return await pickFolderWebkit();
     },
   };
 })();
