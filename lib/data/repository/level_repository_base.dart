@@ -20,12 +20,21 @@ class WebFolderImport {
   final List<String> paths;
 }
 
+enum LevelSortMode {
+  name,
+  created,
+  modified,
+  size,
+  type,
+}
+
 class FileItem {
   FileItem({
     required this.name,
     required this.path,
     required this.isDirectory,
     required this.lastModified,
+    this.creationTime,
     required this.size,
     this.isFavorite = false,
   });
@@ -34,8 +43,19 @@ class FileItem {
   final String path;
   final bool isDirectory;
   final int lastModified;
+  final int? creationTime;
   final int size;
   final bool isFavorite;
+
+  /// Rank for file type sorting: JSON (0) -> RTON (1) -> HUJSON (2) -> Other (3)
+  int get extensionRank {
+    if (isDirectory) return -1;
+    final lower = name.toLowerCase();
+    if (lower.endsWith('.json')) return 0;
+    if (lower.endsWith('.rton')) return 1;
+    if (lower.endsWith('.hujson')) return 2;
+    return 3;
+  }
 }
 
 abstract class LevelRepositoryBase {
@@ -73,8 +93,14 @@ abstract class LevelRepositoryBase {
   Future<String?> getLastOpenedLevelDirectory();
   Future<String> getCacheDir();
   Future<bool> fileExistsInDirectory(String dirPath, String fileName);
-  Future<List<FileItem>> getDirectoryContents(String dirPath);
-  Future<List<FileItem>> getFavorites(String rootPath);
+  Future<List<FileItem>> getDirectoryContents(
+    String dirPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  });
+  Future<List<FileItem>> getFavorites(
+    String rootPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  });
   Future<bool> createDirectory(String parentPath, String name);
   Future<bool> renameItem(
     String currentDirPath,

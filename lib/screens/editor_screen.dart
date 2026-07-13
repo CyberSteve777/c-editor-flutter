@@ -3308,6 +3308,9 @@ class _EditorScreenState extends State<EditorScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsCubit>().state;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final bool useCompactActions = screenWidth < 500;
+
     return BlocBuilder<EditorCubit, EditorState>(
       builder: (context, editorState) {
         final l10n = AppLocalizations.of(context);
@@ -3330,60 +3333,93 @@ class _EditorScreenState extends State<EditorScreen> {
               },
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.remove_red_eye),
-                tooltip: l10n?.levelPreview ?? 'Preview',
-                onPressed: _ec.state.levelFile != null && _ec.state.parsedData != null
-                    ? () {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => LevelPreviewDialog(
-                      levelFile: _ec.state.levelFile!,
-                      parsed: _ec.state.parsedData!,
-                      fileName: _ec.fileName,
-                      onBack: () => Navigator.pop(ctx),
-                    ),
-                  );
-                }
-                    : null,
-              ),
-              IconButton(
-                icon: const Icon(Icons.code),
-                tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',
-                onPressed: _ec.state.levelFile != null
-                    ? () async {
-                        final hadChanges = _ec.state.hasChanges;
-                        await _save();
-                        if (!context.mounted) return;
-                        if (hadChanges) {
-                          // Let the banner start its fade-in before the route covers the frame.
-                          await Future<void>.delayed(
-                            const Duration(milliseconds: 32),
-                          );
-                          if (!context.mounted) return;
+              if (!useCompactActions) ...[
+                IconButton(
+                  icon: const Icon(Icons.remove_red_eye),
+                  tooltip: l10n?.levelPreview ?? 'Preview',
+                  onPressed: _ec.state.levelFile != null && _ec.state.parsedData != null
+                      ? () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!context.mounted) return;
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => LevelPreviewDialog(
+                          levelFile: _ec.state.levelFile!,
+                          parsed: _ec.state.parsedData!,
+                          fileName: _ec.fileName,
+                          onBack: () => Navigator.pop(ctx),
+                        ),
+                      );
+                    });
+                  }
+                      : null,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.code),
+                  tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',
+                  onPressed: _ec.state.levelFile != null
+                      ? () async {
+                          final hadChanges = _ec.state.hasChanges;
+                          await _save();
+                          if (!mounted) return;
+                          if (hadChanges) {
+                            // Let the banner start its fade-in before the route covers the frame.
+                            await Future<void>.delayed(
+                              const Duration(milliseconds: 32),
+                            );
+                            if (!mounted) return;
+                          }
+                          WidgetsBinding.instance.addPostFrameCallback((_) async {
+                            if (!context.mounted) return;
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => JsonViewerScreen(
+                                  fileName: _ec.fileName,
+                                  filePath: _ec.filePath,
+                                  levelFile: _ec.state.levelFile!,
+                                  onBack: () => Navigator.pop(context),
+                                  onSaved: () => _ec.onJsonViewerSaved(),
+                                ),
+                              ),
+                            );
+                          });
                         }
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => JsonViewerScreen(
-                              fileName: _ec.fileName,
-                              filePath: _ec.filePath,
-                              levelFile: _ec.state.levelFile!,
-                              onBack: () => Navigator.pop(context),
-                              onSaved: () => _ec.onJsonViewerSaved(),
-                            ),
-                          ),
-                        );
-                      }
-                    : null,
-              ),
-              IconButton(
-                icon: const Icon(Icons.save),
-                tooltip: l10n?.tooltipSave ?? 'Save',
-                onPressed: _ec.state.hasChanges ? _save : null,
+                      : null,
+                ),
+              ],
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: const Icon(Icons.save),
+                    tooltip: l10n?.tooltipSave ?? 'Save',
+                    onPressed: _ec.state.hasChanges ? _save : null,
+                  );
+                },
               ),
               PopupMenuButton<String>(
                 itemBuilder: (context) => [
+                  if (useCompactActions) ...[
+                    PopupMenuItem(
+                      value: 'preview',
+                      enabled: _ec.state.levelFile != null && _ec.state.parsedData != null,
+                      child: ListTile(
+                        leading: const Icon(Icons.remove_red_eye),
+                        title: Text(l10n?.levelPreview ?? 'Preview'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'json',
+                      enabled: _ec.state.levelFile != null,
+                      child: ListTile(
+                        leading: const Icon(Icons.code),
+                        title: Text(l10n?.tooltipJsonViewer ?? 'View/edit JSON'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuDivider(),
+                  ],
                   PopupMenuItem(
                     value: 'lang',
                     child: ListTile(
@@ -3413,8 +3449,44 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                   ),
                 ],
-                onSelected: (value) {
-                  if (value == 'lang') {
+                onSelected: (value) async {
+                  if (value == 'preview') {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!context.mounted) return;
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => LevelPreviewDialog(
+                          levelFile: _ec.state.levelFile!,
+                          parsed: _ec.state.parsedData!,
+                          fileName: _ec.fileName,
+                          onBack: () => Navigator.pop(ctx),
+                        ),
+                      );
+                    });
+                  } else if (value == 'json') {
+                    final hadChanges = _ec.state.hasChanges;
+                    await _save();
+                    if (!mounted) return;
+                    if (hadChanges) {
+                      await Future<void>.delayed(const Duration(milliseconds: 32));
+                      if (!mounted) return;
+                    }
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
+                      if (!context.mounted) return;
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => JsonViewerScreen(
+                            fileName: _ec.fileName,
+                            filePath: _ec.filePath,
+                            levelFile: _ec.state.levelFile!,
+                            onBack: () => Navigator.pop(context),
+                            onSaved: () => _ec.onJsonViewerSaved(),
+                          ),
+                        ),
+                      );
+                    });
+                  } else if (value == 'lang') {
                     widget.onLanguageTap(context);
                   } else if (value == 'ui') {
                     _showUiScaleDialog(context);
@@ -3438,14 +3510,20 @@ class _EditorScreenState extends State<EditorScreen> {
                   child: Builder(
                     builder: (context) {
                       _tabController = DefaultTabController.of(context);
-                      return Column(
-                        children: [
-                          TabBar(
-                            isScrollable: false,
-                            tabAlignment: TabAlignment.fill,
-                            dividerHeight: 0,
-                            indicatorSize: TabBarIndicatorSize.tab,
-                            tabs: _ec.state.availableTabs.map((t) {
+                      return LayoutBuilder(
+                        builder: (context, constraints) {
+                          final bool shouldScroll = constraints.maxWidth < 600;
+                          return Column(
+                            children: [
+                              TabBar(
+                                isScrollable: shouldScroll,
+                                tabAlignment:
+                                    shouldScroll
+                                        ? TabAlignment.start
+                                        : TabAlignment.fill,
+                                dividerHeight: 0,
+                                indicatorSize: TabBarIndicatorSize.tab,
+                                tabs: _ec.state.availableTabs.map((t) {
                               IconData icon;
                               String label;
                               switch (t) {
@@ -3573,9 +3651,11 @@ class _EditorScreenState extends State<EditorScreen> {
                         ],
                       );
                     },
-                  ),
-                ),
-        );
+                  );
+                },
+              ),
+            ),
+          );
         if (isDesktop) {
           body = Shortcuts(
             shortcuts: const {
@@ -3634,7 +3714,7 @@ class _UiScalePresetLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
       children: [
         _UiScalePresetLabel(
           label: smallLabel,

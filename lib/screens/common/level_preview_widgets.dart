@@ -34,27 +34,34 @@ class ResourceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget content = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      height: 32,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
-      child: Wrap(
-        spacing: 6,
-        runSpacing: 4,
-        crossAxisAlignment: WrapCrossAlignment.center,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: 16, color: color),
-          if (label.isNotEmpty)
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+          Icon(icon, size: 18, color: color),
+          if (label.isNotEmpty) ...[
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  height: 1.1,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
+          ],
         ],
       ),
     );

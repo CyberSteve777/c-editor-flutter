@@ -48,6 +48,12 @@
   "heianWind": "Heian Wind",
   "all": "All",
   "impLv": "Imp Lv.",
+  "sortByLabel": "Sort",
+  "sortByName": "Sort: By Name",
+  "sortByCreationDate": "Sort: By Creation Date",
+  "sortByModificationDate": "Sort: By Modification Date",
+  "sortBySize": "Sort: By Size",
+  "sortByFileType": "Sort: By File Type",
   "impsCount": "{count, plural, =1{1 imp} other{{count} imps}}",
   "@impsCount": {
     "placeholders": {

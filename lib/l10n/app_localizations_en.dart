@@ -156,6 +156,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get impLv => 'Imp Lv.';
 
   @override
+  String get sortByLabel => 'Sort';
+
+  @override
+  String get sortByName => 'Sort: By Name';
+
+  @override
+  String get sortByCreationDate => 'Sort: By Creation Date';
+
+  @override
+  String get sortByModificationDate => 'Sort: By Modification Date';
+
+  @override
+  String get sortBySize => 'Sort: By Size';
+
+  @override
+  String get sortByFileType => 'Sort: By File Type';
+
+  @override
   String impsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

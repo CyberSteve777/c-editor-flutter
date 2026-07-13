@@ -31,7 +31,10 @@ class LevelRepository {
 
   static Future<String> ensureIosLibraryPath() => _impl.ensureIosLibraryPath();
 
-  static Future<List<FileItem>> getFavorites(String rootPath) => _impl.getFavorites(rootPath);
+  static Future<List<FileItem>> getFavorites(
+    String rootPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) => _impl.getFavorites(rootPath, sortMode: sortMode);
 
   static Future<bool> ensureFolderAccess() => _impl.ensureFolderAccess();
 
@@ -52,8 +55,10 @@ class LevelRepository {
   static String baseNameWithoutLevelExtension(String name) =>
       _impl.baseNameWithoutLevelExtension(name);
 
-  static Future<List<FileItem>> getDirectoryContents(String dirPath) =>
-      _impl.getDirectoryContents(dirPath);
+  static Future<List<FileItem>> getDirectoryContents(
+    String dirPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) => _impl.getDirectoryContents(dirPath, sortMode: sortMode);
 
   static Future<void> setFavoriteLevelPath(String path, bool isFavorite) =>
       _impl.setFavoriteLevelPath(path, isFavorite);

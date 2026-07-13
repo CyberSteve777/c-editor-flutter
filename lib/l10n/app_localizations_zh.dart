@@ -156,6 +156,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get impLv => '小僵尸等级';
 
   @override
+  String get sortByLabel => '排序';
+
+  @override
+  String get sortByName => '排序：按名称';
+
+  @override
+  String get sortByCreationDate => '排序：按创建日期';
+
+  @override
+  String get sortByModificationDate => '排序：按修改日期';
+
+  @override
+  String get sortBySize => '排序：按大小';
+
+  @override
+  String get sortByFileType => '排序：按文件类型';
+
+  @override
   String impsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

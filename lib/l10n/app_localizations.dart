@@ -394,6 +394,42 @@ abstract class AppLocalizations {
   /// **'Imp Lv.'**
   String get impLv;
 
+  /// No description provided for @sortByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortByLabel;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Name'**
+  String get sortByName;
+
+  /// No description provided for @sortByCreationDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Creation Date'**
+  String get sortByCreationDate;
+
+  /// No description provided for @sortByModificationDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Modification Date'**
+  String get sortByModificationDate;
+
+  /// No description provided for @sortBySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Size'**
+  String get sortBySize;
+
+  /// No description provided for @sortByFileType.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By File Type'**
+  String get sortByFileType;
+
   /// No description provided for @impsCount.
   ///
   /// In en, this message translates to:

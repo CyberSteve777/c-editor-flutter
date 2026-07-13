@@ -44,6 +44,12 @@
   "heianWind": "平安阁之风",
   "all": "全部",
   "impLv": "小僵尸等级",
+  "sortByLabel": "排序",
+  "sortByName": "排序：按名称",
+  "sortByCreationDate": "排序：按创建日期",
+  "sortByModificationDate": "排序：按修改日期",
+  "sortBySize": "排序：按大小",
+  "sortByFileType": "排序：按文件类型",
   "impsCount": "{count, plural, =1{1 个小僵尸} other{{count} 个小僵尸}}",
   "@impsCount": {
     "placeholders": {
