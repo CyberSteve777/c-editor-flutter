@@ -241,23 +241,24 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildSummaryCard(context, levelDef, theme, l10n),
-              const SizedBox(height: 12),
               _buildSeedBankCard(context, theme, l10n),
-              const SizedBox(height: 12),
               _buildConveyorCard(context, theme, l10n),
-              const SizedBox(height: 12),
               _buildCopycatCard(context, theme, l10n),
-              const SizedBox(height: 12),
               _buildSeedRainCard(context, theme, l10n),
-              const SizedBox(height: 12),
               _buildHeianWindCard(context, theme, l10n),
-              const SizedBox(height: 12),
               _buildPrePlacedCard(context, theme, l10n),
-              const SizedBox(height: 12),
               _buildEncounterCard(context, theme, l10n),
-              const SizedBox(height: 12),
               _buildModulesCard(context, theme, l10n),
-            ],
+            ].fold<List<Widget>>([], (list, card) {
+              if (card is SizedBox && (card.height ?? 0) == 0 && card.child == null) {
+                return list;
+              }
+              if (list.isNotEmpty) {
+                list.add(const SizedBox(height: 12));
+              }
+              list.add(card);
+              return list;
+            }),
           ),
         ),
       ),

@@ -412,20 +412,6 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     _sync();
   }
 
-  void _setZombies(List<ZombieSpawnData> zombies, {bool sortRows = false}) {
-    if (sortRows) {
-      sortZombieSpawnListByRow(zombies, maxRow: _maxRow);
-    }
-    _data = SpawnZombiesFishWaveActionPropsData(
-      notificationEvents: _data.notificationEvents,
-      additionalPlantFood: _data.additionalPlantFood,
-      spawnPlantName: _data.spawnPlantName,
-      zombies: zombies,
-      fishes: _data.fishes,
-    );
-    _sync();
-  }
-
   void _handleZombieDragDropMove(
       int fromIndex,
       int toRow,
@@ -449,7 +435,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     }
     _data = SpawnZombiesFishWaveActionPropsData(
       notificationEvents: _data.notificationEvents,
-      additionalPlantFood: (plants.length) > 0 ? plants.length : null,
+      additionalPlantFood: plants.isNotEmpty ? plants.length : null,
       spawnPlantName: plants.isEmpty ? null : plants,
       zombies: _data.zombies,
       fishes: _data.fishes,

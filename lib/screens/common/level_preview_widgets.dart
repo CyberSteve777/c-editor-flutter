@@ -87,7 +87,7 @@ class UniversalIcon extends StatelessWidget {
       return _IconWrapper(
         id: clean,
         tooltip: ResourceNames.lookup(context, 'tool_plantfood'),
-        asset: 'assets/images/others/plantfood.webp',
+        asset: 'assets/images/others/plantfood.png',
         size: size,
         isGrid: isGrid,
         fallbackIcon: Icons.build,
@@ -238,7 +238,6 @@ class ZombieIcon extends StatelessWidget {
     if (info?.icon != null) {
       asset = 'assets/images/zombies/${info!.icon}';
     } else if (isCustom) {
-      // Fallback for custom: try class name directly if TypeName was just a class name
       final normalizedBase = _normalizeId(targetId);
       final classInfo = repo.getZombieById(normalizedBase);
       if (classInfo?.icon != null) {
@@ -246,7 +245,6 @@ class ZombieIcon extends StatelessWidget {
       }
     }
 
-    // If still no asset, use unknown question mark for custom or missing ones
     final finalAsset = asset ?? 'assets/images/others/unknown.webp';
 
     return _IconWrapper(
