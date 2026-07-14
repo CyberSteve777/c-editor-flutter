@@ -43,9 +43,12 @@ jobs:
 
       - run: flutter pub get
       - name: Build Windows release
+        shell: pwsh
         env:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
-        run: flutter build windows --release
+        run: |
+          $dartDefines = & .github/scripts/flutter-dart-defines.ps1
+          flutter build windows --release $dartDefines
 
       - name: Package Windows portable
         shell: pwsh
