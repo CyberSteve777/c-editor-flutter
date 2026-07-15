@@ -207,39 +207,43 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       );
     }
 
-    return AlertDialog(
+    return Dialog(
       backgroundColor: theme.colorScheme.surface,
       insetPadding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 40 : 12,
-        vertical: isDesktop ? 40 : 20,
+        vertical: isDesktop ? 40 : 12,
       ),
-      titlePadding: const EdgeInsets.fromLTRB(24, 16, 16, 8),
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(
-              '${l10n.levelPreview}: ${widget.fileName}',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: widget.onBack,
-            tooltip: l10n.back,
-          ),
-        ],
-      ),
-      contentPadding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-      content: SizedBox(
-        width: isDesktop ? 900 : double.maxFinite,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: isDesktop ? 900 : double.infinity,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
         child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    '${l10n.levelPreview}: ${widget.fileName}',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: widget.onBack,
+                    tooltip: l10n.back,
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
               _buildSummaryCard(context, levelDef, theme, l10n),
               _buildSeedBankCard(context, theme, l10n),
               _buildConveyorCard(context, theme, l10n),
@@ -415,12 +419,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
                 children: [
                   Icon(Icons.info_outline, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildSectionTitle(l10n.levelBasicInfo, theme)),
+                  _buildSectionTitle(l10n.levelBasicInfo, theme),
                 ],
               ),
             ),
@@ -578,7 +582,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   ),
                 if (hasZombieRush && rushTime != null)
                   ResourceChip(
-                    icon: Icons.timer,
+                    icon: Icons.timer_outlined,
                     label: '${rushTime}s',
                     color: Colors.redAccent,
                     tooltip: l10n.zombieRushLabel,
@@ -719,30 +723,29 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
             const SizedBox(height: 20),
             if (isZombieMode)
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   const Icon(Icons.swap_horiz, size: 18, color: Colors.blueAccent),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "${l10n.reverseZombieFactionTitle}: ",
-                      style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
-                    ),
+                  Text(
+                    "${l10n.reverseZombieFactionTitle}: ",
+                    style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
                   ),
                   Icon(isReversedFaction ? Icons.check : Icons.close, size: 18, color: isReversedFaction ? Colors.greenAccent : Colors.redAccent),
                 ],
               )
             else
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   const Icon(Icons.trending_up, size: 18, color: Colors.blueAccent),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "${l10n.plantLevelLabel}: $levelText",
-                      style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
-                      overflow: TextOverflow.visible,
-                    ),
+                  Text(
+                    "${l10n.plantLevelLabel}: $levelText",
+                    style: const TextStyle(fontSize: 15, color: Colors.blueAccent),
                   ),
                 ],
               ),
@@ -870,14 +873,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   }
 
   Widget _legendItem(Color color, String label, ThemeData theme) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
       children: [
         Container(
           width: 8, height: 8,
           decoration: BoxDecoration(color: color.withValues(alpha: 0.8), shape: BoxShape.circle),
         ),
-        const SizedBox(width: 4),
         Text(label, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.38))),
       ],
     );
@@ -897,8 +900,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 4,
           children: [
             Text(
               '$label ',
@@ -908,7 +912,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const UniversalIcon(id: 'plantfood', size: 16),
+            const UniversalIcon(id: 'plantfood', size: 18),
             Text(
               ': $count',
               style: const TextStyle(
@@ -941,7 +945,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         runSpacing: 4,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          UniversalIcon(id: iconId, size: 16),
+          UniversalIcon(id: iconId, size: 18),
           Text(
             label,
             style: TextStyle(
@@ -1058,12 +1062,11 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   ? _buildPrePlacedTabSwitcher(l10n, allGridCategories)
                   : const SizedBox.shrink();
 
-              final titlePart = Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
+              final titlePart = Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
                 children: [
                   Icon(Icons.grid_view, size: 20, color: tabColor.withValues(alpha: 0.9)),
-                  const SizedBox(width: 8),
                   _buildSectionTitle(l10n.previewPrePlaced, theme, color: tabColor),
                 ],
               );
@@ -2048,11 +2051,11 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             return Wrap(
               spacing: 12,
               runSpacing: 8,
-              children: counts.entries.map((e) => Row(
-                mainAxisSize: MainAxisSize.min,
+              children: counts.entries.map((e) => Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 4,
                 children: [
                   UniversalIcon(id: e.key, size: 36),
-                  const SizedBox(width: 4),
                   Text('x${e.value}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface.withValues(alpha: 0.9))),
                 ],
               )).toList(),
@@ -2064,19 +2067,19 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               spacing: 12,
               runSpacing: 8,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 4,
                   children: [
                     _legendDot(Colors.green),
-                    const SizedBox(width: 4),
                     Text(l10n.vaseSpawnArea, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.8))),
                   ],
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 4,
                   children: [
                     _legendDot(Colors.red),
-                    const SizedBox(width: 4),
                     Text(l10n.blackList, style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.8))),
                   ],
                 ),
@@ -2173,13 +2176,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: LayoutBuilder(builder: (context, constraints) {
-                final titlePart = Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
+                final titlePart = Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
                   children: [
                     Icon(Icons.layers_outlined, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
-                    const SizedBox(width: 8),
-                    Flexible(child: _buildSectionTitle(l10n.previewLevelContent, theme)),
+                    _buildSectionTitle(l10n.previewLevelContent, theme),
                   ],
                 );
 
@@ -2267,12 +2269,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
                 children: [
                   Icon(Icons.question_mark, size: 20, color: const Color(0xFF4AC380)),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildSectionTitle(title, theme, color: const Color(0xFF4AC380))),
+                  _buildSectionTitle(title, theme, color: const Color(0xFF4AC380)),
                 ],
               ),
             ),
@@ -2337,12 +2339,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
                 children: [
                   Icon(Icons.umbrella, size: 20, color: const Color(0xFF4CAF50)),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildSectionTitle(title, theme, color: const Color(0xFF4CAF50))),
+                  _buildSectionTitle(title, theme, color: const Color(0xFF4CAF50)),
                 ],
               ),
             ),
@@ -2373,12 +2375,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
                 children: [
                   Icon(Icons.air, size: 20, color: const Color(0xFF607D8B)),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildSectionTitle(title, theme, color: const Color(0xFF607D8B))),
+                  _buildSectionTitle(title, theme, color: const Color(0xFF607D8B)),
                 ],
               ),
             ),
@@ -2644,11 +2646,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               padding: const EdgeInsets.only(bottom: 16),
               child: LayoutBuilder(builder: (context, constraints) {
                 final isWide = constraints.maxWidth > 500;
-                final titlePart = Row(
+                final titlePart = Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
                   children: [
                     Icon(Icons.auto_awesome, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
-                    const SizedBox(width: 8),
-                    Flexible(child: _buildSectionTitle(featuresLabel, theme)),
+                    _buildSectionTitle(featuresLabel, theme),
                   ],
                 );
 
@@ -2708,11 +2711,11 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               Wrap(
                 spacing: 16,
                 runSpacing: 4,
-                children: statusIcons.map((si) => Row(
-                  mainAxisSize: MainAxisSize.min,
+                children: statusIcons.map((si) => Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 4,
                   children: [
                     Icon(si.icon, size: 12, color: si.color.withValues(alpha: 0.6)),
-                    const SizedBox(width: 4),
                     Text(
                       si.title,
                       style: TextStyle(fontSize: 10, color: theme.colorScheme.onSurface.withValues(alpha: 0.8)),
@@ -2725,10 +2728,13 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               const SizedBox(height: 12),
             ],
     if (featureInfos.isNotEmpty) ...[
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 12,
+        runSpacing: 8,
         children: [
-          Expanded(child: _buildSubSectionTitle(l10n.moduleTitle_StarChallengeModuleProperties, theme)),
+          _buildSubSectionTitle(l10n.moduleTitle_StarChallengeModuleProperties, theme),
           if (featureInfos.length > 5)
             IconButton(
               onPressed: () => setState(() => _challengesExpanded = !_challengesExpanded),
@@ -2753,43 +2759,43 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.start,
+            spacing: 10,
+            runSpacing: 4,
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Icon(info.icon, size: 16, color: info.icon == Icons.star ? Colors.amber : Colors.greenAccent),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Wrap(
-                  spacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    isClickable
-                        ? InkWell(
-                            onTap: () => _showChallengeDetails(context, info.objClass, info.objData, info.title),
-                            borderRadius: BorderRadius.circular(4),
-                            child: Text(
-                              title,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                color: Colors.blueAccent,
-                              ),
-                            ),
-                          )
-                        : Text(
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  isClickable
+                      ? InkWell(
+                          onTap: () => _showChallengeDetails(context, info.objClass, info.objData, info.title),
+                          borderRadius: BorderRadius.circular(4),
+                          child: Text(
                             title,
-                            style: const TextStyle(fontSize: 15),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.blueAccent,
+                            ),
                           ),
-                    if (info.objClass == 'StarChallengeDisablePlantProps' && param != null)
-                      AssetImageWidget(
-                        assetPath: StarChallengeProfessions.iconAsset(param),
-                        width: 20,
-                        height: 20,
-                      ),
-                  ],
-                ),
+                        )
+                      : Text(
+                          title,
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                  if (info.objClass == 'StarChallengeDisablePlantProps' && param != null)
+                    AssetImageWidget(
+                      assetPath: StarChallengeProfessions.iconAsset(param),
+                      width: 20,
+                      height: 20,
+                    ),
+                ],
               ),
             ],
           ),
@@ -3218,7 +3224,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
           ),
-          child: Row(
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 12,
+            runSpacing: 8,
             children: [
               Container(
                 width: 42,
@@ -3234,17 +3243,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                       )
                     : const Center(child: Icon(Icons.face, size: 21, color: Colors.white24)),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  displayName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
-                  ),
+              Text(
+                displayName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -3305,7 +3311,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
           ),
-          child: Row(
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 12,
+            runSpacing: 8,
             children: [
               Container(
                 width: 42,
@@ -3321,17 +3330,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                       )
                     : const Center(child: Icon(Icons.security, size: 21, color: Colors.white24)),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  displayName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
-                  ),
+              Text(
+                displayName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],

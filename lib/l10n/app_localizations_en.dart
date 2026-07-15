@@ -156,6 +156,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get impLv => 'Imp Lv.';
 
   @override
+  String get sortByLabel => 'Sort';
+
+  @override
+  String get sortByName => 'Sort: By Name';
+
+  @override
+  String get sortByCreationDate => 'Sort: By Creation Date';
+
+  @override
+  String get sortByModificationDate => 'Sort: By Modification Date';
+
+  @override
+  String get sortBySize => 'Sort: By Size';
+
+  @override
+  String get sortByFileType => 'Sort: By File Type';
+
+  @override
   String impsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -177,7 +195,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Total Plant Food (including drops, events, etc.)';
 
   @override
-  String get appTitle => 'My Level Library';
+  String get appTitle => 'My Levels';
 
   @override
   String get about => 'About';
@@ -369,10 +387,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadFolder => 'Download this directory';
 
   @override
+  String get exportLevels => 'Export levels';
+
+  @override
+  String get exportSelectLevels => 'Select levels to export';
+
+  @override
+  String get exportSelectFile => 'Select level archive for export (.rsb.smf)';
+
+  @override
+  String exportSelectedFile(String path) {
+    return 'Selected file: $path';
+  }
+
+  @override
+  String get backupRecommendationTitle => 'Backup Recommendation';
+
+  @override
+  String get backupRecommendationBody =>
+      'It is highly recommended to create a backup of your level archive before exporting. This helps prevent data loss if the operation is interrupted.';
+
+  @override
+  String get backupAndProceed => 'Backup and Proceed';
+
+  @override
+  String get proceedWithoutBackup => 'Proceed Without Backup';
+
+  @override
+  String get backupSuffix => '_copy';
+
+  @override
+  String get exportNoFilesFound => 'No compatible files found (.rsb.smf).';
+
+  @override
+  String get cancelExportTitle => 'Cancel Export';
+
+  @override
+  String get cancelExportMessage =>
+      'Are you sure you want to cancel the export process?';
+
+  @override
+  String get exportDisclaimerTitle => 'Risk Warning & Disclaimer';
+
+  @override
+  String get exportDisclaimerBody =>
+      'This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
+
+  @override
   String get importProgressTitle => 'Importing levels…';
 
   @override
   String get exportProgressTitle => 'Building export…';
+
+  @override
+  String get backupProgressTitle => 'Creating backup…';
 
   @override
   String transferProgressCount(int completed, int total) {
@@ -454,7 +522,95 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchLevel => 'Search levels...';
 
   @override
-  String get proceed => 'Continue';
+  String get proceed => 'Proceed';
+
+  @override
+  String get startExport => 'Begin';
+
+  @override
+  String get exportProceed => 'Proceed';
+
+  @override
+  String get exportBegin => 'Begin';
+
+  @override
+  String get exportStatusCreatingRton => 'Creating RTON levels...';
+
+  @override
+  String get exportStatusUnpackingRsb => 'Unpacking RSB...';
+
+  @override
+  String get exportStatusUnpackingRsg => 'Unpacking Packages.rsg...';
+
+  @override
+  String get exportStatusInjecting => 'Injecting levels...';
+
+  @override
+  String get exportStatusRepackingRsg => 'Repacking RSG...';
+
+  @override
+  String get exportStatusRepackingRsb => 'Repacking RSB...';
+
+  @override
+  String get exportStatusFinalizing => 'Finalizing...';
+
+  @override
+  String get exportAssignmentProposalTitle => 'Level Distribution';
+
+  @override
+  String get exportWorld => 'World';
+
+  @override
+  String get exportLevelNumber => 'Level Number';
+
+  @override
+  String exportLevelShort(int level) {
+    return 'Lvl. $level';
+  }
+
+  @override
+  String get exportFinish => 'Finish';
+
+  @override
+  String get exportSuccessTitle => 'Export Successful';
+
+  @override
+  String get exportSuccessMessage =>
+      'The levels have been successfully exported to the archive.';
+
+  @override
+  String exportDuplicateAssignment(String world, int level) {
+    return 'Duplicate assignment: $world $level';
+  }
+
+  @override
+  String get exportAssignmentIncomplete => 'Not all levels assigned';
+
+  @override
+  String get exportConfirmationTitle => 'Confirm assignments';
+
+  @override
+  String get exportConfirmationBody =>
+      'Please verify your assignments before proceeding.';
+
+  @override
+  String get exportFinalCheckTitle => 'Final Check';
+
+  @override
+  String get exportFinalCheckBody =>
+      'The following levels will be exported with new names:';
+
+  @override
+  String exportTargetArchive(String file) {
+    return 'All levels will be exported to $file';
+  }
+
+  @override
+  String get exportStart => 'Start Export';
+
+  @override
+  String get exportAssignmentProposalBody =>
+      'The selected levels are validated. Now you should choose which adventure slot each level will occupy in the game.';
 
   @override
   String get copyReferenceOrDeep => 'Copy reference or make a deep copy?';
@@ -7668,4 +7824,97 @@ class AppLocalizationsEn extends AppLocalizations {
   String startupLoadingCategoryProgress(String category) {
     return 'Loading $category...';
   }
+
+  @override
+  String get reselectFiles => 'Re-select files';
+
+  @override
+  String get validationReviewRequest =>
+      'Please review the validation results for the selected levels.';
+
+  @override
+  String get validationRecommendation =>
+      'We recommend editing these levels to fix the issues before exporting, or choosing different files.';
+
+  @override
+  String validationProgress(int current, int total) {
+    return 'Validating $current / $total';
+  }
+
+  @override
+  String get invalid_rsb_version => 'Invalid RSB version, should be 3 or 4';
+
+  @override
+  String get invalid_file_list_offset => 'Invalid File List Offset';
+
+  @override
+  String get invalid_rsb_ver_3_resource_offset =>
+      'Invalid Resource Offset for RSB version 3';
+
+  @override
+  String get invalid_composite_name => 'Invalid Composite Name';
+
+  @override
+  String get out_of_range_1 => 'Out of range for poolIndex';
+
+  @override
+  String get out_of_range_2 => 'Out of range for packet index';
+
+  @override
+  String get invalid_rsg_name => 'Invalid RSG Name';
+
+  @override
+  String get invalid_packet_width => 'Invalid Packet Width';
+
+  @override
+  String get invalid_packet_height => 'Invalid Packet Height';
+
+  @override
+  String get invalid_item_packet => 'Invalid Item Packet';
+
+  @override
+  String get invalid_rsg_number => 'Invalid RSG index';
+
+  @override
+  String get invalid_part2_offset => 'Invalid Part2 Offset';
+
+  @override
+  String get invalid_head_length => 'Invalid Head Length';
+
+  @override
+  String get rsb_is_corrupted => 'This RSB is corrupted';
+
+  @override
+  String get invalid_ptx_info_eachlength => 'PTX Info is invalid';
+
+  @override
+  String get invalid_end_offset => 'Invalid End Offset';
+
+  @override
+  String get invalid_rsb_head =>
+      'Mismatch RSB magic, should starts with \"1BSR\"';
+
+  @override
+  String get invalid_ptx_info_each_length => 'Invalid PTX Info';
+
+  @override
+  String get category_out_of_length => 'Category is out of length';
+
+  @override
+  String get name_path_must_be_ascii => 'Name path must match ASCII';
+
+  @override
+  String get invalid_rsg_magic =>
+      'Invalid RSG Magic, should starts with \"PGSR\"';
+
+  @override
+  String get invalid_rsg_version => 'Invalid RSG version, should be 3 or 4';
+
+  @override
+  String get invalid_rsg_compression_flag =>
+      'Invalid RSG Compression flag, only 0 to 3 is supported';
+
+  @override
+  String get mismatch_zlib_magic =>
+      'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4';
 }

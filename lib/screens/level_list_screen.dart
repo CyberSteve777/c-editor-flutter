@@ -1,19 +1,22 @@
 import 'dart:io' show Platform, Directory;
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb, Uint8List;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/data/app_links.dart';
 import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
+import 'package:c_editor/data/repository/level_repository_base.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/screens/export/export_screen.dart';
 import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 
@@ -67,6 +70,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
   String _selectedTemplate = '';
   String _newLevelNameInput = '';
   bool _showUiScaleDialog = false;
+  LevelSortMode _sortMode = LevelSortMode.name;
   final ScrollController _listScrollController = ScrollController();
   bool _listScrollAtTop = true;
 
@@ -101,10 +105,43 @@ class _LevelListScreenState extends State<LevelListScreen> {
         lower.endsWith('.hujson') ||
         lower.endsWith('.rton') ||
         lower.endsWith('.zlib') ||
-        lower.endsWith('.bin')) {
+        lower.endsWith('.bin') ||
+        lower.endsWith('.smf') ||
+        lower.endsWith('.rsb') ||
+        lower.endsWith('.rsg')) {
       return trimmed;
     }
     return trimmed + _levelExtensionFromFileName(referenceFileName);
+  }
+
+  Future<void> _toggleSortMode() async {
+    final next = switch (_sortMode) {
+      LevelSortMode.name => LevelSortMode.created,
+      LevelSortMode.created => LevelSortMode.modified,
+      LevelSortMode.modified => LevelSortMode.size,
+      LevelSortMode.size => LevelSortMode.type,
+      LevelSortMode.type => LevelSortMode.name,
+    };
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('level_list_sort_mode', next.index);
+
+    setState(() => _sortMode = next);
+    _loadCurrentDirectory();
+
+    if (mounted) {
+      final l10n = AppLocalizations.of(context);
+      final msg = switch (next) {
+        LevelSortMode.name => l10n?.sortByName ?? 'Sorted by name',
+        LevelSortMode.modified =>
+          l10n?.sortByModificationDate ?? 'Sorted by modification date',
+        LevelSortMode.created =>
+          l10n?.sortByCreationDate ?? 'Sorted by creation date',
+        LevelSortMode.size => l10n?.sortBySize ?? 'Sorted by size',
+        LevelSortMode.type => l10n?.sortByFileType ?? 'Sorted by file type',
+      };
+      _showMessage(msg, icon: Icons.sort);
+    }
   }
 
   @override
@@ -148,7 +185,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
           }
         }
       } catch (_) {
-        /* lastLevelDir not under root */
       }
     }
     _pathStack = stack;
@@ -207,6 +243,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   Future<void> _loadSavedPathAndList() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedSortIndex = prefs.getInt('level_list_sort_mode') ?? 0;
+    if (savedSortIndex < LevelSortMode.values.length) {
+      _sortMode = LevelSortMode.values[savedSortIndex];
+    }
+
     await _ensureStoragePermission();
     if (kIsWeb) {
       await LevelRepository.ensureWebStorageReady();
@@ -257,6 +299,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   Future<void> _pickFolder() async {
     if (kIsWeb) return;
+    final prefs = await SharedPreferences.getInstance();
+    final savedSortIndex = prefs.getInt('level_list_sort_mode') ?? 0;
+    if (savedSortIndex < LevelSortMode.values.length) {
+      _sortMode = LevelSortMode.values[savedSortIndex];
+    }
+
     await _ensureStoragePermission();
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
@@ -450,7 +498,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         )
         .toList();
 
-    if (!context.mounted) return 0;
+    if (!mounted) return 0;
     final imported = progressTitle == null
         ? await LevelRepository.importWebFilesBatched(batched)
         : await _runWebImportProgress(progressTitle, batched) ?? 0;
@@ -500,7 +548,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       return 0;
     }
 
-    if (!context.mounted) {
+    if (!mounted) {
       LevelRepository.releaseWebFolderImport();
       return 0;
     }
@@ -524,7 +572,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     String title,
     List<({String storageKey, String relativePath})> entries,
   ) {
-    if (!context.mounted) {
+    if (!mounted) {
       return Future.value(null);
     }
     return runWebTransferWithProgress<int>(
@@ -543,7 +591,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     String title,
     List<({String storageKey, Uint8List bytes})> files,
   ) {
-    if (!context.mounted) {
+    if (!mounted) {
       return Future.value(null);
     }
     return runWebTransferWithProgress<int>(
@@ -803,7 +851,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
       if (_viewMode == LevelViewMode.favorites) {
         items = await LevelRepository.getFavorites(_rootFolderPath!);
       } else {
-        items = await LevelRepository.getDirectoryContents(activePath);
+        items = await LevelRepository.getDirectoryContents(
+          activePath,
+          sortMode: _sortMode,
+        );
       }
 
       if (mounted) {
@@ -856,7 +907,14 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     var finalName = _renameInput.trim();
     if (!target.isDirectory) {
-      finalName = _ensureLevelExtension(finalName, target.name);
+      final lowerRef = target.name.toLowerCase();
+      if (lowerRef.endsWith('.rsb.smf')) {
+        finalName = '$finalName.rsb.smf';
+      } else if (lowerRef.endsWith('.smf')) {
+        finalName = '$finalName.smf';
+      } else {
+        finalName = _ensureLevelExtension(finalName, target.name);
+      }
     }
     final ok = await LevelRepository.renameItem(
       _pathStack.last.path,
@@ -1123,7 +1181,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   Future<void> _downloadAllLevels() async {
     final l10n = AppLocalizations.of(context)!;
-    if (!context.mounted) return;
+    if (!mounted) return;
     await runWebTransferWithProgress<void>(
       context,
       title: l10n.exportProgressTitle,
@@ -1330,6 +1388,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
         theme.floatingActionButtonTheme.foregroundColor ??
         theme.colorScheme.onPrimaryContainer;
 
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final bool useCompactActions = screenWidth < 540;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -1338,19 +1399,25 @@ class _LevelListScreenState extends State<LevelListScreen> {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
-          if (!kIsWeb)
+          if (_viewMode == LevelViewMode.all)
+            IconButton(
+              icon: const Icon(Icons.sort),
+              tooltip: l10n.sortByLabel,
+              onPressed: _toggleSortMode,
+            ),
+          if (!kIsWeb && !useCompactActions) ...[
             IconButton(
               icon: const Icon(Icons.refresh),
               tooltip: l10n.refresh,
               onPressed: _loadCurrentDirectory,
             ),
-          if (!kIsWeb)
             IconButton(
               icon: const Icon(Icons.folder_open),
               tooltip: l10n.switchFolder,
               onPressed: _pickFolder,
             ),
-          if (kIsWeb) ...[
+          ],
+          if (kIsWeb && !useCompactActions) ...[
             IconButton(
               icon: const Icon(Icons.file_open),
               tooltip: l10n.importFiles,
@@ -1369,6 +1436,53 @@ class _LevelListScreenState extends State<LevelListScreen> {
           ],
           PopupMenuButton<String>(
             itemBuilder: (context) => [
+              if (useCompactActions) ...[
+                if (!kIsWeb) ...[
+                  PopupMenuItem(
+                    value: 'refresh',
+                    child: ListTile(
+                      leading: const Icon(Icons.refresh),
+                      title: Text(l10n.refresh),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'switch_folder',
+                    child: ListTile(
+                      leading: const Icon(Icons.folder_open),
+                      title: Text(l10n.switchFolder),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
+                if (kIsWeb) ...[
+                  PopupMenuItem(
+                    value: 'import_files',
+                    child: ListTile(
+                      leading: const Icon(Icons.file_open),
+                      title: Text(l10n.importFiles),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'import_folder',
+                    child: ListTile(
+                      leading: const Icon(Icons.drive_folder_upload_outlined),
+                      title: Text(l10n.importFolder),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'download_all',
+                    child: ListTile(
+                      leading: const Icon(Icons.download),
+                      title: Text(l10n.downloadAllLevels),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
+                const PopupMenuDivider(),
+              ],
               PopupMenuItem(
                 value: 'theme',
                 child: ListTile(
@@ -1405,6 +1519,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
+              if (!kIsWeb && !Platform.isIOS)
+                PopupMenuItem(
+                  value: 'export',
+                  child: ListTile(
+                    leading: const Icon(Icons.output_rounded),
+                    title: Text(l10n.exportLevels),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
               PopupMenuItem(
                 value: 'about',
                 child: ListTile(
@@ -1415,7 +1538,17 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ),
             ],
             onSelected: (value) async {
-              if (value == 'theme') {
+              if (value == 'refresh') {
+                _loadCurrentDirectory();
+              } else if (value == 'switch_folder') {
+                _pickFolder();
+              } else if (value == 'import_files') {
+                _pickAndAddFile();
+              } else if (value == 'import_folder') {
+                _pickAndImportFolder();
+              } else if (value == 'download_all') {
+                _downloadAllLevels();
+              } else if (value == 'theme') {
                 context.read<SettingsCubit>().cycleTheme();
               } else if (value == 'cache') {
                 final count = await LevelRepository.clearAllInternalCache();
@@ -1428,9 +1561,24 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   (_) => _showUiScaleDialogImpl(),
                 );
               } else if (value == 'lang') {
-                widget.onLanguageTap(context);
+                Future.microtask(() {
+                  if (!context.mounted) return;
+                  widget.onLanguageTap(context);
+                });
+              } else if (value == 'export') {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ExportScreen(),
+                  ),
+                );
+                if (mounted) {
+                  _loadCurrentDirectory();
+                }
               } else if (value == 'about') {
-                widget.onAboutClick();
+                Future.microtask(() {
+                  if (!context.mounted) return;
+                  widget.onAboutClick();
+                });
               }
             },
           ),
@@ -1439,273 +1587,333 @@ class _LevelListScreenState extends State<LevelListScreen> {
       body: Column(
         children: [
           if (_rootFolderPath == null)
-                Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            l10n.initSetup,
-                            style: theme.textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.selectFolderPrompt,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          if (!kIsWeb)
-                            FilledButton.icon(
-                              onPressed: _pickFolder,
-                              icon: const Icon(Icons.folder_open),
-                              label: Text(l10n.selectFolderButton),
-                            ),
-                          if (kIsWeb) ...[
-                            const SizedBox(height: 8),
-                            TextButton.icon(
-                              onPressed: _pickAndAddFile,
-                              icon: const Icon(Icons.file_open),
-                              label: Text(l10n.importFiles),
-                            ),
-                            const SizedBox(height: 8),
-                            TextButton.icon(
-                              onPressed: _pickAndImportFolder,
-                              icon: const Icon(
-                                Icons.drive_folder_upload_outlined,
-                              ),
-                              label: Text(l10n.importFolder),
-                            ),
-                          ],
-                          if (!kIsWeb && Platform.isIOS) ...[
-                            const SizedBox(height: 8),
-                            TextButton(
-                              onPressed: _useDefaultIosLibraryFolder,
-                              child: Text(l10n.useDefaultLibraryFolder),
-                            ),
-                          ],
-                        ],
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l10n.initSetup,
+                        style: theme.textTheme.titleLarge,
                       ),
-                    ),
-                  ),
-                )
-              else
-                Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final useScrollableHeader =
-                          constraints.maxHeight < _compactHeaderBreakpoint;
-                      final headerChildren = _buildLevelListHeaderChildren(
-                        theme: theme,
-                        l10n: l10n,
-                        fabBgColor: fabBgColor,
-                        fabFgColor: fabFgColor,
-                      );
-
-                      return Column(
-                        children: [
-                          if (useScrollableHeader)
-                            Flexible(
-                              fit: FlexFit.loose,
-                              child: ListView(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: const ClampingScrollPhysics(),
-                                children: headerChildren,
-                              ),
-                            )
-                          else
-                            ...headerChildren,
-                          Expanded(
-                  child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : filteredItems.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                _searchQuery.isEmpty ? Icons.folder_open : Icons.search_off,
-                                size: 64,
-                                color: theme.colorScheme.surfaceContainerHighest,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                _searchQuery.isEmpty
-                                    ? (_viewMode == LevelViewMode.favorites ? l10n.emptyFavorites : l10n.emptyFolder)
-                                    : l10n.noLevelsFound,
-                                style: TextStyle(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView.builder(
-                          controller: _listScrollController,
-                          padding: const EdgeInsets.all(16),
-                          itemCount: filteredItems.length,
-                          itemBuilder: (context, index) {
-                            final item = filteredItems[index];
-                            final isMovingMode = _itemToMove != null;
-                            final isSelfMoving =
-                                isMovingMode && _itemToMove == item;
-                            final actionsDisabled = isMovingMode;
-                            return Opacity(
-                              opacity:
-                                  (isMovingMode && !item.isDirectory) ||
-                                      isSelfMoving
-                                  ? 0.5
-                                  : 1,
-                              child: _FileItemRow(
-                                item: item,
-                                l10n: l10n,
-                                rootFolderPath: _rootFolderPath,
-                                onPreview: () => _handlePreview(item),
-                                onTap: () async {
-                                  if (isMovingMode) {
-                                    if (item.isDirectory) {
-                                      _navigateToFolder(item);
-                                    }
-                                  } else {
-                                    if (item.isDirectory) {
-                                      _navigateToFolder(item);
-                                    } else {
-                                      final lowerName = item.name.toLowerCase();
-                                      if (lowerName.endsWith('.hujson') ||
-                                          lowerName.endsWith('.rton')) {
-                                        final convertedPath =
-                                            await _showConversionRequiredDialog(
-                                              item,
-                                            );
-                                        if (!mounted || convertedPath == null) {
-                                          return;
-                                        }
-                                        final convertedName = p.basename(
-                                          convertedPath,
-                                        );
-                                        final ok =
-                                            await LevelRepository.prepareInternalCache(
-                                              convertedPath,
-                                              convertedName,
-                                            );
-                                        if (mounted && ok) {
-                                          widget.onLevelClick(
-                                            convertedName,
-                                            convertedPath,
-                                          );
-                                        }
-                                      } else {
-                                        final ok =
-                                            await LevelRepository.prepareInternalCache(
-                                              item.path,
-                                              item.name,
-                                            );
-                                        if (mounted && ok) {
-                                          widget.onLevelClick(
-                                            item.name,
-                                            item.path,
-                                          );
-                                        }
-                                      }
-                                    }
-                                  }
-                                },
-                                onRename: actionsDisabled
-                                    ? () {}
-                                    : () {
-                                        setState(() {
-                                          _renameInput = item.isDirectory
-                                              ? item.name
-                                              : LevelRepository.baseNameWithoutLevelExtension(
-                                                  item.name,
-                                                );
-                                          _itemToRename = item;
-                                        });
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback(
-                                              (_) => _showRenameDialog(),
-                                            );
-                                      },
-                                onDelete: actionsDisabled
-                                    ? () {}
-                                    : () {
-                                        setState(() => _itemToDelete = item);
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback(
-                                              (_) => _showDeleteDialog(),
-                                            );
-                                      },
-                                onDownload: kIsWeb && !item.isDirectory
-                                    ? () => LevelRepository.downloadLevel(
-                                        item.name,
-                                      )
-                                    : null,
-                                onDownloadFolder: kIsWeb && item.isDirectory
-                                    ? () => _downloadFolderZip(item)
-                                    : null,
-                                onCopy: actionsDisabled
-                                    ? () {}
-                                    : () async {
-                                        if (!item.isDirectory &&
-                                            _pathStack.isNotEmpty) {
-                                          final baseName =
-                                              LevelRepository.baseNameWithoutLevelExtension(
-                                                item.name,
-                                              );
-                                          final nextName =
-                                              await LevelRepository.getNextAvailableCopyName(
-                                                _pathStack.last.path,
-                                                baseName,
-                                              );
-                                          if (mounted) {
-                                            setState(() {
-                                              _copyInput = nextName;
-                                              _itemToCopy = item;
-                                            });
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback(
-                                                  (_) => _showCopyDialog(),
-                                                );
-                                          }
-                                        }
-                                      },
-                                onMove: actionsDisabled
-                                    ? () {}
-                                    : () {
-                                        if (!item.isDirectory &&
-                                            _pathStack.isNotEmpty) {
-                                          setState(() {
-                                            _itemToMove = item;
-                                            _moveSourcePath =
-                                                _pathStack.last.path;
-                                          });
-                                        }
-                                      },
-                                onConvert: actionsDisabled || item.isDirectory
-                                    ? null
-                                    : () => _showConvertMenuFor(item),
-                                onToggleFavorite:
-                                    actionsDisabled || item.isDirectory
-                                    ? null
-                                    : () => _toggleFavorite(item),
-                                onShare: actionsDisabled ||
-                                        item.isDirectory ||
-                                        !isLevelFileShareSupported
-                                    ? null
-                                    : () => _handleShare(item),
-                                showMove: !item.isDirectory && !kIsWeb,
-                              ),
-                            );
-                          },
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.selectFolderPrompt,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      if (!kIsWeb)
+                        FilledButton.icon(
+                          onPressed: _pickFolder,
+                          icon: const Icon(Icons.folder_open),
+                          label: Text(l10n.selectFolderButton),
                         ),
+                      if (kIsWeb) ...[
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: _pickAndAddFile,
+                          icon: const Icon(Icons.file_open),
+                          label: Text(l10n.importFiles),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: _pickAndImportFolder,
+                          icon: const Icon(
+                            Icons.drive_folder_upload_outlined,
                           ),
-                        ],
-                      );
-                    },
+                          label: Text(l10n.importFolder),
+                        ),
+                      ],
+                      if (!kIsWeb && Platform.isIOS) ...[
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: _useDefaultIosLibraryFolder,
+                          child: Text(l10n.useDefaultLibraryFolder),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
+              ),
+            )
+          else
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final useScrollableHeader =
+                      constraints.maxHeight < _compactHeaderBreakpoint;
+                  final headerChildren = _buildLevelListHeaderChildren(
+                    theme: theme,
+                    l10n: l10n,
+                    fabBgColor: fabBgColor,
+                    fabFgColor: fabFgColor,
+                  );
+
+                  return Column(
+                    children: [
+                      if (useScrollableHeader)
+                        Flexible(
+                          fit: FlexFit.loose,
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: const ClampingScrollPhysics(),
+                            children: headerChildren,
+                          ),
+                        )
+                      else
+                        ...headerChildren,
+                      Expanded(
+                        child: _isLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : filteredItems.isEmpty
+                                ? Center(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            _searchQuery.isEmpty
+                                                ? Icons.folder_open
+                                                : Icons.search_off,
+                                            size: 64,
+                                            color: theme.colorScheme
+                                                .surfaceContainerHighest,
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            _searchQuery.isEmpty
+                                                ? (_viewMode ==
+                                                        LevelViewMode.favorites
+                                                    ? l10n.emptyFavorites
+                                                    : l10n.emptyFolder)
+                                                : l10n.noLevelsFound,
+                                            style: TextStyle(
+                                              color: theme
+                                                  .colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    controller: _listScrollController,
+                                    padding: const EdgeInsets.all(16),
+                                    itemCount: filteredItems.length,
+                                    itemBuilder: (context, index) {
+                                      final item = filteredItems[index];
+                                      final isMovingMode = _itemToMove != null;
+                                      final isSelfMoving =
+                                          isMovingMode && _itemToMove == item;
+                                      final actionsDisabled = isMovingMode;
+                                      return Opacity(
+                                        opacity: (isMovingMode &&
+                                                    !item.isDirectory) ||
+                                                isSelfMoving
+                                            ? 0.5
+                                            : 1,
+                                        child: _FileItemRow(
+                                          item: item,
+                                          l10n: l10n,
+                                          rootFolderPath: _rootFolderPath,
+                                          onPreview: () => _handlePreview(item),
+                                          onTap: () async {
+                                            if (isMovingMode) {
+                                              if (item.isDirectory) {
+                                                _navigateToFolder(item);
+                                              }
+                                            } else {
+                                              if (item.isDirectory) {
+                                                _navigateToFolder(item);
+                                              } else {
+                                                final lowerName =
+                                                    item.name.toLowerCase();
+                                                if (lowerName
+                                                        .endsWith('.hujson') ||
+                                                    lowerName
+                                                        .endsWith('.rton')) {
+                                                  final convertedPath =
+                                                      await _showConversionRequiredDialog(
+                                                    item,
+                                                  );
+                                                  if (!mounted ||
+                                                      convertedPath == null) {
+                                                    return;
+                                                  }
+                                                  final convertedName =
+                                                      p.basename(
+                                                    convertedPath,
+                                                  );
+                                                  final ok =
+                                                      await LevelRepository
+                                                          .prepareInternalCache(
+                                                    convertedPath,
+                                                    convertedName,
+                                                  );
+                                                  if (mounted && ok) {
+                                                    WidgetsBinding.instance
+                                                        .addPostFrameCallback(
+                                                            (_) {
+                                                      if (!mounted) return;
+                                                      widget.onLevelClick(
+                                                        convertedName,
+                                                        convertedPath,
+                                                      );
+                                                    });
+                                                  }
+                                                } else {
+                                                  final ok =
+                                                      await LevelRepository
+                                                          .prepareInternalCache(
+                                                    item.path,
+                                                    item.name,
+                                                  );
+                                                  if (mounted && ok) {
+                                                    WidgetsBinding.instance
+                                                        .addPostFrameCallback(
+                                                            (_) {
+                                                      if (!mounted) return;
+                                                      widget.onLevelClick(
+                                                        item.name,
+                                                        item.path,
+                                                      );
+                                                    });
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          onRename: actionsDisabled
+                                              ? () {}
+                                              : () {
+                                                  setState(() {
+                                                    final lower = item.name
+                                                        .toLowerCase();
+                                                    if (lower.endsWith(
+                                                        '.rsb.smf')) {
+                                                      _renameInput = item.name
+                                                          .substring(
+                                                              0,
+                                                              item.name.length -
+                                                                  '.rsb.smf'
+                                                                      .length);
+                                                    } else if (lower
+                                                        .endsWith('.smf')) {
+                                                      _renameInput = item.name
+                                                          .substring(
+                                                              0,
+                                                              item.name.length -
+                                                                  '.smf'
+                                                                      .length);
+                                                    } else {
+                                                      _renameInput = item
+                                                              .isDirectory
+                                                          ? item.name
+                                                          : LevelRepository
+                                                              .baseNameWithoutLevelExtension(
+                                                              item.name,
+                                                            );
+                                                    }
+                                                    _itemToRename = item;
+                                                  });
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback(
+                                                    (_) => _showRenameDialog(),
+                                                  );
+                                                },
+                                          onDelete: actionsDisabled
+                                              ? () {}
+                                              : () {
+                                                  setState(() =>
+                                                      _itemToDelete = item);
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback(
+                                                    (_) => _showDeleteDialog(),
+                                                  );
+                                                },
+                                          onDownload: kIsWeb &&
+                                                  !item.isDirectory
+                                              ? () => LevelRepository
+                                                  .downloadLevel(
+                                                  item.name,
+                                                )
+                                              : null,
+                                          onDownloadFolder: kIsWeb &&
+                                                  item.isDirectory
+                                              ? () => _downloadFolderZip(item)
+                                              : null,
+                                          onCopy: actionsDisabled
+                                              ? () {}
+                                              : () async {
+                                                  if (!item.isDirectory &&
+                                                      _pathStack.isNotEmpty) {
+                                                    final baseName =
+                                                        LevelRepository
+                                                            .baseNameWithoutLevelExtension(
+                                                      item.name,
+                                                    );
+                                                    final nextName =
+                                                        await LevelRepository
+                                                            .getNextAvailableCopyName(
+                                                      _pathStack.last.path,
+                                                      baseName,
+                                                    );
+                                                    if (mounted) {
+                                                      setState(() {
+                                                        _copyInput = nextName;
+                                                        _itemToCopy = item;
+                                                      });
+                                                      WidgetsBinding.instance
+                                                          .addPostFrameCallback(
+                                                        (_) =>
+                                                            _showCopyDialog(),
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                          onMove: actionsDisabled
+                                              ? () {}
+                                              : () {
+                                                  if (!item.isDirectory &&
+                                                      _pathStack.isNotEmpty) {
+                                                    setState(() {
+                                                      _itemToMove = item;
+                                                      _moveSourcePath =
+                                                          _pathStack.last.path;
+                                                    });
+                                                  }
+                                                },
+                                          onConvert: actionsDisabled ||
+                                                  item.isDirectory ||
+                                                  item.name
+                                                      .toLowerCase()
+                                                      .endsWith('.smf')
+                                              ? null
+                                              : () => _showConvertMenuFor(item),
+                                          onToggleFavorite: actionsDisabled ||
+                                                  item.isDirectory
+                                              ? null
+                                              : () => _toggleFavorite(item),
+                                          onShare: actionsDisabled ||
+                                                  item.isDirectory ||
+                                                  !isLevelFileShareSupported
+                                              ? null
+                                              : () => _handleShare(item),
+                                          showMove:
+                                              !item.isDirectory && !kIsWeb,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -1828,7 +2036,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
         title: Text(l10n.newFolder),
         content: TextField(
           controller: ctrl,
-          decoration: InputDecoration(labelText: l10n.folderName, helperText: l10n.newFolderNameHint),
+          decoration: InputDecoration(
+              labelText: l10n.folderName, helperText: l10n.newFolderNameHint),
           onChanged: (v) => _newFolderNameInput = v,
         ),
         actions: [
@@ -1991,8 +2200,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final formatDescription = lower.endsWith('.hujson')
         ? l10n.hujsonFormatDescription
         : lower.endsWith('.rton')
-        ? l10n.rtonFormatDescription
-        : null;
+            ? l10n.rtonFormatDescription
+            : null;
     final shouldConvert = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -2007,8 +2216,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
               Text(
                 formatDescription,
                 style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ],
@@ -2635,7 +2844,8 @@ class _FileItemRow extends StatelessWidget {
         if (item.name.toLowerCase().endsWith('.json'))
           PopupMenuItem(
             value: 'preview',
-            child: _popupMenuTile(icon: Icons.remove_red_eye, label: l10n.levelPreview),
+            child: _popupMenuTile(
+                icon: Icons.remove_red_eye, label: l10n.levelPreview),
           ),
         PopupMenuItem(
           value: 'rename',
@@ -2773,7 +2983,8 @@ class _FileItemRow extends StatelessWidget {
       children: [
         if (onDownloadFolder != null)
           IconButton(
-            icon: Icon(Icons.download, color: theme.colorScheme.onSurfaceVariant),
+            icon:
+                Icon(Icons.download, color: theme.colorScheme.onSurfaceVariant),
             tooltip: l10n.downloadFolder,
             onPressed: onDownloadFolder,
             iconSize: 22,
@@ -2800,16 +3011,27 @@ class _FileItemRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isSmfFile =
+        !item.isDirectory && item.name.toLowerCase().endsWith('.smf');
+    final isRsbSmf =
+        !item.isDirectory && item.name.toLowerCase().endsWith('.rsb.smf');
+
     final displayName = item.isDirectory
         ? item.name
-        : LevelRepository.baseNameWithoutLevelExtension(item.name);
+        : (isRsbSmf
+            ? item.name.substring(0, item.name.length - '.rsb.smf'.length)
+            : (isSmfFile
+                ? item.name.substring(0, item.name.length - '.smf'.length)
+                : LevelRepository.baseNameWithoutLevelExtension(item.name)));
+
+    final isResourceFile = isSmfFile;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: onTap,
+        onTap: isResourceFile ? null : onTap,
         borderRadius: BorderRadius.circular(12),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -2821,8 +3043,8 @@ class _FileItemRow extends StatelessWidget {
             final gap = compact ? 8.0 : 12.0;
             final actions = item.isDirectory
                 ? (compact
-                      ? _buildFolderMenu(theme)
-                      : _buildFolderActions(theme))
+                    ? _buildFolderMenu(theme)
+                    : _buildFolderActions(theme))
                 : _buildLevelFileActions(context, theme);
 
             return Padding(
@@ -2833,11 +3055,17 @@ class _FileItemRow extends StatelessWidget {
                     width: iconBox,
                     height: iconBox,
                     child: Icon(
-                      item.isDirectory ? Icons.folder : Icons.description,
+                      item.isDirectory
+                          ? Icons.folder
+                          : (isResourceFile
+                              ? Icons.inventory_2_outlined
+                              : Icons.description),
                       size: iconSize,
                       color: item.isDirectory
                           ? const Color(0xFFFFC107)
-                          : theme.colorScheme.primary,
+                          : (isResourceFile
+                              ? Colors.blueGrey
+                              : theme.colorScheme.primary),
                     ),
                   ),
                   SizedBox(width: gap),
@@ -2857,7 +3085,14 @@ class _FileItemRow extends StatelessWidget {
                         if (!item.isDirectory) ...[
                           const SizedBox(height: 2),
                           Text(
-                            p.extension(item.name).replaceFirst('.', '').toUpperCase(),
+                            isRsbSmf
+                                ? '.rsb.smf'
+                                : (isSmfFile
+                                    ? '.smf'
+                                    : p
+                                        .extension(item.name)
+                                        .replaceFirst('.', '')
+                                        .toUpperCase()),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

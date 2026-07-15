@@ -118,6 +118,12 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<void> ensureWebStorageReady() => _ensureReady();
 
   @override
+  bool isSupportedLevelFileName(String name) {
+    if (name.toLowerCase().endsWith('.rsb.smf')) return false;
+    return super.isSupportedLevelFileName(name);
+  }
+
+  @override
   void releaseWebFolderImport() {
     _fsa.releaseFolderImport();
   }
@@ -256,7 +262,10 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   }
 
   @override
-  Future<List<FileItem>> getFavorites(String rootPath) async {
+  Future<List<FileItem>> getFavorites(
+    String rootPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) async {
     final favoritePaths = await readFavoriteLevelPaths();
     final items = <FileItem>[];
 
@@ -280,7 +289,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       }
     }
 
-    items.sort((a, b) => naturalCompare(a.name, b.name));
+    _sortItems(items, sortMode);
     return items;
   }
 
@@ -310,7 +319,10 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   }
 
   @override
-  Future<List<FileItem>> getDirectoryContents(String dirPath) async {
+  Future<List<FileItem>> getDirectoryContents(
+    String dirPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) async {
     await _ensureReady();
     if (!dirPath.startsWith(_webPathPrefix)) return [];
     final normalized = _normalizeWebDirPath(dirPath);
@@ -354,13 +366,38 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     }
 
     items.sort((a, b) {
+      // 1. Folders always on top, sorted by name
       if (a.isDirectory != b.isDirectory) return a.isDirectory ? -1 : 1;
-      if (!a.isDirectory && a.isFavorite != b.isFavorite) {
-        return a.isFavorite ? -1 : 1;
-      }
-      return naturalCompare(a.name, b.name);
+      if (a.isDirectory) return naturalCompare(a.name, b.name);
+
+      // 2. Favorites always on top of other files
+      if (a.isFavorite != b.isFavorite) return a.isFavorite ? -1 : 1;
+
+      // 3. File sorting based on mode
+      return _compareFiles(a, b, sortMode);
     });
     return items;
+  }
+
+  void _sortItems(List<FileItem> list, LevelSortMode mode) {
+    list.sort((a, b) => _compareFiles(a, b, mode));
+  }
+
+  int _compareFiles(FileItem a, FileItem b, LevelSortMode mode) {
+    switch (mode) {
+      case LevelSortMode.name:
+        return naturalCompare(a.name, b.name);
+      case LevelSortMode.modified:
+        return b.lastModified.compareTo(a.lastModified);
+      case LevelSortMode.created:
+        return (b.creationTime ?? 0).compareTo(a.creationTime ?? 0);
+      case LevelSortMode.size:
+        return b.size.compareTo(a.size);
+      case LevelSortMode.type:
+        final rankCompare = a.extensionRank.compareTo(b.extensionRank);
+        if (rankCompare != 0) return rankCompare;
+        return naturalCompare(a.name, b.name);
+    }
   }
 
   @override

@@ -394,6 +394,42 @@ abstract class AppLocalizations {
   /// **'Imp Lv.'**
   String get impLv;
 
+  /// No description provided for @sortByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortByLabel;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Name'**
+  String get sortByName;
+
+  /// No description provided for @sortByCreationDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Creation Date'**
+  String get sortByCreationDate;
+
+  /// No description provided for @sortByModificationDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Modification Date'**
+  String get sortByModificationDate;
+
+  /// No description provided for @sortBySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By Size'**
+  String get sortBySize;
+
+  /// No description provided for @sortByFileType.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: By File Type'**
+  String get sortByFileType;
+
   /// No description provided for @impsCount.
   ///
   /// In en, this message translates to:
@@ -421,7 +457,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Level Library'**
+  /// **'My Levels'**
   String get appTitle;
 
   /// No description provided for @about.
@@ -772,6 +808,90 @@ abstract class AppLocalizations {
   /// **'Download this directory'**
   String get downloadFolder;
 
+  /// No description provided for @exportLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'Export levels'**
+  String get exportLevels;
+
+  /// No description provided for @exportSelectLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'Select levels to export'**
+  String get exportSelectLevels;
+
+  /// No description provided for @exportSelectFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Select level archive for export (.rsb.smf)'**
+  String get exportSelectFile;
+
+  /// No description provided for @exportSelectedFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected file: {path}'**
+  String exportSelectedFile(String path);
+
+  /// No description provided for @backupRecommendationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Recommendation'**
+  String get backupRecommendationTitle;
+
+  /// No description provided for @backupRecommendationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It is highly recommended to create a backup of your level archive before exporting. This helps prevent data loss if the operation is interrupted.'**
+  String get backupRecommendationBody;
+
+  /// No description provided for @backupAndProceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup and Proceed'**
+  String get backupAndProceed;
+
+  /// No description provided for @proceedWithoutBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed Without Backup'**
+  String get proceedWithoutBackup;
+
+  /// No description provided for @backupSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'_copy'**
+  String get backupSuffix;
+
+  /// No description provided for @exportNoFilesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No compatible files found (.rsb.smf).'**
+  String get exportNoFilesFound;
+
+  /// No description provided for @cancelExportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Export'**
+  String get cancelExportTitle;
+
+  /// No description provided for @cancelExportMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel the export process?'**
+  String get cancelExportMessage;
+
+  /// No description provided for @exportDisclaimerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk Warning & Disclaimer'**
+  String get exportDisclaimerTitle;
+
+  /// No description provided for @exportDisclaimerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.'**
+  String get exportDisclaimerBody;
+
   /// No description provided for @importProgressTitle.
   ///
   /// In en, this message translates to:
@@ -783,6 +903,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Building export…'**
   String get exportProgressTitle;
+
+  /// No description provided for @backupProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating backup…'**
+  String get backupProgressTitle;
 
   /// No description provided for @transferProgressCount.
   ///
@@ -931,8 +1057,164 @@ abstract class AppLocalizations {
   /// No description provided for @proceed.
   ///
   /// In en, this message translates to:
-  /// **'Continue'**
+  /// **'Proceed'**
   String get proceed;
+
+  /// No description provided for @startExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin'**
+  String get startExport;
+
+  /// No description provided for @exportProceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed'**
+  String get exportProceed;
+
+  /// No description provided for @exportBegin.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin'**
+  String get exportBegin;
+
+  /// No description provided for @exportStatusCreatingRton.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating RTON levels...'**
+  String get exportStatusCreatingRton;
+
+  /// No description provided for @exportStatusUnpackingRsb.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpacking RSB...'**
+  String get exportStatusUnpackingRsb;
+
+  /// No description provided for @exportStatusUnpackingRsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpacking Packages.rsg...'**
+  String get exportStatusUnpackingRsg;
+
+  /// No description provided for @exportStatusInjecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Injecting levels...'**
+  String get exportStatusInjecting;
+
+  /// No description provided for @exportStatusRepackingRsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Repacking RSG...'**
+  String get exportStatusRepackingRsg;
+
+  /// No description provided for @exportStatusRepackingRsb.
+  ///
+  /// In en, this message translates to:
+  /// **'Repacking RSB...'**
+  String get exportStatusRepackingRsb;
+
+  /// No description provided for @exportStatusFinalizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Finalizing...'**
+  String get exportStatusFinalizing;
+
+  /// No description provided for @exportAssignmentProposalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Distribution'**
+  String get exportAssignmentProposalTitle;
+
+  /// No description provided for @exportWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World'**
+  String get exportWorld;
+
+  /// No description provided for @exportLevelNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Number'**
+  String get exportLevelNumber;
+
+  /// No description provided for @exportLevelShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Lvl. {level}'**
+  String exportLevelShort(int level);
+
+  /// No description provided for @exportFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get exportFinish;
+
+  /// No description provided for @exportSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Successful'**
+  String get exportSuccessTitle;
+
+  /// No description provided for @exportSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The levels have been successfully exported to the archive.'**
+  String get exportSuccessMessage;
+
+  /// No description provided for @exportDuplicateAssignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate assignment: {world} {level}'**
+  String exportDuplicateAssignment(String world, int level);
+
+  /// No description provided for @exportAssignmentIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Not all levels assigned'**
+  String get exportAssignmentIncomplete;
+
+  /// No description provided for @exportConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm assignments'**
+  String get exportConfirmationTitle;
+
+  /// No description provided for @exportConfirmationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Please verify your assignments before proceeding.'**
+  String get exportConfirmationBody;
+
+  /// No description provided for @exportFinalCheckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Final Check'**
+  String get exportFinalCheckTitle;
+
+  /// No description provided for @exportFinalCheckBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The following levels will be exported with new names:'**
+  String get exportFinalCheckBody;
+
+  /// No description provided for @exportTargetArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'All levels will be exported to {file}'**
+  String exportTargetArchive(String file);
+
+  /// No description provided for @exportStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Export'**
+  String get exportStart;
+
+  /// No description provided for @exportAssignmentProposalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected levels are validated. Now you should choose which adventure slot each level will occupy in the game.'**
+  String get exportAssignmentProposalBody;
 
   /// No description provided for @copyReferenceOrDeep.
   ///
@@ -13729,6 +14011,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading {category}...'**
   String startupLoadingCategoryProgress(String category);
+
+  /// No description provided for @reselectFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-select files'**
+  String get reselectFiles;
+
+  /// No description provided for @validationReviewRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Please review the validation results for the selected levels.'**
+  String get validationReviewRequest;
+
+  /// No description provided for @validationRecommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'We recommend editing these levels to fix the issues before exporting, or choosing different files.'**
+  String get validationRecommendation;
+
+  /// No description provided for @validationProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Validating {current} / {total}'**
+  String validationProgress(int current, int total);
+
+  /// No description provided for @invalid_rsb_version.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSB version, should be 3 or 4'**
+  String get invalid_rsb_version;
+
+  /// No description provided for @invalid_file_list_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid File List Offset'**
+  String get invalid_file_list_offset;
+
+  /// No description provided for @invalid_rsb_ver_3_resource_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Resource Offset for RSB version 3'**
+  String get invalid_rsb_ver_3_resource_offset;
+
+  /// No description provided for @invalid_composite_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Composite Name'**
+  String get invalid_composite_name;
+
+  /// No description provided for @out_of_range_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of range for poolIndex'**
+  String get out_of_range_1;
+
+  /// No description provided for @out_of_range_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of range for packet index'**
+  String get out_of_range_2;
+
+  /// No description provided for @invalid_rsg_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG Name'**
+  String get invalid_rsg_name;
+
+  /// No description provided for @invalid_packet_width.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Packet Width'**
+  String get invalid_packet_width;
+
+  /// No description provided for @invalid_packet_height.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Packet Height'**
+  String get invalid_packet_height;
+
+  /// No description provided for @invalid_item_packet.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Item Packet'**
+  String get invalid_item_packet;
+
+  /// No description provided for @invalid_rsg_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG index'**
+  String get invalid_rsg_number;
+
+  /// No description provided for @invalid_part2_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Part2 Offset'**
+  String get invalid_part2_offset;
+
+  /// No description provided for @invalid_head_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Head Length'**
+  String get invalid_head_length;
+
+  /// No description provided for @rsb_is_corrupted.
+  ///
+  /// In en, this message translates to:
+  /// **'This RSB is corrupted'**
+  String get rsb_is_corrupted;
+
+  /// No description provided for @invalid_ptx_info_eachlength.
+  ///
+  /// In en, this message translates to:
+  /// **'PTX Info is invalid'**
+  String get invalid_ptx_info_eachlength;
+
+  /// No description provided for @invalid_end_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid End Offset'**
+  String get invalid_end_offset;
+
+  /// No description provided for @invalid_rsb_head.
+  ///
+  /// In en, this message translates to:
+  /// **'Mismatch RSB magic, should starts with \"1BSR\"'**
+  String get invalid_rsb_head;
+
+  /// No description provided for @invalid_ptx_info_each_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid PTX Info'**
+  String get invalid_ptx_info_each_length;
+
+  /// No description provided for @category_out_of_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Category is out of length'**
+  String get category_out_of_length;
+
+  /// No description provided for @name_path_must_be_ascii.
+  ///
+  /// In en, this message translates to:
+  /// **'Name path must match ASCII'**
+  String get name_path_must_be_ascii;
+
+  /// No description provided for @invalid_rsg_magic.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG Magic, should starts with \"PGSR\"'**
+  String get invalid_rsg_magic;
+
+  /// No description provided for @invalid_rsg_version.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG version, should be 3 or 4'**
+  String get invalid_rsg_version;
+
+  /// No description provided for @invalid_rsg_compression_flag.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG Compression flag, only 0 to 3 is supported'**
+  String get invalid_rsg_compression_flag;
+
+  /// No description provided for @mismatch_zlib_magic.
+  ///
+  /// In en, this message translates to:
+  /// **'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4'**
+  String get mismatch_zlib_magic;
 }
 
 class _AppLocalizationsDelegate

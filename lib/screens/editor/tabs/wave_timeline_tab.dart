@@ -2195,7 +2195,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final isDeepSeaLawn = LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: 80),
+      padding: const EdgeInsets.only(bottom: 16),
       children: [
         _buildHintCard(context),
         if (deadLinks.isNotEmpty) _buildDeadLinksCard(context, deadLinks),
@@ -2264,7 +2264,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           }),
         ],
         Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
           child: Center(
             child: FilledButton.icon(
               onPressed: _addWave,
