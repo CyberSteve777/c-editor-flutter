@@ -555,6 +555,15 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   }
 
   @override
+  bool isSupportedLevelFileName(String name) {
+    final lower = name.toLowerCase();
+    if (lower.endsWith('.rsb.smf')) {
+      return !Platform.isIOS;
+    }
+    return super.isSupportedLevelFileName(name);
+  }
+
+  @override
   Future<bool> createLevelFromTemplate(
     String currentDirPath,
     String templateName,

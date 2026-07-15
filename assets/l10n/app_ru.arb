@@ -64,7 +64,7 @@
   "sunBombFalling": "Падают солнечные бомбы",
   "sunDroppingActive": "Солнце падает с неба",
   "sunDroppingInactive": "Солнце не падает с неба",
-  "appTitle": "Моя библиотека уровней",
+  "appTitle": "Мои уровни",
   "about": "О программе",
   "refresh": "Обновить",
   "toggleTheme": "Переключить тему",
@@ -135,8 +135,28 @@
   "download": "Скачать",
   "downloadAllLevels": "Экспортировать все уровни",
   "downloadFolder": "Скачать эту папку",
+  "exportLevels": "Экспорт уровней",
+  "exportSelectLevels": "Выберите уровни для экспорта",
+  "exportSelectFile": "Выберите архив уровней для экспорта (.rsb.smf)",
+  "exportSelectedFile": "Выбранный файл: {path}",
+  "@exportSelectedFile": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "backupRecommendationTitle": "Рекомендация по резервному копированию",
+  "backupRecommendationBody": "Настоятельно рекомендуется создать резервную копию архива уровней перед экспортом. Это поможет избежать потери данных в случае прерывания операции.",
+  "backupAndProceed": "Создать копию и продолжить",
+  "proceedWithoutBackup": "Продолжить без копии",
+  "backupSuffix": "_копия",
+  "exportNoFilesFound": "Нужные файлы не найдены (.rsb.smf).",
+  "cancelExportTitle": "Отмена экспорта",
+  "cancelExportMessage": "Вы уверены, что хотите прервать процесс экспорта?",
+  "exportDisclaimerTitle": "Предупреждение о рисках и отказ от ответственности",
+  "exportDisclaimerBody": "Данный инструмент предназначен для прямого изменения данных игры «Plants vs. Zombies 2».\n\n• Использование этого инструмента для изменения игровых данных может нарушать условия обслуживания игры.\n• Это может привести к временной или постоянной блокировке вашей игровой учетной записи.\n• Это может привести к повреждению игровых сохранений или потере данных.\n• Все действия совершаются пользователем добрововольно, на свой страх и риск.\n\nОтказ от ответственности:\n\nРазработчик настоящим заявляет:\n1. Данный инструмент предназначен только для ознакомления и исследований; любые формы читерства в игре не поощряются.\n2. Все последствия использования данного инструмента, включая, помимо прочего, блокировку аккаунта, потерю данных и ухудшение игрового процесса, ложатся исключительно на пользователя. Разработчик не несет никакой прямой или косвенной ответственности.\n3. Пользователи должны полностью осознавать связанные с этим риски перед использованием данного инструмента и самостоятельно принимать решение о принятии этих рисков.\n4. Дальнейшее использование означает, что вы прочитали, поняли и согласны со всеми условиями данного отказа от ответственности.",
   "importProgressTitle": "Импорт уровней…",
   "exportProgressTitle": "Подготовка экспорта…",
+  "backupProgressTitle": "Создание резервной копии…",
   "transferProgressCount": "{completed} / {total}",
   "webFolderImportNotice": "Папка импортирована в хранилище браузера. В этом браузере изменения не записываются на диск автоматически — используйте «Экспорт».",
   "share": "Поделиться",
@@ -177,6 +197,48 @@
   "uploadLevelConfirm": "Сейчас вы покинете редактор и перейдёте на официальный сайт продвинутой Креаторской Площадки. После регистрации/входа через эл. почту, вы сможете загружать JSON файлы уровней из редактора прямо в игровую Креаторскую Площадку, чтобы другие люди могли сыграть в ваш уровень. Хотите продолжить?",
   "back": "Назад",
   "proceed": "Продолжить",
+  "startExport": "Приступить",
+  "exportProceed": "Продолжить",
+  "exportBegin": "Приступить",
+  "exportStatusCreatingRton": "Создание RTON уровней...",
+  "exportStatusUnpackingRsb": "Распаковка RSB...",
+  "exportStatusUnpackingRsg": "Распаковка Packages.rsg...",
+  "exportStatusInjecting": "Инъекция уровней...",
+  "exportStatusRepackingRsg": "Запаковка RSG...",
+  "exportStatusRepackingRsb": "Запаковка RSB...",
+  "exportStatusFinalizing": "Завершение...",
+  "exportAssignmentProposalTitle": "Распределение уровней",
+  "exportWorld": "Мир",
+  "exportLevelNumber": "Номер уровня",
+  "exportLevelShort": "ур. {level}",
+  "@exportLevelShort": {
+    "placeholders": {
+      "level": { "type": "int" }
+    }
+  },
+  "exportFinish": "Завершить",
+  "exportSuccessTitle": "Экспорт завершён",
+  "exportSuccessMessage": "Уровни были успешно экспортированы в архив.",
+  "exportDuplicateAssignment": "Повторяющееся распределение: {world} {level}",
+  "@exportDuplicateAssignment": {
+    "placeholders": {
+      "world": { "type": "String" },
+      "level": { "type": "int" }
+    }
+  },
+  "exportAssignmentIncomplete": "Не все уровни распределены",
+  "exportConfirmationTitle": "Подтвердите выбор",
+  "exportConfirmationBody": "Пожалуйста, проверьте распределение перед продолжением.",
+  "exportFinalCheckTitle": "Финальная проверка",
+  "exportFinalCheckBody": "Следующие уровни будут экспортированы с новыми именами:",
+  "exportTargetArchive": "Все уровни будут экспортированы в {file}",
+  "@exportTargetArchive": {
+    "placeholders": {
+      "file": { "type": "String" }
+    }
+  },
+  "exportStart": "Начать экспорт",
+  "exportAssignmentProposalBody": "Выбранные уровни проверены. Теперь необходимо выбрать, какой слот в приключении будет занимать каждый из них.",
   "copyReferenceOrDeep": "Скопировать ссылку или создать полную копию?",
   "copyReference": "Скопировать ссылку",
   "deepCopy": "Полная копия",
@@ -2562,5 +2624,39 @@
     "placeholders": {
       "category": { "type": "String" }
     }
-  }
+  },
+  "reselectFiles": "Выбрать заново",
+  "validationReviewRequest": "Пожалуйста, ознакомьтесь с результатами проверки выбранных уровней.",
+  "validationRecommendation": "Рекомендуется отредактировать выбранные уровни для исправления ошибок или выбрать другие файлы.",
+  "validationProgress": "Проверка {current} / {total}",
+  "@validationProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "invalid_rsb_version": "Неверная версия RSB, должна быть 3 или 4",
+  "invalid_file_list_offset": "Неверное смещение списка файлов",
+  "invalid_rsb_ver_3_resource_offset": "Неверное смещение ресурса для RSB версии 3",
+  "invalid_composite_name": "Неверное имя композита",
+  "out_of_range_1": "Выход за пределы диапазона poolIndex",
+  "out_of_range_2": "Выход за пределы диапазона индекса пакета",
+  "invalid_rsg_name": "Неверное имя RSG",
+  "invalid_packet_width": "Неверная ширина пакета",
+  "invalid_packet_height": "Неверная высота пакета",
+  "invalid_item_packet": "Неверный пакет элемента",
+  "invalid_rsg_number": "Неверный индекс RSG",
+  "invalid_part2_offset": "Неверное смещение Part2",
+  "invalid_head_length": "Неверная длина заголовка",
+  "rsb_is_corrupted": "Этот RSB поврежден",
+  "invalid_ptx_info_eachlength": "Информация PTX неверна",
+  "invalid_end_offset": "Неверное конечное смещение",
+  "invalid_rsb_head": "Несоответствие магического числа RSB, должно начинаться с \"1BSR\"",
+  "invalid_ptx_info_each_length": "Неверная информация PTX",
+  "category_out_of_length": "Категория выходит за пределы длины",
+  "name_path_must_be_ascii": "Путь имени должен соответствовать ASCII",
+  "invalid_rsg_magic": "Неверное магическое число RSG, должно начинаться с \"PGSR\"",
+  "invalid_rsg_version": "Неверная версия RSG, должна быть 3 или 4",
+  "invalid_rsg_compression_flag": "Неверный флаг сжатия RSG, поддерживаются только от 0 до 3",
+  "mismatch_zlib_magic": "Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4"
 }

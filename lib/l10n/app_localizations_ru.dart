@@ -195,7 +195,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Всего подкормки на уровне (включая дроп и события)';
 
   @override
-  String get appTitle => 'Моя библиотека уровней';
+  String get appTitle => 'Мои уровни';
 
   @override
   String get about => 'О программе';
@@ -387,10 +387,63 @@ class AppLocalizationsRu extends AppLocalizations {
   String get downloadFolder => 'Скачать эту папку';
 
   @override
+  String get exportLevels => 'Экспорт уровней';
+
+  @override
+  String get exportSelectLevels => 'Выберите уровни для экспорта';
+
+  @override
+  String get exportSelectFile =>
+      'Выберите архив уровней для экспорта (.rsb.smf)';
+
+  @override
+  String exportSelectedFile(String path) {
+    return 'Выбранный файл: $path';
+  }
+
+  @override
+  String get backupRecommendationTitle =>
+      'Рекомендация по резервному копированию';
+
+  @override
+  String get backupRecommendationBody =>
+      'Настоятельно рекомендуется создать резервную копию архива уровней перед экспортом. Это поможет избежать потери данных в случае прерывания операции.';
+
+  @override
+  String get backupAndProceed => 'Создать копию и продолжить';
+
+  @override
+  String get proceedWithoutBackup => 'Продолжить без копии';
+
+  @override
+  String get backupSuffix => '_копия';
+
+  @override
+  String get exportNoFilesFound => 'Нужные файлы не найдены (.rsb.smf).';
+
+  @override
+  String get cancelExportTitle => 'Отмена экспорта';
+
+  @override
+  String get cancelExportMessage =>
+      'Вы уверены, что хотите прервать процесс экспорта?';
+
+  @override
+  String get exportDisclaimerTitle =>
+      'Предупреждение о рисках и отказ от ответственности';
+
+  @override
+  String get exportDisclaimerBody =>
+      'Данный инструмент предназначен для прямого изменения данных игры «Plants vs. Zombies 2».\n\n• Использование этого инструмента для изменения игровых данных может нарушать условия обслуживания игры.\n• Это может привести к временной или постоянной блокировке вашей игровой учетной записи.\n• Это может привести к повреждению игровых сохранений или потере данных.\n• Все действия совершаются пользователем добрововольно, на свой страх и риск.\n\nОтказ от ответственности:\n\nРазработчик настоящим заявляет:\n1. Данный инструмент предназначен только для ознакомления и исследований; любые формы читерства в игре не поощряются.\n2. Все последствия использования данного инструмента, включая, помимо прочего, блокировку аккаунта, потерю данных и ухудшение игрового процесса, ложатся исключительно на пользователя. Разработчик не несет никакой прямой или косвенной ответственности.\n3. Пользователи должны полностью осознавать связанные с этим риски перед использованием данного инструмента и самостоятельно принимать решение о принятии этих рисков.\n4. Дальнейшее использование означает, что вы прочитали, поняли и согласны со всеми условиями данного отказа от ответственности.';
+
+  @override
   String get importProgressTitle => 'Импорт уровней…';
 
   @override
   String get exportProgressTitle => 'Подготовка экспорта…';
+
+  @override
+  String get backupProgressTitle => 'Создание резервной копии…';
 
   @override
   String transferProgressCount(int completed, int total) {
@@ -474,6 +527,94 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get proceed => 'Продолжить';
+
+  @override
+  String get startExport => 'Приступить';
+
+  @override
+  String get exportProceed => 'Продолжить';
+
+  @override
+  String get exportBegin => 'Приступить';
+
+  @override
+  String get exportStatusCreatingRton => 'Создание RTON уровней...';
+
+  @override
+  String get exportStatusUnpackingRsb => 'Распаковка RSB...';
+
+  @override
+  String get exportStatusUnpackingRsg => 'Распаковка Packages.rsg...';
+
+  @override
+  String get exportStatusInjecting => 'Инъекция уровней...';
+
+  @override
+  String get exportStatusRepackingRsg => 'Запаковка RSG...';
+
+  @override
+  String get exportStatusRepackingRsb => 'Запаковка RSB...';
+
+  @override
+  String get exportStatusFinalizing => 'Завершение...';
+
+  @override
+  String get exportAssignmentProposalTitle => 'Распределение уровней';
+
+  @override
+  String get exportWorld => 'Мир';
+
+  @override
+  String get exportLevelNumber => 'Номер уровня';
+
+  @override
+  String exportLevelShort(int level) {
+    return 'ур. $level';
+  }
+
+  @override
+  String get exportFinish => 'Завершить';
+
+  @override
+  String get exportSuccessTitle => 'Экспорт завершён';
+
+  @override
+  String get exportSuccessMessage =>
+      'Уровни были успешно экспортированы в архив.';
+
+  @override
+  String exportDuplicateAssignment(String world, int level) {
+    return 'Повторяющееся распределение: $world $level';
+  }
+
+  @override
+  String get exportAssignmentIncomplete => 'Не все уровни распределены';
+
+  @override
+  String get exportConfirmationTitle => 'Подтвердите выбор';
+
+  @override
+  String get exportConfirmationBody =>
+      'Пожалуйста, проверьте распределение перед продолжением.';
+
+  @override
+  String get exportFinalCheckTitle => 'Финальная проверка';
+
+  @override
+  String get exportFinalCheckBody =>
+      'Следующие уровни будут экспортированы с новыми именами:';
+
+  @override
+  String exportTargetArchive(String file) {
+    return 'Все уровни будут экспортированы в $file';
+  }
+
+  @override
+  String get exportStart => 'Начать экспорт';
+
+  @override
+  String get exportAssignmentProposalBody =>
+      'Выбранные уровни проверены. Теперь необходимо выбрать, какой слот в приключении будет занимать каждый из них.';
 
   @override
   String get copyReferenceOrDeep =>
@@ -7632,4 +7773,98 @@ class AppLocalizationsRu extends AppLocalizations {
   String startupLoadingCategoryProgress(String category) {
     return 'Загрузка $category...';
   }
+
+  @override
+  String get reselectFiles => 'Выбрать заново';
+
+  @override
+  String get validationReviewRequest =>
+      'Пожалуйста, ознакомьтесь с результатами проверки выбранных уровней.';
+
+  @override
+  String get validationRecommendation =>
+      'Рекомендуется отредактировать выбранные уровни для исправления ошибок или выбрать другие файлы.';
+
+  @override
+  String validationProgress(int current, int total) {
+    return 'Проверка $current / $total';
+  }
+
+  @override
+  String get invalid_rsb_version => 'Неверная версия RSB, должна быть 3 или 4';
+
+  @override
+  String get invalid_file_list_offset => 'Неверное смещение списка файлов';
+
+  @override
+  String get invalid_rsb_ver_3_resource_offset =>
+      'Неверное смещение ресурса для RSB версии 3';
+
+  @override
+  String get invalid_composite_name => 'Неверное имя композита';
+
+  @override
+  String get out_of_range_1 => 'Выход за пределы диапазона poolIndex';
+
+  @override
+  String get out_of_range_2 => 'Выход за пределы диапазона индекса пакета';
+
+  @override
+  String get invalid_rsg_name => 'Неверное имя RSG';
+
+  @override
+  String get invalid_packet_width => 'Неверная ширина пакета';
+
+  @override
+  String get invalid_packet_height => 'Неверная высота пакета';
+
+  @override
+  String get invalid_item_packet => 'Неверный пакет элемента';
+
+  @override
+  String get invalid_rsg_number => 'Неверный индекс RSG';
+
+  @override
+  String get invalid_part2_offset => 'Неверное смещение Part2';
+
+  @override
+  String get invalid_head_length => 'Неверная длина заголовка';
+
+  @override
+  String get rsb_is_corrupted => 'Этот RSB поврежден';
+
+  @override
+  String get invalid_ptx_info_eachlength => 'Информация PTX неверна';
+
+  @override
+  String get invalid_end_offset => 'Неверное конечное смещение';
+
+  @override
+  String get invalid_rsb_head =>
+      'Несоответствие магического числа RSB, должно начинаться с \"1BSR\"';
+
+  @override
+  String get invalid_ptx_info_each_length => 'Неверная информация PTX';
+
+  @override
+  String get category_out_of_length => 'Категория выходит за пределы длины';
+
+  @override
+  String get name_path_must_be_ascii =>
+      'Путь имени должен соответствовать ASCII';
+
+  @override
+  String get invalid_rsg_magic =>
+      'Неверное магическое число RSG, должно начинаться с \"PGSR\"';
+
+  @override
+  String get invalid_rsg_version => 'Неверная версия RSG, должна быть 3 или 4';
+
+  @override
+  String get invalid_rsg_compression_flag =>
+      'Неверный флаг сжатия RSG, поддерживаются только от 0 до 3';
+
+  @override
+  String get mismatch_zlib_magic =>
+      'Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4';
 }

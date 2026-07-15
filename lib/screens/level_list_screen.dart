@@ -16,6 +16,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/screens/export/export_screen.dart';
 import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 
@@ -104,7 +105,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
         lower.endsWith('.hujson') ||
         lower.endsWith('.rton') ||
         lower.endsWith('.zlib') ||
-        lower.endsWith('.bin')) {
+        lower.endsWith('.bin') ||
+        lower.endsWith('.smf') ||
+        lower.endsWith('.rsb') ||
+        lower.endsWith('.rsg')) {
       return trimmed;
     }
     return trimmed + _levelExtensionFromFileName(referenceFileName);
@@ -903,7 +907,14 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     var finalName = _renameInput.trim();
     if (!target.isDirectory) {
-      finalName = _ensureLevelExtension(finalName, target.name);
+      final lowerRef = target.name.toLowerCase();
+      if (lowerRef.endsWith('.rsb.smf')) {
+        finalName = '$finalName.rsb.smf';
+      } else if (lowerRef.endsWith('.smf')) {
+        finalName = '$finalName.smf';
+      } else {
+        finalName = _ensureLevelExtension(finalName, target.name);
+      }
     }
     final ok = await LevelRepository.renameItem(
       _pathStack.last.path,
@@ -1508,6 +1519,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
+              if (!kIsWeb && !Platform.isIOS)
+                PopupMenuItem(
+                  value: 'export',
+                  child: ListTile(
+                    leading: const Icon(Icons.output_rounded),
+                    title: Text(l10n.exportLevels),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
               PopupMenuItem(
                 value: 'about',
                 child: ListTile(
@@ -1545,6 +1565,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   if (!context.mounted) return;
                   widget.onLanguageTap(context);
                 });
+              } else if (value == 'export') {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ExportScreen(),
+                  ),
+                );
+                if (mounted) {
+                  _loadCurrentDirectory();
+                }
               } else if (value == 'about') {
                 Future.microtask(() {
                   if (!context.mounted) return;
@@ -1761,13 +1790,33 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                               ? () {}
                                               : () {
                                                   setState(() {
-                                                    _renameInput = item
-                                                            .isDirectory
-                                                        ? item.name
-                                                        : LevelRepository
-                                                            .baseNameWithoutLevelExtension(
-                                                            item.name,
-                                                          );
+                                                    final lower = item.name
+                                                        .toLowerCase();
+                                                    if (lower.endsWith(
+                                                        '.rsb.smf')) {
+                                                      _renameInput = item.name
+                                                          .substring(
+                                                              0,
+                                                              item.name.length -
+                                                                  '.rsb.smf'
+                                                                      .length);
+                                                    } else if (lower
+                                                        .endsWith('.smf')) {
+                                                      _renameInput = item.name
+                                                          .substring(
+                                                              0,
+                                                              item.name.length -
+                                                                  '.smf'
+                                                                      .length);
+                                                    } else {
+                                                      _renameInput = item
+                                                              .isDirectory
+                                                          ? item.name
+                                                          : LevelRepository
+                                                              .baseNameWithoutLevelExtension(
+                                                              item.name,
+                                                            );
+                                                    }
                                                     _itemToRename = item;
                                                   });
                                                   WidgetsBinding.instance
@@ -1838,7 +1887,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                   }
                                                 },
                                           onConvert: actionsDisabled ||
-                                                  item.isDirectory
+                                                  item.isDirectory ||
+                                                  item.name
+                                                      .toLowerCase()
+                                                      .endsWith('.smf')
                                               ? null
                                               : () => _showConvertMenuFor(item),
                                           onToggleFavorite: actionsDisabled ||
@@ -2959,16 +3011,27 @@ class _FileItemRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isSmfFile =
+        !item.isDirectory && item.name.toLowerCase().endsWith('.smf');
+    final isRsbSmf =
+        !item.isDirectory && item.name.toLowerCase().endsWith('.rsb.smf');
+
     final displayName = item.isDirectory
         ? item.name
-        : LevelRepository.baseNameWithoutLevelExtension(item.name);
+        : (isRsbSmf
+            ? item.name.substring(0, item.name.length - '.rsb.smf'.length)
+            : (isSmfFile
+                ? item.name.substring(0, item.name.length - '.smf'.length)
+                : LevelRepository.baseNameWithoutLevelExtension(item.name)));
+
+    final isResourceFile = isSmfFile;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: onTap,
+        onTap: isResourceFile ? null : onTap,
         borderRadius: BorderRadius.circular(12),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -2992,11 +3055,17 @@ class _FileItemRow extends StatelessWidget {
                     width: iconBox,
                     height: iconBox,
                     child: Icon(
-                      item.isDirectory ? Icons.folder : Icons.description,
+                      item.isDirectory
+                          ? Icons.folder
+                          : (isResourceFile
+                              ? Icons.inventory_2_outlined
+                              : Icons.description),
                       size: iconSize,
                       color: item.isDirectory
                           ? const Color(0xFFFFC107)
-                          : theme.colorScheme.primary,
+                          : (isResourceFile
+                              ? Colors.blueGrey
+                              : theme.colorScheme.primary),
                     ),
                   ),
                   SizedBox(width: gap),
@@ -3016,10 +3085,14 @@ class _FileItemRow extends StatelessWidget {
                         if (!item.isDirectory) ...[
                           const SizedBox(height: 2),
                           Text(
-                            p
-                                .extension(item.name)
-                                .replaceFirst('.', '')
-                                .toUpperCase(),
+                            isRsbSmf
+                                ? '.rsb.smf'
+                                : (isSmfFile
+                                    ? '.smf'
+                                    : p
+                                        .extension(item.name)
+                                        .replaceFirst('.', '')
+                                        .toUpperCase()),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

@@ -118,6 +118,12 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<void> ensureWebStorageReady() => _ensureReady();
 
   @override
+  bool isSupportedLevelFileName(String name) {
+    if (name.toLowerCase().endsWith('.rsb.smf')) return false;
+    return super.isSupportedLevelFileName(name);
+  }
+
+  @override
   void releaseWebFolderImport() {
     _fsa.releaseFolderImport();
   }

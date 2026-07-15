@@ -194,7 +194,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get totalPlantFoodTooltip => '本关能量豆总数（包括掉落、事件等）';
 
   @override
-  String get appTitle => '我的关卡库';
+  String get appTitle => '我的关卡';
 
   @override
   String get about => '关于';
@@ -381,10 +381,59 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadFolder => '下载此文件夹';
 
   @override
+  String get exportLevels => '导出关卡';
+
+  @override
+  String get exportSelectLevels => '选择要导出的关卡';
+
+  @override
+  String get exportSelectFile => '选择要导出的关卡存档 (.rsb.smf)';
+
+  @override
+  String exportSelectedFile(String path) {
+    return '已选文件：$path';
+  }
+
+  @override
+  String get backupRecommendationTitle => '建议备份';
+
+  @override
+  String get backupRecommendationBody =>
+      '强烈建议在导出前为您的关卡存档创建备份。这有助于防止操作中断导致的数据丢失。';
+
+  @override
+  String get backupAndProceed => '备份并继续';
+
+  @override
+  String get proceedWithoutBackup => '不备份直接继续';
+
+  @override
+  String get backupSuffix => '_副本';
+
+  @override
+  String get exportNoFilesFound => '未找到兼容的文件 (.rsb.smf)。';
+
+  @override
+  String get cancelExportTitle => '取消导出';
+
+  @override
+  String get cancelExportMessage => '确定要取消导出过程吗？';
+
+  @override
+  String get exportDisclaimerTitle => '风险提示与免责声明';
+
+  @override
+  String get exportDisclaimerBody =>
+      '本工具涉及对《植物大战僵尸 2》游戏数据的直接修改操作。\n\n• 使用本工具修改游戏数据可能违反游戏服务条款\n• 可能导致游戏账号被临时或永久封禁\n• 可能导致游戏存档损坏或数据丢失\n• 所有操作均为用户自行选择，风险自负\n\n免责声明：\n\n开发者在此明确声明：\n1. 本工具仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n2. 用户使用本工具所产生的一切后果，包括但不限于账号封禁、数据丢失、游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n3. 用户在使用本工具前应充分了解相关风险，并自行决定是否承担这些风险。\n4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。';
+
+  @override
   String get importProgressTitle => '正在导入关卡…';
 
   @override
   String get exportProgressTitle => '正在生成导出…';
+
+  @override
+  String get backupProgressTitle => '正在创建备份…';
 
   @override
   String transferProgressCount(int completed, int total) {
@@ -466,6 +515,90 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get proceed => '继续';
+
+  @override
+  String get startExport => '开始';
+
+  @override
+  String get exportProceed => '继续';
+
+  @override
+  String get exportBegin => '开始';
+
+  @override
+  String get exportStatusCreatingRton => '正在创建 RTON 关卡...';
+
+  @override
+  String get exportStatusUnpackingRsb => '正在解包 RSB...';
+
+  @override
+  String get exportStatusUnpackingRsg => '正在解包 Packages.rsg...';
+
+  @override
+  String get exportStatusInjecting => '正在注入关卡...';
+
+  @override
+  String get exportStatusRepackingRsg => '正在打包 RSG...';
+
+  @override
+  String get exportStatusRepackingRsb => '正在打包 RSB...';
+
+  @override
+  String get exportStatusFinalizing => '正在完成...';
+
+  @override
+  String get exportAssignmentProposalTitle => '关卡分配';
+
+  @override
+  String get exportWorld => '世界';
+
+  @override
+  String get exportLevelNumber => '关卡编号';
+
+  @override
+  String exportLevelShort(int level) {
+    return '第 $level 关';
+  }
+
+  @override
+  String get exportFinish => '完成';
+
+  @override
+  String get exportSuccessTitle => '导出成功';
+
+  @override
+  String get exportSuccessMessage => '关卡已成功导出到存档中。';
+
+  @override
+  String exportDuplicateAssignment(String world, int level) {
+    return '重复分配：$world 第 $level 关';
+  }
+
+  @override
+  String get exportAssignmentIncomplete => '部分关卡未分配';
+
+  @override
+  String get exportConfirmationTitle => '确认分配';
+
+  @override
+  String get exportConfirmationBody => '请在继续之前核实您的分配。';
+
+  @override
+  String get exportFinalCheckTitle => '最终检查';
+
+  @override
+  String get exportFinalCheckBody => '以下关卡将以新名称导出：';
+
+  @override
+  String exportTargetArchive(String file) {
+    return '所有关卡都将导出到 $file';
+  }
+
+  @override
+  String get exportStart => '开始导出';
+
+  @override
+  String get exportAssignmentProposalBody => '所选关卡已验证。现在，您应该选择每个关卡在游戏中占用的冒险槽位。';
 
   @override
   String get copyReferenceOrDeep => '复制事件引用，还是创建独立副本？';
@@ -7318,4 +7451,90 @@ class AppLocalizationsZh extends AppLocalizations {
   String startupLoadingCategoryProgress(String category) {
     return '正在加载$category...';
   }
+
+  @override
+  String get reselectFiles => '重新选择文件';
+
+  @override
+  String get validationReviewRequest => '请查看所选关卡的校验结果。';
+
+  @override
+  String get validationRecommendation => '建议在导出前修改这些关卡以修复问题，或者选择其他文件。';
+
+  @override
+  String validationProgress(int current, int total) {
+    return '正在校验 $current / $total';
+  }
+
+  @override
+  String get invalid_rsb_version => '无效的 RSB 版本，应为 3 或 4';
+
+  @override
+  String get invalid_file_list_offset => '无效的文件列表偏移';
+
+  @override
+  String get invalid_rsb_ver_3_resource_offset => 'RSB 版本 3 的资源偏移无效';
+
+  @override
+  String get invalid_composite_name => '无效的 Composite 名称';
+
+  @override
+  String get out_of_range_1 => 'poolIndex 超出范围';
+
+  @override
+  String get out_of_range_2 => 'packet index 超出范围';
+
+  @override
+  String get invalid_rsg_name => '无效的 RSG 名称';
+
+  @override
+  String get invalid_packet_width => '无效的 packet 宽度';
+
+  @override
+  String get invalid_packet_height => '无效的 packet 高度';
+
+  @override
+  String get invalid_item_packet => '无效的 Item Packet';
+
+  @override
+  String get invalid_rsg_number => '无效的 RSG 索引';
+
+  @override
+  String get invalid_part2_offset => '无效的 Part2 偏移';
+
+  @override
+  String get invalid_head_length => '无效的标头长度';
+
+  @override
+  String get rsb_is_corrupted => '此 RSB 已损坏';
+
+  @override
+  String get invalid_ptx_info_eachlength => 'PTX 信息无效';
+
+  @override
+  String get invalid_end_offset => '无效的结束偏移';
+
+  @override
+  String get invalid_rsb_head => 'RSB Magic 不匹配，应以 \"1BSR\" 开头';
+
+  @override
+  String get invalid_ptx_info_each_length => '无效的 PTX 信息';
+
+  @override
+  String get category_out_of_length => '类别超出长度';
+
+  @override
+  String get name_path_must_be_ascii => '名称路径必须符合 ASCII';
+
+  @override
+  String get invalid_rsg_magic => '无效的 RSG Magic，应以 \"PGSR\" 开头';
+
+  @override
+  String get invalid_rsg_version => '无效的 RSG 版本，应为 3 或 4';
+
+  @override
+  String get invalid_rsg_compression_flag => '无效的 RSG 压缩标志，仅支持 0 到 3';
+
+  @override
+  String get mismatch_zlib_magic => 'PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头';
 }

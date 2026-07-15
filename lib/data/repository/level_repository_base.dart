@@ -47,14 +47,15 @@ class FileItem {
   final int size;
   final bool isFavorite;
 
-  /// Rank for file type sorting: JSON (0) -> RTON (1) -> HUJSON (2) -> Other (3)
+  /// Rank for file type sorting: SMF (0) -> JSON (1) -> RTON (2) -> HUJSON (3) -> Other (4)
   int get extensionRank {
     if (isDirectory) return -1;
     final lower = name.toLowerCase();
-    if (lower.endsWith('.json')) return 0;
-    if (lower.endsWith('.rton')) return 1;
-    if (lower.endsWith('.hujson')) return 2;
-    return 3;
+    if (lower.endsWith('.smf')) return 0;
+    if (lower.endsWith('.json')) return 1;
+    if (lower.endsWith('.rton')) return 2;
+    if (lower.endsWith('.hujson')) return 3;
+    return 4;
   }
 }
 
@@ -67,6 +68,7 @@ abstract class LevelRepositoryBase {
     '.rton',
     '.zlib',
     '.bin',
+    '.smf',
   };
 
   static const List<String> defaultTemplateList = [
@@ -272,6 +274,11 @@ abstract class LevelRepositoryBase {
 
   bool isSupportedLevelFileName(String name) {
     final lower = name.toLowerCase();
+    if (lower.endsWith('.smf')) {
+      // .rsb.smf is supported (checked in subclasses for platform visibility),
+      // but plain .smf is not to be shown.
+      return lower.endsWith('.rsb.smf');
+    }
     return levelExtensions.any(lower.endsWith);
   }
 

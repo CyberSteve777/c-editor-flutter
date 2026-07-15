@@ -65,7 +65,7 @@
   "dropShip": "Drop Ship",
   "totalLabel": "Total",
   "totalPlantFoodTooltip": "Total Plant Food (including drops, events, etc.)",
-  "appTitle": "My Level Library",
+  "appTitle": "My Levels",
   "about": "About",
   "refresh": "Refresh",
   "toggleTheme": "Toggle theme",
@@ -145,8 +145,28 @@
   "download": "Download",
   "downloadAllLevels": "Export all levels",
   "downloadFolder": "Download this directory",
+  "exportLevels": "Export levels",
+  "exportSelectLevels": "Select levels to export",
+  "exportSelectFile": "Select level archive for export (.rsb.smf)",
+  "exportSelectedFile": "Selected file: {path}",
+  "@exportSelectedFile": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "backupRecommendationTitle": "Backup Recommendation",
+  "backupRecommendationBody": "It is highly recommended to create a backup of your level archive before exporting. This helps prevent data loss if the operation is interrupted.",
+  "backupAndProceed": "Backup and Proceed",
+  "proceedWithoutBackup": "Proceed Without Backup",
+  "backupSuffix": "_copy",
+  "exportNoFilesFound": "No compatible files found (.rsb.smf).",
+  "cancelExportTitle": "Cancel Export",
+  "cancelExportMessage": "Are you sure you want to cancel the export process?",
+  "exportDisclaimerTitle": "Risk Warning & Disclaimer",
+  "exportDisclaimerBody": "This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game's terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.",
   "importProgressTitle": "Importing levels…",
   "exportProgressTitle": "Building export…",
+  "backupProgressTitle": "Creating backup…",
   "transferProgressCount": "{completed} / {total}",
   "@transferProgressCount": {
     "placeholders": {
@@ -177,7 +197,49 @@
   "back": "Back",
   "noLevelsFound": "No levels found",
   "searchLevel": "Search levels...",
-  "proceed": "Continue",
+  "proceed": "Proceed",
+  "startExport": "Begin",
+  "exportProceed": "Proceed",
+  "exportBegin": "Begin",
+  "exportStatusCreatingRton": "Creating RTON levels...",
+  "exportStatusUnpackingRsb": "Unpacking RSB...",
+  "exportStatusUnpackingRsg": "Unpacking Packages.rsg...",
+  "exportStatusInjecting": "Injecting levels...",
+  "exportStatusRepackingRsg": "Repacking RSG...",
+  "exportStatusRepackingRsb": "Repacking RSB...",
+  "exportStatusFinalizing": "Finalizing...",
+  "exportAssignmentProposalTitle": "Level Distribution",
+  "exportWorld": "World",
+  "exportLevelNumber": "Level Number",
+  "exportLevelShort": "Lvl. {level}",
+  "@exportLevelShort": {
+    "placeholders": {
+      "level": { "type": "int" }
+    }
+  },
+  "exportFinish": "Finish",
+  "exportSuccessTitle": "Export Successful",
+  "exportSuccessMessage": "The levels have been successfully exported to the archive.",
+  "exportDuplicateAssignment": "Duplicate assignment: {world} {level}",
+  "@exportDuplicateAssignment": {
+    "placeholders": {
+      "world": { "type": "String" },
+      "level": { "type": "int" }
+    }
+  },
+  "exportAssignmentIncomplete": "Not all levels assigned",
+  "exportConfirmationTitle": "Confirm assignments",
+  "exportConfirmationBody": "Please verify your assignments before proceeding.",
+  "exportFinalCheckTitle": "Final Check",
+  "exportFinalCheckBody": "The following levels will be exported with new names:",
+  "exportTargetArchive": "All levels will be exported to {file}",
+  "@exportTargetArchive": {
+    "placeholders": {
+      "file": { "type": "String" }
+    }
+  },
+  "exportStart": "Start Export",
+  "exportAssignmentProposalBody": "The selected levels are validated. Now you should choose which adventure slot each level will occupy in the game.",
   "copyReferenceOrDeep": "Copy reference or make a deep copy?",
   "copyReference": "Copy reference",
   "deepCopy": "Deep copy",
@@ -2570,5 +2632,39 @@
     "placeholders": {
       "category": { "type": "String" }
     }
-  }
+  },
+  "reselectFiles": "Re-select files",
+  "validationReviewRequest": "Please review the validation results for the selected levels.",
+  "validationRecommendation": "We recommend editing these levels to fix the issues before exporting, or choosing different files.",
+  "validationProgress": "Validating {current} / {total}",
+  "@validationProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "invalid_rsb_version": "Invalid RSB version, should be 3 or 4",
+  "invalid_file_list_offset": "Invalid File List Offset",
+  "invalid_rsb_ver_3_resource_offset": "Invalid Resource Offset for RSB version 3",
+  "invalid_composite_name": "Invalid Composite Name",
+  "out_of_range_1": "Out of range for poolIndex",
+  "out_of_range_2": "Out of range for packet index",
+  "invalid_rsg_name": "Invalid RSG Name",
+  "invalid_packet_width": "Invalid Packet Width",
+  "invalid_packet_height": "Invalid Packet Height",
+  "invalid_item_packet": "Invalid Item Packet",
+  "invalid_rsg_number": "Invalid RSG index",
+  "invalid_part2_offset": "Invalid Part2 Offset",
+  "invalid_head_length": "Invalid Head Length",
+  "rsb_is_corrupted": "This RSB is corrupted",
+  "invalid_ptx_info_eachlength": "PTX Info is invalid",
+  "invalid_end_offset": "Invalid End Offset",
+  "invalid_rsb_head": "Mismatch RSB magic, should starts with \"1BSR\"",
+  "invalid_ptx_info_each_length": "Invalid PTX Info",
+  "category_out_of_length": "Category is out of length",
+  "name_path_must_be_ascii": "Name path must match ASCII",
+  "invalid_rsg_magic": "Invalid RSG Magic, should starts with \"PGSR\"",
+  "invalid_rsg_version": "Invalid RSG version, should be 3 or 4",
+  "invalid_rsg_compression_flag": "Invalid RSG Compression flag, only 0 to 3 is supported",
+  "mismatch_zlib_magic": "Mismatch PopCap Zlib magic, should begins with 0xDEADFED4"
 }
