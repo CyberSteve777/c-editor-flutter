@@ -9,11 +9,11 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_validator.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/world_repository.dart';
-import 'package:c_editor/utils/3rdParty/sen_rsb_unpack.dart';
-import 'package:c_editor/utils/3rdParty/sen_rsb_pack.dart';
-import 'package:c_editor/utils/3rdParty/sen_rsg_unpack.dart';
-import 'package:c_editor/utils/3rdParty/sen_rsg_pack.dart';
-import 'package:c_editor/utils/3rdParty/pyvz2_rton_codec.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_rsb_unpack.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_rsb_pack.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_rsg_unpack.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_rsg_pack.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:path/path.dart' as p;
 

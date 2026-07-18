@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:c_editor/utils/hujson_codec.dart';
-import 'package:c_editor/utils/3rdParty/pyvz2_rton_codec.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/utils/pvz2c_crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,6 +26,30 @@ enum LevelSortMode {
   modified,
   size,
   type,
+}
+
+class LibraryItem {
+  LibraryItem({
+    required this.path,
+    required this.displayName,
+    this.bookmark,
+  });
+
+  final String path;
+  final String displayName;
+  final String? bookmark;
+
+  Map<String, dynamic> toJson() => {
+        'path': path,
+        'displayName': displayName,
+        if (bookmark != null) 'bookmark': bookmark,
+      };
+
+  factory LibraryItem.fromJson(Map<String, dynamic> json) => LibraryItem(
+        path: json['path'] as String,
+        displayName: json['displayName'] as String,
+        bookmark: json['bookmark'] as String?,
+      );
 }
 
 class FileItem {
@@ -86,6 +110,10 @@ abstract class LevelRepositoryBase {
 
   Future<String?> getSavedFolderPath();
   Future<void> setSavedFolderPath(String path);
+
+  Future<List<LibraryItem>> getLibraries();
+  Future<void> setLibraries(List<LibraryItem> libraries);
+
   Future<LevelLibraryStartupCache> preloadLibrarySettings(
     SharedPreferences prefs,
   );

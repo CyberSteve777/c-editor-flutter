@@ -481,8 +481,68 @@ abstract class AppLocalizations {
   /// No description provided for @switchFolder.
   ///
   /// In en, this message translates to:
-  /// **'Switch folder'**
+  /// **'Library manager'**
   String get switchFolder;
+
+  /// No description provided for @manageLibraries.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage libraries'**
+  String get manageLibraries;
+
+  /// No description provided for @addLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Add library'**
+  String get addLibrary;
+
+  /// No description provided for @libraryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Library name'**
+  String get libraryName;
+
+  /// No description provided for @libraryPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get libraryPath;
+
+  /// No description provided for @deleteLibraryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove library?'**
+  String get deleteLibraryTitle;
+
+  /// No description provided for @deleteLibraryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove \"{name}\" from the library list? This will NOT delete any files on your disk.'**
+  String deleteLibraryMessage(String name);
+
+  /// No description provided for @defaultLibraryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Default library'**
+  String get defaultLibraryName;
+
+  /// No description provided for @renameLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename library'**
+  String get renameLibrary;
+
+  /// No description provided for @activeLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeLibrary;
+
+  /// No description provided for @noLibrariesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No libraries added yet'**
+  String get noLibrariesFound;
 
   /// No description provided for @clearCache.
   ///
@@ -537,6 +597,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not share level file'**
   String get shareLevelFailed;
+
+  /// No description provided for @shareAsFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Share as File'**
+  String get shareAsFile;
+
+  /// No description provided for @shareAsPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Share as Preview'**
+  String get shareAsPreview;
+
+  /// No description provided for @selectBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Background'**
+  String get selectBackground;
+
+  /// No description provided for @autoSelectBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-select'**
+  String get autoSelectBackground;
+
+  /// No description provided for @customBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Background'**
+  String get customBackground;
+
+  /// No description provided for @selectPlantList.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Plant List'**
+  String get selectPlantList;
+
+  /// No description provided for @levelContainsCustomZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Level contains custom zombies'**
+  String get levelContainsCustomZombies;
+
+  /// No description provided for @generatingPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating preview...'**
+  String get generatingPreview;
+
+  /// No description provided for @saveToGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to Gallery'**
+  String get saveToGallery;
+
+  /// No description provided for @imageSavedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Image saved successfully'**
+  String get imageSavedSuccessfully;
+
+  /// No description provided for @shareOptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to share?'**
+  String get shareOptionTitle;
+
+  /// No description provided for @selectLevelType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Level Type'**
+  String get selectLevelType;
+
+  /// No description provided for @autoSelectLevelType.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-detect'**
+  String get autoSelectLevelType;
+
+  /// No description provided for @manualSelectLevelType.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual selection'**
+  String get manualSelectLevelType;
+
+  /// No description provided for @levelTypeAdventure.
+  ///
+  /// In en, this message translates to:
+  /// **'Adventure'**
+  String get levelTypeAdventure;
+
+  /// No description provided for @levelTypeLastStand.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Stand'**
+  String get levelTypeLastStand;
+
+  /// No description provided for @levelTypeConveyor.
+  ///
+  /// In en, this message translates to:
+  /// **'Conveyor'**
+  String get levelTypeConveyor;
+
+  /// No description provided for @levelTypeSeedRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Seed Rain'**
+  String get levelTypeSeedRain;
+
+  /// No description provided for @levelTypeIPlant.
+  ///
+  /// In en, this message translates to:
+  /// **'I, Plant'**
+  String get levelTypeIPlant;
+
+  /// No description provided for @levelTypeOldStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Old-Style'**
+  String get levelTypeOldStyle;
+
+  /// No description provided for @levelTypeUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get levelTypeUnknown;
 
   /// No description provided for @selectFolder.
   ///
@@ -915,6 +1101,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{completed} / {total}'**
   String transferProgressCount(int completed, int total);
+
+  /// No description provided for @folderAccessError.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected folder is read-only or inaccessible. Please select another folder.'**
+  String get folderAccessError;
 
   /// No description provided for @webFolderImportNotice.
   ///
