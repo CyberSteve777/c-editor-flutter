@@ -2,9 +2,9 @@ name: iOS Build (dev)
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   pull_request:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   workflow_dispatch:
     inputs:
       build_id:
