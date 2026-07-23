@@ -2,9 +2,9 @@ name: Build dev (Windows, Linux, Android)
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   pull_request:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   workflow_dispatch:
 
 concurrency:
