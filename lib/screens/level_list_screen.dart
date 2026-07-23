@@ -11,6 +11,8 @@ import 'package:c_editor/data/app_links.dart';
 import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -1415,6 +1417,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
+              ...pluginOverflowMenuItems(
+                slot: CPluginUiSlots.levelListOverflow,
+                valuePrefix: 'plugin:',
+              ),
               PopupMenuItem(
                 value: 'about',
                 child: ListTile(
@@ -1443,6 +1449,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 widget.onPluginsClick();
               } else if (value == 'about') {
                 widget.onAboutClick();
+              } else {
+                handlePluginOverflowSelection(
+                  context,
+                  value: value,
+                  valuePrefix: 'plugin:',
+                  slot: CPluginUiSlots.levelListOverflow,
+                );
               }
             },
           ),

@@ -3,12 +3,12 @@
   "formatVersion": 1,
   "id": "com.example.hello",
   "name": "Hello Plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "C-Editor",
-  "description": "Sample plugin that registers a Hello screen",
+  "description": "Sample plugin that registers a Hello screen and editor UI actions",
   "minEditorVersion": "0.1.0",
   "entry": {
-    "library": "package:hello_plugin/main.dart",
+    "library": "package:hello_cplugin/main.dart",
     "function": "initialize"
   }
 }

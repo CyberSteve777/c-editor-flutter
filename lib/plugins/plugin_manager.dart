@@ -1,13 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter_eval/flutter_eval.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dart_eval/dart_eval.dart';
-import 'package:c_editor/plugin_api/eval/c_editor_plugin_eval_plugin.dart';
-import 'package:c_editor/plugin_api/eval/host_wrappers.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
 import 'package:c_editor/plugins/plugin_downloader.dart';
-import 'package:c_editor/plugins/plugin_host_impl.dart';
+import 'package:c_editor/plugins/plugin_runtime.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 import 'package:c_editor/plugins/plugin_storage_factory.dart';
@@ -54,7 +53,6 @@ class PluginManager extends ChangeNotifier {
       List.unmodifiable(_installed);
 
   Future<void> reload() async {
-    // Tear down previous runtimes/screens.
     for (final id in _runtimes.keys.toList()) {
       screenRegistry.clearForPlugin(id);
     }
@@ -74,8 +72,20 @@ class PluginManager extends ChangeNotifier {
     final package = _validator.validate(bytes);
     await _checkMinEditorVersion(package.manifest.minEditorVersion);
 
-    // Ensure EVC is loadable before persisting.
-    _createRuntime(package.evcBytes);
+    // Verify the entrypoint actually runs before persisting (catches EVC that
+    // was compiled without the library marked as an entrypoint).
+    try {
+      executePluginEntrypoint(
+        evcBytes: package.evcBytes,
+        manifest: package.manifest,
+        pluginId: package.manifest.id,
+        assets: package.assets,
+      );
+    } catch (e) {
+      throw CPluginValidationException(
+        'Plugin bytecode failed to execute initialize(): $e',
+      );
+    }
 
     await _storage.savePackage(package, enabled: enable);
     await reload();
@@ -106,19 +116,13 @@ class PluginManager extends ChangeNotifier {
   Future<void> _loadPlugin(InstalledPluginRecord record) async {
     screenRegistry.clearForPlugin(record.id);
     try {
-      final runtime = _createRuntime(record.evcBytes);
-      final host = PluginHostImpl(
+      final runtime = executePluginEntrypoint(
+        evcBytes: record.evcBytes,
+        manifest: record.manifest,
         pluginId: record.id,
-        assets: MemoryCPluginAssets(record.assets),
+        assets: record.assets,
         registry: screenRegistry,
       );
-
-      runtime.executeLib(
-        record.manifest.entryLibrary,
-        record.manifest.entryFunction,
-        [$CPluginHost.wrap(host)],
-      );
-
       _runtimes[record.id] = runtime;
 
       final index = _installed.indexWhere((p) => p.id == record.id);
@@ -132,13 +136,6 @@ class PluginManager extends ChangeNotifier {
         _installed[index] = record.copyWith(loadError: e.toString());
       }
     }
-  }
-
-  Runtime _createRuntime(Uint8List evcBytes) {
-    final runtime = Runtime(ByteData.sublistView(evcBytes));
-    runtime.addPlugin(flutterEvalPlugin);
-    runtime.addPlugin(const CEditorPluginEvalPlugin());
-    return runtime;
   }
 
   Future<void> _checkMinEditorVersion(String? minVersion) async {

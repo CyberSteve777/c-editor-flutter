@@ -13,6 +13,8 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
@@ -3382,6 +3384,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 tooltip: l10n?.tooltipSave ?? 'Save',
                 onPressed: _ec.state.hasChanges ? _save : null,
               ),
+              ...pluginEditorAppBarActions(context),
               PopupMenuButton<String>(
                 itemBuilder: (context) => [
                   PopupMenuItem(
@@ -3412,6 +3415,10 @@ class _EditorScreenState extends State<EditorScreen> {
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
+                  ...pluginOverflowMenuItems(
+                    slot: CPluginUiSlots.editorOverflow,
+                    valuePrefix: 'plugin:',
+                  ),
                 ],
                 onSelected: (value) {
                   if (value == 'lang') {
@@ -3420,6 +3427,13 @@ class _EditorScreenState extends State<EditorScreen> {
                     _showUiScaleDialog(context);
                   } else if (value == 'theme') {
                     context.read<SettingsCubit>().cycleTheme();
+                  } else {
+                    handlePluginOverflowSelection(
+                      context,
+                      value: value,
+                      valuePrefix: 'plugin:',
+                      slot: CPluginUiSlots.editorOverflow,
+                    );
                   }
                 },
               ),

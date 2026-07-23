@@ -14,6 +14,10 @@ analyzer:
     - build/**
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - third_party/flutter_eval/example/**
+    - third_party/flutter_eval/test/**
+    - examples/hello_cplugin/debug_host/**
+
 
 linter:
   # The lint rules applied to this project can be customized in the

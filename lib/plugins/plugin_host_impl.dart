@@ -41,15 +41,16 @@ class PluginHostImpl implements CPluginHost {
   PluginHostImpl({
     required this.pluginId,
     required CPluginAssets assets,
-    required PluginScreenRegistry registry,
-  }) : _assets = assets,
-       _registry = registry;
+    required this.registry,
+  }) : _assets = assets;
 
   @override
   final String pluginId;
 
   final CPluginAssets _assets;
-  final PluginScreenRegistry _registry;
+
+  /// Registry that receives screens / UI elements from this host.
+  final PluginScreenRegistry registry;
 
   @override
   CPluginAssets get assets => _assets;
@@ -63,12 +64,41 @@ class PluginHostImpl implements CPluginHost {
     if (id.isEmpty) {
       throw ArgumentError('Screen id must not be empty');
     }
-    _registry.register(
+    registry.register(
       PluginRegisteredScreen(
         pluginId: pluginId,
         screenId: id,
         title: title.isEmpty ? id : title,
         builder: builder,
+      ),
+    );
+  }
+
+  @override
+  void registerUiElement(
+    String id,
+    String title,
+    String slot,
+    CPluginScreenBuilder builder, [
+    int? iconCodePoint,
+  ]) {
+    if (id.isEmpty) {
+      throw ArgumentError('UI element id must not be empty');
+    }
+    if (!CPluginUiSlots.isValid(slot)) {
+      throw ArgumentError(
+        'Unknown UI slot "$slot". '
+        'Use CPluginUiSlots.editorAppBar, editorOverflow, or levelListOverflow.',
+      );
+    }
+    registry.registerUiElement(
+      PluginUiElement(
+        pluginId: pluginId,
+        id: id,
+        title: title.isEmpty ? id : title,
+        slot: slot,
+        builder: builder,
+        iconCodePoint: iconCodePoint,
       ),
     );
   }

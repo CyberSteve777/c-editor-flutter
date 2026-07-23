@@ -118,6 +118,41 @@ class $CPluginHost implements $Instance {
           ],
         ),
       ),
+      'registerUiElement': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+          params: [
+            BridgeParameter(
+              'id',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'title',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'slot',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'builder',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.function)),
+              false,
+            ),
+            BridgeParameter(
+              'iconCodePoint',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.int),
+                nullable: true,
+              ),
+              true,
+            ),
+          ],
+        ),
+      ),
     },
     getters: {
       'pluginId': BridgeMethodDef(
@@ -157,23 +192,48 @@ class $CPluginHost implements $Instance {
           final id = args[0]!.$value as String;
           final title = args[1]!.$value as String;
           final builder = args[2]! as EvalCallable;
-          $value.registerScreen(id, title, (context) {
-            final result = builder.call(
-              runtime,
-              null,
-              [$BuildContext.wrap(context)],
-            );
-            if (result == null) {
-              return const SizedBox.shrink();
-            }
-            final value = result.$value;
-            if (value is Widget) return value;
-            return const SizedBox.shrink();
-          });
+          $value.registerScreen(id, title, _wrapBuilder(runtime, builder));
+          return null;
+        });
+      case 'registerUiElement':
+        return $Function((runtime, target, args) {
+          final id = args[0]!.$value as String;
+          final title = args[1]!.$value as String;
+          final slot = args[2]!.$value as String;
+          final builder = args[3]! as EvalCallable;
+          final iconCodePoint = args.length > 4
+              ? (args[4]?.$value as num?)?.toInt()
+              : null;
+          $value.registerUiElement(
+            id,
+            title,
+            slot,
+            _wrapBuilder(runtime, builder),
+            iconCodePoint,
+          );
           return null;
         });
     }
     return _superclass.$getProperty(runtime, identifier);
+  }
+
+  static CPluginScreenBuilder _wrapBuilder(
+    Runtime runtime,
+    EvalCallable builder,
+  ) {
+    return (context) {
+      final result = builder.call(
+        runtime,
+        null,
+        [$BuildContext.wrap(context)],
+      );
+      if (result == null) {
+        return const SizedBox.shrink();
+      }
+      final value = result.$value;
+      if (value is Widget) return value;
+      return const SizedBox.shrink();
+    };
   }
 
   @override
