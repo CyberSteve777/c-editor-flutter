@@ -66,6 +66,60 @@
   "clearCache": "释放缓存",
   "uiSize": "界面大小",
   "aboutSoftware": "关于软件",
+  "pluginsTitle": "插件",
+  "pluginInstallFromDevice": "从本地安装",
+  "pluginInstallFromUrl": "从链接安装",
+  "pluginUrlHint": "https://example.com/my_plugin.cplugin",
+  "pluginDownload": "下载",
+  "pluginInstalling": "正在安装插件…",
+  "pluginDownloadProgress": "正在下载 {received} / {total}",
+  "@pluginDownloadProgress": {
+    "placeholders": {
+      "received": { "type": "String" },
+      "total": { "type": "String" }
+    }
+  },
+  "pluginDownloadProgressUnknown": "正在下载 {received}",
+  "@pluginDownloadProgressUnknown": {
+    "placeholders": {
+      "received": { "type": "String" }
+    }
+  },
+  "pluginInstallSuccess": "已安装 {name}",
+  "@pluginInstallSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginInstallFailed": "安装失败：{error}",
+  "@pluginInstallFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "pluginInvalidFile": "不是有效的插件：{reason}",
+  "@pluginInvalidFile": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "pluginInvalidUrl": "请输入有效的 http(s) 链接",
+  "pluginReadFailed": "无法读取所选文件",
+  "pluginTrustWarningTitle": "安全提示",
+  "pluginTrustWarningBody": "插件会在 C-Editor 内运行代码。请只安装来自可信来源的插件。默认情况下文件与网络访问受沙箱限制，但恶意插件仍可能影响编辑器界面。",
+  "pluginInstalledSection": "已安装插件",
+  "pluginScreensSection": "插件界面",
+  "pluginEmpty": "尚未安装插件。可从本地或下载链接安装 .cplugin 文件。",
+  "pluginNoScreens": "暂无可用的插件界面。请启用会注册界面的已安装插件。",
+  "pluginUninstall": "卸载",
+  "pluginUninstallTitle": "卸载插件",
+  "pluginUninstallConfirm": "要从本机移除 {name} 吗？",
+  "@pluginUninstallConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginLoadError": "加载失败",
   "ultra": "超大",
   "plantTagInternational": "国际版移植",
   "plantTagChinese": "中文版独有",

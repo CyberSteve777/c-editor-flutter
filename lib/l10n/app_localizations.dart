@@ -484,6 +484,144 @@ abstract class AppLocalizations {
   /// **'About'**
   String get aboutSoftware;
 
+  /// No description provided for @pluginsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plugins'**
+  String get pluginsTitle;
+
+  /// No description provided for @pluginInstallFromDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Install from device'**
+  String get pluginInstallFromDevice;
+
+  /// No description provided for @pluginInstallFromUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Install from URL'**
+  String get pluginInstallFromUrl;
+
+  /// No description provided for @pluginUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/my_plugin.cplugin'**
+  String get pluginUrlHint;
+
+  /// No description provided for @pluginDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get pluginDownload;
+
+  /// No description provided for @pluginInstalling.
+  ///
+  /// In en, this message translates to:
+  /// **'Installing plugin…'**
+  String get pluginInstalling;
+
+  /// No description provided for @pluginDownloadProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading {received} / {total}'**
+  String pluginDownloadProgress(String received, String total);
+
+  /// No description provided for @pluginDownloadProgressUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading {received}'**
+  String pluginDownloadProgressUnknown(String received);
+
+  /// No description provided for @pluginInstallSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed {name}'**
+  String pluginInstallSuccess(String name);
+
+  /// No description provided for @pluginInstallFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Install failed: {error}'**
+  String pluginInstallFailed(String error);
+
+  /// No description provided for @pluginInvalidFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a valid plugin: {reason}'**
+  String pluginInvalidFile(String reason);
+
+  /// No description provided for @pluginInvalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid http(s) URL'**
+  String get pluginInvalidUrl;
+
+  /// No description provided for @pluginReadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the selected file'**
+  String get pluginReadFailed;
+
+  /// No description provided for @pluginTrustWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust warning'**
+  String get pluginTrustWarningTitle;
+
+  /// No description provided for @pluginTrustWarningBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.'**
+  String get pluginTrustWarningBody;
+
+  /// No description provided for @pluginInstalledSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed plugins'**
+  String get pluginInstalledSection;
+
+  /// No description provided for @pluginScreensSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Plugin screens'**
+  String get pluginScreensSection;
+
+  /// No description provided for @pluginEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No plugins installed yet. Install a .cplugin file from your device or a download link.'**
+  String get pluginEmpty;
+
+  /// No description provided for @pluginNoScreens.
+  ///
+  /// In en, this message translates to:
+  /// **'No plugin screens are available. Enable an installed plugin that registers screens.'**
+  String get pluginNoScreens;
+
+  /// No description provided for @pluginUninstall.
+  ///
+  /// In en, this message translates to:
+  /// **'Uninstall'**
+  String get pluginUninstall;
+
+  /// No description provided for @pluginUninstallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Uninstall plugin'**
+  String get pluginUninstallTitle;
+
+  /// No description provided for @pluginUninstallConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from this device?'**
+  String pluginUninstallConfirm(String name);
+
+  /// No description provided for @pluginLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load'**
+  String get pluginLoadError;
+
   /// No description provided for @share.
   ///
   /// In en, this message translates to:

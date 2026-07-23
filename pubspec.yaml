@@ -37,6 +37,11 @@ dependencies:
   idb_shim: ^2.9.2
   web: ^1.1.1
   drag_and_drop_lists: ^0.4.2
+  flutter_eval:
+    path: third_party/flutter_eval
+  dart_eval: ^0.8.5
+  eval_annotation: ^0.8.1
+  http: ^1.6.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

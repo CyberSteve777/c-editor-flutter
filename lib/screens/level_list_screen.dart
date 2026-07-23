@@ -35,11 +35,13 @@ class LevelListScreen extends StatefulWidget {
     super.key,
     required this.onLevelClick,
     required this.onAboutClick,
+    required this.onPluginsClick,
     required this.onLanguageTap,
   });
 
   final void Function(String fileName, String filePath) onLevelClick;
   final VoidCallback onAboutClick;
+  final VoidCallback onPluginsClick;
   final ValueChanged<BuildContext> onLanguageTap;
 
   @override
@@ -1406,6 +1408,14 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 ),
               ),
               PopupMenuItem(
+                value: 'plugins',
+                child: ListTile(
+                  leading: const Icon(Icons.extension),
+                  title: Text(l10n.pluginsTitle),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
                 value: 'about',
                 child: ListTile(
                   leading: const Icon(Icons.info_outline),
@@ -1429,6 +1439,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 );
               } else if (value == 'lang') {
                 widget.onLanguageTap(context);
+              } else if (value == 'plugins') {
+                widget.onPluginsClick();
               } else if (value == 'about') {
                 widget.onAboutClick();
               }

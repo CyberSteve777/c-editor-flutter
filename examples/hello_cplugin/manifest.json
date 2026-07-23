@@ -1,0 +1,14 @@
+{
+  "format": "cplugin",
+  "formatVersion": 1,
+  "id": "com.example.hello",
+  "name": "Hello Plugin",
+  "version": "1.0.0",
+  "author": "C-Editor",
+  "description": "Sample plugin that registers a Hello screen",
+  "minEditorVersion": "0.1.0",
+  "entry": {
+    "library": "package:hello_plugin/main.dart",
+    "function": "initialize"
+  }
+}

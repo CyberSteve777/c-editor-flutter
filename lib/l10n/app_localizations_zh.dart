@@ -209,6 +209,88 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aboutSoftware => '关于软件';
 
   @override
+  String get pluginsTitle => '插件';
+
+  @override
+  String get pluginInstallFromDevice => '从本地安装';
+
+  @override
+  String get pluginInstallFromUrl => '从链接安装';
+
+  @override
+  String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
+
+  @override
+  String get pluginDownload => '下载';
+
+  @override
+  String get pluginInstalling => '正在安装插件…';
+
+  @override
+  String pluginDownloadProgress(String received, String total) {
+    return '正在下载 $received / $total';
+  }
+
+  @override
+  String pluginDownloadProgressUnknown(String received) {
+    return '正在下载 $received';
+  }
+
+  @override
+  String pluginInstallSuccess(String name) {
+    return '已安装 $name';
+  }
+
+  @override
+  String pluginInstallFailed(String error) {
+    return '安装失败：$error';
+  }
+
+  @override
+  String pluginInvalidFile(String reason) {
+    return '不是有效的插件：$reason';
+  }
+
+  @override
+  String get pluginInvalidUrl => '请输入有效的 http(s) 链接';
+
+  @override
+  String get pluginReadFailed => '无法读取所选文件';
+
+  @override
+  String get pluginTrustWarningTitle => '安全提示';
+
+  @override
+  String get pluginTrustWarningBody =>
+      '插件会在 C-Editor 内运行代码。请只安装来自可信来源的插件。默认情况下文件与网络访问受沙箱限制，但恶意插件仍可能影响编辑器界面。';
+
+  @override
+  String get pluginInstalledSection => '已安装插件';
+
+  @override
+  String get pluginScreensSection => '插件界面';
+
+  @override
+  String get pluginEmpty => '尚未安装插件。可从本地或下载链接安装 .cplugin 文件。';
+
+  @override
+  String get pluginNoScreens => '暂无可用的插件界面。请启用会注册界面的已安装插件。';
+
+  @override
+  String get pluginUninstall => '卸载';
+
+  @override
+  String get pluginUninstallTitle => '卸载插件';
+
+  @override
+  String pluginUninstallConfirm(String name) {
+    return '要从本机移除 $name 吗？';
+  }
+
+  @override
+  String get pluginLoadError => '加载失败';
+
+  @override
   String get share => '分享';
 
   @override

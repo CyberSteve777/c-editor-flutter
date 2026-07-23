@@ -210,6 +210,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutSoftware => 'About';
 
   @override
+  String get pluginsTitle => 'Plugins';
+
+  @override
+  String get pluginInstallFromDevice => 'Install from device';
+
+  @override
+  String get pluginInstallFromUrl => 'Install from URL';
+
+  @override
+  String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
+
+  @override
+  String get pluginDownload => 'Download';
+
+  @override
+  String get pluginInstalling => 'Installing plugin…';
+
+  @override
+  String pluginDownloadProgress(String received, String total) {
+    return 'Downloading $received / $total';
+  }
+
+  @override
+  String pluginDownloadProgressUnknown(String received) {
+    return 'Downloading $received';
+  }
+
+  @override
+  String pluginInstallSuccess(String name) {
+    return 'Installed $name';
+  }
+
+  @override
+  String pluginInstallFailed(String error) {
+    return 'Install failed: $error';
+  }
+
+  @override
+  String pluginInvalidFile(String reason) {
+    return 'Not a valid plugin: $reason';
+  }
+
+  @override
+  String get pluginInvalidUrl => 'Enter a valid http(s) URL';
+
+  @override
+  String get pluginReadFailed => 'Could not read the selected file';
+
+  @override
+  String get pluginTrustWarningTitle => 'Trust warning';
+
+  @override
+  String get pluginTrustWarningBody =>
+      'Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.';
+
+  @override
+  String get pluginInstalledSection => 'Installed plugins';
+
+  @override
+  String get pluginScreensSection => 'Plugin screens';
+
+  @override
+  String get pluginEmpty =>
+      'No plugins installed yet. Install a .cplugin file from your device or a download link.';
+
+  @override
+  String get pluginNoScreens =>
+      'No plugin screens are available. Enable an installed plugin that registers screens.';
+
+  @override
+  String get pluginUninstall => 'Uninstall';
+
+  @override
+  String get pluginUninstallTitle => 'Uninstall plugin';
+
+  @override
+  String pluginUninstallConfirm(String name) {
+    return 'Remove $name from this device?';
+  }
+
+  @override
+  String get pluginLoadError => 'Failed to load';
+
+  @override
   String get share => 'Share';
 
   @override

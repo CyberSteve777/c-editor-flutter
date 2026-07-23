@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:c_editor/utils/3rdParty/sen_popcap_zlib.dart';
-import 'package:c_editor/utils/3rdParty/sen_buffer.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_popcap_zlib.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_buffer.dart';
 import 'package:c_editor/utils/apple_folder_access.dart';
 
 import '../level_library_startup_cache.dart';

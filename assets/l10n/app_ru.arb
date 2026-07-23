@@ -67,6 +67,60 @@
   "clearCache": "Очистить кэш",
   "uiSize": "Размер интерфейса",
   "aboutSoftware": "О программе",
+  "pluginsTitle": "Плагины",
+  "pluginInstallFromDevice": "Установить с устройства",
+  "pluginInstallFromUrl": "Установить по URL",
+  "pluginUrlHint": "https://example.com/my_plugin.cplugin",
+  "pluginDownload": "Скачать",
+  "pluginInstalling": "Установка плагина…",
+  "pluginDownloadProgress": "Загрузка {received} / {total}",
+  "@pluginDownloadProgress": {
+    "placeholders": {
+      "received": { "type": "String" },
+      "total": { "type": "String" }
+    }
+  },
+  "pluginDownloadProgressUnknown": "Загрузка {received}",
+  "@pluginDownloadProgressUnknown": {
+    "placeholders": {
+      "received": { "type": "String" }
+    }
+  },
+  "pluginInstallSuccess": "Установлен {name}",
+  "@pluginInstallSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginInstallFailed": "Ошибка установки: {error}",
+  "@pluginInstallFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "pluginInvalidFile": "Неверный плагин: {reason}",
+  "@pluginInvalidFile": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "pluginInvalidUrl": "Введите корректный http(s) URL",
+  "pluginReadFailed": "Не удалось прочитать выбранный файл",
+  "pluginTrustWarningTitle": "Предупреждение",
+  "pluginTrustWarningBody": "Плагины выполняют код внутри C-Editor. Устанавливайте плагины только из доверенных источников. Доступ к файлам и сети по умолчанию ограничен, но вредоносные плагины всё ещё могут нарушить работу интерфейса редактора.",
+  "pluginInstalledSection": "Установленные плагины",
+  "pluginScreensSection": "Экраны плагинов",
+  "pluginEmpty": "Плагины ещё не установлены. Установите файл .cplugin с устройства или по ссылке.",
+  "pluginNoScreens": "Нет доступных экранов плагинов. Включите установленный плагин, который регистрирует экраны.",
+  "pluginUninstall": "Удалить",
+  "pluginUninstallTitle": "Удалить плагин",
+  "pluginUninstallConfirm": "Удалить {name} с этого устройства?",
+  "@pluginUninstallConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginLoadError": "Ошибка загрузки",
   "selectFolder": "Выбрать папку",
   "plantTagInternational": "Интернациональные",
   "plantTagChinese": "Китайские",

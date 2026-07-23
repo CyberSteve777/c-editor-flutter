@@ -12,6 +12,7 @@ import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/screens/about_screen.dart';
 import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/screens/level_list_screen.dart';
+import 'package:c_editor/screens/plugins_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/locale_flag_icon.dart';
@@ -64,8 +65,9 @@ class _DesktopEscapeHandlerState extends State<_DesktopEscapeHandler> {
 
     if (EscapeOverride.tryHandle?.call() == true) return true;
 
-    // Credits/about uses cubit navigation, not the Navigator stack.
-    if (widget.currentScreen == AppScreen.about) {
+    // Credits/about/plugins use cubit navigation, not the Navigator stack.
+    if (widget.currentScreen == AppScreen.about ||
+        widget.currentScreen == AppScreen.plugins) {
       widget.onEscapeNoRouteToPop?.call();
       return true;
     }
@@ -206,6 +208,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
             context.read<AppNavigationCubit>().openLevel(fileName, filePath);
           },
           onAboutClick: () => context.read<AppNavigationCubit>().openAbout(),
+          onPluginsClick: () =>
+              context.read<AppNavigationCubit>().openPlugins(),
           onLanguageTap: _showLanguageSelector,
         );
       case AppScreen.editor:
@@ -227,6 +231,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
         );
       case AppScreen.about:
         return AboutScreen(onBack: () => _backToLevelList(context));
+      case AppScreen.plugins:
+        return PluginsScreen(onBack: () => _backToLevelList(context));
     }
   }
 

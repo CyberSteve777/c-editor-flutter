@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:c_editor/utils/hujson_codec.dart';
-import 'package:c_editor/utils/3rdParty/pyvz2_rton_codec.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/utils/pvz2c_crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -210,6 +210,90 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aboutSoftware => 'О программе';
 
   @override
+  String get pluginsTitle => 'Плагины';
+
+  @override
+  String get pluginInstallFromDevice => 'Установить с устройства';
+
+  @override
+  String get pluginInstallFromUrl => 'Установить по URL';
+
+  @override
+  String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
+
+  @override
+  String get pluginDownload => 'Скачать';
+
+  @override
+  String get pluginInstalling => 'Установка плагина…';
+
+  @override
+  String pluginDownloadProgress(String received, String total) {
+    return 'Загрузка $received / $total';
+  }
+
+  @override
+  String pluginDownloadProgressUnknown(String received) {
+    return 'Загрузка $received';
+  }
+
+  @override
+  String pluginInstallSuccess(String name) {
+    return 'Установлен $name';
+  }
+
+  @override
+  String pluginInstallFailed(String error) {
+    return 'Ошибка установки: $error';
+  }
+
+  @override
+  String pluginInvalidFile(String reason) {
+    return 'Неверный плагин: $reason';
+  }
+
+  @override
+  String get pluginInvalidUrl => 'Введите корректный http(s) URL';
+
+  @override
+  String get pluginReadFailed => 'Не удалось прочитать выбранный файл';
+
+  @override
+  String get pluginTrustWarningTitle => 'Предупреждение';
+
+  @override
+  String get pluginTrustWarningBody =>
+      'Плагины выполняют код внутри C-Editor. Устанавливайте плагины только из доверенных источников. Доступ к файлам и сети по умолчанию ограничен, но вредоносные плагины всё ещё могут нарушить работу интерфейса редактора.';
+
+  @override
+  String get pluginInstalledSection => 'Установленные плагины';
+
+  @override
+  String get pluginScreensSection => 'Экраны плагинов';
+
+  @override
+  String get pluginEmpty =>
+      'Плагины ещё не установлены. Установите файл .cplugin с устройства или по ссылке.';
+
+  @override
+  String get pluginNoScreens =>
+      'Нет доступных экранов плагинов. Включите установленный плагин, который регистрирует экраны.';
+
+  @override
+  String get pluginUninstall => 'Удалить';
+
+  @override
+  String get pluginUninstallTitle => 'Удалить плагин';
+
+  @override
+  String pluginUninstallConfirm(String name) {
+    return 'Удалить $name с этого устройства?';
+  }
+
+  @override
+  String get pluginLoadError => 'Ошибка загрузки';
+
+  @override
   String get share => 'Поделиться';
 
   @override

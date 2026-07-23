@@ -70,6 +70,60 @@
   "plantTagInternational": "International",
   "plantTagChinese": "China Only",
   "aboutSoftware": "About",
+  "pluginsTitle": "Plugins",
+  "pluginInstallFromDevice": "Install from device",
+  "pluginInstallFromUrl": "Install from URL",
+  "pluginUrlHint": "https://example.com/my_plugin.cplugin",
+  "pluginDownload": "Download",
+  "pluginInstalling": "Installing plugin…",
+  "pluginDownloadProgress": "Downloading {received} / {total}",
+  "@pluginDownloadProgress": {
+    "placeholders": {
+      "received": { "type": "String" },
+      "total": { "type": "String" }
+    }
+  },
+  "pluginDownloadProgressUnknown": "Downloading {received}",
+  "@pluginDownloadProgressUnknown": {
+    "placeholders": {
+      "received": { "type": "String" }
+    }
+  },
+  "pluginInstallSuccess": "Installed {name}",
+  "@pluginInstallSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginInstallFailed": "Install failed: {error}",
+  "@pluginInstallFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "pluginInvalidFile": "Not a valid plugin: {reason}",
+  "@pluginInvalidFile": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "pluginInvalidUrl": "Enter a valid http(s) URL",
+  "pluginReadFailed": "Could not read the selected file",
+  "pluginTrustWarningTitle": "Trust warning",
+  "pluginTrustWarningBody": "Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.",
+  "pluginInstalledSection": "Installed plugins",
+  "pluginScreensSection": "Plugin screens",
+  "pluginEmpty": "No plugins installed yet. Install a .cplugin file from your device or a download link.",
+  "pluginNoScreens": "No plugin screens are available. Enable an installed plugin that registers screens.",
+  "pluginUninstall": "Uninstall",
+  "pluginUninstallTitle": "Uninstall plugin",
+  "pluginUninstallConfirm": "Remove {name} from this device?",
+  "@pluginUninstallConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginLoadError": "Failed to load",
   "share": "Share",
   "shareLevelFileText": "Level file: {name}",
   "@shareLevelFileText": {

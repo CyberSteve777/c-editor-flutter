@@ -6,6 +6,7 @@ import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/data/app_bootstrap.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
+import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/screens/startup_loading_screen.dart';
 
 void main() async {
@@ -91,6 +92,7 @@ class _BootstrapAppState extends State<BootstrapApp> {
         });
       },
     );
+    await PluginManager.init(widget.prefs);
     if (!mounted) return;
     setState(() => _ready = true);
   }
