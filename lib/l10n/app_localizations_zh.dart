@@ -75,10 +75,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveNumberLegend => '数字表示波次编号';
 
   @override
-  String get expand => 'Expand';
+  String get expand => '展开';
 
   @override
-  String get obtainableInLevel => 'Can be obtained in the level';
+  String get obtainableInLevel => '可在关卡中获得';
 
   @override
   String get allZombiesInLevel => '本关所有僵尸';
@@ -339,6 +339,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pluginLoadError => '加载失败';
+
+  @override
+  String get pluginBundledBadge => '内置';
+
+  @override
+  String get pluginsFolderReserved => '“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。';
+
+  @override
+  String get pluginNoLibraryForInstall => '请先选择关卡库文件夹，再安装插件。';
 
   @override
   String get share => '分享';

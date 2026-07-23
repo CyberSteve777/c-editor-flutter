@@ -1,0 +1,15 @@
+{
+  "format": "cplugin",
+  "formatVersion": 1,
+  "id": "com.c_editor.level_preview",
+  "name": "Level Preview",
+  "version": "1.0.0",
+  "author": "C-Editor",
+  "description": "Preview plants, zombies, and layout for the open or selected level",
+  "minEditorVersion": "0.1.0",
+  "bundled": true,
+  "entry": {
+    "library": "package:c_editor/bundled_plugins/level_preview_cplugin/main.dart",
+    "function": "initialize"
+  }
+}

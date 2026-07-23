@@ -153,6 +153,100 @@ class $CPluginHost implements $Instance {
           ],
         ),
       ),
+      'getOpenLevelJson': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.string),
+            nullable: true,
+          ),
+        ),
+      ),
+      'applyOpenLevelJson': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+          params: [
+            BridgeParameter(
+              'json',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+          ],
+        ),
+      ),
+      'saveOpenLevel': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.future, [
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+            ]),
+          ),
+        ),
+      ),
+      'loadLevelJson': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.future, [
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.string),
+                nullable: true,
+              ),
+            ]),
+          ),
+          params: [
+            BridgeParameter(
+              'filePath',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+          ],
+        ),
+      ),
+      'saveLevelJson': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.future, [
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+            ]),
+          ),
+          params: [
+            BridgeParameter(
+              'filePath',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'json',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+          ],
+        ),
+      ),
+      'localize': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+          params: [
+            BridgeParameter(
+              'context',
+              BridgeTypeAnnotation($BuildContext.$type),
+              false,
+            ),
+            BridgeParameter(
+              'key',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'fallback',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.string),
+                nullable: true,
+              ),
+              true,
+            ),
+          ],
+        ),
+      ),
     },
     getters: {
       'pluginId': BridgeMethodDef(
@@ -163,6 +257,27 @@ class $CPluginHost implements $Instance {
       'assets': BridgeMethodDef(
         BridgeFunctionDef(
           returns: BridgeTypeAnnotation($CPluginAssets.$type),
+        ),
+      ),
+      'hasOpenLevel': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.bool)),
+        ),
+      ),
+      'openLevelPath': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.string),
+            nullable: true,
+          ),
+        ),
+      ),
+      'openLevelFileName': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.string),
+            nullable: true,
+          ),
         ),
       ),
     },
@@ -187,6 +302,54 @@ class $CPluginHost implements $Instance {
         return $String($value.pluginId);
       case 'assets':
         return $CPluginAssets.wrap($value.assets);
+      case 'hasOpenLevel':
+        return $bool($value.hasOpenLevel);
+      case 'openLevelPath':
+        final path = $value.openLevelPath;
+        return path == null ? const $null() : $String(path);
+      case 'openLevelFileName':
+        final name = $value.openLevelFileName;
+        return name == null ? const $null() : $String(name);
+      case 'getOpenLevelJson':
+        return $Function((runtime, target, args) {
+          final json = $value.getOpenLevelJson();
+          return json == null ? const $null() : $String(json);
+        });
+      case 'applyOpenLevelJson':
+        return $Function((runtime, target, args) {
+          final json = args[0]!.$value as String;
+          $value.applyOpenLevelJson(json);
+          return null;
+        });
+      case 'saveOpenLevel':
+        return $Function((runtime, target, args) {
+          return $Future.wrap($value.saveOpenLevel().then((_) => null));
+        });
+      case 'loadLevelJson':
+        return $Function((runtime, target, args) {
+          final path = args[0]!.$value as String;
+          return $Future.wrap(
+            $value.loadLevelJson(path).then(
+              (json) => json == null ? const $null() : $String(json),
+            ),
+          );
+        });
+      case 'saveLevelJson':
+        return $Function((runtime, target, args) {
+          final path = args[0]!.$value as String;
+          final json = args[1]!.$value as String;
+          return $Future.wrap(
+            $value.saveLevelJson(path, json).then((_) => null),
+          );
+        });
+      case 'localize':
+        return $Function((runtime, target, args) {
+          final context = args[0]!.$value as BuildContext;
+          final key = args[1]!.$value as String;
+          final fallback =
+              args.length > 2 ? args[2]?.$value as String? : null;
+          return $String($value.localize(context, key, fallback));
+        });
       case 'registerScreen':
         return $Function((runtime, target, args) {
           final id = args[0]!.$value as String;

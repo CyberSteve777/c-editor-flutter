@@ -75,10 +75,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get waveNumberLegend => 'Цифра — номер волны';
 
   @override
-  String get expand => 'Expand';
+  String get expand => 'Развернуть';
 
   @override
-  String get obtainableInLevel => 'Can be obtained in the level';
+  String get obtainableInLevel => 'Можно получить на уровне';
 
   @override
   String get allZombiesInLevel => 'Все зомби на уровне';
@@ -342,6 +342,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pluginLoadError => 'Ошибка загрузки';
+
+  @override
+  String get pluginBundledBadge => 'Встроенный';
+
+  @override
+  String get pluginsFolderReserved =>
+      'Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.';
+
+  @override
+  String get pluginNoLibraryForInstall =>
+      'Сначала выберите папку библиотеки уровней, затем установите плагины.';
 
   @override
   String get share => 'Поделиться';

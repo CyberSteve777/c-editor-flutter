@@ -1,22 +1,28 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dart_eval/dart_eval.dart';
+import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
+import 'package:c_editor/plugins/bundled_plugin.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
 import 'package:c_editor/plugins/plugin_downloader.dart';
+import 'package:c_editor/plugins/plugin_host_impl.dart';
+import 'package:c_editor/plugins/plugin_kind.dart';
 import 'package:c_editor/plugins/plugin_runtime.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 import 'package:c_editor/plugins/plugin_storage_factory.dart';
 
+const _prefsDisabledKey = 'cplugin_disabled_ids';
+
 /// Coordinates install, enable/disable, and runtime loading of plugins.
 class PluginManager extends ChangeNotifier {
   PluginManager._({
     required PluginStorage storage,
+    required SharedPreferences prefs,
     required this.screenRegistry,
-  }) : _storage = storage;
+  }) : _storage = storage,
+       _prefs = prefs;
 
   static PluginManager? _instance;
 
@@ -34,6 +40,7 @@ class PluginManager extends ChangeNotifier {
     if (_instance != null) return _instance!;
     final manager = PluginManager._(
       storage: createPluginStorage(prefs),
+      prefs: prefs,
       screenRegistry: PluginScreenRegistry(),
     );
     _instance = manager;
@@ -42,6 +49,7 @@ class PluginManager extends ChangeNotifier {
   }
 
   final PluginStorage _storage;
+  final SharedPreferences _prefs;
   final PluginScreenRegistry screenRegistry;
   final PluginDownloader _downloader = PluginDownloader();
   final CPluginValidator _validator = const CPluginValidator();
@@ -49,19 +57,69 @@ class PluginManager extends ChangeNotifier {
   List<InstalledPluginRecord> _installed = [];
   final Map<String, Runtime> _runtimes = {};
 
-  List<InstalledPluginRecord> get installed =>
-      List.unmodifiable(_installed);
+  List<InstalledPluginRecord> get installed => List.unmodifiable(_installed);
+
+  Set<String> _disabledIds() {
+    final list = _prefs.getStringList(_prefsDisabledKey) ?? const [];
+    return list.toSet();
+  }
+
+  Future<void> _setDisabledIds(Set<String> ids) async {
+    await _prefs.setStringList(_prefsDisabledKey, ids.toList()..sort());
+  }
 
   Future<void> reload() async {
-    for (final id in _runtimes.keys.toList()) {
-      screenRegistry.clearForPlugin(id);
-    }
+    screenRegistry.clearAll();
     _runtimes.clear();
 
-    _installed = await _storage.listInstalled();
-    for (final plugin in _installed.where((p) => p.enabled)) {
-      await _loadPlugin(plugin);
+    final disabled = _disabledIds();
+    final records = <InstalledPluginRecord>[];
+
+    for (final bundled in bundledPlugins) {
+      final enabled = !disabled.contains(bundled.id);
+      records.add(bundledPluginRecord(bundled, enabled: enabled));
     }
+
+    final imported = await _storage.listInstalled();
+    for (final plugin in imported) {
+      if (records.any((r) => r.id == plugin.id)) continue;
+      final enabled = !disabled.contains(plugin.id);
+      records.add(plugin.copyWith(enabled: enabled));
+    }
+
+    records.sort((a, b) {
+      if (a.kind != b.kind) {
+        return a.kind == PluginKind.bundled ? -1 : 1;
+      }
+      return a.manifest.name.compareTo(b.manifest.name);
+    });
+    _installed = records;
+
+    for (final bundled in bundledPlugins) {
+      final record = _installed.firstWhere((p) => p.id == bundled.id);
+      if (!record.enabled) continue;
+      try {
+        final host = PluginHostImpl(
+          pluginId: bundled.id,
+          assets: MemoryCPluginAssets(const {}),
+          registry: screenRegistry,
+        );
+        bundled.register(host);
+      } catch (e, st) {
+        debugPrint('Failed to register bundled plugin ${bundled.id}: $e\n$st');
+        final index = _installed.indexWhere((p) => p.id == bundled.id);
+        if (index >= 0) {
+          _installed[index] = _installed[index].copyWith(loadError: e.toString());
+        }
+      }
+    }
+
+    for (final record in _installed.where(
+      (p) => p.kind == PluginKind.imported && p.enabled,
+    )) {
+      await _loadImported(record);
+    }
+
     notifyListeners();
   }
 
@@ -70,10 +128,13 @@ class PluginManager extends ChangeNotifier {
     bool enable = true,
   }) async {
     final package = _validator.validate(bytes);
+    if (bundledPlugins.any((b) => b.id == package.manifest.id)) {
+      throw CPluginValidationException(
+        'Plugin id "${package.manifest.id}" is reserved for a bundled plugin',
+      );
+    }
     await _checkMinEditorVersion(package.manifest.minEditorVersion);
 
-    // Verify the entrypoint actually runs before persisting (catches EVC that
-    // was compiled without the library marked as an entrypoint).
     try {
       executePluginEntrypoint(
         evcBytes: package.evcBytes,
@@ -88,6 +149,13 @@ class PluginManager extends ChangeNotifier {
     }
 
     await _storage.savePackage(package, enabled: enable);
+    final disabled = _disabledIds();
+    if (enable) {
+      disabled.remove(package.manifest.id);
+    } else {
+      disabled.add(package.manifest.id);
+    }
+    await _setDisabledIds(disabled);
     await reload();
     return _installed.firstWhere((p) => p.id == package.manifest.id);
   }
@@ -102,18 +170,35 @@ class PluginManager extends ChangeNotifier {
   }
 
   Future<void> setEnabled(String pluginId, bool enabled) async {
-    await _storage.setEnabled(pluginId, enabled);
+    final disabled = _disabledIds();
+    if (enabled) {
+      disabled.remove(pluginId);
+    } else {
+      disabled.add(pluginId);
+    }
+    await _setDisabledIds(disabled);
+
+    final record = _installed.where((p) => p.id == pluginId).firstOrNull;
+    if (record != null && record.kind == PluginKind.imported) {
+      await _storage.setEnabled(pluginId, enabled);
+    }
     await reload();
   }
 
   Future<void> uninstall(String pluginId) async {
+    final record = _installed.where((p) => p.id == pluginId).firstOrNull;
+    if (record != null && !record.canUninstall) {
+      throw StateError('Bundled plugins cannot be uninstalled');
+    }
     screenRegistry.clearForPlugin(pluginId);
     _runtimes.remove(pluginId);
     await _storage.uninstall(pluginId);
+    final disabled = _disabledIds()..remove(pluginId);
+    await _setDisabledIds(disabled);
     await reload();
   }
 
-  Future<void> _loadPlugin(InstalledPluginRecord record) async {
+  Future<void> _loadImported(InstalledPluginRecord record) async {
     screenRegistry.clearForPlugin(record.id);
     try {
       final runtime = executePluginEntrypoint(
@@ -124,7 +209,6 @@ class PluginManager extends ChangeNotifier {
         registry: screenRegistry,
       );
       _runtimes[record.id] = runtime;
-
       final index = _installed.indexWhere((p) => p.id == record.id);
       if (index >= 0) {
         _installed[index] = record.copyWith(clearLoadError: true);
@@ -149,14 +233,10 @@ class PluginManager extends ChangeNotifier {
     }
   }
 
-  /// Simple dotted numeric compare (ignores pre-release suffixes).
   static bool _isVersionAtLeast(String current, String minimum) {
     List<int> parts(String v) {
       final core = v.split(RegExp(r'[-+]')).first;
-      return core
-          .split('.')
-          .map((p) => int.tryParse(p) ?? 0)
-          .toList();
+      return core.split('.').map((p) => int.tryParse(p) ?? 0).toList();
     }
 
     final a = parts(current);

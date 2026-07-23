@@ -2,29 +2,33 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/plugins/c_plugin_manifest.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
+import 'package:c_editor/plugins/plugin_constants.dart';
+import 'package:c_editor/plugins/plugin_kind.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 
 const _prefsEnabledKey = 'cplugin_enabled_ids';
 
-/// File-system plugin storage for desktop/mobile.
+/// File-system plugin storage under the level library's [kPluginsFolderName].
 class NativePluginStorage implements PluginStorage {
   NativePluginStorage(this._prefs);
 
   final SharedPreferences _prefs;
-  Directory? _root;
 
   Future<Directory> _pluginsRoot() async {
-    if (_root != null) return _root!;
-    final support = await getApplicationSupportDirectory();
-    final dir = Directory(p.join(support.path, 'plugins'));
+    final library = await LevelRepository.getSavedFolderPath();
+    if (library == null || library.isEmpty) {
+      throw StateError(
+        'Select a level library folder before installing plugins',
+      );
+    }
+    final dir = Directory(p.join(library, kPluginsFolderName));
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
-    _root = dir;
     return dir;
   }
 
@@ -45,9 +49,18 @@ class NativePluginStorage implements PluginStorage {
 
   @override
   Future<List<InstalledPluginRecord>> listInstalled() async {
-    final root = await _pluginsRoot();
     final enabled = await enabledIds();
     final result = <InstalledPluginRecord>[];
+
+    Directory root;
+    try {
+      root = await _pluginsRoot();
+    } catch (_) {
+      // No library selected yet — no imported plugins.
+      return result;
+    }
+
+    if (!await root.exists()) return result;
 
     await for (final entity in root.list()) {
       if (entity is! Directory) continue;
@@ -92,6 +105,7 @@ class NativePluginStorage implements PluginStorage {
       evcBytes: evcBytes,
       assets: assets,
       enabled: enabled,
+      kind: PluginKind.imported,
     );
   }
 
@@ -121,7 +135,6 @@ class NativePluginStorage implements PluginStorage {
       }
     }
 
-    // Also keep the original zip for backups / reinstall.
     await File(p.join(dir.path, 'package.cplugin'))
         .writeAsBytes(package.rawZipBytes, flush: true);
 
@@ -147,9 +160,13 @@ class NativePluginStorage implements PluginStorage {
 
   @override
   Future<void> uninstall(String pluginId) async {
-    final dir = await _pluginDir(pluginId);
-    if (await dir.exists()) {
-      await dir.delete(recursive: true);
+    try {
+      final dir = await _pluginDir(pluginId);
+      if (await dir.exists()) {
+        await dir.delete(recursive: true);
+      }
+    } catch (_) {
+      // Library may be unset; still clear enabled flag.
     }
     final ids = await enabledIds();
     ids.remove(pluginId);

@@ -137,6 +137,13 @@ class _PluginsScreenState extends State<PluginsScreen> {
       );
     } on CPluginValidationException catch (e) {
       _showError(l10n.pluginInvalidFile(e.message));
+    } on StateError catch (e) {
+      final msg = e.message;
+      if (msg.toString().contains('level library')) {
+        _showError(l10n.pluginNoLibraryForInstall);
+      } else {
+        _showError(l10n.pluginInstallFailed(e.toString()));
+      }
     } catch (e) {
       _showError(l10n.pluginInstallFailed(e.toString()));
     } finally {
@@ -341,6 +348,7 @@ class _PluginTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final m = plugin.manifest;
     final subtitle = [
+      if (plugin.isBundled) l10n.pluginBundledBadge,
       if (m.author.isNotEmpty) m.author,
       'v${m.version}',
       if (plugin.loadError != null) l10n.pluginLoadError,
@@ -369,11 +377,12 @@ class _PluginTile extends StatelessWidget {
               value: plugin.enabled,
               onChanged: busy ? null : onToggle,
             ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              tooltip: l10n.pluginUninstall,
-              onPressed: busy ? null : onUninstall,
-            ),
+            if (plugin.canUninstall)
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: l10n.pluginUninstall,
+                onPressed: busy ? null : onUninstall,
+              ),
           ],
         ),
       ),

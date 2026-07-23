@@ -13,11 +13,13 @@ import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/level_repository_base.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/plugins/plugin_constants.dart';
+import 'package:c_editor/plugins/plugin_manager.dart';
+import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/widgets/app_message.dart';
-import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/screens/export/export_screen.dart';
-import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 
 enum LevelViewMode { all, favorites }
@@ -38,11 +40,13 @@ class LevelListScreen extends StatefulWidget {
     super.key,
     required this.onLevelClick,
     required this.onAboutClick,
+    required this.onPluginsClick,
     required this.onLanguageTap,
   });
 
   final void Function(String fileName, String filePath) onLevelClick;
   final VoidCallback onAboutClick;
+  final VoidCallback onPluginsClick;
   final ValueChanged<BuildContext> onLanguageTap;
 
   @override
@@ -219,29 +223,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await ensureStoragePermission(context);
   }
 
-  Future<void> _handlePreview(FileItem item) async {
-    if (item.isDirectory) return;
-
-    final file = await LevelRepository.loadLevelFromPath(item.path);
-    if (file == null || !mounted) return;
-
-    final parsed = LevelParser.parseLevel(file);
-    if (!mounted) return;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        builder: (ctx) => LevelPreviewDialog(
-          levelFile: file,
-          parsed: parsed,
-          fileName: item.name,
-          onBack: () => Navigator.pop(ctx),
-        ),
-      );
-    });
-  }
-
   Future<void> _loadSavedPathAndList() async {
     final prefs = await SharedPreferences.getInstance();
     final savedSortIndex = prefs.getInt('level_list_sort_mode') ?? 0;
@@ -322,6 +303,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   Future<void> _applyLibraryFolder(String path) async {
     await LevelRepository.setSavedFolderPath(path);
+    if (PluginManager.isInitialized) {
+      await PluginManager.instance.reload();
+    }
     if (!mounted) return;
     if (!kIsWeb && Platform.isIOS) {
       final ok = await LevelRepository.ensureFolderAccess();
@@ -915,6 +899,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
       } else {
         finalName = _ensureLevelExtension(finalName, target.name);
       }
+    } else if (isReservedLibraryFolderName(finalName)) {
+      _showWarningMessage(l10n.pluginsFolderReserved);
+      return;
     }
     final ok = await LevelRepository.renameItem(
       _pathStack.last.path,
@@ -963,10 +950,24 @@ class _LevelListScreenState extends State<LevelListScreen> {
       nameInput = l10n.newFolder;
     }
 
+    if (isReservedLibraryFolderName(nameInput)) {
+      if (mounted) {
+        _showWarningMessage(l10n.pluginsFolderReserved);
+      }
+      return;
+    }
+
     final finalName = await LevelRepository.getNextAvailableNameForTemplate(
       _pathStack.last.path,
       nameInput,
     );
+
+    if (isReservedLibraryFolderName(finalName)) {
+      if (mounted) {
+        _showWarningMessage(l10n.pluginsFolderReserved);
+      }
+      return;
+    }
 
     final ok = await LevelRepository.createDirectory(
       _pathStack.last.path,
@@ -1529,6 +1530,19 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   ),
                 ),
               PopupMenuItem(
+                value: 'plugins',
+                child: ListTile(
+                  leading: const Icon(Icons.extension),
+                  title: Text(l10n.pluginsTitle),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              ...pluginOverflowMenuItems(
+                context: context,
+                slot: CPluginUiSlots.levelListOverflow,
+                valuePrefix: 'plugin:',
+              ),
+              PopupMenuItem(
                 value: 'about',
                 child: ListTile(
                   leading: const Icon(Icons.info_outline),
@@ -1574,11 +1588,20 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 if (mounted) {
                   _loadCurrentDirectory();
                 }
+              } else if (value == 'plugins') {
+                widget.onPluginsClick();
               } else if (value == 'about') {
                 Future.microtask(() {
                   if (!context.mounted) return;
                   widget.onAboutClick();
                 });
+              } else {
+                handlePluginOverflowSelection(
+                  context,
+                  value: value,
+                  valuePrefix: 'plugin:',
+                  slot: CPluginUiSlots.levelListOverflow,
+                );
               }
             },
           ),
@@ -1719,7 +1742,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                           item: item,
                                           l10n: l10n,
                                           rootFolderPath: _rootFolderPath,
-                                          onPreview: () => _handlePreview(item),
                                           onTap: () async {
                                             if (isMovingMode) {
                                               if (item.isDirectory) {
@@ -2757,7 +2779,6 @@ class _FileItemRow extends StatelessWidget {
     required this.onCopy,
     required this.onMove,
     required this.showMove,
-    this.onPreview,
     this.rootFolderPath,
     this.onDownload,
     this.onDownloadFolder,
@@ -2769,7 +2790,6 @@ class _FileItemRow extends StatelessWidget {
   final FileItem item;
   final AppLocalizations l10n;
   final VoidCallback onTap;
-  final VoidCallback? onPreview;
   final VoidCallback onRename;
   final VoidCallback onDelete;
   final VoidCallback onCopy;
@@ -2841,12 +2861,11 @@ class _FileItemRow extends StatelessWidget {
               iconColor: item.isFavorite ? theme.colorScheme.error : null,
             ),
           ),
-        if (item.name.toLowerCase().endsWith('.json'))
-          PopupMenuItem(
-            value: 'preview',
-            child: _popupMenuTile(
-                icon: Icons.remove_red_eye, label: l10n.levelPreview),
-          ),
+        ...pluginLevelFileMenuItems(
+          context: context,
+          fileName: item.name,
+          valuePrefix: 'pfile:',
+        ),
         PopupMenuItem(
           value: 'rename',
           child: _popupMenuTile(icon: Icons.edit, label: l10n.rename),
@@ -2895,12 +2914,18 @@ class _FileItemRow extends StatelessWidget {
         ),
       ],
       onSelected: (v) {
+        if (handlePluginLevelFileSelection(
+          context,
+          value: v,
+          valuePrefix: 'pfile:',
+          fileName: item.name,
+          filePath: item.path,
+        )) {
+          return;
+        }
         switch (v) {
           case 'favorite':
             onToggleFavorite?.call();
-          case 'preview':
-            onPreview?.call();
-            break;
           case 'rename':
             onRename();
           case 'copy':

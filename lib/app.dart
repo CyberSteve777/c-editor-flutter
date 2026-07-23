@@ -9,6 +9,7 @@ import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
+import 'package:c_editor/plugins/active_editor_session.dart';
 import 'package:c_editor/screens/about_screen.dart';
 import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/screens/level_list_screen.dart';
@@ -219,14 +220,24 @@ class _ZEditorAppState extends State<ZEditorApp> {
             fileName: nav.editorFileName,
             filePath: nav.editorFilePath,
           )..loadLevel(),
-          child: EditorScreen(
-            onBack: () => _backToLevelList(context),
-            onRegisterBackHandler: (handler) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) setState(() => _editorBackHandler = handler);
-              });
+          child: Builder(
+            builder: (context) {
+              final cubit = context.read<EditorCubit>();
+              return _BindActiveEditorSession(
+                cubit: cubit,
+                child: EditorScreen(
+                  onBack: () => _backToLevelList(context),
+                  onRegisterBackHandler: (handler) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() => _editorBackHandler = handler);
+                      }
+                    });
+                  },
+                  onLanguageTap: _showLanguageSelector,
+                ),
+              );
             },
-            onLanguageTap: _showLanguageSelector,
           ),
         );
       case AppScreen.about:
@@ -284,4 +295,45 @@ class _ZEditorAppState extends State<ZEditorApp> {
       ),
     );
   }
+}
+
+/// Binds [EditorCubit] to [ActiveEditorSession] for the plugin host API.
+class _BindActiveEditorSession extends StatefulWidget {
+  const _BindActiveEditorSession({
+    required this.cubit,
+    required this.child,
+  });
+
+  final EditorCubit cubit;
+  final Widget child;
+
+  @override
+  State<_BindActiveEditorSession> createState() =>
+      _BindActiveEditorSessionState();
+}
+
+class _BindActiveEditorSessionState extends State<_BindActiveEditorSession> {
+  @override
+  void initState() {
+    super.initState();
+    ActiveEditorSession.instance.bind(widget.cubit);
+  }
+
+  @override
+  void didUpdateWidget(covariant _BindActiveEditorSession oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.cubit != widget.cubit) {
+      ActiveEditorSession.instance.clearIf(oldWidget.cubit);
+      ActiveEditorSession.instance.bind(widget.cubit);
+    }
+  }
+
+  @override
+  void dispose() {
+    ActiveEditorSession.instance.clearIf(widget.cubit);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

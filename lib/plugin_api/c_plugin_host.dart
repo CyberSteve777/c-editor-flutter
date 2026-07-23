@@ -76,4 +76,53 @@ abstract class CPluginHost {
     CPluginScreenBuilder builder, [
     int? iconCodePoint,
   ]);
+
+  // --- Level data (JSON strings; cross-platform via LevelRepository) ---
+
+  /// Whether the level editor currently has a level open.
+  bool get hasOpenLevel;
+
+  /// Library path of the open level, or `null` if none.
+  String? get openLevelPath;
+
+  /// File name of the open level, or `null` if none.
+  String? get openLevelFileName;
+
+  /// Encoded [PvzLevelFile] JSON for the open level, or `null` if none.
+  String? getOpenLevelJson();
+
+  /// Replaces the open level from encoded [PvzLevelFile] JSON and marks dirty.
+  ///
+  /// Throws [ArgumentError] / [FormatException] on invalid JSON.
+  /// Throws [StateError] if no level is open.
+  void applyOpenLevelJson(String json);
+
+  /// Saves the open level through the host repository.
+  ///
+  /// Throws [StateError] if no level is open.
+  Future<void> saveOpenLevel();
+
+  /// Loads a level from a library [filePath] and returns encoded JSON.
+  ///
+  /// Returns `null` if the file cannot be loaded. Paths are opaque strings
+  /// from the level library (native FS or web storage).
+  Future<String?> loadLevelJson(String filePath);
+
+  /// Saves encoded [PvzLevelFile] JSON to [filePath] via the level repository.
+  ///
+  /// If [filePath] is the currently open editor level, also applies into the
+  /// open session so the editor stays consistent.
+  Future<void> saveLevelJson(String filePath, String json);
+
+  // --- Localization ---
+
+  /// Looks up a host [AppLocalizations] string by ARB key (e.g. `'levelPreview'`).
+  ///
+  /// Also checks this plugin's `assets/l10n/{locale}.json` then `en.json`.
+  /// Returns [fallback] or [key] when nothing matches.
+  String localize(
+    BuildContext context,
+    String key, [
+    String? fallback,
+  ]);
 }

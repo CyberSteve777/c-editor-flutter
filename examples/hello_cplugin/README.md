@@ -76,5 +76,15 @@ dart run tools/pack_cplugin.dart build/hello_cplugin build/hello.cplugin
   - `'levelListOverflow'` — item in the level-list overflow menu
 - `host.assets.image(path)` / `readString(path)` for plugin `assets/`
 - Curated widgets: `editorWarningBanner`, `pvzAddButton`, `addItemCard`, `appBarSearchField`, `hostAssetImage`
+- Level data (JSON strings; works on all platforms via the level library):
+  - `host.hasOpenLevel` / `openLevelPath` / `openLevelFileName`
+  - `host.getOpenLevelJson()` / `applyOpenLevelJson(json)` / `saveOpenLevel()`
+  - `await host.loadLevelJson(path)` / `await host.saveLevelJson(path, json)`
+    (if `path` is the open editor level, the editor session is updated too)
+- Localization: `host.localize(context, 'levelPreview')` looks up host ARB keys
+  and optional plugin `assets/l10n/{locale}.json`
 
-Plugins do **not** yet hook into level module/event editors.
+Bundled plugins (e.g. Level Preview) ship with the editor and can only be
+disabled, not uninstalled. Imported `.cplugin` packages are stored under the
+level library’s `.plugins` folder on native platforms (hidden from the file
+list) and in browser storage on web.

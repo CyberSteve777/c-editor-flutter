@@ -718,6 +718,24 @@ abstract class AppLocalizations {
   /// **'Failed to load'**
   String get pluginLoadError;
 
+  /// No description provided for @pluginBundledBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Bundled'**
+  String get pluginBundledBadge;
+
+  /// No description provided for @pluginsFolderReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.'**
+  String get pluginsFolderReserved;
+
+  /// No description provided for @pluginNoLibraryForInstall.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a level library folder before installing plugins.'**
+  String get pluginNoLibraryForInstall;
+
   /// No description provided for @share.
   ///
   /// In en, this message translates to:

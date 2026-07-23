@@ -131,7 +131,6 @@ import 'package:c_editor/data/custom_stage_level_utils.dart';
 import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/screens/editor/others/custom_stage_properties_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:c_editor/screens/common/level_preview_dialog.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 
@@ -3337,26 +3336,6 @@ class _EditorScreenState extends State<EditorScreen> {
             actions: [
               if (!useCompactActions) ...[
                 IconButton(
-                  icon: const Icon(Icons.remove_red_eye),
-                  tooltip: l10n?.levelPreview ?? 'Preview',
-                  onPressed: _ec.state.levelFile != null && _ec.state.parsedData != null
-                      ? () {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (!context.mounted) return;
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => LevelPreviewDialog(
-                          levelFile: _ec.state.levelFile!,
-                          parsed: _ec.state.parsedData!,
-                          fileName: _ec.fileName,
-                          onBack: () => Navigator.pop(ctx),
-                        ),
-                      );
-                    });
-                  }
-                      : null,
-                ),
-                IconButton(
                   icon: const Icon(Icons.code),
                   tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',
                   onPressed: _ec.state.levelFile != null
@@ -3404,15 +3383,6 @@ class _EditorScreenState extends State<EditorScreen> {
                 itemBuilder: (context) => [
                   if (useCompactActions) ...[
                     PopupMenuItem(
-                      value: 'preview',
-                      enabled: _ec.state.levelFile != null && _ec.state.parsedData != null,
-                      child: ListTile(
-                        leading: const Icon(Icons.remove_red_eye),
-                        title: Text(l10n?.levelPreview ?? 'Preview'),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    PopupMenuItem(
                       value: 'json',
                       enabled: _ec.state.levelFile != null,
                       child: ListTile(
@@ -3452,25 +3422,13 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                   ),
                   ...pluginOverflowMenuItems(
+                    context: context,
                     slot: CPluginUiSlots.editorOverflow,
                     valuePrefix: 'plugin:',
                   ),
                 ],
                 onSelected: (value) async {
-                  if (value == 'preview') {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (!context.mounted) return;
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => LevelPreviewDialog(
-                          levelFile: _ec.state.levelFile!,
-                          parsed: _ec.state.parsedData!,
-                          fileName: _ec.fileName,
-                          onBack: () => Navigator.pop(ctx),
-                        ),
-                      );
-                    });
-                  } else if (value == 'json') {
+                  if (value == 'json') {
                     final hadChanges = _ec.state.hasChanges;
                     await _save();
                     if (!mounted) return;

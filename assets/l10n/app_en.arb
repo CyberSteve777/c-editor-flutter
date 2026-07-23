@@ -145,6 +145,9 @@
     }
   },
   "pluginLoadError": "Failed to load",
+  "pluginBundledBadge": "Bundled",
+  "pluginsFolderReserved": "The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.",
+  "pluginNoLibraryForInstall": "Select a level library folder before installing plugins.",
   "share": "Share",
   "shareLevelFileText": "Level file: {name}",
   "@shareLevelFileText": {

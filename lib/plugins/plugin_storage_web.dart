@@ -5,6 +5,7 @@ import 'package:idb_shim/idb_browser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:c_editor/plugins/c_plugin_manifest.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
+import 'package:c_editor/plugins/plugin_kind.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 
 const _prefsEnabledKey = 'cplugin_enabled_ids';
@@ -77,6 +78,7 @@ class WebPluginStorage implements PluginStorage {
       evcBytes: evc,
       assets: assets,
       enabled: enabled,
+      kind: PluginKind.imported,
     );
   }
 

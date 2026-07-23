@@ -16,7 +16,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/armrack_type_catalog.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
-import 'package:c_editor/screens/common/level_preview_widgets.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/src/level_preview_widgets.dart';
 import 'package:c_editor/widgets/lawn_grid.dart';
 import 'package:c_editor/widgets/asset_image.dart' show AssetImageWidget, imageAltCandidates;
 import 'package:collection/collection.dart';

@@ -12,6 +12,7 @@ import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
 import 'web/web_transfer_progress.dart';
+import 'package:c_editor/plugins/plugin_constants.dart';
 
 LevelRepositoryBase createLevelRepository() => LevelRepositoryNativeImpl();
 
@@ -296,6 +297,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
       final stat = await entity.stat();
       final name = p.basename(entity.path);
       final isDir = stat.type == FileSystemEntityType.directory;
+      // Hide the reserved plugin store folder from the level browser.
+      if (isDir && isReservedLibraryFolderName(name)) continue;
       final isLevel = !isDir && isSupportedLevelFileName(name);
       if (isDir || isLevel) {
         list.add(
@@ -355,6 +358,7 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   @override
   Future<bool> createDirectory(String parentPath, String name) async {
     await _requireFolderAccess();
+    if (isReservedLibraryFolderName(name)) return false;
     final dir = Directory(p.join(parentPath, name));
     if (await dir.exists()) return false;
     await dir.create(recursive: true);
@@ -369,6 +373,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     bool isDirectory,
   ) async {
     await _requireFolderAccess();
+    if (isDirectory && isReservedLibraryFolderName(newName)) return false;
+    if (isDirectory && isReservedLibraryFolderName(oldName)) return false;
     final oldPath = p.join(currentDirPath, oldName);
     final newPath = p.join(currentDirPath, newName);
     if (await File(newPath).exists() || await Directory(newPath).exists()) {

@@ -19,6 +19,8 @@
   "willBeAdded": "добавится",
   "willBeRemoved": "удалится",
   "waveNumberLegend": "Цифра — номер волны",
+  "expand": "Развернуть",
+  "obtainableInLevel": "Можно получить на уровне",
   "allZombiesInLevel": "Все зомби на уровне",
   "allObjectsInLevel": "Все объекты на уровне",
   "allEventsInLevel": "Все события на уровне",
@@ -142,6 +144,9 @@
     }
   },
   "pluginLoadError": "Ошибка загрузки",
+  "pluginBundledBadge": "Встроенный",
+  "pluginsFolderReserved": "Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.",
+  "pluginNoLibraryForInstall": "Сначала выберите папку библиотеки уровней, затем установите плагины.",
   "selectFolder": "Выбрать папку",
   "plantTagInternational": "Интернациональные",
   "plantTagChinese": "Китайские",
@@ -227,6 +232,12 @@
   "exportProgressTitle": "Подготовка экспорта…",
   "backupProgressTitle": "Создание резервной копии…",
   "transferProgressCount": "{completed} / {total}",
+  "@transferProgressCount": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "folderAccessError": "Выбранная папка доступна только для чтения или недоступна. Пожалуйста, выберите другую папку.",
   "webFolderImportNotice": "Папка импортирована в хранилище браузера. В этом браузере изменения не записываются на диск автоматически — используйте «Экспорт».",
   "share": "Поделиться",
@@ -491,6 +502,13 @@
   "defaultPropertiesLabel": "По умолчанию",
   "addNewVariation": "+ Добавить вариант",
   "editCustomZombieAlias": "Редактировать {alias}",
+  "@editCustomZombieAlias": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "switchZombie": "Сменить зомби",
   "customZombieAppearanceLocation": "Появление:",
   "customZombieNotUsed": "Этот кастомный зомби не используется ни в одной волне.",
@@ -1202,6 +1220,16 @@
   "aliasAlreadyTakenTitle": "Псевдоним уже занят",
   "aliasRenameConfirmTitle": "Переименовать псевдоним?",
   "aliasRenameConfirmMessage": "Переименовать «{oldAlias}» в «{newAlias}»? Все ссылки на этом уровне будут обновлены.",
+  "@aliasRenameConfirmMessage": {
+    "placeholders": {
+      "oldAlias": {
+        "type": "String"
+      },
+      "newAlias": {
+        "type": "String"
+      }
+    }
+  },
   "resilienceSelectShield": "Выбрать щит стойкости",
   "resilienceCreateCustom": "Новый пользовательский щит",
   "resilienceEditCustom": "Редактировать щит",
@@ -1212,6 +1240,13 @@
   "resilienceShieldInUseCannotDelete": "Нельзя удалить — этот щит используется зомби на уровне.",
   "resilienceShieldDeleteTitle": "Удалить пользовательский щит стойкости?",
   "resilienceShieldDeleteMessage": "Удалить «{alias}» из этого уровня?",
+  "@resilienceShieldDeleteMessage": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "aliasAlreadyExists": "Такой псевдоним уже есть на этом уровне.",
   "zombieTypeLabel": "Тип зомби: {type}",
   "@zombieTypeLabel": {"placeholders": {"type": {}}},
@@ -2469,6 +2504,13 @@
   "armrackModuleExpectationLabel": "Оружейные стойки",
   "armrackModuleIgnoredWaveOverridesWarning": "В уровне есть переопределения оружейных стоек для волн, отличных от 1. Они сохраняются, но не отображаются на временной шкале, так как игра применяет только волну 1.",
   "armrackModuleRequiredMessage": "Чтобы оружейные стойки отображались правильно и без текстур солнца, нужно добавить модуль «{moduleName}».",
+  "@armrackModuleRequiredMessage": {
+    "placeholders": {
+      "moduleName": {
+        "type": "String"
+      }
+    }
+  },
   "energyGridModuleTitle": "Плитки с подкормкой",
   "energyGridModuleHelpTitle": "Модуль плиток с подкормкой",
   "energyGridModuleHelpOverview": "Обзор",

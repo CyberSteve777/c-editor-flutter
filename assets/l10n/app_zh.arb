@@ -19,6 +19,8 @@
   "willBeAdded": "将添加",
   "willBeRemoved": "将移除",
   "waveNumberLegend": "数字表示波次编号",
+  "expand": "展开",
+  "obtainableInLevel": "可在关卡中获得",
   "allZombiesInLevel": "本关所有僵尸",
   "allObjectsInLevel": "本关所有物品",
   "allEventsInLevel": "本关所有事件",
@@ -141,6 +143,9 @@
     }
   },
   "pluginLoadError": "加载失败",
+  "pluginBundledBadge": "内置",
+  "pluginsFolderReserved": "“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。",
+  "pluginNoLibraryForInstall": "请先选择关卡库文件夹，再安装插件。",
   "ultra": "超大",
   "plantTagInternational": "国际版移植",
   "plantTagChinese": "中文版独有",
@@ -265,6 +270,12 @@
   "exportProgressTitle": "正在生成导出…",
   "backupProgressTitle": "正在创建备份…",
   "transferProgressCount": "{completed} / {total}",
+  "@transferProgressCount": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
   "folderAccessError": "所选文件夹为只读或无法访问。请选择其他文件夹。",
   "webFolderImportNotice": "文件夹已导入到浏览器存储。在此浏览器上，编辑不会自动写回磁盘——请使用“导出”保存文件。",
   "favorite": "收藏",
@@ -491,6 +502,13 @@
   "defaultPropertiesLabel": "默认",
   "addNewVariation": "+ 添加新变体",
   "editCustomZombieAlias": "编辑 {alias}",
+  "@editCustomZombieAlias": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "switchZombie": "切换僵尸",
   "customZombieAppearanceLocation": "出现位置：",
   "customZombieNotUsed": "此自定义僵尸当前未被任何波次或模块使用。",
@@ -1137,6 +1155,16 @@
   "aliasAlreadyTakenTitle": "代号已被占用",
   "aliasRenameConfirmTitle": "重命名代号？",
   "aliasRenameConfirmMessage": "将「{oldAlias}」重命名为「{newAlias}」？本关卡中的所有引用都将更新。",
+  "@aliasRenameConfirmMessage": {
+    "placeholders": {
+      "oldAlias": {
+        "type": "String"
+      },
+      "newAlias": {
+        "type": "String"
+      }
+    }
+  },
   "resilienceSelectShield": "选择韧性护盾",
   "resilienceCreateCustom": "新建自定义护盾",
   "resilienceEditCustom": "编辑自定义护盾",
@@ -1147,6 +1175,13 @@
   "resilienceShieldInUseCannotDelete": "无法删除——本关卡中有僵尸正在使用此护盾。",
   "resilienceShieldDeleteTitle": "删除自定义韧性护盾？",
   "resilienceShieldDeleteMessage": "从本关卡中删除「{alias}」？",
+  "@resilienceShieldDeleteMessage": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "aliasAlreadyExists": "本关卡中已存在该代号。",
   "zombieTypeLabel": "僵尸所属种类：{type}",
   "@zombieTypeLabel": {"placeholders": {"type": {}}},
@@ -2469,6 +2504,13 @@
   "armrackModuleExpectationLabel": "兵器架",
   "armrackModuleIgnoredWaveOverridesWarning": "此关卡包含第一波以外的兵器架配置。这些配置会保留，但不会显示在波次时间轴中，因为游戏仅应用第一波。",
   "armrackModuleRequiredMessage": "为使兵器架正常显示且不出现阳光贴图，需要添加「{moduleName}」模块。",
+  "@armrackModuleRequiredMessage": {
+    "placeholders": {
+      "moduleName": {
+        "type": "String"
+      }
+    }
+  },
   "energyGridModuleTitle": "太极瓷砖",
   "energyGridModuleHelpTitle": "太极瓷砖模块说明",
   "energyGridModuleHelpOverview": "简要介绍",

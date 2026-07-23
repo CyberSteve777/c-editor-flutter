@@ -50,9 +50,28 @@ void initialize(CPluginHost host) {
     'Hello tool',
     'editorAppBar',
     (context) {
+      final open = host.hasOpenLevel;
+      final name = host.openLevelFileName ?? '(none)';
+      final path = host.openLevelPath ?? '(none)';
+      final json = host.getOpenLevelJson();
+      final length = json == null ? 0 : json.length;
       return Scaffold(
         appBar: AppBar(title: Text('Hello tool')),
-        body: Center(child: Text('Opened from editor AppBar')),
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(open ? 'Level is open' : 'No level open'),
+              SizedBox(height: 8.0),
+              Text('File: ' + name),
+              SizedBox(height: 8.0),
+              Text('Path: ' + path),
+              SizedBox(height: 8.0),
+              Text('JSON length: ' + length.toString()),
+            ],
+          ),
+        ),
       );
     },
   );
