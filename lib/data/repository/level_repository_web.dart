@@ -82,6 +82,22 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   static const _prefsLastLevelDirKey = 'last_level_directory';
   static const _defaultLibraryLabel = 'My levels';
 
+  @override
+  Future<List<LibraryItem>> getLibraries() async {
+    await _ensureReady();
+    return [
+      LibraryItem(
+        path: _webPathPrefix,
+        displayName: _defaultLibraryLabel,
+      )
+    ];
+  }
+
+  @override
+  Future<void> setLibraries(List<LibraryItem> libraries) async {
+    // Web currently only supports the internal virtual storage
+  }
+
   final Map<String, Uint8List> _memoryCache = {};
   final Set<String> _directories = {_webPathPrefix};
   final WebLevelIdbStore _idb = WebLevelIdbStore.instance;

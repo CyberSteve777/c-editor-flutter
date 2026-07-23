@@ -206,7 +206,39 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toggleTheme => '切换主题';
 
   @override
-  String get switchFolder => '切换目录';
+  String get switchFolder => '管理库';
+
+  @override
+  String get manageLibraries => '管理库';
+
+  @override
+  String get addLibrary => '添加库';
+
+  @override
+  String get libraryName => '库名称';
+
+  @override
+  String get libraryPath => '路径';
+
+  @override
+  String get deleteLibraryTitle => '确认删除库?';
+
+  @override
+  String deleteLibraryMessage(String name) {
+    return '您确定要从库列表中移除 \"$name\" 吗? 此操作不会删除磁盘上的任何文件。';
+  }
+
+  @override
+  String get defaultLibraryName => '默认库';
+
+  @override
+  String get renameLibrary => '重命名库';
+
+  @override
+  String get activeLibrary => '活动';
+
+  @override
+  String get noLibrariesFound => '暂无已添加的库';
 
   @override
   String get clearCache => '释放缓存';
@@ -236,6 +268,69 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shareLevelFailed => '无法分享关卡文件';
+
+  @override
+  String get shareAsFile => '分享文件';
+
+  @override
+  String get shareAsPreview => '分享预览图';
+
+  @override
+  String get selectBackground => '选择背景';
+
+  @override
+  String get autoSelectBackground => '自动选择';
+
+  @override
+  String get customBackground => '自定义背景';
+
+  @override
+  String get selectPlantList => '选择植物列表';
+
+  @override
+  String get levelContainsCustomZombies => '关卡包含自定义僵尸';
+
+  @override
+  String get generatingPreview => '正在生成预览图...';
+
+  @override
+  String get saveToGallery => '保存到相册';
+
+  @override
+  String get imageSavedSuccessfully => '图片保存成功';
+
+  @override
+  String get shareOptionTitle => '如何分享？';
+
+  @override
+  String get selectLevelType => '选择关卡类型';
+
+  @override
+  String get autoSelectLevelType => '自动识别';
+
+  @override
+  String get manualSelectLevelType => '手动选择';
+
+  @override
+  String get levelTypeAdventure => '冒险';
+
+  @override
+  String get levelTypeLastStand => '坚不可摧';
+
+  @override
+  String get levelTypeConveyor => '传送带';
+
+  @override
+  String get levelTypeSeedRain => '种子雨';
+
+  @override
+  String get levelTypeIPlant => '我是植物';
+
+  @override
+  String get levelTypeOldStyle => '旧式关卡';
+
+  @override
+  String get levelTypeUnknown => '未知';
 
   @override
   String get selectFolder => '选择文件夹';
@@ -439,6 +534,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String transferProgressCount(int completed, int total) {
     return '$completed / $total';
   }
+
+  @override
+  String get folderAccessError => '所选文件夹为只读或无法访问。请选择其他文件夹。';
 
   @override
   String get webFolderImportNotice =>

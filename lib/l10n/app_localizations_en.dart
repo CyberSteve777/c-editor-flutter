@@ -207,7 +207,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Toggle theme';
 
   @override
-  String get switchFolder => 'Switch folder';
+  String get switchFolder => 'Library manager';
+
+  @override
+  String get manageLibraries => 'Manage libraries';
+
+  @override
+  String get addLibrary => 'Add library';
+
+  @override
+  String get libraryName => 'Library name';
+
+  @override
+  String get libraryPath => 'Path';
+
+  @override
+  String get deleteLibraryTitle => 'Remove library?';
+
+  @override
+  String deleteLibraryMessage(String name) {
+    return 'Are you sure you want to remove \"$name\" from the library list? This will NOT delete any files on your disk.';
+  }
+
+  @override
+  String get defaultLibraryName => 'Default library';
+
+  @override
+  String get renameLibrary => 'Rename library';
+
+  @override
+  String get activeLibrary => 'Active';
+
+  @override
+  String get noLibrariesFound => 'No libraries added yet';
 
   @override
   String get clearCache => 'Clear cache';
@@ -237,6 +269,69 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareLevelFailed => 'Could not share level file';
+
+  @override
+  String get shareAsFile => 'Share as File';
+
+  @override
+  String get shareAsPreview => 'Share as Preview';
+
+  @override
+  String get selectBackground => 'Select Background';
+
+  @override
+  String get autoSelectBackground => 'Auto-select';
+
+  @override
+  String get customBackground => 'Custom Background';
+
+  @override
+  String get selectPlantList => 'Select Plant List';
+
+  @override
+  String get levelContainsCustomZombies => 'Level contains custom zombies';
+
+  @override
+  String get generatingPreview => 'Generating preview...';
+
+  @override
+  String get saveToGallery => 'Save to Gallery';
+
+  @override
+  String get imageSavedSuccessfully => 'Image saved successfully';
+
+  @override
+  String get shareOptionTitle => 'How to share?';
+
+  @override
+  String get selectLevelType => 'Select Level Type';
+
+  @override
+  String get autoSelectLevelType => 'Auto-detect';
+
+  @override
+  String get manualSelectLevelType => 'Manual selection';
+
+  @override
+  String get levelTypeAdventure => 'Adventure';
+
+  @override
+  String get levelTypeLastStand => 'Last Stand';
+
+  @override
+  String get levelTypeConveyor => 'Conveyor';
+
+  @override
+  String get levelTypeSeedRain => 'Seed Rain';
+
+  @override
+  String get levelTypeIPlant => 'I, Plant';
+
+  @override
+  String get levelTypeOldStyle => 'Old-Style';
+
+  @override
+  String get levelTypeUnknown => 'Unknown';
 
   @override
   String get selectFolder => 'Select folder';
@@ -446,6 +541,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String transferProgressCount(int completed, int total) {
     return '$completed / $total';
   }
+
+  @override
+  String get folderAccessError =>
+      'The selected folder is read-only or inaccessible. Please select another folder.';
 
   @override
   String get webFolderImportNotice =>

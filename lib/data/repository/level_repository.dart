@@ -12,7 +12,7 @@ import 'level_repository_web.dart'
 
 export '../pvz_models.dart' show PvzLevelFile;
 export 'level_repository_base.dart'
-    show FileItem, LevelRepositoryBase, WebFolderImport;
+    show FileItem, LevelRepositoryBase, WebFolderImport, LibraryItem;
 
 class LevelRepository {
   static final LevelRepositoryBase _impl = impl.createLevelRepository();
@@ -28,6 +28,19 @@ class LevelRepository {
 
   static Future<void> setSavedFolderPath(String path) =>
       _impl.setSavedFolderPath(path);
+
+  static Future<List<LibraryItem>> getLibraries() => _impl.getLibraries();
+
+  static Future<void> setLibraries(List<LibraryItem> libraries) =>
+      _impl.setLibraries(libraries);
+
+  static Future<String?> getLibraryDisplayName(String path) async {
+    final libs = await getLibraries();
+    for (final lib in libs) {
+      if (lib.path == path) return lib.displayName;
+    }
+    return null;
+  }
 
   static Future<String> ensureIosLibraryPath() => _impl.ensureIosLibraryPath();
 

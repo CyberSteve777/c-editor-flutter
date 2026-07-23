@@ -153,6 +153,22 @@ class ZombieDiscovery {
     return zombies;
   }
 
+  static bool hasWaves(ParsedLevelData parsed) {
+    final wm = parsed.waveManager;
+    if (wm is WaveManagerData && wm.waves.isNotEmpty) {
+      for (final wave in wm.waves) {
+        if (wave.isNotEmpty) return true;
+      }
+    }
+
+    final wg = parsed.waveGenerator;
+    if (wg != null && wg.waves.isNotEmpty) {
+      return true;
+    }
+
+    return false;
+  }
+
   static Set<String> discoverEvents(ParsedLevelData parsed) {
     final events = <String>{};
     final wm = parsed.waveManager;

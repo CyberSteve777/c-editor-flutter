@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:c_editor/utils/3rdParty/sen_popcap_zlib.dart';
-import 'package:c_editor/utils/3rdParty/sen_buffer.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_popcap_zlib.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_buffer.dart';
 import 'package:c_editor/utils/apple_folder_access.dart';
 
 import '../level_library_startup_cache.dart';
@@ -18,6 +19,7 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   static const _prefsFolderKey = 'folder_path';
   static const _prefsFolderBookmarkKey = 'folder_bookmark';
   static const _prefsLastLevelDirKey = 'last_level_directory';
+  static const _prefsLibrariesKey = 'libraries_json';
 
   @override
   Future<String> ensureIosLibraryPath() => AppleFolderAccess.defaultLibraryPath();
@@ -50,19 +52,43 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
 
   @override
   Future<bool> ensureFolderAccess() async {
-    if (!Platform.isIOS) return true;
     final path = await getSavedFolderPath();
     if (path == null || path.isEmpty) return false;
-    if (await AppleFolderAccess.isAppSandboxPath(path)) return true;
-    return AppleFolderAccess.grantAccessForPath(path);
+
+    if (Platform.isIOS) {
+      if (await AppleFolderAccess.isAppSandboxPath(path)) return true;
+      if (!await AppleFolderAccess.grantAccessForPath(path)) return false;
+    }
+
+    return await _checkFolderReadWrite(path);
+  }
+
+  Future<bool> _checkFolderReadWrite(String path) async {
+    try {
+      final dir = Directory(path);
+      if (!await dir.exists()) return false;
+
+      // 1. Check Read access
+      // Try to list the directory to see if it's readable.
+      await dir.list().take(1).toList();
+
+      // 2. Check Write access
+      // Try to create and delete a temporary hidden file.
+      final testFile = File(p.join(path, '.c_editor_access_test.tmp'));
+      await testFile.writeAsString('test', flush: true);
+      await testFile.delete();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> _requireFolderAccess() async {
-    if (!Platform.isIOS) return;
     if (!await ensureFolderAccess()) {
       throw const FileSystemException(
         'Cannot access level library folder',
-        'apple_folder_access',
+        'folder_access',
       );
     }
   }
@@ -101,9 +127,28 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     final savedFolderPath = !Platform.isIOS
         ? prefs.getString(_prefsFolderKey)
         : await _resolveIosFolderPath(prefs);
+
+    String? displayName;
+    if (savedFolderPath != null) {
+      final jsonString = prefs.getString(_prefsLibrariesKey);
+      if (jsonString != null && jsonString.isNotEmpty) {
+        try {
+          final List<dynamic> list = jsonDecode(jsonString);
+          final libs = list.map((e) => LibraryItem.fromJson(e)).toList();
+          for (final lib in libs) {
+            if (lib.path == savedFolderPath) {
+              displayName = lib.displayName;
+              break;
+            }
+          }
+        } catch (_) {}
+      }
+    }
+
     return LevelLibraryStartupCache(
       savedFolderPath: savedFolderPath,
       lastOpenedLevelDirectory: prefs.getString(_prefsLastLevelDirKey),
+      webLibraryDisplayName: displayName,
     );
   }
 
@@ -125,19 +170,80 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsFolderKey, path);
 
-    if (!Platform.isIOS) return;
-
-    if (await AppleFolderAccess.isAppSandboxPath(path)) {
-      await prefs.remove(_prefsFolderBookmarkKey);
-      return;
+    String? bookmark;
+    if (Platform.isIOS) {
+      if (await AppleFolderAccess.isAppSandboxPath(path)) {
+        await prefs.remove(_prefsFolderBookmarkKey);
+      } else {
+        bookmark = await AppleFolderAccess.createBookmark(path);
+        if (bookmark != null && bookmark.isNotEmpty) {
+          await prefs.setString(_prefsFolderBookmarkKey, bookmark);
+        } else {
+          await prefs.remove(_prefsFolderBookmarkKey);
+        }
+      }
     }
 
-    final bookmark = await AppleFolderAccess.createBookmark(path);
-    if (bookmark != null && bookmark.isNotEmpty) {
-      await prefs.setString(_prefsFolderBookmarkKey, bookmark);
+    // Update libraries list to ensure this path is present and has correct bookmark
+    final libraries = await getLibraries();
+    final index = libraries.indexWhere((lib) => lib.path == path);
+    final displayName = index != -1
+        ? libraries[index].displayName
+        : p.basename(path).isEmpty
+            ? 'Root'
+            : p.basename(path);
+
+    final newItem = LibraryItem(
+      path: path,
+      displayName: displayName,
+      bookmark: bookmark,
+    );
+
+    if (index != -1) {
+      libraries[index] = newItem;
     } else {
-      await prefs.remove(_prefsFolderBookmarkKey);
+      libraries.add(newItem);
     }
+    await setLibraries(libraries);
+  }
+
+  @override
+  Future<List<LibraryItem>> getLibraries() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_prefsLibrariesKey);
+    if (jsonString == null || jsonString.isEmpty) {
+      // Migration: if no libraries list exists, but a folder path exists, create initial list
+      final currentPath = await getSavedFolderPath();
+      if (currentPath != null && currentPath.isNotEmpty) {
+        String? bookmark;
+        if (Platform.isIOS) {
+          bookmark = prefs.getString(_prefsFolderBookmarkKey);
+        }
+        return [
+          LibraryItem(
+            path: currentPath,
+            displayName: p.basename(currentPath).isEmpty
+                ? 'Default Library'
+                : p.basename(currentPath),
+            bookmark: bookmark,
+          )
+        ];
+      }
+      return [];
+    }
+    try {
+      final List<dynamic> list = jsonDecode(jsonString);
+      return list.map((e) => LibraryItem.fromJson(e)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<void> setLibraries(List<LibraryItem> libraries) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = jsonEncode(libraries.map((e) => e.toJson()).toList());
+    await prefs.setString(_prefsLibrariesKey, jsonString);
   }
 
   @override

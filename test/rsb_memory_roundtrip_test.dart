@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:c_editor/utils/3rdParty/sen_rsg_common.dart';
-import 'package:c_editor/utils/3rdParty/sen_rsb_common.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_rsg_common.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_rsb_common.dart';
 
 void main() {
   group('RSG Memory Round-trip', () {

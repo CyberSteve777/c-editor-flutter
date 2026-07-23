@@ -207,7 +207,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get toggleTheme => 'Переключить тему';
 
   @override
-  String get switchFolder => 'Сменить папку';
+  String get switchFolder => 'Управление папками';
+
+  @override
+  String get manageLibraries => 'Управление папками';
+
+  @override
+  String get addLibrary => 'Добавить папку';
+
+  @override
+  String get libraryName => 'Название папки';
+
+  @override
+  String get libraryPath => 'Путь';
+
+  @override
+  String get deleteLibraryTitle => 'Удалить из списка?';
+
+  @override
+  String deleteLibraryMessage(String name) {
+    return 'Вы уверены, что хотите убрать «$name» из списка? Сами файлы на диске удалены НЕ будут.';
+  }
+
+  @override
+  String get defaultLibraryName => 'Основная папка';
+
+  @override
+  String get renameLibrary => 'Переименовать';
+
+  @override
+  String get activeLibrary => 'Активна';
+
+  @override
+  String get noLibrariesFound => 'Список папок пуст';
 
   @override
   String get clearCache => 'Очистить кэш';
@@ -237,6 +269,70 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get shareLevelFailed => 'Не удалось поделиться файлом уровня';
+
+  @override
+  String get shareAsFile => 'Поделиться файлом';
+
+  @override
+  String get shareAsPreview => 'Поделиться превью';
+
+  @override
+  String get selectBackground => 'Выберите фон';
+
+  @override
+  String get autoSelectBackground => 'Автоподбор';
+
+  @override
+  String get customBackground => 'Свой фон';
+
+  @override
+  String get selectPlantList => 'Выберите список растений';
+
+  @override
+  String get levelContainsCustomZombies =>
+      'В уровне присутствуют кастомные зомби';
+
+  @override
+  String get generatingPreview => 'Создание превью...';
+
+  @override
+  String get saveToGallery => 'Сохранить в галерею';
+
+  @override
+  String get imageSavedSuccessfully => 'Изображение успешно сохранено';
+
+  @override
+  String get shareOptionTitle => 'Как поделиться?';
+
+  @override
+  String get selectLevelType => 'Выберите тип уровня';
+
+  @override
+  String get autoSelectLevelType => 'Автоподбор';
+
+  @override
+  String get manualSelectLevelType => 'Ручной выбор';
+
+  @override
+  String get levelTypeAdventure => 'Приключение';
+
+  @override
+  String get levelTypeLastStand => 'Последний рубеж';
+
+  @override
+  String get levelTypeConveyor => 'Конвейер';
+
+  @override
+  String get levelTypeSeedRain => 'Дождь из семян';
+
+  @override
+  String get levelTypeIPlant => 'Я растение';
+
+  @override
+  String get levelTypeOldStyle => 'Старый тип';
+
+  @override
+  String get levelTypeUnknown => 'Неизвестно';
 
   @override
   String get selectFolder => 'Выбрать папку';
@@ -449,6 +545,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String transferProgressCount(int completed, int total) {
     return '$completed / $total';
   }
+
+  @override
+  String get folderAccessError =>
+      'Выбранная папка доступна только для чтения или недоступна. Пожалуйста, выберите другую папку.';
 
   @override
   String get webFolderImportNotice =>
