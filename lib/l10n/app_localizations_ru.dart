@@ -156,6 +156,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get impLv => 'Ур. импа';
 
   @override
+  String get sortByLabel => 'Сортировка';
+
+  @override
+  String get sortByName => 'Сортировка: по имени';
+
+  @override
+  String get sortByCreationDate => 'Сортировка: по дате создания';
+
+  @override
+  String get sortByModificationDate => 'Сортировка: по дате изменения';
+
+  @override
+  String get sortBySize => 'Сортировка: по размеру';
+
+  @override
+  String get sortByFileType => 'Сортировка: по типу файла';
+
+  @override
   String impsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -177,7 +195,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Всего подкормки на уровне (включая дроп и события)';
 
   @override
-  String get appTitle => 'Моя библиотека уровней';
+  String get appTitle => 'Мои уровни';
 
   @override
   String get about => 'О программе';
@@ -189,7 +207,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get toggleTheme => 'Переключить тему';
 
   @override
-  String get switchFolder => 'Сменить папку';
+  String get switchFolder => 'Управление папками';
+
+  @override
+  String get manageLibraries => 'Управление папками';
+
+  @override
+  String get addLibrary => 'Добавить папку';
+
+  @override
+  String get libraryName => 'Название папки';
+
+  @override
+  String get libraryPath => 'Путь';
+
+  @override
+  String get deleteLibraryTitle => 'Удалить из списка?';
+
+  @override
+  String deleteLibraryMessage(String name) {
+    return 'Вы уверены, что хотите убрать «$name» из списка? Сами файлы на диске удалены НЕ будут.';
+  }
+
+  @override
+  String get defaultLibraryName => 'Основная папка';
+
+  @override
+  String get renameLibrary => 'Переименовать';
+
+  @override
+  String get activeLibrary => 'Активна';
+
+  @override
+  String get noLibrariesFound => 'Список папок пуст';
 
   @override
   String get clearCache => 'Очистить кэш';
@@ -303,6 +353,70 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get shareLevelFailed => 'Не удалось поделиться файлом уровня';
+
+  @override
+  String get shareAsFile => 'Поделиться файлом';
+
+  @override
+  String get shareAsPreview => 'Поделиться превью';
+
+  @override
+  String get selectBackground => 'Выберите фон';
+
+  @override
+  String get autoSelectBackground => 'Автоподбор';
+
+  @override
+  String get customBackground => 'Свой фон';
+
+  @override
+  String get selectPlantList => 'Выберите список растений';
+
+  @override
+  String get levelContainsCustomZombies =>
+      'В уровне присутствуют кастомные зомби';
+
+  @override
+  String get generatingPreview => 'Создание превью...';
+
+  @override
+  String get saveToGallery => 'Сохранить в галерею';
+
+  @override
+  String get imageSavedSuccessfully => 'Изображение успешно сохранено';
+
+  @override
+  String get shareOptionTitle => 'Как поделиться?';
+
+  @override
+  String get selectLevelType => 'Выберите тип уровня';
+
+  @override
+  String get autoSelectLevelType => 'Автоподбор';
+
+  @override
+  String get manualSelectLevelType => 'Ручной выбор';
+
+  @override
+  String get levelTypeAdventure => 'Приключение';
+
+  @override
+  String get levelTypeLastStand => 'Последний рубеж';
+
+  @override
+  String get levelTypeConveyor => 'Конвейер';
+
+  @override
+  String get levelTypeSeedRain => 'Дождь из семян';
+
+  @override
+  String get levelTypeIPlant => 'Я растение';
+
+  @override
+  String get levelTypeOldStyle => 'Старый тип';
+
+  @override
+  String get levelTypeUnknown => 'Неизвестно';
 
   @override
   String get selectFolder => 'Выбрать папку';
@@ -453,15 +567,72 @@ class AppLocalizationsRu extends AppLocalizations {
   String get downloadFolder => 'Скачать эту папку';
 
   @override
+  String get exportLevels => 'Экспорт уровней';
+
+  @override
+  String get exportSelectLevels => 'Выберите уровни для экспорта';
+
+  @override
+  String get exportSelectFile =>
+      'Выберите архив уровней для экспорта (.rsb.smf)';
+
+  @override
+  String exportSelectedFile(String path) {
+    return 'Выбранный файл: $path';
+  }
+
+  @override
+  String get backupRecommendationTitle =>
+      'Рекомендация по резервному копированию';
+
+  @override
+  String get backupRecommendationBody =>
+      'Настоятельно рекомендуется создать резервную копию архива уровней перед экспортом. Это поможет избежать потери данных в случае прерывания операции.';
+
+  @override
+  String get backupAndProceed => 'Создать копию и продолжить';
+
+  @override
+  String get proceedWithoutBackup => 'Продолжить без копии';
+
+  @override
+  String get backupSuffix => '_копия';
+
+  @override
+  String get exportNoFilesFound => 'Нужные файлы не найдены (.rsb.smf).';
+
+  @override
+  String get cancelExportTitle => 'Отмена экспорта';
+
+  @override
+  String get cancelExportMessage =>
+      'Вы уверены, что хотите прервать процесс экспорта?';
+
+  @override
+  String get exportDisclaimerTitle =>
+      'Предупреждение о рисках и отказ от ответственности';
+
+  @override
+  String get exportDisclaimerBody =>
+      'Данный инструмент предназначен для прямого изменения данных игры «Plants vs. Zombies 2».\n\n• Использование этого инструмента для изменения игровых данных может нарушать условия обслуживания игры.\n• Это может привести к временной или постоянной блокировке вашей игровой учетной записи.\n• Это может привести к повреждению игровых сохранений или потере данных.\n• Все действия совершаются пользователем добрововольно, на свой страх и риск.\n\nОтказ от ответственности:\n\nРазработчик настоящим заявляет:\n1. Данный инструмент предназначен только для ознакомления и исследований; любые формы читерства в игре не поощряются.\n2. Все последствия использования данного инструмента, включая, помимо прочего, блокировку аккаунта, потерю данных и ухудшение игрового процесса, ложатся исключительно на пользователя. Разработчик не несет никакой прямой или косвенной ответственности.\n3. Пользователи должны полностью осознавать связанные с этим риски перед использованием данного инструмента и самостоятельно принимать решение о принятии этих рисков.\n4. Дальнейшее использование означает, что вы прочитали, поняли и согласны со всеми условиями данного отказа от ответственности.';
+
+  @override
   String get importProgressTitle => 'Импорт уровней…';
 
   @override
   String get exportProgressTitle => 'Подготовка экспорта…';
 
   @override
+  String get backupProgressTitle => 'Создание резервной копии…';
+
+  @override
   String transferProgressCount(int completed, int total) {
     return '$completed / $total';
   }
+
+  @override
+  String get folderAccessError =>
+      'Выбранная папка доступна только для чтения или недоступна. Пожалуйста, выберите другую папку.';
 
   @override
   String get webFolderImportNotice =>
@@ -540,6 +711,94 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get proceed => 'Продолжить';
+
+  @override
+  String get startExport => 'Приступить';
+
+  @override
+  String get exportProceed => 'Продолжить';
+
+  @override
+  String get exportBegin => 'Приступить';
+
+  @override
+  String get exportStatusCreatingRton => 'Создание RTON уровней...';
+
+  @override
+  String get exportStatusUnpackingRsb => 'Распаковка RSB...';
+
+  @override
+  String get exportStatusUnpackingRsg => 'Распаковка Packages.rsg...';
+
+  @override
+  String get exportStatusInjecting => 'Инъекция уровней...';
+
+  @override
+  String get exportStatusRepackingRsg => 'Запаковка RSG...';
+
+  @override
+  String get exportStatusRepackingRsb => 'Запаковка RSB...';
+
+  @override
+  String get exportStatusFinalizing => 'Завершение...';
+
+  @override
+  String get exportAssignmentProposalTitle => 'Распределение уровней';
+
+  @override
+  String get exportWorld => 'Мир';
+
+  @override
+  String get exportLevelNumber => 'Номер уровня';
+
+  @override
+  String exportLevelShort(int level) {
+    return 'ур. $level';
+  }
+
+  @override
+  String get exportFinish => 'Завершить';
+
+  @override
+  String get exportSuccessTitle => 'Экспорт завершён';
+
+  @override
+  String get exportSuccessMessage =>
+      'Уровни были успешно экспортированы в архив.';
+
+  @override
+  String exportDuplicateAssignment(String world, int level) {
+    return 'Повторяющееся распределение: $world $level';
+  }
+
+  @override
+  String get exportAssignmentIncomplete => 'Не все уровни распределены';
+
+  @override
+  String get exportConfirmationTitle => 'Подтвердите выбор';
+
+  @override
+  String get exportConfirmationBody =>
+      'Пожалуйста, проверьте распределение перед продолжением.';
+
+  @override
+  String get exportFinalCheckTitle => 'Финальная проверка';
+
+  @override
+  String get exportFinalCheckBody =>
+      'Следующие уровни будут экспортированы с новыми именами:';
+
+  @override
+  String exportTargetArchive(String file) {
+    return 'Все уровни будут экспортированы в $file';
+  }
+
+  @override
+  String get exportStart => 'Начать экспорт';
+
+  @override
+  String get exportAssignmentProposalBody =>
+      'Выбранные уровни проверены. Теперь необходимо выбрать, какой слот в приключении будет занимать каждый из них.';
 
   @override
   String get copyReferenceOrDeep =>
@@ -2034,14 +2293,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleTitle_LevelMutatorStartingPlantfoodProps =>
-      'Стартовый растительный корм';
+      'Стартовая подкормка';
 
   @override
   String get moduleDesc_LevelMutatorStartingPlantfoodProps =>
-      'Начальный растительный корм';
+      'Начальная подкормка';
 
   @override
-  String get moduleTitle_StarChallengeModuleProperties => 'Испытания';
+  String get moduleTitle_StarChallengeModuleProperties => 'Звёздные испытания';
 
   @override
   String get moduleDesc_StarChallengeModuleProperties =>
@@ -2062,12 +2321,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'У этого испытания нет настраиваемых параметров.\n\nВсе газонокосилки должны остаться целыми. Примечание: в модуле двора газонокосилок по умолчанию нет.';
 
   @override
-  String get starChallengePlantFoodNonuseTitle =>
-      'Не использовать растительный корм';
+  String get starChallengePlantFoodNonuseTitle => 'Не использовать подкормку';
 
   @override
   String get starChallengePlantFoodNonuseNoConfigMessage =>
-      'У этого испытания нет настраиваемых параметров.\n\nИспользование растительного корма запрещено.';
+      'У этого испытания нет настраиваемых параметров.\n\nИспользование подкормки запрещено.';
 
   @override
   String get moduleTitle_LevelScoringModuleProperties => 'Очки';
@@ -2134,7 +2392,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
-      'Параметры боя с Боссами (Мастер Цигун, Пиродемон и т.д.)';
+      'Параметры боя с Боссами (Мастер Цигун, Пиродьявол и т.д.)';
 
   @override
   String get moduleTitle_SeedRainProperties => 'Дождь из семян';
@@ -2144,7 +2402,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Падающие растения/зомби/предметы';
 
   @override
-  String get moduleTitle_LastStandMinigameProperties => 'Ласт стенд';
+  String get moduleTitle_LastStandMinigameProperties => 'Последний Выживший';
 
   @override
   String get moduleDesc_LastStandMinigameProperties =>
@@ -2188,7 +2446,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleTitle_InitialPlantProperties =>
-      'Устаревшие предустановленные растения';
+      'Начальные растения (устаревший модуль)';
 
   @override
   String get moduleDesc_InitialPlantProperties =>
@@ -2203,10 +2461,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get frozenPlantPlacementTitle =>
-      'Устаревшие предустановленные растения';
+      'Растения в начале уровня (устаревший модуль с возможностью сделать замороженные растения)';
 
   @override
-  String get frozenPlantPlacementLastStand => 'Режим ласт стенда';
+  String get frozenPlantPlacementLastStand =>
+      'Сжигание всех растений при старте уровня';
 
   @override
   String get frozenPlantPlacementSelectedPosition => 'Выбранная позиция';
@@ -2316,25 +2575,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_MechanismPlankProperties =>
-      'Редактирование распложения вагонеток и рельс из мира Кунг-Фу';
+      'Редактирование распложения вагонеток и рельс Кунг-Фу Мира';
 
   @override
   String get moduleTitle_PowerTileProperties => 'Силовые плитки';
 
   @override
   String get moduleDesc_PowerTileProperties =>
-      'Расположение силовых плиток в Будущем';
+      'Расположение разноцветных плиток из Далёкого Будущего';
 
   @override
-  String get moduleTitle_ManholePipelineModuleProperties => 'Люки';
+  String get moduleTitle_ManholePipelineModuleProperties => 'Проходные люки';
 
   @override
   String get moduleDesc_ManholePipelineModuleProperties =>
-      'Трубы в Паровом веке';
+      'Настраивает проходы для зомби в виде люков';
 
   @override
-  String get moduleTitle_SmokePollutionModuleProperties =>
-      'Дымовое загрязнение';
+  String get moduleTitle_SmokePollutionModuleProperties => 'Дымовые люки';
 
   @override
   String get moduleDesc_SmokePollutionModuleProperties =>
@@ -2364,7 +2622,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_BronzeProperties =>
-      'Мини-игра бронзовых статуй мира Кунфу: размещение статуй и времени возрождения (не привязано к волнам)';
+      'Мини-игра бронзовых статуй Кунг-Фу Мира: размещение статуй и настройка времени пробуждения (не привязано к волнам)';
 
   @override
   String get moduleTitle_ArmrackProperties => 'Оружейные стойки';
@@ -2378,7 +2636,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_EnergyGridProperties =>
-      'Настройка отображения плиток Тайцзи на газоне (только волна 1)';
+      'Настройка отображения плиток с подкормкой на газоне (только волна 1)';
 
   @override
   String get bronzeModuleTitle => 'Бронзовые статуи';
@@ -2391,20 +2649,20 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get bronzeModuleHelpOverviewBody =>
-      'Размещает статуи Хань, Сигун и Рыцаря на газоне в начале уровня. Возрождение задаётся в секундах (spawnTime). Каждая группа волн — отдельная запись в массиве data; в игре действует только волна 1.';
+      'Размещает статуи Хань, Сигун и Рыцаря на газоне в начале уровня. Время пробуждения задаётся в секундах (spawnTime). Каждая группа волн — отдельная запись в массиве data; в игре действует только волна 1.';
 
   @override
   String get bronzeModuleHelpBatches => 'Пакеты и время';
 
   @override
   String get bronzeModuleHelpBatchesBody =>
-      'Статуи с одинаковым временем возрождения появляются вместе. Последующие пакеты могут продолжать отсчёт. Выберите клетку, тип и секунды до возрождения.';
+      'Статуи с одинаковым временем пробуждения появляются вместе. Последующие пакеты могут продолжать отсчёт. Выберите клетку, тип и секунды до пробуждения.';
 
   @override
   String get bronzeModuleShakeOffset => 'Анимация';
 
   @override
-  String get bronzeModuleShakeOffsetLabel => 'Смещение тряски при возрождении';
+  String get bronzeModuleShakeOffsetLabel => 'Смещение тряски при пробуждении';
 
   @override
   String get bronzeModuleInCell => 'Статуи в выбранной клетке';
@@ -2434,13 +2692,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bronzeModuleTypeLabel => 'Тип';
 
   @override
-  String get bronzeModuleSpawnTimeLabel => 'Время возрождения (с)';
+  String get bronzeModuleSpawnTimeLabel => 'Время пробуждения (с)';
 
   @override
-  String get moduleTitle_WarMistProperties => 'Туман войны';
+  String get moduleTitle_WarMistProperties => 'Туман';
 
   @override
-  String get moduleDesc_WarMistProperties => 'Система тумана войны';
+  String get moduleDesc_WarMistProperties => 'Система тумана';
 
   @override
   String get moduleTitle_RainDarkProperties => 'Погода';
@@ -2652,21 +2910,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get eventDesc_MagicMirrorWaveActionProps => 'Зеркальные порталы';
 
   @override
-  String get weatherOption_DefaultSnow_label => 'Ледяные пещеры (DefaultSnow)';
+  String get weatherOption_DefaultSnow_label => 'Снег';
 
   @override
   String get weatherOption_DefaultSnow_desc => 'Эффект снега из Ледяных пещер';
 
   @override
-  String get weatherOption_LightningRain_label => 'Гроза (LightningRain)';
+  String get weatherOption_LightningRain_label => 'Дождь с грозой';
 
   @override
   String get weatherOption_LightningRain_desc =>
       'Дождь и молнии, Тёмные века день 8';
 
   @override
-  String get weatherOption_DefaultRainDark_label =>
-      'Тёмные века (DefaultRainDark)';
+  String get weatherOption_DefaultRainDark_label => 'Дождь';
 
   @override
   String get weatherOption_DefaultRainDark_desc =>
@@ -2880,7 +3137,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get enableEliteImmunities => 'Включить элитный иммунитет';
 
   @override
-  String get canSpawnPlantFood => 'Может выпадать растительный корм';
+  String get canSpawnPlantFood => 'Может выпадать подкормка';
 
   @override
   String get canSurrender => 'Может сдаться';
@@ -3167,7 +3424,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get setEnd => 'Установить конец';
 
   @override
-  String get collectable => 'Собираемый (растительный корм)';
+  String get collectable => 'Собираемый (подкормка)';
 
   @override
   String get selectGridItem => 'Выбрать предмет';
@@ -3234,7 +3491,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get rainIntervalSeconds => 'Интервал падения (сек)';
 
   @override
-  String get startingPlantFood => 'Начальный растительный корм';
+  String get startingPlantFood => 'Начальная подкормка';
 
   @override
   String get bowlingFoulLine => 'Линия запрета посадки';
@@ -3426,7 +3683,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpDropConfig =>
-      'Растительная еда или карточки растений, которые несут зомби. Добавьте растения для выпадения карт.';
+      'Подкормка или семена растений, которые несут зомби. Добавьте растения для выпадения карт.';
 
   @override
   String get fishPropertiesEntryHelp =>
@@ -4070,17 +4327,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get manholePipelineHelpOverview =>
-      'Определяет подземные соединения труб в эпохе пара.';
+      'Определяет подземные соединения труб в Паровых Веках.';
 
   @override
   String get manholePipelineHelpEditing =>
       'Переключайте режим начала/конца, затем нажмите на сетку для размещения.';
 
   @override
-  String get smokePollutionModuleTitle => 'Модуль дымового загрязнения';
+  String get smokePollutionModuleTitle => 'Модуль дымовых люков';
 
   @override
-  String get smokePollutionModuleHelpTitle => 'Справка: дымовое загрязнение';
+  String get smokePollutionModuleHelpTitle => 'Справка: дымовые люки';
 
   @override
   String get smokePollutionModuleHelpOverview => 'Обзор';
@@ -4090,14 +4347,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Размещает на газоне дымовые люки, которые через заданное время выбрасывают ядовитый пар. Часто используется в уровнях Парового века.';
 
   @override
-  String get smokePollutionModuleHelpManholes => 'Люки';
+  String get smokePollutionModuleHelpManholes => 'Проходные люки';
 
   @override
   String get smokePollutionModuleHelpManholesBody =>
-      'Выберите клетку на сетке и добавьте люки в этой позиции. У каждого люка есть Start Time — секунды от начала уровня до выброса ядовитого пара.';
+      'Выберите клетку на сетке и добавьте люки в этой позиции. У каждого люка есть стартовое время — секунды от начала уровня до выброса ядовитого пара.';
 
   @override
-  String get smokePollutionModuleStartTimeLabel => 'Start time (с)';
+  String get smokePollutionModuleStartTimeLabel => 'Стартовое время (с)';
 
   @override
   String manholePipelineStartEndFormat(int sx, int sy, int ex, int ey) {
@@ -4295,7 +4552,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get startingPlantfoodHelpOverview =>
-      'Этот модуль изначально использовался для настройки уровней сложности. Используйте его для переопределения начального количества растительной еды в уровне.';
+      'Этот модуль изначально использовался для настройки уровней сложности. Используйте его для переопределения начального количества подкормки в уровне.';
 
   @override
   String get starChallengeHelpTitle => 'Модуль звёздных испытаний';
@@ -5299,7 +5556,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dropConfigPlants => 'Настройка дропа (растения)';
 
   @override
-  String get dropConfigPlantFood => 'Настройка дропа (растительная еда)';
+  String get dropConfigPlantFood => 'Настройка дропа (подкормка)';
 
   @override
   String get waveDropConfigTitle => 'Настройка дропа';
@@ -5309,7 +5566,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
-    return '$count растительной еды';
+    return '$count подкормки';
   }
 
   @override
@@ -5321,7 +5578,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombiesCarryingPlants => 'Зомби с растениями';
 
   @override
-  String get zombiesCarryingPlantFood => 'Зомби с растительной едой';
+  String get zombiesCarryingPlantFood => 'Зомби с подкормкой';
 
   @override
   String get description => 'Описание';
@@ -5702,11 +5959,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get recommendedTunnelDefendTitle =>
-      'Рекомендуется модуль защиты тоннелей';
+      'Рекомендуется модуль тоннелей Подземного Дворца';
 
   @override
   String get recommendedTunnelDefendBody =>
-      'Арены Подземного дворца рассчитаны на визуал тоннелей. Настоятельно рекомендуется добавить модуль защиты тоннелей — иначе газон в игре может выглядеть пустым.';
+      'Арены Подземного дворца рассчитаны на визуал тоннелей. Настоятельно рекомендуется добавить модуль тоннелей Подземного Дворца — иначе газон в игре может выглядеть пустым.';
 
   @override
   String get selectedPosition => 'Выбранная позиция';
@@ -5718,19 +5975,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get itemListRowFirst => 'Список препятствий (по строкам)';
 
   @override
-  String get railcartCowboy => 'Ковбой';
+  String get railcartCowboy => 'Вагонетка Дикого Запада';
 
   @override
-  String get railcartFuture => 'Будущее';
+  String get railcartFuture => 'Вагонетка Далёкого Будущего';
 
   @override
-  String get railcartEgypt => 'Египет';
+  String get railcartEgypt => 'Вагонетка Древнего Египта';
 
   @override
-  String get railcartPirate => 'Пират';
+  String get railcartPirate => 'Вагонетка Пиратских Морей';
 
   @override
-  String get railcartWorldcup => 'Чемпионат мира';
+  String get railcartWorldcup => 'Чемпионат Дейва';
 
   @override
   String get clearUnusedTitle => 'Удалить неиспользуемые объекты?';
@@ -5785,11 +6042,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get levelCountdown => 'Обратный отсчёт уровня';
 
   @override
-  String get tunnelDefendTitle => 'Защита тоннелей';
+  String get tunnelDefendTitle => 'Тоннели Подземного Дворца';
 
   @override
   String get tunnelDefendHelpOverview =>
-      'Добавление путей тоннелей мавзолея. Некоторые зомби и растения взаимодействуют с тоннелями.';
+      'Добавление путей тоннелей Подземного Дворца. Некоторые зомби и растения взаимодействуют с тоннелями.';
 
   @override
   String get tunnelDefendHelpUsage => 'Использование';
@@ -5887,11 +6144,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleDesc_LawnMowerProperties => 'Стиль газонокосилок для уровня';
 
   @override
-  String get moduleTitle_TunnelDefendModuleProperties => 'Защита тоннелей';
+  String get moduleTitle_TunnelDefendModuleProperties =>
+      'Тоннели Подземного Дворца';
 
   @override
   String get moduleDesc_TunnelDefendModuleProperties =>
-      'Размещение тоннелей мавзолея';
+      'Размещение тоннелей Подземного Дворца';
 
   @override
   String get moduleTitle_WitchModuleProperties => 'Тыквенная ведьма';
@@ -5902,11 +6160,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleTitle_InitialGridItemGulliverTunnelProperties =>
-      'Тоннели Gulliver';
+      'Тоннели Гулливера';
 
   @override
   String get moduleDesc_InitialGridItemGulliverTunnelProperties =>
-      'Предустановленные тоннели Gulliver на газоне';
+      'Предустановленные тоннели Гулливера на газоне';
 
   @override
   String get witchModuleTitle => 'Тыквенная ведьма';
@@ -5930,11 +6188,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Интервал появления ведьмы (WitchSpawnInterval, сек.)';
 
   @override
-  String get gulliverTunnelTitle => 'Тоннели Gulliver';
+  String get gulliverTunnelTitle => 'Тоннели Гулливера';
 
   @override
   String get gulliverTunnelHelpOverview =>
-      'Размещение тоннелей Gulliver на газоне до начала уровня.';
+      'Размещение тоннелей Гулливера на газоне до начала уровня.';
 
   @override
   String get gulliverTunnelHelpUsage => 'Использование';
@@ -5957,11 +6215,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gulliverTunnelClearConfirmTitle =>
-      'Очистить все тоннели Gulliver?';
+      'Очистить все тоннели Гулливера?';
 
   @override
   String get gulliverTunnelClearConfirmMessage =>
-      'Удалить все размещённые тоннели Gulliver с сетки.';
+      'Удалить все размещённые тоннели Гулливера с сетки.';
 
   @override
   String get gulliverTunnelSelectOrientation => 'Выберите ориентацию';
@@ -5981,21 +6239,21 @@ class AppLocalizationsRu extends AppLocalizations {
       'Удалить размещения тоннелей за пределами сетки 5×9.';
 
   @override
-  String get moduleTitle_RiftThemeDemoModuleProperties => 'Темы Rift';
+  String get moduleTitle_RiftThemeDemoModuleProperties => 'Модификаторы уровня';
 
   @override
   String get moduleDesc_RiftThemeDemoModuleProperties =>
-      'Задаёт пользовательские темы уровня (Penny Pursuit / Memory Lane)';
+      'Задаёт пользовательские модификаторы уровня (Погоня Пенни / Дорога Воспоминаний)';
 
   @override
-  String get riftThemeModuleTitle => 'Темы Rift';
+  String get riftThemeModuleTitle => 'Модификаторы уровня';
 
   @override
-  String get riftThemeHelpTitle => 'Модуль тем Rift';
+  String get riftThemeHelpTitle => 'Модуль модификаторов уровня';
 
   @override
   String get riftThemeHelpOverview =>
-      'Задаёт пользовательский список тем rift для уровня — как в уровнях Penny Pursuit и Memory Lane. Подробности тем см. в справочнике.';
+      'Задаёт пользовательский список модификаторов для уровня — как в уровнях Погони Пенни и Дороги Воспоминаний. Подробности тем см. в справочнике.';
 
   @override
   String get riftThemeHelpUsage => 'Использование';
@@ -6038,10 +6296,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get riftThemeAllUsedMessage =>
-      'Все темы rift уже в списке. Каждую тему можно добавить только один раз.';
+      'Все модификаторы уже в списке. Каждую тему можно добавить только один раз.';
 
   @override
-  String get moduleTitle_ZombieRushModuleProperties => 'Таймер Zombie Rush';
+  String get moduleTitle_ZombieRushModuleProperties =>
+      'Таймер (из плана уничтожения зомби / нанесения урона снеговикам за время)';
 
   @override
   String get moduleDesc_ZombieRushModuleProperties => 'Обратный отсчёт уровня';
@@ -6051,7 +6310,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_PVZ1PassageModuleProperties =>
-      'Порталы в стиле PVZ1: группы, колонки появления и тайминги телепорта';
+      'Порталы в стиле PvZ 1: группы, колонки появления и тайминги телепорта';
 
   @override
   String get moduleTitle_PVZ1CopycatsModuleProperties => 'Угадай, кто я';
@@ -6134,7 +6393,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pvz1PassageHelpOverview =>
-      'Настраивает порталы-проходы на газоне в стиле PVZ1: число типов групп порталов, число порталов в каждой группе, диапазон колонок появления, минимальный интервал между телепортами одного зомби и период обновления позиций порталов.';
+      'Настраивает порталы-проходы на газоне в стиле PvZ 1: число типов групп порталов, число порталов в каждой группе, диапазон колонок появления, минимальный интервал между телепортами одного зомби и период обновления позиций порталов.';
 
   @override
   String get pvz1PassageHelpFieldsTitle => 'Описание полей';
@@ -7000,17 +7259,17 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get energyGridModuleTitle => 'Плитки Тайцзи';
+  String get energyGridModuleTitle => 'Плитки с подкормкой';
 
   @override
-  String get energyGridModuleHelpTitle => 'Модуль плиток Тайцзи';
+  String get energyGridModuleHelpTitle => 'Модуль плиток с подкормкой';
 
   @override
   String get energyGridModuleHelpOverview => 'Обзор';
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      'Размещает плитки Тайцзи на газоне. Волна 1 — начальный пресет (до старта уровня); последующие группы появляются в волнах генератора по правилу N−1.';
+      'Размещает плитки с подкормкой на газоне. Волна 1 — начальный пресет (до старта уровня); последующие группы появляются в волнах генератора по правилу N−1.';
 
   @override
   String get energyGridModuleHelpPlacement => 'Размещение';
@@ -7028,18 +7287,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get energyGridModuleTapToPlace =>
-      'Нажмите пустую клетку, чтобы поставить плитку Тайцзи.';
+      'Нажмите пустую клетку, чтобы поставить плитку с подкормкой.';
 
   @override
-  String get energyGridModuleExpectationLabel => 'Плитки Тайцзи';
+  String get energyGridModuleExpectationLabel => 'Плитки с подкормкой';
 
   @override
   String get energyGridModuleIgnoredWaveOverridesWarning =>
-      'В уровне есть переопределения плиток Тайцзи для волн, отличных от 1. Они сохраняются, но не отображаются на временной шкале, так как игра применяет только волну 1.';
+      'В уровне есть переопределения плиток с подкормкой для волн, отличных от 1. Они сохраняются, но не отображаются на временной шкале, так как игра применяет только волну 1.';
 
   @override
   String get energyGridModuleWarningMessage =>
-      'Из-за ошибки игры сгенерированные плитки Тайцзи могут отображаться как фиолетовые маркеры X. На функциональность это не влияет.';
+      'Из-за ошибки игры сгенерированные плитки с подкормкой могут отображаться как фиолетовые маркеры X. На функциональность это не влияет.';
 
   @override
   String get gridOverrideModuleAppearances => 'Группы волн';
@@ -7076,11 +7335,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gridOverridePreviewArmrackTitle => 'Размещение оружейных стоек';
 
   @override
-  String get gridOverridePreviewEnergyGridTitle => 'Размещение плиток Тайцзи';
+  String get gridOverridePreviewEnergyGridTitle =>
+      'Размещение плиток с подкормкой';
 
   @override
   String get waveGeneratorInitialGridOverridesTitle =>
-      'Начальные объекты сетки кунфу';
+      'Начальные объекты сетки из Кунг-Фу Мира';
 
   @override
   String get waveGeneratorPreviewInitialArmrack =>
@@ -7088,7 +7348,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorPreviewInitialEnergyGrid =>
-      'Предпросмотр начального размещения плиток Тайцзи';
+      'Предпросмотр начального размещения плиток с подкормкой';
 
   @override
   String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label) {
@@ -7104,17 +7364,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Zombies added here are not included in the editor random spawn expectation preview and will not take effect in-game. Continue?';
 
   @override
-  String get mechanismPlankSettings => 'Connected Minecart settings';
+  String get mechanismPlankSettings => 'Настройки объединённых вагонеток';
 
   @override
-  String get mechanismPlankStartColumn => 'Starting column (mx)';
+  String get mechanismPlankStartColumn => 'Стартовая колонка (mx)';
 
   @override
-  String get mechanismPlankTrackLength => 'Track length (mWidth)';
+  String get mechanismPlankTrackLength => 'Длина рельсовых дорожек (mWidth)';
 
   @override
   String get mechanismPlankEditNotice =>
-      'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.\nAdditionally, Connected Minecarts are not recommended outside of Kongfu World, as they are more likely to appear as purple X markers. This does not affect their actual functionality, but it may impact the level\'s visual presentation.';
+      'Этот интерфейс поддерживает только изменение стартовой колонны и длины рельсовых дорожек. Все остальные параметры используют уже заранее заготовленные значения, так как их изменение может привести к поломке вагонеток. Для более продвинутой кастомизации воспользуйтесь функцией редактирования JSON файла.\nК тому же, не рекомендуется использовать модуль объединённых вагонеток вне лужайки Кунг-Фу мира, так как сами вагонетки могут не прогрузиться и отображаться как фиолетовые кресты. Их работоспособность не постарадает, но на визуальной составляющей уровня это может сказаться сильно.';
 
   @override
   String get mechanismPlankOutOfAreaWarning =>
@@ -7697,4 +7957,98 @@ class AppLocalizationsRu extends AppLocalizations {
   String startupLoadingCategoryProgress(String category) {
     return 'Загрузка $category...';
   }
+
+  @override
+  String get reselectFiles => 'Выбрать заново';
+
+  @override
+  String get validationReviewRequest =>
+      'Пожалуйста, ознакомьтесь с результатами проверки выбранных уровней.';
+
+  @override
+  String get validationRecommendation =>
+      'Рекомендуется отредактировать выбранные уровни для исправления ошибок или выбрать другие файлы.';
+
+  @override
+  String validationProgress(int current, int total) {
+    return 'Проверка $current / $total';
+  }
+
+  @override
+  String get invalid_rsb_version => 'Неверная версия RSB, должна быть 3 или 4';
+
+  @override
+  String get invalid_file_list_offset => 'Неверное смещение списка файлов';
+
+  @override
+  String get invalid_rsb_ver_3_resource_offset =>
+      'Неверное смещение ресурса для RSB версии 3';
+
+  @override
+  String get invalid_composite_name => 'Неверное имя композита';
+
+  @override
+  String get out_of_range_1 => 'Выход за пределы диапазона poolIndex';
+
+  @override
+  String get out_of_range_2 => 'Выход за пределы диапазона индекса пакета';
+
+  @override
+  String get invalid_rsg_name => 'Неверное имя RSG';
+
+  @override
+  String get invalid_packet_width => 'Неверная ширина пакета';
+
+  @override
+  String get invalid_packet_height => 'Неверная высота пакета';
+
+  @override
+  String get invalid_item_packet => 'Неверный пакет элемента';
+
+  @override
+  String get invalid_rsg_number => 'Неверный индекс RSG';
+
+  @override
+  String get invalid_part2_offset => 'Неверное смещение Part2';
+
+  @override
+  String get invalid_head_length => 'Неверная длина заголовка';
+
+  @override
+  String get rsb_is_corrupted => 'Этот RSB поврежден';
+
+  @override
+  String get invalid_ptx_info_eachlength => 'Информация PTX неверна';
+
+  @override
+  String get invalid_end_offset => 'Неверное конечное смещение';
+
+  @override
+  String get invalid_rsb_head =>
+      'Несоответствие магического числа RSB, должно начинаться с \"1BSR\"';
+
+  @override
+  String get invalid_ptx_info_each_length => 'Неверная информация PTX';
+
+  @override
+  String get category_out_of_length => 'Категория выходит за пределы длины';
+
+  @override
+  String get name_path_must_be_ascii =>
+      'Путь имени должен соответствовать ASCII';
+
+  @override
+  String get invalid_rsg_magic =>
+      'Неверное магическое число RSG, должно начинаться с \"PGSR\"';
+
+  @override
+  String get invalid_rsg_version => 'Неверная версия RSG, должна быть 3 или 4';
+
+  @override
+  String get invalid_rsg_compression_flag =>
+      'Неверный флаг сжатия RSG, поддерживаются только от 0 до 3';
+
+  @override
+  String get mismatch_zlib_magic =>
+      'Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4';
 }

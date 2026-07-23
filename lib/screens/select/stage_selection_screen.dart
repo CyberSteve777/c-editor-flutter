@@ -155,7 +155,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
         title: Text(l10n?.selectStage ?? 'Select lawn'),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(
-            _tab == _StagePickerTab.builtin ? 148 : 72,
+            _tab == _StagePickerTab.builtin ? 172 : 80,
           ),
           child: Column(
             children: [
@@ -258,7 +258,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
         maxCrossAxisExtent: 180,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.85,
+        childAspectRatio: 0.65,
       ),
       itemCount: items.length,
       itemBuilder: (_, i) {

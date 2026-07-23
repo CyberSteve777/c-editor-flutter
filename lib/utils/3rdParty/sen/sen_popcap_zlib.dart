@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
+import 'package:c_editor/l10n/app_localizations.dart';
 
 import 'sen_buffer.dart';
 
@@ -24,11 +25,16 @@ class PopCapZlib {
     return result;
   }
 
-  static SenBuffer uncompress(SenBuffer data, bool use64BitVariant) {
+  static SenBuffer uncompress(
+    SenBuffer data,
+    bool use64BitVariant, [
+    AppLocalizations? localizations,
+  ]) {
     final magicWord = data.readUInt32LE();
     if (magicWord != 0xDEADFED4) {
       throw Exception(
-        'Mismatch PopCap Zlib magic, should begin with 0xDEADFED4, received 0x${magicWord.toRadixString(16).toUpperCase()}',
+        localizations?.mismatch_zlib_magic ??
+            'Mismatch PopCap Zlib magic, should begin with 0xDEADFED4, received 0x${magicWord.toRadixString(16).toUpperCase()}',
       );
     }
     if (use64BitVariant) {

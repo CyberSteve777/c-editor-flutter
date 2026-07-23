@@ -20,12 +20,45 @@ class WebFolderImport {
   final List<String> paths;
 }
 
+enum LevelSortMode {
+  name,
+  created,
+  modified,
+  size,
+  type,
+}
+
+class LibraryItem {
+  LibraryItem({
+    required this.path,
+    required this.displayName,
+    this.bookmark,
+  });
+
+  final String path;
+  final String displayName;
+  final String? bookmark;
+
+  Map<String, dynamic> toJson() => {
+        'path': path,
+        'displayName': displayName,
+        if (bookmark != null) 'bookmark': bookmark,
+      };
+
+  factory LibraryItem.fromJson(Map<String, dynamic> json) => LibraryItem(
+        path: json['path'] as String,
+        displayName: json['displayName'] as String,
+        bookmark: json['bookmark'] as String?,
+      );
+}
+
 class FileItem {
   FileItem({
     required this.name,
     required this.path,
     required this.isDirectory,
     required this.lastModified,
+    this.creationTime,
     required this.size,
     this.isFavorite = false,
   });
@@ -34,8 +67,20 @@ class FileItem {
   final String path;
   final bool isDirectory;
   final int lastModified;
+  final int? creationTime;
   final int size;
   final bool isFavorite;
+
+  /// Rank for file type sorting: SMF (0) -> JSON (1) -> RTON (2) -> HUJSON (3) -> Other (4)
+  int get extensionRank {
+    if (isDirectory) return -1;
+    final lower = name.toLowerCase();
+    if (lower.endsWith('.smf')) return 0;
+    if (lower.endsWith('.json')) return 1;
+    if (lower.endsWith('.rton')) return 2;
+    if (lower.endsWith('.hujson')) return 3;
+    return 4;
+  }
 }
 
 abstract class LevelRepositoryBase {
@@ -47,6 +92,7 @@ abstract class LevelRepositoryBase {
     '.rton',
     '.zlib',
     '.bin',
+    '.smf',
   };
 
   static const List<String> defaultTemplateList = [
@@ -64,6 +110,10 @@ abstract class LevelRepositoryBase {
 
   Future<String?> getSavedFolderPath();
   Future<void> setSavedFolderPath(String path);
+
+  Future<List<LibraryItem>> getLibraries();
+  Future<void> setLibraries(List<LibraryItem> libraries);
+
   Future<LevelLibraryStartupCache> preloadLibrarySettings(
     SharedPreferences prefs,
   );
@@ -73,8 +123,14 @@ abstract class LevelRepositoryBase {
   Future<String?> getLastOpenedLevelDirectory();
   Future<String> getCacheDir();
   Future<bool> fileExistsInDirectory(String dirPath, String fileName);
-  Future<List<FileItem>> getDirectoryContents(String dirPath);
-  Future<List<FileItem>> getFavorites(String rootPath);
+  Future<List<FileItem>> getDirectoryContents(
+    String dirPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  });
+  Future<List<FileItem>> getFavorites(
+    String rootPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  });
   Future<bool> createDirectory(String parentPath, String name);
   Future<bool> renameItem(
     String currentDirPath,
@@ -246,6 +302,11 @@ abstract class LevelRepositoryBase {
 
   bool isSupportedLevelFileName(String name) {
     final lower = name.toLowerCase();
+    if (lower.endsWith('.smf')) {
+      // .rsb.smf is supported (checked in subclasses for platform visibility),
+      // but plain .smf is not to be shown.
+      return lower.endsWith('.rsb.smf');
+    }
     return levelExtensions.any(lower.endsWith);
   }
 

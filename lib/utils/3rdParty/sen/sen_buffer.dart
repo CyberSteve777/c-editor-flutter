@@ -1,25 +1,9 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, unnecessary_this, prefer_const_constructors, constant_identifier_names, non_constant_identifier_names, require_trailing_commas
-import "dart:io";
 import "dart:convert";
 import "dart:typed_data";
 
 abstract interface class SenBuffer {
   factory SenBuffer() => _SenBuffer(Uint8List(0));
-
-  factory SenBuffer.OpenFile(String path) {
-    final file = File((path));
-    final length = file.lengthSync();
-    final bytes = Uint8List(length);
-    final raFile = file.openSync();
-    int pos = 0;
-    const chunkSize = 1000000000;
-    while (pos < length) {
-      raFile.readIntoSync(bytes, pos, (pos + chunkSize).clamp(0, length));
-      pos += chunkSize;
-    }
-    raFile.closeSync();
-    return _SenBuffer(bytes, path);
-  }
 
   factory SenBuffer.fromBytes(Uint8List buffer) {
     return _SenBuffer(_copyBuffer(buffer));
@@ -300,10 +284,6 @@ abstract interface class SenBuffer {
   void backupWriteOffset();
 
   void restoreWriteOffset();
-
-  void outFile(String outFile);
-
-  void outBytes(String outFile, int count, int offset);
 
   void clear();
 }
@@ -1374,23 +1354,6 @@ class _SenBuffer implements SenBuffer {
   @override
   void restoreWriteOffset() {
     _writeOffset = _tempWriteOffset;
-  }
-
-  @override
-  void outFile(String outFile) {
-    final file = File(outFile.replaceAll('\\', '/'));
-    file.createSync(recursive: true);
-    file.writeAsBytesSync(toBytes());
-    clear();
-    return;
-  }
-
-  @override
-  void outBytes(String outFile, int count, int offset) {
-    final file = File(outFile);
-    file.createSync(recursive: true);
-    file.writeAsBytesSync(getBytes(count, offset));
-    return;
   }
 
   @override
