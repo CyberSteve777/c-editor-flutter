@@ -156,15 +156,29 @@ abstract class CPluginHost {
 
   /// Resolves a localization key for this plugin.
   ///
-  /// Order: plugin `assets/l10n/{locale}.arb` (ARB messages only; `@` metadata
-  /// ignored), then `en.arb`, then a curated set of host [AppLocalizations]
-  /// keys. Returns [fallback] or [key] when nothing matches.
+  /// Order: plugin `assets/l10n/{locale}.arb`, then `en.arb`, then a curated
+  /// set of host [AppLocalizations] keys. Returns [fallback] or [key] when
+  /// nothing matches.
   ///
-  /// Non-l10n plugin data should use other JSON (or files) under `assets/`,
-  /// not the `l10n/` folder.
+  /// [args] are ICU / ARB placeholders (same patterns as Flutter gen-l10n):
+  /// simple `{name}`, `{count, plural, …}`, `{gender, select, …}`, etc.
+  /// Plugin `@key` metadata (`placeholders` type / format /
+  /// optionalParameters) is applied like Flutter gen-l10n.
+  /// Non-l10n plugin data should use other files under `assets/`, not `l10n/`.
+  ///
+  /// ```dart
+  /// host.localize(context, 'hello', null, {'name': 'Ada'});
+  /// host.localize(
+  ///   context,
+  ///   'itemCount',
+  ///   null,
+  ///   {'count': 3},
+  /// );
+  /// ```
   String localize(
     BuildContext context,
     String key, [
     String? fallback,
+    Map<String, Object?>? args,
   ]);
 }

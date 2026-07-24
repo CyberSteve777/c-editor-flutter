@@ -333,7 +333,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String pluginShowingCount(int count) {
-    return '显示 $count 个插件';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '显示 $count 个插件',
+      one: '显示 1 个插件',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -516,7 +522,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String importFolderSuccess(int count) {
-    return '已导入 $count 个关卡';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已导入 $count 个关卡',
+      one: '已导入 1 个关卡',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -649,6 +661,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get exportNoFilesFound => '未找到兼容的文件 (.rsb.smf)。';
+
+  @override
+  String get exportDownloadExternalDynamic => '下载 dynamic…';
 
   @override
   String get cancelExportTitle => '取消导出';
@@ -987,8 +1002,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reset => '重置';
 
   @override
-  String cacheCleared(Object count) {
-    return '已清理$count个缓存文件';
+  String cacheCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已清理$count个缓存文件',
+      one: '已清理1个缓存文件',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1797,7 +1818,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String deleteWaveConfirm(int count) {
-    return '将移除此波次及其 $count 个事件。';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '将移除此波次及其 $count 个事件。',
+      one: '将移除此波次及其 1 个事件。',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5416,12 +5443,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
-    return '$count 个能量豆';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个能量豆',
+      one: '1 个能量豆',
+    );
+    return '$_temp0';
   }
 
   @override
   String waveDropPlantsCount(int count) {
-    return '$count 张植物卡片';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张植物卡片',
+      one: '1 张植物卡片',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5835,7 +5874,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String clearUnusedDone(int count) {
-    return '已移除 $count 个未使用对象。';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已移除 $count 个未使用对象。',
+      one: '已移除 1 个未使用对象。',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -6451,7 +6496,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String glacierModuleEntryCount(int count) {
-    return '$count 条';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条',
+      one: '1 条',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7604,7 +7655,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String importResourceGroupsFromStageSkipped(int count) {
-    return '自定义地图已包含该地图的$count个资源组，这些资源组将不再重复添加。';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '自定义地图已包含该地图的$count个资源组，这些资源组将不再重复添加。',
+      one: '自定义地图已包含该地图的1个资源组，该资源组将不再重复添加。',
+    );
+    return '$_temp0';
   }
 
   @override

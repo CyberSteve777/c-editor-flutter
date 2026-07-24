@@ -1,0 +1,18 @@
+{
+  "format": "cplugin",
+  "formatVersion": 1,
+  "id": "team.international2c.dynamic_fetch",
+  "name": "External Dynamic",
+  "version": "1.0.0",
+  "authors": ["C-Editor"],
+  "contributors": [],
+  "description": "When RSB export finds no .rsb.smf files, offer downloading dynamic.rsb.smf from Archiver2c/pvz2c-dynamic releases",
+  "minEditorVersion": "0.1.0",
+  "license": "MIT",
+  "website": "https://github.com/Archiver2c/pvz2c-dynamic/releases",
+  "icon": "icon.png",
+  "entry": {
+    "library": "package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/main.dart",
+    "function": "initialize"
+  }
+}

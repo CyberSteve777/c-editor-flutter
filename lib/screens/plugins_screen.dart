@@ -273,196 +273,221 @@ class _PluginsScreenState extends State<PluginsScreen> {
               ),
             ],
           ),
-          body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: EditorWarningBanner(
-                  title: l10n.pluginTrustWarningTitle,
-                  message: l10n.pluginTrustWarningBody,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AppBarSearchField(
-                      hintText: l10n.pluginSearchHint,
-                      query: _searchQuery,
-                      onChanged: (v) => setState(() => _searchQuery = v),
-                      onClear: () => setState(() => _searchQuery = ''),
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onSurface,
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        FilledButton.icon(
-                          onPressed: _busy ? null : _installLocal,
-                          icon: const Icon(Icons.folder_open),
-                          label: Text(l10n.pluginInstallFromDevice),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: _busy ? null : _installFromUrl,
-                          icon: const Icon(Icons.link),
-                          label: Text(l10n.pluginInstallFromUrl),
-                        ),
-                        if (!kIsWeb)
-                          OutlinedButton.icon(
-                            onPressed: _busy ? null : _installFromFolder,
-                            icon: const Icon(Icons.folder_special_outlined),
-                            label: Text(l10n.pluginInstallFromFolder),
-                          ),
-                      ],
-                    ),
-                    if (!kIsWeb) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        l10n.pluginFolderHint,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 840;
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: EditorWarningBanner(
+                        title: l10n.pluginTrustWarningTitle,
+                        message: l10n.pluginTrustWarningBody,
                       ),
-                    ],
-                  ],
-                ),
-              ),
-              if (_busy)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (_downloadProgress != null)
-                        LinearProgressIndicator(value: _downloadProgress)
-                      else
-                        const LinearProgressIndicator(),
-                      if (_statusMessage != null) ...[
-                        const SizedBox(height: 6),
-                        Text(_statusMessage!),
-                      ],
-                    ],
+                    ),
                   ),
-                ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    plugins.isEmpty
-                        ? l10n.pluginEmpty
-                        : l10n.pluginShowingCount(plugins.length),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final wide = constraints.maxWidth >= 840;
-                    if (!wide) {
-                      return _PluginListPane(
-                        plugins: plugins,
-                        selectedId: _selectedPluginId,
-                        busy: _busy,
-                        onSelect: (id) {
-                          final plugin = _manager.installed
-                              .where((p) => p.id == id)
-                              .firstOrNull;
-                          if (plugin == null) return;
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => _PluginDetailPage(
-                                plugin: plugin,
-                                busy: _busy,
-                                screens: _manager.screenRegistry.screens
-                                    .where((s) => s.pluginId == plugin.id)
-                                    .toList(growable: false),
-                                onToggle: (v) => _toggleEnabled(plugin, v),
-                                onUninstall: () => _uninstall(plugin),
-                                onOpenScreen: _openScreen,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                          width: 340,
-                          child: _PluginListPane(
-                            plugins: plugins,
-                            selectedId: _selectedPluginId,
-                            busy: _busy,
-                            onSelect: (id) =>
-                                setState(() => _selectedPluginId = id),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          AppBarSearchField(
+                            hintText: l10n.pluginSearchHint,
+                            query: _searchQuery,
+                            onChanged: (v) =>
+                                setState(() => _searchQuery = v),
+                            onClear: () => setState(() => _searchQuery = ''),
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSurface,
                           ),
-                        ),
-                        const VerticalDivider(width: 1),
-                        Expanded(
-                          child: selected == null
-                              ? Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(32),
-                                    child: Text(
-                                      l10n.pluginSelectHint,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                          ),
-                                    ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              FilledButton.icon(
+                                onPressed: _busy ? null : _installLocal,
+                                icon: const Icon(Icons.folder_open),
+                                label: Text(l10n.pluginInstallFromDevice),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: _busy ? null : _installFromUrl,
+                                icon: const Icon(Icons.link),
+                                label: Text(l10n.pluginInstallFromUrl),
+                              ),
+                              if (!kIsWeb)
+                                OutlinedButton.icon(
+                                  onPressed:
+                                      _busy ? null : _installFromFolder,
+                                  icon: const Icon(
+                                    Icons.folder_special_outlined,
                                   ),
-                                )
-                              : _PluginDetailPane(
-                                  plugin: selected,
-                                  busy: _busy,
-                                  screens: _manager.screenRegistry.screens
-                                      .where((s) => s.pluginId == selected.id)
-                                      .toList(growable: false),
-                                  onToggle: (v) =>
-                                      _toggleEnabled(selected, v),
-                                  onUninstall: () => _uninstall(selected),
-                                  onOpenScreen: _openScreen,
+                                  label: Text(l10n.pluginInstallFromFolder),
                                 ),
+                            ],
+                          ),
+                          if (!kIsWeb) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              l10n.pluginFolderHint,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (_busy)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (_downloadProgress != null)
+                              LinearProgressIndicator(value: _downloadProgress)
+                            else
+                              const LinearProgressIndicator(),
+                            if (_statusMessage != null) ...[
+                              const SizedBox(height: 6),
+                              Text(_statusMessage!),
+                            ],
+                          ],
                         ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                  child: Row(
-                    children: [
-                      Expanded(
+                      ),
+                    ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
                         child: Text(
-                          l10n.pluginDropHint,
+                          plugins.isEmpty
+                              ? l10n.pluginEmpty
+                              : l10n.pluginShowingCount(plugins.length),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
-                      FilledButton(
-                        onPressed: widget.onBack,
-                        child: Text(l10n.done),
-                      ),
-                    ],
+                    ),
                   ),
+                  SliverFillRemaining(
+                    hasScrollBody: true,
+                    child: wide
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              SizedBox(
+                                width: 340,
+                                child: _PluginListPane(
+                                  plugins: plugins,
+                                  selectedId: _selectedPluginId,
+                                  busy: _busy,
+                                  onSelect: (id) => setState(
+                                    () => _selectedPluginId = id,
+                                  ),
+                                ),
+                              ),
+                              const VerticalDivider(width: 1),
+                              Expanded(
+                                child: selected == null
+                                    ? Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(32),
+                                          child: Text(
+                                            l10n.pluginSelectHint,
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge
+                                                ?.copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                          ),
+                                        ),
+                                      )
+                                    : _PluginDetailPane(
+                                        plugin: selected,
+                                        busy: _busy,
+                                        screens: _manager
+                                            .screenRegistry.screens
+                                            .where(
+                                              (s) =>
+                                                  s.pluginId == selected.id,
+                                            )
+                                            .toList(growable: false),
+                                        onToggle: (v) =>
+                                            _toggleEnabled(selected, v),
+                                        onUninstall: () =>
+                                            _uninstall(selected),
+                                        onOpenScreen: _openScreen,
+                                      ),
+                              ),
+                            ],
+                          )
+                        : _PluginListPane(
+                            plugins: plugins,
+                            selectedId: _selectedPluginId,
+                            busy: _busy,
+                            onSelect: (id) {
+                              final plugin = _manager.installed
+                                  .where((p) => p.id == id)
+                                  .firstOrNull;
+                              if (plugin == null) return;
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => _PluginDetailPage(
+                                    plugin: plugin,
+                                    busy: _busy,
+                                    screens: _manager.screenRegistry.screens
+                                        .where((s) => s.pluginId == plugin.id)
+                                        .toList(growable: false),
+                                    onToggle: (v) =>
+                                        _toggleEnabled(plugin, v),
+                                    onUninstall: () => _uninstall(plugin),
+                                    onOpenScreen: _openScreen,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              );
+            },
+          ),
+          bottomNavigationBar: Material(
+            elevation: 1,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.pluginDropHint,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                    FilledButton(
+                      onPressed: widget.onBack,
+                      child: Text(l10n.done),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         );
       },
@@ -560,19 +585,17 @@ class _PluginListTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Expanded(
-                          child: Text(
-                            m.name,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        Text(
+                          m.name,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(width: 6),
                         _Badge(
                           label: plugin.isBundled
                               ? l10n.pluginBundledBadge
@@ -928,6 +951,9 @@ class _Badge extends StatelessWidget {
       ),
       child: Text(
         label,
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w700,

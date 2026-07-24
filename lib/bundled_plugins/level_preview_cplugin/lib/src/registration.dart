@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
+import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/active_editor_session.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
@@ -30,15 +31,9 @@ void registerLevelPreview(CPluginHost host) {
     eye,
     extensions,
   );
+  // Overflow menu only — avoid duplicating an AppBar icon.
   host.registerEditorAction(
     'preview_editor',
-    'levelPreview',
-    CPluginUiSlots.editorAppBar,
-    (context) => host.openLevelPreview(context),
-    eye,
-  );
-  host.registerEditorAction(
-    'preview_editor_overflow',
     'levelPreview',
     CPluginUiSlots.editorOverflow,
     (context) => host.openLevelPreview(context),
@@ -79,12 +74,14 @@ Future<void> openLevelPreviewFromOpenSession(
   if (!context.mounted) return;
   await showDialog<void>(
     context: context,
-    builder: (ctx) => LevelPreviewDialog(
-      host: host,
-      levelFile: level,
-      parsed: parsed,
-      fileName: fileName,
-      onBack: () => Navigator.pop(ctx),
+    builder: (ctx) => EscapeClosesModal(
+      child: LevelPreviewDialog(
+        host: host,
+        levelFile: level,
+        parsed: parsed,
+        fileName: fileName,
+        onBack: () => Navigator.pop(ctx),
+      ),
     ),
   );
 }
@@ -101,12 +98,14 @@ Future<void> openLevelPreviewFromPath(
   if (!context.mounted) return;
   await showDialog<void>(
     context: context,
-    builder: (ctx) => LevelPreviewDialog(
-      host: host,
-      levelFile: file,
-      parsed: parsed,
-      fileName: fileName,
-      onBack: () => Navigator.pop(ctx),
+    builder: (ctx) => EscapeClosesModal(
+      child: LevelPreviewDialog(
+        host: host,
+        levelFile: file,
+        parsed: parsed,
+        fileName: fileName,
+        onBack: () => Navigator.pop(ctx),
+      ),
     ),
   );
 }
@@ -122,12 +121,14 @@ Future<void> openLevelPreviewDialog(
   if (!context.mounted) return;
   await showDialog<void>(
     context: context,
-    builder: (ctx) => LevelPreviewDialog(
-      host: host,
-      levelFile: levelFile,
-      parsed: parsed,
-      fileName: fileName,
-      onBack: () => Navigator.pop(ctx),
+    builder: (ctx) => EscapeClosesModal(
+      child: LevelPreviewDialog(
+        host: host,
+        levelFile: levelFile,
+        parsed: parsed,
+        fileName: fileName,
+        onBack: () => Navigator.pop(ctx),
+      ),
     ),
   );
 }

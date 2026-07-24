@@ -5,6 +5,7 @@ import 'package:flutter_eval/painting.dart';
 import 'package:flutter_eval/widgets.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugin_api/c_plugin_widgets.dart' as widgets;
+import 'package:c_editor/plugins/plugin_arb.dart';
 
 const _lib = 'package:c_editor/plugin_api.dart';
 
@@ -349,6 +350,17 @@ class $CPluginHost implements $Instance {
               ),
               true,
             ),
+            BridgeParameter(
+              'args',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.map, [
+                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+                  BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.object)),
+                ]),
+                nullable: true,
+              ),
+              true,
+            ),
           ],
         ),
       ),
@@ -453,7 +465,10 @@ class $CPluginHost implements $Instance {
           final key = args[1]!.$value as String;
           final fallback =
               args.length > 2 ? args[2]?.$value as String? : null;
-          return $String($value.localize(context, key, fallback));
+          final named = args.length > 3
+              ? coerceLocalizeArgs(args[3]?.$value)
+              : null;
+          return $String($value.localize(context, key, fallback, named));
         });
       case 'registerScreen':
         return $Function((runtime, target, args) {

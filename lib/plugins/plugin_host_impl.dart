@@ -278,17 +278,38 @@ class PluginHostImpl implements CPluginHost {
   }
 
   @override
-  String localize(BuildContext context, String key, [String? fallback]) {
+  String localize(
+    BuildContext context,
+    String key, [
+    String? fallback,
+    Map<String, Object?>? args,
+  ]) {
     final locale = Localizations.localeOf(context).languageCode;
     final assets = _assets;
+    PluginArbEntry? entry;
     if (assets is MemoryCPluginAssets) {
-      final fromArb = lookupPluginArbMessage(
+      entry = lookupPluginArbEntry(
         assets.tryReadString,
         locale,
         key,
       );
-      if (fromArb != null) return fromArb;
     }
-    return lookupHostL10n(context, key) ?? fallback ?? key;
+    final raw = entry?.pattern ?? lookupHostL10n(context, key) ?? fallback ?? key;
+    final placeholders = entry?.placeholders ?? const {};
+    if (args == null || args.isEmpty) {
+      // Still run MessageFormat so ICU strings without named slots are OK,
+      // and plain text stays unchanged.
+      return formatPluginArbMessage(
+        raw,
+        locale: locale,
+        placeholders: placeholders,
+      );
+    }
+    return formatPluginArbMessage(
+      raw,
+      args: args,
+      locale: locale,
+      placeholders: placeholders,
+    );
   }
 }

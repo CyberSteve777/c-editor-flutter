@@ -338,7 +338,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String pluginShowingCount(int count) {
-    return 'Showing $count plugins';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Showing $count plugins',
+      one: 'Showing 1 plugin',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -525,7 +531,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String importFolderSuccess(int count) {
-    return 'Imported $count level(s)';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Imported $count levels',
+      one: 'Imported 1 level',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -661,6 +673,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportNoFilesFound => 'No compatible files found (.rsb.smf).';
+
+  @override
+  String get exportDownloadExternalDynamic => 'Download dynamic…';
 
   @override
   String get cancelExportTitle => 'Cancel Export';
@@ -1007,8 +1022,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reset => 'Reset';
 
   @override
-  String cacheCleared(Object count) {
-    return 'Cleared $count cached files';
+  String cacheCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cleared $count cached files',
+      one: 'Cleared 1 cached file',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1838,7 +1859,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deleteWaveConfirm(int count) {
-    return 'This will remove this wave and its $count events.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'This will remove this wave and its $count events.',
+      one: 'This will remove this wave and its 1 event.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5681,12 +5708,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
-    return '$count plant food';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plant food',
+      one: '1 plant food',
+    );
+    return '$_temp0';
   }
 
   @override
   String waveDropPlantsCount(int count) {
-    return '$count plants';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plants',
+      one: '1 plant',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -6121,7 +6160,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String clearUnusedDone(int count) {
-    return 'Removed $count unused object(s).';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Removed $count unused objects.',
+      one: 'Removed 1 unused object.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7980,7 +8025,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String importResourceGroupsFromStageSkipped(int count) {
-    return '$count resource group(s) already in this level will be skipped.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count resource groups already in this level will be skipped.',
+      one: '1 resource group already in this level will be skipped.',
+    );
+    return '$_temp0';
   }
 
   @override

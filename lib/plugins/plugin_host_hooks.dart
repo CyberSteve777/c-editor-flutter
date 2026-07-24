@@ -13,4 +13,14 @@ abstract final class PluginHostHooks {
     String? filePath,
     String? fileName,
   })? openLevelPreview;
+
+  /// When export finds no `.rsb.smf` under [libraryPath], offer an external
+  /// dynamic download. Returns `true` if a file was saved and export should
+  /// rescan. Set [skipInitialPrompt] when the user already chose to download
+  /// (e.g. Export screen button).
+  static Future<bool> Function(
+    BuildContext context, {
+    required String libraryPath,
+    bool skipInitialPrompt,
+  })? offerExternalDynamic;
 }

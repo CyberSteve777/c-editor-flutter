@@ -142,7 +142,7 @@
   "pluginImportedBadge": "Imported",
   "pluginsFolderReserved": "The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.",
   "pluginNoLibraryForInstall": "Select a level library folder before installing plugins.",
-  "pluginShowingCount": "Showing {count} plugins",
+  "pluginShowingCount": "{count, plural, =1{Showing 1 plugin} other{Showing {count} plugins}}",
   "@pluginShowingCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -221,7 +221,7 @@
   "importFiles": "Import files",
   "importFolder": "Import folder",
   "importFolderEmpty": "No level files found in the selected folder",
-  "importFolderSuccess": "Imported {count} level(s)",
+  "importFolderSuccess": "{count, plural, =1{Imported 1 level} other{Imported {count} levels}}",
   "@importFolderSuccess": {
     "placeholders": {
       "count": { "type": "int" }
@@ -283,6 +283,7 @@
   "proceedWithoutBackup": "Proceed Without Backup",
   "backupSuffix": "_copy",
   "exportNoFilesFound": "No compatible files found (.rsb.smf).",
+  "exportDownloadExternalDynamic": "Download dynamic…",
   "cancelExportTitle": "Cancel Export",
   "cancelExportMessage": "Are you sure you want to cancel the export process?",
   "exportDisclaimerTitle": "Risk Warning & Disclaimer",
@@ -410,7 +411,12 @@
   "large": "Large",
   "done": "Done",
   "reset": "Reset",
-  "cacheCleared": "Cleared {count} cached files",
+  "cacheCleared": "{count, plural, =1{Cleared 1 cached file} other{Cleared {count} cached files}}",
+  "@cacheCleared": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "returnUp": "Back",
   "jsonFile": "JSON file",
   "convertToJson": "Convert to JSON",
@@ -703,7 +709,7 @@
   "noWaves": "No waves",
   "addFirstWave": "Add the first wave.",
   "deleteWave": "Delete wave",
-  "deleteWaveConfirm": "This will remove this wave and its {count} events.",
+  "deleteWaveConfirm": "{count, plural, =1{This will remove this wave and its 1 event.} other{This will remove this wave and its {count} events.}}",
   "@deleteWaveConfirm": {"placeholders": {"count": {"type": "int"}}},
   "deleteWaveConfirmCheckbox": "I confirm permanent deletion of this wave",
   "addEvent": "Add event",
@@ -1926,7 +1932,7 @@
   "dropConfigPlantFood": "Drop config (Plant Food)",
   "waveDropConfigTitle": "Drop configuration",
   "waveDropTotalLabel": "Total carrier zombies (AdditionalPlantfood)",
-  "waveDropPlantFoodOnlyCount": "{count} plant food",
+  "waveDropPlantFoodOnlyCount": "{count, plural, =1{1 plant food} other{{count} plant food}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
       "count": {
@@ -1934,7 +1940,7 @@
       }
     }
   },
-  "waveDropPlantsCount": "{count} plants",
+  "waveDropPlantsCount": "{count, plural, =1{1 plant} other{{count} plants}}",
   "@waveDropPlantsCount": {
     "placeholders": {
       "count": {
@@ -2076,7 +2082,7 @@
   "clearUnusedTitle": "Clear unused objects?",
   "clearUnusedMessage": "This will permanently delete all unused objects from the level file, including custom zombies, their properties, and any other unreferenced data. This action cannot be undone. Continue?",
   "clearUnusedNone": "No unused objects found.",
-  "clearUnusedDone": "Removed {count} unused object(s).",
+  "clearUnusedDone": "{count, plural, =1{Removed 1 unused object.} other{Removed {count} unused objects.}}",
   "@clearUnusedDone": {"placeholders": {"count": {"type": "int"}}},
   "lawnMowerTitle": "Lawn Mowers",
   "lawnMowerNotes": "Notes",
@@ -2717,7 +2723,7 @@
       }
     }
   },
-  "importResourceGroupsFromStageSkipped": "{count} resource group(s) already in this level will be skipped.",
+  "importResourceGroupsFromStageSkipped": "{count, plural, =1{1 resource group already in this level will be skipped.} other{{count} resource groups already in this level will be skipped.}}",
   "@importResourceGroupsFromStageSkipped": {
     "placeholders": {
       "count": {

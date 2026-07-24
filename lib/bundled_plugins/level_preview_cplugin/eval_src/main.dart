@@ -5,7 +5,7 @@ import 'package:c_editor/plugin_api.dart';
 /// Only imports [plugin_api] so dart_eval can compile this file without the
 /// heavy in-process `registration.dart` / dialog host code.
 ///
-/// In-process bundled load still uses `../main.dart` (see plugin README).
+/// In-process bundled load still uses `../lib/main.dart` (see plugin README).
 void initialize(CPluginHost host) {
   const eye = 0xe8f4; // Icons.remove_red_eye.codePoint
   const extensions = '.json,.hujson,.rton';
@@ -19,17 +19,9 @@ void initialize(CPluginHost host) {
     eye,
     extensions,
   );
+  // Overflow menu only — avoid duplicating an AppBar icon.
   host.registerEditorAction(
     'preview_editor',
-    'levelPreview',
-    'editorAppBar',
-    (context) async {
-      await host.openLevelPreview(context);
-    },
-    eye,
-  );
-  host.registerEditorAction(
-    'preview_editor_overflow',
     'levelPreview',
     'editorOverflow',
     (context) async {

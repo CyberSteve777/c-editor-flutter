@@ -1,0 +1,53 @@
+{
+  "@@locale": "ru",
+  "dynamicOfferTitle": "Скачать dynamic?",
+  "dynamicOfferBody": "В библиотеке уровней не найдено файлов .rsb.smf.\n\nСкачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic на GitHub?",
+  "dynamicOfferYes": "Выбрать релиз",
+  "dynamicOfferNo": "Не сейчас",
+  "dynamicSelectTitle": "Выберите релиз dynamic",
+  "dynamicLatestBadge": "Последний",
+  "dynamicEmpty": "Релизов с файлами .rsb.smf не найдено.",
+  "dynamicDownloadTitle": "Загрузка dynamic",
+  "dynamicDownloading": "Загрузка…",
+  "dynamicDownloadDone": "Сохранено: {path}",
+  "@dynamicDownloadDone": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "dynamicFetchError": "Ошибка загрузки: {error}",
+  "@dynamicFetchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "dynamicCancelTitle": "Отменить загрузку?",
+  "dynamicCancelBody": "Остановить загрузку и удалить незавершённый файл?",
+  "dynamicCancelConfirm": "Отменить загрузку",
+  "dynamicCancelKeep": "Продолжить",
+  "dynamicCanceling": "Отмена…",
+  "dynamicCanceled": "Загрузка отменена.",
+  "dynamicNoConnection": "Нет подключения к интернету. Проверьте сеть и повторите попытку.",
+  "dynamicConnectionLost": "Соединение прервалось во время загрузки. Попробуйте ещё раз.",
+  "dynamicServerError": "Ошибка сервера ({code}). Попробуйте позже.",
+  "@dynamicServerError": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "dynamicRetry": "Повторить",
+  "dynamicExistsTitle": "Файл уже существует",
+  "dynamicExistsBody": "«{name}» уже есть в библиотеке уровней.\n\nПерезаписать его или сохранить под другим именем?",
+  "@dynamicExistsBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicExistsOverwrite": "Перезаписать",
+  "dynamicExistsRename": "Другое имя…",
+  "dynamicRenameTitle": "Сохранить как",
+  "dynamicRenameHint": "Имя файла",
+  "dynamicRenameConfirm": "Сохранить",
+  "dynamicRenameInvalid": "Введите корректное имя файла.",
+  "dynamicRenameExists": "Такой файл уже есть. Выберите другое имя."
+}
