@@ -83,6 +83,8 @@
   "pluginsTitle": "插件",
   "pluginInstallFromDevice": "从本地安装",
   "pluginInstallFromUrl": "从链接安装",
+  "pluginInstallFromFolder": "加载文件夹（调试）",
+  "pluginFolderHint": "将插件包文件夹编译进 C-Editor 以便测试。",
   "pluginUrlHint": "https://example.com/my_plugin.cplugin",
   "pluginDownload": "下载",
   "pluginInstalling": "正在安装插件…",

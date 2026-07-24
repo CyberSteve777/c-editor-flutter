@@ -84,6 +84,8 @@
   "pluginsTitle": "Плагины",
   "pluginInstallFromDevice": "Установить с устройства",
   "pluginInstallFromUrl": "Установить по URL",
+  "pluginInstallFromFolder": "Загрузить папку (отладка)",
+  "pluginFolderHint": "Компилирует папку пакета плагина в C-Editor для тестирования.",
   "pluginUrlHint": "https://example.com/my_plugin.cplugin",
   "pluginDownload": "Скачать",
   "pluginInstalling": "Установка плагина…",

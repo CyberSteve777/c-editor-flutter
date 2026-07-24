@@ -241,6 +241,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pluginInstallFromUrl => '从链接安装';
 
   @override
+  String get pluginInstallFromFolder => '加载文件夹（调试）';
+
+  @override
+  String get pluginFolderHint => '将插件包文件夹编译进 C-Editor 以便测试。';
+
+  @override
   String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
 
   @override

@@ -11,6 +11,7 @@ import 'package:c_editor/plugins/plugin_kind.dart';
 import 'package:c_editor/plugins/plugin_package.dart';
 import 'package:c_editor/plugins/plugin_runtime.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
+import 'package:c_editor/plugins/plugin_source_compiler.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 import 'package:c_editor/plugins/plugin_storage_factory.dart';
 
@@ -46,6 +47,15 @@ class PluginManager extends ChangeNotifier {
     );
     _instance = manager;
     await manager.reload();
+    if (kCpluginDebugPathDefine.trim().isNotEmpty) {
+      try {
+        final path = kCpluginDebugPathDefine.trim();
+        debugPrint('CPLUGIN_DEBUG_PATH: compiling & installing $path');
+        await manager.installFromSourceDirectory(path);
+      } catch (e, st) {
+        debugPrint('CPLUGIN_DEBUG_PATH failed: $e\n$st');
+      }
+    }
     return manager;
   }
 
@@ -229,6 +239,19 @@ class PluginManager extends ChangeNotifier {
   }) async {
     final bytes = await _downloader.download(uri, onProgress: onProgress);
     return installBytes(bytes, enable: enable);
+  }
+
+  Future<InstalledPluginRecord> installFromSourceDirectory(
+    String directoryPath, {
+    bool enable = true,
+  }) async {
+    if (kIsWeb) {
+      throw UnsupportedError(
+        'Loading plugins from a folder is not supported on web',
+      );
+    }
+    final package = compilePluginDirectory(directoryPath);
+    return installBytes(package.rawZipBytes, enable: enable);
   }
 
   Future<void> setEnabled(String pluginId, bool enabled) async {

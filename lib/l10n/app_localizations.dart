@@ -544,6 +544,18 @@ abstract class AppLocalizations {
   /// **'Install from URL'**
   String get pluginInstallFromUrl;
 
+  /// No description provided for @pluginInstallFromFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Load folder (debug)'**
+  String get pluginInstallFromFolder;
+
+  /// No description provided for @pluginFolderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Compiles a plugin package folder into C-Editor for testing.'**
+  String get pluginFolderHint;
+
   /// No description provided for @pluginUrlHint.
   ///
   /// In en, this message translates to:

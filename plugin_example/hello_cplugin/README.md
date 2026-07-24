@@ -2,24 +2,25 @@
 
 Sample plugin for C-Editor's `.cplugin` / flutter_eval system.
 
-This folder is a **normal Flutter package**. Develop and hot-reload with the
-debug host, then compile to `.cplugin` for shipping.
+This folder is a **normal Flutter package**. Debug by loading it into the real
+C-Editor app, then compile to `.cplugin` for shipping.
 
-## Debug (hot reload)
+## Debug (with C-Editor)
 
 ```bash
-cd examples/hello_cplugin/debug_host
-flutter pub get
-flutter run -d windows   # or chrome / linux / macos
+# From C-Editor repo root — run the real app with your plugin path:
+flutter run -d windows --dart-define=CPLUGIN_DEBUG_PATH=plugin_example/hello_cplugin
+# Or Android Studio: Run configuration → Additional run args:
+# --dart-define=CPLUGIN_DEBUG_PATH=C:\full\path\to\your_plugin
 ```
 
-Edit `lib/main.dart`, save, and hot-reload. The debug shell lists
-`registerScreen` / `registerUiElement` contributions and mirrors editor AppBar
-slots.
+You can also use the Plugins screen → **Load folder (debug)** → pick the plugin
+package root (folder with `manifest.json` + `lib/`).
 
-The shell lives in C-Editor as `PluginDebugApp`
-(`package:c_editor/plugins/debug/plugin_debug_app.dart`) so any plugin project
-can reuse it.
+Then open the editor / Plugins to use registered screens and UI elements.
+
+After edits: hot restart, or re-run **Load folder (debug)** (EVC recompile; not
+Dart hot reload of plugin code).
 
 ## Format (shipping)
 
@@ -59,7 +60,7 @@ dart run tools/pack_cplugin.dart build/hello_cplugin build/hello.cplugin
 2. Implement `void initialize(CPluginHost host)` in `lib/main.dart`
    (preferred name so dart_eval keeps it; set `entry.library` to
    `package:<name>/main.dart`).
-3. Debug with a `debug_host` app using `PluginDebugApp`.
+3. Debug with C-Editor (`CPLUGIN_DEBUG_PATH` or **Load folder (debug)**).
 4. Compile to EVC (see test helper / dart_eval) and pack with `tools/pack_cplugin.dart`.
    Important: dart_eval only treats `/main.dart` as an entrypoint by default.
    The compile helper also adds your manifest `entry.library` to `compiler.entrypoints`.

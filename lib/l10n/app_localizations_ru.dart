@@ -242,6 +242,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pluginInstallFromUrl => 'Установить по URL';
 
   @override
+  String get pluginInstallFromFolder => 'Загрузить папку (отладка)';
+
+  @override
+  String get pluginFolderHint =>
+      'Компилирует папку пакета плагина в C-Editor для тестирования.';
+
+  @override
   String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
 
   @override

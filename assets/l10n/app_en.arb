@@ -85,6 +85,8 @@
   "pluginsTitle": "Plugins",
   "pluginInstallFromDevice": "Install from device",
   "pluginInstallFromUrl": "Install from URL",
+  "pluginInstallFromFolder": "Load folder (debug)",
+  "pluginFolderHint": "Compiles a plugin package folder into C-Editor for testing.",
   "pluginUrlHint": "https://example.com/my_plugin.cplugin",
   "pluginDownload": "Download",
   "pluginInstalling": "Installing plugin…",

@@ -3,7 +3,7 @@
 First-party C-Editor plugin that provides level preview from the editor AppBar
 and the level-list file menu.
 
-Layout matches `examples/hello_cplugin` (Flutter package shape):
+Layout matches `plugin_example/hello_cplugin` (Flutter package shape):
 
 ```
 level_preview_cplugin/

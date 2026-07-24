@@ -242,6 +242,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginInstallFromUrl => 'Install from URL';
 
   @override
+  String get pluginInstallFromFolder => 'Load folder (debug)';
+
+  @override
+  String get pluginFolderHint =>
+      'Compiles a plugin package folder into C-Editor for testing.';
+
+  @override
   String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
 
   @override

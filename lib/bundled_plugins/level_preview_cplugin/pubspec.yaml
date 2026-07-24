@@ -1,4 +1,4 @@
-# Documentary package metadata — mirrors examples/hello_cplugin layout.
+# Documentary package metadata — mirrors plugin_example/hello_cplugin layout.
 # This plugin is embedded under package:c_editor (lib/bundled_plugins/...) for
 # in-process load. Do NOT add it as a path dependency of the root app (would
 # create a circular dep with c_editor). Host imports use package:c_editor/... .

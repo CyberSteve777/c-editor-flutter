@@ -6,7 +6,8 @@ import 'package:c_editor/plugin_api.dart';
 /// Named `main.dart` so dart_eval's default entrypoint list (`/main.dart`)
 /// keeps [initialize] in the bytecode.
 ///
-/// - **Debug:** run `debug_host/` with hot reload (`flutter run`).
+/// - **Debug:** load into C-Editor via `CPLUGIN_DEBUG_PATH` or Plugins →
+///   Load folder (debug).
 /// - **Ship:** compile to EVC and pack as `.cplugin`.
 ///
 /// Prefer non-`const` constructors — dart_eval support for const is limited.

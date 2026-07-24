@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -62,6 +61,12 @@ class _PluginsScreenState extends State<PluginsScreen> {
     }
 
     await _runInstall(() => _manager.installBytes(bytes!));
+  }
+
+  Future<void> _installFromFolder() async {
+    final path = await FilePicker.getDirectoryPath();
+    if (path == null || path.isEmpty) return;
+    await _runInstall(() => _manager.installFromSourceDirectory(path));
   }
 
   Future<void> _installFromUrl() async {
@@ -305,8 +310,25 @@ class _PluginsScreenState extends State<PluginsScreen> {
                           icon: const Icon(Icons.link),
                           label: Text(l10n.pluginInstallFromUrl),
                         ),
+                        if (!kIsWeb)
+                          OutlinedButton.icon(
+                            onPressed: _busy ? null : _installFromFolder,
+                            icon: const Icon(Icons.folder_special_outlined),
+                            label: Text(l10n.pluginInstallFromFolder),
+                          ),
                       ],
                     ),
+                    if (!kIsWeb) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.pluginFolderHint,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                      ),
+                    ],
                   ],
                 ),
               ),

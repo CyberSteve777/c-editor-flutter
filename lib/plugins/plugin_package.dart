@@ -24,7 +24,7 @@ class CPluginPackageSpec {
   /// Repo / Flutter asset root, e.g.
   /// `lib/bundled_plugins/level_preview_cplugin`.
   ///
-  /// Expected children (same layout as `examples/hello_cplugin`):
+  /// Expected children (same layout as `plugin_example/hello_cplugin`):
   /// - `manifest.json`
   /// - `lib/main.dart` (`initialize`; host entry via `package:c_editor/.../lib/main.dart`)
   /// - `assets/**` (plugin asset paths relative to `assets/`)

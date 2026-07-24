@@ -1,7 +1,7 @@
 # Bundled plugins
 
 First-party plugins shipped with C-Editor. They use the same package contract
-as external `.cplugin` packages (see `examples/hello_cplugin`):
+as external `.cplugin` packages (see `plugin_example/hello_cplugin`):
 
 - `manifest.json` (id, authors, contributors, icon, links, incompatibilities, …)
 - `lib/main.dart` with `initialize(CPluginHost)` entrypoint
