@@ -1,4 +1,4 @@
-/// Level Preview bundled plugin (same layout shape as `examples/hello_cplugin`).
+/// Level Preview plugin (same layout / entry contract as `examples/hello_cplugin`).
 library;
 
 export 'main.dart' show initialize;

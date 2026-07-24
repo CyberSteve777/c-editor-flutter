@@ -6,8 +6,6 @@ String? lookupHostL10n(BuildContext context, String key) {
   final l10n = AppLocalizations.of(context);
   if (l10n == null) return null;
   switch (key) {
-    case 'levelPreview':
-      return l10n.levelPreview;
     case 'cancel':
       return l10n.cancel;
     case 'confirm':

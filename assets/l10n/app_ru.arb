@@ -4,17 +4,9 @@
   "warning": "Предупреждение",
   "info": "Информация",
   "success": "Успех",
-  "levelPreview": "Предпросмотр",
-  "previewStartingPlantFood": "Начальная подкормка",
   "previewTabPlants": "Растения",
   "previewTabZombies": "Зомби",
   "previewTabGridItems": "Объекты",
-  "previewInitial": "Начальные",
-  "previewPrePlaced": "Расстановка",
-  "previewRegularPlants": "Обычные",
-  "previewFrozenPlants": "Замороженные",
-  "previewLevelContent": "Содержимое уровня",
-  "previewSeedBank": "Банк семян",
   "conveyorChanges": "Изменения в конвейере",
   "willBeAdded": "добавится",
   "willBeRemoved": "удалится",
@@ -24,7 +16,6 @@
   "allZombiesInLevel": "Все зомби на уровне",
   "allObjectsInLevel": "Все объекты на уровне",
   "allEventsInLevel": "Все события на уровне",
-  "previewFeatures": "Особенности",
   "overwhelmLabel": "Заполнение колонн",
   "fastEntryLabel": "Быстрый вход",
   "zombieRushLabel": "Таймер уровня",
@@ -132,9 +123,9 @@
   "pluginTrustWarningTitle": "Предупреждение",
   "pluginTrustWarningBody": "Плагины выполняют код внутри C-Editor. Устанавливайте плагины только из доверенных источников. Доступ к файлам и сети по умолчанию ограничен, но вредоносные плагины всё ещё могут нарушить работу интерфейса редактора.",
   "pluginInstalledSection": "Установленные плагины",
-  "pluginScreensSection": "Экраны плагинов",
+  "pluginScreensSection": "Функции и экраны",
   "pluginEmpty": "Плагины ещё не установлены. Установите файл .cplugin с устройства или по ссылке.",
-  "pluginNoScreens": "Нет доступных экранов плагинов. Включите установленный плагин, который регистрирует экраны.",
+  "pluginNoScreens": "Этот плагин не регистрирует экраны.",
   "pluginUninstall": "Удалить",
   "pluginUninstallTitle": "Удалить плагин",
   "pluginUninstallConfirm": "Удалить {name} с этого устройства?",
@@ -145,8 +136,45 @@
   },
   "pluginLoadError": "Ошибка загрузки",
   "pluginBundledBadge": "Встроенный",
+  "pluginImportedBadge": "Установленный",
   "pluginsFolderReserved": "Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.",
   "pluginNoLibraryForInstall": "Сначала выберите папку библиотеки уровней, затем установите плагины.",
+  "pluginShowingCount": "Показано плагинов: {count}",
+  "@pluginShowingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pluginSearchHint": "Поиск плагинов",
+  "pluginSelectHint": "Выберите плагин, чтобы увидеть сведения, настройки и функции.",
+  "pluginEnabled": "Включён",
+  "pluginDisabled": "Выключен",
+  "pluginAuthors": "Авторы",
+  "pluginContributors": "Участники",
+  "pluginByAuthors": "Авторы: {authors}",
+  "@pluginByAuthors": {
+    "placeholders": {
+      "authors": { "type": "String" }
+    }
+  },
+  "pluginLicense": "Лицензия",
+  "pluginVersionLabel": "v{version}",
+  "@pluginVersionLabel": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "pluginIdLabel": "ID",
+  "pluginLinks": "Ссылки",
+  "pluginLinkWebsite": "Сайт",
+  "pluginLinkIssues": "Issues",
+  "pluginLinkSource": "Исходный код",
+  "pluginLinkDiscord": "Discord",
+  "pluginIncompatibleWith": "Несовместим с",
+  "pluginOpenScreen": "Открыть",
+  "pluginFeaturesSection": "Функции и экраны",
+  "pluginDropHint": "Установите .cplugin с устройства или по ссылке.",
+  "pluginNoDescription": "Описание не указано.",
   "selectFolder": "Выбрать папку",
   "plantTagInternational": "Интернациональные",
   "plantTagChinese": "Китайские",
@@ -2752,6 +2780,7 @@
   "startupLoadingPlants": "Растения",
   "startupLoadingFish": "Рыбы",
   "startupLoadingImages": "Изображения",
+  "startupLoadingPlugins": "Плагины",
   "startupLoadingCategoryProgress": "Загрузка {category}...",
   "@startupLoadingCategoryProgress": {
     "placeholders": {

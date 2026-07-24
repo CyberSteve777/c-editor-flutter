@@ -21,12 +21,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get success => '成功';
 
   @override
-  String get levelPreview => '关卡预览';
-
-  @override
-  String get previewStartingPlantFood => '初始能量豆';
-
-  @override
   String get previewTabPlants => '植物';
 
   @override
@@ -34,24 +28,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get previewTabGridItems => '物品';
-
-  @override
-  String get previewPrePlaced => '布局/摆放';
-
-  @override
-  String get previewRegularPlants => '常规植物';
-
-  @override
-  String get previewFrozenPlants => '冰冻植物';
-
-  @override
-  String get previewLevelContent => '关卡内容';
-
-  @override
-  String get previewSeedBank => '选卡/卡槽';
-
-  @override
-  String get previewFeatures => '关卡特性';
 
   @override
   String get sunBombFalling => '紫光日光落地爆炸';
@@ -88,9 +64,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get allEventsInLevel => '本关所有事件';
-
-  @override
-  String get previewInitial => '初始';
 
   @override
   String get overwhelmLabel => '行列填充';
@@ -318,13 +291,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pluginInstalledSection => '已安装插件';
 
   @override
-  String get pluginScreensSection => '插件界面';
+  String get pluginScreensSection => '功能与界面';
 
   @override
   String get pluginEmpty => '尚未安装插件。可从本地或下载链接安装 .cplugin 文件。';
 
   @override
-  String get pluginNoScreens => '暂无可用的插件界面。请启用会注册界面的已安装插件。';
+  String get pluginNoScreens => '此插件未注册任何界面。';
 
   @override
   String get pluginUninstall => '卸载';
@@ -344,10 +317,82 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pluginBundledBadge => '内置';
 
   @override
+  String get pluginImportedBadge => '已导入';
+
+  @override
   String get pluginsFolderReserved => '“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。';
 
   @override
   String get pluginNoLibraryForInstall => '请先选择关卡库文件夹，再安装插件。';
+
+  @override
+  String pluginShowingCount(int count) {
+    return '显示 $count 个插件';
+  }
+
+  @override
+  String get pluginSearchHint => '搜索插件';
+
+  @override
+  String get pluginSelectHint => '选择插件以查看详情、设置与功能。';
+
+  @override
+  String get pluginEnabled => '已启用';
+
+  @override
+  String get pluginDisabled => '已禁用';
+
+  @override
+  String get pluginAuthors => '作者';
+
+  @override
+  String get pluginContributors => '贡献者';
+
+  @override
+  String pluginByAuthors(String authors) {
+    return '作者：$authors';
+  }
+
+  @override
+  String get pluginLicense => '许可证';
+
+  @override
+  String pluginVersionLabel(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get pluginIdLabel => 'ID';
+
+  @override
+  String get pluginLinks => '链接';
+
+  @override
+  String get pluginLinkWebsite => '网站';
+
+  @override
+  String get pluginLinkIssues => '问题反馈';
+
+  @override
+  String get pluginLinkSource => '源码';
+
+  @override
+  String get pluginLinkDiscord => 'Discord';
+
+  @override
+  String get pluginIncompatibleWith => '不兼容';
+
+  @override
+  String get pluginOpenScreen => '打开';
+
+  @override
+  String get pluginFeaturesSection => '功能与界面';
+
+  @override
+  String get pluginDropHint => '从本地或 URL 安装 .cplugin。';
+
+  @override
+  String get pluginNoDescription => '暂无描述。';
 
   @override
   String get share => '分享';
@@ -7635,6 +7680,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get startupLoadingImages => '图片';
+
+  @override
+  String get startupLoadingPlugins => '插件';
 
   @override
   String startupLoadingCategoryProgress(String category) {

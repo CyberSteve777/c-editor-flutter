@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/painting.dart';
 import 'package:c_editor/plugins/c_plugin_manifest.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
 import 'package:c_editor/plugins/plugin_kind.dart';
@@ -27,6 +28,15 @@ class InstalledPluginRecord {
   bool get canUninstall => kind == PluginKind.imported;
 
   bool get isBundled => kind == PluginKind.bundled;
+
+  ImageProvider? iconImageProvider() {
+    final path = manifest.icon;
+    if (path == null || path.isEmpty) return null;
+    final normalized = path.replaceAll('\\', '/');
+    final bytes = assets[normalized];
+    if (bytes == null || bytes.isEmpty) return null;
+    return MemoryImage(bytes);
+  }
 
   InstalledPluginRecord copyWith({
     bool? enabled,

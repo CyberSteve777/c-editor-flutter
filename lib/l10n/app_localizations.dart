@@ -124,18 +124,6 @@ abstract class AppLocalizations {
   /// **'Success'**
   String get success;
 
-  /// No description provided for @levelPreview.
-  ///
-  /// In en, this message translates to:
-  /// **'Level Preview'**
-  String get levelPreview;
-
-  /// No description provided for @previewStartingPlantFood.
-  ///
-  /// In en, this message translates to:
-  /// **'Starting Plant Food'**
-  String get previewStartingPlantFood;
-
   /// No description provided for @previewTabPlants.
   ///
   /// In en, this message translates to:
@@ -153,42 +141,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Grid Items'**
   String get previewTabGridItems;
-
-  /// No description provided for @previewPrePlaced.
-  ///
-  /// In en, this message translates to:
-  /// **'Placement'**
-  String get previewPrePlaced;
-
-  /// No description provided for @previewRegularPlants.
-  ///
-  /// In en, this message translates to:
-  /// **'Regular Plants'**
-  String get previewRegularPlants;
-
-  /// No description provided for @previewFrozenPlants.
-  ///
-  /// In en, this message translates to:
-  /// **'Frozen Plants'**
-  String get previewFrozenPlants;
-
-  /// No description provided for @previewLevelContent.
-  ///
-  /// In en, this message translates to:
-  /// **'Level Content'**
-  String get previewLevelContent;
-
-  /// No description provided for @previewSeedBank.
-  ///
-  /// In en, this message translates to:
-  /// **'Seed Bank'**
-  String get previewSeedBank;
-
-  /// No description provided for @previewFeatures.
-  ///
-  /// In en, this message translates to:
-  /// **'Level Features'**
-  String get previewFeatures;
 
   /// No description provided for @sunBombFalling.
   ///
@@ -261,12 +213,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All events in the level'**
   String get allEventsInLevel;
-
-  /// No description provided for @previewInitial.
-  ///
-  /// In en, this message translates to:
-  /// **'Initial'**
-  String get previewInitial;
 
   /// No description provided for @overwhelmLabel.
   ///
@@ -679,7 +625,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginScreensSection.
   ///
   /// In en, this message translates to:
-  /// **'Plugin screens'**
+  /// **'Features & screens'**
   String get pluginScreensSection;
 
   /// No description provided for @pluginEmpty.
@@ -691,7 +637,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginNoScreens.
   ///
   /// In en, this message translates to:
-  /// **'No plugin screens are available. Enable an installed plugin that registers screens.'**
+  /// **'This plugin does not register any screens.'**
   String get pluginNoScreens;
 
   /// No description provided for @pluginUninstall.
@@ -721,8 +667,14 @@ abstract class AppLocalizations {
   /// No description provided for @pluginBundledBadge.
   ///
   /// In en, this message translates to:
-  /// **'Bundled'**
+  /// **'Built-in'**
   String get pluginBundledBadge;
+
+  /// No description provided for @pluginImportedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported'**
+  String get pluginImportedBadge;
 
   /// No description provided for @pluginsFolderReserved.
   ///
@@ -735,6 +687,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a level library folder before installing plugins.'**
   String get pluginNoLibraryForInstall;
+
+  /// No description provided for @pluginShowingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {count} plugins'**
+  String pluginShowingCount(int count);
+
+  /// No description provided for @pluginSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search plugins'**
+  String get pluginSearchHint;
+
+  /// No description provided for @pluginSelectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a plugin to view details, settings, and features.'**
+  String get pluginSelectHint;
+
+  /// No description provided for @pluginEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get pluginEnabled;
+
+  /// No description provided for @pluginDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get pluginDisabled;
+
+  /// No description provided for @pluginAuthors.
+  ///
+  /// In en, this message translates to:
+  /// **'Authors'**
+  String get pluginAuthors;
+
+  /// No description provided for @pluginContributors.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors'**
+  String get pluginContributors;
+
+  /// No description provided for @pluginByAuthors.
+  ///
+  /// In en, this message translates to:
+  /// **'By {authors}'**
+  String pluginByAuthors(String authors);
+
+  /// No description provided for @pluginLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get pluginLicense;
+
+  /// No description provided for @pluginVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'v{version}'**
+  String pluginVersionLabel(String version);
+
+  /// No description provided for @pluginIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get pluginIdLabel;
+
+  /// No description provided for @pluginLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Links'**
+  String get pluginLinks;
+
+  /// No description provided for @pluginLinkWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get pluginLinkWebsite;
+
+  /// No description provided for @pluginLinkIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues'**
+  String get pluginLinkIssues;
+
+  /// No description provided for @pluginLinkSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get pluginLinkSource;
+
+  /// No description provided for @pluginLinkDiscord.
+  ///
+  /// In en, this message translates to:
+  /// **'Discord'**
+  String get pluginLinkDiscord;
+
+  /// No description provided for @pluginIncompatibleWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Incompatible with'**
+  String get pluginIncompatibleWith;
+
+  /// No description provided for @pluginOpenScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get pluginOpenScreen;
+
+  /// No description provided for @pluginFeaturesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Features & screens'**
+  String get pluginFeaturesSection;
+
+  /// No description provided for @pluginDropHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Install a .cplugin from your device or a download URL.'**
+  String get pluginDropHint;
+
+  /// No description provided for @pluginNoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'No description provided.'**
+  String get pluginNoDescription;
 
   /// No description provided for @share.
   ///
@@ -14353,6 +14431,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Images'**
   String get startupLoadingImages;
+
+  /// No description provided for @startupLoadingPlugins.
+  ///
+  /// In en, this message translates to:
+  /// **'Plugins'**
+  String get startupLoadingPlugins;
 
   /// No description provided for @startupLoadingCategoryProgress.
   ///

@@ -77,6 +77,44 @@ abstract class CPluginHost {
     int? iconCodePoint,
   ]);
 
+  /// Registers an immediate editor action (no full-screen route).
+  ///
+  /// [titleKey] is resolved with [localize] when the action is shown.
+  /// [slot] must be [CPluginUiSlots.editorAppBar] or
+  /// [CPluginUiSlots.editorOverflow].
+  void registerEditorAction(
+    String id,
+    String titleKey,
+    String slot,
+    Future<void> Function(BuildContext context) onActivate, [
+    int? iconCodePoint,
+  ]);
+
+  /// Registers a per-file action in the level-list overflow menu.
+  ///
+  /// [titleKey] is resolved with [localize] when shown.
+  /// [fileExtensions] is an optional comma-separated list of extensions
+  /// (e.g. `'.json,.hujson,.rton'`); omit to match all files.
+  void registerLevelFileAction(
+    String id,
+    String titleKey,
+    Future<void> Function(
+      BuildContext context,
+      String fileName,
+      String filePath,
+    ) onActivate, [
+    int? iconCodePoint,
+    String? fileExtensions,
+  ]);
+
+  /// Opens the host level-preview UI for the open editor level, or for
+  /// [filePath] / [fileName] when provided.
+  Future<void> openLevelPreview(
+    BuildContext context, [
+    String? filePath,
+    String? fileName,
+  ]);
+
   // --- Level data (JSON strings; cross-platform via LevelRepository) ---
 
   /// Whether the level editor currently has a level open.
@@ -116,10 +154,14 @@ abstract class CPluginHost {
 
   // --- Localization ---
 
-  /// Looks up a host [AppLocalizations] string by ARB key (e.g. `'levelPreview'`).
+  /// Resolves a localization key for this plugin.
   ///
-  /// Also checks this plugin's `assets/l10n/{locale}.json` then `en.json`.
-  /// Returns [fallback] or [key] when nothing matches.
+  /// Order: plugin `assets/l10n/{locale}.arb` (ARB messages only; `@` metadata
+  /// ignored), then `en.arb`, then a curated set of host [AppLocalizations]
+  /// keys. Returns [fallback] or [key] when nothing matches.
+  ///
+  /// Non-l10n plugin data should use other JSON (or files) under `assets/`,
+  /// not the `l10n/` folder.
   String localize(
     BuildContext context,
     String key, [

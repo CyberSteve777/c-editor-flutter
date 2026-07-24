@@ -3,11 +3,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dart_eval/dart_eval.dart';
 import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
-import 'package:c_editor/plugins/bundled_plugin.dart';
+import 'package:c_editor/plugins/c_plugin_manifest.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
 import 'package:c_editor/plugins/plugin_downloader.dart';
 import 'package:c_editor/plugins/plugin_host_impl.dart';
 import 'package:c_editor/plugins/plugin_kind.dart';
+import 'package:c_editor/plugins/plugin_package.dart';
 import 'package:c_editor/plugins/plugin_runtime.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
@@ -77,7 +78,44 @@ class PluginManager extends ChangeNotifier {
 
     for (final bundled in bundledPlugins) {
       final enabled = !disabled.contains(bundled.id);
-      records.add(bundledPluginRecord(bundled, enabled: enabled));
+      try {
+        final manifest = await loadPluginManifestAsset(bundled.manifestAssetPath);
+        if (manifest.id != bundled.id) {
+          throw StateError(
+            'Bundled plugin id mismatch: catalog=${bundled.id} '
+            'manifest=${manifest.id}',
+          );
+        }
+        final assets =
+            await loadPluginAssetsFromFlutter(bundled.assetsFlutterRoot);
+        records.add(
+          bundledPluginRecord(
+            manifest: manifest,
+            assets: assets,
+            enabled: enabled,
+          ),
+        );
+      } catch (e, st) {
+        debugPrint('Failed to load bundled plugin ${bundled.id}: $e\n$st');
+        records.add(
+          InstalledPluginRecord(
+            manifest: CPluginManifest(
+              format: CPluginManifest.expectedFormat,
+              formatVersion: CPluginManifest.supportedFormatVersion,
+              id: bundled.id,
+              name: bundled.id,
+              version: '0',
+              entryLibrary: 'package:c_editor/bundled/${bundled.id}',
+              entryFunction: 'initialize',
+            ),
+            evcBytes: Uint8List(0),
+            assets: const {},
+            enabled: enabled,
+            kind: PluginKind.bundled,
+            loadError: e.toString(),
+          ),
+        );
+      }
     }
 
     final imported = await _storage.listInstalled();
@@ -95,18 +133,32 @@ class PluginManager extends ChangeNotifier {
     });
     _installed = records;
 
+    for (var i = 0; i < _installed.length; i++) {
+      final record = _installed[i];
+      if (!record.enabled || record.loadError != null) continue;
+      final conflict = findPluginConflictMessage(
+        record.manifest,
+        _installed
+            .where((p) => p.enabled && p.id != record.id)
+            .map((p) => p.manifest),
+      );
+      if (conflict != null) {
+        _installed[i] = record.copyWith(loadError: conflict);
+      }
+    }
+
     for (final bundled in bundledPlugins) {
       final record = _installed.firstWhere((p) => p.id == bundled.id);
-      if (!record.enabled) continue;
+      if (!record.enabled || record.loadError != null) continue;
       try {
         final host = PluginHostImpl(
           pluginId: bundled.id,
-          assets: MemoryCPluginAssets(const {}),
+          assets: MemoryCPluginAssets(record.assets),
           registry: screenRegistry,
         );
-        bundled.register(host);
+        bundled.initialize(host);
       } catch (e, st) {
-        debugPrint('Failed to register bundled plugin ${bundled.id}: $e\n$st');
+        debugPrint('Failed to initialize bundled plugin ${bundled.id}: $e\n$st');
         final index = _installed.indexWhere((p) => p.id == bundled.id);
         if (index >= 0) {
           _installed[index] = _installed[index].copyWith(loadError: e.toString());
@@ -115,7 +167,10 @@ class PluginManager extends ChangeNotifier {
     }
 
     for (final record in _installed.where(
-      (p) => p.kind == PluginKind.imported && p.enabled,
+      (p) =>
+          p.kind == PluginKind.imported &&
+          p.enabled &&
+          p.loadError == null,
     )) {
       await _loadImported(record);
     }
@@ -132,6 +187,13 @@ class PluginManager extends ChangeNotifier {
       throw CPluginValidationException(
         'Plugin id "${package.manifest.id}" is reserved for a bundled plugin',
       );
+    }
+    final conflict = findPluginConflictMessage(
+      package.manifest,
+      _installed.map((r) => r.manifest),
+    );
+    if (conflict != null) {
+      throw CPluginValidationException(conflict);
     }
     await _checkMinEditorVersion(package.manifest.minEditorVersion);
 

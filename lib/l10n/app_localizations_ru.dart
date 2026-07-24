@@ -21,12 +21,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get success => 'Успех';
 
   @override
-  String get levelPreview => 'Предпросмотр';
-
-  @override
-  String get previewStartingPlantFood => 'Начальная подкормка';
-
-  @override
   String get previewTabPlants => 'Растения';
 
   @override
@@ -34,24 +28,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get previewTabGridItems => 'Объекты';
-
-  @override
-  String get previewPrePlaced => 'Расстановка';
-
-  @override
-  String get previewRegularPlants => 'Обычные';
-
-  @override
-  String get previewFrozenPlants => 'Замороженные';
-
-  @override
-  String get previewLevelContent => 'Содержимое уровня';
-
-  @override
-  String get previewSeedBank => 'Банк семян';
-
-  @override
-  String get previewFeatures => 'Особенности';
 
   @override
   String get sunBombFalling => 'Падают солнечные бомбы';
@@ -88,9 +64,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get allEventsInLevel => 'Все события на уровне';
-
-  @override
-  String get previewInitial => 'Начальные';
 
   @override
   String get overwhelmLabel => 'Заполнение колонн';
@@ -319,15 +292,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pluginInstalledSection => 'Установленные плагины';
 
   @override
-  String get pluginScreensSection => 'Экраны плагинов';
+  String get pluginScreensSection => 'Функции и экраны';
 
   @override
   String get pluginEmpty =>
       'Плагины ещё не установлены. Установите файл .cplugin с устройства или по ссылке.';
 
   @override
-  String get pluginNoScreens =>
-      'Нет доступных экранов плагинов. Включите установленный плагин, который регистрирует экраны.';
+  String get pluginNoScreens => 'Этот плагин не регистрирует экраны.';
 
   @override
   String get pluginUninstall => 'Удалить';
@@ -347,12 +319,86 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pluginBundledBadge => 'Встроенный';
 
   @override
+  String get pluginImportedBadge => 'Установленный';
+
+  @override
   String get pluginsFolderReserved =>
       'Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.';
 
   @override
   String get pluginNoLibraryForInstall =>
       'Сначала выберите папку библиотеки уровней, затем установите плагины.';
+
+  @override
+  String pluginShowingCount(int count) {
+    return 'Показано плагинов: $count';
+  }
+
+  @override
+  String get pluginSearchHint => 'Поиск плагинов';
+
+  @override
+  String get pluginSelectHint =>
+      'Выберите плагин, чтобы увидеть сведения, настройки и функции.';
+
+  @override
+  String get pluginEnabled => 'Включён';
+
+  @override
+  String get pluginDisabled => 'Выключен';
+
+  @override
+  String get pluginAuthors => 'Авторы';
+
+  @override
+  String get pluginContributors => 'Участники';
+
+  @override
+  String pluginByAuthors(String authors) {
+    return 'Авторы: $authors';
+  }
+
+  @override
+  String get pluginLicense => 'Лицензия';
+
+  @override
+  String pluginVersionLabel(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get pluginIdLabel => 'ID';
+
+  @override
+  String get pluginLinks => 'Ссылки';
+
+  @override
+  String get pluginLinkWebsite => 'Сайт';
+
+  @override
+  String get pluginLinkIssues => 'Issues';
+
+  @override
+  String get pluginLinkSource => 'Исходный код';
+
+  @override
+  String get pluginLinkDiscord => 'Discord';
+
+  @override
+  String get pluginIncompatibleWith => 'Несовместим с';
+
+  @override
+  String get pluginOpenScreen => 'Открыть';
+
+  @override
+  String get pluginFeaturesSection => 'Функции и экраны';
+
+  @override
+  String get pluginDropHint =>
+      'Установите .cplugin с устройства или по ссылке.';
+
+  @override
+  String get pluginNoDescription => 'Описание не указано.';
 
   @override
   String get share => 'Поделиться';
@@ -7963,6 +8009,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get startupLoadingImages => 'Изображения';
+
+  @override
+  String get startupLoadingPlugins => 'Плагины';
 
   @override
   String startupLoadingCategoryProgress(String category) {

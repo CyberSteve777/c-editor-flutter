@@ -85,16 +85,24 @@ class _BootstrapAppState extends State<BootstrapApp> {
       onProgress: (progress, category) {
         if (!mounted) return;
         setState(() {
-          _progress = progress;
+          _progress = progress * 0.92;
           if (category != null) {
             _loadingCategory = category;
           }
         });
       },
     );
+    if (!mounted) return;
+    setState(() {
+      _progress = 0.92;
+      _loadingCategory = BootstrapLoadingCategory.plugins;
+    });
     await PluginManager.init(widget.prefs);
     if (!mounted) return;
-    setState(() => _ready = true);
+    setState(() {
+      _progress = 1.0;
+      _ready = true;
+    });
   }
 
   @override

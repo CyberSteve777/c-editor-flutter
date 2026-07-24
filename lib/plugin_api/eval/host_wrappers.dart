@@ -153,6 +153,111 @@ class $CPluginHost implements $Instance {
           ],
         ),
       ),
+      'registerEditorAction': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+          params: [
+            BridgeParameter(
+              'id',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'titleKey',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'slot',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'onActivate',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.function)),
+              false,
+            ),
+            BridgeParameter(
+              'iconCodePoint',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.int),
+                nullable: true,
+              ),
+              true,
+            ),
+          ],
+        ),
+      ),
+      'registerLevelFileAction': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+          params: [
+            BridgeParameter(
+              'id',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'titleKey',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+            BridgeParameter(
+              'onActivate',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.function)),
+              false,
+            ),
+            BridgeParameter(
+              'iconCodePoint',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.int),
+                nullable: true,
+              ),
+              true,
+            ),
+            BridgeParameter(
+              'fileExtensions',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.string),
+                nullable: true,
+              ),
+              true,
+            ),
+          ],
+        ),
+      ),
+      'openLevelPreview': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.future, [
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+            ]),
+          ),
+          params: [
+            BridgeParameter(
+              'context',
+              BridgeTypeAnnotation($BuildContext.$type),
+              false,
+            ),
+            BridgeParameter(
+              'filePath',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.string),
+                nullable: true,
+              ),
+              true,
+            ),
+            BridgeParameter(
+              'fileName',
+              BridgeTypeAnnotation(
+                BridgeTypeRef(CoreTypes.string),
+                nullable: true,
+              ),
+              true,
+            ),
+          ],
+        ),
+      ),
       'getOpenLevelJson': BridgeMethodDef(
         BridgeFunctionDef(
           returns: BridgeTypeAnnotation(
@@ -376,6 +481,56 @@ class $CPluginHost implements $Instance {
           );
           return null;
         });
+      case 'registerEditorAction':
+        return $Function((runtime, target, args) {
+          final id = args[0]!.$value as String;
+          final titleKey = args[1]!.$value as String;
+          final slot = args[2]!.$value as String;
+          final onActivate = args[3]! as EvalCallable;
+          final iconCodePoint = args.length > 4
+              ? (args[4]?.$value as num?)?.toInt()
+              : null;
+          $value.registerEditorAction(
+            id,
+            titleKey,
+            slot,
+            _wrapEditorActivate(runtime, onActivate),
+            iconCodePoint,
+          );
+          return null;
+        });
+      case 'registerLevelFileAction':
+        return $Function((runtime, target, args) {
+          final id = args[0]!.$value as String;
+          final titleKey = args[1]!.$value as String;
+          final onActivate = args[2]! as EvalCallable;
+          final iconCodePoint = args.length > 3
+              ? (args[3]?.$value as num?)?.toInt()
+              : null;
+          final fileExtensions =
+              args.length > 4 ? args[4]?.$value as String? : null;
+          $value.registerLevelFileAction(
+            id,
+            titleKey,
+            _wrapLevelFileActivate(runtime, onActivate),
+            iconCodePoint,
+            fileExtensions,
+          );
+          return null;
+        });
+      case 'openLevelPreview':
+        return $Function((runtime, target, args) {
+          final context = args[0]!.$value as BuildContext;
+          final filePath =
+              args.length > 1 ? args[1]?.$value as String? : null;
+          final fileName =
+              args.length > 2 ? args[2]?.$value as String? : null;
+          return $Future.wrap(
+            $value
+                .openLevelPreview(context, filePath, fileName)
+                .then((_) => null),
+          );
+        });
     }
     return _superclass.$getProperty(runtime, identifier);
   }
@@ -396,6 +551,44 @@ class $CPluginHost implements $Instance {
       final value = result.$value;
       if (value is Widget) return value;
       return const SizedBox.shrink();
+    };
+  }
+
+  static Future<void> Function(BuildContext context) _wrapEditorActivate(
+    Runtime runtime,
+    EvalCallable onActivate,
+  ) {
+    return (context) async {
+      final result = onActivate.call(
+        runtime,
+        null,
+        [$BuildContext.wrap(context)],
+      );
+      final value = result?.$value;
+      if (value is Future) await value;
+    };
+  }
+
+  static Future<void> Function(
+    BuildContext context,
+    String fileName,
+    String filePath,
+  ) _wrapLevelFileActivate(
+    Runtime runtime,
+    EvalCallable onActivate,
+  ) {
+    return (context, fileName, filePath) async {
+      final result = onActivate.call(
+        runtime,
+        null,
+        [
+          $BuildContext.wrap(context),
+          $String(fileName),
+          $String(filePath),
+        ],
+      );
+      final value = result?.$value;
+      if (value is Future) await value;
     };
   }
 

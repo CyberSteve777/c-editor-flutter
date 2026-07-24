@@ -16,7 +16,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/armrack_type_catalog.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/src/level_preview_widgets.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_widgets.dart';
 import 'package:c_editor/widgets/lawn_grid.dart';
 import 'package:c_editor/widgets/asset_image.dart' show AssetImageWidget, imageAltCandidates;
 import 'package:collection/collection.dart';
@@ -28,8 +28,10 @@ import 'package:c_editor/data/repository/challenge_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
+import 'package:c_editor/plugin_api/c_plugin_host.dart';
 
 class LevelPreviewDialog extends StatefulWidget {
+  final CPluginHost host;
   final PvzLevelFile levelFile;
   final ParsedLevelData parsed;
   final String fileName;
@@ -37,6 +39,7 @@ class LevelPreviewDialog extends StatefulWidget {
 
   const LevelPreviewDialog({
     super.key,
+    required this.host,
     required this.levelFile,
     required this.parsed,
     required this.fileName,
@@ -48,6 +51,9 @@ class LevelPreviewDialog extends StatefulWidget {
 }
 
 class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
+  String _p(String key, [String? fallback]) =>
+      widget.host.localize(context, key, fallback ?? key);
+
   int _prePlacedTabIndex = 0;
   int _plantTypeIndex = 0;
   String? _gridItemCategoryKey;
@@ -138,8 +144,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   String _getModuleLabel(GridPreviewModuleKind kind, AppLocalizations l10n) {
     switch (kind) {
       case GridPreviewModuleKind.plants: return l10n.previewTabPlants;
-      case GridPreviewModuleKind.zombies: return l10n.previewInitial;
-      case GridPreviewModuleKind.common: return l10n.previewInitial;
+      case GridPreviewModuleKind.zombies: return _p('previewInitial', 'Initial');
+      case GridPreviewModuleKind.common: return _p('previewInitial', 'Initial');
       case GridPreviewModuleKind.piratePlank: return l10n.moduleTitle_PiratePlankProperties;
       case GridPreviewModuleKind.railcart: return l10n.moduleTitle_RailcartProperties;
       case GridPreviewModuleKind.mechanismPlank: return l10n.moduleTitle_MechanismPlankProperties;
@@ -164,7 +170,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       case GridPreviewModuleKind.flowers: return ChallengeResourceL10n.title(context, 'StarChallengeZombieDistanceProps');
       case GridPreviewModuleKind.zombossMech: return l10n.zomboss;
       case GridPreviewModuleKind.zomboss: return l10n.boss;
-      case GridPreviewModuleKind.empty: return l10n.previewInitial;
+      case GridPreviewModuleKind.empty: return _p('previewInitial', 'Initial');
     }
   }
 
@@ -228,7 +234,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
-                    '${l10n.levelPreview}: ${widget.fileName}',
+                    '${_p('levelPreview', 'Level Preview')}: ${widget.fileName}',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -378,7 +384,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final isDesktop = isDesktopPlatform(context);
     final List<({String title, IconData? icon, String? iconId, Color color})> summaryLegends = [];
     summaryLegends.add((title: l10n.startingSun, icon: null, iconId: 'sun', color: Colors.orange));
-    summaryLegends.add((title: l10n.previewStartingPlantFood, icon: null, iconId: 'plantfood', color: Colors.greenAccent));
+    summaryLegends.add((title: _p('previewStartingPlantFood', 'Starting Plant Food'), icon: null, iconId: 'plantfood', color: Colors.greenAccent));
     summaryLegends.add((
       title: sunBombsActive ? l10n.sunBombFalling : (skySunEnabled ? l10n.sunDroppingActive : l10n.sunDroppingInactive),
       icon: sunBombsActive ? Icons.wb_iridescent : (skySunEnabled ? Icons.wb_sunny_outlined : Icons.sunny_snowing),
@@ -470,7 +476,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                         iconId: 'plantfood',
                         label: '$pfCount',
                         color: Colors.greenAccent,
-                        tooltip: l10n.previewStartingPlantFood,
+                        tooltip: _p('previewStartingPlantFood', 'Starting Plant Food'),
                       ),
                     ],
                   ),
@@ -690,7 +696,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 children: [
                   Icon(Icons.inventory_2_outlined, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
                   const SizedBox(width: 8),
-                  _buildSectionTitle(l10n.previewSeedBank, theme),
+                  _buildSectionTitle(_p('previewSeedBank', 'Seed Bank'), theme),
                 ],
               ),
             ),
@@ -1067,7 +1073,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 spacing: 8,
                 children: [
                   Icon(Icons.grid_view, size: 20, color: tabColor.withValues(alpha: 0.9)),
-                  _buildSectionTitle(l10n.previewPrePlaced, theme, color: tabColor),
+                  _buildSectionTitle(_p('previewPrePlaced', 'Placement'), theme, color: tabColor),
                 ],
               );
 
@@ -1293,8 +1299,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _subTabItem(0, l10n.previewRegularPlants, theme),
-                _subTabItem(1, l10n.previewFrozenPlants, theme),
+                _subTabItem(0, _p('previewRegularPlants', 'Regular Plants'), theme),
+                _subTabItem(1, _p('previewFrozenPlants', 'Frozen Plants'), theme),
               ],
             ),
           ),
@@ -2181,7 +2187,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   spacing: 8,
                   children: [
                     Icon(Icons.layers_outlined, size: 20, color: theme.colorScheme.primary.withValues(alpha: 0.9)),
-                    _buildSectionTitle(l10n.previewLevelContent, theme),
+                    _buildSectionTitle(_p('previewLevelContent', 'Level Content'), theme),
                   ],
                 );
 
@@ -2628,7 +2634,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       'DestroyGridItemsChallengeProps',
     };
 
-    final featuresLabel = l10n.previewFeatures;
+    final featuresLabel = _p('previewFeatures', 'Level Features');
 
     final isDesktop = isDesktopPlatform(context);
     return Container(

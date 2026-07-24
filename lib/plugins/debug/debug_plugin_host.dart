@@ -55,6 +55,44 @@ class DebugPluginHost implements CPluginHost {
       _impl.registerUiElement(id, title, slot, builder, iconCodePoint);
 
   @override
+  void registerEditorAction(
+    String id,
+    String titleKey,
+    String slot,
+    Future<void> Function(BuildContext context) onActivate, [
+    int? iconCodePoint,
+  ]) =>
+      _impl.registerEditorAction(id, titleKey, slot, onActivate, iconCodePoint);
+
+  @override
+  void registerLevelFileAction(
+    String id,
+    String titleKey,
+    Future<void> Function(
+      BuildContext context,
+      String fileName,
+      String filePath,
+    ) onActivate, [
+    int? iconCodePoint,
+    String? fileExtensions,
+  ]) =>
+      _impl.registerLevelFileAction(
+        id,
+        titleKey,
+        onActivate,
+        iconCodePoint,
+        fileExtensions,
+      );
+
+  @override
+  Future<void> openLevelPreview(
+    BuildContext context, [
+    String? filePath,
+    String? fileName,
+  ]) =>
+      _impl.openLevelPreview(context, filePath, fileName);
+
+  @override
   bool get hasOpenLevel => _impl.hasOpenLevel;
 
   @override

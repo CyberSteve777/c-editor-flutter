@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/active_editor_session.dart';
+import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/plugins/plugin_level_io.dart';
+import 'package:c_editor/plugins/plugin_arb.dart';
 import 'package:c_editor/plugins/plugin_l10n.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 
@@ -118,6 +120,104 @@ class PluginHostImpl implements CPluginHost {
     );
   }
 
+  IconData _iconForCodePoint(int? iconCodePoint) {
+    if (iconCodePoint == null) return Icons.extension;
+    // ignore: non_const_argument_for_const_parameter
+    return IconData(iconCodePoint, fontFamily: 'MaterialIcons');
+  }
+
+  @override
+  void registerEditorAction(
+    String id,
+    String titleKey,
+    String slot,
+    Future<void> Function(BuildContext context) onActivate, [
+    int? iconCodePoint,
+  ]) {
+    if (id.isEmpty) {
+      throw ArgumentError('Editor action id must not be empty');
+    }
+    if (slot != CPluginUiSlots.editorAppBar &&
+        slot != CPluginUiSlots.editorOverflow) {
+      throw ArgumentError(
+        'Editor action slot must be editorAppBar or editorOverflow.',
+      );
+    }
+    final key = titleKey.isEmpty ? id : titleKey;
+    registry.registerEditorAction(
+      PluginEditorAction(
+        pluginId: pluginId,
+        id: id,
+        titleBuilder: (context) => localize(context, key, key),
+        icon: _iconForCodePoint(iconCodePoint),
+        slot: slot,
+        onActivate: onActivate,
+      ),
+    );
+  }
+
+  @override
+  void registerLevelFileAction(
+    String id,
+    String titleKey,
+    Future<void> Function(
+      BuildContext context,
+      String fileName,
+      String filePath,
+    ) onActivate, [
+    int? iconCodePoint,
+    String? fileExtensions,
+  ]) {
+    if (id.isEmpty) {
+      throw ArgumentError('Level file action id must not be empty');
+    }
+    final key = titleKey.isEmpty ? id : titleKey;
+    bool Function(String fileName)? matcher;
+    if (fileExtensions != null && fileExtensions.trim().isNotEmpty) {
+      final exts = fileExtensions
+          .split(',')
+          .map((e) => e.trim().toLowerCase())
+          .where((e) => e.isNotEmpty)
+          .map((e) => e.startsWith('.') ? e : '.$e')
+          .toList(growable: false);
+      matcher = (name) {
+        final lower = name.toLowerCase();
+        return exts.any(lower.endsWith);
+      };
+    }
+    registry.registerLevelFileAction(
+      PluginLevelFileAction(
+        pluginId: pluginId,
+        id: id,
+        titleBuilder: (context) => localize(context, key, key),
+        icon: _iconForCodePoint(iconCodePoint),
+        matchesFileName: matcher,
+        onActivate: onActivate,
+      ),
+    );
+  }
+
+  @override
+  Future<void> openLevelPreview(
+    BuildContext context, [
+    String? filePath,
+    String? fileName,
+  ]) async {
+    final opener = PluginHostHooks.openLevelPreview;
+    if (opener == null) {
+      throw StateError(
+        'Level preview is not available in this host build '
+        '(PluginHostHooks.openLevelPreview is unset).',
+      );
+    }
+    await opener(
+      context,
+      host: this,
+      filePath: filePath,
+      fileName: fileName,
+    );
+  }
+
   @override
   bool get hasOpenLevel => _session.hasOpenLevel;
 
@@ -182,16 +282,12 @@ class PluginHostImpl implements CPluginHost {
     final locale = Localizations.localeOf(context).languageCode;
     final assets = _assets;
     if (assets is MemoryCPluginAssets) {
-      for (final code in [locale, 'en']) {
-        final raw = assets.tryReadString('l10n/$code.json');
-        if (raw == null) continue;
-        try {
-          final decoded = jsonDecode(raw);
-          if (decoded is Map && decoded[key] is String) {
-            return decoded[key] as String;
-          }
-        } catch (_) {}
-      }
+      final fromArb = lookupPluginArbMessage(
+        assets.tryReadString,
+        locale,
+        key,
+      );
+      if (fromArb != null) return fromArb;
     }
     return lookupHostL10n(context, key) ?? fallback ?? key;
   }

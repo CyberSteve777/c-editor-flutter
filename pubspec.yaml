@@ -42,6 +42,7 @@ dependencies:
   dart_eval: ^0.8.5
   eval_annotation: ^0.8.1
   http: ^1.6.0
+  pub_semver: ^2.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -77,6 +78,11 @@ flutter:
     - assets/images/ztalemate_perks/
     - assets/images/fishes/
     - assets/images/tunnels/
+    - lib/bundled_plugins/level_preview_cplugin/manifest.json
+    - lib/bundled_plugins/level_preview_cplugin/assets/icon.png
+    - lib/bundled_plugins/level_preview_cplugin/assets/l10n/en.arb
+    - lib/bundled_plugins/level_preview_cplugin/assets/l10n/ru.arb
+    - lib/bundled_plugins/level_preview_cplugin/assets/l10n/zh.arb
 
 flutter_launcher_icons:
   android: true

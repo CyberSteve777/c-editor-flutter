@@ -1,0 +1,12 @@
+{
+  "@@locale": "ru",
+  "levelPreview": "Предпросмотр",
+  "previewStartingPlantFood": "Начальная подкормка",
+  "previewPrePlaced": "Расстановка",
+  "previewRegularPlants": "Обычные",
+  "previewFrozenPlants": "Замороженные",
+  "previewLevelContent": "Содержимое уровня",
+  "previewSeedBank": "Банк семян",
+  "previewFeatures": "Особенности",
+  "previewInitial": "Начальные"
+}

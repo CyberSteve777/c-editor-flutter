@@ -21,12 +21,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get success => 'Success';
 
   @override
-  String get levelPreview => 'Level Preview';
-
-  @override
-  String get previewStartingPlantFood => 'Starting Plant Food';
-
-  @override
   String get previewTabPlants => 'Plants';
 
   @override
@@ -34,24 +28,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get previewTabGridItems => 'Grid Items';
-
-  @override
-  String get previewPrePlaced => 'Placement';
-
-  @override
-  String get previewRegularPlants => 'Regular Plants';
-
-  @override
-  String get previewFrozenPlants => 'Frozen Plants';
-
-  @override
-  String get previewLevelContent => 'Level Content';
-
-  @override
-  String get previewSeedBank => 'Seed Bank';
-
-  @override
-  String get previewFeatures => 'Level Features';
 
   @override
   String get sunBombFalling => 'Sun Bombs are falling';
@@ -88,9 +64,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allEventsInLevel => 'All events in the level';
-
-  @override
-  String get previewInitial => 'Initial';
 
   @override
   String get overwhelmLabel => 'Column Like You See \'Em';
@@ -319,15 +292,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginInstalledSection => 'Installed plugins';
 
   @override
-  String get pluginScreensSection => 'Plugin screens';
+  String get pluginScreensSection => 'Features & screens';
 
   @override
   String get pluginEmpty =>
       'No plugins installed yet. Install a .cplugin file from your device or a download link.';
 
   @override
-  String get pluginNoScreens =>
-      'No plugin screens are available. Enable an installed plugin that registers screens.';
+  String get pluginNoScreens => 'This plugin does not register any screens.';
 
   @override
   String get pluginUninstall => 'Uninstall';
@@ -344,7 +316,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginLoadError => 'Failed to load';
 
   @override
-  String get pluginBundledBadge => 'Bundled';
+  String get pluginBundledBadge => 'Built-in';
+
+  @override
+  String get pluginImportedBadge => 'Imported';
 
   @override
   String get pluginsFolderReserved =>
@@ -353,6 +328,77 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pluginNoLibraryForInstall =>
       'Select a level library folder before installing plugins.';
+
+  @override
+  String pluginShowingCount(int count) {
+    return 'Showing $count plugins';
+  }
+
+  @override
+  String get pluginSearchHint => 'Search plugins';
+
+  @override
+  String get pluginSelectHint =>
+      'Select a plugin to view details, settings, and features.';
+
+  @override
+  String get pluginEnabled => 'Enabled';
+
+  @override
+  String get pluginDisabled => 'Disabled';
+
+  @override
+  String get pluginAuthors => 'Authors';
+
+  @override
+  String get pluginContributors => 'Contributors';
+
+  @override
+  String pluginByAuthors(String authors) {
+    return 'By $authors';
+  }
+
+  @override
+  String get pluginLicense => 'License';
+
+  @override
+  String pluginVersionLabel(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get pluginIdLabel => 'ID';
+
+  @override
+  String get pluginLinks => 'Links';
+
+  @override
+  String get pluginLinkWebsite => 'Website';
+
+  @override
+  String get pluginLinkIssues => 'Issues';
+
+  @override
+  String get pluginLinkSource => 'Source';
+
+  @override
+  String get pluginLinkDiscord => 'Discord';
+
+  @override
+  String get pluginIncompatibleWith => 'Incompatible with';
+
+  @override
+  String get pluginOpenScreen => 'Open';
+
+  @override
+  String get pluginFeaturesSection => 'Features & screens';
+
+  @override
+  String get pluginDropHint =>
+      'Install a .cplugin from your device or a download URL.';
+
+  @override
+  String get pluginNoDescription => 'No description provided.';
 
   @override
   String get share => 'Share';
@@ -8013,6 +8059,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startupLoadingImages => 'Images';
+
+  @override
+  String get startupLoadingPlugins => 'Plugins';
 
   @override
   String startupLoadingCategoryProgress(String category) {

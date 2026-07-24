@@ -81,8 +81,9 @@ dart run tools/pack_cplugin.dart build/hello_cplugin build/hello.cplugin
   - `host.getOpenLevelJson()` / `applyOpenLevelJson(json)` / `saveOpenLevel()`
   - `await host.loadLevelJson(path)` / `await host.saveLevelJson(path, json)`
     (if `path` is the open editor level, the editor session is updated too)
-- Localization: `host.localize(context, 'levelPreview')` looks up host ARB keys
-  and optional plugin `assets/l10n/{locale}.json`
+- Localization: `host.localize(context, 'someKey')` looks up plugin
+  `assets/l10n/{locale}.arb` (Flutter ARB; `@` metadata ignored), then `en.arb`,
+  then curated host ARB keys. Use other JSON under `assets/` for non-l10n data.
 
 Bundled plugins (e.g. Level Preview) ship with the editor and can only be
 disabled, not uninstalled. Imported `.cplugin` packages are stored under the

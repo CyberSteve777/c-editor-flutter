@@ -3,17 +3,9 @@
   "warning": "Warning",
   "info": "Info",
   "success": "Success",
-  "levelPreview": "Level Preview",
-  "previewStartingPlantFood": "Starting Plant Food",
   "previewTabPlants": "Plants",
   "previewTabZombies": "Zombies",
   "previewTabGridItems": "Grid Items",
-  "previewPrePlaced": "Placement",
-  "previewRegularPlants": "Regular Plants",
-  "previewFrozenPlants": "Frozen Plants",
-  "previewLevelContent": "Level Content",
-  "previewSeedBank": "Seed Bank",
-  "previewFeatures": "Level Features",
   "sunBombFalling": "Sun Bombs are falling",
   "sunDroppingActive": "Sun falls from the sky",
   "sunDroppingInactive": "Sun does not fall from the sky",
@@ -26,7 +18,6 @@
   "allZombiesInLevel": "All zombies in the level",
   "allObjectsInLevel": "All objects in the level",
   "allEventsInLevel": "All events in the level",
-  "previewInitial": "Initial",
   "overwhelmLabel": "Column Like You See 'Em",
   "fastEntryLabel": "Fast Entry",
   "zombieRushLabel": "Level Timer",
@@ -133,9 +124,9 @@
   "pluginTrustWarningTitle": "Trust warning",
   "pluginTrustWarningBody": "Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.",
   "pluginInstalledSection": "Installed plugins",
-  "pluginScreensSection": "Plugin screens",
+  "pluginScreensSection": "Features & screens",
   "pluginEmpty": "No plugins installed yet. Install a .cplugin file from your device or a download link.",
-  "pluginNoScreens": "No plugin screens are available. Enable an installed plugin that registers screens.",
+  "pluginNoScreens": "This plugin does not register any screens.",
   "pluginUninstall": "Uninstall",
   "pluginUninstallTitle": "Uninstall plugin",
   "pluginUninstallConfirm": "Remove {name} from this device?",
@@ -145,9 +136,46 @@
     }
   },
   "pluginLoadError": "Failed to load",
-  "pluginBundledBadge": "Bundled",
+  "pluginBundledBadge": "Built-in",
+  "pluginImportedBadge": "Imported",
   "pluginsFolderReserved": "The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.",
   "pluginNoLibraryForInstall": "Select a level library folder before installing plugins.",
+  "pluginShowingCount": "Showing {count} plugins",
+  "@pluginShowingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pluginSearchHint": "Search plugins",
+  "pluginSelectHint": "Select a plugin to view details, settings, and features.",
+  "pluginEnabled": "Enabled",
+  "pluginDisabled": "Disabled",
+  "pluginAuthors": "Authors",
+  "pluginContributors": "Contributors",
+  "pluginByAuthors": "By {authors}",
+  "@pluginByAuthors": {
+    "placeholders": {
+      "authors": { "type": "String" }
+    }
+  },
+  "pluginLicense": "License",
+  "pluginVersionLabel": "v{version}",
+  "@pluginVersionLabel": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "pluginIdLabel": "ID",
+  "pluginLinks": "Links",
+  "pluginLinkWebsite": "Website",
+  "pluginLinkIssues": "Issues",
+  "pluginLinkSource": "Source",
+  "pluginLinkDiscord": "Discord",
+  "pluginIncompatibleWith": "Incompatible with",
+  "pluginOpenScreen": "Open",
+  "pluginFeaturesSection": "Features & screens",
+  "pluginDropHint": "Install a .cplugin from your device or a download URL.",
+  "pluginNoDescription": "No description provided.",
   "share": "Share",
   "shareLevelFileText": "Level file: {name}",
   "@shareLevelFileText": {
@@ -2721,6 +2749,7 @@
   "startupLoadingPlants": "Plants",
   "startupLoadingFish": "Fish",
   "startupLoadingImages": "Images",
+  "startupLoadingPlugins": "Plugins",
   "startupLoadingCategoryProgress": "Loading {category}...",
   "@startupLoadingCategoryProgress": {
     "placeholders": {

@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "levelPreview": "Level Preview",
+  "@levelPreview": {
+    "description": "Plugin name / preview action title"
+  },
+  "previewStartingPlantFood": "Starting Plant Food",
+  "previewPrePlaced": "Placement",
+  "previewRegularPlants": "Regular Plants",
+  "previewFrozenPlants": "Frozen Plants",
+  "previewLevelContent": "Level Content",
+  "previewSeedBank": "Seed Bank",
+  "previewFeatures": "Level Features",
+  "previewInitial": "Initial"
+}

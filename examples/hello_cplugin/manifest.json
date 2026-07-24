@@ -4,9 +4,11 @@
   "id": "com.example.hello",
   "name": "Hello Plugin",
   "version": "1.0.1",
-  "author": "C-Editor",
+  "authors": ["C-Editor"],
+  "contributors": [],
   "description": "Sample plugin that registers a Hello screen and editor UI actions",
   "minEditorVersion": "0.1.0",
+  "license": "MIT",
   "entry": {
     "library": "package:hello_cplugin/main.dart",
     "function": "initialize"
