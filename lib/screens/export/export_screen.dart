@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -9,15 +9,20 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_validator.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/world_repository.dart';
-import 'package:c_editor/utils/3rdParty/sen/sen_rsb_unpack.dart';
-import 'package:c_editor/utils/3rdParty/sen/sen_rsb_pack.dart';
-import 'package:c_editor/utils/3rdParty/sen/sen_rsg_unpack.dart';
-import 'package:c_editor/utils/3rdParty/sen/sen_rsg_pack.dart';
 import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/screens/export/export_rsb_isolate.dart';
+import 'package:c_editor/plugins/plugin_constants.dart';
+import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:path/path.dart' as p;
 
 enum ExportStep { disclaimer, selectingArchive, selectingLevels, reviewSelection, proposingAssignments, finalCheck, success }
+
+bool _exportPathIsUnderPlugins(String entityPath) {
+  return p
+      .split(p.normalize(entityPath))
+      .any(isReservedLibraryFolderName);
+}
 
 class ExportScreen extends StatefulWidget {
   const ExportScreen({super.key});
@@ -72,6 +77,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
       // Recursive check for at least one .rsb.smf file
       await for (final entity in rootDir.list(recursive: true)) {
+        if (_exportPathIsUnderPlugins(entity.path)) continue;
         if (entity is File && entity.path.endsWith('.rsb.smf')) {
           hasEligibleFile = true;
           break;
@@ -99,6 +105,73 @@ class _ExportScreenState extends State<ExportScreen> {
         setState(() => _isScanning = false);
       }
     }
+
+    if (mounted && _noFilesFound) {
+      await _offerExternalDynamicIfAvailable();
+    }
+  }
+
+  /// When no `.rsb.smf` files exist, let an enabled plugin offer a download.
+  Future<void> _offerExternalDynamicIfAvailable() async {
+    await _runExternalDynamicDownload();
+  }
+
+  bool get _externalDynamicDownloadAvailable =>
+      PluginHostHooks.offerExternalDynamic != null &&
+      _rootPath != null &&
+      _rootPath!.isNotEmpty;
+
+  Future<void> _runExternalDynamicDownload({
+    bool skipInitialPrompt = false,
+  }) async {
+    final hook = PluginHostHooks.offerExternalDynamic;
+    final libraryPath = _rootPath;
+    if (hook == null || libraryPath == null || libraryPath.isEmpty) return;
+    if (!mounted) return;
+
+    final obtained = await hook(
+      context,
+      libraryPath: libraryPath,
+      skipInitialPrompt: skipInitialPrompt,
+    );
+    if (!obtained || !mounted) return;
+
+    await _refreshAfterExternalDynamicDownload();
+  }
+
+  Future<void> _refreshAfterExternalDynamicDownload() async {
+    final libraryPath = _rootPath;
+    if (libraryPath == null || libraryPath.isEmpty) return;
+
+    setState(() => _isScanning = true);
+    try {
+      final rootDir = Directory(libraryPath);
+      var hasEligibleFile = false;
+      await for (final entity in rootDir.list(recursive: true)) {
+        if (_exportPathIsUnderPlugins(entity.path)) continue;
+        if (entity is File && entity.path.endsWith('.rsb.smf')) {
+          hasEligibleFile = true;
+          break;
+        }
+      }
+      if (!mounted) return;
+      if (!hasEligibleFile) return;
+
+      if (_currentStep == ExportStep.disclaimer) {
+        setState(() {
+          _currentStep = ExportStep.selectingArchive;
+          _noFilesFound = false;
+          _pathStack.clear();
+        });
+        await _loadDirectory(libraryPath);
+      } else if (_currentStep == ExportStep.selectingArchive) {
+        setState(() => _noFilesFound = false);
+        final dir = _pathStack.isNotEmpty ? _pathStack.last.path : libraryPath;
+        await _loadDirectory(dir);
+      }
+    } finally {
+      if (mounted) setState(() => _isScanning = false);
+    }
   }
 
   Future<void> _loadDirectory(String path) async {
@@ -108,7 +181,9 @@ class _ExportScreenState extends State<ExportScreen> {
       
       // Filter for directories and eligible files
       final filtered = items.where((item) {
-        if (item is Directory) return true;
+        if (item is Directory) {
+          return !isReservedLibraryFolderName(p.basename(item.path));
+        }
         if (item is File) {
           final fileName = p.basename(item.path).toLowerCase();
           if (_currentStep == ExportStep.selectingArchive) {
@@ -808,6 +883,18 @@ class _ExportScreenState extends State<ExportScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (_currentStep == ExportStep.selectingArchive &&
+                    _externalDynamicDownloadAvailable &&
+                    !_noFilesFound)
+                  TextButton.icon(
+                    onPressed: _isScanning
+                        ? null
+                        : () => _runExternalDynamicDownload(
+                              skipInitialPrompt: true,
+                            ),
+                    icon: const Icon(Icons.cloud_download_outlined),
+                    label: Text(l10n.exportDownloadExternalDynamic),
+                  ),
                 TextButton(
                   onPressed: _isScanning
                       ? null
@@ -1295,10 +1382,12 @@ class _ExportScreenState extends State<ExportScreen> {
       final tempRsbPath = p.join(tempPath, "temp.rsb");
       await rsbFile.copy(tempRsbPath);
 
-      // 4. Unpack RSB
+      // 4. Unpack RSB (CPU-heavy — keep off the UI isolate)
       final rsbUnpackDir = p.join(tempPath, "rsb.bundle");
-      Directory(rsbUnpackDir).createSync(recursive: true);
-      RsbUnpack.process(tempRsbPath, rsbUnpackDir, l10n);
+      await compute(
+        exportIsolateUnpackRsb,
+        (tempRsbPath, rsbUnpackDir),
+      );
 
       // 5. Look for Packages.rsg
       setState(() {
@@ -1307,7 +1396,7 @@ class _ExportScreenState extends State<ExportScreen> {
       });
 
       final packetDir = Directory(p.join(rsbUnpackDir, "packet"));
-      if (!packetDir.existsSync()) {
+      if (!await packetDir.exists()) {
         // Diagnostic: list rsbUnpackDir
         final rsbFiles = Directory(rsbUnpackDir).listSync(recursive: true)
           .map((e) => p.relative(e.path, from: rsbUnpackDir)).take(10).join(", ");
@@ -1315,7 +1404,7 @@ class _ExportScreenState extends State<ExportScreen> {
       }
 
       String? packagesRsgPath;
-      for (final entity in packetDir.listSync()) {
+      await for (final entity in packetDir.list()) {
         if (entity is File && p.basename(entity.path).toLowerCase() == "packages.rsg") {
           packagesRsgPath = entity.path;
           break;
@@ -1328,8 +1417,11 @@ class _ExportScreenState extends State<ExportScreen> {
 
       // 6. Unpack Packages.rsg
       final rsgUnpackDir = p.join(tempPath, "Packages.packet");
-      Directory(rsgUnpackDir).createSync(recursive: true);
-      RsgUnpack.process(packagesRsgPath, rsgUnpackDir, l10n);
+      final packagesRsgPathFinal = packagesRsgPath;
+      await compute(
+        exportIsolateUnpackRsg,
+        (packagesRsgPathFinal, rsgUnpackDir),
+      );
 
       // 7. Look for LEVELS folder
       setState(() {
@@ -1340,8 +1432,8 @@ class _ExportScreenState extends State<ExportScreen> {
       // Search for LEVELS folder case-insensitively
       Directory? levelsDir;
       final resDir = Directory(p.join(rsgUnpackDir, "res"));
-      if (resDir.existsSync()) {
-        for (final entity in resDir.listSync(recursive: true)) {
+      if (await resDir.exists()) {
+        await for (final entity in resDir.list(recursive: true)) {
           if (entity is Directory && p.basename(entity.path).toLowerCase() == "levels") {
             levelsDir = entity;
             break;
@@ -1351,7 +1443,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
       if (levelsDir == null) {
         // Fallback: try to find it anywhere in rsgUnpackDir
-        for (final entity in Directory(rsgUnpackDir).listSync(recursive: true)) {
+        await for (final entity in Directory(rsgUnpackDir).list(recursive: true)) {
           if (entity is Directory && p.basename(entity.path).toLowerCase() == "levels") {
             levelsDir = entity;
             break;
@@ -1381,14 +1473,20 @@ class _ExportScreenState extends State<ExportScreen> {
         _exportProgress = 0.7;
         _exportStatus = l10n.exportStatusRepackingRsg;
       });
-      RsgPack.process(rsgUnpackDir, packagesRsgPath, l10n);
+      await compute(
+        exportIsolatePackRsg,
+        (rsgUnpackDir, packagesRsgPathFinal),
+      );
 
       // 10. Pack rsb.bundle back to .rsb
       setState(() {
         _exportProgress = 0.8;
         _exportStatus = l10n.exportStatusRepackingRsb;
       });
-      RsbPack.process(rsbUnpackDir, tempRsbPath, l10n);
+      await compute(
+        exportIsolatePackRsb,
+        (rsbUnpackDir, tempRsbPath),
+      );
 
       // 11. Rename .rsb to .rsb.smf (overwrite original)
       setState(() {
@@ -1414,89 +1512,142 @@ class _ExportScreenState extends State<ExportScreen> {
         AppMessage.show(context, "${l10n.error}: $e", icon: Icons.error_outline);
       }
     } finally {
-      if (tempDir.existsSync()) {
+      if (await tempDir.exists()) {
         await tempDir.delete(recursive: true);
       }
     }
   }
 
   Widget _buildDisclaimer(AppLocalizations l10n, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1000),
-                  child: Column(
-                    children: [
-                      Text(
-                        l10n.exportDisclaimerTitle,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+    final content = Column(
+      children: [
+        Text(
+          l10n.exportDisclaimerTitle,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 32),
+        Text(
+          l10n.exportDisclaimerBody,
+          textAlign: TextAlign.left,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            height: 1.6,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+          ),
+        ),
+        if (_noFilesFound) ...[
+          const SizedBox(height: 32),
+          Text(
+            l10n.exportNoFilesFound,
+            style: const TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ],
+    );
+
+    final proceedButton = _noFilesFound && _externalDynamicDownloadAvailable
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton.icon(
+                onPressed: _isScanning
+                    ? null
+                    : () => _runExternalDynamicDownload(
+                          skipInitialPrompt: true,
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      Text(
-                        l10n.exportDisclaimerBody,
-                        textAlign: TextAlign.left,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          height: 1.6,
-                          color:
-                              theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                        ),
-                      ),
-                      if (_noFilesFound) ...[
-                        const SizedBox(height: 32),
-                        Text(
-                          l10n.exportNoFilesFound,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ],
+                icon: const Icon(Icons.cloud_download_outlined),
+                label: Text(l10n.exportDownloadExternalDynamic),
+              ),
+              const SizedBox(width: 8),
+              TextButton(
+                onPressed: _isScanning
+                    ? null
+                    : () => Navigator.of(context).pop(),
+                child: Text(
+                  l10n.close,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16, bottom: 16),
-              child: TextButton(
-                onPressed: _isScanning
-                    ? null
-                    : (_noFilesFound
-                        ? () => Navigator.of(context).pop()
-                        : _performGlobalScan),
-                child: _isScanning
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        _noFilesFound ? l10n.close : l10n.proceed,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: _noFilesFound
-                              ? theme.colorScheme.onSurfaceVariant
-                              : Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+            ],
+          )
+        : TextButton(
+      onPressed: _isScanning
+          ? null
+          : (_noFilesFound
+              ? () => Navigator.of(context).pop()
+              : _performGlobalScan),
+      child: _isScanning
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(
+              _noFilesFound ? l10n.close : l10n.proceed,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: _noFilesFound
+                    ? theme.colorScheme.onSurfaceVariant
+                    : Colors.green,
+                fontWeight: FontWeight.bold,
               ),
             ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tight = constraints.maxHeight < 220;
+        if (tight) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1000),
+                child: Column(
+                  children: [
+                    content,
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: proceedButton,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1000),
+                      child: content,
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: proceedButton,
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

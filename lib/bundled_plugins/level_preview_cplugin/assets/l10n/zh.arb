@@ -1,0 +1,14 @@
+{
+  "@@locale": "zh",
+  "pluginName": "关卡预览",
+  "pluginDescription": "预览当前打开或选中关卡中的植物、僵尸与布局",
+  "levelPreview": "关卡预览",
+  "previewStartingPlantFood": "初始能量豆",
+  "previewPrePlaced": "布局/摆放",
+  "previewRegularPlants": "常规植物",
+  "previewFrozenPlants": "冰冻植物",
+  "previewLevelContent": "关卡内容",
+  "previewSeedBank": "选卡/卡槽",
+  "previewFeatures": "关卡特性",
+  "previewInitial": "初始"
+}

@@ -21,12 +21,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get success => '成功';
 
   @override
-  String get levelPreview => '关卡预览';
-
-  @override
-  String get previewStartingPlantFood => '初始能量豆';
-
-  @override
   String get previewTabPlants => '植物';
 
   @override
@@ -34,24 +28,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get previewTabGridItems => '物品';
-
-  @override
-  String get previewPrePlaced => '布局/摆放';
-
-  @override
-  String get previewRegularPlants => '常规植物';
-
-  @override
-  String get previewFrozenPlants => '冰冻植物';
-
-  @override
-  String get previewLevelContent => '关卡内容';
-
-  @override
-  String get previewSeedBank => '选卡/卡槽';
-
-  @override
-  String get previewFeatures => '关卡特性';
 
   @override
   String get sunBombFalling => '紫光日光落地爆炸';
@@ -75,10 +51,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveNumberLegend => '数字表示波次编号';
 
   @override
-  String get expand => 'Expand';
+  String get expand => '展开';
 
   @override
-  String get obtainableInLevel => 'Can be obtained in the level';
+  String get obtainableInLevel => '可在关卡中获得';
 
   @override
   String get allZombiesInLevel => '本关所有僵尸';
@@ -88,9 +64,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get allEventsInLevel => '本关所有事件';
-
-  @override
-  String get previewInitial => '初始';
 
   @override
   String get overwhelmLabel => '行列填充';
@@ -259,6 +232,181 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aboutSoftware => '关于软件';
 
   @override
+  String get pluginsTitle => '插件';
+
+  @override
+  String get pluginInstallFromDevice => '从本地安装';
+
+  @override
+  String get pluginInstallFromUrl => '从链接安装';
+
+  @override
+  String get pluginInstallFromFolder => '加载文件夹（调试）';
+
+  @override
+  String get pluginFolderHint => '将插件包文件夹编译进 C-Editor 以便测试。';
+
+  @override
+  String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
+
+  @override
+  String get pluginDownload => '下载';
+
+  @override
+  String get pluginInstalling => '正在安装插件…';
+
+  @override
+  String pluginDownloadProgress(String received, String total) {
+    return '正在下载 $received / $total';
+  }
+
+  @override
+  String pluginDownloadProgressUnknown(String received) {
+    return '正在下载 $received';
+  }
+
+  @override
+  String pluginInstallSuccess(String name) {
+    return '已安装 $name';
+  }
+
+  @override
+  String pluginInstallFailed(String error) {
+    return '安装失败：$error';
+  }
+
+  @override
+  String pluginInvalidFile(String reason) {
+    return '不是有效的插件：$reason';
+  }
+
+  @override
+  String get pluginInvalidUrl => '请输入有效的 http(s) 链接';
+
+  @override
+  String get pluginReadFailed => '无法读取所选文件';
+
+  @override
+  String get pluginTrustWarningTitle => '安全提示';
+
+  @override
+  String get pluginTrustWarningBody =>
+      '插件会在 C-Editor 内运行代码。请只安装来自可信来源的插件。默认情况下文件与网络访问受沙箱限制，但恶意插件仍可能影响编辑器界面。';
+
+  @override
+  String get pluginInstalledSection => '已安装插件';
+
+  @override
+  String get pluginScreensSection => '功能与界面';
+
+  @override
+  String get pluginEmpty => '尚未安装插件。可从本地或下载链接安装 .cplugin 文件。';
+
+  @override
+  String get pluginNoScreens => '此插件未注册任何界面。';
+
+  @override
+  String get pluginUninstall => '卸载';
+
+  @override
+  String get pluginUninstallTitle => '卸载插件';
+
+  @override
+  String pluginUninstallConfirm(String name) {
+    return '要从本机移除 $name 吗？';
+  }
+
+  @override
+  String get pluginLoadError => '加载失败';
+
+  @override
+  String get pluginBundledBadge => '内置';
+
+  @override
+  String get pluginImportedBadge => '已导入';
+
+  @override
+  String get pluginsFolderReserved => '“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。';
+
+  @override
+  String get pluginNoLibraryForInstall => '请先选择关卡库文件夹，再安装插件。';
+
+  @override
+  String pluginShowingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '显示 $count 个插件',
+      one: '显示 1 个插件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pluginSearchHint => '搜索插件';
+
+  @override
+  String get pluginSelectHint => '选择插件以查看详情、设置与功能。';
+
+  @override
+  String get pluginEnabled => '已启用';
+
+  @override
+  String get pluginDisabled => '已禁用';
+
+  @override
+  String get pluginAuthors => '作者';
+
+  @override
+  String get pluginContributors => '贡献者';
+
+  @override
+  String pluginByAuthors(String authors) {
+    return '作者：$authors';
+  }
+
+  @override
+  String get pluginLicense => '许可证';
+
+  @override
+  String pluginVersionLabel(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get pluginIdLabel => 'ID';
+
+  @override
+  String get pluginLinks => '链接';
+
+  @override
+  String get pluginLinkWebsite => '网站';
+
+  @override
+  String get pluginLinkIssues => '问题反馈';
+
+  @override
+  String get pluginLinkSource => '源码';
+
+  @override
+  String get pluginLinkDiscord => 'Discord';
+
+  @override
+  String get pluginIncompatibleWith => '不兼容';
+
+  @override
+  String get pluginOpenScreen => '打开';
+
+  @override
+  String get pluginFeaturesSection => '功能与界面';
+
+  @override
+  String get pluginDropHint => '从本地或 URL 安装 .cplugin。';
+
+  @override
+  String get pluginNoDescription => '暂无描述。';
+
+  @override
   String get share => '分享';
 
   @override
@@ -374,7 +522,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String importFolderSuccess(int count) {
-    return '已导入 $count 个关卡';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已导入 $count 个关卡',
+      one: '已导入 1 个关卡',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -507,6 +661,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get exportNoFilesFound => '未找到兼容的文件 (.rsb.smf)。';
+
+  @override
+  String get exportDownloadExternalDynamic => '下载 dynamic…';
 
   @override
   String get cancelExportTitle => '取消导出';
@@ -845,8 +1002,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reset => '重置';
 
   @override
-  String cacheCleared(Object count) {
-    return '已清理$count个缓存文件';
+  String cacheCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已清理$count个缓存文件',
+      one: '已清理1个缓存文件',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1655,7 +1818,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String deleteWaveConfirm(int count) {
-    return '将移除此波次及其 $count 个事件。';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '将移除此波次及其 $count 个事件。',
+      one: '将移除此波次及其 1 个事件。',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5274,12 +5443,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
-    return '$count 个能量豆';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个能量豆',
+      one: '1 个能量豆',
+    );
+    return '$_temp0';
   }
 
   @override
   String waveDropPlantsCount(int count) {
-    return '$count 张植物卡片';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张植物卡片',
+      one: '1 张植物卡片',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5693,7 +5874,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String clearUnusedDone(int count) {
-    return '已移除 $count 个未使用对象。';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已移除 $count 个未使用对象。',
+      one: '已移除 1 个未使用对象。',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -6309,7 +6496,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String glacierModuleEntryCount(int count) {
-    return '$count 条';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条',
+      one: '1 条',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7462,7 +7655,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String importResourceGroupsFromStageSkipped(int count) {
-    return '自定义地图已包含该地图的$count个资源组，这些资源组将不再重复添加。';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '自定义地图已包含该地图的$count个资源组，这些资源组将不再重复添加。',
+      one: '自定义地图已包含该地图的1个资源组，该资源组将不再重复添加。',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7544,6 +7743,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get startupLoadingImages => '图片';
+
+  @override
+  String get startupLoadingPlugins => '插件';
 
   @override
   String startupLoadingCategoryProgress(String category) {

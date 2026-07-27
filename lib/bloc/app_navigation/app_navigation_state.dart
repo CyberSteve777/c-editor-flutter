@@ -1,6 +1,6 @@
 part of 'app_navigation_cubit.dart';
 
-enum AppScreen { levelList, editor, about }
+enum AppScreen { levelList, editor, about, plugins }
 
 final class AppNavigationState extends Equatable {
   const AppNavigationState({

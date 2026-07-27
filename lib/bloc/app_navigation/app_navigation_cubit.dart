@@ -20,6 +20,10 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
     emit(state.copyWith(screen: AppScreen.about));
   }
 
+  void openPlugins() {
+    emit(state.copyWith(screen: AppScreen.plugins));
+  }
+
   void backToLevelList() {
     emit(
       state.copyWith(

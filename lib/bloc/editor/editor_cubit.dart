@@ -151,6 +151,44 @@ class EditorCubit extends Cubit<EditorState> {
     );
   }
 
+  /// Replaces the in-memory level from [newLevel].
+  ///
+  /// When [markDirty] is true (default), the editor is marked unsaved.
+  /// Pass false after a successful disk write that already matches [newLevel].
+  void applyLevelFile(PvzLevelFile newLevel, {bool markDirty = true}) {
+    if (isClosed) return;
+    final lf = state.levelFile;
+    if (lf == null) {
+      final parsed = LevelParser.parseLevel(newLevel);
+      emit(
+        EditorState(
+          levelFile: newLevel,
+          parsedData: parsed,
+          isLoading: false,
+          hasChanges: markDirty,
+          availableTabs: _computeAvailableTabs(newLevel, parsed),
+        ),
+      );
+      return;
+    }
+    lf.objects
+      ..clear()
+      ..addAll(newLevel.objects);
+    lf.version = newLevel.version;
+    if (markDirty) {
+      onJsonViewerSaved();
+    } else {
+      final parsed = LevelParser.parseLevel(lf);
+      emit(
+        state.copyWith(
+          hasChanges: false,
+          parsedData: parsed,
+          availableTabs: _computeAvailableTabs(lf, parsed),
+        ),
+      );
+    }
+  }
+
   static const String _rocketZombieFlickObjClass =
       'RocketZombieFlickModuleProperties';
 
