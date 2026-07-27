@@ -13,5 +13,4 @@ flutter config --enable-web
 flutter precache --web
 flutter pub get
 DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
-
-flutter build web --release --wasm --no-tree-shake-icons ${DART_DEFINES}
+flutter build web --release --wasm ${DART_DEFINES}
