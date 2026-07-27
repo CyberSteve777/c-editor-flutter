@@ -42,7 +42,6 @@ void main() {
         'format': 'cplugin',
         'formatVersion': 1,
         'id': 'com.example.rich',
-        'name': 'Rich',
         'version': '2.0.0',
         'authors': ['Alice', 'Bob'],
         'contributors': ['Carol'],
@@ -57,6 +56,8 @@ void main() {
         },
       });
 
+      expect(manifest.name, isEmpty);
+      expect(manifest.description, isEmpty);
       expect(manifest.authors, ['Alice', 'Bob']);
       expect(manifest.contributors, ['Carol']);
       expect(manifest.icon, 'icon.png');
@@ -67,12 +68,28 @@ void main() {
       expect(manifest.resolvedAuthors, ['Alice', 'Bob']);
     });
 
+    test('legacy name and description still parse', () {
+      final manifest = CPluginManifest.fromJson({
+        'format': 'cplugin',
+        'formatVersion': 1,
+        'id': 'com.example.legacy_named',
+        'name': 'Legacy Name',
+        'description': 'Legacy description',
+        'version': '1.0.0',
+        'entry': {
+          'library': 'package:legacy/main.dart',
+          'function': 'initialize',
+        },
+      });
+      expect(manifest.name, 'Legacy Name');
+      expect(manifest.description, 'Legacy description');
+    });
+
     test('legacy author string still works via resolvedAuthors', () {
       final manifest = CPluginManifest.fromJson({
         'format': 'cplugin',
         'formatVersion': 1,
         'id': 'com.example.legacy',
-        'name': 'Legacy',
         'version': '1.0.0',
         'author': 'OldAuthor',
         'entry': {

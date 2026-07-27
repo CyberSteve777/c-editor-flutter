@@ -17,7 +17,8 @@ const kLevelPreviewPluginId = 'team.international2c.level_preview';
 void registerLevelPreview(CPluginHost host) {
   installLevelPreviewHostHooks();
 
-  const eye = 0xe8f4; // Icons.remove_red_eye.codePoint
+  // Keep Icons.remove_red_eye referenced for tree-shaking; pass its code point.
+  final eye = Icons.remove_red_eye.codePoint;
   const extensions = '.json,.hujson,.rton';
 
   host.registerLevelFileAction(

@@ -98,7 +98,7 @@ class WebPluginStorage implements PluginStorage {
       }
     }
     await txn.completed;
-    result.sort((a, b) => a.manifest.name.compareTo(b.manifest.name));
+    result.sort((a, b) => a.localizedName('en').compareTo(b.localizedName('en')));
     return result;
   }
 

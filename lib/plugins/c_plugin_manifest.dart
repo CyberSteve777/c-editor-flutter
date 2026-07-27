@@ -64,10 +64,10 @@ class CPluginManifest {
     required this.format,
     required this.formatVersion,
     required this.id,
-    required this.name,
     required this.version,
     required this.entryLibrary,
     required this.entryFunction,
+    this.name = '',
     this.author = '',
     this.authors = const [],
     this.contributors = const [],
@@ -85,6 +85,8 @@ class CPluginManifest {
   final String format;
   final int formatVersion;
   final String id;
+
+  /// Legacy English display name. Prefer `pluginName` in plugin ARB assets.
   final String name;
   final String version;
 
@@ -97,6 +99,7 @@ class CPluginManifest {
   /// Additional contributors.
   final List<String> contributors;
 
+  /// Legacy English description. Prefer `pluginDescription` in plugin ARB assets.
   final String description;
   final String? minEditorVersion;
 
@@ -171,9 +174,6 @@ class CPluginManifest {
     if (id is! String || id.isEmpty) {
       throw const FormatException('manifest id is required');
     }
-    if (name is! String || name.isEmpty) {
-      throw const FormatException('manifest name is required');
-    }
     if (version is! String || version.isEmpty) {
       throw const FormatException('manifest version is required');
     }
@@ -182,7 +182,7 @@ class CPluginManifest {
       format: format,
       formatVersion: formatVersion,
       id: id,
-      name: name,
+      name: name is String ? name : '',
       version: version,
       author: json['author'] is String ? json['author'] as String : '',
       authors: _stringList(json['authors']),
@@ -218,8 +218,10 @@ class CPluginManifest {
         'format': format,
         'formatVersion': formatVersion,
         'id': id,
-        'name': name,
         'version': version,
+        // Legacy fields kept for older packages; prefer ARB `pluginName` /
+        // `pluginDescription`.
+        if (name.isNotEmpty) 'name': name,
         if (author.isNotEmpty) 'author': author,
         if (authors.isNotEmpty) 'authors': authors,
         if (contributors.isNotEmpty) 'contributors': contributors,
@@ -280,11 +282,13 @@ String? findPluginConflictMessage(
   for (final other in installed) {
     if (other.id == candidate.id) continue;
     if (candidate.declaresIncompatibilityWith(other)) {
-      return 'Incompatible with ${other.name} (${other.id}) '
+      final label = other.name.isNotEmpty ? other.name : other.id;
+      return 'Incompatible with $label (${other.id}) '
           'v${other.version}';
     }
     if (other.declaresIncompatibilityWith(candidate)) {
-      return 'Conflicts with ${other.name} (${other.id}) '
+      final label = other.name.isNotEmpty ? other.name : other.id;
+      return 'Conflicts with $label (${other.id}) '
           'v${other.version}';
     }
   }

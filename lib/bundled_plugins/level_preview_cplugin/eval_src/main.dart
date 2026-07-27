@@ -7,7 +7,9 @@ import 'package:c_editor/plugin_api.dart';
 ///
 /// In-process bundled load still uses `../lib/main.dart` (see plugin README).
 void initialize(CPluginHost host) {
-  const eye = 0xe8f4; // Icons.remove_red_eye.codePoint
+  // Icons.remove_red_eye.codePoint — numeric so this eval-safe file stays
+  // free of flutter/material. Host maps it via pluginMaterialIcon().
+  const eye = 0xe8f4;
   const extensions = '.json,.hujson,.rton';
 
   host.registerLevelFileAction(

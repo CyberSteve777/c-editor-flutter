@@ -143,7 +143,9 @@ class _PluginsScreenState extends State<PluginsScreen> {
       setState(() => _selectedPluginId = record.id);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.pluginInstallSuccess(record.manifest.name)),
+          content: Text(l10n.pluginInstallSuccess(record.localizedName(
+            Localizations.localeOf(context).languageCode,
+          ))),
         ),
       );
     } on CPluginValidationException catch (e) {
@@ -193,7 +195,9 @@ class _PluginsScreenState extends State<PluginsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.pluginUninstallTitle),
-        content: Text(l10n.pluginUninstallConfirm(plugin.manifest.name)),
+        content: Text(l10n.pluginUninstallConfirm(plugin.localizedName(
+          Localizations.localeOf(context).languageCode,
+        ))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -227,12 +231,13 @@ class _PluginsScreenState extends State<PluginsScreen> {
   }
 
   List<InstalledPluginRecord> _filtered(List<InstalledPluginRecord> plugins) {
+    final lang = Localizations.localeOf(context).languageCode;
     return plugins.where((p) {
       final m = p.manifest;
       return matchesSelectionSearch(_searchQuery, [
-        m.name,
+        p.localizedName(lang),
         m.id,
-        m.description,
+        p.localizedDescription(lang),
         m.authorsDisplay,
         ...m.contributors,
         m.version,
@@ -472,19 +477,9 @@ class _PluginsScreenState extends State<PluginsScreen> {
               top: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l10n.pluginDropHint,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ),
-                    FilledButton(
-                      onPressed: widget.onBack,
-                      child: Text(l10n.done),
-                    ),
-                  ],
+                child: Text(
+                  l10n.pluginDropHint,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
             ),
@@ -559,9 +554,11 @@ class _PluginListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final m = plugin.manifest;
     final scheme = theme.colorScheme;
     final borderColor = selected ? scheme.primary : scheme.outlineVariant;
+    final lang = Localizations.localeOf(context).languageCode;
+    final name = plugin.localizedName(lang);
+    final description = plugin.localizedDescription(lang);
 
     return Material(
       color: selected
@@ -591,7 +588,7 @@ class _PluginListTile extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          m.name,
+                          name,
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -608,26 +605,28 @@ class _PluginListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      m.description.isEmpty
+                      description.isEmpty
                           ? l10n.pluginNoDescription
-                          : m.description,
+                          : description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
                     ),
-                    if (!plugin.enabled || plugin.loadError != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        plugin.loadError != null
-                            ? l10n.pluginLoadError
-                            : l10n.pluginDisabled,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: scheme.error,
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      plugin.loadError != null
+                          ? l10n.pluginLoadError
+                          : (plugin.enabled
+                              ? l10n.pluginEnabled
+                              : l10n.pluginDisabled),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: plugin.loadError != null || !plugin.enabled
+                            ? scheme.error
+                            : scheme.primary,
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),
@@ -658,8 +657,11 @@ class _PluginDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final name = plugin.localizedName(
+      Localizations.localeOf(context).languageCode,
+    );
     return Scaffold(
-      appBar: AppBar(title: Text(plugin.manifest.name)),
+      appBar: AppBar(title: Text(name)),
       body: _PluginDetailPane(
         plugin: plugin,
         busy: busy,
@@ -695,6 +697,9 @@ class _PluginDetailPane extends StatelessWidget {
     final theme = Theme.of(context);
     final m = plugin.manifest;
     final authors = m.authorsDisplay;
+    final lang = Localizations.localeOf(context).languageCode;
+    final name = plugin.localizedName(lang);
+    final description = plugin.localizedDescription(lang);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -714,7 +719,7 @@ class _PluginDetailPane extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
-                        m.name,
+                        name,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -727,11 +732,14 @@ class _PluginDetailPane extends StatelessWidget {
                             ? theme.colorScheme.tertiary
                             : theme.colorScheme.secondary,
                       ),
-                      if (!plugin.enabled)
-                        _Badge(
-                          label: l10n.pluginDisabled,
-                          color: theme.colorScheme.error,
-                        ),
+                      _Badge(
+                        label: plugin.enabled
+                            ? l10n.pluginEnabled
+                            : l10n.pluginDisabled,
+                        color: plugin.enabled
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.error,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -802,7 +810,7 @@ class _PluginDetailPane extends StatelessWidget {
           ),
         const SizedBox(height: 8),
         Text(
-          m.description.isEmpty ? l10n.pluginNoDescription : m.description,
+          description.isEmpty ? l10n.pluginNoDescription : description,
           style: theme.textTheme.bodyLarge,
         ),
         if (plugin.loadError != null) ...[
@@ -924,7 +932,7 @@ class _PluginIcon extends StatelessWidget {
             : ColoredBox(
                 color: scheme.surfaceContainerHighest,
                 child: Icon(
-                  Icons.extension,
+                  Icons.settings,
                   size: size * 0.55,
                   color: scheme.primary,
                 ),

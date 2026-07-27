@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/plugins/plugin_material_icon.dart';
 
 /// A screen registered by a loaded plugin (Plugins management UI).
 class PluginRegisteredScreen {
@@ -38,12 +39,7 @@ class PluginUiElement {
 
   String get key => '$pluginId::$slot::$id';
 
-  IconData get icon {
-    if (iconCodePoint == null) return Icons.extension;
-    // Plugin authors pass a runtime Material icon code point from EVC.
-    // ignore: non_const_argument_for_const_parameter
-    return IconData(iconCodePoint!, fontFamily: 'MaterialIcons');
-  }
+  IconData get icon => pluginMaterialIcon(iconCodePoint);
 }
 
 /// Localized title for bundled plugin actions.

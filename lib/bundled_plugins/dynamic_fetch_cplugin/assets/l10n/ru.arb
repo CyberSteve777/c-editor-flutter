@@ -1,5 +1,7 @@
 {
   "@@locale": "ru",
+  "pluginName": "Внешний Dynamic",
+  "pluginDescription": "Если при экспорте RSB в библиотеке нет файлов .rsb.smf, предлагает скачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic",
   "dynamicOfferTitle": "Скачать dynamic?",
   "dynamicOfferBody": "В библиотеке уровней не найдено файлов .rsb.smf.\n\nСкачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic на GitHub?",
   "dynamicOfferYes": "Выбрать релиз",

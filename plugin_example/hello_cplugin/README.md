@@ -88,7 +88,8 @@ dart run tools/pack_cplugin.dart build/hello_cplugin build/hello.cplugin
   `host.localize(context, 'hello', null, {'name': 'Ada'})` /
   `{count, plural, …}`. `@key` placeholder metadata (`type`, `format`,
   `optionalParameters`) is applied like Flutter gen-l10n.
-  Use other files under `assets/` for non-l10n data.
+  Put display metadata in ARB as `pluginName` / `pluginDescription`
+  (not in `manifest.json`). Use other files under `assets/` for non-l10n data.
 
 Bundled plugins (e.g. Level Preview) ship with the editor and can only be
 disabled, not uninstalled. Imported `.cplugin` packages are stored under the

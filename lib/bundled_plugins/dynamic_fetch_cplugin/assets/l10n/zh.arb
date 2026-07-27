@@ -1,5 +1,7 @@
 {
   "@@locale": "zh",
+  "pluginName": "外部 Dynamic",
+  "pluginDescription": "在 RSB 导出未找到 .rsb.smf 时，可从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf",
   "dynamicOfferTitle": "下载 dynamic？",
   "dynamicOfferBody": "关卡库中未找到 .rsb.smf 文件。\n\n是否从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf？",
   "dynamicOfferYes": "选择版本",

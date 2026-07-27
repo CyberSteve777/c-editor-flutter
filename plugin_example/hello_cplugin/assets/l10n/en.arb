@@ -1,0 +1,5 @@
+{
+  "@@locale": "en",
+  "pluginName": "Hello Plugin",
+  "pluginDescription": "Sample plugin that registers a Hello screen and editor UI actions"
+}
