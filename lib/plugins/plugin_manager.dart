@@ -116,7 +116,6 @@ class PluginManager extends ChangeNotifier {
               format: CPluginManifest.expectedFormat,
               formatVersion: CPluginManifest.supportedFormatVersion,
               id: bundled.id,
-              name: bundled.id,
               version: '0',
               entryLibrary: 'package:c_editor/bundled/${bundled.id}',
               entryFunction: 'initialize',
@@ -142,7 +141,7 @@ class PluginManager extends ChangeNotifier {
       if (a.kind != b.kind) {
         return a.kind == PluginKind.bundled ? -1 : 1;
       }
-      return a.manifest.name.compareTo(b.manifest.name);
+      return a.localizedName('en').compareTo(b.localizedName('en'));
     });
     _installed = records;
 

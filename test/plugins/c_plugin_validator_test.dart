@@ -51,7 +51,6 @@ void main() {
       'format': 'cplugin',
       'formatVersion': 1,
       'id': 'com.example.test',
-      'name': 'Test',
       'version': '1.0.0',
       'entry': {
         'library': 'package:test/main.dart',
@@ -66,6 +65,7 @@ void main() {
 
     final package = validator.validate(bytes);
     expect(package.manifest.id, 'com.example.test');
+    expect(package.manifest.name, isEmpty);
     expect(package.evcBytes, [1, 2, 3, 4, 5]);
     expect(utf8.decode(package.assets['note.txt']!), 'hi');
   });
@@ -75,7 +75,6 @@ void main() {
       'format': 'not-cplugin',
       'formatVersion': 1,
       'id': 'com.example.test',
-      'name': 'Test',
       'version': '1.0.0',
       'entry': {
         'library': 'package:test/main.dart',

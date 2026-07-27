@@ -9,6 +9,7 @@ import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/plugins/plugin_level_io.dart';
 import 'package:c_editor/plugins/plugin_arb.dart';
 import 'package:c_editor/plugins/plugin_l10n.dart';
+import 'package:c_editor/plugins/plugin_material_icon.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 
 /// In-memory asset accessor for a loaded plugin.
@@ -120,11 +121,8 @@ class PluginHostImpl implements CPluginHost {
     );
   }
 
-  IconData _iconForCodePoint(int? iconCodePoint) {
-    if (iconCodePoint == null) return Icons.extension;
-    // ignore: non_const_argument_for_const_parameter
-    return IconData(iconCodePoint, fontFamily: 'MaterialIcons');
-  }
+  IconData _iconForCodePoint(int? iconCodePoint) =>
+      pluginMaterialIcon(iconCodePoint);
 
   @override
   void registerEditorAction(

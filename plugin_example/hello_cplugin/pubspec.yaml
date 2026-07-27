@@ -19,3 +19,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/l10n/en.arb
+    - assets/l10n/ru.arb
+    - assets/l10n/zh.arb

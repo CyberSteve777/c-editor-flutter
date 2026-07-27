@@ -2,11 +2,9 @@
   "format": "cplugin",
   "formatVersion": 1,
   "id": "com.example.hello",
-  "name": "Hello Plugin",
   "version": "1.0.1",
   "authors": ["C-Editor"],
   "contributors": [],
-  "description": "Sample plugin that registers a Hello screen and editor UI actions",
   "minEditorVersion": "0.1.0",
   "license": "MIT",
   "entry": {

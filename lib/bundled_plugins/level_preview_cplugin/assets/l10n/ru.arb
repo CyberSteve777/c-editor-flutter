@@ -1,5 +1,7 @@
 {
   "@@locale": "ru",
+  "pluginName": "Предпросмотр",
+  "pluginDescription": "Предпросмотр растений, зомби и раскладки открытого или выбранного уровня",
   "levelPreview": "Предпросмотр",
   "previewStartingPlantFood": "Начальная подкормка",
   "previewPrePlaced": "Расстановка",

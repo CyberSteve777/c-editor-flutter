@@ -48,11 +48,8 @@ void main() {
       'format': 'cplugin',
       'formatVersion': 1,
       'id': pluginId,
-      'name': 'Level Preview',
       'version': '1.0.0',
-      'author': 'C-Editor',
-      'description':
-          'Preview plants, zombies, and layout for the open or selected level',
+      'authors': ['C-Editor'],
       'minEditorVersion': '0.1.0',
       'entry': {
         'library': library,

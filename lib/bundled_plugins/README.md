@@ -7,6 +7,7 @@ as external `.cplugin` packages (see `plugin_example/hello_cplugin`):
 - `lib/main.dart` with `initialize(CPluginHost)` entrypoint
 - `lib/` Dart sources (barrel + `src/`)
 - `assets/l10n/{locale}.arb` for plugin-exclusive strings (ARB; `@key` placeholder metadata applied at runtime)
+  — include `pluginName` and `pluginDescription` (display metadata; not in the manifest)
 - other `assets/**` JSON/files for non-l10n extra data
 - documentary `pubspec.yaml` / `analysis_options.yaml` (embedded in `c_editor`; not a separate workspace path dep)
 

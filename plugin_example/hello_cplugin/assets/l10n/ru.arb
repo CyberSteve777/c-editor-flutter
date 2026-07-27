@@ -1,0 +1,5 @@
+{
+  "@@locale": "ru",
+  "pluginName": "Hello Plugin",
+  "pluginDescription": "Пример плагина: экран Hello и действия в интерфейсе редактора"
+}
