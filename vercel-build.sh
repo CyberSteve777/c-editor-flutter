@@ -13,7 +13,6 @@ flutter config --enable-web
 flutter precache --web
 flutter pub get
 DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
-# Stay on WASM. Default -O2 runs wasm-opt, which currently fails validation on
-# SplayTreeSet codegen pulled in via dart_eval (Flutter/Dart stable bug).
-# Plugin IconData is created at runtime, so icon tree-shaking must stay off.
+# -O0: wasm-opt fails on dart_eval/SplayTreeSet at default -O2 (dart2wasm bug).
+# --no-tree-shake-icons: plugins use runtime IconData(codePoint).
 flutter build web --release --wasm -O0 --no-tree-shake-icons ${DART_DEFINES}

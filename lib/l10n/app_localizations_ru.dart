@@ -152,6 +152,8 @@ class AppLocalizationsRu extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count импов',
+      many: '$count импов',
+      few: '$count импа',
       one: '1 имп',
     );
     return '$_temp0';
@@ -338,7 +340,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String pluginShowingCount(int count) {
-    return 'Показано плагинов: $count';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Показано $count плагинов',
+      many: 'Показано $count плагинов',
+      few: 'Показано $count плагина',
+      one: 'Показан $count плагин',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -526,7 +536,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String importFolderSuccess(int count) {
-    return 'Импортировано уровней: $count';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Импортировано $count уровней',
+      many: 'Импортировано $count уровней',
+      few: 'Импортировано $count уровня',
+      one: 'Импортирован $count уровень',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -664,6 +682,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get exportNoFilesFound => 'Нужные файлы не найдены (.rsb.smf).';
+
+  @override
+  String get exportDownloadExternalDynamic => 'Скачать dynamic…';
 
   @override
   String get cancelExportTitle => 'Отмена экспорта';
@@ -1013,8 +1034,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reset => 'Сброс';
 
   @override
-  String cacheCleared(Object count) {
-    return 'Очищено файлов в кэше: $count';
+  String cacheCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Очищено $count файлов в кэше',
+      many: 'Очищено $count файлов в кэше',
+      few: 'Очищено $count файла в кэше',
+      one: 'Очищен $count файл в кэше',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1848,7 +1877,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String deleteWaveConfirm(int count) {
-    return 'Будет удалена эта волна и её $count событий.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Будет удалена эта волна и её $count событий.',
+      many: 'Будет удалена эта волна и её $count событий.',
+      few: 'Будет удалена эта волна и её $count события.',
+      one: 'Будет удалена эта волна и её $count событие.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5630,12 +5667,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
-    return '$count подкормки';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count подкормок',
+      many: '$count подкормок',
+      few: '$count подкормки',
+      one: '1 подкормка',
+    );
+    return '$_temp0';
   }
 
   @override
   String waveDropPlantsCount(int count) {
-    return '$count растений';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count растений',
+      many: '$count растений',
+      few: '$count растения',
+      one: '1 растение',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -6065,7 +6118,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String clearUnusedDone(int count) {
-    return 'Удалено неиспользуемых объектов: $count.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Удалено $count неиспользуемых объектов.',
+      many: 'Удалено $count неиспользуемых объектов.',
+      few: 'Удалено $count неиспользуемых объекта.',
+      one: 'Удалён $count неиспользуемый объект.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7807,7 +7868,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String mustProtectCount(int count) {
-    return 'Current protected target count: $count';
+    return 'Текущее количество целей для защиты: $count';
   }
 
   @override
@@ -7927,7 +7988,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String importResourceGroupsFromStageSkipped(int count) {
-    return '$count групп(ы) ресурсов уже есть на этом уровне и будут пропущены.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count групп ресурсов уже есть на этом уровне и будут пропущены.',
+      many: '$count групп ресурсов уже есть на этом уровне и будут пропущены.',
+      few: '$count группы ресурсов уже есть на этом уровне и будут пропущены.',
+      one: '$count группа ресурсов уже есть на этом уровне и будет пропущена.',
+    );
+    return '$_temp0';
   }
 
   @override

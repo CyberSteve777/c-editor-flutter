@@ -140,7 +140,7 @@
   "pluginImportedBadge": "已导入",
   "pluginsFolderReserved": "“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。",
   "pluginNoLibraryForInstall": "请先选择关卡库文件夹，再安装插件。",
-  "pluginShowingCount": "显示 {count} 个插件",
+  "pluginShowingCount": "{count, plural, =1{显示 1 个插件} other{显示 {count} 个插件}}",
   "@pluginShowingCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -230,7 +230,7 @@
   "importFiles": "导入文件",
   "importFolder": "导入文件夹",
   "importFolderEmpty": "所选文件夹中没有关卡文件",
-  "importFolderSuccess": "已导入 {count} 个关卡",
+  "importFolderSuccess": "{count, plural, =1{已导入 1 个关卡} other{已导入 {count} 个关卡}}",
   "@importFolderSuccess": {
     "placeholders": {
       "count": { "type": "int" }
@@ -292,6 +292,7 @@
   "proceedWithoutBackup": "不备份直接继续",
   "backupSuffix": "_副本",
   "exportNoFilesFound": "未找到兼容的文件 (.rsb.smf)。",
+  "exportDownloadExternalDynamic": "下载 dynamic…",
   "cancelExportTitle": "取消导出",
   "cancelExportMessage": "确定要取消导出过程吗？",
   "exportDisclaimerTitle": "风险提示与免责声明",
@@ -411,7 +412,12 @@
   "large": "大",
   "done": "完成",
   "reset": "重置",
-  "cacheCleared": "已清理{count}个缓存文件",
+  "cacheCleared": "{count, plural, =1{已清理1个缓存文件} other{已清理{count}个缓存文件}}",
+  "@cacheCleared": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "returnUp": "返回上一级",
   "jsonFile": "JSON 文件",
   "convertToJson": "转换为 JSON",
@@ -642,7 +648,7 @@
   "noWaves": "暂无波次",
   "addFirstWave": "添加第一个波次。",
   "deleteWave": "删除波次",
-  "deleteWaveConfirm": "将移除此波次及其 {count} 个事件。",
+  "deleteWaveConfirm": "{count, plural, =1{将移除此波次及其 1 个事件。} other{将移除此波次及其 {count} 个事件。}}",
   "@deleteWaveConfirm": {
     "placeholders": {
       "count": {
@@ -1957,7 +1963,7 @@
   "dropConfigPlantFood": "掉落物配置（能量豆）",
   "waveDropConfigTitle": "掉落物配置",
   "waveDropTotalLabel": "携带掉落物的僵尸总数（AdditionalPlantfood）",
-  "waveDropPlantFoodOnlyCount": "{count} 个能量豆",
+  "waveDropPlantFoodOnlyCount": "{count, plural, =1{1 个能量豆} other{{count} 个能量豆}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
       "count": {
@@ -1965,7 +1971,7 @@
       }
     }
   },
-  "waveDropPlantsCount": "{count} 张植物卡片",
+  "waveDropPlantsCount": "{count, plural, =1{1 张植物卡片} other{{count} 张植物卡片}}",
   "@waveDropPlantsCount": {
     "placeholders": {
       "count": {
@@ -2107,7 +2113,7 @@
   "clearUnusedTitle": "清除未使用对象？",
   "clearUnusedMessage": "将永久删除关卡文件中所有未使用的对象，包括自定义僵尸、其属性及任何其他未被引用的数据。此操作不可撤销。确定继续？",
   "clearUnusedNone": "未找到未使用的对象。",
-  "clearUnusedDone": "已移除 {count} 个未使用对象。",
+  "clearUnusedDone": "{count, plural, =1{已移除 1 个未使用对象。} other{已移除 {count} 个未使用对象。}}",
   "@clearUnusedDone": {"placeholders": {"count": {"type": "int"}}},
   "lawnMowerTitle": "小推车样式设置",
   "lawnMowerNotes": "注意事项",
@@ -2326,7 +2332,7 @@
   "glacierModuleCompatibilityWarning": "此模块须与僵王战斗模块一起使用，且僵王须为冰河机甲（zombossmech_iceage）。请添加或修正相关设置，冰川障碍物才能召唤僵尸。",
   "glacierModuleColumn": "第 {columnIndex} 列（自左）",
   "@glacierModuleColumn": {"placeholders": {"columnIndex": {"type": "int"}}},
-  "glacierModuleEntryCount": "{count} 条",
+  "glacierModuleEntryCount": "{count, plural, =1{1 条} other{{count} 条}}",
   "@glacierModuleEntryCount": {"placeholders": {"count": {"type": "int"}}},
   "glacierModuleEntryLabel": "条目 {index}",
   "@glacierModuleEntryLabel": {"placeholders": {"index": {"type": "int"}}},
@@ -2748,7 +2754,7 @@
       }
     }
   },
-  "importResourceGroupsFromStageSkipped": "自定义地图已包含该地图的{count}个资源组，这些资源组将不再重复添加。",
+  "importResourceGroupsFromStageSkipped": "{count, plural, =1{自定义地图已包含该地图的1个资源组，该资源组将不再重复添加。} other{自定义地图已包含该地图的{count}个资源组，这些资源组将不再重复添加。}}",
   "@importResourceGroupsFromStageSkipped": {
     "placeholders": {
       "count": {

@@ -1,0 +1,53 @@
+{
+  "@@locale": "en",
+  "dynamicOfferTitle": "Download dynamic?",
+  "dynamicOfferBody": "No .rsb.smf files were found in your level library.\n\nDo you want to download a dynamic.rsb.smf from the Archiver2c/pvz2c-dynamic GitHub releases?",
+  "dynamicOfferYes": "Browse releases",
+  "dynamicOfferNo": "Not now",
+  "dynamicSelectTitle": "Select dynamic release",
+  "dynamicLatestBadge": "Latest",
+  "dynamicEmpty": "No releases with .rsb.smf assets were found.",
+  "dynamicDownloadTitle": "Downloading dynamic",
+  "dynamicDownloading": "Downloading…",
+  "dynamicDownloadDone": "Saved to {path}",
+  "@dynamicDownloadDone": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "dynamicFetchError": "Download failed: {error}",
+  "@dynamicFetchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "dynamicCancelTitle": "Cancel download?",
+  "dynamicCancelBody": "Stop downloading and discard the partial file?",
+  "dynamicCancelConfirm": "Cancel download",
+  "dynamicCancelKeep": "Keep downloading",
+  "dynamicCanceling": "Canceling…",
+  "dynamicCanceled": "Download canceled.",
+  "dynamicNoConnection": "No internet connection. Check your network and try again.",
+  "dynamicConnectionLost": "Connection lost while downloading. Please try again.",
+  "dynamicServerError": "Server error ({code}). Please try again later.",
+  "@dynamicServerError": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "dynamicRetry": "Retry",
+  "dynamicExistsTitle": "File already exists",
+  "dynamicExistsBody": "“{name}” is already in your level library.\n\nOverwrite it, or save under a different name?",
+  "@dynamicExistsBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicExistsOverwrite": "Overwrite",
+  "dynamicExistsRename": "Different name…",
+  "dynamicRenameTitle": "Save as",
+  "dynamicRenameHint": "File name",
+  "dynamicRenameConfirm": "Save",
+  "dynamicRenameInvalid": "Enter a valid file name.",
+  "dynamicRenameExists": "That file already exists. Choose another name."
+}

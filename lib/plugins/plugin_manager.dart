@@ -6,6 +6,7 @@ import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
 import 'package:c_editor/plugins/c_plugin_manifest.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
 import 'package:c_editor/plugins/plugin_downloader.dart';
+import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/plugins/plugin_host_impl.dart';
 import 'package:c_editor/plugins/plugin_kind.dart';
 import 'package:c_editor/plugins/plugin_package.dart';
@@ -82,6 +83,8 @@ class PluginManager extends ChangeNotifier {
   Future<void> reload() async {
     screenRegistry.clearAll();
     _runtimes.clear();
+    PluginHostHooks.openLevelPreview = null;
+    PluginHostHooks.offerExternalDynamic = null;
 
     final disabled = _disabledIds();
     final records = <InstalledPluginRecord>[];

@@ -332,6 +332,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  hive_ce:
+    dependency: transitive
+    description:
+      name: hive_ce
+      sha256: "8e9980e68643afb1e765d3af32b47996552a64e190d03faf622cea07c1294418"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.19.3"
+  hive_ce_flutter:
+    dependency: transitive
+    description:
+      name: hive_ce_flutter
+      sha256: "2677e95a333ff15af43ccd06af7eb7abbf1a4f154ea071997f3de4346cae913a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.4"
   hooks:
     dependency: transitive
     description:
@@ -373,13 +389,21 @@ packages:
     source: hosted
     version: "4.8.0"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
       url: "https://pub.dev"
     source: hosted
     version: "0.20.2"
+  isolate_channel:
+    dependency: transitive
+    description:
+      name: isolate_channel
+      sha256: a9d3d620695bc984244dafae00b95e4319d6974b2d77f4b9e1eb4f2efe099094
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.1"
   jni:
     dependency: transitive
     description:
@@ -508,6 +532,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  nice_downloader:
+    dependency: "direct main"
+    description:
+      name: nice_downloader
+      sha256: "213ca993c18cd31b64beff5e99ecfaf2c9653af41bcba42169b68cb93ce03ea3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.1"
   objective_c:
     dependency: transitive
     description:

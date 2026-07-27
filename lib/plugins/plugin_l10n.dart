@@ -10,6 +10,8 @@ String? lookupHostL10n(BuildContext context, String key) {
       return l10n.cancel;
     case 'confirm':
       return l10n.confirm;
+    case 'close':
+      return l10n.close;
     case 'error':
       return l10n.error;
     case 'warning':

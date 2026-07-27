@@ -703,7 +703,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginShowingCount.
   ///
   /// In en, this message translates to:
-  /// **'Showing {count} plugins'**
+  /// **'{count, plural, =1{Showing 1 plugin} other{Showing {count} plugins}}'**
   String pluginShowingCount(int count);
 
   /// No description provided for @pluginSearchHint.
@@ -1051,7 +1051,7 @@ abstract class AppLocalizations {
   /// No description provided for @importFolderSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Imported {count} level(s)'**
+  /// **'{count, plural, =1{Imported 1 level} other{Imported {count} levels}}'**
   String importFolderSuccess(int count);
 
   /// No description provided for @importFilesUnreadable.
@@ -1299,6 +1299,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No compatible files found (.rsb.smf).'**
   String get exportNoFilesFound;
+
+  /// No description provided for @exportDownloadExternalDynamic.
+  ///
+  /// In en, this message translates to:
+  /// **'Download dynamic…'**
+  String get exportDownloadExternalDynamic;
 
   /// No description provided for @cancelExportTitle.
   ///
@@ -1933,8 +1939,8 @@ abstract class AppLocalizations {
   /// No description provided for @cacheCleared.
   ///
   /// In en, this message translates to:
-  /// **'Cleared {count} cached files'**
-  String cacheCleared(Object count);
+  /// **'{count, plural, =1{Cleared 1 cached file} other{Cleared {count} cached files}}'**
+  String cacheCleared(int count);
 
   /// No description provided for @returnUp.
   ///
@@ -3463,7 +3469,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteWaveConfirm.
   ///
   /// In en, this message translates to:
-  /// **'This will remove this wave and its {count} events.'**
+  /// **'{count, plural, =1{This will remove this wave and its 1 event.} other{This will remove this wave and its {count} events.}}'**
   String deleteWaveConfirm(int count);
 
   /// No description provided for @deleteWaveConfirmCheckbox.
@@ -10187,13 +10193,13 @@ abstract class AppLocalizations {
   /// No description provided for @waveDropPlantFoodOnlyCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} plant food'**
+  /// **'{count, plural, =1{1 plant food} other{{count} plant food}}'**
   String waveDropPlantFoodOnlyCount(int count);
 
   /// No description provided for @waveDropPlantsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} plants'**
+  /// **'{count, plural, =1{1 plant} other{{count} plants}}'**
   String waveDropPlantsCount(int count);
 
   /// No description provided for @zombiesCarryingPlants.
@@ -10979,7 +10985,7 @@ abstract class AppLocalizations {
   /// No description provided for @clearUnusedDone.
   ///
   /// In en, this message translates to:
-  /// **'Removed {count} unused object(s).'**
+  /// **'{count, plural, =1{Removed 1 unused object.} other{Removed {count} unused objects.}}'**
   String clearUnusedDone(int count);
 
   /// No description provided for @lawnMowerTitle.
@@ -14285,7 +14291,7 @@ abstract class AppLocalizations {
   /// No description provided for @importResourceGroupsFromStageSkipped.
   ///
   /// In en, this message translates to:
-  /// **'{count} resource group(s) already in this level will be skipped.'**
+  /// **'{count, plural, =1{1 resource group already in this level will be skipped.} other{{count} resource groups already in this level will be skipped.}}'**
   String importResourceGroupsFromStageSkipped(int count);
 
   /// No description provided for @importResourceGroupsFromStageAllPresent.

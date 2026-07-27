@@ -6,7 +6,7 @@ as external `.cplugin` packages (see `plugin_example/hello_cplugin`):
 - `manifest.json` (id, authors, contributors, icon, links, incompatibilities, …)
 - `lib/main.dart` with `initialize(CPluginHost)` entrypoint
 - `lib/` Dart sources (barrel + `src/`)
-- `assets/l10n/{locale}.arb` for plugin-exclusive strings (ARB; `@` metadata ok)
+- `assets/l10n/{locale}.arb` for plugin-exclusive strings (ARB; `@key` placeholder metadata applied at runtime)
 - other `assets/**` JSON/files for non-l10n extra data
 - documentary `pubspec.yaml` / `analysis_options.yaml` (embedded in `c_editor`; not a separate workspace path dep)
 
@@ -17,6 +17,7 @@ but cannot uninstall them.
 | Plugin | Id | Path |
 |--------|----|------|
 | Level Preview | `team.international2c.level_preview` | [level_preview_cplugin/](level_preview_cplugin/) |
+| External Dynamic | `team.international2c.dynamic_fetch` | [dynamic_fetch_cplugin/](dynamic_fetch_cplugin/) |
 
 Pack an eval-safe external build (where supported):
 

@@ -37,7 +37,7 @@
   "heianWind": "Ветер Хэйан",
   "all": "Все",
   "impLv": "Ур. импа",
-  "impsCount": "{count, plural, =1{1 имп} other{{count} импов}}",
+  "impsCount": "{count, plural, one{1 имп} few{{count} импа} many{{count} импов} other{{count} импов}}",
   "sortByLabel": "Сортировка",
   "sortByName": "Сортировка: по имени",
   "sortByCreationDate": "Сортировка: по дате создания",
@@ -141,7 +141,7 @@
   "pluginImportedBadge": "Установленный",
   "pluginsFolderReserved": "Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.",
   "pluginNoLibraryForInstall": "Сначала выберите папку библиотеки уровней, затем установите плагины.",
-  "pluginShowingCount": "Показано плагинов: {count}",
+  "pluginShowingCount": "{count, plural, one{Показан {count} плагин} few{Показано {count} плагина} many{Показано {count} плагинов} other{Показано {count} плагинов}}",
   "@pluginShowingCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -192,7 +192,7 @@
   "importFiles": "Импортировать файлы",
   "importFolder": "Импортировать папку",
   "importFolderEmpty": "В выбранной папке нет файлов уровней",
-  "importFolderSuccess": "Импортировано уровней: {count}",
+  "importFolderSuccess": "{count, plural, one{Импортирован {count} уровень} few{Импортировано {count} уровня} many{Импортировано {count} уровней} other{Импортировано {count} уровней}}",
   "@importFolderSuccess": {
     "placeholders": {
       "count": { "type": "int" }
@@ -254,6 +254,7 @@
   "proceedWithoutBackup": "Продолжить без копии",
   "backupSuffix": "_копия",
   "exportNoFilesFound": "Нужные файлы не найдены (.rsb.smf).",
+  "exportDownloadExternalDynamic": "Скачать dynamic…",
   "cancelExportTitle": "Отмена экспорта",
   "cancelExportMessage": "Вы уверены, что хотите прервать процесс экспорта?",
   "exportDisclaimerTitle": "Предупреждение о рисках и отказ от ответственности",
@@ -411,7 +412,12 @@
   "large": "Большой",
   "done": "Готово",
   "reset": "Сброс",
-  "cacheCleared": "Очищено файлов в кэше: {count}",
+  "cacheCleared": "{count, plural, one{Очищен {count} файл в кэше} few{Очищено {count} файла в кэше} many{Очищено {count} файлов в кэше} other{Очищено {count} файлов в кэше}}",
+  "@cacheCleared": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "returnUp": "Назад",
   "jsonFile": "JSON-файл",
   "convertToJson": "Преобразовать в JSON",
@@ -642,7 +648,7 @@
   "noWaves": "Нет волн",
   "addFirstWave": "Добавьте первую волну.",
   "deleteWave": "Удалить волну",
-  "deleteWaveConfirm": "Будет удалена эта волна и её {count} событий.",
+  "deleteWaveConfirm": "{count, plural, one{Будет удалена эта волна и её {count} событие.} few{Будет удалена эта волна и её {count} события.} many{Будет удалена эта волна и её {count} событий.} other{Будет удалена эта волна и её {count} событий.}}",
   "@deleteWaveConfirm": {
     "placeholders": {
       "count": {
@@ -1957,7 +1963,7 @@
   "dropConfigPlantFood": "Настройка дропа (подкормка)",
   "waveDropConfigTitle": "Настройка дропа",
   "waveDropTotalLabel": "Всего зомби с дропом (AdditionalPlantfood)",
-  "waveDropPlantFoodOnlyCount": "{count} подкормки",
+  "waveDropPlantFoodOnlyCount": "{count, plural, one{1 подкормка} few{{count} подкормки} many{{count} подкормок} other{{count} подкормок}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
       "count": {
@@ -1965,7 +1971,7 @@
       }
     }
   },
-  "waveDropPlantsCount": "{count} растений",
+  "waveDropPlantsCount": "{count, plural, one{1 растение} few{{count} растения} many{{count} растений} other{{count} растений}}",
   "@waveDropPlantsCount": {
     "placeholders": {
       "count": {
@@ -2107,7 +2113,7 @@
   "clearUnusedTitle": "Удалить неиспользуемые объекты?",
   "clearUnusedMessage": "Будут безвозвратно удалены все неиспользуемые объекты из файла уровня, включая пользовательских зомби, их свойства и другие неиспользуемые данные. Действие нельзя отменить. Продолжить?",
   "clearUnusedNone": "Неиспользуемые объекты не найдены.",
-  "clearUnusedDone": "Удалено неиспользуемых объектов: {count}.",
+  "clearUnusedDone": "{count, plural, one{Удалён {count} неиспользуемый объект.} few{Удалено {count} неиспользуемых объекта.} many{Удалено {count} неиспользуемых объектов.} other{Удалено {count} неиспользуемых объектов.}}",
   "@clearUnusedDone": {"placeholders": {"count": {"type": "int"}}},
   "lawnMowerTitle": "Стиль газонокосилок",
   "lawnMowerNotes": "Заметки",
@@ -2697,7 +2703,7 @@
   "protectGridItemChallengeHelpOverview": "Specify the grid items that must be protected in the level. The level will immediately fail if any of them are destroyed.",
   "protectGridItemChallengeHelpAutoCountBody": "The editor will automatically update the number of grid items that need to be protected based on the number of items you add.",
   "protectGridItemChallengeHelpOperationGuide": "Click a position in the grid above, then click the \"Add item\" button to select the type of item to protect.",
-  "mustProtectCount": "Current protected target count: {count}",
+  "mustProtectCount": "Текущее количество целей для защиты: {count}",
   "@mustProtectCount": {
     "placeholders": {
       "count": {
@@ -2748,7 +2754,7 @@
       }
     }
   },
-  "importResourceGroupsFromStageSkipped": "{count} групп(ы) ресурсов уже есть на этом уровне и будут пропущены.",
+  "importResourceGroupsFromStageSkipped": "{count, plural, one{{count} группа ресурсов уже есть на этом уровне и будет пропущена.} few{{count} группы ресурсов уже есть на этом уровне и будут пропущены.} many{{count} групп ресурсов уже есть на этом уровне и будут пропущены.} other{{count} групп ресурсов уже есть на этом уровне и будут пропущены.}}",
   "@importResourceGroupsFromStageSkipped": {
     "placeholders": {
       "count": {

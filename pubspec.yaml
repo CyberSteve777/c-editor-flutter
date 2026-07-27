@@ -43,6 +43,8 @@ dependencies:
   eval_annotation: ^0.8.1
   http: ^1.6.0
   pub_semver: ^2.2.0
+  intl: ^0.20.2
+  nice_downloader: ^1.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -83,6 +85,11 @@ flutter:
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/en.arb
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/ru.arb
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/zh.arb
+    - lib/bundled_plugins/dynamic_fetch_cplugin/manifest.json
+    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/icon.png
+    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/en.arb
+    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/ru.arb
+    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/zh.arb
 
 flutter_launcher_icons:
   android: true
