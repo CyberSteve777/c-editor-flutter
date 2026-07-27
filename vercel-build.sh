@@ -15,4 +15,4 @@ flutter pub get
 DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
 # -O0: wasm-opt fails on dart_eval/SplayTreeSet at default -O2 (dart2wasm bug).
 # --no-tree-shake-icons: plugins use runtime IconData(codePoint).
-flutter build web --release --wasm --no-tree-shake-icons ${DART_DEFINES}
+flutter build web --release --wasm -O0 --no-tree-shake-icons ${DART_DEFINES}
