@@ -13,4 +13,6 @@ flutter config --enable-web
 flutter precache --web
 flutter pub get
 DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
-flutter build web --release -O0 --wasm ${DART_DEFINES}
+# -O0: wasm-opt fails on dart_eval/SplayTreeSet at default -O2 (dart2wasm bug).
+# --no-tree-shake-icons: plugins use runtime IconData(codePoint).
+flutter build web --release --wasm --no-tree-shake-icons ${DART_DEFINES}
