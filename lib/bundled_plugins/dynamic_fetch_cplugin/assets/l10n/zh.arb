@@ -1,0 +1,55 @@
+{
+  "@@locale": "zh",
+  "pluginName": "外部 Dynamic",
+  "pluginDescription": "在 RSB 导出未找到 .rsb.smf 时，可从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf",
+  "dynamicOfferTitle": "下载 dynamic？",
+  "dynamicOfferBody": "关卡库中未找到 .rsb.smf 文件。\n\n是否从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf？",
+  "dynamicOfferYes": "选择版本",
+  "dynamicOfferNo": "暂不",
+  "dynamicSelectTitle": "选择 dynamic 版本",
+  "dynamicLatestBadge": "最新",
+  "dynamicEmpty": "未找到包含 .rsb.smf 的发行版。",
+  "dynamicDownloadTitle": "正在下载 dynamic",
+  "dynamicDownloading": "下载中…",
+  "dynamicDownloadDone": "已保存到 {path}",
+  "@dynamicDownloadDone": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "dynamicFetchError": "下载失败：{error}",
+  "@dynamicFetchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "dynamicCancelTitle": "取消下载？",
+  "dynamicCancelBody": "停止下载并删除未完成的文件？",
+  "dynamicCancelConfirm": "取消下载",
+  "dynamicCancelKeep": "继续下载",
+  "dynamicCanceling": "正在取消…",
+  "dynamicCanceled": "下载已取消。",
+  "dynamicNoConnection": "无网络连接。请检查网络后重试。",
+  "dynamicConnectionLost": "下载过程中连接中断，请重试。",
+  "dynamicServerError": "服务器错误（{code}）。请稍后再试。",
+  "@dynamicServerError": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "dynamicRetry": "重试",
+  "dynamicExistsTitle": "文件已存在",
+  "dynamicExistsBody": "关卡库中已有 “{name}”。\n\n要覆盖它，还是另存为其他名称？",
+  "@dynamicExistsBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicExistsOverwrite": "覆盖",
+  "dynamicExistsRename": "其他名称…",
+  "dynamicRenameTitle": "另存为",
+  "dynamicRenameHint": "文件名",
+  "dynamicRenameConfirm": "保存",
+  "dynamicRenameInvalid": "请输入有效的文件名。",
+  "dynamicRenameExists": "该文件已存在，请换一个名称。"
+}

@@ -21,12 +21,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get success => 'Success';
 
   @override
-  String get levelPreview => 'Level Preview';
-
-  @override
-  String get previewStartingPlantFood => 'Starting Plant Food';
-
-  @override
   String get previewTabPlants => 'Plants';
 
   @override
@@ -34,24 +28,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get previewTabGridItems => 'Grid Items';
-
-  @override
-  String get previewPrePlaced => 'Placement';
-
-  @override
-  String get previewRegularPlants => 'Regular Plants';
-
-  @override
-  String get previewFrozenPlants => 'Frozen Plants';
-
-  @override
-  String get previewLevelContent => 'Level Content';
-
-  @override
-  String get previewSeedBank => 'Seed Bank';
-
-  @override
-  String get previewFeatures => 'Level Features';
 
   @override
   String get sunBombFalling => 'Sun Bombs are falling';
@@ -88,9 +64,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allEventsInLevel => 'All events in the level';
-
-  @override
-  String get previewInitial => 'Initial';
 
   @override
   String get overwhelmLabel => 'Column Like You See \'Em';
@@ -207,7 +180,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Toggle theme';
 
   @override
-  String get switchFolder => 'Switch folder';
+  String get switchFolder => 'Library manager';
+
+  @override
+  String get manageLibraries => 'Manage libraries';
+
+  @override
+  String get addLibrary => 'Add library';
+
+  @override
+  String get libraryName => 'Library name';
+
+  @override
+  String get libraryPath => 'Path';
+
+  @override
+  String get deleteLibraryTitle => 'Remove library?';
+
+  @override
+  String deleteLibraryMessage(String name) {
+    return 'Are you sure you want to remove \"$name\" from the library list? This will NOT delete any files on your disk.';
+  }
+
+  @override
+  String get defaultLibraryName => 'Default library';
+
+  @override
+  String get renameLibrary => 'Rename library';
+
+  @override
+  String get activeLibrary => 'Active';
+
+  @override
+  String get noLibrariesFound => 'No libraries added yet';
 
   @override
   String get clearCache => 'Clear cache';
@@ -228,6 +233,187 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutSoftware => 'About';
 
   @override
+  String get pluginsTitle => 'Plugins';
+
+  @override
+  String get pluginInstallFromDevice => 'Install from device';
+
+  @override
+  String get pluginInstallFromUrl => 'Install from URL';
+
+  @override
+  String get pluginInstallFromFolder => 'Load folder (debug)';
+
+  @override
+  String get pluginFolderHint =>
+      'Compiles a plugin package folder into C-Editor for testing.';
+
+  @override
+  String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
+
+  @override
+  String get pluginDownload => 'Download';
+
+  @override
+  String get pluginInstalling => 'Installing plugin…';
+
+  @override
+  String pluginDownloadProgress(String received, String total) {
+    return 'Downloading $received / $total';
+  }
+
+  @override
+  String pluginDownloadProgressUnknown(String received) {
+    return 'Downloading $received';
+  }
+
+  @override
+  String pluginInstallSuccess(String name) {
+    return 'Installed $name';
+  }
+
+  @override
+  String pluginInstallFailed(String error) {
+    return 'Install failed: $error';
+  }
+
+  @override
+  String pluginInvalidFile(String reason) {
+    return 'Not a valid plugin: $reason';
+  }
+
+  @override
+  String get pluginInvalidUrl => 'Enter a valid http(s) URL';
+
+  @override
+  String get pluginReadFailed => 'Could not read the selected file';
+
+  @override
+  String get pluginTrustWarningTitle => 'Trust warning';
+
+  @override
+  String get pluginTrustWarningBody =>
+      'Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.';
+
+  @override
+  String get pluginInstalledSection => 'Installed plugins';
+
+  @override
+  String get pluginScreensSection => 'Features & screens';
+
+  @override
+  String get pluginEmpty =>
+      'No plugins installed yet. Install a .cplugin file from your device or a download link.';
+
+  @override
+  String get pluginNoScreens => 'This plugin does not register any screens.';
+
+  @override
+  String get pluginUninstall => 'Uninstall';
+
+  @override
+  String get pluginUninstallTitle => 'Uninstall plugin';
+
+  @override
+  String pluginUninstallConfirm(String name) {
+    return 'Remove $name from this device?';
+  }
+
+  @override
+  String get pluginLoadError => 'Failed to load';
+
+  @override
+  String get pluginBundledBadge => 'Built-in';
+
+  @override
+  String get pluginImportedBadge => 'Imported';
+
+  @override
+  String get pluginsFolderReserved =>
+      'The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.';
+
+  @override
+  String get pluginNoLibraryForInstall =>
+      'Select a level library folder before installing plugins.';
+
+  @override
+  String pluginShowingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Showing $count plugins',
+      one: 'Showing 1 plugin',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pluginSearchHint => 'Search plugins';
+
+  @override
+  String get pluginSelectHint =>
+      'Select a plugin to view details, settings, and features.';
+
+  @override
+  String get pluginEnabled => 'Enabled';
+
+  @override
+  String get pluginDisabled => 'Disabled';
+
+  @override
+  String get pluginAuthors => 'Authors';
+
+  @override
+  String get pluginContributors => 'Contributors';
+
+  @override
+  String pluginByAuthors(String authors) {
+    return 'By $authors';
+  }
+
+  @override
+  String get pluginLicense => 'License';
+
+  @override
+  String pluginVersionLabel(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get pluginIdLabel => 'ID';
+
+  @override
+  String get pluginLinks => 'Links';
+
+  @override
+  String get pluginLinkWebsite => 'Website';
+
+  @override
+  String get pluginLinkIssues => 'Issues';
+
+  @override
+  String get pluginLinkSource => 'Source';
+
+  @override
+  String get pluginLinkDiscord => 'Discord';
+
+  @override
+  String get pluginIncompatibleWith => 'Incompatible with';
+
+  @override
+  String get pluginOpenScreen => 'Open';
+
+  @override
+  String get pluginFeaturesSection => 'Features & screens';
+
+  @override
+  String get pluginDropHint =>
+      'Install a .cplugin from your device or a download URL.';
+
+  @override
+  String get pluginNoDescription => 'No description provided.';
+
+  @override
   String get share => 'Share';
 
   @override
@@ -237,6 +423,69 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareLevelFailed => 'Could not share level file';
+
+  @override
+  String get shareAsFile => 'Share as File';
+
+  @override
+  String get shareAsPreview => 'Share as Preview';
+
+  @override
+  String get selectBackground => 'Select Background';
+
+  @override
+  String get autoSelectBackground => 'Auto-select';
+
+  @override
+  String get customBackground => 'Custom Background';
+
+  @override
+  String get selectPlantList => 'Select Plant List';
+
+  @override
+  String get levelContainsCustomZombies => 'Level contains custom zombies';
+
+  @override
+  String get generatingPreview => 'Generating preview...';
+
+  @override
+  String get saveToGallery => 'Save to Gallery';
+
+  @override
+  String get imageSavedSuccessfully => 'Image saved successfully';
+
+  @override
+  String get shareOptionTitle => 'How to share?';
+
+  @override
+  String get selectLevelType => 'Select Level Type';
+
+  @override
+  String get autoSelectLevelType => 'Auto-detect';
+
+  @override
+  String get manualSelectLevelType => 'Manual selection';
+
+  @override
+  String get levelTypeAdventure => 'Adventure';
+
+  @override
+  String get levelTypeLastStand => 'Last Stand';
+
+  @override
+  String get levelTypeConveyor => 'Conveyor';
+
+  @override
+  String get levelTypeSeedRain => 'Seed Rain';
+
+  @override
+  String get levelTypeIPlant => 'I, Plant';
+
+  @override
+  String get levelTypeOldStyle => 'Old-Style';
+
+  @override
+  String get levelTypeUnknown => 'Unknown';
 
   @override
   String get selectFolder => 'Select folder';
@@ -282,7 +531,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String importFolderSuccess(int count) {
-    return 'Imported $count level(s)';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Imported $count levels',
+      one: 'Imported 1 level',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -420,6 +675,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportNoFilesFound => 'No compatible files found (.rsb.smf).';
 
   @override
+  String get exportDownloadExternalDynamic => 'Download dynamic…';
+
+  @override
   String get cancelExportTitle => 'Cancel Export';
 
   @override
@@ -446,6 +704,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String transferProgressCount(int completed, int total) {
     return '$completed / $total';
   }
+
+  @override
+  String get folderAccessError =>
+      'The selected folder is read-only or inaccessible. Please select another folder.';
 
   @override
   String get webFolderImportNotice =>
@@ -760,8 +1022,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reset => 'Reset';
 
   @override
-  String cacheCleared(Object count) {
-    return 'Cleared $count cached files';
+  String cacheCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Cleared $count cached files',
+      one: 'Cleared 1 cached file',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1591,7 +1859,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deleteWaveConfirm(int count) {
-    return 'This will remove this wave and its $count events.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'This will remove this wave and its $count events.',
+      one: 'This will remove this wave and its 1 event.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5434,12 +5708,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
-    return '$count plant food';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plant food',
+      one: '1 plant food',
+    );
+    return '$_temp0';
   }
 
   @override
   String waveDropPlantsCount(int count) {
-    return '$count plants';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plants',
+      one: '1 plant',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5874,7 +6160,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String clearUnusedDone(int count) {
-    return 'Removed $count unused object(s).';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Removed $count unused objects.',
+      one: 'Removed 1 unused object.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7733,7 +8025,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String importResourceGroupsFromStageSkipped(int count) {
-    return '$count resource group(s) already in this level will be skipped.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count resource groups already in this level will be skipped.',
+      one: '1 resource group already in this level will be skipped.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7819,6 +8117,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startupLoadingImages => 'Images';
+
+  @override
+  String get startupLoadingPlugins => 'Plugins';
 
   @override
   String startupLoadingCategoryProgress(String category) {

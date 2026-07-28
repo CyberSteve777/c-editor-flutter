@@ -2,9 +2,9 @@ name: iOS Build (dev)
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   pull_request:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   workflow_dispatch:
     inputs:
       build_id:
@@ -216,12 +216,14 @@ jobs:
           if [ "$PROJECT_TYPE" = "flutter" ]; then
             cd "$REPO_ROOT"
             DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
+            # Plugin system + flutter_eval construct IconData at runtime.
+            EXTRA_FLAGS="--no-tree-shake-icons"
             if [ "$CONFIGURATION" = "Debug" ]; then
               echo "Building Flutter iOS Debug..."
-              flutter build ios --debug --no-codesign ${DART_DEFINES}
+              flutter build ios --debug --no-codesign ${DART_DEFINES} ${EXTRA_FLAGS}
             else
               echo "Building Flutter iOS Release..."
-              flutter build ios --release --no-codesign ${DART_DEFINES}
+              flutter build ios --release --no-codesign ${DART_DEFINES} ${EXTRA_FLAGS}
             fi
           elif [ "$PROJECT_TYPE" = "reactnative" ] || [ "$PROJECT_TYPE" = "expo" ]; then
             # Use xcodebuild directly for React Native/Expo

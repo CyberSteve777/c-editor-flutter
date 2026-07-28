@@ -21,12 +21,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get success => 'Успех';
 
   @override
-  String get levelPreview => 'Предпросмотр';
-
-  @override
-  String get previewStartingPlantFood => 'Начальная подкормка';
-
-  @override
   String get previewTabPlants => 'Растения';
 
   @override
@@ -34,24 +28,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get previewTabGridItems => 'Объекты';
-
-  @override
-  String get previewPrePlaced => 'Расстановка';
-
-  @override
-  String get previewRegularPlants => 'Обычные';
-
-  @override
-  String get previewFrozenPlants => 'Замороженные';
-
-  @override
-  String get previewLevelContent => 'Содержимое уровня';
-
-  @override
-  String get previewSeedBank => 'Банк семян';
-
-  @override
-  String get previewFeatures => 'Особенности';
 
   @override
   String get sunBombFalling => 'Падают солнечные бомбы';
@@ -75,10 +51,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get waveNumberLegend => 'Цифра — номер волны';
 
   @override
-  String get expand => 'Expand';
+  String get expand => 'Развернуть';
 
   @override
-  String get obtainableInLevel => 'Can be obtained in the level';
+  String get obtainableInLevel => 'Можно получить на уровне';
 
   @override
   String get allZombiesInLevel => 'Все зомби на уровне';
@@ -88,9 +64,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get allEventsInLevel => 'Все события на уровне';
-
-  @override
-  String get previewInitial => 'Начальные';
 
   @override
   String get overwhelmLabel => 'Заполнение колонн';
@@ -179,6 +152,8 @@ class AppLocalizationsRu extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count импов',
+      many: '$count импов',
+      few: '$count импа',
       one: '1 имп',
     );
     return '$_temp0';
@@ -207,7 +182,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get toggleTheme => 'Переключить тему';
 
   @override
-  String get switchFolder => 'Сменить папку';
+  String get switchFolder => 'Управление папками';
+
+  @override
+  String get manageLibraries => 'Управление папками';
+
+  @override
+  String get addLibrary => 'Добавить папку';
+
+  @override
+  String get libraryName => 'Название папки';
+
+  @override
+  String get libraryPath => 'Путь';
+
+  @override
+  String get deleteLibraryTitle => 'Удалить из списка?';
+
+  @override
+  String deleteLibraryMessage(String name) {
+    return 'Вы уверены, что хотите убрать «$name» из списка? Сами файлы на диске удалены НЕ будут.';
+  }
+
+  @override
+  String get defaultLibraryName => 'Основная папка';
+
+  @override
+  String get renameLibrary => 'Переименовать';
+
+  @override
+  String get activeLibrary => 'Активна';
+
+  @override
+  String get noLibrariesFound => 'Список папок пуст';
 
   @override
   String get clearCache => 'Очистить кэш';
@@ -228,6 +235,189 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aboutSoftware => 'О программе';
 
   @override
+  String get pluginsTitle => 'Плагины';
+
+  @override
+  String get pluginInstallFromDevice => 'Установить с устройства';
+
+  @override
+  String get pluginInstallFromUrl => 'Установить по URL';
+
+  @override
+  String get pluginInstallFromFolder => 'Загрузить папку (отладка)';
+
+  @override
+  String get pluginFolderHint =>
+      'Компилирует папку пакета плагина в C-Editor для тестирования.';
+
+  @override
+  String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
+
+  @override
+  String get pluginDownload => 'Скачать';
+
+  @override
+  String get pluginInstalling => 'Установка плагина…';
+
+  @override
+  String pluginDownloadProgress(String received, String total) {
+    return 'Загрузка $received / $total';
+  }
+
+  @override
+  String pluginDownloadProgressUnknown(String received) {
+    return 'Загрузка $received';
+  }
+
+  @override
+  String pluginInstallSuccess(String name) {
+    return 'Установлен $name';
+  }
+
+  @override
+  String pluginInstallFailed(String error) {
+    return 'Ошибка установки: $error';
+  }
+
+  @override
+  String pluginInvalidFile(String reason) {
+    return 'Неверный плагин: $reason';
+  }
+
+  @override
+  String get pluginInvalidUrl => 'Введите корректный http(s) URL';
+
+  @override
+  String get pluginReadFailed => 'Не удалось прочитать выбранный файл';
+
+  @override
+  String get pluginTrustWarningTitle => 'Предупреждение';
+
+  @override
+  String get pluginTrustWarningBody =>
+      'Плагины выполняют код внутри C-Editor. Устанавливайте плагины только из доверенных источников. Доступ к файлам и сети по умолчанию ограничен, но вредоносные плагины всё ещё могут нарушить работу интерфейса редактора.';
+
+  @override
+  String get pluginInstalledSection => 'Установленные плагины';
+
+  @override
+  String get pluginScreensSection => 'Функции и экраны';
+
+  @override
+  String get pluginEmpty =>
+      'Плагины ещё не установлены. Установите файл .cplugin с устройства или по ссылке.';
+
+  @override
+  String get pluginNoScreens => 'Этот плагин не регистрирует экраны.';
+
+  @override
+  String get pluginUninstall => 'Удалить';
+
+  @override
+  String get pluginUninstallTitle => 'Удалить плагин';
+
+  @override
+  String pluginUninstallConfirm(String name) {
+    return 'Удалить $name с этого устройства?';
+  }
+
+  @override
+  String get pluginLoadError => 'Ошибка загрузки';
+
+  @override
+  String get pluginBundledBadge => 'Встроенный';
+
+  @override
+  String get pluginImportedBadge => 'Установленный';
+
+  @override
+  String get pluginsFolderReserved =>
+      'Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.';
+
+  @override
+  String get pluginNoLibraryForInstall =>
+      'Сначала выберите папку библиотеки уровней, затем установите плагины.';
+
+  @override
+  String pluginShowingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Показано $count плагинов',
+      many: 'Показано $count плагинов',
+      few: 'Показано $count плагина',
+      one: 'Показан $count плагин',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pluginSearchHint => 'Поиск плагинов';
+
+  @override
+  String get pluginSelectHint =>
+      'Выберите плагин, чтобы увидеть сведения, настройки и функции.';
+
+  @override
+  String get pluginEnabled => 'Включён';
+
+  @override
+  String get pluginDisabled => 'Выключен';
+
+  @override
+  String get pluginAuthors => 'Авторы';
+
+  @override
+  String get pluginContributors => 'Участники';
+
+  @override
+  String pluginByAuthors(String authors) {
+    return 'Авторы: $authors';
+  }
+
+  @override
+  String get pluginLicense => 'Лицензия';
+
+  @override
+  String pluginVersionLabel(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get pluginIdLabel => 'ID';
+
+  @override
+  String get pluginLinks => 'Ссылки';
+
+  @override
+  String get pluginLinkWebsite => 'Сайт';
+
+  @override
+  String get pluginLinkIssues => 'Issues';
+
+  @override
+  String get pluginLinkSource => 'Исходный код';
+
+  @override
+  String get pluginLinkDiscord => 'Discord';
+
+  @override
+  String get pluginIncompatibleWith => 'Несовместим с';
+
+  @override
+  String get pluginOpenScreen => 'Открыть';
+
+  @override
+  String get pluginFeaturesSection => 'Функции и экраны';
+
+  @override
+  String get pluginDropHint =>
+      'Установите .cplugin с устройства или по ссылке.';
+
+  @override
+  String get pluginNoDescription => 'Описание не указано.';
+
+  @override
   String get share => 'Поделиться';
 
   @override
@@ -237,6 +427,70 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get shareLevelFailed => 'Не удалось поделиться файлом уровня';
+
+  @override
+  String get shareAsFile => 'Поделиться файлом';
+
+  @override
+  String get shareAsPreview => 'Поделиться превью';
+
+  @override
+  String get selectBackground => 'Выберите фон';
+
+  @override
+  String get autoSelectBackground => 'Автоподбор';
+
+  @override
+  String get customBackground => 'Свой фон';
+
+  @override
+  String get selectPlantList => 'Выберите список растений';
+
+  @override
+  String get levelContainsCustomZombies =>
+      'В уровне присутствуют кастомные зомби';
+
+  @override
+  String get generatingPreview => 'Создание превью...';
+
+  @override
+  String get saveToGallery => 'Сохранить в галерею';
+
+  @override
+  String get imageSavedSuccessfully => 'Изображение успешно сохранено';
+
+  @override
+  String get shareOptionTitle => 'Как поделиться?';
+
+  @override
+  String get selectLevelType => 'Выберите тип уровня';
+
+  @override
+  String get autoSelectLevelType => 'Автоподбор';
+
+  @override
+  String get manualSelectLevelType => 'Ручной выбор';
+
+  @override
+  String get levelTypeAdventure => 'Приключение';
+
+  @override
+  String get levelTypeLastStand => 'Последний рубеж';
+
+  @override
+  String get levelTypeConveyor => 'Конвейер';
+
+  @override
+  String get levelTypeSeedRain => 'Дождь из семян';
+
+  @override
+  String get levelTypeIPlant => 'Я растение';
+
+  @override
+  String get levelTypeOldStyle => 'Старый тип';
+
+  @override
+  String get levelTypeUnknown => 'Неизвестно';
 
   @override
   String get selectFolder => 'Выбрать папку';
@@ -282,7 +536,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String importFolderSuccess(int count) {
-    return 'Импортировано уровней: $count';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Импортировано $count уровней',
+      many: 'Импортировано $count уровней',
+      few: 'Импортировано $count уровня',
+      one: 'Импортирован $count уровень',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -422,6 +684,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportNoFilesFound => 'Нужные файлы не найдены (.rsb.smf).';
 
   @override
+  String get exportDownloadExternalDynamic => 'Скачать dynamic…';
+
+  @override
   String get cancelExportTitle => 'Отмена экспорта';
 
   @override
@@ -449,6 +714,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String transferProgressCount(int completed, int total) {
     return '$completed / $total';
   }
+
+  @override
+  String get folderAccessError =>
+      'Выбранная папка доступна только для чтения или недоступна. Пожалуйста, выберите другую папку.';
 
   @override
   String get webFolderImportNotice =>
@@ -765,8 +1034,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reset => 'Сброс';
 
   @override
-  String cacheCleared(Object count) {
-    return 'Очищено файлов в кэше: $count';
+  String cacheCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Очищено $count файлов в кэше',
+      many: 'Очищено $count файлов в кэше',
+      few: 'Очищено $count файла в кэше',
+      one: 'Очищен $count файл в кэше',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1600,7 +1877,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String deleteWaveConfirm(int count) {
-    return 'Будет удалена эта волна и её $count событий.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Будет удалена эта волна и её $count событий.',
+      many: 'Будет удалена эта волна и её $count событий.',
+      few: 'Будет удалена эта волна и её $count события.',
+      one: 'Будет удалена эта волна и её $count событие.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5382,12 +5667,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
-    return '$count подкормки';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count подкормок',
+      many: '$count подкормок',
+      few: '$count подкормки',
+      one: '1 подкормка',
+    );
+    return '$_temp0';
   }
 
   @override
   String waveDropPlantsCount(int count) {
-    return '$count растений';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count растений',
+      many: '$count растений',
+      few: '$count растения',
+      one: '1 растение',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5817,7 +6118,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String clearUnusedDone(int count) {
-    return 'Удалено неиспользуемых объектов: $count.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Удалено $count неиспользуемых объектов.',
+      many: 'Удалено $count неиспользуемых объектов.',
+      few: 'Удалено $count неиспользуемых объекта.',
+      one: 'Удалён $count неиспользуемый объект.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7559,7 +7868,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String mustProtectCount(int count) {
-    return 'Current protected target count: $count';
+    return 'Текущее количество целей для защиты: $count';
   }
 
   @override
@@ -7679,7 +7988,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String importResourceGroupsFromStageSkipped(int count) {
-    return '$count групп(ы) ресурсов уже есть на этом уровне и будут пропущены.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count групп ресурсов уже есть на этом уровне и будут пропущены.',
+      many: '$count групп ресурсов уже есть на этом уровне и будут пропущены.',
+      few: '$count группы ресурсов уже есть на этом уровне и будут пропущены.',
+      one: '$count группа ресурсов уже есть на этом уровне и будет пропущена.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7768,6 +8085,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get startupLoadingImages => 'Изображения';
+
+  @override
+  String get startupLoadingPlugins => 'Плагины';
 
   @override
   String startupLoadingCategoryProgress(String category) {

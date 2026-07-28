@@ -70,3 +70,15 @@ flutter analyze    # Lint / static analysis
 flutter test       # Run tests
 flutter gen-l10n   # Regenerate localization (after editing assets/l10n/*.arb)
 ```
+
+## License
+
+C-Editor is licensed under the [GNU Lesser General Public License v3.0](LICENSE) (see also [COPYING](COPYING) for the GPL-3.0 terms incorporated by LGPL-3.0).
+
+Third-party components kept under their own terms:
+
+| Path | Origin | License |
+|------|--------|---------|
+| `lib/utils/3rdParty/sen/` | [Sen](https://github.com/harumazzz/Sen) (Haruma) | [GPL-3.0](lib/utils/3rdParty/sen/LICENSE) |
+| `lib/utils/3rdParty/pyvz2/` | PyVZ2-derived RTON codec | Covered by this project's LGPL-3.0 (with author permission) |
+| `third_party/flutter_eval/` | Vendored [flutter_eval](https://pub.dev/packages/flutter_eval) | BSD-3-Clause |

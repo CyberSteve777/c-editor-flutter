@@ -1,0 +1,5 @@
+{
+  "@@locale": "zh",
+  "pluginName": "Hello Plugin",
+  "pluginDescription": "示例插件：注册 Hello 屏幕与编辑器界面操作"
+}

@@ -13,6 +13,7 @@ import 'web/web_file_system_access.dart';
 import 'web/web_level_idb_store.dart';
 import 'web/web_transfer_progress.dart';
 import 'web/web_zip_builder.dart';
+import 'package:c_editor/plugins/plugin_constants.dart';
 
 /// Virtual path prefix for web - files opened via picker have no real path.
 const String _webPathPrefix = 'web://';
@@ -81,6 +82,22 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   static const _prefsFolderKey = 'folder_path';
   static const _prefsLastLevelDirKey = 'last_level_directory';
   static const _defaultLibraryLabel = 'My levels';
+
+  @override
+  Future<List<LibraryItem>> getLibraries() async {
+    await _ensureReady();
+    return [
+      LibraryItem(
+        path: _webPathPrefix,
+        displayName: _defaultLibraryLabel,
+      )
+    ];
+  }
+
+  @override
+  Future<void> setLibraries(List<LibraryItem> libraries) async {
+    // Web currently only supports the internal virtual storage
+  }
 
   final Map<String, Uint8List> _memoryCache = {};
   final Set<String> _directories = {_webPathPrefix};
@@ -335,9 +352,11 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
         .where((d) => d != normalized && _parentWebDir(d) == normalized)
         .toList();
     for (final dir in childDirs) {
+      final leaf = _leafNameFromWebPath(dir);
+      if (isReservedLibraryFolderName(leaf)) continue;
       items.add(
         FileItem(
-          name: _leafNameFromWebPath(dir),
+          name: leaf,
           path: dir,
           isDirectory: true,
           lastModified: 0,
@@ -406,6 +425,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     if (trimmed.isEmpty || trimmed.contains('/') || trimmed.contains('\\')) {
       return false;
     }
+    if (isReservedLibraryFolderName(trimmed)) return false;
     final parent = _normalizeWebDirPath(parentPath);
     if (!_directories.contains(parent)) return false;
     final newDir = _webJoin(parent, trimmed);
@@ -430,6 +450,11 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     if (newName.trim().isEmpty ||
         newName.contains('/') ||
         newName.contains('\\')) {
+      return false;
+    }
+    if (isDirectory &&
+        (isReservedLibraryFolderName(newName) ||
+            isReservedLibraryFolderName(oldName))) {
       return false;
     }
     if (isDirectory) {
