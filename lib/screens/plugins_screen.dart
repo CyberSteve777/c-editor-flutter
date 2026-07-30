@@ -11,6 +11,7 @@ import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Plugin manager — master/detail layout inspired by Minecraft's mod menu.
@@ -141,12 +142,12 @@ class _PluginsScreenState extends State<PluginsScreen> {
       final record = await action();
       if (!mounted) return;
       setState(() => _selectedPluginId = record.id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.pluginInstallSuccess(record.localizedName(
-            Localizations.localeOf(context).languageCode,
-          ))),
-        ),
+      AppMessage.show(
+        context,
+        l10n.pluginInstallSuccess(record.localizedName(
+          Localizations.localeOf(context).languageCode,
+        )),
+        icon: Icons.check_circle,
       );
     } on CPluginValidationException catch (e) {
       _showError(l10n.pluginInvalidFile(e.message));
@@ -172,9 +173,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
 
   void _showError(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    AppMessage.show(context, message, icon: Icons.error_outline);
   }
 
   Future<void> _toggleEnabled(
