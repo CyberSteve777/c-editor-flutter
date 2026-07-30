@@ -11,6 +11,7 @@ import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Plugin manager — master/detail layout inspired by Minecraft's mod menu.
@@ -141,12 +142,12 @@ class _PluginsScreenState extends State<PluginsScreen> {
       final record = await action();
       if (!mounted) return;
       setState(() => _selectedPluginId = record.id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.pluginInstallSuccess(record.localizedName(
-            Localizations.localeOf(context).languageCode,
-          ))),
-        ),
+      AppMessage.show(
+        context,
+        l10n.pluginInstallSuccess(record.localizedName(
+          Localizations.localeOf(context).languageCode,
+        )),
+        icon: Icons.check_circle,
       );
     } on CPluginValidationException catch (e) {
       _showError(l10n.pluginInvalidFile(e.message));
@@ -172,9 +173,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
 
   void _showError(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    AppMessage.show(context, message, icon: Icons.error_outline);
   }
 
   Future<void> _toggleEnabled(
@@ -189,7 +188,8 @@ class _PluginsScreenState extends State<PluginsScreen> {
     }
   }
 
-  Future<void> _uninstall(InstalledPluginRecord plugin) async {
+  /// Returns `true` if the plugin was uninstalled.
+  Future<bool> _uninstall(InstalledPluginRecord plugin) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -210,13 +210,14 @@ class _PluginsScreenState extends State<PluginsScreen> {
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (confirmed != true) return false;
     setState(() => _busy = true);
     try {
       await _manager.uninstall(plugin.id);
       if (_selectedPluginId == plugin.id) {
         _selectedPluginId = null;
       }
+      return true;
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -451,7 +452,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
                               if (plugin == null) return;
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
-                                  builder: (_) => _PluginDetailPage(
+                                  builder: (detailContext) => _PluginDetailPage(
                                     plugin: plugin,
                                     busy: _busy,
                                     screens: _manager.screenRegistry.screens
@@ -459,7 +460,12 @@ class _PluginsScreenState extends State<PluginsScreen> {
                                         .toList(growable: false),
                                     onToggle: (v) =>
                                         _toggleEnabled(plugin, v),
-                                    onUninstall: () => _uninstall(plugin),
+                                    onUninstall: () async {
+                                      final removed = await _uninstall(plugin);
+                                      if (removed && detailContext.mounted) {
+                                        Navigator.of(detailContext).pop();
+                                      }
+                                    },
                                     onOpenScreen: _openScreen,
                                   ),
                                 ),
@@ -652,7 +658,7 @@ class _PluginDetailPage extends StatelessWidget {
   final bool busy;
   final List<PluginRegisteredScreen> screens;
   final ValueChanged<bool> onToggle;
-  final VoidCallback onUninstall;
+  final Future<void> Function() onUninstall;
   final ValueChanged<PluginRegisteredScreen> onOpenScreen;
 
   @override
@@ -688,7 +694,7 @@ class _PluginDetailPane extends StatelessWidget {
   final bool busy;
   final List<PluginRegisteredScreen> screens;
   final ValueChanged<bool> onToggle;
-  final VoidCallback onUninstall;
+  final Future<void> Function() onUninstall;
   final ValueChanged<PluginRegisteredScreen> onOpenScreen;
 
   @override
