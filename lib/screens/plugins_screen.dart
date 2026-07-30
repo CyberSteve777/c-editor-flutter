@@ -188,7 +188,8 @@ class _PluginsScreenState extends State<PluginsScreen> {
     }
   }
 
-  Future<void> _uninstall(InstalledPluginRecord plugin) async {
+  /// Returns `true` if the plugin was uninstalled.
+  Future<bool> _uninstall(InstalledPluginRecord plugin) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -209,13 +210,14 @@ class _PluginsScreenState extends State<PluginsScreen> {
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (confirmed != true) return false;
     setState(() => _busy = true);
     try {
       await _manager.uninstall(plugin.id);
       if (_selectedPluginId == plugin.id) {
         _selectedPluginId = null;
       }
+      return true;
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -450,7 +452,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
                               if (plugin == null) return;
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
-                                  builder: (_) => _PluginDetailPage(
+                                  builder: (detailContext) => _PluginDetailPage(
                                     plugin: plugin,
                                     busy: _busy,
                                     screens: _manager.screenRegistry.screens
@@ -458,7 +460,12 @@ class _PluginsScreenState extends State<PluginsScreen> {
                                         .toList(growable: false),
                                     onToggle: (v) =>
                                         _toggleEnabled(plugin, v),
-                                    onUninstall: () => _uninstall(plugin),
+                                    onUninstall: () async {
+                                      final removed = await _uninstall(plugin);
+                                      if (removed && detailContext.mounted) {
+                                        Navigator.of(detailContext).pop();
+                                      }
+                                    },
                                     onOpenScreen: _openScreen,
                                   ),
                                 ),
@@ -651,7 +658,7 @@ class _PluginDetailPage extends StatelessWidget {
   final bool busy;
   final List<PluginRegisteredScreen> screens;
   final ValueChanged<bool> onToggle;
-  final VoidCallback onUninstall;
+  final Future<void> Function() onUninstall;
   final ValueChanged<PluginRegisteredScreen> onOpenScreen;
 
   @override
@@ -687,7 +694,7 @@ class _PluginDetailPane extends StatelessWidget {
   final bool busy;
   final List<PluginRegisteredScreen> screens;
   final ValueChanged<bool> onToggle;
-  final VoidCallback onUninstall;
+  final Future<void> Function() onUninstall;
   final ValueChanged<PluginRegisteredScreen> onOpenScreen;
 
   @override
