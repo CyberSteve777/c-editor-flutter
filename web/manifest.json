@@ -6,7 +6,7 @@
     "background_color": "#ffffff",
     "theme_color": "#1976d2",
     "description": "Level Editor for Plants vs. Zombies 2 Chinese",
-    "orientation": "portrait-primary",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
