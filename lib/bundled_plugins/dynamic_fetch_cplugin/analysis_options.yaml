@@ -1,0 +1,9 @@
+# Documentary package only — sources are part of package:c_editor at runtime.
+# Nested pubspec exists for layout parity with plugin_example/hello_cplugin; it is
+# not a workspace path dependency of the root app (avoids circular deps).
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    # Host APIs are provided by embedding package:c_editor, not this pubspec.
+    depend_on_referenced_packages: ignore

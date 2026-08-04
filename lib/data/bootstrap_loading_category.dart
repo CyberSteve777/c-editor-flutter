@@ -11,7 +11,8 @@ enum BootstrapLoadingCategory {
   zombies,
   plants,
   fish,
-  images;
+  images,
+  plugins;
 
   String localized(AppLocalizations l10n) {
     return switch (this) {
@@ -26,6 +27,7 @@ enum BootstrapLoadingCategory {
       BootstrapLoadingCategory.plants => l10n.startupLoadingPlants,
       BootstrapLoadingCategory.fish => l10n.startupLoadingFish,
       BootstrapLoadingCategory.images => l10n.startupLoadingImages,
+      BootstrapLoadingCategory.plugins => l10n.startupLoadingPlugins,
     };
   }
 

@@ -4,25 +4,18 @@
   "warning": "Предупреждение",
   "info": "Информация",
   "success": "Успех",
-  "levelPreview": "Предпросмотр",
-  "previewStartingPlantFood": "Начальная подкормка",
   "previewTabPlants": "Растения",
   "previewTabZombies": "Зомби",
   "previewTabGridItems": "Объекты",
-  "previewInitial": "Начальные",
-  "previewPrePlaced": "Расстановка",
-  "previewRegularPlants": "Обычные",
-  "previewFrozenPlants": "Замороженные",
-  "previewLevelContent": "Содержимое уровня",
-  "previewSeedBank": "Банк семян",
   "conveyorChanges": "Изменения в конвейере",
   "willBeAdded": "добавится",
   "willBeRemoved": "удалится",
   "waveNumberLegend": "Цифра — номер волны",
+  "expand": "Развернуть",
+  "obtainableInLevel": "Можно получить на уровне",
   "allZombiesInLevel": "Все зомби на уровне",
   "allObjectsInLevel": "Все объекты на уровне",
   "allEventsInLevel": "Все события на уровне",
-  "previewFeatures": "Особенности",
   "overwhelmLabel": "Заполнение колонн",
   "fastEntryLabel": "Быстрый вход",
   "zombieRushLabel": "Таймер уровня",
@@ -44,7 +37,7 @@
   "heianWind": "Ветер Хэйан",
   "all": "Все",
   "impLv": "Ур. импа",
-  "impsCount": "{count, plural, =1{1 имп} other{{count} импов}}",
+  "impsCount": "{count, plural, one{1 имп} few{{count} импа} many{{count} импов} other{{count} импов}}",
   "sortByLabel": "Сортировка",
   "sortByName": "Сортировка: по имени",
   "sortByCreationDate": "Сортировка: по дате создания",
@@ -68,11 +61,122 @@
   "about": "О программе",
   "refresh": "Обновить",
   "toggleTheme": "Переключить тему",
-  "switchFolder": "Сменить папку",
+  "switchFolder": "Управление папками",
+  "manageLibraries": "Управление папками",
+  "addLibrary": "Добавить папку",
+  "libraryName": "Название папки",
+  "libraryPath": "Путь",
+  "deleteLibraryTitle": "Удалить из списка?",
+  "deleteLibraryMessage": "Вы уверены, что хотите убрать «{name}» из списка? Сами файлы на диске удалены НЕ будут.",
+  "@deleteLibraryMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "defaultLibraryName": "Основная папка",
+  "renameLibrary": "Переименовать",
+  "activeLibrary": "Активна",
+  "noLibrariesFound": "Список папок пуст",
   "ultra": "Ультра",
   "clearCache": "Очистить кэш",
   "uiSize": "Размер интерфейса",
   "aboutSoftware": "О программе",
+  "pluginsTitle": "Плагины",
+  "pluginInstallFromDevice": "Установить с устройства",
+  "pluginInstallFromUrl": "Установить по URL",
+  "pluginInstallFromFolder": "Загрузить папку (отладка)",
+  "pluginFolderHint": "Компилирует папку пакета плагина в C-Editor для тестирования.",
+  "pluginUrlHint": "https://example.com/my_plugin.cplugin",
+  "pluginDownload": "Скачать",
+  "pluginInstalling": "Установка плагина…",
+  "pluginDownloadProgress": "Загрузка {received} / {total}",
+  "@pluginDownloadProgress": {
+    "placeholders": {
+      "received": { "type": "String" },
+      "total": { "type": "String" }
+    }
+  },
+  "pluginDownloadProgressUnknown": "Загрузка {received}",
+  "@pluginDownloadProgressUnknown": {
+    "placeholders": {
+      "received": { "type": "String" }
+    }
+  },
+  "pluginInstallSuccess": "Установлен {name}",
+  "@pluginInstallSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginInstallFailed": "Ошибка установки: {error}",
+  "@pluginInstallFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "pluginInvalidFile": "Неверный плагин: {reason}",
+  "@pluginInvalidFile": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "pluginInvalidUrl": "Введите корректный http(s) URL",
+  "pluginReadFailed": "Не удалось прочитать выбранный файл",
+  "pluginTrustWarningTitle": "Предупреждение",
+  "pluginTrustWarningBody": "Плагины выполняют код внутри C-Editor. Устанавливайте плагины только из доверенных источников. Доступ к файлам и сети по умолчанию ограничен, но вредоносные плагины всё ещё могут нарушить работу интерфейса редактора.",
+  "pluginInstalledSection": "Установленные плагины",
+  "pluginScreensSection": "Функции и экраны",
+  "pluginEmpty": "Плагины ещё не установлены. Установите файл .cplugin с устройства или по ссылке.",
+  "pluginNoScreens": "Этот плагин не регистрирует экраны.",
+  "pluginUninstall": "Удалить",
+  "pluginUninstallTitle": "Удалить плагин",
+  "pluginUninstallConfirm": "Удалить {name} с этого устройства?",
+  "@pluginUninstallConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginLoadError": "Ошибка загрузки",
+  "pluginBundledBadge": "Встроенный",
+  "pluginImportedBadge": "Установленный",
+  "pluginsFolderReserved": "Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.",
+  "pluginNoLibraryForInstall": "Сначала выберите папку библиотеки уровней, затем установите плагины.",
+  "pluginShowingCount": "{count, plural, one{Показан {count} плагин} few{Показано {count} плагина} many{Показано {count} плагинов} other{Показано {count} плагинов}}",
+  "@pluginShowingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pluginSearchHint": "Поиск плагинов",
+  "pluginSelectHint": "Выберите плагин, чтобы увидеть сведения, настройки и функции.",
+  "pluginEnabled": "Включён",
+  "pluginDisabled": "Выключен",
+  "pluginAuthors": "Авторы",
+  "pluginContributors": "Участники",
+  "pluginByAuthors": "Авторы: {authors}",
+  "@pluginByAuthors": {
+    "placeholders": {
+      "authors": { "type": "String" }
+    }
+  },
+  "pluginLicense": "Лицензия",
+  "pluginVersionLabel": "v{version}",
+  "@pluginVersionLabel": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "pluginIdLabel": "ID",
+  "pluginLinks": "Ссылки",
+  "pluginLinkWebsite": "Сайт",
+  "pluginLinkIssues": "Issues",
+  "pluginLinkSource": "Исходный код",
+  "pluginLinkDiscord": "Discord",
+  "pluginIncompatibleWith": "Несовместим с",
+  "pluginOpenScreen": "Открыть",
+  "pluginFeaturesSection": "Функции и экраны",
+  "pluginDropHint": "Установите .cplugin с устройства или по ссылке.",
+  "pluginNoDescription": "Описание не указано.",
   "selectFolder": "Выбрать папку",
   "storagePermissionHint": "Требуется разрешение на доступ к хранилищу. Включите «Разрешить управление всеми файлами» в настройках.",
   "storagePermissionDialogTitle": "Требуется разрешение на хранилище",
@@ -86,7 +190,7 @@
   "importFiles": "Импортировать файлы",
   "importFolder": "Импортировать папку",
   "importFolderEmpty": "В выбранной папке нет файлов уровней",
-  "importFolderSuccess": "Импортировано уровней: {count}",
+  "importFolderSuccess": "{count, plural, one{Импортирован {count} уровень} few{Импортировано {count} уровня} many{Импортировано {count} уровней} other{Импортировано {count} уровней}}",
   "@importFolderSuccess": {
     "placeholders": {
       "count": { "type": "int" }
@@ -148,6 +252,7 @@
   "proceedWithoutBackup": "Продолжить без копии",
   "backupSuffix": "_копия",
   "exportNoFilesFound": "Нужные файлы не найдены (.rsb.smf).",
+  "exportDownloadExternalDynamic": "Скачать dynamic…",
   "cancelExportTitle": "Отмена экспорта",
   "cancelExportMessage": "Вы уверены, что хотите прервать процесс экспорта?",
   "exportDisclaimerTitle": "Предупреждение о рисках и отказ от ответственности",
@@ -156,6 +261,13 @@
   "exportProgressTitle": "Подготовка экспорта…",
   "backupProgressTitle": "Создание резервной копии…",
   "transferProgressCount": "{completed} / {total}",
+  "@transferProgressCount": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "folderAccessError": "Выбранная папка доступна только для чтения или недоступна. Пожалуйста, выберите другую папку.",
   "webFolderImportNotice": "Папка импортирована в хранилище браузера. В этом браузере изменения не записываются на диск автоматически — используйте «Экспорт».",
   "share": "Поделиться",
   "shareLevelFileText": "Файл уровня: {name}",
@@ -166,6 +278,27 @@
     }
   },
   "shareLevelFailed": "Не удалось поделиться файлом уровня",
+  "shareAsFile": "Поделиться файлом",
+  "shareAsPreview": "Поделиться превью",
+  "selectBackground": "Выберите фон",
+  "autoSelectBackground": "Автоподбор",
+  "customBackground": "Свой фон",
+  "selectPlantList": "Выберите список растений",
+  "levelContainsCustomZombies": "В уровне присутствуют кастомные зомби",
+  "generatingPreview": "Создание превью...",
+  "saveToGallery": "Сохранить в галерею",
+  "imageSavedSuccessfully": "Изображение успешно сохранено",
+  "shareOptionTitle": "Как поделиться?",
+  "selectLevelType": "Выберите тип уровня",
+  "autoSelectLevelType": "Автоподбор",
+  "manualSelectLevelType": "Ручной выбор",
+  "levelTypeAdventure": "Приключение",
+  "levelTypeLastStand": "Последний рубеж",
+  "levelTypeConveyor": "Конвейер",
+  "levelTypeSeedRain": "Дождь из семян",
+  "levelTypeIPlant": "Я растение",
+  "levelTypeOldStyle": "Старый тип",
+  "levelTypeUnknown": "Неизвестно",
   "favorite": "В избранное",
   "unfavorite": "Убрать из избранного",
   "move": "Переместить",
@@ -277,7 +410,12 @@
   "large": "Большой",
   "done": "Готово",
   "reset": "Сброс",
-  "cacheCleared": "Очищено файлов в кэше: {count}",
+  "cacheCleared": "{count, plural, one{Очищен {count} файл в кэше} few{Очищено {count} файла в кэше} many{Очищено {count} файлов в кэше} other{Очищено {count} файлов в кэше}}",
+  "@cacheCleared": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "returnUp": "Назад",
   "jsonFile": "JSON-файл",
   "convertToJson": "Преобразовать в JSON",
@@ -398,6 +536,13 @@
   "defaultPropertiesLabel": "По умолчанию",
   "addNewVariation": "+ Добавить вариант",
   "editCustomZombieAlias": "Редактировать {alias}",
+  "@editCustomZombieAlias": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "switchZombie": "Сменить зомби",
   "customZombieAppearanceLocation": "Появление:",
   "customZombieNotUsed": "Этот кастомный зомби не используется ни в одной волне.",
@@ -501,7 +646,7 @@
   "noWaves": "Нет волн",
   "addFirstWave": "Добавьте первую волну.",
   "deleteWave": "Удалить волну",
-  "deleteWaveConfirm": "Будет удалена эта волна и её {count} событий.",
+  "deleteWaveConfirm": "{count, plural, one{Будет удалена эта волна и её {count} событие.} few{Будет удалена эта волна и её {count} события.} many{Будет удалена эта волна и её {count} событий.} other{Будет удалена эта волна и её {count} событий.}}",
   "@deleteWaveConfirm": {
     "placeholders": {
       "count": {
@@ -1115,6 +1260,16 @@
   "aliasAlreadyTakenTitle": "Псевдоним уже занят",
   "aliasRenameConfirmTitle": "Переименовать псевдоним?",
   "aliasRenameConfirmMessage": "Переименовать «{oldAlias}» в «{newAlias}»? Все ссылки на этом уровне будут обновлены.",
+  "@aliasRenameConfirmMessage": {
+    "placeholders": {
+      "oldAlias": {
+        "type": "String"
+      },
+      "newAlias": {
+        "type": "String"
+      }
+    }
+  },
   "resilienceSelectShield": "Выбрать щит стойкости",
   "resilienceCreateCustom": "Новый пользовательский щит",
   "resilienceEditCustom": "Редактировать щит",
@@ -1125,6 +1280,13 @@
   "resilienceShieldInUseCannotDelete": "Нельзя удалить — этот щит используется зомби на уровне.",
   "resilienceShieldDeleteTitle": "Удалить пользовательский щит стойкости?",
   "resilienceShieldDeleteMessage": "Удалить «{alias}» из этого уровня?",
+  "@resilienceShieldDeleteMessage": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "aliasAlreadyExists": "Такой псевдоним уже есть на этом уровне.",
   "zombieTypeLabel": "Тип зомби: {type}",
   "@zombieTypeLabel": {"placeholders": {"type": {}}},
@@ -1805,7 +1967,7 @@
   "dropConfigPlantFood": "Настройка дропа (подкормка)",
   "waveDropConfigTitle": "Настройка дропа",
   "waveDropTotalLabel": "Всего зомби с дропом (AdditionalPlantfood)",
-  "waveDropPlantFoodOnlyCount": "{count} подкормки",
+  "waveDropPlantFoodOnlyCount": "{count, plural, one{1 подкормка} few{{count} подкормки} many{{count} подкормок} other{{count} подкормок}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
       "count": {
@@ -1813,7 +1975,7 @@
       }
     }
   },
-  "waveDropPlantsCount": "{count} растений",
+  "waveDropPlantsCount": "{count, plural, one{1 растение} few{{count} растения} many{{count} растений} other{{count} растений}}",
   "@waveDropPlantsCount": {
     "placeholders": {
       "count": {
@@ -1955,7 +2117,7 @@
   "clearUnusedTitle": "Удалить неиспользуемые объекты?",
   "clearUnusedMessage": "Будут безвозвратно удалены все неиспользуемые объекты из файла уровня, включая пользовательских зомби, их свойства и другие неиспользуемые данные. Действие нельзя отменить. Продолжить?",
   "clearUnusedNone": "Неиспользуемые объекты не найдены.",
-  "clearUnusedDone": "Удалено неиспользуемых объектов: {count}.",
+  "clearUnusedDone": "{count, plural, one{Удалён {count} неиспользуемый объект.} few{Удалено {count} неиспользуемых объекта.} many{Удалено {count} неиспользуемых объектов.} other{Удалено {count} неиспользуемых объектов.}}",
   "@clearUnusedDone": {"placeholders": {"count": {"type": "int"}}},
   "lawnMowerTitle": "Стиль газонокосилок",
   "lawnMowerNotes": "Заметки",
@@ -2382,6 +2544,13 @@
   "armrackModuleExpectationLabel": "Оружейные стойки",
   "armrackModuleIgnoredWaveOverridesWarning": "В уровне есть переопределения оружейных стоек для волн, отличных от 1. Они сохраняются, но не отображаются на временной шкале, так как игра применяет только волну 1.",
   "armrackModuleRequiredMessage": "Чтобы оружейные стойки отображались правильно и без текстур солнца, нужно добавить модуль «{moduleName}».",
+  "@armrackModuleRequiredMessage": {
+    "placeholders": {
+      "moduleName": {
+        "type": "String"
+      }
+    }
+  },
   "energyGridModuleTitle": "Плитки с подкормкой",
   "energyGridModuleHelpTitle": "Модуль плиток с подкормкой",
   "energyGridModuleHelpOverview": "Обзор",
@@ -2538,7 +2707,7 @@
   "protectGridItemChallengeHelpOverview": "Specify the grid items that must be protected in the level. The level will immediately fail if any of them are destroyed.",
   "protectGridItemChallengeHelpAutoCountBody": "The editor will automatically update the number of grid items that need to be protected based on the number of items you add.",
   "protectGridItemChallengeHelpOperationGuide": "Click a position in the grid above, then click the \"Add item\" button to select the type of item to protect.",
-  "mustProtectCount": "Current protected target count: {count}",
+  "mustProtectCount": "Текущее количество целей для защиты: {count}",
   "@mustProtectCount": {
     "placeholders": {
       "count": {
@@ -2589,7 +2758,7 @@
       }
     }
   },
-  "importResourceGroupsFromStageSkipped": "{count} групп(ы) ресурсов уже есть на этом уровне и будут пропущены.",
+  "importResourceGroupsFromStageSkipped": "{count, plural, one{{count} группа ресурсов уже есть на этом уровне и будет пропущена.} few{{count} группы ресурсов уже есть на этом уровне и будут пропущены.} many{{count} групп ресурсов уже есть на этом уровне и будут пропущены.} other{{count} групп ресурсов уже есть на этом уровне и будут пропущены.}}",
   "@importResourceGroupsFromStageSkipped": {
     "placeholders": {
       "count": {
@@ -2623,6 +2792,7 @@
   "startupLoadingPlants": "Растения",
   "startupLoadingFish": "Рыбы",
   "startupLoadingImages": "Изображения",
+  "startupLoadingPlugins": "Плагины",
   "startupLoadingCategoryProgress": "Загрузка {category}...",
   "@startupLoadingCategoryProgress": {
     "placeholders": {

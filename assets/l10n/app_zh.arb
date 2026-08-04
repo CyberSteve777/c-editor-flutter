@@ -4,25 +4,18 @@
   "warning": "警告",
   "info": "信息",
   "success": "成功",
-  "levelPreview": "关卡预览",
-  "previewStartingPlantFood": "初始能量豆",
   "previewTabPlants": "植物",
   "previewTabZombies": "僵尸",
   "previewTabGridItems": "物品",
-  "previewInitial": "初始",
-  "previewPrePlaced": "布局/摆放",
-  "previewRegularPlants": "常规植物",
-  "previewFrozenPlants": "冰冻植物",
-  "previewLevelContent": "关卡内容",
-  "previewSeedBank": "选卡/卡槽",
   "conveyorChanges": "传送带变动",
   "willBeAdded": "将添加",
   "willBeRemoved": "将移除",
   "waveNumberLegend": "数字表示波次编号",
+  "expand": "展开",
+  "obtainableInLevel": "可在关卡中获得",
   "allZombiesInLevel": "本关所有僵尸",
   "allObjectsInLevel": "本关所有物品",
   "allEventsInLevel": "本关所有事件",
-  "previewFeatures": "关卡特性",
   "overwhelmLabel": "行列填充",
   "fastEntryLabel": "快速入场",
   "zombieRushLabel": "关卡倒计时",
@@ -68,10 +61,121 @@
   "about": "关于",
   "refresh": "刷新",
   "toggleTheme": "切换主题",
-  "switchFolder": "切换目录",
+  "switchFolder": "管理库",
+  "manageLibraries": "管理库",
+  "addLibrary": "添加库",
+  "libraryName": "库名称",
+  "libraryPath": "路径",
+  "deleteLibraryTitle": "确认删除库?",
+  "deleteLibraryMessage": "您确定要从库列表中移除 \"{name}\" 吗? 此操作不会删除磁盘上的任何文件。",
+  "@deleteLibraryMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "defaultLibraryName": "默认库",
+  "renameLibrary": "重命名库",
+  "activeLibrary": "活动",
+  "noLibrariesFound": "暂无已添加的库",
   "clearCache": "释放缓存",
   "uiSize": "界面大小",
   "aboutSoftware": "关于软件",
+  "pluginsTitle": "插件",
+  "pluginInstallFromDevice": "从本地安装",
+  "pluginInstallFromUrl": "从链接安装",
+  "pluginInstallFromFolder": "加载文件夹（调试）",
+  "pluginFolderHint": "将插件包文件夹编译进 C-Editor 以便测试。",
+  "pluginUrlHint": "https://example.com/my_plugin.cplugin",
+  "pluginDownload": "下载",
+  "pluginInstalling": "正在安装插件…",
+  "pluginDownloadProgress": "正在下载 {received} / {total}",
+  "@pluginDownloadProgress": {
+    "placeholders": {
+      "received": { "type": "String" },
+      "total": { "type": "String" }
+    }
+  },
+  "pluginDownloadProgressUnknown": "正在下载 {received}",
+  "@pluginDownloadProgressUnknown": {
+    "placeholders": {
+      "received": { "type": "String" }
+    }
+  },
+  "pluginInstallSuccess": "已安装 {name}",
+  "@pluginInstallSuccess": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginInstallFailed": "安装失败：{error}",
+  "@pluginInstallFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "pluginInvalidFile": "不是有效的插件：{reason}",
+  "@pluginInvalidFile": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "pluginInvalidUrl": "请输入有效的 http(s) 链接",
+  "pluginReadFailed": "无法读取所选文件",
+  "pluginTrustWarningTitle": "安全提示",
+  "pluginTrustWarningBody": "插件会在 C-Editor 内运行代码。请只安装来自可信来源的插件。默认情况下文件与网络访问受沙箱限制，但恶意插件仍可能影响编辑器界面。",
+  "pluginInstalledSection": "已安装插件",
+  "pluginScreensSection": "功能与界面",
+  "pluginEmpty": "尚未安装插件。可从本地或下载链接安装 .cplugin 文件。",
+  "pluginNoScreens": "此插件未注册任何界面。",
+  "pluginUninstall": "卸载",
+  "pluginUninstallTitle": "卸载插件",
+  "pluginUninstallConfirm": "要从本机移除 {name} 吗？",
+  "@pluginUninstallConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "pluginLoadError": "加载失败",
+  "pluginBundledBadge": "内置",
+  "pluginImportedBadge": "已导入",
+  "pluginsFolderReserved": "“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。",
+  "pluginNoLibraryForInstall": "请先选择关卡库文件夹，再安装插件。",
+  "pluginShowingCount": "{count, plural, =1{显示 1 个插件} other{显示 {count} 个插件}}",
+  "@pluginShowingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pluginSearchHint": "搜索插件",
+  "pluginSelectHint": "选择插件以查看详情、设置与功能。",
+  "pluginEnabled": "已启用",
+  "pluginDisabled": "已禁用",
+  "pluginAuthors": "作者",
+  "pluginContributors": "贡献者",
+  "pluginByAuthors": "作者：{authors}",
+  "@pluginByAuthors": {
+    "placeholders": {
+      "authors": { "type": "String" }
+    }
+  },
+  "pluginLicense": "许可证",
+  "pluginVersionLabel": "v{version}",
+  "@pluginVersionLabel": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "pluginIdLabel": "ID",
+  "pluginLinks": "链接",
+  "pluginLinkWebsite": "网站",
+  "pluginLinkIssues": "问题反馈",
+  "pluginLinkSource": "源码",
+  "pluginLinkDiscord": "Discord",
+  "pluginIncompatibleWith": "不兼容",
+  "pluginOpenScreen": "打开",
+  "pluginFeaturesSection": "功能与界面",
+  "pluginDropHint": "从本地或 URL 安装 .cplugin。",
+  "pluginNoDescription": "暂无描述。",
   "ultra": "超大",
   "selectFolder": "选择文件夹",
   "share": "分享",
@@ -83,6 +187,27 @@
     }
   },
   "shareLevelFailed": "无法分享关卡文件",
+  "shareAsFile": "分享文件",
+  "shareAsPreview": "分享预览图",
+  "selectBackground": "选择背景",
+  "autoSelectBackground": "自动选择",
+  "customBackground": "自定义背景",
+  "selectPlantList": "选择植物列表",
+  "levelContainsCustomZombies": "关卡包含自定义僵尸",
+  "generatingPreview": "正在生成预览图...",
+  "saveToGallery": "保存到相册",
+  "imageSavedSuccessfully": "图片保存成功",
+  "shareOptionTitle": "如何分享？",
+  "selectLevelType": "选择关卡类型",
+  "autoSelectLevelType": "自动识别",
+  "manualSelectLevelType": "手动选择",
+  "levelTypeAdventure": "冒险",
+  "levelTypeLastStand": "坚不可摧",
+  "levelTypeConveyor": "传送带",
+  "levelTypeSeedRain": "种子雨",
+  "levelTypeIPlant": "我是植物",
+  "levelTypeOldStyle": "旧式关卡",
+  "levelTypeUnknown": "未知",
   "storagePermissionHint": "需要存储权限。请在设置中开启「允许访问以管理所有文件」来打开关卡文件。",
   "storagePermissionDialogTitle": "需要存储权限",
   "storagePermissionDialogMessage": "本应用需要访问外部存储以打开和保存关卡文件。请在设置中授予「允许访问以管理所有文件」权限。",
@@ -103,7 +228,7 @@
   "importFiles": "导入文件",
   "importFolder": "导入文件夹",
   "importFolderEmpty": "所选文件夹中没有关卡文件",
-  "importFolderSuccess": "已导入 {count} 个关卡",
+  "importFolderSuccess": "{count, plural, =1{已导入 1 个关卡} other{已导入 {count} 个关卡}}",
   "@importFolderSuccess": {
     "placeholders": {
       "count": { "type": "int" }
@@ -165,6 +290,7 @@
   "proceedWithoutBackup": "不备份直接继续",
   "backupSuffix": "_副本",
   "exportNoFilesFound": "未找到兼容的文件 (.rsb.smf)。",
+  "exportDownloadExternalDynamic": "下载 dynamic…",
   "cancelExportTitle": "取消导出",
   "cancelExportMessage": "确定要取消导出过程吗？",
   "exportDisclaimerTitle": "风险提示与免责声明",
@@ -173,6 +299,13 @@
   "exportProgressTitle": "正在生成导出…",
   "backupProgressTitle": "正在创建备份…",
   "transferProgressCount": "{completed} / {total}",
+  "@transferProgressCount": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "folderAccessError": "所选文件夹为只读或无法访问。请选择其他文件夹。",
   "webFolderImportNotice": "文件夹已导入到浏览器存储。在此浏览器上，编辑不会自动写回磁盘——请使用“导出”保存文件。",
   "favorite": "收藏",
   "unfavorite": "取消收藏",
@@ -277,7 +410,12 @@
   "large": "大",
   "done": "完成",
   "reset": "重置",
-  "cacheCleared": "已清理{count}个缓存文件",
+  "cacheCleared": "{count, plural, =1{已清理1个缓存文件} other{已清理{count}个缓存文件}}",
+  "@cacheCleared": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "returnUp": "返回上一级",
   "jsonFile": "JSON 文件",
   "convertToJson": "转换为 JSON",
@@ -398,6 +536,13 @@
   "defaultPropertiesLabel": "默认",
   "addNewVariation": "+ 添加新变体",
   "editCustomZombieAlias": "编辑 {alias}",
+  "@editCustomZombieAlias": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "switchZombie": "切换僵尸",
   "customZombieAppearanceLocation": "出现位置：",
   "customZombieNotUsed": "此自定义僵尸当前未被任何波次或模块使用。",
@@ -501,7 +646,7 @@
   "noWaves": "暂无波次",
   "addFirstWave": "添加第一个波次。",
   "deleteWave": "删除波次",
-  "deleteWaveConfirm": "将移除此波次及其 {count} 个事件。",
+  "deleteWaveConfirm": "{count, plural, =1{将移除此波次及其 1 个事件。} other{将移除此波次及其 {count} 个事件。}}",
   "@deleteWaveConfirm": {
     "placeholders": {
       "count": {
@@ -1050,6 +1195,16 @@
   "aliasAlreadyTakenTitle": "代号已被占用",
   "aliasRenameConfirmTitle": "重命名代号？",
   "aliasRenameConfirmMessage": "将「{oldAlias}」重命名为「{newAlias}」？本关卡中的所有引用都将更新。",
+  "@aliasRenameConfirmMessage": {
+    "placeholders": {
+      "oldAlias": {
+        "type": "String"
+      },
+      "newAlias": {
+        "type": "String"
+      }
+    }
+  },
   "resilienceSelectShield": "选择韧性护盾",
   "resilienceCreateCustom": "新建自定义护盾",
   "resilienceEditCustom": "编辑自定义护盾",
@@ -1060,6 +1215,13 @@
   "resilienceShieldInUseCannotDelete": "无法删除——本关卡中有僵尸正在使用此护盾。",
   "resilienceShieldDeleteTitle": "删除自定义韧性护盾？",
   "resilienceShieldDeleteMessage": "从本关卡中删除「{alias}」？",
+  "@resilienceShieldDeleteMessage": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      }
+    }
+  },
   "aliasAlreadyExists": "本关卡中已存在该代号。",
   "zombieTypeLabel": "僵尸所属种类：{type}",
   "@zombieTypeLabel": {"placeholders": {"type": {}}},
@@ -1805,7 +1967,7 @@
   "dropConfigPlantFood": "掉落物配置（能量豆）",
   "waveDropConfigTitle": "掉落物配置",
   "waveDropTotalLabel": "携带掉落物的僵尸总数（AdditionalPlantfood）",
-  "waveDropPlantFoodOnlyCount": "{count} 个能量豆",
+  "waveDropPlantFoodOnlyCount": "{count, plural, =1{1 个能量豆} other{{count} 个能量豆}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
       "count": {
@@ -1813,7 +1975,7 @@
       }
     }
   },
-  "waveDropPlantsCount": "{count} 张植物卡片",
+  "waveDropPlantsCount": "{count, plural, =1{1 张植物卡片} other{{count} 张植物卡片}}",
   "@waveDropPlantsCount": {
     "placeholders": {
       "count": {
@@ -1955,7 +2117,7 @@
   "clearUnusedTitle": "清除未使用对象？",
   "clearUnusedMessage": "将永久删除关卡文件中所有未使用的对象，包括自定义僵尸、其属性及任何其他未被引用的数据。此操作不可撤销。确定继续？",
   "clearUnusedNone": "未找到未使用的对象。",
-  "clearUnusedDone": "已移除 {count} 个未使用对象。",
+  "clearUnusedDone": "{count, plural, =1{已移除 1 个未使用对象。} other{已移除 {count} 个未使用对象。}}",
   "@clearUnusedDone": {"placeholders": {"count": {"type": "int"}}},
   "lawnMowerTitle": "小推车样式设置",
   "lawnMowerNotes": "注意事项",
@@ -2174,7 +2336,7 @@
   "glacierModuleCompatibilityWarning": "此模块须与僵王战斗模块一起使用，且僵王须为冰河机甲（zombossmech_iceage）。请添加或修正相关设置，冰川障碍物才能召唤僵尸。",
   "glacierModuleColumn": "第 {columnIndex} 列（自左）",
   "@glacierModuleColumn": {"placeholders": {"columnIndex": {"type": "int"}}},
-  "glacierModuleEntryCount": "{count} 条",
+  "glacierModuleEntryCount": "{count, plural, =1{1 条} other{{count} 条}}",
   "@glacierModuleEntryCount": {"placeholders": {"count": {"type": "int"}}},
   "glacierModuleEntryLabel": "条目 {index}",
   "@glacierModuleEntryLabel": {"placeholders": {"index": {"type": "int"}}},
@@ -2382,6 +2544,13 @@
   "armrackModuleExpectationLabel": "兵器架",
   "armrackModuleIgnoredWaveOverridesWarning": "此关卡包含第一波以外的兵器架配置。这些配置会保留，但不会显示在波次时间轴中，因为游戏仅应用第一波。",
   "armrackModuleRequiredMessage": "为使兵器架正常显示且不出现阳光贴图，需要添加「{moduleName}」模块。",
+  "@armrackModuleRequiredMessage": {
+    "placeholders": {
+      "moduleName": {
+        "type": "String"
+      }
+    }
+  },
   "energyGridModuleTitle": "太极瓷砖",
   "energyGridModuleHelpTitle": "太极瓷砖模块说明",
   "energyGridModuleHelpOverview": "简要介绍",
@@ -2589,7 +2758,7 @@
       }
     }
   },
-  "importResourceGroupsFromStageSkipped": "自定义地图已包含该地图的{count}个资源组，这些资源组将不再重复添加。",
+  "importResourceGroupsFromStageSkipped": "{count, plural, =1{自定义地图已包含该地图的1个资源组，该资源组将不再重复添加。} other{自定义地图已包含该地图的{count}个资源组，这些资源组将不再重复添加。}}",
   "@importResourceGroupsFromStageSkipped": {
     "placeholders": {
       "count": {
@@ -2623,6 +2792,7 @@
   "startupLoadingPlants": "植物",
   "startupLoadingFish": "鱼类",
   "startupLoadingImages": "图片",
+  "startupLoadingPlugins": "插件",
   "startupLoadingCategoryProgress": "正在加载{category}...",
   "@startupLoadingCategoryProgress": {
     "placeholders": {

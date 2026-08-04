@@ -1,0 +1,16 @@
+{
+  "format": "cplugin",
+  "formatVersion": 1,
+  "id": "team.international2c.dynamic_fetch",
+  "version": "1.0.0",
+  "authors": ["C-Editor"],
+  "contributors": [],
+  "minEditorVersion": "0.1.0",
+  "license": "MIT",
+  "website": "https://github.com/Archiver2c/pvz2c-dynamic/releases",
+  "icon": "icon.png",
+  "entry": {
+    "library": "package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/main.dart",
+    "function": "initialize"
+  }
+}

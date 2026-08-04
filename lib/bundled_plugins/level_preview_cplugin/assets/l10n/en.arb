@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+  "pluginName": "Level Preview",
+  "@pluginName": {
+    "description": "Plugin display name"
+  },
+  "pluginDescription": "Preview plants, zombies, and layout for the open or selected level",
+  "@pluginDescription": {
+    "description": "Plugin display description"
+  },
+  "levelPreview": "Level Preview",
+  "@levelPreview": {
+    "description": "Preview action title"
+  },
+  "previewStartingPlantFood": "Starting Plant Food",
+  "previewPrePlaced": "Placement",
+  "previewRegularPlants": "Regular Plants",
+  "previewFrozenPlants": "Frozen Plants",
+  "previewLevelContent": "Level Content",
+  "previewSeedBank": "Seed Bank",
+  "previewFeatures": "Level Features",
+  "previewInitial": "Initial"
+}

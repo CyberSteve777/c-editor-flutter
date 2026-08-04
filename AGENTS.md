@@ -42,6 +42,14 @@ A `libstdc++.so` symlink must exist at `/usr/lib/x86_64-linux-gnu/libstdc++.so` 
 | Build Windows | `flutter build windows` |
 | Run (debug, Windows) | `flutter run -d windows` |
 | Run (debug, Chrome) | `flutter run -d chrome` |
+| Compile sample plugin | `flutter test test/tools/compile_hello_cplugin_test.dart` |
+| Debug a plugin in C-Editor | `flutter run -d windows --dart-define=CPLUGIN_DEBUG_PATH=plugin_example/hello_cplugin` (or Plugins → **Load folder (debug)**) |
+
+### Plugin authoring
+
+- Sample: `plugin_example/hello_cplugin/` (package layout: `manifest.json`, `lib/main.dart`, `assets/`).
+- Debug **inside the real C-Editor app** (not a separate host): set `CPLUGIN_DEBUG_PATH` to the plugin package root, or use **Plugins → Load folder (debug)**. That compiles sources to EVC and installs them; re-run / reload after edits (plugin code is not Dart hot-reload).
+- Ship: compile + pack to `.cplugin`, then install from device/URL.
 
 ### Gotchas
 

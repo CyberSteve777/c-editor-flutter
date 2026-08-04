@@ -1,0 +1,14 @@
+{
+  "format": "cplugin",
+  "formatVersion": 1,
+  "id": "com.example.hello",
+  "version": "1.0.1",
+  "authors": ["C-Editor"],
+  "contributors": [],
+  "minEditorVersion": "0.1.0",
+  "license": "MIT",
+  "entry": {
+    "library": "package:hello_cplugin/main.dart",
+    "function": "initialize"
+  }
+}
