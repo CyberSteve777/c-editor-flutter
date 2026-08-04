@@ -1630,7 +1630,7 @@
   "ztPerksNone": "尚未添加任何词条。",
   "ztPerksAdd": "为僵尸添加词条",
   "ztPerksTypeAlreadyAssigned": "该僵尸已拥有同类型词条，请选择其他词条。",
-  "eventHelpJitteredZtPerks": "为单个僵尸选择僵局逃脱词条，带词条的僵尸会额外受到增益效果。所选词条将保存在该僵尸的Titles数组中。每类词条中仅能选择一个，例如“结晶I”和“结晶II”不能同时选择。"
+  "eventHelpJitteredZtPerks": "为单个僵尸选择僵局逃脱词条，带词条的僵尸会额外受到增益效果。所选词条将保存在该僵尸的Titles数组中。每类词条中仅能选择一个，例如“结晶I”和“结晶II”不能同时选择。",
   "ztPerkCategoryCrystal": "结晶",
   "ztPerkCategoryAttack": "强力",
   "ztPerkCategorySpeed": "高速",

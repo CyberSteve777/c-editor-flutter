@@ -219,12 +219,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiSize => 'UI size';
 
   @override
-  String get plantTagInternational => 'International';
-
-  @override
-  String get plantTagChinese => 'China Only';
-
-  @override
   String get aboutSoftware => 'About';
 
   @override
@@ -1051,6 +1045,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagHenaiAtlantis => 'Heian Ages / Underwater World';
 
   @override
+  String get zombieTagMoon => 'Moon Base';
+
+  @override
   String get zombieTagTaleZCorp => 'Fairytale Forest / ZCorp Takeover';
 
   @override
@@ -1076,6 +1073,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieTagCustom => 'Memory Lane Variants';
+
+  @override
+  String get zombieTagExpedition => 'Expedition Gate Variants';
 
   @override
   String get zombieTagPet => 'Pet';
@@ -1231,6 +1231,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plantTagWorldAtlantis => 'Underwater World';
 
   @override
+  String get plantTagWorldMoon => 'Moon Base';
+
+  @override
   String get plantTagWorldFairytale => 'Fairytale Forest';
 
   @override
@@ -1247,6 +1250,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get plantTagSpecial => 'Magic Hats';
+
+  @override
+  String get plantTagHidden => 'Hidden Plants';
+
+  @override
+  String get plantTagInternational => 'International';
+
+  @override
+  String get plantTagChinese => 'China Only';
 
   @override
   String get removeModuleConfirm =>
@@ -4928,76 +4940,76 @@ class AppLocalizationsEn extends AppLocalizations {
       'Zombies can spawn in any row from 1–6, or in a random row.';
 
   @override
-  String get ztPerksSectionTitle => 'Ztalemate perks';
+  String get ztPerksSectionTitle => 'Zombie Perks';
 
   @override
   String get ztPerksSectionHint =>
-      'Each perk type can only be applied once per zombie.';
+      'A zombie cannot have multiple perks of the same type.';
 
   @override
-  String get ztPerksNone => 'No perks assigned.';
+  String get ztPerksNone => 'No perks have been added yet.';
 
   @override
-  String get ztPerksAdd => 'Add perk';
+  String get ztPerksAdd => 'Add Zombie Perks';
 
   @override
   String get ztPerksTypeAlreadyAssigned =>
-      'Another perk of this type is already assigned.';
+      'A perk of this type is already assigned to this zombie.';
 
   @override
   String get eventHelpJitteredZtPerks =>
-      'Assign Ztalemate Escape buffs to individual zombies. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
+      'Assign Ztalemate Escape perkss to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
 
   @override
-  String get ztPerkCategoryCrystal => 'Crystal';
+  String get ztPerkCategoryCrystal => 'Crystallization';
 
   @override
-  String get ztPerkCategoryAttack => 'Attack';
+  String get ztPerkCategoryAttack => 'Strength';
 
   @override
-  String get ztPerkCategorySpeed => 'Speed';
+  String get ztPerkCategorySpeed => 'Rapidity';
 
   @override
-  String get ztPerkCategoryShield => 'Shield';
+  String get ztPerkCategoryShield => 'Energy-Shield';
 
   @override
-  String get ztPerkCategoryGravity => 'Gravity';
+  String get ztPerkCategoryGravity => 'Hypergravity';
 
   @override
-  String get ztPerkCategoryImmuneControl => 'Control immunity';
+  String get ztPerkCategoryImmuneControl => 'Unyielding';
 
   @override
-  String get ztPerkCategoryAntiControl => 'Control resistance';
+  String get ztPerkCategoryAntiControl => 'Concentration';
 
   @override
-  String get ztPerksViewStats => 'View stats';
+  String get ztPerksViewStats => 'View Stats';
 
   @override
-  String get ztPerkPropDamageTakenInterval => 'Damage taken interval';
+  String get ztPerkPropDamageTakenInterval => 'Damage interval';
 
   @override
-  String get ztPerkPropDamageTotalTaken => 'Damage total taken';
+  String get ztPerkPropDamageTotalTaken => 'Total damage taken';
 
   @override
-  String get ztPerkPropDamageTakenPerTime => 'Damage taken per time';
+  String get ztPerkPropDamageTakenPerTime => 'Damage per hit';
 
   @override
-  String get ztPerkPropHpReduced => 'HP reduced';
+  String get ztPerkPropHpReduced => 'Health reduction';
 
   @override
-  String get ztPerkPropShieldNum => 'Shield layers';
+  String get ztPerkPropShieldNum => 'Shield charges';
 
   @override
-  String get ztPerkPropReducedControlPercent => 'Control reduction';
+  String get ztPerkPropReducedControlPercent => 'Control effect reduction';
 
   @override
   String get ztPerkPropReducedDamagePercent => 'Damage reduction';
 
   @override
-  String get ztPerkPropImprovedDamagePercent => 'Damage boost';
+  String get ztPerkPropImprovedDamagePercent => 'Attack power increase';
 
   @override
-  String get ztPerkPropImprovedSpeedPercent => 'Speed boost';
+  String get ztPerkPropImprovedSpeedPercent => 'Walking speed increase';
 
   @override
   String ztPerkDescCrystal(
@@ -5005,26 +5017,25 @@ class AppLocalizationsEn extends AppLocalizations {
     String damagePerHit,
     String hpReduced,
   ) {
-    return 'Grants immunity against instant-kill effects. Damage can only be received once every $interval seconds, each hit deals $damagePerHit damage, and health is reduced by $hpReduced.';
+    return 'Grants immunity to instant-kill effects, allows damage to be taken only once every $interval seconds, reduces all damage taken to $damagePerHit, and reduces health by $hpReduced.';
   }
 
   @override
-  String get ztPerkDescGravity =>
-      'Knockback or knockoff effects are no longer effective.';
+  String get ztPerkDescGravity => 'Immune to knockback and knockoff effects.';
 
   @override
   String ztPerkDescShield(String shieldNum) {
-    return 'The first $shieldNum instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.';
+    return 'Negates the first $shieldNum instances of damage and grants immunity to instant-kill effects for the perk\'s duration.';
   }
 
   @override
   String ztPerkDescImmuneControl(String percent) {
-    return '$percent more resistance against control effects.';
+    return 'Grants $percent more resistance against control effects.';
   }
 
   @override
   String ztPerkDescAntiControl(String percent) {
-    return 'When under the influence of a control effect, received damage is reduced by $percent.';
+    return 'When under the influence of a control effect, damage taken is reduced by $percent.';
   }
 
   @override
@@ -5038,31 +5049,31 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get ztPerksCategoryInfoTitle => 'Perk descriptions';
+  String get ztPerksCategoryInfoTitle => 'Perk Descriptions';
 
   @override
   String get ztPerkCategoryDescNumericHint =>
-      'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.';
+      'A, B, X, N, and P represent values that vary by perk tier.';
 
   @override
   String get ztPerkCategoryDescCrystal =>
-      'Grants immunity against instant-kill effects. Damage can only be received once every A seconds, each hit deals B damage, and health is reduced by X.';
+      'Grants immunity to instant-kill effects, allows damage to be taken only once every A seconds, reduces all damage taken to B, and reduces health by X.';
 
   @override
   String get ztPerkCategoryDescGravity =>
-      'Knockback or knockoff effects are no longer effective.';
+      'Immune to knockback and knockoff effects.';
 
   @override
   String get ztPerkCategoryDescShield =>
-      'The first N instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.';
+      'Negates the first N instances of damage and grants immunity to instant-kill effects for the perk\'s duration.';
 
   @override
   String get ztPerkCategoryDescImmuneControl =>
-      'P% more resistance against control effects.';
+      'Grants P% more resistance against control effects.';
 
   @override
   String get ztPerkCategoryDescAntiControl =>
-      'When under the influence of a control effect, received damage is reduced by P%.';
+      'When under the influence of a control effect, damage taken is reduced by P%.';
 
   @override
   String get ztPerkCategoryDescAttack => 'Attack power increased by P%.';
@@ -5091,7 +5102,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reverseZombieFactionSubtitle =>
-      'Placed zombies will belong to the plant faction. Useful for Plant Wars (ZvZ) mini-game.';
+      'When enabled, placed zombies belong to the plant faction and can be used in Plant Wars (ZvZ).';
 
   @override
   String get initialWeight => 'Initial weight';
@@ -5430,7 +5441,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveDropTotalLabel =>
-      'Total carrier zombies (AdditionalPlantfood)';
+      'Total Plant Food carriers (AdditionalPlantfood)';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {

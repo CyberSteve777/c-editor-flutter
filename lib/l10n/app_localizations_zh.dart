@@ -218,12 +218,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get uiSize => '界面大小';
 
   @override
-  String get plantTagInternational => '国际版移植';
-
-  @override
-  String get plantTagChinese => '中文版独有';
-
-  @override
   String get aboutSoftware => '关于软件';
 
   @override
@@ -1032,6 +1026,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieTagHenaiAtlantis => '平安/海底';
 
   @override
+  String get zombieTagMoon => '月球基地';
+
+  @override
   String get zombieTagTaleZCorp => '童话/Z公司';
 
   @override
@@ -1057,6 +1054,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombieTagCustom => '回忆变体';
+
+  @override
+  String get zombieTagExpedition => '远征变体';
 
   @override
   String get zombieTagPet => '宠物';
@@ -1212,6 +1212,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get plantTagWorldAtlantis => '海底世界';
 
   @override
+  String get plantTagWorldMoon => '月球基地';
+
+  @override
   String get plantTagWorldFairytale => '童话森林';
 
   @override
@@ -1228,6 +1231,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get plantTagSpecial => '魔术帽';
+
+  @override
+  String get plantTagHidden => '隐藏植物';
+
+  @override
+  String get plantTagInternational => '国际版移植';
+
+  @override
+  String get plantTagChinese => '中文版独有';
 
   @override
   String get removeModuleConfirm =>
@@ -3031,7 +3043,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addModuleAliasTitle => '添加模块';
 
   @override
-  String get aliasLabel => '代号';
+  String get aliasLabel => '代号 (仅支持英文字母)';
 
   @override
   String get add => '添加';
@@ -4709,44 +4721,44 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventHelpStandardRowDeepSea => '僵尸可出现在第1–6行中的任意一行，或随机选择一行出现。';
 
   @override
-  String get ztPerksSectionTitle => '僵局逃脱增益';
+  String get ztPerksSectionTitle => '僵局逃脱词条';
 
   @override
-  String get ztPerksSectionHint => '每种增益类型对同一僵尸只能应用一次。';
+  String get ztPerksSectionHint => '一只僵尸不能同时拥有多个同类型的词条。';
 
   @override
-  String get ztPerksNone => '未分配增益。';
+  String get ztPerksNone => '尚未添加任何词条。';
 
   @override
-  String get ztPerksAdd => '添加增益';
+  String get ztPerksAdd => '为僵尸添加词条';
 
   @override
-  String get ztPerksTypeAlreadyAssigned => '该类型的增益已分配。';
+  String get ztPerksTypeAlreadyAssigned => '该僵尸已拥有同类型词条，请选择其他词条。';
 
   @override
   String get eventHelpJitteredZtPerks =>
-      '为单个僵尸分配僵局逃脱（Ztalemate）增益，保存在僵尸的 Titles 数组中。同一僵尸不能同时拥有同类型的多个增益（例如不能同时有 Crystal I 和 Crystal II）。';
+      '为单个僵尸选择僵局逃脱词条，带词条的僵尸会额外受到增益效果。所选词条将保存在该僵尸的Titles数组中。每类词条中仅能选择一个，例如“结晶I”和“结晶II”不能同时选择。';
 
   @override
-  String get ztPerkCategoryCrystal => '水晶';
+  String get ztPerkCategoryCrystal => '结晶';
 
   @override
-  String get ztPerkCategoryAttack => '攻击';
+  String get ztPerkCategoryAttack => '强力';
 
   @override
-  String get ztPerkCategorySpeed => '速度';
+  String get ztPerkCategorySpeed => '高速';
 
   @override
-  String get ztPerkCategoryShield => '护盾';
+  String get ztPerkCategoryShield => '能量盾';
 
   @override
-  String get ztPerkCategoryGravity => '重力';
+  String get ztPerkCategoryGravity => '超重力';
 
   @override
-  String get ztPerkCategoryImmuneControl => '控制免疫';
+  String get ztPerkCategoryImmuneControl => '不屈';
 
   @override
-  String get ztPerkCategoryAntiControl => '控制抗性';
+  String get ztPerkCategoryAntiControl => '定力';
 
   @override
   String get ztPerksViewStats => '查看数值';
@@ -4755,28 +4767,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ztPerkPropDamageTakenInterval => '受伤间隔';
 
   @override
-  String get ztPerkPropDamageTotalTaken => '累计受伤';
+  String get ztPerkPropDamageTotalTaken => '累计承受伤害';
 
   @override
-  String get ztPerkPropDamageTakenPerTime => '每次受伤';
+  String get ztPerkPropDamageTakenPerTime => '单次伤害';
 
   @override
-  String get ztPerkPropHpReduced => '生命削减';
+  String get ztPerkPropHpReduced => '生命值削减';
 
   @override
-  String get ztPerkPropShieldNum => '护盾层数';
+  String get ztPerkPropShieldNum => '护盾次数';
 
   @override
-  String get ztPerkPropReducedControlPercent => '控制减免';
+  String get ztPerkPropReducedControlPercent => '控制效果减免';
 
   @override
   String get ztPerkPropReducedDamagePercent => '伤害减免';
 
   @override
-  String get ztPerkPropImprovedDamagePercent => '攻击提升';
+  String get ztPerkPropImprovedDamagePercent => '攻击力提升';
 
   @override
-  String get ztPerkPropImprovedSpeedPercent => '速度提升';
+  String get ztPerkPropImprovedSpeedPercent => '移动速度提升';
 
   @override
   String ztPerkDescCrystal(
@@ -4784,7 +4796,7 @@ class AppLocalizationsZh extends AppLocalizations {
     String damagePerHit,
     String hpReduced,
   ) {
-    return '免疫秒杀效果，在 $interval 秒内只会受到 1 次伤害，每次受到的伤害变为 $damagePerHit 点，生命值降低 $hpReduced。';
+    return '免疫秒杀效果，在$interval秒内只会受到 1 次伤害，每次受到的伤害降至$damagePerHit 点，生命值降低$hpReduced。';
   }
 
   @override
@@ -4792,56 +4804,56 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String ztPerkDescShield(String shieldNum) {
-    return '前 $shieldNum 次伤害无效，持续期间免疫秒杀效果。';
+    return '前$shieldNum次伤害无效，持续期间免疫秒杀效果。';
   }
 
   @override
   String ztPerkDescImmuneControl(String percent) {
-    return '受到的控制效果降低 $percent。';
+    return '受到的控制效果降低$percent。';
   }
 
   @override
   String ztPerkDescAntiControl(String percent) {
-    return '处于控制效果影响时，受到的伤害降低 $percent。';
+    return '处于控制效果影响时，受到的伤害降低$percent。';
   }
 
   @override
   String ztPerkDescAttack(String percent) {
-    return '攻击力增加 $percent。';
+    return '攻击力增加$percent。';
   }
 
   @override
   String ztPerkDescSpeed(String percent) {
-    return '移动速度增加 $percent。';
+    return '移动速度增加$percent。';
   }
 
   @override
   String get ztPerksCategoryInfoTitle => '增益说明';
 
   @override
-  String get ztPerkCategoryDescNumericHint => 'A、B、X、N、P 等字母代表随等级变化的数值。';
+  String get ztPerkCategoryDescNumericHint => 'A、B、X、N、P 代表随增益等级变化的数值。';
 
   @override
   String get ztPerkCategoryDescCrystal =>
-      '免疫秒杀效果，在 A 秒内只会受到 1 次伤害，每次受到的伤害变为 B 点，生命值降低 X。';
+      '免疫秒杀效果，在A秒内只会受到1次伤害，每次受到的伤害降至B点，生命值降低X。';
 
   @override
-  String get ztPerkCategoryDescGravity => '不会受到击退和击飞效果影响。';
+  String get ztPerkCategoryDescGravity => '免疫击退和击飞效果。';
 
   @override
-  String get ztPerkCategoryDescShield => '前 N 次伤害无效，持续期间免疫秒杀效果。';
+  String get ztPerkCategoryDescShield => '前N次伤害无效，持续期间免疫秒杀效果。';
 
   @override
-  String get ztPerkCategoryDescImmuneControl => '受到的控制效果降低 P%。';
+  String get ztPerkCategoryDescImmuneControl => '受到的控制效果降低P%。';
 
   @override
-  String get ztPerkCategoryDescAntiControl => '处于控制效果影响时，受到的伤害降低 P%。';
+  String get ztPerkCategoryDescAntiControl => '处于控制效果影响时，受到的伤害降低P%。';
 
   @override
-  String get ztPerkCategoryDescAttack => '攻击力增加 P%。';
+  String get ztPerkCategoryDescAttack => '攻击力增加P%。';
 
   @override
-  String get ztPerkCategoryDescSpeed => '移动速度增加 P%。';
+  String get ztPerkCategoryDescSpeed => '移动速度增加P%。';
 
   @override
   String get warningStageSwitchedTo5Rows =>
@@ -4862,7 +4874,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reverseZombieFactionTitle => '反转僵尸阵营';
 
   @override
-  String get reverseZombieFactionSubtitle => '启用后放置的僵尸为植物阵营，可用于ZVZ';
+  String get reverseZombieFactionSubtitle =>
+      '启用后放置的僵尸属于植物阵营，可用于 Plant Wars（ZVZ）玩法。';
 
   @override
   String get initialWeight => '初始权重';
@@ -6615,14 +6628,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechPropertiesLabel => '属性';
 
   @override
-  String get zombossMechAliasLabel => '代号';
+  String get zombossMechAliasLabel => '代号 (仅支持英文字母)';
 
   @override
   String get zombossMechDeletePhase => '删除阶段';
 
   @override
   String zombossMechDeletePhaseTitle(int number) {
-    return '删除第 $number 阶段？';
+    return '删除第$number阶段？';
   }
 
   @override
@@ -7272,7 +7285,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customStageSectionAdvanced => '高级设置';
 
   @override
-  String get customStageAlias => '地图代号（仅支持英文）';
+  String get customStageAlias => '地图代号 (仅支持英文字母)';
 
   @override
   String get customStageNoResourceGroups => '列表中没有资源组';

@@ -219,12 +219,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get uiSize => 'Размер интерфейса';
 
   @override
-  String get plantTagInternational => 'Интернациональные';
-
-  @override
-  String get plantTagChinese => 'Китайские';
-
-  @override
   String get aboutSoftware => 'О программе';
 
   @override
@@ -1058,6 +1052,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombieTagHenaiAtlantis => 'Хэйан/Атлантида';
 
   @override
+  String get zombieTagMoon => 'Moon Base';
+
+  @override
   String get zombieTagTaleZCorp => 'Сказка/ZCorp';
 
   @override
@@ -1083,6 +1080,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombieTagCustom => 'Готовые кастомные';
+
+  @override
+  String get zombieTagExpedition => 'Expedition Gate Variants';
 
   @override
   String get zombieTagPet => 'Питомец';
@@ -1238,6 +1238,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagWorldAtlantis => 'Атлантида';
 
   @override
+  String get plantTagWorldMoon => 'Moon Base';
+
+  @override
   String get plantTagWorldFairytale => 'Сказочный лес';
 
   @override
@@ -1254,6 +1257,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get plantTagSpecial => 'Специальные';
+
+  @override
+  String get plantTagHidden => 'Hidden Plants';
+
+  @override
+  String get plantTagInternational => 'Интернациональные';
+
+  @override
+  String get plantTagChinese => 'Китайские';
 
   @override
   String get removeModuleConfirm =>

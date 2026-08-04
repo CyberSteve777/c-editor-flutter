@@ -502,18 +502,6 @@ abstract class AppLocalizations {
   /// **'UI size'**
   String get uiSize;
 
-  /// No description provided for @plantTagInternational.
-  ///
-  /// In en, this message translates to:
-  /// **'International'**
-  String get plantTagInternational;
-
-  /// No description provided for @plantTagChinese.
-  ///
-  /// In en, this message translates to:
-  /// **'China Only'**
-  String get plantTagChinese;
-
   /// No description provided for @aboutSoftware.
   ///
   /// In en, this message translates to:
@@ -2026,6 +2014,12 @@ abstract class AppLocalizations {
   /// **'Heian Ages / Underwater World'**
   String get zombieTagHenaiAtlantis;
 
+  /// No description provided for @zombieTagMoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Base'**
+  String get zombieTagMoon;
+
   /// No description provided for @zombieTagTaleZCorp.
   ///
   /// In en, this message translates to:
@@ -2079,6 +2073,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Memory Lane Variants'**
   String get zombieTagCustom;
+
+  /// No description provided for @zombieTagExpedition.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate Variants'**
+  String get zombieTagExpedition;
 
   /// No description provided for @zombieTagPet.
   ///
@@ -2386,6 +2386,12 @@ abstract class AppLocalizations {
   /// **'Underwater World'**
   String get plantTagWorldAtlantis;
 
+  /// No description provided for @plantTagWorldMoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Base'**
+  String get plantTagWorldMoon;
+
   /// No description provided for @plantTagWorldFairytale.
   ///
   /// In en, this message translates to:
@@ -2421,6 +2427,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Magic Hats'**
   String get plantTagSpecial;
+
+  /// No description provided for @plantTagHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Plants'**
+  String get plantTagHidden;
+
+  /// No description provided for @plantTagInternational.
+  ///
+  /// In en, this message translates to:
+  /// **'International'**
+  String get plantTagInternational;
+
+  /// No description provided for @plantTagChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'China Only'**
+  String get plantTagChinese;
 
   /// No description provided for @removeModuleConfirm.
   ///
@@ -8893,121 +8917,121 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerksSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Ztalemate perks'**
+  /// **'Zombie Perks'**
   String get ztPerksSectionTitle;
 
   /// No description provided for @ztPerksSectionHint.
   ///
   /// In en, this message translates to:
-  /// **'Each perk type can only be applied once per zombie.'**
+  /// **'A zombie cannot have multiple perks of the same type.'**
   String get ztPerksSectionHint;
 
   /// No description provided for @ztPerksNone.
   ///
   /// In en, this message translates to:
-  /// **'No perks assigned.'**
+  /// **'No perks have been added yet.'**
   String get ztPerksNone;
 
   /// No description provided for @ztPerksAdd.
   ///
   /// In en, this message translates to:
-  /// **'Add perk'**
+  /// **'Add Zombie Perks'**
   String get ztPerksAdd;
 
   /// No description provided for @ztPerksTypeAlreadyAssigned.
   ///
   /// In en, this message translates to:
-  /// **'Another perk of this type is already assigned.'**
+  /// **'A perk of this type is already assigned to this zombie.'**
   String get ztPerksTypeAlreadyAssigned;
 
   /// No description provided for @eventHelpJitteredZtPerks.
   ///
   /// In en, this message translates to:
-  /// **'Assign Ztalemate Escape buffs to individual zombies. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).'**
+  /// **'Assign Ztalemate Escape perkss to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).'**
   String get eventHelpJitteredZtPerks;
 
   /// No description provided for @ztPerkCategoryCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Crystal'**
+  /// **'Crystallization'**
   String get ztPerkCategoryCrystal;
 
   /// No description provided for @ztPerkCategoryAttack.
   ///
   /// In en, this message translates to:
-  /// **'Attack'**
+  /// **'Strength'**
   String get ztPerkCategoryAttack;
 
   /// No description provided for @ztPerkCategorySpeed.
   ///
   /// In en, this message translates to:
-  /// **'Speed'**
+  /// **'Rapidity'**
   String get ztPerkCategorySpeed;
 
   /// No description provided for @ztPerkCategoryShield.
   ///
   /// In en, this message translates to:
-  /// **'Shield'**
+  /// **'Energy-Shield'**
   String get ztPerkCategoryShield;
 
   /// No description provided for @ztPerkCategoryGravity.
   ///
   /// In en, this message translates to:
-  /// **'Gravity'**
+  /// **'Hypergravity'**
   String get ztPerkCategoryGravity;
 
   /// No description provided for @ztPerkCategoryImmuneControl.
   ///
   /// In en, this message translates to:
-  /// **'Control immunity'**
+  /// **'Unyielding'**
   String get ztPerkCategoryImmuneControl;
 
   /// No description provided for @ztPerkCategoryAntiControl.
   ///
   /// In en, this message translates to:
-  /// **'Control resistance'**
+  /// **'Concentration'**
   String get ztPerkCategoryAntiControl;
 
   /// No description provided for @ztPerksViewStats.
   ///
   /// In en, this message translates to:
-  /// **'View stats'**
+  /// **'View Stats'**
   String get ztPerksViewStats;
 
   /// No description provided for @ztPerkPropDamageTakenInterval.
   ///
   /// In en, this message translates to:
-  /// **'Damage taken interval'**
+  /// **'Damage interval'**
   String get ztPerkPropDamageTakenInterval;
 
   /// No description provided for @ztPerkPropDamageTotalTaken.
   ///
   /// In en, this message translates to:
-  /// **'Damage total taken'**
+  /// **'Total damage taken'**
   String get ztPerkPropDamageTotalTaken;
 
   /// No description provided for @ztPerkPropDamageTakenPerTime.
   ///
   /// In en, this message translates to:
-  /// **'Damage taken per time'**
+  /// **'Damage per hit'**
   String get ztPerkPropDamageTakenPerTime;
 
   /// No description provided for @ztPerkPropHpReduced.
   ///
   /// In en, this message translates to:
-  /// **'HP reduced'**
+  /// **'Health reduction'**
   String get ztPerkPropHpReduced;
 
   /// No description provided for @ztPerkPropShieldNum.
   ///
   /// In en, this message translates to:
-  /// **'Shield layers'**
+  /// **'Shield charges'**
   String get ztPerkPropShieldNum;
 
   /// No description provided for @ztPerkPropReducedControlPercent.
   ///
   /// In en, this message translates to:
-  /// **'Control reduction'**
+  /// **'Control effect reduction'**
   String get ztPerkPropReducedControlPercent;
 
   /// No description provided for @ztPerkPropReducedDamagePercent.
@@ -9019,19 +9043,19 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkPropImprovedDamagePercent.
   ///
   /// In en, this message translates to:
-  /// **'Damage boost'**
+  /// **'Attack power increase'**
   String get ztPerkPropImprovedDamagePercent;
 
   /// No description provided for @ztPerkPropImprovedSpeedPercent.
   ///
   /// In en, this message translates to:
-  /// **'Speed boost'**
+  /// **'Walking speed increase'**
   String get ztPerkPropImprovedSpeedPercent;
 
   /// No description provided for @ztPerkDescCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Grants immunity against instant-kill effects. Damage can only be received once every {interval} seconds, each hit deals {damagePerHit} damage, and health is reduced by {hpReduced}.'**
+  /// **'Grants immunity to instant-kill effects, allows damage to be taken only once every {interval} seconds, reduces all damage taken to {damagePerHit}, and reduces health by {hpReduced}.'**
   String ztPerkDescCrystal(
     String interval,
     String damagePerHit,
@@ -9041,25 +9065,25 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkDescGravity.
   ///
   /// In en, this message translates to:
-  /// **'Knockback or knockoff effects are no longer effective.'**
+  /// **'Immune to knockback and knockoff effects.'**
   String get ztPerkDescGravity;
 
   /// No description provided for @ztPerkDescShield.
   ///
   /// In en, this message translates to:
-  /// **'The first {shieldNum} instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.'**
+  /// **'Negates the first {shieldNum} instances of damage and grants immunity to instant-kill effects for the perk\'s duration.'**
   String ztPerkDescShield(String shieldNum);
 
   /// No description provided for @ztPerkDescImmuneControl.
   ///
   /// In en, this message translates to:
-  /// **'{percent} more resistance against control effects.'**
+  /// **'Grants {percent} more resistance against control effects.'**
   String ztPerkDescImmuneControl(String percent);
 
   /// No description provided for @ztPerkDescAntiControl.
   ///
   /// In en, this message translates to:
-  /// **'When under the influence of a control effect, received damage is reduced by {percent}.'**
+  /// **'When under the influence of a control effect, damage taken is reduced by {percent}.'**
   String ztPerkDescAntiControl(String percent);
 
   /// No description provided for @ztPerkDescAttack.
@@ -9077,43 +9101,43 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerksCategoryInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Perk descriptions'**
+  /// **'Perk Descriptions'**
   String get ztPerksCategoryInfoTitle;
 
   /// No description provided for @ztPerkCategoryDescNumericHint.
   ///
   /// In en, this message translates to:
-  /// **'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.'**
+  /// **'A, B, X, N, and P represent values that vary by perk tier.'**
   String get ztPerkCategoryDescNumericHint;
 
   /// No description provided for @ztPerkCategoryDescCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Grants immunity against instant-kill effects. Damage can only be received once every A seconds, each hit deals B damage, and health is reduced by X.'**
+  /// **'Grants immunity to instant-kill effects, allows damage to be taken only once every A seconds, reduces all damage taken to B, and reduces health by X.'**
   String get ztPerkCategoryDescCrystal;
 
   /// No description provided for @ztPerkCategoryDescGravity.
   ///
   /// In en, this message translates to:
-  /// **'Knockback or knockoff effects are no longer effective.'**
+  /// **'Immune to knockback and knockoff effects.'**
   String get ztPerkCategoryDescGravity;
 
   /// No description provided for @ztPerkCategoryDescShield.
   ///
   /// In en, this message translates to:
-  /// **'The first N instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.'**
+  /// **'Negates the first N instances of damage and grants immunity to instant-kill effects for the perk\'s duration.'**
   String get ztPerkCategoryDescShield;
 
   /// No description provided for @ztPerkCategoryDescImmuneControl.
   ///
   /// In en, this message translates to:
-  /// **'P% more resistance against control effects.'**
+  /// **'Grants P% more resistance against control effects.'**
   String get ztPerkCategoryDescImmuneControl;
 
   /// No description provided for @ztPerkCategoryDescAntiControl.
   ///
   /// In en, this message translates to:
-  /// **'When under the influence of a control effect, received damage is reduced by P%.'**
+  /// **'When under the influence of a control effect, damage taken is reduced by P%.'**
   String get ztPerkCategoryDescAntiControl;
 
   /// No description provided for @ztPerkCategoryDescAttack.
@@ -9161,7 +9185,7 @@ abstract class AppLocalizations {
   /// No description provided for @reverseZombieFactionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Placed zombies will belong to the plant faction. Useful for Plant Wars (ZvZ) mini-game.'**
+  /// **'When enabled, placed zombies belong to the plant faction and can be used in Plant Wars (ZvZ).'**
   String get reverseZombieFactionSubtitle;
 
   /// No description provided for @initialWeight.
@@ -9743,7 +9767,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveDropTotalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Total carrier zombies (AdditionalPlantfood)'**
+  /// **'Total Plant Food carriers (AdditionalPlantfood)'**
   String get waveDropTotalLabel;
 
   /// No description provided for @waveDropPlantFoodOnlyCount.
