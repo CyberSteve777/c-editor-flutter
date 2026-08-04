@@ -34,6 +34,7 @@ enum ZombieTag {
   modernPvz1,
   steamRenai,
   henaiAtlantis,
+  moon,
   taleZCorp,
   parkourSpeed,
   toTheWest,
@@ -51,6 +52,7 @@ enum ZombieTag {
   elite,
   evildave,
   custom,
+  expedition,
   chinese,
   international,
 }
@@ -79,6 +81,8 @@ extension ZombieTagExtension on ZombieTag {
         return s.zombieTagSteamRenai;
       case ZombieTag.henaiAtlantis:
         return s.zombieTagHenaiAtlantis;
+      case ZombieTag.moon:
+        return s.zombieTagMoon;
       case ZombieTag.taleZCorp:
         return s.zombieTagTaleZCorp;
       case ZombieTag.parkourSpeed:
@@ -111,6 +115,8 @@ extension ZombieTagExtension on ZombieTag {
         return s.zombieTagElite;
       case ZombieTag.custom:
         return s.zombieTagCustom;
+      case ZombieTag.expedition:
+        return s.zombieTagExpedition;
       case ZombieTag.evildave:
         return s.zombieTagEvildave;
       case ZombieTag.international:
@@ -132,6 +138,7 @@ extension ZombieTagExtension on ZombieTag {
       case ZombieTag.modernPvz1:
       case ZombieTag.steamRenai:
       case ZombieTag.henaiAtlantis:
+      case ZombieTag.moon:
       case ZombieTag.taleZCorp:
       case ZombieTag.parkourSpeed:
       case ZombieTag.toTheWest:
@@ -151,6 +158,7 @@ extension ZombieTagExtension on ZombieTag {
         return ZombieCategory.size;
       case ZombieTag.evildave:
       case ZombieTag.custom:
+      case ZombieTag.expedition:
       case ZombieTag.international:
       case ZombieTag.chinese:
         return ZombieCategory.other;

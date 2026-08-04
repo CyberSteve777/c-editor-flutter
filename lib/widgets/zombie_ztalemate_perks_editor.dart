@@ -265,15 +265,15 @@ class ZombieZtalematePerksEditor extends StatelessWidget {
   String _categoryLabel(BuildContext context, String type) {
     final l10n = AppLocalizations.of(context);
     return switch (type) {
-      'zombie_title_crystal' => l10n?.ztPerkCategoryCrystal ?? 'Crystal',
       'zombie_title_attack' => l10n?.ztPerkCategoryAttack ?? 'Attack',
       'zombie_title_speed' => l10n?.ztPerkCategorySpeed ?? 'Speed',
-      'zombie_title_shield' => l10n?.ztPerkCategoryShield ?? 'Shield',
-      'zombie_title_gravity' => l10n?.ztPerkCategoryGravity ?? 'Gravity',
-      'zombie_title_immunecontrol' =>
-        l10n?.ztPerkCategoryImmuneControl ?? 'Control immunity',
       'zombie_title_anticontrol' =>
         l10n?.ztPerkCategoryAntiControl ?? 'Control resistance',
+      'zombie_title_immunecontrol' =>
+        l10n?.ztPerkCategoryImmuneControl ?? 'Control immunity',
+      'zombie_title_gravity' => l10n?.ztPerkCategoryGravity ?? 'Gravity',
+      'zombie_title_shield' => l10n?.ztPerkCategoryShield ?? 'Shield',
+      'zombie_title_crystal' => l10n?.ztPerkCategoryCrystal ?? 'Crystal',
       _ => type,
     };
   }

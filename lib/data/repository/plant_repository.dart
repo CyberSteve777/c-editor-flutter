@@ -65,12 +65,14 @@ enum PlantTag {
   worldRenai,
   worldHeian,
   worldAtlantis,
+  worldMoon,
   worldFairytale,
   worldZcorp,
   worldMausoleum,
   original,
   parallel,
   special,
+  hidden,
   chinese,
   international,
 }
@@ -153,6 +155,8 @@ extension PlantTagExtension on PlantTag {
         return s.plantTagWorldHeian;
       case PlantTag.worldAtlantis:
         return s.plantTagWorldAtlantis;
+      case PlantTag.worldMoon:
+        return s.plantTagWorldMoon;
       case PlantTag.worldFairytale:
         return s.plantTagWorldFairytale;
       case PlantTag.worldZcorp:
@@ -165,6 +169,8 @@ extension PlantTagExtension on PlantTag {
         return s.plantTagParallel;
       case PlantTag.special:
         return s.plantTagSpecial;
+      case PlantTag.hidden:
+        return s.plantTagHidden;
       case PlantTag.international:
         return s.plantTagInternational;
       case PlantTag.chinese:
@@ -272,6 +278,7 @@ extension PlantTagExtension on PlantTag {
       case PlantTag.worldRenai:
       case PlantTag.worldHeian:
       case PlantTag.worldAtlantis:
+      case PlantTag.worldMoon:
       case PlantTag.worldFairytale:
       case PlantTag.worldZcorp:
       case PlantTag.worldMausoleum:
@@ -279,6 +286,7 @@ extension PlantTagExtension on PlantTag {
       case PlantTag.original:
       case PlantTag.parallel:
       case PlantTag.special:
+      case PlantTag.hidden:
       case PlantTag.international:
       case PlantTag.chinese:
         return PlantCategory.other;
