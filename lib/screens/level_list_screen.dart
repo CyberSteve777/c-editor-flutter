@@ -3201,10 +3201,11 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _reveal,
-      child: ScaleTransition(
-        scale: _reveal,
+    return SizeTransition(
+      sizeFactor: _reveal,
+      alignment: Alignment.bottomRight,
+      child: FadeTransition(
+        opacity: _reveal,
         child: SlideTransition(
           position: _slide,
           child: IgnorePointer(
