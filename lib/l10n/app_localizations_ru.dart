@@ -2268,6 +2268,57 @@ class AppLocalizationsRu extends AppLocalizations {
       'Растения тайных миров нельзя выбрать в режиме выбора. Используйте предустановку, конвейер, выпадение карт и другие способы.';
 
   @override
+  String get hiddenPlantChooserBlockedLabel => 'Нельзя выбрать растение';
+
+  @override
+  String get hiddenPlantChooserBlockedTitle => 'Нельзя выбрать растение';
+
+  @override
+  String get hiddenPlantChooserBlockedMessage =>
+      'Скрытые растения нельзя выбирать в режиме выбора карт. Используйте предустановленный режим, конвейер, выпадение карт или другие способы.\nКроме того, за исключением некоторых растений, таких как Жрец-пухомор и Сборщик растеброни - Огненная звезда, большинство скрытых растений отображаются в игровых слотах карт значком подсолнуха, что может повлиять на общий вид уровня. Используйте их осторожно.';
+
+  @override
+  String get comingSoonPlantBlockedLabel => 'Послание из космоса';
+
+  @override
+  String get comingSoonPlantBlockedTitle => 'Послание из космоса';
+
+  @override
+  String get comingSoonPlantBlockedMessage =>
+      'Совершенно новый мир «Лунная база» появится в недалеком будущем. Следите за новостями!';
+
+  @override
+  String get stayTunedMoonZombieBlockedLabel => 'Послание из космоса';
+
+  @override
+  String get stayTunedMoonZombieBlockedTitle => 'Послание из космоса';
+
+  @override
+  String get stayTunedMoonZombieBlockedMessage =>
+      'Совершенно новый мир «Лунная база» появится в недалеком будущем. Следите за новостями!';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedLabel =>
+      'История ZCorp еще не закончена';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedTitle => 'Продолжение следует';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedMessage =>
+      'Вторая глава ZCorp скоро выйдет. Следите за новостями!';
+
+  @override
+  String get stayTunedZombieBlockedLabel => 'Следите за новостями';
+
+  @override
+  String get stayTunedZombieBlockedTitle => 'Продолжение следует';
+
+  @override
+  String get stayTunedZombieBlockedMessage =>
+      'Этот контент еще официально не открыт. Следите за будущими обновлениями!';
+
+  @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
     return 'Отсутствует модуль «$moduleName» для растений: $plantList';
   }

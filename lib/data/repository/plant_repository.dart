@@ -5,6 +5,9 @@ import 'package:c_editor/data/asset_loader.dart';
 import 'package:c_editor/data/tag_assets.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 
+const String _kToBeContinuedIconPath =
+    'assets/images/others/to_be_continued.webp';
+
 enum PlantCategory { quality, role, attribute, world, other, collection }
 
 extension PlantCategoryExtension on PlantCategory {
@@ -314,6 +317,7 @@ class PlantInfo {
   bool hasInternalTag(String tag) => internalTags.contains(tag);
 
   String? get iconAssetPath {
+    if (id == 'coming_soon') return _kToBeContinuedIconPath;
     if (icon == null) return null;
     final path = icon!;
     return 'assets/images/plants/$path';

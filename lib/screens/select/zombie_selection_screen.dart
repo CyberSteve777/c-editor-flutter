@@ -17,6 +17,13 @@ import 'package:c_editor/widgets/editor_components.dart'
 
 /// Placeholder when a zombie has no icon or icon fails to load.
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
+const String _kStayTunedZombieId = 'stay_tuned';
+
+enum _ZombieBlockedReason {
+  stayTunedMoon,
+  stayTunedTaleZCorp,
+  stayTunedFallback,
+}
 
 /// Zombie selection. Ported from Z-Editor-master ZombieSelectionScreen.kt
 class ZombieSelectionScreen extends StatefulWidget {
@@ -70,7 +77,12 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       _selectedIds.addAll(widget.initialSelectedIds);
     }
     ZombieRepository().init().then((_) {
-      if (mounted) setState(() => _isLoaded = true);
+      if (mounted) {
+        setState(() {
+          _removeBlockedSelections();
+          _isLoaded = true;
+        });
+      }
     });
   }
 
@@ -123,6 +135,95 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       ),
     );
     setState(() {});
+  }
+
+  _ZombieBlockedReason? _zombieBlockedReason(ZombieInfo zombie) {
+    if (zombie.id != _kStayTunedZombieId) return null;
+    final hasMoon = zombie.tags.contains(ZombieTag.moon);
+    final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
+    if (hasMoon && _selectedTag == ZombieTag.moon) {
+      return _ZombieBlockedReason.stayTunedMoon;
+    }
+    if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
+      return _ZombieBlockedReason.stayTunedTaleZCorp;
+    }
+    // A shared stay_tuned entry can carry both tags. Without a stronger
+    // category context, keep a fixed priority: Moon, then Tale_ZCorp.
+    if (hasMoon) return _ZombieBlockedReason.stayTunedMoon;
+    if (hasTaleZCorp) return _ZombieBlockedReason.stayTunedTaleZCorp;
+    return _ZombieBlockedReason.stayTunedFallback;
+  }
+
+  _ZombieBlockedReason? _zombieBlockedReasonForId(String id) {
+    if (id != _kStayTunedZombieId) return null;
+    final zombie = ZombieRepository().getZombieById(id);
+    if (zombie == null) return _ZombieBlockedReason.stayTunedFallback;
+    return _zombieBlockedReason(zombie);
+  }
+
+  void _removeBlockedSelections() {
+    bool isBlocked(String id) => _zombieBlockedReasonForId(id) != null;
+    _selectedIds.removeWhere(isBlocked);
+    _selectedIdsWithDuplicates.removeWhere(isBlocked);
+  }
+
+  List<String> _filterSelectableZombieIds(List<String> ids) {
+    return ids.where((id) => _zombieBlockedReasonForId(id) == null).toList();
+  }
+
+  String _zombieBlockedLabel(
+    BuildContext context,
+    _ZombieBlockedReason reason,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    switch (reason) {
+      case _ZombieBlockedReason.stayTunedMoon:
+        return l10n?.stayTunedMoonZombieBlockedLabel ?? 'A Message from Space';
+      case _ZombieBlockedReason.stayTunedTaleZCorp:
+        return l10n?.stayTunedTaleZCorpZombieBlockedLabel ??
+            'The ZCorp story is not over';
+      case _ZombieBlockedReason.stayTunedFallback:
+        return l10n?.stayTunedZombieBlockedLabel ?? 'Stay tuned';
+    }
+  }
+
+  Future<void> _showZombieBlockedDialog(
+    BuildContext context,
+    _ZombieBlockedReason reason,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final (title, message) = switch (reason) {
+      _ZombieBlockedReason.stayTunedMoon => (
+        l10n?.stayTunedMoonZombieBlockedTitle ?? 'A Message from Space',
+        l10n?.stayTunedMoonZombieBlockedMessage ??
+            'The brand-new world, Moon Base, is coming in the '
+                'not-too-distant future. Stay tuned!',
+      ),
+      _ZombieBlockedReason.stayTunedTaleZCorp => (
+        l10n?.stayTunedTaleZCorpZombieBlockedTitle ?? 'To be continued',
+        l10n?.stayTunedTaleZCorpZombieBlockedMessage ??
+            'ZCorp Chapter Two is coming soon. Stay tuned!',
+      ),
+      _ZombieBlockedReason.stayTunedFallback => (
+        l10n?.stayTunedZombieBlockedTitle ?? 'To be continued',
+        l10n?.stayTunedZombieBlockedMessage ??
+            'This content is not officially available yet. Stay tuned for '
+                'future updates!',
+      ),
+    };
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n?.ok ?? 'OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   List<ZombieInfo> _categoryFilteredZombies(ZombieRepository repo) {
@@ -194,18 +295,22 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
           ? FloatingActionButton(
               backgroundColor: themeColor,
               foregroundColor: theme.colorScheme.surface,
-              onPressed: () async {
-                final ids = widget.allowDuplicateSelection
-                    ? List<String>.from(_selectedIdsWithDuplicates)
-                    : _selectedIds.toList();
-                await maybeShowKongfuRocketFlickPrompt(
-                  context,
-                  ids,
-                  editorCubit: widget.editorCubit,
-                );
-                if (!context.mounted) return;
-                widget.onMultiZombieSelected?.call(ids);
-              },
+              onPressed: _isLoaded
+                  ? () async {
+                      final ids = _filterSelectableZombieIds(
+                        widget.allowDuplicateSelection
+                            ? List<String>.from(_selectedIdsWithDuplicates)
+                            : _selectedIds.toList(),
+                      );
+                      await maybeShowKongfuRocketFlickPrompt(
+                        context,
+                        ids,
+                        editorCubit: widget.editorCubit,
+                      );
+                      if (!context.mounted) return;
+                      widget.onMultiZombieSelected?.call(ids);
+                    }
+                  : null,
               child: const Icon(Icons.check),
             )
           : null,
@@ -284,9 +389,8 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                         AccentBarFilterTabRow(
                           key: ValueKey('${_selectedCategory.name}_tags'),
                           selectedIndex: safeTagIndex,
-                          onSelected: (index) => setState(
-                            () => _selectedTag = visibleTags[index],
-                          ),
+                          onSelected: (index) =>
+                              setState(() => _selectedTag = visibleTags[index]),
                           tabs: visibleTags.map((tag) {
                             final iconPath = tag.iconAssetPath;
                             return Row(
@@ -297,9 +401,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                                     assetPath: iconPath,
                                     width: 18,
                                     height: 18,
-                                    altCandidates: imageAltCandidates(
-                                      iconPath,
-                                    ),
+                                    altCandidates: imageAltCandidates(iconPath),
                                   ),
                                   const SizedBox(width: 6),
                                 ],
@@ -361,12 +463,25 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                           : (_selectedIds.contains(zombie.id) ? 1 : 0);
                       final isSelected = selectionCount > 0;
                       final isFavorite = repo.isFavorite(zombie.id);
+                      final blockedReason = _zombieBlockedReason(zombie);
+                      final isEnabled = blockedReason == null;
                       return _ZombieGridItem(
                         zombie: zombie,
                         isSelected: isSelected,
                         isFavorite: isFavorite,
+                        isEnabled: isEnabled,
+                        blockedLabel: blockedReason == null
+                            ? null
+                            : _zombieBlockedLabel(context, blockedReason),
                         selectionColor: widget.multiSelect ? themeColor : null,
                         onTap: () async {
+                          if (blockedReason != null) {
+                            await _showZombieBlockedDialog(
+                              context,
+                              blockedReason,
+                            );
+                            return;
+                          }
                           if (widget.multiSelect) {
                             setState(() {
                               if (widget.allowDuplicateSelection) {
@@ -401,6 +516,8 @@ class _ZombieGridItem extends StatelessWidget {
     required this.zombie,
     required this.isSelected,
     required this.isFavorite,
+    required this.isEnabled,
+    this.blockedLabel,
     required this.onTap,
     required this.onLongPress,
     this.selectionColor,
@@ -409,6 +526,8 @@ class _ZombieGridItem extends StatelessWidget {
   final ZombieInfo zombie;
   final bool isSelected;
   final bool isFavorite;
+  final bool isEnabled;
+  final String? blockedLabel;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
   final Color? selectionColor;
@@ -418,101 +537,108 @@ class _ZombieGridItem extends StatelessWidget {
     final theme = Theme.of(context);
     final iconPath = zombie.iconAssetPath;
     final hasIcon = iconPath != null && iconPath.isNotEmpty;
+    final detailText = blockedLabel ?? zombie.id;
+    final detailColor = blockedLabel == null
+        ? theme.colorScheme.onSurfaceVariant
+        : theme.colorScheme.error;
 
     final accent = selectionColor ?? theme.colorScheme.primary;
     final borderColor = isSelected ? accent : Colors.transparent;
     final bgColor = isSelected
         ? accent.withValues(alpha: 0.08)
         : Colors.transparent;
-    return Material(
-      color: bgColor,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
+    return Opacity(
+      opacity: isEnabled ? 1.0 : 0.5,
+      child: Material(
+        color: bgColor,
         borderRadius: BorderRadius.circular(8),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: borderColor, width: isSelected ? 2 : 0),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  ClipOval(
-                    child: SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: hasIcon
-                          ? AssetImageWidget(
-                              assetPath: iconPath,
-                              altCandidates: imageAltCandidates(iconPath),
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                              errorWidget: Image.asset(
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: borderColor, width: isSelected ? 2 : 0),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  children: [
+                    ClipOval(
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: hasIcon
+                            ? AssetImageWidget(
+                                assetPath: iconPath,
+                                altCandidates: imageAltCandidates(iconPath),
+                                width: 44,
+                                height: 44,
+                                fit: BoxFit.cover,
+                                errorWidget: Image.asset(
+                                  _kUnknownIconPath,
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.asset(
                                 _kUnknownIconPath,
                                 width: 44,
                                 height: 44,
                                 fit: BoxFit.cover,
                               ),
-                            )
-                          : Image.asset(
-                              _kUnknownIconPath,
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                  if (isFavorite)
-                    Positioned(
-                      right: -2,
-                      top: -2,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFFFC107),
-                            width: 0.5,
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(2),
-                        child: const Icon(
-                          Icons.star,
-                          size: 12,
-                          color: Color(0xFFFFC107),
-                        ),
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                ResourceNames.lookup(context, zombie.name),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 9,
+                    if (isFavorite)
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFFFFC107),
+                              width: 0.5,
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(2),
+                          child: const Icon(
+                            Icons.star,
+                            size: 12,
+                            color: Color(0xFFFFC107),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                zombie.id,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 8,
+                const SizedBox(height: 4),
+                Text(
+                  ResourceNames.lookup(context, zombie.name),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 9,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+                Text(
+                  detailText,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: detailColor,
+                    fontSize: 8,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
       ),

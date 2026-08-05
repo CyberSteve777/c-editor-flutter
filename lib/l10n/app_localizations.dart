@@ -4138,6 +4138,96 @@ abstract class AppLocalizations {
   /// **'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.'**
   String get realmExclusivePlantChooserBlockedMessage;
 
+  /// No description provided for @hiddenPlantChooserBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select plant'**
+  String get hiddenPlantChooserBlockedLabel;
+
+  /// No description provided for @hiddenPlantChooserBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select plant'**
+  String get hiddenPlantChooserBlockedTitle;
+
+  /// No description provided for @hiddenPlantChooserBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and Plant Mech Assembler - Flame Star, most hidden plants appear as Sunflower icons in game seed slots, which may affect the level\'s overall appearance. Use them carefully.'**
+  String get hiddenPlantChooserBlockedMessage;
+
+  /// No description provided for @comingSoonPlantBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get comingSoonPlantBlockedLabel;
+
+  /// No description provided for @comingSoonPlantBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get comingSoonPlantBlockedTitle;
+
+  /// No description provided for @comingSoonPlantBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!'**
+  String get comingSoonPlantBlockedMessage;
+
+  /// No description provided for @stayTunedMoonZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedLabel;
+
+  /// No description provided for @stayTunedMoonZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedTitle;
+
+  /// No description provided for @stayTunedMoonZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!'**
+  String get stayTunedMoonZombieBlockedMessage;
+
+  /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ZCorp\'s story is not over'**
+  String get stayTunedTaleZCorpZombieBlockedLabel;
+
+  /// No description provided for @stayTunedTaleZCorpZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To Be Continued'**
+  String get stayTunedTaleZCorpZombieBlockedTitle;
+
+  /// No description provided for @stayTunedTaleZCorpZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'ZCorp Chapter Two is coming soon. Stay tuned!'**
+  String get stayTunedTaleZCorpZombieBlockedMessage;
+
+  /// No description provided for @stayTunedZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay tuned'**
+  String get stayTunedZombieBlockedLabel;
+
+  /// No description provided for @stayTunedZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To Be Continued'**
+  String get stayTunedZombieBlockedTitle;
+
+  /// No description provided for @stayTunedZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This content is not officially available yet. Stay tuned for future updates!'**
+  String get stayTunedZombieBlockedMessage;
+
   /// No description provided for @missingModuleForPlantsWarning.
   ///
   /// In en, this message translates to:

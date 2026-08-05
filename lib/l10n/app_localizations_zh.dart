@@ -2180,6 +2180,52 @@ class AppLocalizationsZh extends AppLocalizations {
       '秘境专属植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。';
 
   @override
+  String get hiddenPlantChooserBlockedLabel => '无法选择植物';
+
+  @override
+  String get hiddenPlantChooserBlockedTitle => '无法选择植物';
+
+  @override
+  String get hiddenPlantChooserBlockedMessage =>
+      '隐藏植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n此外，除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵，可能影响关卡的整体观感，请谨慎使用。';
+
+  @override
+  String get comingSoonPlantBlockedLabel => '来自宇宙的预告';
+
+  @override
+  String get comingSoonPlantBlockedTitle => '来自宇宙的预告';
+
+  @override
+  String get comingSoonPlantBlockedMessage => '全新世界“月球基地”即将在不远的未来开启，敬请期待！';
+
+  @override
+  String get stayTunedMoonZombieBlockedLabel => '来自宇宙的预告';
+
+  @override
+  String get stayTunedMoonZombieBlockedTitle => '来自宇宙的预告';
+
+  @override
+  String get stayTunedMoonZombieBlockedMessage => '全新世界“月球基地”即将在不远的未来开启，敬请期待！';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedLabel => 'Z公司的故事尚未结束';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedTitle => '未完待续';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedMessage => 'Z公司的第二章节即将推出，敬请期待！';
+
+  @override
+  String get stayTunedZombieBlockedLabel => '敬请期待';
+
+  @override
+  String get stayTunedZombieBlockedTitle => '未完待续';
+
+  @override
+  String get stayTunedZombieBlockedMessage => '该内容尚未正式开放，敬请期待后续更新！';
+
+  @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
     return '缺少模块「$moduleName」，涉及植物：$plantList';
   }

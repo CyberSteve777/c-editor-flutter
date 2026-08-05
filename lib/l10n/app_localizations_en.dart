@@ -2251,6 +2251,57 @@ class AppLocalizationsEn extends AppLocalizations {
       'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.';
 
   @override
+  String get hiddenPlantChooserBlockedLabel => 'Cannot select plant';
+
+  @override
+  String get hiddenPlantChooserBlockedTitle => 'Cannot select plant';
+
+  @override
+  String get hiddenPlantChooserBlockedMessage =>
+      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and Plant Mech Assembler - Flame Star, most hidden plants appear as Sunflower icons in game seed slots, which may affect the level\'s overall appearance. Use them carefully.';
+
+  @override
+  String get comingSoonPlantBlockedLabel => 'A Message from Space';
+
+  @override
+  String get comingSoonPlantBlockedTitle => 'A Message from Space';
+
+  @override
+  String get comingSoonPlantBlockedMessage =>
+      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+
+  @override
+  String get stayTunedMoonZombieBlockedLabel => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonZombieBlockedTitle => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonZombieBlockedMessage =>
+      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedLabel =>
+      'ZCorp\'s story is not over';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedTitle => 'To Be Continued';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedMessage =>
+      'ZCorp Chapter Two is coming soon. Stay tuned!';
+
+  @override
+  String get stayTunedZombieBlockedLabel => 'Stay tuned';
+
+  @override
+  String get stayTunedZombieBlockedTitle => 'To Be Continued';
+
+  @override
+  String get stayTunedZombieBlockedMessage =>
+      'This content is not officially available yet. Stay tuned for future updates!';
+
+  @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
     return 'Missing module $moduleName for plants: $plantList';
   }

@@ -34,6 +34,7 @@ class SeedBankPropertiesScreen extends StatefulWidget {
     List<String>? excludeIds,
     List<String>? initialSelectedIds,
     bool blockRealmExclusiveInChooser,
+    bool blockHiddenPlantsInChooser,
     bool allowDuplicateSelection,
   })
   onRequestPlantSelection;
@@ -93,7 +94,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
     );
     _syncGridItemModeFromPreset();
     if (_data.selectionMethod == 'chooser' && _data.zombieMode != true) {
-      _stripRealmExclusiveFromPreset();
+      _stripChooserOnlyBlockedPlantsFromPreset();
     }
   }
 
@@ -113,8 +114,19 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
         plant.hasInternalTag('_internal_mausoleum');
   }
 
-  void _stripRealmExclusiveFromPreset() {
-    _data.presetPlantList.removeWhere(_isRealmExclusivePlantId);
+  bool _isHiddenPlantId(String id) {
+    if (kSeedBankGridItemIds.contains(id)) return false;
+    final plant = PlantRepository().getPlantInfoById(id);
+    if (plant == null) return false;
+    return plant.tags.contains(PlantTag.hidden);
+  }
+
+  bool _isChooserOnlyBlockedPlantId(String id) {
+    return _isRealmExclusivePlantId(id) || _isHiddenPlantId(id);
+  }
+
+  void _stripChooserOnlyBlockedPlantsFromPreset() {
+    _data.presetPlantList.removeWhere(_isChooserOnlyBlockedPlantId);
   }
 
   void _removeGridItemsFromPreset() {
@@ -143,6 +155,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
         });
       },
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
       allowDuplicateSelection: true,
     );
   }
@@ -158,6 +171,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       excludeIds: _data.plantBlackList,
       initialSelectedIds: _data.plantWhiteList,
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
     );
   }
 
@@ -172,6 +186,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       excludeIds: _data.plantWhiteList,
       initialSelectedIds: _data.plantBlackList,
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
     );
   }
 
@@ -218,7 +233,6 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       _sync();
     });
   }
-
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -273,15 +287,15 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: isZombieMode ? izombieColor : null,
-            ),
-            const SizedBox(height: 16),
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+                accentColor: isZombieMode ? izombieColor : null,
+              ),
+              const SizedBox(height: 16),
               _buildBasicRulesCard(context, isZombieMode, l10n),
               const SizedBox(height: 16),
               if (isZombieMode)
@@ -428,7 +442,7 @@ ModuleAliasInputField(
                       : (v) {
                           setState(() {
                             _data.selectionMethod = 'chooser';
-                            _stripRealmExclusiveFromPreset();
+                            _stripChooserOnlyBlockedPlantsFromPreset();
                             _sync();
                           });
                         },

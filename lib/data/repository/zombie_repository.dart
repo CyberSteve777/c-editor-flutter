@@ -5,6 +5,9 @@ import 'package:c_editor/data/asset_loader.dart';
 import 'package:c_editor/data/tag_assets.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 
+const String _kToBeContinuedIconPath =
+    'assets/images/others/to_be_continued.webp';
+
 enum ZombieCategory { main, size, other, collection }
 
 extension ZombieCategoryExtension on ZombieCategory {
@@ -207,6 +210,7 @@ class ZombieInfo {
   });
 
   String? get iconAssetPath {
+    if (id == 'stay_tuned') return _kToBeContinuedIconPath;
     if (icon == null) return null;
     final path = icon!;
     return 'assets/images/zombies/$path';

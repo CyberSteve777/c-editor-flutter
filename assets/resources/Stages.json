@@ -22645,6 +22645,188 @@
         "tag": "extra"
       },
       {
+        "alias": "SouDaCheStage",
+        "objdata": {
+          "ResourceGroupNames": [
+            "Egypt_Gravestone",
+            "Game_Tombstones_Dynamic",
+            "Tombstone_Dark_Effects",
+            "DelayLoad_Background_SouDaChe",
+            "AudioTutorial"
+          ],
+          "GroupsToUnloadForAds": [
+            "DelayLoad_Background_SouDaChe"
+          ],
+          "StagePrefix": "newyear_night",
+          "BackgroundResourceGroup": "DelayLoad_Background_SouDaChe",
+          "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_SOUDACHE",
+          "LevelPowerupSet": "LevelPowerupsDefault",
+          "BasicZombieTypeName": "tutorial",
+          "FlagZombieTypeName": "tutorial_flag",
+          "Armor1ZombieTypeName": "tutorial_armor1",
+          "Armor2ZombieTypeName": "tutorial_armor2",
+          "MusicSuffix": "Gnomiverse",
+          "RailcartDefaultTypeName": "railcart_tutotial",
+          "GravestoneDefaultTypeName": "gravestone_tutorial",
+          "DisabledStreetCells": [
+            {
+              "mX": 0,
+              "mY": 0
+            },
+            {
+              "mX": 0,
+              "mY": 1
+            },
+            {
+              "mX": 0,
+              "mY": 2
+            },
+            {
+              "mX": 0,
+              "mY": 3
+            },
+            {
+              "mX": 0,
+              "mY": 4
+            },
+            {
+              "mX": 0,
+              "mY": 5
+            },
+            {
+              "mX": 0,
+              "mY": 6
+            },
+            {
+              "mX": 0,
+              "mY": 7
+            },
+            {
+              "mX": 0,
+              "mY": 8
+            },
+            {
+              "mX": 0,
+              "mY": 9
+            },
+            {
+              "mX": 1,
+              "mY": 0
+            },
+            {
+              "mX": 1,
+              "mY": 1
+            },
+            {
+              "mX": 1,
+              "mY": 2
+            },
+            {
+              "mX": 1,
+              "mY": 3
+            },
+            {
+              "mX": 1,
+              "mY": 4
+            },
+            {
+              "mX": 1,
+              "mY": 5
+            },
+            {
+              "mX": 1,
+              "mY": 6
+            },
+            {
+              "mX": 1,
+              "mY": 7
+            },
+            {
+              "mX": 1,
+              "mY": 8
+            },
+            {
+              "mX": 1,
+              "mY": 9
+            },
+            {
+              "mX": 2,
+              "mY": 0
+            },
+            {
+              "mX": 2,
+              "mY": 1
+            },
+            {
+              "mX": 2,
+              "mY": 2
+            },
+            {
+              "mX": 2,
+              "mY": 3
+            },
+            {
+              "mX": 2,
+              "mY": 4
+            },
+            {
+              "mX": 2,
+              "mY": 5
+            },
+            {
+              "mX": 2,
+              "mY": 6
+            },
+            {
+              "mX": 2,
+              "mY": 7
+            },
+            {
+              "mX": 2,
+              "mY": 8
+            },
+            {
+              "mX": 2,
+              "mY": 9
+            },
+            {
+              "mX": 3,
+              "mY": 9
+            },
+            {
+              "mX": 5,
+              "mY": 9
+            },
+            {
+              "mX": 7,
+              "mY": 9
+            },
+            {
+              "mX": 7,
+              "mY": 8
+            },
+            {
+              "mX": 7,
+              "mY": 7
+            },
+            {
+              "mX": 8,
+              "mY": 9
+            },
+            {
+              "mX": 8,
+              "mY": 8
+            },
+            {
+              "mX": 8,
+              "mY": 7
+            }
+          ]
+        },
+        "image": "Stage_SouDaChe.gif",
+        "tag": "extra"
+      },
+      {
         "alias": "TutorialStage",
         "objdata": {
           "ResourceGroupNames": [

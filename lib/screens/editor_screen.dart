@@ -2747,6 +2747,7 @@ class _EditorScreenState extends State<EditorScreen> {
                   excludeIds,
                   initialSelectedIds,
                   blockRealmExclusiveInChooser = false,
+                  blockHiddenPlantsInChooser = false,
                   allowDuplicateSelection = false,
                 }) {
                   Navigator.push(
@@ -2758,6 +2759,8 @@ class _EditorScreenState extends State<EditorScreen> {
                         initialSelectedIds: initialSelectedIds ?? const [],
                         blockRealmExclusiveInChooser:
                             blockRealmExclusiveInChooser,
+                        blockHiddenPlantsInChooser:
+                            blockHiddenPlantsInChooser,
                         allowDuplicateSelection: allowDuplicateSelection,
                         onPlantSelected: (_) {},
                         onMultiPlantSelected: (ids) {

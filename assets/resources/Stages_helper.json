@@ -257,6 +257,12 @@
       "nameKey": "stage_SoccerStage"
     }
   },
+  "DelayLoad_Background_SouDaChe": {
+    "IMAGE_BACKGROUNDS_SOUDACHE": {
+      "image": "Stage_SouDaChe.gif",
+      "nameKey": "stage_SouDaCheStage"
+    }
+  },
   "DelayLoad_Background_Spring_Daylight": {
     "IMAGE_BACKGROUNDS_SPRING_DAYLIGHT": {
       "image": "Stage_SpringDaylight.webp",
