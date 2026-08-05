@@ -29,6 +29,10 @@ class ZombiePotionModuleScreen extends StatefulWidget {
 
 class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
   static const _objClass = 'ZombiePotionModuleProperties';
+  static const _initialField = 'Initial';
+  static const _maxCountField = 'MaxCount';
+  static const _potionSpawnTimerField = 'PotionSpawnTimer';
+  static const _potionTypesField = 'PotionTypes';
   late String _alias;
   late PvzObject _moduleObj;
   late ZombiePotionModulePropertiesData _data;
@@ -50,7 +54,7 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
         aliases: [alias],
-        objClass: 'ZombiePotionModuleProperties',
+        objClass: _objClass,
         objData: ZombiePotionModulePropertiesData().toJson(),
       ),
     );
@@ -124,7 +128,6 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -138,35 +141,34 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: l10n?.back ?? 'Back',
+          tooltip: l10n.back,
           onPressed: widget.onBack,
         ),
-        title: buildEditorObjectAppBarTitle(
-          context: context,
-          localizedName: resolveModuleTitleByObjClass(context, _objClass),
-          isEvent: false,
-          objClass: _objClass,
-        ),
+        title: Text(l10n.zombiePotionSettings),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
-            tooltip: l10n?.tooltipAboutModule ?? 'About this module',
+            tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
-              title: 'Zombie potion',
-              sections: const [
+              title: l10n.zombiePotionHelpTitle,
+              sections: [
                 HelpSectionData(
-                  title: 'Overview',
-                  body: 'Potions spawn over time until reaching max count.',
+                  title: l10n.overview,
+                  body: l10n.moduleHelpZombiePotionBody,
                 ),
                 HelpSectionData(
-                  title: 'Types',
-                  body: 'Potions are chosen randomly from the list.',
+                  title: l10n.moduleHelpZombiePotionMechanism,
+                  body: l10n.moduleHelpZombiePotionMechanismBody,
+                ),
+                HelpSectionData(
+                  title: l10n.moduleHelpZombiePotionPotionTypes,
+                  body: l10n.moduleHelpZombiePotionTypes,
                 ),
               ],
             ),
@@ -178,7 +180,7 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -193,7 +195,7 @@ ModuleAliasInputField(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Counts',
+                      l10n.counts,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
@@ -205,7 +207,11 @@ ModuleAliasInputField(
                         Expanded(
                           child: _intField(
                             controller: _initialCtrl,
-                            label: 'Initial',
+                            label: localizedPropertyLabel(
+                              context,
+                              l10n.initialCount,
+                              _initialField,
+                            ),
                             onChanged: (v) {
                               final n = int.tryParse(v);
                               if (n != null) {
@@ -219,7 +225,11 @@ ModuleAliasInputField(
                         Expanded(
                           child: _intField(
                             controller: _maxCtrl,
-                            label: 'Max',
+                            label: localizedPropertyLabel(
+                              context,
+                              l10n.maximumCount,
+                              _maxCountField,
+                            ),
                             onChanged: (v) {
                               final n = int.tryParse(v);
                               if (n != null) {
@@ -243,7 +253,11 @@ ModuleAliasInputField(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Spawn timer',
+                      localizedPropertyLabel(
+                        context,
+                        l10n.spawnInterval,
+                        _potionSpawnTimerField,
+                      ),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
@@ -255,7 +269,7 @@ ModuleAliasInputField(
                         Expanded(
                           child: _intField(
                             controller: _minCtrl,
-                            label: 'Min (sec)',
+                            label: l10n.minimumIntervalSeconds,
                             onChanged: (v) {
                               final n = int.tryParse(v);
                               if (n != null) {
@@ -269,7 +283,7 @@ ModuleAliasInputField(
                         Expanded(
                           child: _intField(
                             controller: _maxTimerCtrl,
-                            label: 'Max (sec)',
+                            label: l10n.maximumIntervalSeconds,
                             onChanged: (v) {
                               final n = int.tryParse(v);
                               if (n != null) {
@@ -295,7 +309,11 @@ ModuleAliasInputField(
                     Row(
                       children: [
                         Text(
-                          'Potion types',
+                          localizedPropertyLabel(
+                            context,
+                            l10n.potionTypeList,
+                            _potionTypesField,
+                          ),
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.primary,
@@ -305,13 +323,16 @@ ModuleAliasInputField(
                         TextButton.icon(
                           onPressed: _addPotionType,
                           icon: const Icon(Icons.add),
-                          label: const Text('Add'),
+                          label: Text(l10n.add),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     if (_data.potionTypes.isEmpty)
-                      Text('No potion types', style: theme.textTheme.bodySmall),
+                      Text(
+                        l10n.noPotionTypes,
+                        style: theme.textTheme.bodySmall,
+                      ),
                     ..._data.potionTypes.map((id) {
                       final displayName = ResourceNames.lookup(
                         context,
@@ -332,7 +353,7 @@ ModuleAliasInputField(
                           subtitle: Text(id),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline),
-                            tooltip: l10n?.delete ?? 'Delete',
+                            tooltip: l10n.delete,
                             onPressed: () => _removePotionType(id),
                           ),
                         ),

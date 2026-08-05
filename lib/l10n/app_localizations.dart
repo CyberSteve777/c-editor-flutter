@@ -3631,8 +3631,14 @@ abstract class AppLocalizations {
   /// No description provided for @startingSun.
   ///
   /// In en, this message translates to:
-  /// **'Starting sun'**
+  /// **'Starting Sun'**
   String get startingSun;
+
+  /// No description provided for @startingPlantfood.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Plant Food'**
+  String get startingPlantfood;
 
   /// No description provided for @stageModule.
   ///
@@ -4533,6 +4539,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enables scoring system based on zombie kills'**
   String get moduleDesc_LevelScoringModuleProperties;
+
+  /// No description provided for @moduleTitle_SouDaCheDamageTextModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Number Display'**
+  String get moduleTitle_SouDaCheDamageTextModuleProperties;
+
+  /// No description provided for @moduleDesc_SouDaCheDamageTextModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows the damage value dealt by each plant attack during the level'**
+  String get moduleDesc_SouDaCheDamageTextModuleProperties;
 
   /// No description provided for @moduleTitle_BowlingMinigameProperties.
   ///
@@ -6298,6 +6316,12 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get ok;
 
+  /// No description provided for @helpDialogGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get helpDialogGotIt;
+
   /// No description provided for @width.
   ///
   /// In en, this message translates to:
@@ -6661,13 +6685,13 @@ abstract class AppLocalizations {
   /// No description provided for @stopColumn.
   ///
   /// In en, this message translates to:
-  /// **'Stop column (StopColumn, range: 0-9 or 0-10)'**
+  /// **'Stop Column'**
   String get stopColumn;
 
   /// No description provided for @speedUp.
   ///
   /// In en, this message translates to:
-  /// **'Speed multiplier (SpeedUp)'**
+  /// **'Speed Multiplier'**
   String get speedUp;
 
   /// No description provided for @baseCostIncreased.
@@ -7909,13 +7933,31 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpZombiePotionBody.
   ///
   /// In en, this message translates to:
-  /// **'Spawns specified grid iems types (like potions) at random rows from right to left within a defined time interval. Stops spawning when the maximum number of grid items is reached.'**
+  /// **'This module periodically spawns specified obstacle types in random rows, moving from right to left.'**
   String get moduleHelpZombiePotionBody;
+
+  /// No description provided for @moduleHelpZombiePotionMechanism.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Mechanism'**
+  String get moduleHelpZombiePotionMechanism;
+
+  /// No description provided for @moduleHelpZombiePotionMechanismBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Obstacles spawn randomly within the configured time interval. If the number of matching obstacles on the lawn reaches the limit, spawning pauses.'**
+  String get moduleHelpZombiePotionMechanismBody;
+
+  /// No description provided for @moduleHelpZombiePotionPotionTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Potion Types'**
+  String get moduleHelpZombiePotionPotionTypes;
 
   /// No description provided for @moduleHelpZombiePotionTypes.
   ///
   /// In en, this message translates to:
-  /// **'Potions are randomly selected from the specified types. To spawn multiple grid items at fixed intervals, add multiple instances of this module.'**
+  /// **'One type is randomly selected from the configured list. To spawn multiple obstacles at fixed intervals, add this module multiple times in the level.'**
   String get moduleHelpZombiePotionTypes;
 
   /// No description provided for @moduleHelpUnknownBody.
@@ -8194,6 +8236,18 @@ abstract class AppLocalizations {
   /// **'Dark Alchemy module'**
   String get zombiePotion;
 
+  /// No description provided for @zombiePotionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Potion Settings'**
+  String get zombiePotionSettings;
+
+  /// No description provided for @zombiePotionHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Potion Module Help'**
+  String get zombiePotionHelpTitle;
+
   /// No description provided for @eventTimeRift.
   ///
   /// In en, this message translates to:
@@ -8223,6 +8277,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last Stand Settings'**
   String get lastStandSettings;
+
+  /// No description provided for @lastStandInitialResourceSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial Resource Settings'**
+  String get lastStandInitialResourceSettings;
+
+  /// No description provided for @lastStandManualStartupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After adding the Last Stand module, the editor automatically enables Manual Startup in the Wave Manager module.'**
+  String get lastStandManualStartupHint;
+
+  /// No description provided for @lastStandHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Stand Module Help'**
+  String get lastStandHelpTitle;
+
+  /// No description provided for @lastStandHelpOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap Start Battle.'**
+  String get lastStandHelpOverviewBody;
+
+  /// No description provided for @lastStandHelpNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get lastStandHelpNotes;
+
+  /// No description provided for @lastStandHelpNotesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Stand requires Manual Startup to be enabled in the Wave Manager; otherwise zombies will appear automatically. The editor manages this switch automatically when the Last Stand module is added or removed.'**
+  String get lastStandHelpNotesBody;
 
   /// No description provided for @roofFlowerPot.
   ///
@@ -8983,8 +9073,44 @@ abstract class AppLocalizations {
   /// No description provided for @counts.
   ///
   /// In en, this message translates to:
-  /// **'Count Settings'**
+  /// **'Quantity Control'**
   String get counts;
+
+  /// No description provided for @initialCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial Count'**
+  String get initialCount;
+
+  /// No description provided for @maximumCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Count'**
+  String get maximumCount;
+
+  /// No description provided for @spawnInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Interval'**
+  String get spawnInterval;
+
+  /// No description provided for @minimumIntervalSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Interval (seconds)'**
+  String get minimumIntervalSeconds;
+
+  /// No description provided for @maximumIntervalSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Interval (seconds)'**
+  String get maximumIntervalSeconds;
+
+  /// No description provided for @potionTypeList.
+  ///
+  /// In en, this message translates to:
+  /// **'Potion Type List'**
+  String get potionTypeList;
 
   /// No description provided for @initial.
   ///
@@ -10043,7 +10169,7 @@ abstract class AppLocalizations {
   /// No description provided for @noPotionTypes.
   ///
   /// In en, this message translates to:
-  /// **'No potion types configured; add one to continue'**
+  /// **'No potion types configured. Add a potion type to continue.'**
   String get noPotionTypes;
 
   /// No description provided for @conveyorCardPool.

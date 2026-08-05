@@ -76,6 +76,17 @@ class EditorWarningBanner extends StatelessWidget {
   }
 }
 
+String localizedPropertyLabel(
+  BuildContext context,
+  String localizedName,
+  String codeName,
+) {
+  final languageCode = Localizations.localeOf(context).languageCode;
+  return languageCode == 'zh'
+      ? '$localizedName（$codeName）'
+      : '$localizedName ($codeName)';
+}
+
 /// Shared editor UI components. Ported from Z-Editor-master EditorComponents.kt
 
 /// Square add button with rounded corners and + symbol.
@@ -537,12 +548,8 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
 
   ScrollbarThemeData _desktopScrollbarTheme() {
     return ScrollbarThemeData(
-      thumbColor: WidgetStateProperty.all(
-        Colors.white.withValues(alpha: 0.75),
-      ),
-      trackColor: WidgetStateProperty.all(
-        Colors.white.withValues(alpha: 0.18),
-      ),
+      thumbColor: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.75)),
+      trackColor: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.18)),
       trackBorderColor: WidgetStateProperty.all(Colors.transparent),
       thickness: WidgetStateProperty.all(6),
       radius: const Radius.circular(4),
@@ -608,10 +615,7 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
           controller: _scrollController,
           thumbVisibility: true,
           interactive: true,
-          child: _buildScrollableRow(
-            tabColors,
-            alignTabsToBottom: true,
-          ),
+          child: _buildScrollableRow(tabColors, alignTabsToBottom: true),
         ),
       ),
     );
@@ -664,13 +668,15 @@ class AccentBarChoiceChip extends StatelessWidget {
           highlightColor: Colors.transparent,
           overlayColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.pressed)) {
-              return (selected ? selectedFg : unselectedFg)
-                  .withValues(alpha: 0.12);
+              return (selected ? selectedFg : unselectedFg).withValues(
+                alpha: 0.12,
+              );
             }
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.focused)) {
-              return (selected ? selectedFg : unselectedFg)
-                  .withValues(alpha: 0.08);
+              return (selected ? selectedFg : unselectedFg).withValues(
+                alpha: 0.08,
+              );
             }
             return null;
           }),
@@ -806,71 +812,76 @@ void showEditorHelpDialog(
 }) {
   showDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Row(
-        children: [
-          Icon(
-            Icons.help_outline,
-            color: themeColor ?? Theme.of(ctx).colorScheme.primary,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-        ],
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: sections
-              .map(
-                (s) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '• ${s.title}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color:
-                              themeColor ?? Theme.of(ctx).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12),
-                        child: Text(
-                          s.body,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(
-            'OK',
-            style: TextStyle(
+    builder: (ctx) {
+      final l10n = AppLocalizations.of(ctx);
+      final confirmLabel =
+          l10n?.helpDialogGotIt ?? MaterialLocalizations.of(ctx).okButtonLabel;
+      return AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.help_outline,
               color: themeColor ?? Theme.of(ctx).colorScheme.primary,
             ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: sections
+                .map(
+                  (s) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '• ${s.title}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color:
+                                themeColor ?? Theme.of(ctx).colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            s.body,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
-      ],
-    ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              confirmLabel,
+              style: TextStyle(
+                color: themeColor ?? Theme.of(ctx).colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
+      );
+    },
   );
 }
 
@@ -883,7 +894,8 @@ class HelpSectionData {
 const _kWaveDropConfigTitleIconSize = 32.0;
 const _kPlantDropIconCardSize = 56.0;
 const _kPlantFoodIconPath = 'assets/images/others/plantfood.png';
-const _kPlantDropTagIconPath = 'assets/images/tags/plants/rarity/Plant_Green.webp';
+const _kPlantDropTagIconPath =
+    'assets/images/tags/plants/rarity/Plant_Green.webp';
 
 /// Plant drop token: icon plus a full-height remove strip (easier to tap than a
 /// corner overlay on a small square).
@@ -1035,9 +1047,13 @@ class WaveDropConfigCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final leafColor = isDark ? pvzGreenLight : pvzGreenDark;
     final plantCount = plants.length;
-    final plantFoodOnlyCount = (totalDropCount - plantCount).clamp(0, totalDropCount);
+    final plantFoodOnlyCount = (totalDropCount - plantCount).clamp(
+      0,
+      totalDropCount,
+    );
     final canIncreaseTotal = totalDropCount < zombieCount;
-    final canAddPlant = onAddPlant != null &&
+    final canAddPlant =
+        onAddPlant != null &&
         zombieCount > 0 &&
         totalDropCount > 0 &&
         plantCount < totalDropCount;
@@ -1079,22 +1095,23 @@ class WaveDropConfigCard extends StatelessWidget {
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 36, minHeight: 36),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
                       icon: const Icon(Icons.remove),
                       onPressed: totalDropCount > 0
                           ? () => onTotalDropCountChanged(totalDropCount - 1)
                           : null,
                     ),
-                    Text(
-                      '$totalDropCount',
-                      style: theme.textTheme.titleMedium,
-                    ),
+                    Text('$totalDropCount', style: theme.textTheme.titleMedium),
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 36, minHeight: 36),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
                       icon: const Icon(Icons.add),
                       onPressed: canIncreaseTotal
                           ? () => onTotalDropCountChanged(totalDropCount + 1)
@@ -1155,13 +1172,17 @@ class WaveDropConfigCard extends StatelessWidget {
                   if (plantFoodOnlyCount > 0)
                     _DropCountBadge(
                       iconPath: _kPlantFoodIconPath,
-                      label: l10n?.waveDropPlantFoodOnlyCount(plantFoodOnlyCount) ??
+                      label:
+                          l10n?.waveDropPlantFoodOnlyCount(
+                            plantFoodOnlyCount,
+                          ) ??
                           '$plantFoodOnlyCount plant food',
                     ),
                   if (plantCount > 0)
                     _DropCountBadge(
                       iconPath: _kPlantDropTagIconPath,
-                      label: l10n?.waveDropPlantsCount(plantCount) ??
+                      label:
+                          l10n?.waveDropPlantsCount(plantCount) ??
                           '$plantCount plants',
                     ),
                 ],
@@ -1259,7 +1280,8 @@ class _DropCountBadge extends StatelessWidget {
         const iconSize = 20.0;
         const gap = 6.0;
         const horizontalPadding = 20.0;
-        final maxWidth = constraints.hasBoundedWidth && constraints.maxWidth.isFinite
+        final maxWidth =
+            constraints.hasBoundedWidth && constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : double.infinity;
         final maxLabelWidth = math.max(

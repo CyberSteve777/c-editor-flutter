@@ -141,16 +141,13 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     if (zombie.id != _kStayTunedZombieId) return null;
     final hasMoon = zombie.tags.contains(ZombieTag.moon);
     final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
+    // The shared stay_tuned entry uses generic copy on the all-zombies tab.
     if (hasMoon && _selectedTag == ZombieTag.moon) {
       return _ZombieBlockedReason.stayTunedMoon;
     }
     if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
       return _ZombieBlockedReason.stayTunedTaleZCorp;
     }
-    // A shared stay_tuned entry can carry both tags. Without a stronger
-    // category context, keep a fixed priority: Moon, then Tale_ZCorp.
-    if (hasMoon) return _ZombieBlockedReason.stayTunedMoon;
-    if (hasTaleZCorp) return _ZombieBlockedReason.stayTunedTaleZCorp;
     return _ZombieBlockedReason.stayTunedFallback;
   }
 
@@ -169,22 +166,6 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
 
   List<String> _filterSelectableZombieIds(List<String> ids) {
     return ids.where((id) => _zombieBlockedReasonForId(id) == null).toList();
-  }
-
-  String _zombieBlockedLabel(
-    BuildContext context,
-    _ZombieBlockedReason reason,
-  ) {
-    final l10n = AppLocalizations.of(context);
-    switch (reason) {
-      case _ZombieBlockedReason.stayTunedMoon:
-        return l10n?.stayTunedMoonZombieBlockedLabel ?? 'A Message from Space';
-      case _ZombieBlockedReason.stayTunedTaleZCorp:
-        return l10n?.stayTunedTaleZCorpZombieBlockedLabel ??
-            'The ZCorp story is not over';
-      case _ZombieBlockedReason.stayTunedFallback:
-        return l10n?.stayTunedZombieBlockedLabel ?? 'Stay tuned';
-    }
   }
 
   Future<void> _showZombieBlockedDialog(
@@ -470,9 +451,6 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                         isSelected: isSelected,
                         isFavorite: isFavorite,
                         isEnabled: isEnabled,
-                        blockedLabel: blockedReason == null
-                            ? null
-                            : _zombieBlockedLabel(context, blockedReason),
                         selectionColor: widget.multiSelect ? themeColor : null,
                         onTap: () async {
                           if (blockedReason != null) {
@@ -517,7 +495,6 @@ class _ZombieGridItem extends StatelessWidget {
     required this.isSelected,
     required this.isFavorite,
     required this.isEnabled,
-    this.blockedLabel,
     required this.onTap,
     required this.onLongPress,
     this.selectionColor,
@@ -527,7 +504,6 @@ class _ZombieGridItem extends StatelessWidget {
   final bool isSelected;
   final bool isFavorite;
   final bool isEnabled;
-  final String? blockedLabel;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
   final Color? selectionColor;
@@ -537,10 +513,6 @@ class _ZombieGridItem extends StatelessWidget {
     final theme = Theme.of(context);
     final iconPath = zombie.iconAssetPath;
     final hasIcon = iconPath != null && iconPath.isNotEmpty;
-    final detailText = blockedLabel ?? zombie.id;
-    final detailColor = blockedLabel == null
-        ? theme.colorScheme.onSurfaceVariant
-        : theme.colorScheme.error;
 
     final accent = selectionColor ?? theme.colorScheme.primary;
     final borderColor = isSelected ? accent : Colors.transparent;
@@ -628,9 +600,9 @@ class _ZombieGridItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  detailText,
+                  zombie.id,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: detailColor,
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontSize: 8,
                   ),
                   textAlign: TextAlign.center,

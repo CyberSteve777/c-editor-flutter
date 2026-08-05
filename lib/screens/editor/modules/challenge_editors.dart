@@ -5,6 +5,7 @@ import 'package:c_editor/data/repository/challenge_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/modules/star_challenge_property_editors.dart';
 import 'package:c_editor/theme/app_theme.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 /// Shows challenge editor in an alert dialog instead of a separate screen.
 Future<void> showChallengeEditorDialog(
@@ -832,7 +833,7 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            initialValue: '${item.gridItemType}',
+                            initialValue: item.gridItemType,
                             decoration: InputDecoration(
                               labelText: l10n?.gridItemType ?? 'Grid Item Type',
                               border: const OutlineInputBorder(),
@@ -1005,6 +1006,10 @@ class _ZombiePotionModuleEditor extends StatefulWidget {
 }
 
 class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
+  static const _initialField = 'Initial';
+  static const _maxCountField = 'MaxCount';
+  static const _potionSpawnTimerField = 'PotionSpawnTimer';
+
   late ZombiePotionModulePropertiesData _data;
 
   @override
@@ -1022,14 +1027,18 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = widget.l10n ?? AppLocalizations.of(context);
+    final AppLocalizations l10n = widget.l10n ?? AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
           initialValue: _data.initialPotionCount.toString(),
           decoration: InputDecoration(
-            labelText: l10n?.initialPotionCount ?? 'Initial Potion Count',
+            labelText: localizedPropertyLabel(
+              context,
+              l10n.initialCount,
+              _initialField,
+            ),
             border: const OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
@@ -1042,7 +1051,11 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
         TextFormField(
           initialValue: _data.maxPotionCount.toString(),
           decoration: InputDecoration(
-            labelText: l10n?.maxPotionCount ?? 'Max Potion Count',
+            labelText: localizedPropertyLabel(
+              context,
+              l10n.maximumCount,
+              _maxCountField,
+            ),
             border: const OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
@@ -1053,7 +1066,11 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
         ),
         const SizedBox(height: 8),
         Text(
-          l10n?.spawnTimer ?? 'Spawn Timer (Min/Max seconds)',
+          localizedPropertyLabel(
+            context,
+            l10n.spawnInterval,
+            _potionSpawnTimerField,
+          ),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         Row(
@@ -1062,7 +1079,7 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
               child: TextFormField(
                 initialValue: _data.potionSpawnTimer.min.toString(),
                 decoration: InputDecoration(
-                  labelText: l10n?.minSec ?? 'Min',
+                  labelText: l10n.minimumIntervalSeconds,
                   border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
@@ -1077,7 +1094,7 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
               child: TextFormField(
                 initialValue: _data.potionSpawnTimer.max.toString(),
                 decoration: InputDecoration(
-                  labelText: l10n?.maxSec ?? 'Max',
+                  labelText: l10n.maximumIntervalSeconds,
                   border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
@@ -1091,8 +1108,7 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
         ),
         const SizedBox(height: 16),
         Text(
-          l10n?.potionTypesConfigured(_data.potionTypes.length) ??
-              'Potion types: ${_data.potionTypes.length} configured',
+          l10n.potionTypesConfigured(_data.potionTypes.length),
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),

@@ -1974,6 +1974,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get startingSun => 'Начальное солнце';
 
   @override
+  String get startingPlantfood => 'Начальная подкормка';
+
+  @override
   String get stageModule => 'Стадия';
 
   @override
@@ -2496,6 +2499,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_LevelScoringModuleProperties => 'Очки за убийства';
+
+  @override
+  String get moduleTitle_SouDaCheDamageTextModuleProperties =>
+      'Отображение урона';
+
+  @override
+  String get moduleDesc_SouDaCheDamageTextModuleProperties =>
+      'Показывает урон, нанесенный каждой атакой растения во время уровня';
 
   @override
   String get moduleTitle_BowlingMinigameProperties => 'Боулинг';
@@ -3468,6 +3479,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ok => 'ОК';
 
   @override
+  String get helpDialogGotIt => 'Понятно';
+
+  @override
   String get width => 'Ширина';
 
   @override
@@ -3672,10 +3686,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'BowlingFoulLine — индекс столбца слева (с 0). Растения нельзя ставить на этой линии и правее неё.';
 
   @override
-  String get stopColumn => 'Стоп-колонка (StopColumn)';
+  String get stopColumn => 'Стоп-колонка';
 
   @override
-  String get speedUp => 'Ускорение (SpeedUp)';
+  String get speedUp => 'Множитель скорости';
 
   @override
   String get baseCostIncreased =>
@@ -4379,11 +4393,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleHelpZombiePotionBody =>
-      'Зелья появляются со временем до максимума.';
+      'Этот модуль периодически создаёт указанные препятствия в случайных рядах справа налево.';
+
+  @override
+  String get moduleHelpZombiePotionMechanism => 'Механика появления';
+
+  @override
+  String get moduleHelpZombiePotionMechanismBody =>
+      'Препятствия появляются случайно в заданном интервале времени. Если их количество на поле достигло предела, генерация приостанавливается.';
+
+  @override
+  String get moduleHelpZombiePotionPotionTypes => 'Типы зелий';
 
   @override
   String get moduleHelpZombiePotionTypes =>
-      'Зелья выбираются случайно из списка.';
+      'Тип выбирается случайно из настроенного списка. Чтобы через фиксированный интервал создавать несколько препятствий, добавьте этот модуль в уровень несколько раз.';
 
   @override
   String get moduleHelpUnknownBody =>
@@ -4535,6 +4559,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombiePotion => 'Зелье зомби';
 
   @override
+  String get zombiePotionSettings => 'Настройки зелий зомби';
+
+  @override
+  String get zombiePotionHelpTitle => 'Справка по модулю зелий зомби';
+
+  @override
   String get eventTimeRift => 'Событие временного разлома';
 
   @override
@@ -4548,6 +4578,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get lastStandSettings => 'Настройки последнего рубежа';
+
+  @override
+  String get lastStandInitialResourceSettings => 'Начальные ресурсы';
+
+  @override
+  String get lastStandManualStartupHint =>
+      'После добавления модуля Last Stand редактор автоматически включает Manual Startup в модуле Wave Manager.';
+
+  @override
+  String get lastStandHelpTitle => 'Справка по модулю Last Stand';
+
+  @override
+  String get lastStandHelpOverviewBody =>
+      'Когда этот модуль включён, уровень начинается с фазы подготовки: зомби не появляются сразу, а игрок может тратить начальное солнце на размещение растений. Волны начнутся только после нажатия кнопки начала боя.';
+
+  @override
+  String get lastStandHelpNotes => 'Примечания';
+
+  @override
+  String get lastStandHelpNotesBody =>
+      'Для Last Stand нужно включить Manual Startup в Wave Manager, иначе зомби появятся автоматически. Редактор сам управляет этим переключателем при добавлении или удалении модуля Last Stand.';
 
   @override
   String get roofFlowerPot => 'Цветочный горшок на крыше';
@@ -4946,7 +4997,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectWeatherType => 'Выбрать тип погоды';
 
   @override
-  String get counts => 'Количество';
+  String get counts => 'Управление количеством';
+
+  @override
+  String get initialCount => 'Начальное количество';
+
+  @override
+  String get maximumCount => 'Максимальное количество';
+
+  @override
+  String get spawnInterval => 'Интервал появления';
+
+  @override
+  String get minimumIntervalSeconds => 'Минимальный интервал (секунды)';
+
+  @override
+  String get maximumIntervalSeconds => 'Максимальный интервал (секунды)';
+
+  @override
+  String get potionTypeList => 'Список типов зелий';
 
   @override
   String get initial => 'Начальное';
@@ -5581,7 +5650,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get potionTypes => 'Типы зелий';
 
   @override
-  String get noPotionTypes => 'Нет типов зелий';
+  String get noPotionTypes =>
+      'Типы зелий не настроены. Добавьте тип зелья, чтобы продолжить.';
 
   @override
   String get conveyorCardPool => 'Пул карт конвейера';

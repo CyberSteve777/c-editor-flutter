@@ -1910,6 +1910,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get startingSun => '初始阳光';
 
   @override
+  String get startingPlantfood => '初始能量豆';
+
+  @override
   String get stageModule => '关卡地图';
 
   @override
@@ -2389,6 +2392,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moduleDesc_LevelScoringModuleProperties => '启用积分模块，杀死僵尸获得分数';
+
+  @override
+  String get moduleTitle_SouDaCheDamageTextModuleProperties => '伤害数字显示';
+
+  @override
+  String get moduleDesc_SouDaCheDamageTextModuleProperties =>
+      '在关卡中显示植物每次攻击造成的伤害数值';
 
   @override
   String get moduleTitle_BowlingMinigameProperties => '沙滩保龄球';
@@ -3301,6 +3311,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ok => '确定';
 
   @override
+  String get helpDialogGotIt => '我明白了';
+
+  @override
   String get width => 'Width';
 
   @override
@@ -3504,10 +3517,10 @@ class AppLocalizationsZh extends AppLocalizations {
       'BowlingFoulLine 为从左起算的列索引（从 0 开始）。该列及其右侧不可种植植物。';
 
   @override
-  String get stopColumn => '停止列 (StopColumn，范围0-9或0-10)';
+  String get stopColumn => '停止列';
 
   @override
-  String get speedUp => '加速倍率 (SpeedUp)';
+  String get speedUp => '加速倍率';
 
   @override
   String get baseCostIncreased => '每次增加阳光消耗 (BaseCostIncreased)';
@@ -4196,12 +4209,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleHelpWeatherRef => '这些模块通常直接引用自 LevelModules，无需在关卡内自定义参数。';
 
   @override
-  String get moduleHelpZombiePotionBody =>
-      '此模块会在指定的时间间隔区间内，从右往左在随机行生成指定类型的障碍物。如果场上指定障碍物数量达到上限，则不会继续生成。';
+  String get moduleHelpZombiePotionBody => '此模块会按一定的时间间隔从右往左在随机行生成指定类型的障碍物。';
+
+  @override
+  String get moduleHelpZombiePotionMechanism => '生成机制';
+
+  @override
+  String get moduleHelpZombiePotionMechanismBody =>
+      '障碍物会在指定的时间间隔区间内随机生成。如果场上指定障碍物数量达到上限，则不会继续生成。';
+
+  @override
+  String get moduleHelpZombiePotionPotionTypes => '药水类型';
 
   @override
   String get moduleHelpZombiePotionTypes =>
-      '药水会在指定的种类中随机选取，如果想间隔固定时间同时生成多个，可以尝试在关卡内添加多次此模块。';
+      '会在指定的种类中随机选取。如果想间隔固定时间同时生成多个，可以尝试在关卡里添加多次此模块。';
 
   @override
   String get moduleHelpUnknownBody =>
@@ -4352,6 +4374,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombiePotion => '僵尸药水模块';
 
   @override
+  String get zombiePotionSettings => '药水生成设置';
+
+  @override
+  String get zombiePotionHelpTitle => '僵尸药水模块说明';
+
+  @override
   String get eventTimeRift => '事件类型：时空裂缝';
 
   @override
@@ -4365,6 +4393,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get lastStandSettings => '坚不可摧设置';
+
+  @override
+  String get lastStandInitialResourceSettings => '初始资源设置';
+
+  @override
+  String get lastStandManualStartupHint =>
+      '添加坚不可摧模块后，会自动在波次管理器模块中启用“手动开始游戏”开关。';
+
+  @override
+  String get lastStandHelpTitle => '坚不可摧模块说明';
+
+  @override
+  String get lastStandHelpOverviewBody =>
+      '启用此模块后，关卡开始时会进入布阵阶段，不会立即出怪，允许玩家消耗初始阳光摆放植物。点击“开始战斗”后才会开始刷新波次。';
+
+  @override
+  String get lastStandHelpNotes => '注意事项';
+
+  @override
+  String get lastStandHelpNotesBody =>
+      '启用坚不可摧后，需要在波次管理器中启用“手动开始游戏”开关，否则僵尸会自动出现。添加或移除坚不可摧模块时，软件会自动管理此开关。';
 
   @override
   String get roofFlowerPot => '屋顶花盆模块';
@@ -4759,6 +4808,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get counts => '数量控制';
+
+  @override
+  String get initialCount => '初始数量';
+
+  @override
+  String get maximumCount => '最大数量';
+
+  @override
+  String get spawnInterval => '生成时间间隔';
+
+  @override
+  String get minimumIntervalSeconds => '最小间隔（秒）';
+
+  @override
+  String get maximumIntervalSeconds => '最大间隔（秒）';
+
+  @override
+  String get potionTypeList => '药水种类列表';
 
   @override
   String get initial => '初始数量 (InitialPotionCount)';

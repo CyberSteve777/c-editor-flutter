@@ -111,6 +111,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_StarChallengeModuleProperties;
       case 'moduleTitle_LevelScoringModuleProperties':
         return l10n.moduleTitle_LevelScoringModuleProperties;
+      case 'moduleTitle_SouDaCheDamageTextModuleProperties':
+        return l10n.moduleTitle_SouDaCheDamageTextModuleProperties;
       case 'moduleTitle_BowlingMinigameProperties':
         return l10n.moduleTitle_BowlingMinigameProperties;
       case 'moduleTitle_NewBowlingMinigameProperties':
@@ -257,6 +259,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_StarChallengeModuleProperties;
       case 'moduleDesc_LevelScoringModuleProperties':
         return l10n.moduleDesc_LevelScoringModuleProperties;
+      case 'moduleDesc_SouDaCheDamageTextModuleProperties':
+        return l10n.moduleDesc_SouDaCheDamageTextModuleProperties;
       case 'moduleDesc_BowlingMinigameProperties':
         return l10n.moduleDesc_BowlingMinigameProperties;
       case 'moduleDesc_NewBowlingMinigameProperties':
@@ -530,6 +534,16 @@ class ModuleRegistry {
       category: ModuleCategory.base,
       defaultAlias: 'LevelScoring',
       initialDataFactory: () => LevelScoringData(),
+      routeId: 'UnknownDetail',
+    ),
+    'SouDaCheDamageTextModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_SouDaCheDamageTextModuleProperties',
+      descriptionKey: 'moduleDesc_SouDaCheDamageTextModuleProperties',
+      icon: Icons.numbers,
+      isCore: false,
+      category: ModuleCategory.base,
+      defaultAlias: 'SouDaCheDamageTextModule',
+      initialDataFactory: () => <String, dynamic>{},
       routeId: 'UnknownDetail',
     ),
     'LawnMowerProperties': const ModuleMetadata(

@@ -1951,7 +1951,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelNumber => 'Level number';
 
   @override
-  String get startingSun => 'Starting sun';
+  String get startingSun => 'Starting Sun';
+
+  @override
+  String get startingPlantfood => 'Starting Plant Food';
 
   @override
   String get stageModule => 'Lawn module';
@@ -2485,6 +2488,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_LevelScoringModuleProperties =>
       'Enables scoring system based on zombie kills';
+
+  @override
+  String get moduleTitle_SouDaCheDamageTextModuleProperties =>
+      'Damage Number Display';
+
+  @override
+  String get moduleDesc_SouDaCheDamageTextModuleProperties =>
+      'Shows the damage value dealt by each plant attack during the level';
 
   @override
   String get moduleTitle_BowlingMinigameProperties => 'Bulb Bowling';
@@ -3481,6 +3492,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
+  String get helpDialogGotIt => 'Got it';
+
+  @override
   String get width => 'Width';
 
   @override
@@ -3686,10 +3700,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'BowlingFoulLine is a 0-based column index from the left edge of the lawn. Zombies and bowling bulbs interact with plants to the right of this line.';
 
   @override
-  String get stopColumn => 'Stop column (StopColumn, range: 0-9 or 0-10)';
+  String get stopColumn => 'Stop Column';
 
   @override
-  String get speedUp => 'Speed multiplier (SpeedUp)';
+  String get speedUp => 'Speed Multiplier';
 
   @override
   String get baseCostIncreased =>
@@ -4410,11 +4424,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleHelpZombiePotionBody =>
-      'Spawns specified grid iems types (like potions) at random rows from right to left within a defined time interval. Stops spawning when the maximum number of grid items is reached.';
+      'This module periodically spawns specified obstacle types in random rows, moving from right to left.';
+
+  @override
+  String get moduleHelpZombiePotionMechanism => 'Spawn Mechanism';
+
+  @override
+  String get moduleHelpZombiePotionMechanismBody =>
+      'Obstacles spawn randomly within the configured time interval. If the number of matching obstacles on the lawn reaches the limit, spawning pauses.';
+
+  @override
+  String get moduleHelpZombiePotionPotionTypes => 'Potion Types';
 
   @override
   String get moduleHelpZombiePotionTypes =>
-      'Potions are randomly selected from the specified types. To spawn multiple grid items at fixed intervals, add multiple instances of this module.';
+      'One type is randomly selected from the configured list. To spawn multiple obstacles at fixed intervals, add this module multiple times in the level.';
 
   @override
   String get moduleHelpUnknownBody =>
@@ -4565,6 +4589,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombiePotion => 'Dark Alchemy module';
 
   @override
+  String get zombiePotionSettings => 'Zombie Potion Settings';
+
+  @override
+  String get zombiePotionHelpTitle => 'Zombie Potion Module Help';
+
+  @override
   String get eventTimeRift => 'Event: Spacetime Portal';
 
   @override
@@ -4578,6 +4608,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lastStandSettings => 'Last Stand Settings';
+
+  @override
+  String get lastStandInitialResourceSettings => 'Initial Resource Settings';
+
+  @override
+  String get lastStandManualStartupHint =>
+      'After adding the Last Stand module, the editor automatically enables Manual Startup in the Wave Manager module.';
+
+  @override
+  String get lastStandHelpTitle => 'Last Stand Module Help';
+
+  @override
+  String get lastStandHelpOverviewBody =>
+      'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap Start Battle.';
+
+  @override
+  String get lastStandHelpNotes => 'Notes';
+
+  @override
+  String get lastStandHelpNotesBody =>
+      'Last Stand requires Manual Startup to be enabled in the Wave Manager; otherwise zombies will appear automatically. The editor manages this switch automatically when the Last Stand module is added or removed.';
 
   @override
   String get roofFlowerPot => 'Roof Pots module';
@@ -4979,7 +5030,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectWeatherType => 'Select weather type';
 
   @override
-  String get counts => 'Count Settings';
+  String get counts => 'Quantity Control';
+
+  @override
+  String get initialCount => 'Initial Count';
+
+  @override
+  String get maximumCount => 'Maximum Count';
+
+  @override
+  String get spawnInterval => 'Spawn Interval';
+
+  @override
+  String get minimumIntervalSeconds => 'Minimum Interval (seconds)';
+
+  @override
+  String get maximumIntervalSeconds => 'Maximum Interval (seconds)';
+
+  @override
+  String get potionTypeList => 'Potion Type List';
 
   @override
   String get initial => 'Initial count (InitialPotionCount)';
@@ -5617,7 +5686,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get potionTypes => 'Potion Types (PotionTypes)';
 
   @override
-  String get noPotionTypes => 'No potion types configured; add one to continue';
+  String get noPotionTypes =>
+      'No potion types configured. Add a potion type to continue.';
 
   @override
   String get conveyorCardPool => 'Conveyor Pool';

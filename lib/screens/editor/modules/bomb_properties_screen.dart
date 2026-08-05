@@ -101,7 +101,6 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
     setState(() {});
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -155,14 +154,14 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -179,9 +178,11 @@ ModuleAliasInputField(
                       const SizedBox(height: 12),
                       TextField(
                         controller: _flameSpeedCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'FlameSpeed',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText:
+                              l10n?.bombPropertiesFlameSpeed ??
+                              'Fuse Burn Speed (FlameSpeed)',
+                          border: const OutlineInputBorder(),
                         ),
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,

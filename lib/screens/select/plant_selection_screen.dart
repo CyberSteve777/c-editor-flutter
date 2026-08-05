@@ -318,25 +318,6 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     }
   }
 
-  String? _plantBlockedLabel(
-    BuildContext context,
-    _PlantBlockedReason? reason,
-  ) {
-    final l10n = AppLocalizations.of(context);
-    switch (reason) {
-      case _PlantBlockedReason.comingSoon:
-        return l10n?.comingSoonPlantBlockedLabel ?? 'A Message from Space';
-      case _PlantBlockedReason.realmExclusiveChooser:
-        return l10n?.realmExclusivePlantChooserBlockedTitle ??
-            'Cannot select plant';
-      case _PlantBlockedReason.hiddenChooser:
-        return l10n?.hiddenPlantChooserBlockedLabel ?? 'Cannot select plant';
-      case _PlantBlockedReason.missingModule:
-      case null:
-        return null;
-    }
-  }
-
   Future<void> _onPlantTap(
     BuildContext context,
     PlantInfo plant,
@@ -657,10 +638,6 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                         isSelected: isSelected,
                         isFavorite: isFavorite,
                         isEnabled: isEnabled,
-                        blockedLabel: _plantBlockedLabel(
-                          context,
-                          blockedReason,
-                        ),
                         onTap: () => _onPlantTap(context, plant, blockedReason),
                         onSecondaryTap: isHat
                             ? () => _openMagicHatPreview(context, plant.id)
@@ -684,7 +661,6 @@ class _PlantGridItem extends StatelessWidget {
     required this.isSelected,
     required this.isFavorite,
     required this.isEnabled,
-    this.blockedLabel,
     required this.onTap,
     this.onSecondaryTap,
     required this.onLongPress,
@@ -694,7 +670,6 @@ class _PlantGridItem extends StatelessWidget {
   final bool isSelected;
   final bool isFavorite;
   final bool isEnabled;
-  final String? blockedLabel;
   final VoidCallback onTap;
   final VoidCallback? onSecondaryTap;
   final VoidCallback onLongPress;
@@ -704,10 +679,6 @@ class _PlantGridItem extends StatelessWidget {
     final theme = Theme.of(context);
     final iconPath = plant.iconAssetPath;
     final hasIcon = iconPath != null && iconPath.isNotEmpty;
-    final detailText = blockedLabel ?? plant.id;
-    final detailColor = blockedLabel == null
-        ? theme.colorScheme.onSurfaceVariant
-        : theme.colorScheme.error;
 
     final borderColor = isSelected
         ? theme.colorScheme.primary
@@ -796,9 +767,9 @@ class _PlantGridItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                detailText,
+                plant.id,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: detailColor,
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontSize: 8,
                 ),
                 textAlign: TextAlign.center,
