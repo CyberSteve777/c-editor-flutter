@@ -2524,6 +2524,14 @@
       }
     }
   },
+  "zombossPresetDerivedBaseAction": "Based on Preset Custom Action: {action}",
+  "@zombossPresetDerivedBaseAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "zombossMechActionAliasHint": "Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.",
   "zombossMechActionBaseObjclass": "Action Type (objclass)",
   "zombossMechActionDetails": "Action Details",

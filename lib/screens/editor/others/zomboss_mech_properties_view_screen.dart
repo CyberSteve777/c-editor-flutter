@@ -170,11 +170,10 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
   ) {
     final l10n = AppLocalizations.of(context);
     final entries = <(String, String)>[];
-    for (final entry in propsData.entries) {
-      final key = entry.key;
-      final value = entry.value;
-      if (key == 'Stages' || key == 'UnlimitedStages') continue;
-      if (value is Map || value is List) continue;
+    const keys = ['MinColumn', 'MaxColumn'];
+    for (final key in keys) {
+      final value = propsData[key];
+      if (value == null) continue;
       entries.add((_propertyLabel(l10n, key), value.toString()));
     }
     return entries;

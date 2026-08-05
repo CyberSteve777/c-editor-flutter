@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
@@ -49,7 +50,18 @@ class _CustomZombossMechActionEditorScreenState
         ? widget.catalog.actions.where((g) => g.tag == 'retreat')
         : widget.catalog.actions.where((g) => g.tag != 'retreat');
     final seen = <String>{};
-    return groups.where((g) => seen.add(g.objclass)).toList();
+    final list = groups.where((g) => seen.add(g.objclass)).toList();
+    if (!widget.retreatOnly) {
+      for (final group
+          in ZombossCustomActionPresetRepository.actionGroupsForMech(
+            widget.catalog.editableInstance,
+          )) {
+        if (seen.add(group.objclass)) {
+          list.add(group);
+        }
+      }
+    }
+    return list;
   }
 
   ZombossMechObjclassGroup? get _group =>
@@ -107,7 +119,11 @@ class _CustomZombossMechActionEditorScreenState
         data: _data,
       );
     } else {
-      _obj!.aliases = [_alias];
+      _obj!.aliases =
+          ZombossCustomActionPresetRepository.aliasesWithPrimaryAlias(
+            _alias,
+            _obj!.aliases,
+          );
       _obj!.objData = Map<String, dynamic>.from(_data);
     }
     widget.onPropsSync?.call();

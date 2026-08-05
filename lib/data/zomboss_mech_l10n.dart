@@ -16,11 +16,17 @@ abstract class ZombossMechL10n {
   static String actionKey(String mechId, String objclass) =>
       '${mechId}_action_$objclass';
 
+  static String genericActionKey(String objclass) =>
+      'zombossMech_action_$objclass';
+
   static String actionImplementationKey(String mechId, String alias) =>
       '${mechId}_action_impl_$alias';
 
   static String fieldKey(String mechId, String objclass, String fieldName) =>
       '${mechId}_action_${objclass}_field_$fieldName';
+
+  static String genericFieldKey(String objclass, String fieldName) =>
+      'zombossMech_action_${objclass}_field_$fieldName';
 
   static String? _lookup(BuildContext context, String key, String fallback) {
     final localized = ResourceNames.lookup(context, key);
@@ -44,7 +50,9 @@ abstract class ZombossMechL10n {
     String? fallback,
   }) {
     final fb = fallback ?? objclass;
-    return _lookup(context, actionKey(mechId, objclass), fb) ?? fb;
+    final localized = _lookup(context, actionKey(mechId, objclass), fb);
+    if (localized != null && localized != fb) return localized;
+    return _lookup(context, genericActionKey(objclass), fb) ?? fb;
   }
 
   /// Per-implementation alias label (picker rows). Falls back to [alias].
@@ -69,7 +77,9 @@ abstract class ZombossMechL10n {
     String? fallback,
   }) {
     final fb = fallback ?? fieldName;
-    return _lookup(context, fieldKey(mechId, objclass, fieldName), fb) ?? fb;
+    final localized = _lookup(context, fieldKey(mechId, objclass, fieldName), fb);
+    if (localized != null && localized != fb) return localized;
+    return _lookup(context, genericFieldKey(objclass, fieldName), fb) ?? fb;
   }
 
   /// Category chip / tag label from ARB (movement, attack, spawn, …).

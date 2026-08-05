@@ -7477,6 +7477,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String zombossPresetDerivedBaseAction(String action) {
+    return 'Based on Preset Custom Action: $action';
+  }
+
+  @override
   String get zombossMechActionAliasHint =>
       'Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.';
 

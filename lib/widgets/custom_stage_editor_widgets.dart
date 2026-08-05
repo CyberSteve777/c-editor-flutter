@@ -43,6 +43,11 @@ Color customStageBadgeColor(BuildContext context) =>
     ? const Color(0xFF1976D2)
     : const Color(0xFF42A5F5);
 
+Color presetCustomResourceBadgeColor(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+    ? const Color(0xFF1B5E20)
+    : const Color(0xFF2E7D32);
+
 double customStageBadgeFontSize(BuildContext context) {
   final platform = Theme.of(context).platform;
   final isDesktop =

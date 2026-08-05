@@ -2133,10 +2133,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
             children: [
               Text(
                 l10n.confirmDeleteMessage(
-                  target.name,
                   target.isDirectory
                       ? l10n.folderDeleteDetail
                       : l10n.levelDeleteDetail,
+                  target.name,
                 ),
               ),
               const SizedBox(height: 16),
@@ -3203,7 +3203,7 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
   Widget build(BuildContext context) {
     return SizeTransition(
       sizeFactor: _reveal,
-      alignment: Alignment.bottomRight,
+      axisAlignment: 1,
       child: FadeTransition(
         opacity: _reveal,
         child: SlideTransition(

@@ -7,6 +7,7 @@ import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/portal_type_selector.dart';
 import 'package:c_editor/widgets/zomboss_mech_robot_spawn_list.dart';
+import 'package:c_editor/widgets/zomboss_mech_weighted_zombie_list.dart';
 import 'package:c_editor/widgets/zomboss_mech_zombie_type_list.dart';
 
 /// Dynamic editors for zomboss action objdata from catalog field specs.
@@ -53,8 +54,12 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = <Widget>[];
+    final hasWeightedZombieList =
+        fields.any((field) => field.name == 'ZombieNames') &&
+        fields.any((field) => field.name == 'ZombieWeights');
     for (final field in fields) {
       if (field.name.isEmpty || field.name.startsWith('#')) continue;
+      if (hasWeightedZombieList && field.name == 'ZombieWeights') continue;
       children.add(_buildField(context, field));
     }
     return Column(
@@ -66,6 +71,32 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
   Widget _buildField(BuildContext context, ZombossMechFieldSpec field) {
     final padding = EdgeInsets.only(left: depth * 12.0, top: 8, bottom: 4);
     final label = _fieldLabel(context, field);
+
+    if (field.name == 'ZombieNames' &&
+        fields.any((item) => item.name == 'ZombieWeights')) {
+      final weightField = fields.firstWhere(
+        (item) => item.name == 'ZombieWeights',
+        orElse: () =>
+            ZombossMechFieldSpec(name: 'ZombieWeights', type: 'List<int>'),
+      );
+      final ids = ZombossMechActionUtils.parseZombieTypeList(data[field.name]);
+      final weights = _parseIntList(data['ZombieWeights'], ids.length);
+      return Padding(
+        padding: padding,
+        child: ZombossMechWeightedZombieListEditor(
+          fieldLabel: label,
+          weightLabel: _fieldLabel(context, weightField),
+          zombieIds: ids,
+          weights: weights,
+          editable: editable,
+          onChanged: (nextIds, nextWeights) {
+            data[field.name] = nextIds;
+            data['ZombieWeights'] = nextWeights;
+            onChanged();
+          },
+        ),
+      );
+    }
 
     if (ZombossMechActionUtils.isZombieTypeField(field)) {
       final raw = data[field.name];
@@ -169,6 +200,28 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
         },
       ),
     );
+  }
+
+  List<int> _parseIntList(dynamic raw, int expectedLength) {
+    final values = <int>[];
+    if (raw is List) {
+      for (final item in raw) {
+        if (item is int) {
+          values.add(item);
+        } else if (item is num) {
+          values.add(item.toInt());
+        } else {
+          values.add(int.tryParse(item.toString()) ?? 100);
+        }
+      }
+    }
+    while (values.length < expectedLength) {
+      values.add(100);
+    }
+    if (values.length > expectedLength) {
+      return values.take(expectedLength).toList();
+    }
+    return values;
   }
 }
 

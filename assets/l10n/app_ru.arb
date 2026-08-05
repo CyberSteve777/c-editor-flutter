@@ -2555,6 +2555,14 @@
       }
     }
   },
+  "zombossPresetDerivedBaseAction": "На основе предустановленного пользовательского действия: {action}",
+  "@zombossPresetDerivedBaseAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "zombossMechActionAliasHint": "Имя в RTID(псевдоним@CurrentLevel). Можно изменить позже; ссылки в этом листе свойств обновятся автоматически.",
   "zombossMechActionBaseObjclass": "Тип действия (objclass)",
   "zombossMechActionDetails": "Сведения о действии",

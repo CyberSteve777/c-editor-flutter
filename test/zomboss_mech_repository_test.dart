@@ -38,4 +38,17 @@ void main() {
     expect(propsData['Stages'], isNotEmpty);
     expect((propsData['Stages'] as List).first['Actions'], isA<List>());
   });
+
+  test('resolves memo editable instances to their owning base mech', () async {
+    await ZombossMechRepository.init();
+
+    expect(
+      ZombossMechRepository.findBaseForVariation('zombossmech_iceage_memo')?.id,
+      'ZombieZombossMech_IceAge',
+    );
+    expect(
+      ZombossMechRepository.resolveBaseId(null, 'zombossmech_future_memo'),
+      'ZombieZombossMech_Future',
+    );
+  });
 }

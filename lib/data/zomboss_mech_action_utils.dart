@@ -3,6 +3,7 @@ import 'package:c_editor/data/level_rtid_utils.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 
 /// Binding for a spawn-related zombie type field on an action.
@@ -111,9 +112,14 @@ abstract class ZombossMechActionUtils {
     if (info.source == customSource) {
       final obj = findLevelObject(levelFile, rtid);
       if (obj == null) return null;
-      final group = catalog.actions
-          .where((g) => g.objclass == obj.objClass)
-          .firstOrNull;
+      final group =
+          catalog.actions
+              .where((g) => g.objclass == obj.objClass)
+              .firstOrNull ??
+          ZombossCustomActionPresetRepository.groupForObjclass(
+            catalog.editableInstance,
+            obj.objClass,
+          );
       final raw = obj.objData;
       final data = raw is Map<String, dynamic>
           ? Map<String, dynamic>.from(raw)
@@ -271,7 +277,10 @@ abstract class ZombossMechActionUtils {
     final newRtid = RtidParser.build(newAlias, customSource);
     LevelRtidUtils.replaceReferences(levelFile, oldRtid, newRtid);
     if (obj != null) {
-      obj.aliases = [newAlias];
+      obj.aliases = ZombossCustomActionPresetRepository.aliasesWithPrimaryAlias(
+        newAlias,
+        obj.aliases,
+      );
     }
   }
 

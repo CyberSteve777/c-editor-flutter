@@ -14,6 +14,7 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/repository/zombie_title_catalog_repository.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
+import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 
@@ -29,7 +30,7 @@ abstract final class AppBootstrap {
   static Future<void> load({BootstrapProgressCallback? onProgress}) async {
     if (_complete) return;
 
-    const dataSteps = 16;
+    const dataSteps = 17;
     var dataStep = 0;
     void dataTick(BootstrapLoadingCategory category) {
       dataStep++;
@@ -60,6 +61,9 @@ abstract final class AppBootstrap {
 
     onProgress?.call((dataStep / dataSteps) * 0.25, BootstrapLoadingCategory.zomboss);
     await ZombossMechRepository.init();
+    dataTick(BootstrapLoadingCategory.zomboss);
+
+    await ZombossCustomActionPresetRepository.init();
     dataTick(BootstrapLoadingCategory.zomboss);
 
     await ZombossBattleRepository.init();

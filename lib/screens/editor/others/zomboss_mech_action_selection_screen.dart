@@ -1,12 +1,15 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/models/zomboss_custom_action_preset.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zomboss_mech_action_ordering.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_action_detail_screen.dart';
 import 'package:c_editor/utils/selection_search.dart';
@@ -94,11 +97,7 @@ class _ZombossMechActionSelectionScreenState
         final category = ZombossMechActionOrdering.categoryForCatalogAction(
           action,
         );
-        if (!ZombossMechActionOrdering.matchesFilter(
-          filter: _category,
-          isCustom: false,
-          category: category,
-        )) {
+        if (!_matchesCategory(isCustom: false, category: category)) {
           continue;
         }
         items.add(
@@ -113,44 +112,104 @@ class _ZombossMechActionSelectionScreenState
           ),
         );
       }
+
+      for (final preset in ZombossCustomActionPresetRepository.presetsForMech(
+        widget.catalog.editableInstance,
+      )) {
+        final group =
+            ZombossCustomActionPresetRepository.groupForObjclass(
+              widget.catalog.editableInstance,
+              preset.objclass,
+            ) ??
+            ZombossMechObjclassGroup(
+              objclass: preset.objclass,
+              tag: 'spawn',
+              fields: preset.fields,
+              implementations: const {},
+            );
+        final category = ZombossMechActionOrdering.categoryForGroup(
+          group,
+          alias: preset.sourceAlias,
+        );
+        if (!_matchesCategory(isCustom: true, category: category)) {
+          continue;
+        }
+        items.add(
+          _ActionListItem.presetTemplate(
+            catalog: widget.catalog,
+            template: preset,
+            category: category,
+          ),
+        );
+      }
     }
+
+    final derivedItems = <_ActionListItem>[];
+    final userItems = <_ActionListItem>[];
     for (final obj in widget.levelFile.objects) {
       final alias = obj.aliases?.firstOrNull;
       if (alias == null) continue;
-      final group = widget.catalog.actions
-          .where((g) => g.objclass == obj.objClass)
-          .firstOrNull;
+      final group =
+          widget.catalog.actions
+              .where((g) => g.objclass == obj.objClass)
+              .firstOrNull ??
+          ZombossCustomActionPresetRepository.groupForObjclass(
+            widget.catalog.editableInstance,
+            obj.objClass,
+          );
       if (group == null) continue;
       if (widget.retreatOnly && group.tag != 'retreat') continue;
       if (!widget.retreatOnly && group.tag == 'retreat') continue;
+      final origin = ZombossCustomActionPresetRepository.originForObject(obj);
+      if (origin == ZombossCustomActionOrigin.presetTemplate) continue;
       final category = ZombossMechActionOrdering.categoryForGroup(
         group,
         alias: alias,
       );
       if (!widget.retreatOnly &&
-          !ZombossMechActionOrdering.matchesFilter(
-            filter: _category,
-            isCustom: true,
-            category: category,
-          )) {
+          !_matchesCategory(isCustom: true, category: category)) {
         continue;
       }
-      items.add(
-        _ActionListItem.custom(
-          catalog: widget.catalog,
-          alias: alias,
-          objclass: obj.objClass,
-          tag: group.tag,
-          category: category,
-          baseAliases: group.implementations.keys.toList(),
-          rtid: RtidParser.build(alias, ZombossMechActionUtils.customSource),
-        ),
+      final item = _ActionListItem.custom(
+        catalog: widget.catalog,
+        alias: alias,
+        objclass: obj.objClass,
+        tag: group.tag,
+        category: category,
+        baseAliases: group.implementations.keys.toList(),
+        rtid: RtidParser.build(alias, ZombossMechActionUtils.customSource),
+        origin: origin,
+        preset: ZombossCustomActionPresetRepository.presetForObject(obj),
       );
+      if (origin == ZombossCustomActionOrigin.presetDerived) {
+        derivedItems.add(item);
+      } else {
+        userItems.add(item);
+      }
     }
-    final q = _query.trim().toLowerCase();
+    items
+      ..addAll(derivedItems)
+      ..addAll(userItems);
+
+    return _filterBySearch(items);
+  }
+
+  bool _matchesCategory({
+    required bool isCustom,
+    required ZombossMechActionMainCategory category,
+  }) {
+    return ZombossMechActionOrdering.matchesFilter(
+      filter: _category,
+      isCustom: isCustom,
+      category: category,
+    );
+  }
+
+  List<_ActionListItem> _filterBySearch(List<_ActionListItem> items) {
+    final q = _query.trim();
     if (q.isEmpty) return items;
     return items
-        .where((e) => matchesSelectionSearch(_query, e.searchTerms(context)))
+        .where((e) => matchesSelectionSearch(q, e.searchTerms(context)))
         .toList();
   }
 
@@ -191,6 +250,18 @@ class _ZombossMechActionSelectionScreenState
         ),
       ),
     );
+  }
+
+  void _selectItem(_ActionListItem item) {
+    if (item.presetTemplate != null) {
+      final creation = ZombossCustomActionPresetRepository.instantiatePreset(
+        widget.levelFile,
+        item.presetTemplate!,
+      );
+      Navigator.pop(context, creation.rtid);
+      return;
+    }
+    Navigator.pop(context, item.rtid);
   }
 
   @override
@@ -259,11 +330,7 @@ class _ZombossMechActionSelectionScreenState
                         itemBuilder: (context, index) {
                           final item = items[index];
                           return ListTile(
-                            leading: item.isCustom
-                                ? const CustomResourceBadge(
-                                    color: Color(0xFFFFC107),
-                                  )
-                                : null,
+                            leading: item.customBadge(context),
                             title: Text(item.primaryLabel(context)),
                             subtitle: Text(
                               item.secondaryLabel(context),
@@ -271,7 +338,9 @@ class _ZombossMechActionSelectionScreenState
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            trailing: item.isCustom
+                            trailing: item.presetTemplate != null
+                                ? null
+                                : item.canEditExisting
                                 ? IconButton(
                                     icon: const Icon(Icons.edit_outlined),
                                     tooltip: l10n?.edit ?? 'Edit',
@@ -302,7 +371,7 @@ class _ZombossMechActionSelectionScreenState
                                     onPressed: () =>
                                         _openActionDetails(item.rtid),
                                   ),
-                            onTap: () => Navigator.pop(context, item.rtid),
+                            onTap: () => _selectItem(item),
                           );
                         },
                       ),
@@ -332,11 +401,30 @@ class _ActionListItem {
     required ZombossMechCatalogAction action,
     required this.category,
     required this.rtid,
-  }) : isCustom = false,
+  }) : origin = null,
+       preset = null,
+       presetTemplate = null,
        catalogAction = action,
        alias = action.alias,
        objclass = action.objclass,
        tag = action.tag,
+       baseAliases = const [];
+
+  _ActionListItem.presetTemplate({
+    required this.catalog,
+    required ZombossCustomActionPreset template,
+    required this.category,
+  }) : origin = ZombossCustomActionOrigin.presetTemplate,
+       preset = template,
+       presetTemplate = template,
+       catalogAction = null,
+       rtid = RtidParser.build(
+         template.sourceAlias,
+         ZombossMechActionUtils.customSource,
+       ),
+       alias = template.sourceAlias,
+       objclass = template.objclass,
+       tag = 'spawn',
        baseAliases = const [];
 
   _ActionListItem.custom({
@@ -347,20 +435,44 @@ class _ActionListItem {
     required this.category,
     required this.baseAliases,
     required this.rtid,
-  }) : isCustom = true,
+    required this.origin,
+    required this.preset,
+  }) : presetTemplate = null,
        catalogAction = null;
 
   final ZombossMechCatalogEntry catalog;
   final ZombossMechCatalogAction? catalogAction;
+  final ZombossCustomActionOrigin? origin;
+  final ZombossCustomActionPreset? preset;
+  final ZombossCustomActionPreset? presetTemplate;
   final String rtid;
-  final bool isCustom;
   final String alias;
   final String objclass;
   final String tag;
   final ZombossMechActionMainCategory category;
   final List<String> baseAliases;
 
+  bool get isCustom => origin != null;
+  bool get canEditExisting =>
+      origin == ZombossCustomActionOrigin.presetDerived ||
+      origin == ZombossCustomActionOrigin.userCreated;
+
+  Widget? customBadge(BuildContext context) {
+    final itemOrigin = origin;
+    if (itemOrigin == null) return null;
+    final color = switch (itemOrigin) {
+      ZombossCustomActionOrigin.presetTemplate =>
+        presetCustomResourceBadgeColor(context),
+      ZombossCustomActionOrigin.presetDerived => customStageBadgeColor(context),
+      ZombossCustomActionOrigin.userCreated => const Color(0xFFFFC107),
+    };
+    return CustomResourceBadge(color: color);
+  }
+
   String primaryLabel(BuildContext context) {
+    if (presetTemplate != null) {
+      return _resourceName(context, presetTemplate!.nameKey);
+    }
     if (isCustom) {
       return _rtidLabel();
     }
@@ -368,6 +480,19 @@ class _ActionListItem {
   }
 
   String secondaryLabel(BuildContext context) {
+    if (presetTemplate != null) {
+      return _resourceName(context, presetTemplate!.sourceKey);
+    }
+    if (origin == ZombossCustomActionOrigin.presetDerived && preset != null) {
+      final l10n = AppLocalizations.of(context);
+      final action =
+          ZombossCustomActionPresetRepository.presetDisplayNameWithAlias(
+            preset!,
+            _resourceName(context, preset!.nameKey),
+          );
+      return l10n?.zombossPresetDerivedBaseAction(action) ??
+          'Based on Preset Custom Action: $action';
+    }
     if (isCustom) {
       final baseAction = baseActionDisplayName(context);
       final l10n = AppLocalizations.of(context);
@@ -394,6 +519,11 @@ class _ActionListItem {
     return rtid;
   }
 
+  String _resourceName(BuildContext context, String key) {
+    final name = ResourceNames.lookup(context, key);
+    return name == key ? key : name;
+  }
+
   Iterable<String> searchTerms(BuildContext context) sync* {
     yield primaryLabel(context);
     yield secondaryLabel(context);
@@ -404,6 +534,22 @@ class _ActionListItem {
     yield rtid;
     yield ZombossMechL10n.actionKey(catalog.id, objclass);
     yield ZombossMechL10n.actionImplementationKey(catalog.id, alias);
+    if (presetTemplate != null) {
+      yield presetTemplate!.nameKey;
+      yield presetTemplate!.sourceKey;
+      yield presetTemplate!.sourceAlias;
+      yield _resourceName(context, presetTemplate!.nameKey);
+      yield _resourceName(context, presetTemplate!.sourceKey);
+    }
+    if (preset != null) {
+      yield preset!.nameKey;
+      yield preset!.sourceAlias;
+      yield _resourceName(context, preset!.nameKey);
+      yield ZombossCustomActionPresetRepository.presetDisplayNameWithAlias(
+        preset!,
+        _resourceName(context, preset!.nameKey),
+      );
+    }
     if (isCustom) {
       yield baseActionDisplayName(context);
       for (final baseAlias in baseAliases) {

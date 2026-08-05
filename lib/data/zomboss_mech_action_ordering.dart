@@ -62,8 +62,8 @@ class ZombossMechActionOrdering {
   }) {
     if (filter == allFilter) return true;
     if (filter == customFilter) return isCustom;
-    if (isCustom) return false;
     if (category == ZombossMechActionMainCategory.other) return false;
+    if (isCustom && filter != summonFilter) return false;
     return category.filterKey == filter;
   }
 
@@ -116,7 +116,8 @@ class ZombossMechActionOrdering {
   }) {
     if (_isSummonIdentifier(alias) ||
         _isSummonIdentifier(objclass) ||
-        _isSummonIdentifier(tag)) {
+        _isSummonIdentifier(tag) ||
+        _isSummonObjclass(objclass)) {
       return ZombossMechActionMainCategory.summon;
     }
     return switch (tag) {
@@ -130,6 +131,11 @@ class ZombossMechActionOrdering {
   static bool _isSummonIdentifier(String value) {
     final normalized = value.toLowerCase();
     return normalized.contains('spawn') || normalized.contains('portalsevent');
+  }
+
+  static bool _isSummonObjclass(String value) {
+    return value == 'ZombieDropZombiesOnBoardActionDefinition' ||
+        value == 'ZombieDropActionDefinition';
   }
 
   static Map<String, _VariationActionOrder> _variationActionOrder(

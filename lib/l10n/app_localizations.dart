@@ -13304,6 +13304,12 @@ abstract class AppLocalizations {
   /// **'Base Action: {action}'**
   String zombossCustomActionBaseAction(String action);
 
+  /// No description provided for @zombossPresetDerivedBaseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on Preset Custom Action: {action}'**
+  String zombossPresetDerivedBaseAction(String action);
+
   /// No description provided for @zombossMechActionAliasHint.
   ///
   /// In en, this message translates to:

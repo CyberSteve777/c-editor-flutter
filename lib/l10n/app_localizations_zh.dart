@@ -7123,6 +7123,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String zombossPresetDerivedBaseAction(String action) {
+    return '基础预设自定义动作：$action';
+  }
+
+  @override
   String get zombossMechActionAliasHint =>
       '用于 RTID(僵王机甲@CurrentLevel) 的代号，可稍后修改；本属性表中的引用会自动更新。';
 

@@ -503,9 +503,7 @@ class _CurrentCustomStageBadge extends StatelessWidget {
 
   Color _badgeColor(BuildContext context) {
     if (fromPreset) {
-      return Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFF1B5E20)
-          : const Color(0xFF2E7D32);
+      return presetCustomResourceBadgeColor(context);
     }
     return customStageBadgeColor(context);
   }

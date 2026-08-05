@@ -28,6 +28,35 @@ void main() {
     );
   });
 
+  test('allows custom summon actions in summon and custom filters', () {
+    const category = ZombossMechActionMainCategory.summon;
+
+    expect(
+      ZombossMechActionOrdering.matchesFilter(
+        filter: ZombossMechActionOrdering.summonFilter,
+        isCustom: true,
+        category: category,
+      ),
+      isTrue,
+    );
+    expect(
+      ZombossMechActionOrdering.matchesFilter(
+        filter: ZombossMechActionOrdering.customFilter,
+        isCustom: true,
+        category: category,
+      ),
+      isTrue,
+    );
+    expect(
+      ZombossMechActionOrdering.matchesFilter(
+        filter: 'attack',
+        isCustom: true,
+        category: category,
+      ),
+      isFalse,
+    );
+  });
+
   test('sorts the first variation by variation and category order', () {
     final egypt = ZombossMechRepository.getCatalog('ZombieZombossMech_Egypt');
     expect(egypt, isNotNull);

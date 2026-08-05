@@ -118,7 +118,11 @@ class ZombossMechRepository {
 
   static ZombossMechInfo? findBaseForVariation(String variation) {
     return allZombossMechs
-        .where((b) => b.variations.contains(variation))
+        .where(
+          (b) =>
+              b.variations.contains(variation) ||
+              (b.hasCustomInstance && b.editableInstance == variation),
+        )
         .firstOrNull;
   }
 
@@ -138,7 +142,9 @@ class ZombossMechRepository {
   static String resolveBaseId(String? preferredBaseId, String variation) {
     if (preferredBaseId != null) {
       final base = getBase(preferredBaseId);
-      if (base != null && base.variations.contains(variation)) {
+      if (base != null &&
+          (base.variations.contains(variation) ||
+              (base.hasCustomInstance && base.editableInstance == variation))) {
         return preferredBaseId;
       }
     }

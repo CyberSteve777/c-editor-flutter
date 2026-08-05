@@ -7435,6 +7435,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String zombossPresetDerivedBaseAction(String action) {
+    return 'На основе предустановленного пользовательского действия: $action';
+  }
+
+  @override
   String get zombossMechActionAliasHint =>
       'Имя в RTID(псевдоним@CurrentLevel). Можно изменить позже; ссылки в этом листе свойств обновятся автоматически.';
 
