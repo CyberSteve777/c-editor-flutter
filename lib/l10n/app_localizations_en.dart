@@ -2258,7 +2258,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hiddenPlantChooserBlockedMessage =>
-      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and Plant Mech Assembler - Flame Star, most hidden plants appear as Sunflower icons in game seed slots, which may affect the level\'s overall appearance. Use them carefully.';
+      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.';
 
   @override
   String get comingSoonPlantBlockedLabel => 'A Message from Space';
@@ -2285,11 +2285,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'ZCorp\'s story is not over';
 
   @override
-  String get stayTunedTaleZCorpZombieBlockedTitle => 'To Be Continued';
+  String get stayTunedTaleZCorpZombieBlockedTitle => 'Under Construction';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedMessage =>
-      'ZCorp Chapter Two is coming soon. Stay tuned!';
+      'Part 2 of ZCorp Secret Realm is coming soon. Stay tuned!';
 
   @override
   String get stayTunedZombieBlockedLabel => 'Stay tuned';
@@ -2299,7 +2299,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stayTunedZombieBlockedMessage =>
-      'This content is not officially available yet. Stay tuned for future updates!';
+      'More zombies are approaching. Stay tuned for future updates!';
 
   @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
@@ -7992,7 +7992,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customStageSectionAdvanced => 'Advanced Settings';
 
   @override
-  String get customStageAlias => 'Stage alias (English only)';
+  String get customStageAlias => 'Stage alias (English letters only)';
 
   @override
   String get customStageNoResourceGroups => 'No resource groups in list';

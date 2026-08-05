@@ -1030,7 +1030,7 @@
   "stayTunedTaleZCorpZombieBlockedMessage": "Вторая глава ZCorp скоро выйдет. Следите за новостями!",
   "stayTunedZombieBlockedLabel": "Следите за новостями",
   "stayTunedZombieBlockedTitle": "Продолжение следует",
-  "stayTunedZombieBlockedMessage": "Впереди ещё больше зомби. Следите за будущими обновлениями!"
+  "stayTunedZombieBlockedMessage": "Впереди ещё больше зомби. Следите за будущими обновлениями!",
   "missingModuleForPlantsWarning": "Отсутствует модуль «{moduleName}» для растений: {plantList}",
   "@missingModuleForPlantsWarning": {"placeholders": {"moduleName": {"type": "String"}, "plantList": {"type": "String"}}},
   "moduleTitle_StandardLevelIntroProperties": "Заставка",

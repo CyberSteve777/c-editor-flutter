@@ -4153,7 +4153,7 @@ abstract class AppLocalizations {
   /// No description provided for @hiddenPlantChooserBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and Plant Mech Assembler - Flame Star, most hidden plants appear as Sunflower icons in game seed slots, which may affect the level\'s overall appearance. Use them carefully.'**
+  /// **'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.'**
   String get hiddenPlantChooserBlockedMessage;
 
   /// No description provided for @comingSoonPlantBlockedLabel.
@@ -4201,13 +4201,13 @@ abstract class AppLocalizations {
   /// No description provided for @stayTunedTaleZCorpZombieBlockedTitle.
   ///
   /// In en, this message translates to:
-  /// **'To Be Continued'**
+  /// **'Under Construction'**
   String get stayTunedTaleZCorpZombieBlockedTitle;
 
   /// No description provided for @stayTunedTaleZCorpZombieBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'ZCorp Chapter Two is coming soon. Stay tuned!'**
+  /// **'Part 2 of ZCorp Secret Realm is coming soon. Stay tuned!'**
   String get stayTunedTaleZCorpZombieBlockedMessage;
 
   /// No description provided for @stayTunedZombieBlockedLabel.
@@ -4225,7 +4225,7 @@ abstract class AppLocalizations {
   /// No description provided for @stayTunedZombieBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'This content is not officially available yet. Stay tuned for future updates!'**
+  /// **'More zombies are approaching. Stay tuned for future updates!'**
   String get stayTunedZombieBlockedMessage;
 
   /// No description provided for @missingModuleForPlantsWarning.
@@ -14231,7 +14231,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageAlias.
   ///
   /// In en, this message translates to:
-  /// **'Stage alias (English only)'**
+  /// **'Stage alias (English letters only)'**
   String get customStageAlias;
 
   /// No description provided for @customStageNoResourceGroups.

@@ -2316,7 +2316,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stayTunedZombieBlockedMessage =>
-      'Этот контент еще официально не открыт. Следите за будущими обновлениями!';
+      'Впереди ещё больше зомби. Следите за будущими обновлениями!';
 
   @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {

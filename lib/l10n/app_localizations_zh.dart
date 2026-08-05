@@ -2211,7 +2211,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stayTunedTaleZCorpZombieBlockedLabel => 'Z公司的故事尚未结束';
 
   @override
-  String get stayTunedTaleZCorpZombieBlockedTitle => '未完待续';
+  String get stayTunedTaleZCorpZombieBlockedTitle => '还有高手？';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedMessage => 'Z公司的第二章节即将推出，敬请期待！';
@@ -2223,7 +2223,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stayTunedZombieBlockedTitle => '未完待续';
 
   @override
-  String get stayTunedZombieBlockedMessage => '该内容尚未正式开放，敬请期待后续更新！';
+  String get stayTunedZombieBlockedMessage => '更多的僵尸要来了。敬请期待后续更新！';
 
   @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
