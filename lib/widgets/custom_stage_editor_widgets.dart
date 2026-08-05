@@ -66,10 +66,22 @@ class CustomStageBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return CustomResourceBadge(color: customStageBadgeColor(context));
+  }
+}
+
+/// Shared "C" badge shape used by custom resources.
+class CustomResourceBadge extends StatelessWidget {
+  const CustomResourceBadge({super.key, required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: customStageBadgePadding(context),
       decoration: BoxDecoration(
-        color: customStageBadgeColor(context),
+        color: color,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

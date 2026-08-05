@@ -1544,7 +1544,10 @@
   "impact": "Влияние",
   "events": "События",
   "referenceModules": "Ссылки на модули",
-  "portalType": "Тип портала",
+  "portalType": "Тип портала (PortalType)",
+  "selectPortalType": "Выберите тип портала",
+  "noPortalTypesFound": "Типы порталов не найдены.",
+  "noPortalTypeSelected": "Тип портала не выбран.",
   "direction": "Направление",
   "velocityScale": "Масштаб скорости",
   "range": "Диапазон",
@@ -2003,6 +2006,8 @@
   "dropConfigPlantFood": "Настройка дропа (подкормка)",
   "waveDropConfigTitle": "Настройка дропа",
   "waveDropTotalLabel": "Всего зомби с дропом (AdditionalPlantfood)",
+  "waveDropAddZombiesFirst": "Добавьте зомби в эту волну перед настройкой дропа.",
+  "waveDropIncreaseTotalBeforePlants": "Увеличьте общее число дропов перед добавлением растений.",
   "waveDropPlantFoodOnlyCount": "{count, plural, one{1 подкормка} few{{count} подкормки} many{{count} подкормок} other{{count} подкормок}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
@@ -2538,11 +2543,20 @@
   "zombossMechActionCategoryAttack": "Атака",
   "zombossMechActionCategorySpecial": "Особые",
   "zombossMechActionCategorySpawn": "Призыв",
+  "zombossMechActionCategoryCustom": "Свои",
   "zombossMechActionCategoryRetreat": "Отступление",
   "zombossMechNoActionsFound": "Действия не найдены",
   "zombossMechCustomActionLabel": "Своё (CurrentLevel)",
+  "zombossCustomActionBaseAction": "Базовое действие: {action}",
+  "@zombossCustomActionBaseAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "zombossMechActionAliasHint": "Имя в RTID(псевдоним@CurrentLevel). Можно изменить позже; ссылки в этом листе свойств обновятся автоматически.",
-  "zombossMechActionBaseObjclass": "Базовый objclass",
+  "zombossMechActionBaseObjclass": "Тип действия (objclass)",
   "zombossMechEditRetreatAction": "Выбрать отступление",
   "zombossMechAddZombie": "Добавить зомби",
   "zombossMechPickZombie": "Выбрать зомби",

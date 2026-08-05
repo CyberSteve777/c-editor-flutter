@@ -6415,7 +6415,7 @@ abstract class AppLocalizations {
   /// No description provided for @aliasLabel.
   ///
   /// In en, this message translates to:
-  /// **'Alias'**
+  /// **'Alias (English letters only)'**
   String get aliasLabel;
 
   /// No description provided for @add.
@@ -7933,7 +7933,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpZombiePotionBody.
   ///
   /// In en, this message translates to:
-  /// **'This module periodically spawns specified obstacle types in random rows, moving from right to left.'**
+  /// **'This module periodically spawns specified grid item types in random rows, moving from right to left.'**
   String get moduleHelpZombiePotionBody;
 
   /// No description provided for @moduleHelpZombiePotionMechanism.
@@ -7945,7 +7945,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpZombiePotionMechanismBody.
   ///
   /// In en, this message translates to:
-  /// **'Obstacles spawn randomly within the configured time interval. If the number of matching obstacles on the lawn reaches the limit, spawning pauses.'**
+  /// **'Grid items spawn randomly within the configured time interval. If the number of matching grid items on the lawn reaches the limit, spawning pauses.'**
   String get moduleHelpZombiePotionMechanismBody;
 
   /// No description provided for @moduleHelpZombiePotionPotionTypes.
@@ -7957,7 +7957,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpZombiePotionTypes.
   ///
   /// In en, this message translates to:
-  /// **'One type is randomly selected from the configured list. To spawn multiple obstacles at fixed intervals, add this module multiple times in the level.'**
+  /// **'One type is randomly selected from the configured list. To spawn multiple grid items at fixed intervals, add this module multiple times in the level.'**
   String get moduleHelpZombiePotionTypes;
 
   /// No description provided for @moduleHelpUnknownBody.
@@ -8025,6 +8025,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Portal type (PortalType)'**
   String get portalType;
+
+  /// No description provided for @selectPortalType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Portal Type'**
+  String get selectPortalType;
+
+  /// No description provided for @noPortalTypesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No portal types found.'**
+  String get noPortalTypesFound;
+
+  /// No description provided for @noPortalTypeSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No portal type selected.'**
+  String get noPortalTypeSelected;
 
   /// No description provided for @direction.
   ///
@@ -8179,7 +8197,7 @@ abstract class AppLocalizations {
   /// No description provided for @smokePollutionModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Smoke pollution module help'**
+  /// **'Smoke pollution module'**
   String get smokePollutionModuleHelpTitle;
 
   /// No description provided for @smokePollutionModuleHelpOverview.
@@ -8245,7 +8263,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombiePotionHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Zombie Potion Module Help'**
+  /// **'Zombie Potion Module'**
   String get zombiePotionHelpTitle;
 
   /// No description provided for @eventTimeRift.
@@ -8293,13 +8311,13 @@ abstract class AppLocalizations {
   /// No description provided for @lastStandHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Last Stand Module Help'**
+  /// **'Last Stand Module'**
   String get lastStandHelpTitle;
 
   /// No description provided for @lastStandHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap Start Battle.'**
+  /// **'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap \"LET\'S ROCK!\".'**
   String get lastStandHelpOverviewBody;
 
   /// No description provided for @lastStandHelpNotes.
@@ -10429,6 +10447,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Plant Food carriers (AdditionalPlantfood)'**
   String get waveDropTotalLabel;
+
+  /// No description provided for @waveDropAddZombiesFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add zombies to this wave before configuring drops.'**
+  String get waveDropAddZombiesFirst;
+
+  /// No description provided for @waveDropIncreaseTotalBeforePlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase total drops before adding plants.'**
+  String get waveDropIncreaseTotalBeforePlants;
 
   /// No description provided for @waveDropPlantFoodOnlyCount.
   ///
@@ -13241,8 +13271,14 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechActionCategorySpawn.
   ///
   /// In en, this message translates to:
-  /// **'Spawn'**
+  /// **'Summon'**
   String get zombossMechActionCategorySpawn;
+
+  /// No description provided for @zombossMechActionCategoryCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get zombossMechActionCategoryCustom;
 
   /// No description provided for @zombossMechActionCategoryRetreat.
   ///
@@ -13262,6 +13298,12 @@ abstract class AppLocalizations {
   /// **'Custom (CurrentLevel)'**
   String get zombossMechCustomActionLabel;
 
+  /// No description provided for @zombossCustomActionBaseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Action: {action}'**
+  String zombossCustomActionBaseAction(String action);
+
   /// No description provided for @zombossMechActionAliasHint.
   ///
   /// In en, this message translates to:
@@ -13271,7 +13313,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechActionBaseObjclass.
   ///
   /// In en, this message translates to:
-  /// **'Base objclass'**
+  /// **'Action Type (objclass)'**
   String get zombossMechActionBaseObjclass;
 
   /// No description provided for @zombossMechEditRetreatAction.

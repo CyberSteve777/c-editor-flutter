@@ -78,7 +78,7 @@ abstract class ZombossMechL10n {
     return switch (tag) {
       'movement' => l10n?.zombossMechActionCategoryMovement ?? 'Movement',
       'attack' => l10n?.zombossMechActionCategoryAttack ?? 'Attack',
-      'spawn' => l10n?.zombossMechActionCategorySpawn ?? 'Spawn',
+      'spawn' => l10n?.zombossMechActionCategorySpawn ?? 'Summon',
       'special' => l10n?.zombossMechActionCategorySpecial ?? 'Special',
       'retreat' => l10n?.zombossMechActionCategoryRetreat ?? 'Retreat',
       _ => tag,

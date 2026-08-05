@@ -498,21 +498,7 @@ class _CurrentCustomStageBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: customStageBadgePadding(context),
-      decoration: BoxDecoration(
-        color: _badgeColor(context),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        'C',
-        style: TextStyle(
-          fontSize: customStageBadgeFontSize(context),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
+    return CustomResourceBadge(color: _badgeColor(context));
   }
 
   Color _badgeColor(BuildContext context) {

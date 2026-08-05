@@ -954,7 +954,7 @@
   "realmExclusivePlantChooserBlockedMessage": "秘境专属植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。",
   "hiddenPlantChooserBlockedLabel": "无法选择植物",
   "hiddenPlantChooserBlockedTitle": "无法选择植物",
-  "hiddenPlantChooserBlockedMessage": "隐藏植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n此外，除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵，可能影响关卡的整体观感，请谨慎使用。",
+  "hiddenPlantChooserBlockedMessage": "隐藏植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n此外，除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵，可能影响关卡的整体观感。",
   "comingSoonPlantBlockedLabel": "来自宇宙的预告",
   "comingSoonPlantBlockedTitle": "来自宇宙的预告",
   "comingSoonPlantBlockedMessage": "全新世界“月球基地”即将在不远的未来开启，敬请期待！",
@@ -1532,7 +1532,10 @@
   "impact": "影响",
   "events": "事件",
   "referenceModules": "参考模块",
-  "portalType": "裂缝类型",
+  "portalType": "裂缝类型（PortalType）",
+  "selectPortalType": "选择裂缝类型",
+  "noPortalTypesFound": "未找到裂缝类型。",
+  "noPortalTypeSelected": "未选择裂缝类型。",
   "direction": "方向 (Direction)",
   "velocityScale": "速度倍率 (VelocityScale)",
   "range": "范围参数 (Range)",
@@ -1558,7 +1561,7 @@
   "manholePipelineHelpOverview": "定义场景中的地下管道系统，常用于蒸汽时代地图。管道连接两点，僵尸可以通过管道进行移动。",
   "manholePipelineHelpEditing": "在上方列表选择管道组，下方网格显示管道布局。点击“放置起点”或“放置终点”切换模式，然后点击网格设定位置。",
   "smokePollutionModuleTitle": "蒸汽毒雾模块",
-  "smokePollutionModuleHelpTitle": "蒸汽毒雾模块帮助",
+  "smokePollutionModuleHelpTitle": "蒸汽毒雾模块",
   "smokePollutionModuleHelpOverview": "概述",
   "smokePollutionModuleHelpOverviewBody": "在场地放置蒸汽毒雾井盖，经过设定时间后井盖被喷飞并释放毒雾。常用于蒸汽时代关卡。",
   "smokePollutionModuleHelpManholes": "井盖",
@@ -2003,6 +2006,8 @@
   "dropConfigPlantFood": "掉落物配置（能量豆）",
   "waveDropConfigTitle": "掉落物配置",
   "waveDropTotalLabel": "携带掉落物的僵尸总数（AdditionalPlantfood）",
+  "waveDropAddZombiesFirst": "请先为本波次添加僵尸，再配置掉落物。",
+  "waveDropIncreaseTotalBeforePlants": "请先增加携带掉落物的僵尸总数，再添加植物卡片。",
   "waveDropPlantFoodOnlyCount": "{count, plural, =1{1 个能量豆} other{{count} 个能量豆}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
@@ -2538,11 +2543,20 @@
   "zombossMechActionCategoryAttack": "攻击",
   "zombossMechActionCategorySpecial": "特殊",
   "zombossMechActionCategorySpawn": "召唤",
+  "zombossMechActionCategoryCustom": "自定义",
   "zombossMechActionCategoryRetreat": "撤退",
   "zombossMechNoActionsFound": "未找到动作",
   "zombossMechCustomActionLabel": "自定义（CurrentLevel）",
+  "zombossCustomActionBaseAction": "基础动作：{action}",
+  "@zombossCustomActionBaseAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
   "zombossMechActionAliasHint": "用于 RTID(僵王机甲@CurrentLevel) 的代号，可稍后修改；本属性表中的引用会自动更新。",
-  "zombossMechActionBaseObjclass": "基础 objclass",
+  "zombossMechActionBaseObjclass": "动作类型 (objclass)",
   "zombossMechEditRetreatAction": "选择撤退动作",
   "zombossMechAddZombie": "添加僵尸",
   "zombossMechPickZombie": "选择僵尸",

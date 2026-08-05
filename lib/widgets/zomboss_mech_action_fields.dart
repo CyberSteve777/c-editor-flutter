@@ -5,6 +5,7 @@ import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/portal_type_selector.dart';
 import 'package:c_editor/widgets/zomboss_mech_robot_spawn_list.dart';
 import 'package:c_editor/widgets/zomboss_mech_zombie_type_list.dart';
 
@@ -100,6 +101,21 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
             } else {
               data[field.name] = next.isNotEmpty ? next.first : '';
             }
+            onChanged();
+          },
+        ),
+      );
+    }
+
+    if (field.name == 'PortalType' && field.type == 'string') {
+      final value = data[field.name] ?? field.defaultValue ?? '';
+      return Padding(
+        padding: padding,
+        child: PortalTypeSingleSelectField(
+          label: label,
+          value: value.toString(),
+          onChanged: (next) {
+            data[field.name] = next;
             onChanged();
           },
         ),

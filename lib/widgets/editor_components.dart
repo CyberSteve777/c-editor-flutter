@@ -919,10 +919,10 @@ class PlantDropIconCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final removeHint = label != null && label!.isNotEmpty
-        ? '${l10n?.remove ?? 'Remove'} $label'
-        : (l10n?.remove ?? 'Remove');
+        ? '${l10n.remove} $label'
+        : l10n.remove;
 
     final chipRow = Row(
       mainAxisSize: MainAxisSize.min,
@@ -1043,7 +1043,7 @@ class WaveDropConfigCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
     final leafColor = isDark ? pvzGreenLight : pvzGreenDark;
     final plantCount = plants.length;
@@ -1075,7 +1075,7 @@ class WaveDropConfigCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    l10n?.waveDropConfigTitle ?? 'Drop configuration',
+                    l10n.waveDropConfigTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -1125,8 +1125,7 @@ class WaveDropConfigCard extends StatelessWidget {
                   child: counterRow,
                 );
                 final labelText = Text(
-                  l10n?.waveDropTotalLabel ??
-                      'Total carrier zombies (AdditionalPlantfood)',
+                  l10n.waveDropTotalLabel,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -1157,7 +1156,7 @@ class WaveDropConfigCard extends StatelessWidget {
             if (zombieCount == 0) ...[
               const SizedBox(height: 8),
               Text(
-                'Add zombies to this wave before configuring drops.',
+                l10n.waveDropAddZombiesFirst,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -1172,18 +1171,14 @@ class WaveDropConfigCard extends StatelessWidget {
                   if (plantFoodOnlyCount > 0)
                     _DropCountBadge(
                       iconPath: _kPlantFoodIconPath,
-                      label:
-                          l10n?.waveDropPlantFoodOnlyCount(
-                            plantFoodOnlyCount,
-                          ) ??
-                          '$plantFoodOnlyCount plant food',
+                      label: l10n.waveDropPlantFoodOnlyCount(
+                        plantFoodOnlyCount,
+                      ),
                     ),
                   if (plantCount > 0)
                     _DropCountBadge(
                       iconPath: _kPlantDropTagIconPath,
-                      label:
-                          l10n?.waveDropPlantsCount(plantCount) ??
-                          '$plantCount plants',
+                      label: l10n.waveDropPlantsCount(plantCount),
                     ),
                 ],
               ),
@@ -1204,7 +1199,7 @@ class WaveDropConfigCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    l10n?.dropConfigPlants ?? 'Drop config (Plants)',
+                    l10n.dropConfigPlants,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -1253,7 +1248,7 @@ class WaveDropConfigCard extends StatelessWidget {
                 zombieCount > 0) ...[
               const SizedBox(height: 8),
               Text(
-                'Increase total drops before adding plants.',
+                l10n.waveDropIncreaseTotalBeforePlants,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

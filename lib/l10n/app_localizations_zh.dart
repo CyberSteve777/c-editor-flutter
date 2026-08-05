@@ -2190,7 +2190,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hiddenPlantChooserBlockedMessage =>
-      '隐藏植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n此外，除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵，可能影响关卡的整体观感，请谨慎使用。';
+      '隐藏植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n此外，除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵，可能影响关卡的整体观感。';
 
   @override
   String get comingSoonPlantBlockedLabel => '来自宇宙的预告';
@@ -4260,7 +4260,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get referenceModules => '参考模块';
 
   @override
-  String get portalType => '裂缝类型';
+  String get portalType => '裂缝类型（PortalType）';
+
+  @override
+  String get selectPortalType => '选择裂缝类型';
+
+  @override
+  String get noPortalTypesFound => '未找到裂缝类型。';
+
+  @override
+  String get noPortalTypeSelected => '未选择裂缝类型。';
 
   @override
   String get direction => '方向 (Direction)';
@@ -4340,7 +4349,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get smokePollutionModuleTitle => '蒸汽毒雾模块';
 
   @override
-  String get smokePollutionModuleHelpTitle => '蒸汽毒雾模块帮助';
+  String get smokePollutionModuleHelpTitle => '蒸汽毒雾模块';
 
   @override
   String get smokePollutionModuleHelpOverview => '概述';
@@ -5566,6 +5575,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveDropTotalLabel => '携带掉落物的僵尸总数（AdditionalPlantfood）';
+
+  @override
+  String get waveDropAddZombiesFirst => '请先为本波次添加僵尸，再配置掉落物。';
+
+  @override
+  String get waveDropIncreaseTotalBeforePlants => '请先增加携带掉落物的僵尸总数，再添加植物卡片。';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
@@ -7091,6 +7106,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechActionCategorySpawn => '召唤';
 
   @override
+  String get zombossMechActionCategoryCustom => '自定义';
+
+  @override
   String get zombossMechActionCategoryRetreat => '撤退';
 
   @override
@@ -7100,11 +7118,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechCustomActionLabel => '自定义（CurrentLevel）';
 
   @override
+  String zombossCustomActionBaseAction(String action) {
+    return '基础动作：$action';
+  }
+
+  @override
   String get zombossMechActionAliasHint =>
       '用于 RTID(僵王机甲@CurrentLevel) 的代号，可稍后修改；本属性表中的引用会自动更新。';
 
   @override
-  String get zombossMechActionBaseObjclass => '基础 objclass';
+  String get zombossMechActionBaseObjclass => '动作类型 (objclass)';
 
   @override
   String get zombossMechEditRetreatAction => '选择撤退动作';

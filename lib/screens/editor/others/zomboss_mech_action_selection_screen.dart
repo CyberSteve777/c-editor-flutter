@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/data/zomboss_mech_action_ordering.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/animated_extended_fab.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Picks a catalog or level-local zomboss action; returns RTID string.
@@ -31,7 +33,14 @@ class ZombossMechActionSelectionScreen extends StatefulWidget {
 
 class _ZombossMechActionSelectionScreenState
     extends State<ZombossMechActionSelectionScreen> {
-  static const _categories = ['all', 'movement', 'attack', 'special'];
+  static const _categories = [
+    ZombossMechActionOrdering.allFilter,
+    'movement',
+    ZombossMechActionOrdering.summonFilter,
+    'attack',
+    'special',
+    ZombossMechActionOrdering.customFilter,
+  ];
   String _category = 'all';
   String _query = '';
   final ScrollController _listScrollController = ScrollController();
@@ -62,10 +71,14 @@ class _ZombossMechActionSelectionScreenState
     final items = <_ActionListItem>[];
     if (widget.retreatOnly) {
       for (final action in widget.catalog.retreatCatalogActions) {
+        final category = ZombossMechActionOrdering.categoryForCatalogAction(
+          action,
+        );
         items.add(
           _ActionListItem.catalog(
             catalog: widget.catalog,
             action: action,
+            category: category,
             rtid: RtidParser.build(
               action.alias,
               ZombossMechActionUtils.catalogSource,
@@ -74,12 +87,24 @@ class _ZombossMechActionSelectionScreenState
         );
       }
     } else {
-      final tag = _category == 'all' ? null : _category;
-      for (final action in widget.catalog.actionsByTag(tag)) {
+      for (final action in ZombossMechActionOrdering.sortedCatalogActions(
+        widget.catalog,
+      )) {
+        final category = ZombossMechActionOrdering.categoryForCatalogAction(
+          action,
+        );
+        if (!ZombossMechActionOrdering.matchesFilter(
+          filter: _category,
+          isCustom: false,
+          category: category,
+        )) {
+          continue;
+        }
         items.add(
           _ActionListItem.catalog(
             catalog: widget.catalog,
             action: action,
+            category: category,
             rtid: RtidParser.build(
               action.alias,
               ZombossMechActionUtils.catalogSource,
@@ -97,7 +122,16 @@ class _ZombossMechActionSelectionScreenState
       if (group == null) continue;
       if (widget.retreatOnly && group.tag != 'retreat') continue;
       if (!widget.retreatOnly && group.tag == 'retreat') continue;
-      if (!widget.retreatOnly && _category != 'all' && group.tag != _category) {
+      final category = ZombossMechActionOrdering.categoryForGroup(
+        group,
+        alias: alias,
+      );
+      if (!widget.retreatOnly &&
+          !ZombossMechActionOrdering.matchesFilter(
+            filter: _category,
+            isCustom: true,
+            category: category,
+          )) {
         continue;
       }
       items.add(
@@ -106,6 +140,8 @@ class _ZombossMechActionSelectionScreenState
           alias: alias,
           objclass: obj.objClass,
           tag: group.tag,
+          category: category,
+          baseAliases: group.implementations.keys.toList(),
           rtid: RtidParser.build(alias, ZombossMechActionUtils.customSource),
         ),
       );
@@ -118,9 +154,13 @@ class _ZombossMechActionSelectionScreenState
   }
 
   String _categoryLabel(BuildContext context, String key) {
-    if (key == 'all') {
+    final l10n = AppLocalizations.of(context);
+    if (key == ZombossMechActionOrdering.allFilter) {
       return AppLocalizations.of(context)?.zombossMechActionCategoryAll ??
           'All';
+    }
+    if (key == ZombossMechActionOrdering.customFilter) {
+      return l10n?.zombossMechActionCategoryCustom ?? 'Custom';
     }
     return ZombossMechL10n.tagLabel(context, key);
   }
@@ -205,6 +245,11 @@ class _ZombossMechActionSelectionScreenState
                         itemBuilder: (context, index) {
                           final item = items[index];
                           return ListTile(
+                            leading: item.isCustom
+                                ? const CustomResourceBadge(
+                                    color: Color(0xFFFFC107),
+                                  )
+                                : null,
                             title: Text(item.primaryLabel(context)),
                             subtitle: Text(
                               item.secondaryLabel(context),
@@ -264,18 +309,22 @@ class _ActionListItem {
   _ActionListItem.catalog({
     required this.catalog,
     required ZombossMechCatalogAction action,
+    required this.category,
     required this.rtid,
   }) : isCustom = false,
        catalogAction = action,
        alias = action.alias,
        objclass = action.objclass,
-       tag = action.tag;
+       tag = action.tag,
+       baseAliases = const [];
 
   _ActionListItem.custom({
     required this.catalog,
     required this.alias,
     required this.objclass,
     required this.tag,
+    required this.category,
+    required this.baseAliases,
     required this.rtid,
   }) : isCustom = true,
        catalogAction = null;
@@ -287,20 +336,36 @@ class _ActionListItem {
   final String alias;
   final String objclass;
   final String tag;
+  final ZombossMechActionMainCategory category;
+  final List<String> baseAliases;
 
   String primaryLabel(BuildContext context) {
     if (isCustom) {
-      return ZombossMechL10n.actionLabel(
-        context,
-        catalog.id,
-        objclass,
-        fallback: alias,
-      );
+      return _rtidLabel();
     }
     return ZombossMechL10n.implementationLabel(context, catalog.id, alias);
   }
 
   String secondaryLabel(BuildContext context) {
+    if (isCustom) {
+      final baseAction = baseActionDisplayName(context);
+      final l10n = AppLocalizations.of(context);
+      return l10n?.zombossCustomActionBaseAction(baseAction) ??
+          'Base Action: $baseAction';
+    }
+    return _rtidLabel();
+  }
+
+  String baseActionDisplayName(BuildContext context) {
+    return ZombossMechL10n.actionLabel(
+      context,
+      catalog.id,
+      objclass,
+      fallback: alias,
+    );
+  }
+
+  String _rtidLabel() {
     final info = RtidParser.parse(rtid);
     if (info != null) {
       return '${info.alias}@${info.source}';
@@ -314,8 +379,21 @@ class _ActionListItem {
     yield alias;
     yield objclass;
     yield tag;
+    yield category.filterKey;
     yield rtid;
     yield ZombossMechL10n.actionKey(catalog.id, objclass);
     yield ZombossMechL10n.actionImplementationKey(catalog.id, alias);
+    if (isCustom) {
+      yield baseActionDisplayName(context);
+      for (final baseAlias in baseAliases) {
+        yield baseAlias;
+        yield ZombossMechL10n.implementationLabel(
+          context,
+          catalog.id,
+          baseAlias,
+        );
+        yield ZombossMechL10n.actionImplementationKey(catalog.id, baseAlias);
+      }
+    }
   }
 }

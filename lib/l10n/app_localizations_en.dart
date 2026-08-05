@@ -3550,7 +3550,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addModuleAliasTitle => 'Add module';
 
   @override
-  String get aliasLabel => 'Alias';
+  String get aliasLabel => 'Alias (English letters only)';
 
   @override
   String get add => 'Add';
@@ -4424,21 +4424,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleHelpZombiePotionBody =>
-      'This module periodically spawns specified obstacle types in random rows, moving from right to left.';
+      'This module periodically spawns specified grid item types in random rows, moving from right to left.';
 
   @override
   String get moduleHelpZombiePotionMechanism => 'Spawn Mechanism';
 
   @override
   String get moduleHelpZombiePotionMechanismBody =>
-      'Obstacles spawn randomly within the configured time interval. If the number of matching obstacles on the lawn reaches the limit, spawning pauses.';
+      'Grid items spawn randomly within the configured time interval. If the number of matching grid items on the lawn reaches the limit, spawning pauses.';
 
   @override
   String get moduleHelpZombiePotionPotionTypes => 'Potion Types';
 
   @override
   String get moduleHelpZombiePotionTypes =>
-      'One type is randomly selected from the configured list. To spawn multiple obstacles at fixed intervals, add this module multiple times in the level.';
+      'One type is randomly selected from the configured list. To spawn multiple grid items at fixed intervals, add this module multiple times in the level.';
 
   @override
   String get moduleHelpUnknownBody =>
@@ -4476,6 +4476,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get portalType => 'Portal type (PortalType)';
+
+  @override
+  String get selectPortalType => 'Select Portal Type';
+
+  @override
+  String get noPortalTypesFound => 'No portal types found.';
+
+  @override
+  String get noPortalTypeSelected => 'No portal type selected.';
 
   @override
   String get direction => 'Direction';
@@ -4555,7 +4564,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smokePollutionModuleTitle => 'Smoke pollution module';
 
   @override
-  String get smokePollutionModuleHelpTitle => 'Smoke pollution module help';
+  String get smokePollutionModuleHelpTitle => 'Smoke pollution module';
 
   @override
   String get smokePollutionModuleHelpOverview => 'Overview';
@@ -4592,7 +4601,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombiePotionSettings => 'Zombie Potion Settings';
 
   @override
-  String get zombiePotionHelpTitle => 'Zombie Potion Module Help';
+  String get zombiePotionHelpTitle => 'Zombie Potion Module';
 
   @override
   String get eventTimeRift => 'Event: Spacetime Portal';
@@ -4617,11 +4626,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'After adding the Last Stand module, the editor automatically enables Manual Startup in the Wave Manager module.';
 
   @override
-  String get lastStandHelpTitle => 'Last Stand Module Help';
+  String get lastStandHelpTitle => 'Last Stand Module';
 
   @override
   String get lastStandHelpOverviewBody =>
-      'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap Start Battle.';
+      'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap \"LET\'S ROCK!\".';
 
   @override
   String get lastStandHelpNotes => 'Notes';
@@ -5837,6 +5846,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get waveDropTotalLabel =>
       'Total Plant Food carriers (AdditionalPlantfood)';
+
+  @override
+  String get waveDropAddZombiesFirst =>
+      'Add zombies to this wave before configuring drops.';
+
+  @override
+  String get waveDropIncreaseTotalBeforePlants =>
+      'Increase total drops before adding plants.';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
@@ -7440,7 +7457,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionCategorySpecial => 'Special';
 
   @override
-  String get zombossMechActionCategorySpawn => 'Spawn';
+  String get zombossMechActionCategorySpawn => 'Summon';
+
+  @override
+  String get zombossMechActionCategoryCustom => 'Custom';
 
   @override
   String get zombossMechActionCategoryRetreat => 'Retreat';
@@ -7452,11 +7472,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechCustomActionLabel => 'Custom (CurrentLevel)';
 
   @override
+  String zombossCustomActionBaseAction(String action) {
+    return 'Base Action: $action';
+  }
+
+  @override
   String get zombossMechActionAliasHint =>
       'Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.';
 
   @override
-  String get zombossMechActionBaseObjclass => 'Base objclass';
+  String get zombossMechActionBaseObjclass => 'Action Type (objclass)';
 
   @override
   String get zombossMechEditRetreatAction => 'Choose retreat action';

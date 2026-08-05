@@ -4444,7 +4444,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get referenceModules => 'Ссылки на модули';
 
   @override
-  String get portalType => 'Тип портала';
+  String get portalType => 'Тип портала (PortalType)';
+
+  @override
+  String get selectPortalType => 'Выберите тип портала';
+
+  @override
+  String get noPortalTypesFound => 'Типы порталов не найдены.';
+
+  @override
+  String get noPortalTypeSelected => 'Тип портала не выбран.';
 
   @override
   String get direction => 'Направление';
@@ -5797,6 +5806,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveDropTotalLabel => 'Всего зомби с дропом (AdditionalPlantfood)';
+
+  @override
+  String get waveDropAddZombiesFirst =>
+      'Добавьте зомби в эту волну перед настройкой дропа.';
+
+  @override
+  String get waveDropIncreaseTotalBeforePlants =>
+      'Увеличьте общее число дропов перед добавлением растений.';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
@@ -7401,6 +7418,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechActionCategorySpawn => 'Призыв';
 
   @override
+  String get zombossMechActionCategoryCustom => 'Свои';
+
+  @override
   String get zombossMechActionCategoryRetreat => 'Отступление';
 
   @override
@@ -7410,11 +7430,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechCustomActionLabel => 'Своё (CurrentLevel)';
 
   @override
+  String zombossCustomActionBaseAction(String action) {
+    return 'Базовое действие: $action';
+  }
+
+  @override
   String get zombossMechActionAliasHint =>
       'Имя в RTID(псевдоним@CurrentLevel). Можно изменить позже; ссылки в этом листе свойств обновятся автоматически.';
 
   @override
-  String get zombossMechActionBaseObjclass => 'Базовый objclass';
+  String get zombossMechActionBaseObjclass => 'Тип действия (objclass)';
 
   @override
   String get zombossMechEditRetreatAction => 'Выбрать отступление';
