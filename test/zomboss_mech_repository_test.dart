@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 
 void main() {
@@ -22,5 +23,19 @@ void main() {
       ZombossMechRepository.findBaseForVariation('zombossmech_future')?.id,
       'ZombieZombossMech_Future',
     );
+  });
+
+  test('resolves built-in property data for read-only details', () async {
+    await ZombossMechRepository.init();
+    await ZombiePropertiesRepository.init();
+
+    final propsData = ZombossMechRepository.propertiesDataForVariation(
+      'zombossmech_egypt',
+    );
+
+    expect(propsData, isNotNull);
+    expect(propsData!['Stages'], isA<List>());
+    expect(propsData['Stages'], isNotEmpty);
+    expect((propsData['Stages'] as List).first['Actions'], isA<List>());
   });
 }

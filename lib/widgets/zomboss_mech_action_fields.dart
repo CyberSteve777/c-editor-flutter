@@ -17,6 +17,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
     required this.fields,
     required this.data,
     required this.onChanged,
+    this.editable = true,
     this.objclass = '',
     this.levelFile,
     this.depth = 0,
@@ -27,6 +28,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
   final List<ZombossMechFieldSpec> fields;
   final Map<String, dynamic> data;
   final VoidCallback onChanged;
+  final bool editable;
   final String objclass;
   final PvzLevelFile? levelFile;
   final int depth;
@@ -77,6 +79,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
             fieldLabel: label,
             entries: entries,
             levelFile: levelFile,
+            editable: editable,
             onChanged: (next) {
               data[field.name] = ZombossRobotSpawnEntry.toJsonList(next);
               onChanged();
@@ -93,7 +96,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
         child: ZombossMechZombieTypeListEditor(
           fieldLabel: label,
           zombieIds: ids,
-          editable: true,
+          editable: editable,
           isList: field.type == 'List<zombieType>',
           onChanged: (next) {
             if (field.type == 'List<zombieType>') {
@@ -114,6 +117,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
         child: PortalTypeSingleSelectField(
           label: label,
           value: value.toString(),
+          editable: editable,
           onChanged: (next) {
             data[field.name] = next;
             onChanged();
@@ -141,9 +145,10 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
               fields: field.objectFields,
               data: nestedMap,
               onChanged: onChanged,
+              editable: editable,
               objclass: objclass,
               levelFile: levelFile,
-              depth: depth + 1,
+              depth: depth,
               fieldNamePrefix: _fullFieldName(field),
             ),
           ],
@@ -157,6 +162,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
         field: field,
         label: label,
         value: data[field.name],
+        editable: editable,
         onChanged: (v) {
           data[field.name] = v;
           onChanged();
@@ -172,12 +178,14 @@ class _ScalarField extends StatefulWidget {
     required this.label,
     required this.value,
     required this.onChanged,
+    required this.editable,
   });
 
   final ZombossMechFieldSpec field;
   final String label;
   final dynamic value;
   final ValueChanged<dynamic> onChanged;
+  final bool editable;
 
   @override
   State<_ScalarField> createState() => _ScalarFieldState();
@@ -231,25 +239,39 @@ class _ScalarFieldState extends State<_ScalarField> {
           contentPadding: EdgeInsets.zero,
           title: Text(label),
           value: checked,
-          onChanged: (v) => widget.onChanged(v),
+          onChanged: widget.editable ? (v) => widget.onChanged(v) : null,
         );
       case 'int':
         if (ZombossMechActionUtils.usesLabeledIntInput(field)) {
           return TextFormField(
             controller: _controller,
             focusNode: _focusNode,
+            readOnly: !widget.editable,
             decoration: editorInputDecoration(context, labelText: label),
             keyboardType: TextInputType.number,
-            onChanged: (v) {
-              final parsed = int.tryParse(v);
-              if (parsed != null) widget.onChanged(parsed);
-            },
+            onChanged: widget.editable
+                ? (v) {
+                    final parsed = int.tryParse(v);
+                    if (parsed != null) widget.onChanged(parsed);
+                  }
+                : null,
           );
         }
         final intVal = _asInt(widget.value, field);
         return LayoutBuilder(
           builder: (context, constraints) {
             final compact = constraints.maxWidth < 280;
+            if (!widget.editable) {
+              return Row(
+                children: [
+                  Expanded(child: Text(label)),
+                  Text(
+                    '$intVal',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              );
+            }
             final stepper = Row(
               mainAxisSize: compact ? MainAxisSize.max : MainAxisSize.min,
               mainAxisAlignment: compact
@@ -296,19 +318,23 @@ class _ScalarFieldState extends State<_ScalarField> {
         return TextFormField(
           controller: _controller,
           focusNode: _focusNode,
+          readOnly: !widget.editable,
           decoration: editorInputDecoration(context, labelText: label),
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          onChanged: (v) {
-            final parsed = double.tryParse(v);
-            if (parsed != null) widget.onChanged(parsed);
-          },
+          onChanged: widget.editable
+              ? (v) {
+                  final parsed = double.tryParse(v);
+                  if (parsed != null) widget.onChanged(parsed);
+                }
+              : null,
         );
       default:
         return TextFormField(
           controller: _controller,
           focusNode: _focusNode,
+          readOnly: !widget.editable,
           decoration: editorInputDecoration(context, labelText: label),
-          onChanged: (v) => widget.onChanged(v),
+          onChanged: widget.editable ? (v) => widget.onChanged(v) : null,
         );
     }
   }

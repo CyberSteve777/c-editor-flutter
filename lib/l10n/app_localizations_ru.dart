@@ -7442,6 +7442,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechActionBaseObjclass => 'Тип действия (objclass)';
 
   @override
+  String get zombossMechActionDetails => 'Сведения о действии';
+
+  @override
+  String get zombossMechActionRtid => 'RTID';
+
+  @override
+  String get zombossMechActionFields => 'Поля действия';
+
+  @override
+  String get zombossMechPropertiesViewTitle => 'Свойства ZombossMech';
+
+  @override
+  String get viewZombossMechProperties => 'Просмотреть свойства';
+
+  @override
   String get zombossMechEditRetreatAction => 'Выбрать отступление';
 
   @override

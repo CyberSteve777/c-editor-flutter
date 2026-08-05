@@ -13316,6 +13316,36 @@ abstract class AppLocalizations {
   /// **'Action Type (objclass)'**
   String get zombossMechActionBaseObjclass;
 
+  /// No description provided for @zombossMechActionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Details'**
+  String get zombossMechActionDetails;
+
+  /// No description provided for @zombossMechActionRtid.
+  ///
+  /// In en, this message translates to:
+  /// **'RTID'**
+  String get zombossMechActionRtid;
+
+  /// No description provided for @zombossMechActionFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Fields'**
+  String get zombossMechActionFields;
+
+  /// No description provided for @zombossMechPropertiesViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ZombossMech Properties'**
+  String get zombossMechPropertiesViewTitle;
+
+  /// No description provided for @viewZombossMechProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'View Properties'**
+  String get viewZombossMechProperties;
+
   /// No description provided for @zombossMechEditRetreatAction.
   ///
   /// In en, this message translates to:

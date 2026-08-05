@@ -8,6 +8,7 @@ import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
+import 'package:c_editor/screens/editor/others/zomboss_mech_action_detail_screen.dart';
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/animated_extended_fab.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
@@ -179,6 +180,19 @@ class _ZombossMechActionSelectionScreenState
     if (rtid != null && mounted) Navigator.pop(context, rtid);
   }
 
+  Future<void> _openActionDetails(String rtid) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZombossMechActionDetailScreen(
+          catalog: widget.catalog,
+          levelFile: widget.levelFile,
+          rtid: rtid,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -280,7 +294,14 @@ class _ZombossMechActionSelectionScreenState
                                       }
                                     },
                                   )
-                                : null,
+                                : IconButton(
+                                    icon: const Icon(Icons.info_outline),
+                                    tooltip:
+                                        l10n?.zombossMechActionDetails ??
+                                        'Action Details',
+                                    onPressed: () =>
+                                        _openActionDetails(item.rtid),
+                                  ),
                             onTap: () => Navigator.pop(context, item.rtid),
                           );
                         },

@@ -7,6 +7,7 @@ import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
+import 'package:c_editor/screens/editor/others/zomboss_mech_action_detail_screen.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_action_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
@@ -264,6 +265,19 @@ class _CustomZombossMechPropertiesScreenState
     if (mounted) _sync();
   }
 
+  Future<void> _openActionDetails(String rtid) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZombossMechActionDetailScreen(
+          catalog: widget.catalog,
+          levelFile: widget.levelFile,
+          rtid: rtid,
+        ),
+      ),
+    );
+  }
+
   Future<void> _confirmRemoveStageAction(
     int stageIndex,
     int actionIndex,
@@ -468,6 +482,7 @@ class _CustomZombossMechPropertiesScreenState
                 onAddAction: () => _pickAction(stageIndex: i, retreat: false),
                 onPickRetreat: () => _pickAction(stageIndex: i, retreat: true),
                 onEditCustomAction: _editCustomAction,
+                onInspectAction: _openActionDetails,
                 phaseLabel:
                     l10n?.zombossMechPhaseNumber(i + 1) ?? 'Phase ${i + 1}',
                 hitPointsLabel: l10n?.zombossMechHitPoints ?? 'Hit points',
@@ -539,6 +554,7 @@ class _StageCard extends StatelessWidget {
     required this.onAddAction,
     required this.onPickRetreat,
     required this.onEditCustomAction,
+    required this.onInspectAction,
     required this.phaseLabel,
     required this.hitPointsLabel,
     required this.actionsLabel,
@@ -563,6 +579,7 @@ class _StageCard extends StatelessWidget {
   final VoidCallback onAddAction;
   final VoidCallback onPickRetreat;
   final ValueChanged<String> onEditCustomAction;
+  final ValueChanged<String> onInspectAction;
   final String phaseLabel;
   final String hitPointsLabel;
   final String actionsLabel;
@@ -698,6 +715,9 @@ class _StageCard extends StatelessWidget {
                           onEdit: isCustom
                               ? () => onEditCustomAction(rtid)
                               : null,
+                          onInspect: isCustom
+                              ? null
+                              : () => onInspectAction(rtid),
                           onRemove: () => onRemoveAction(actionIndex),
                         );
                       },
@@ -742,6 +762,10 @@ class _StageCard extends StatelessWidget {
                       onEdit: ZombossMechActionUtils.isCustomRtid(retreatRtid)
                           ? () => onEditCustomAction(retreatRtid)
                           : null,
+                      onInspect:
+                          ZombossMechActionUtils.isCustomRtid(retreatRtid)
+                          ? null
+                          : () => onInspectAction(retreatRtid),
                     ),
                   ],
                 ),

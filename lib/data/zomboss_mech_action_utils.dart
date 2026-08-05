@@ -138,7 +138,7 @@ abstract class ZombossMechActionUtils {
       alias: info.alias,
       tag: action.tag,
       fields: action.fields,
-      data: Map<String, dynamic>.from(action.defaultData),
+      data: dataFromCatalogAction(action),
       editable: false,
       levelObject: null,
     );

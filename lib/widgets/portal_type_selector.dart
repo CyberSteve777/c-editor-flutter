@@ -5,7 +5,8 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart';
-import 'package:c_editor/widgets/editor_components.dart';
+
+const _kUnknownZombieIcon = 'assets/images/others/unknown.webp';
 
 PortalWorldDef? portalDefinitionForType(String? typeCode) {
   if (typeCode == null || typeCode.isEmpty) return null;
@@ -89,6 +90,13 @@ String portalTypeDisplayNameForCode(BuildContext context, String typeCode) {
   final def = portalDefinitionForType(typeCode);
   if (def == null) return typeCode;
   return portalTypeDisplayName(AppLocalizations.of(context), def);
+}
+
+String portalTypeIconAssetPath(PortalWorldDef? def) {
+  final firstZombie = def?.representativeZombies.firstOrNull;
+  if (firstZombie == null || firstZombie.isEmpty) return _kUnknownZombieIcon;
+  return ZombieRepository().getZombieById(firstZombie)?.iconAssetPath ??
+      _kUnknownZombieIcon;
 }
 
 Future<void> showPortalTypePreviewDialog(
@@ -192,11 +200,13 @@ class PortalTypeSingleSelectField extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onChanged,
+    this.editable = true,
   });
 
   final String label;
   final String value;
   final ValueChanged<String> onChanged;
+  final bool editable;
 
   Future<void> _pick(BuildContext context) async {
     final selected = await Navigator.push<String>(
@@ -216,6 +226,7 @@ class PortalTypeSingleSelectField extends StatelessWidget {
     final normalized = value.trim();
     final def = portalDefinitionForType(normalized);
     final hasValue = normalized.isNotEmpty;
+    final iconPath = portalTypeIconAssetPath(def);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,12 +234,14 @@ class PortalTypeSingleSelectField extends StatelessWidget {
         Row(
           children: [
             Expanded(child: Text(label, style: theme.textTheme.titleSmall)),
-            PvzAddButton(
-              onPressed: () {
-                _pick(context);
-              },
-              size: 42,
-            ),
+            if (editable)
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.add_circle_outline),
+                onPressed: () {
+                  _pick(context);
+                },
+              ),
           ],
         ),
         const SizedBox(height: 6),
@@ -246,9 +259,11 @@ class PortalTypeSingleSelectField extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(8),
             child: InkWell(
-              onTap: () {
-                _pick(context);
-              },
+              onTap: editable
+                  ? () {
+                      _pick(context);
+                    }
+                  : null,
               borderRadius: BorderRadius.circular(8),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -257,6 +272,17 @@ class PortalTypeSingleSelectField extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: AssetImageWidget(
+                        assetPath: iconPath,
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.contain,
+                        altCandidates: imageAltCandidates(iconPath),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +310,7 @@ class PortalTypeSingleSelectField extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.chevron_right),
+                    if (editable) const Icon(Icons.chevron_right),
                   ],
                 ),
               ),

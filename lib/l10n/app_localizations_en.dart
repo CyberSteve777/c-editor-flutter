@@ -7484,6 +7484,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionBaseObjclass => 'Action Type (objclass)';
 
   @override
+  String get zombossMechActionDetails => 'Action Details';
+
+  @override
+  String get zombossMechActionRtid => 'RTID';
+
+  @override
+  String get zombossMechActionFields => 'Action Fields';
+
+  @override
+  String get zombossMechPropertiesViewTitle => 'ZombossMech Properties';
+
+  @override
+  String get viewZombossMechProperties => 'View Properties';
+
+  @override
   String get zombossMechEditRetreatAction => 'Choose retreat action';
 
   @override

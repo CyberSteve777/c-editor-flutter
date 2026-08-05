@@ -7130,6 +7130,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechActionBaseObjclass => '动作类型 (objclass)';
 
   @override
+  String get zombossMechActionDetails => '动作详情';
+
+  @override
+  String get zombossMechActionRtid => 'RTID';
+
+  @override
+  String get zombossMechActionFields => '动作字段';
+
+  @override
+  String get zombossMechPropertiesViewTitle => 'ZombossMech 属性';
+
+  @override
+  String get viewZombossMechProperties => '查看属性';
+
+  @override
   String get zombossMechEditRetreatAction => '选择撤退动作';
 
   @override
