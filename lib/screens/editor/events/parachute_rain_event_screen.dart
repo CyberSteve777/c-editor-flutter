@@ -530,6 +530,8 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
               ],
             ),
             const SizedBox(height: 12),
+            const EventColumnRangeHint(),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(

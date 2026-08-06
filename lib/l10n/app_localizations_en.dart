@@ -4502,6 +4502,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnRange => 'Column range';
 
   @override
+  String get eventColumnRangeBoundaryHint =>
+      'The lawn’s left edge is column 0 and the right edge is column 9. The start column must be less than the end column.';
+
+  @override
+  String get eventColumnRangeExampleHint =>
+      'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.';
+
+  @override
   String get zombieLevels => 'Zombie level';
 
   @override
@@ -5847,8 +5855,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waveDropConfigTitle => 'Drop configuration';
 
   @override
-  String get waveDropTotalLabel =>
-      'Total Plant Food carriers (AdditionalPlantfood)';
+  String get waveDropTotalLabel => 'Total drops (AdditionalPlantfood)';
 
   @override
   String get waveDropAddZombiesFirst =>

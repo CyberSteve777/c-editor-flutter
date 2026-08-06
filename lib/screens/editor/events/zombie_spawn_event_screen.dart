@@ -178,7 +178,8 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
       _data = SpawnZombiesFromGroundData(
         columnStart: (_data as SpawnZombiesFromGroundData).columnStart,
         columnEnd: (_data as SpawnZombiesFromGroundData).columnEnd,
-        additionalPlantFood: (_data as SpawnZombiesFromGroundData).additionalPlantFood,
+        additionalPlantFood:
+            (_data as SpawnZombiesFromGroundData).additionalPlantFood,
         spawnPlantName: (_data as SpawnZombiesFromGroundData).spawnPlantName,
         zombies: zombies,
       );
@@ -221,11 +222,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
     }
   }
 
-  void _handleZombieDragDropMove(
-    int fromIndex,
-    int toRow,
-    int rowInsertIndex,
-  ) {
+  void _handleZombieDragDropMove(int fromIndex, int toRow, int rowInsertIndex) {
     final zombies = List<ZombieSpawnData>.from(_zombies);
     moveZombieSpawnInListByRowSlot(
       zombies: zombies,
@@ -256,9 +253,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
       index,
       zombie.copyWith(
         type: rtid,
-        level: isEliteNew
-            ? null
-            : (levelValue == 0 ? null : levelValue),
+        level: isEliteNew ? null : (levelValue == 0 ? null : levelValue),
         clearLevel: isEliteNew || levelValue == 0,
         row: rowValue == 0 ? null : rowValue,
         clearRow: rowValue == 0,
@@ -846,6 +841,8 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            const EventColumnRangeHint(),
           ],
         ),
       ),

@@ -4284,6 +4284,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get columnRange => '出怪范围（列数）';
 
   @override
+  String get eventColumnRangeBoundaryHint => '场地左边界为0列，右边界为9列，起始列需小于结束列';
+
+  @override
+  String get eventColumnRangeExampleHint => '若需要在第 n 到 m 列刷新，起始列填 n-1 终止列填 m';
+
+  @override
   String get zombieLevels => '僵尸等级';
 
   @override

@@ -8068,6 +8068,18 @@ abstract class AppLocalizations {
   /// **'Column range'**
   String get columnRange;
 
+  /// No description provided for @eventColumnRangeBoundaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The lawn’s left edge is column 0 and the right edge is column 9. The start column must be less than the end column.'**
+  String get eventColumnRangeBoundaryHint;
+
+  /// No description provided for @eventColumnRangeExampleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.'**
+  String get eventColumnRangeExampleHint;
+
   /// No description provided for @zombieLevels.
   ///
   /// In en, this message translates to:
@@ -10445,7 +10457,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveDropTotalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Total Plant Food carriers (AdditionalPlantfood)'**
+  /// **'Total drops (AdditionalPlantfood)'**
   String get waveDropTotalLabel;
 
   /// No description provided for @waveDropAddZombiesFirst.

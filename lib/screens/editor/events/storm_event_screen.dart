@@ -233,10 +233,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
     final isElite = _isElite(z);
     final baseType = _resolveBaseTypeName(z);
     final info = ZombieRepository().getZombieById(baseType);
-    final displayName = ResourceNames.lookup(
-      context,
-      info?.name ?? baseType,
-    );
+    final displayName = ResourceNames.lookup(context, info?.name ?? baseType);
     final iconPath = info?.iconAssetPath;
     final isCustom = _isCustomZombie(z);
 
@@ -265,7 +262,8 @@ class _StormEventScreenState extends State<StormEventScreen> {
           );
         });
       },
-      onLevelChanged: (level) => _updateZombieLevel(index, level == 0 ? null : level),
+      onLevelChanged: (level) =>
+          _updateZombieLevel(index, level == 0 ? null : level),
       onCopy: () {
         final copy = StormZombieData(
           type: z.type,
@@ -287,13 +285,12 @@ class _StormEventScreenState extends State<StormEventScreen> {
           parentContext: context,
           levelFile: widget.levelFile,
           zombieTypeRtid: z.type,
-          onRemove: (eraseOrphan) => _removeZombie(
-            index,
-            eraseOrphanProperties: eraseOrphan,
-          ),
+          onRemove: (eraseOrphan) =>
+              _removeZombie(index, eraseOrphanProperties: eraseOrphan),
         );
       },
-      customPropertiesActions: widget.onEditCustomZombie != null ||
+      customPropertiesActions:
+          widget.onEditCustomZombie != null ||
               widget.onInjectCustomZombie != null
           ? CustomZombiePropertiesSheetActions(
               levelFile: widget.levelFile,
@@ -302,7 +299,8 @@ class _StormEventScreenState extends State<StormEventScreen> {
               onEditCustomZombie: widget.onEditCustomZombie,
               onInjectCustomZombie: widget.onInjectCustomZombie,
               onCloseSheet: () => Navigator.of(context).pop(),
-              onRtidSelected: (rtid) => _replaceZombieType(index, rtid, z.level),
+              onRtidSelected: (rtid) =>
+                  _replaceZombieType(index, rtid, z.level),
             )
           : null,
     );
@@ -478,6 +476,8 @@ class _StormEventScreenState extends State<StormEventScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 12),
+                      const EventColumnRangeHint(),
                       const SizedBox(height: 12),
                       TextFormField(
                         initialValue: _data.groupSize.toString(),

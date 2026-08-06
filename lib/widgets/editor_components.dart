@@ -76,6 +76,40 @@ class EditorWarningBanner extends StatelessWidget {
   }
 }
 
+/// Shared hint for event editors that expose ColumnStart / ColumnEnd.
+class EventColumnRangeHint extends StatelessWidget {
+  const EventColumnRangeHint({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final style = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+      height: 1.55,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.eventColumnRangeBoundaryHint ??
+              'The lawn’s left edge is column 0 and the right edge is column 9. The start column must be less than the end column.',
+          style: style,
+          softWrap: true,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          l10n?.eventColumnRangeExampleHint ??
+              'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.',
+          style: style,
+          softWrap: true,
+        ),
+      ],
+    );
+  }
+}
+
 String localizedPropertyLabel(
   BuildContext context,
   String localizedName,

@@ -4468,6 +4468,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get columnRange => 'Диапазон колонок';
 
   @override
+  String get eventColumnRangeBoundaryHint =>
+      'Левая граница газона — столбец 0, правая — столбец 9. Начальная колонка должна быть меньше конечной.';
+
+  @override
+  String get eventColumnRangeExampleHint =>
+      'Чтобы спавнить с n-й по m-ю колонку, укажите n - 1 в начальной колонке и m в конечной.';
+
+  @override
   String get zombieLevels => 'Уровни зомби';
 
   @override
