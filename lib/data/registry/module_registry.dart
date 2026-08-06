@@ -14,6 +14,7 @@ class ModuleMetadata {
   final String defaultSource;
   final bool allowMultiple;
   final dynamic Function()? initialDataFactory;
+  final String? uniqueKey;
   // In Flutter, we might use a route name or a widget builder
   // For now, we'll just store the route name or ID
   final String routeId;
@@ -29,11 +30,13 @@ class ModuleMetadata {
     this.defaultSource = 'CurrentLevel',
     this.allowMultiple = false,
     this.initialDataFactory,
+    this.uniqueKey,
     required this.routeId,
     this.objClass = '',
   });
 
   String get effectiveAlias => defaultAlias;
+  String get selectionKey => uniqueKey ?? objClass;
 
   Map<String, dynamic>? get initialData {
     final obj = initialDataFactory?.call();
@@ -68,6 +71,22 @@ class ModuleRegistry {
       routeId: 'Unknown',
       objClass: objClass,
     );
+  }
+
+  static ModuleMetadata getMetadataForAlias(String alias, String objClass) {
+    if (objClass == 'TunnelDefendModuleProperties' &&
+        (alias == 'SouDaCheTunnelDefendDefault' ||
+            alias.startsWith('SoudacheTunnelDefendStage'))) {
+      return registry['SouDaCheTunnelDefendDefault']!.copyWith(
+        objClass: objClass,
+      );
+    }
+    for (final meta in registry.values) {
+      if (meta.defaultAlias == alias && meta.objClass == objClass) {
+        return meta.copyWith(objClass: objClass);
+      }
+    }
+    return getMetadata(objClass);
   }
 
   static List<ModuleMetadata> getAllModules() => all;
@@ -189,6 +208,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_LawnMowerProperties;
       case 'moduleTitle_TunnelDefendModuleProperties':
         return l10n.moduleTitle_TunnelDefendModuleProperties;
+      case 'moduleTitle_SouDaCheTunnelDefendDefault':
+        return l10n.moduleTitle_SouDaCheTunnelDefendDefault;
       case 'moduleTitle_ZombieRushModuleProperties':
         return l10n.moduleTitle_ZombieRushModuleProperties;
       case 'moduleTitle_RenaiModuleProperties':
@@ -337,6 +358,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_LawnMowerProperties;
       case 'moduleDesc_TunnelDefendModuleProperties':
         return l10n.moduleDesc_TunnelDefendModuleProperties;
+      case 'moduleDesc_SouDaCheTunnelDefendDefault':
+        return l10n.moduleDesc_SouDaCheTunnelDefendDefault;
       case 'moduleDesc_ZombieRushModuleProperties':
         return l10n.moduleDesc_ZombieRushModuleProperties;
       case 'moduleDesc_RenaiModuleProperties':
@@ -1024,7 +1047,22 @@ class ModuleRegistry {
       isCore: true,
       category: ModuleCategory.scene,
       defaultAlias: 'TunnelDefend',
-      initialDataFactory: () => TunnelDefendModuleData(),
+      initialDataFactory: () => TunnelDefendModuleData(reportError: true),
+      routeId: 'TunnelDefendModule',
+    ),
+    'SouDaCheTunnelDefendDefault': ModuleMetadata(
+      titleKey: 'moduleTitle_SouDaCheTunnelDefendDefault',
+      descriptionKey: 'moduleDesc_SouDaCheTunnelDefendDefault',
+      icon: Icons.grid_view,
+      isCore: true,
+      category: ModuleCategory.scene,
+      defaultAlias: 'SouDaCheTunnelDefendDefault',
+      uniqueKey: 'SouDaCheTunnelDefendDefault',
+      objClass: 'TunnelDefendModuleProperties',
+      initialDataFactory: () => TunnelDefendModuleData(
+        brickMapIndex: 3,
+        reportError: false,
+      ).toJson(includeTunnelSequenceInterval: false),
       routeId: 'TunnelDefendModule',
     ),
     'InitialGridItemGulliverTunnelProperties': ModuleMetadata(
@@ -1119,7 +1157,11 @@ class ModuleRegistry {
 
   static List<ModuleMetadata> get all {
     return registry.entries
-        .map((e) => e.value.copyWith(objClass: e.key))
+        .map(
+          (e) => e.value.copyWith(
+            objClass: e.value.objClass.isEmpty ? e.key : e.value.objClass,
+          ),
+        )
         .toList();
   }
 }
@@ -1135,6 +1177,7 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
     String? defaultSource,
     bool? allowMultiple,
     dynamic Function()? initialDataFactory,
+    String? uniqueKey,
     String? routeId,
     String? objClass,
   }) {
@@ -1148,6 +1191,7 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
       defaultSource: defaultSource ?? this.defaultSource,
       allowMultiple: allowMultiple ?? this.allowMultiple,
       initialDataFactory: initialDataFactory ?? this.initialDataFactory,
+      uniqueKey: uniqueKey ?? this.uniqueKey,
       routeId: routeId ?? this.routeId,
       objClass: objClass ?? this.objClass,
     );

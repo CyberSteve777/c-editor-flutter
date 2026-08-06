@@ -3215,29 +3215,40 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
                 final screenWidth = MediaQuery.sizeOf(context).width;
                 final isNarrow = screenWidth < 500;
 
+                final Widget fab;
                 if (isNarrow) {
-                  return FloatingActionButton(
+                  fab = FloatingActionButton(
                     heroTag: 'uploadLevel',
                     onPressed: widget.onPressed,
                     tooltip: widget.label,
                     child: const Icon(Icons.cloud_upload),
                   );
+                } else {
+                  fab = FloatingActionButton.extended(
+                    heroTag: 'uploadLevel',
+                    onPressed: widget.onPressed,
+                    icon: const Icon(Icons.cloud_upload),
+                    label: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: (screenWidth - 160).clamp(
+                          0,
+                          double.infinity,
+                        ),
+                      ),
+                      child: Text(
+                        widget.label,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  );
                 }
 
-                return FloatingActionButton.extended(
-                  heroTag: 'uploadLevel',
-                  onPressed: widget.onPressed,
-                  icon: const Icon(Icons.cloud_upload),
-                  label: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: (screenWidth - 160).clamp(0, double.infinity),
-                    ),
-                    child: Text(
-                      widget.label,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
+                return Align(
+                  alignment: Alignment.centerRight,
+                  widthFactor: 1,
+                  heightFactor: 1,
+                  child: fab,
                 );
               },
             ),

@@ -6233,6 +6233,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Арены Подземного дворца рассчитаны на визуал тоннелей. Настоятельно рекомендуется добавить модуль тоннелей Подземного Дворца — иначе газон в игре может выглядеть пустым.';
 
   @override
+  String get recommendedExpeditionTilesTitle =>
+      'Works with the \"Expedition Tiles\" module';
+
+  @override
+  String get recommendedExpeditionTilesBody =>
+      'Add the \"Expedition Tiles\" module to work around the lawn\'s missing tiles and create an experience that more closely matches Expedition Gate.';
+
+  @override
   String get selectedPosition => 'Выбранная позиция';
 
   @override
@@ -6382,6 +6390,89 @@ class AppLocalizationsRu extends AppLocalizations {
       'Задержка между шагами последовательности тоннелей. Меньшие значения ускоряют появление путей.';
 
   @override
+  String get sodPlantingPromptTitle => 'Sod Planting Prompt';
+
+  @override
+  String get expeditionTilesSodPromptBody =>
+      'Whether to show a Sod requirement prompt when planting.';
+
+  @override
+  String get tunnelDefendSodPromptBody =>
+      'Whether to show a Sod requirement prompt when planting. Enabled by default.';
+
+  @override
+  String get expeditionTilesPresetLayout => 'Preset Layout';
+
+  @override
+  String get expeditionTilesPresetFloor1 => 'Expedition Gate – Floor 1';
+
+  @override
+  String get expeditionTilesPresetFloor2 => 'Expedition Gate – Floor 2';
+
+  @override
+  String get expeditionTilesPresetFloor3 => 'Expedition Gate – Floor 3';
+
+  @override
+  String get customLayout => 'Custom layout';
+
+  @override
+  String get switchAction => 'Switch';
+
+  @override
+  String get expeditionTilesSwitchPresetTitle => 'Switch preset layout';
+
+  @override
+  String get expeditionTilesSwitchPresetMessage =>
+      'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.';
+
+  @override
+  String get expeditionTilesUnderwaterMismatchWarning =>
+      'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.';
+
+  @override
+  String get expeditionTilesBlockedCount => 'Non-plantable tiles';
+
+  @override
+  String get expeditionTilesClearConfirmTitle =>
+      'Clear all non-plantable tiles?';
+
+  @override
+  String get expeditionTilesClearConfirmMessage =>
+      'This will remove all placed non-plantable tiles from the lawn. This action cannot be undone.';
+
+  @override
+  String get expeditionTilesHelpTitle => 'Expedition Tiles Module';
+
+  @override
+  String get expeditionTilesHelpOverview =>
+      'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art.';
+
+  @override
+  String get expeditionTilesHelpEditing => 'Tile Editing';
+
+  @override
+  String get expeditionTilesHelpEditingBody =>
+      'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles are only a preview of Expedition Gate\'s starting appearance and do not mean those positions are blocked.';
+
+  @override
+  String get expeditionTilesHelpPresets => 'Preset Layouts';
+
+  @override
+  String get expeditionTilesHelpPresetsBody =>
+      'The editor includes the three official Expedition Gate layouts for Floor 1, Floor 2, and Floor 3. Switching presets replaces all placed non-plantable tiles and cannot be undone; after applying a preset, you can still adjust tiles manually.';
+
+  @override
+  String get expeditionTilesHelpSodPrompt => 'Planting Prompt';
+
+  @override
+  String get expeditionTilesHelpSodPromptBody =>
+      'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Expedition Tiles disables this prompt by default, while Underground Palace Pathways enables it by default.';
+
+  @override
+  String get expeditionTilesHelpNotesBody =>
+      'Expedition Tiles is intended for five-row lawns such as Expedition Gate. Do not use it with six-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.';
+
+  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
       'Лимит времени финальной фазы';
 
@@ -6425,6 +6516,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get moduleDesc_TunnelDefendModuleProperties =>
       'Размещение тоннелей Подземного Дворца';
+
+  @override
+  String get moduleTitle_SouDaCheTunnelDefendDefault => 'Expedition Tiles';
+
+  @override
+  String get moduleDesc_SouDaCheTunnelDefendDefault =>
+      'Configure non-plantable areas on Expedition Gate lawns.';
 
   @override
   String get moduleTitle_WitchModuleProperties => 'Тыквенная ведьма';

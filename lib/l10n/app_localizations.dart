@@ -9043,7 +9043,7 @@ abstract class AppLocalizations {
   /// No description provided for @stageMismatch.
   ///
   /// In en, this message translates to:
-  /// **'Lawn mismatch'**
+  /// **'Lawn Type Mismatch'**
   String get stageMismatch;
 
   /// No description provided for @currentStageNotPirate.
@@ -11186,6 +11186,18 @@ abstract class AppLocalizations {
   /// **'The tiles in Underground Palace Secret Realm lawns must be placed through the \"Underground Palace Pathways\" module. If this module is not added, the lawns may appear overly empty in-game.'**
   String get recommendedTunnelDefendBody;
 
+  /// No description provided for @recommendedExpeditionTilesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Works with the \"Expedition Tiles\" module'**
+  String get recommendedExpeditionTilesTitle;
+
+  /// No description provided for @recommendedExpeditionTilesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the \"Expedition Tiles\" module to work around the lawn\'s missing tiles and create an experience that more closely matches Expedition Gate.'**
+  String get recommendedExpeditionTilesBody;
+
   /// No description provided for @selectedPosition.
   ///
   /// In en, this message translates to:
@@ -11438,6 +11450,150 @@ abstract class AppLocalizations {
   /// **'Delay between tunnel sequence steps. Lower values make pathways appear faster.'**
   String get tunnelDefendHelpSequenceIntervalBody;
 
+  /// No description provided for @sodPlantingPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sod Planting Prompt'**
+  String get sodPlantingPromptTitle;
+
+  /// No description provided for @expeditionTilesSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether to show a Sod requirement prompt when planting.'**
+  String get expeditionTilesSodPromptBody;
+
+  /// No description provided for @tunnelDefendSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether to show a Sod requirement prompt when planting. Enabled by default.'**
+  String get tunnelDefendSodPromptBody;
+
+  /// No description provided for @expeditionTilesPresetLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset Layout'**
+  String get expeditionTilesPresetLayout;
+
+  /// No description provided for @expeditionTilesPresetFloor1.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate – Floor 1'**
+  String get expeditionTilesPresetFloor1;
+
+  /// No description provided for @expeditionTilesPresetFloor2.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate – Floor 2'**
+  String get expeditionTilesPresetFloor2;
+
+  /// No description provided for @expeditionTilesPresetFloor3.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate – Floor 3'**
+  String get expeditionTilesPresetFloor3;
+
+  /// No description provided for @customLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom layout'**
+  String get customLayout;
+
+  /// No description provided for @switchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get switchAction;
+
+  /// No description provided for @expeditionTilesSwitchPresetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch preset layout'**
+  String get expeditionTilesSwitchPresetTitle;
+
+  /// No description provided for @expeditionTilesSwitchPresetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.'**
+  String get expeditionTilesSwitchPresetMessage;
+
+  /// No description provided for @expeditionTilesUnderwaterMismatchWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.'**
+  String get expeditionTilesUnderwaterMismatchWarning;
+
+  /// No description provided for @expeditionTilesBlockedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-plantable tiles'**
+  String get expeditionTilesBlockedCount;
+
+  /// No description provided for @expeditionTilesClearConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all non-plantable tiles?'**
+  String get expeditionTilesClearConfirmTitle;
+
+  /// No description provided for @expeditionTilesClearConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove all placed non-plantable tiles from the lawn. This action cannot be undone.'**
+  String get expeditionTilesClearConfirmMessage;
+
+  /// No description provided for @expeditionTilesHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Tiles Module'**
+  String get expeditionTilesHelpTitle;
+
+  /// No description provided for @expeditionTilesHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art.'**
+  String get expeditionTilesHelpOverview;
+
+  /// No description provided for @expeditionTilesHelpEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Tile Editing'**
+  String get expeditionTilesHelpEditing;
+
+  /// No description provided for @expeditionTilesHelpEditingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles are only a preview of Expedition Gate\'s starting appearance and do not mean those positions are blocked.'**
+  String get expeditionTilesHelpEditingBody;
+
+  /// No description provided for @expeditionTilesHelpPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset Layouts'**
+  String get expeditionTilesHelpPresets;
+
+  /// No description provided for @expeditionTilesHelpPresetsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The editor includes the three official Expedition Gate layouts for Floor 1, Floor 2, and Floor 3. Switching presets replaces all placed non-plantable tiles and cannot be undone; after applying a preset, you can still adjust tiles manually.'**
+  String get expeditionTilesHelpPresetsBody;
+
+  /// No description provided for @expeditionTilesHelpSodPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Planting Prompt'**
+  String get expeditionTilesHelpSodPrompt;
+
+  /// No description provided for @expeditionTilesHelpSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Expedition Tiles disables this prompt by default, while Underground Palace Pathways enables it by default.'**
+  String get expeditionTilesHelpSodPromptBody;
+
+  /// No description provided for @expeditionTilesHelpNotesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Tiles is intended for five-row lawns such as Expedition Gate. Do not use it with six-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.'**
+  String get expeditionTilesHelpNotesBody;
+
   /// No description provided for @moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties.
   ///
   /// In en, this message translates to:
@@ -11509,6 +11665,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configures pathways and tile styles for Underground Palace secret realm levels'**
   String get moduleDesc_TunnelDefendModuleProperties;
+
+  /// No description provided for @moduleTitle_SouDaCheTunnelDefendDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Tiles'**
+  String get moduleTitle_SouDaCheTunnelDefendDefault;
+
+  /// No description provided for @moduleDesc_SouDaCheTunnelDefendDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure non-plantable areas on Expedition Gate lawns.'**
+  String get moduleDesc_SouDaCheTunnelDefendDefault;
 
   /// No description provided for @moduleTitle_WitchModuleProperties.
   ///

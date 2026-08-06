@@ -149,7 +149,12 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
           tooltip: l10n.back,
           onPressed: widget.onBack,
         ),
-        title: Text(l10n.zombiePotionSettings),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),

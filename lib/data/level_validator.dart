@@ -91,12 +91,37 @@ class LevelValidator {
     }
 
     // 5. Tunnel Defend Recommendation (Warning)
-    if (_shouldRecommendTunnelDefendModule(levelDef, existingObjClasses)) {
+    if (_shouldRecommendTunnelDefendModule(
+      levelDef,
+      _hasTunnelDefendModule(parsedData),
+    )) {
       issues.add(ValidationIssue(
         title: l10n.recommendedTunnelDefendTitle,
         message: l10n.recommendedTunnelDefendBody,
         isError: false,
       ));
+    }
+
+    final hasExpeditionTiles = _hasExpeditionTilesModule(parsedData);
+    if (!hasExpeditionTiles &&
+        LevelParser.isSouDaCheLawn(levelDef, levelFile)) {
+      issues.add(
+        ValidationIssue(
+          title: l10n.recommendedExpeditionTilesTitle,
+          message: l10n.recommendedExpeditionTilesBody,
+          isError: false,
+        ),
+      );
+    }
+    if (hasExpeditionTiles &&
+        LevelParser.isUnderwaterWorldSixRowLawn(levelDef, levelFile)) {
+      issues.add(
+        ValidationIssue(
+          title: l10n.stageMismatch,
+          message: l10n.expeditionTilesUnderwaterMismatchWarning,
+          isError: true,
+        ),
+      );
     }
 
     // 6. 6-Row Data Warning (Warning)
@@ -121,6 +146,79 @@ class LevelValidator {
       }
       return ReferenceRepository.instance.getObjClass(info.alias) ?? '';
     }).where((e) => e.isNotEmpty).toSet();
+  }
+
+  static bool _hasExpeditionTilesModule(ParsedLevelData parsedData) {
+    final levelDef = parsedData.levelDef;
+    if (levelDef == null) return false;
+    for (final rtid in levelDef.modules) {
+      final info = RtidParser.parse(rtid);
+      if (info == null) continue;
+      String? objClass;
+      dynamic objData;
+      if (info.source == 'CurrentLevel') {
+        final obj = parsedData.objectMap[info.alias];
+        objClass = obj?.objClass;
+        objData = obj?.objData;
+      } else {
+        final obj = ReferenceRepository.instance.objectForAlias(info.alias);
+        objClass = obj?.objClass;
+        objData = obj?.objData;
+      }
+      if (_isExpeditionTilesModule(
+        alias: info.alias,
+        objClass: objClass,
+        objData: objData,
+      )) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static bool _hasTunnelDefendModule(ParsedLevelData parsedData) {
+    final levelDef = parsedData.levelDef;
+    if (levelDef == null) return false;
+    for (final rtid in levelDef.modules) {
+      final info = RtidParser.parse(rtid);
+      if (info == null) continue;
+      String? objClass;
+      dynamic objData;
+      if (info.source == 'CurrentLevel') {
+        final obj = parsedData.objectMap[info.alias];
+        objClass = obj?.objClass;
+        objData = obj?.objData;
+      } else {
+        final obj = ReferenceRepository.instance.objectForAlias(info.alias);
+        objClass = obj?.objClass;
+        objData = obj?.objData;
+      }
+      if (objClass != 'TunnelDefendModuleProperties') continue;
+      if (!_isExpeditionTilesModule(
+        alias: info.alias,
+        objClass: objClass,
+        objData: objData,
+      )) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static bool _isExpeditionTilesModule({
+    required String alias,
+    required String? objClass,
+    required dynamic objData,
+  }) {
+    if (objClass != 'TunnelDefendModuleProperties') return false;
+    if (alias == 'SouDaCheTunnelDefendDefault' ||
+        alias.startsWith('SoudacheTunnelDefendStage')) {
+      return true;
+    }
+    if (objData is Map) {
+      return (objData['BrickMapIndex'] as num?)?.toInt() == 3;
+    }
+    return false;
   }
 
   static Map<String, List<String>> _getMissingModuleWarnings(
@@ -330,7 +428,7 @@ class LevelValidator {
 
   static bool _shouldRecommendTunnelDefendModule(
     LevelDefinitionData levelDef,
-    Set<String> moduleObjClasses,
+    bool hasTunnelDefendModule,
   ) {
     final stageInfo = RtidParser.parse(levelDef.stageModule);
     final alias = stageInfo?.alias ?? '';
@@ -338,7 +436,7 @@ class LevelValidator {
         alias != 'UnchartedMausoleum2Stage') {
       return false;
     }
-    return !moduleObjClasses.contains('TunnelDefendModuleProperties');
+    return !hasTunnelDefendModule;
   }
 
   static bool _check6RowDataIn5RowStage(PvzLevelFile levelFile, ParsedLevelData parsedData) {

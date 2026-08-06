@@ -92,8 +92,24 @@ abstract class ZombossMechActionUtils {
     return data;
   }
 
+  static bool isZombieTypeListField(ZombossMechFieldSpec field) =>
+      field.type == 'List<zombieType>';
+
+  static bool isSingleZombieTypeField(ZombossMechFieldSpec field) {
+    if (field.type == 'zombieType') return true;
+    if (field.type != 'string') return false;
+    const names = {
+      'ZombieName',
+      'ZombieType',
+      'ZombieTypeName',
+      'SpawnZombieName',
+      'SpiderZombieName',
+    };
+    return names.contains(field.name);
+  }
+
   static bool isZombieTypeField(ZombossMechFieldSpec field) =>
-      field.type == 'List<zombieType>' || field.type == 'zombieType';
+      isZombieTypeListField(field) || isSingleZombieTypeField(field);
 
   static List<String> parseZombieTypeList(dynamic raw) {
     if (raw is! List) return [];
@@ -156,7 +172,7 @@ abstract class ZombossMechActionUtils {
   ) {
     final bindings = <ZombossZombieListBinding>[];
     for (final field in fields) {
-      if (field.type == 'List<zombieType>') {
+      if (isZombieTypeListField(field)) {
         bindings.add(
           ZombossZombieListBinding(
             fieldName: field.name,
@@ -164,7 +180,7 @@ abstract class ZombossMechActionUtils {
             zombieIds: parseZombieTypeList(data[field.name]),
           ),
         );
-      } else if (field.type == 'zombieType') {
+      } else if (isSingleZombieTypeField(field)) {
         final raw = data[field.name];
         if (raw == null || raw.toString().isEmpty) continue;
         bindings.add(

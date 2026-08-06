@@ -196,6 +196,8 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
         ? localized
         : widget.zombieId;
     final iconPath = info?.iconAssetPath ?? _kUnknownZombieIcon;
+    final weightFieldWidth =
+        MediaQuery.sizeOf(context).width < 420 ? 144.0 : 168.0;
 
     return Material(
       color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
@@ -243,7 +245,7 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
               ),
               const SizedBox(width: 10),
               SizedBox(
-                width: 92,
+                width: weightFieldWidth,
                 child: TextFormField(
                   controller: _controller,
                   focusNode: _focusNode,

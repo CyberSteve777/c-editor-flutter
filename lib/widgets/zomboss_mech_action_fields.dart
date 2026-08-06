@@ -119,7 +119,8 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
         );
       }
 
-      final ids = field.type == 'List<zombieType>'
+      final isList = ZombossMechActionUtils.isZombieTypeListField(field);
+      final ids = isList
           ? ZombossMechActionUtils.parseZombieTypeList(raw)
           : [if (raw != null && raw.toString().isNotEmpty) raw.toString()];
       return Padding(
@@ -128,9 +129,9 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
           fieldLabel: label,
           zombieIds: ids,
           editable: editable,
-          isList: field.type == 'List<zombieType>',
+          isList: isList,
           onChanged: (next) {
-            if (field.type == 'List<zombieType>') {
+            if (isList) {
               data[field.name] = next;
             } else {
               data[field.name] = next.isNotEmpty ? next.first : '';

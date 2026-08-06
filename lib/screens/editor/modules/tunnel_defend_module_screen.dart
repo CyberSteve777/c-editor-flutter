@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/widgets/asset_image.dart'
@@ -31,17 +32,54 @@ class TunnelDefendModuleScreen extends StatefulWidget {
 
 class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   static const _objClass = 'TunnelDefendModuleProperties';
+  static const _expeditionAlias = 'SouDaCheTunnelDefendDefault';
+  static const _expeditionBlockedMarker = '__soudache_blocked__';
+  static const _expeditionRoadAsset =
+      'assets/images/tunnels/SouDaCheTunnelRoad.webp';
+  static const _expeditionBlockedAsset =
+      'assets/images/tunnels/SouDaCheTunnelRoadBlocked.webp';
   late String _alias;
   static const _assetWidth = 128.0;
   static const _assetHeight = 152.0;
+
+  static const _expeditionPreviewRoads = <(int, int)>[
+    (0, 0),
+    (1, 0),
+    (0, 1),
+    (1, 1),
+    (5, 1),
+    (0, 2),
+    (1, 2),
+    (5, 2),
+    (0, 3),
+    (1, 3),
+    (5, 3),
+    (0, 4),
+    (1, 4),
+  ];
+
+  static const _expeditionPresetAliases = [
+    'SoudacheTunnelDefendStage1',
+    'SoudacheTunnelDefendStage2',
+    'SoudacheTunnelDefendStage3',
+  ];
 
   bool get _isDeepSeaLawn {
     final parsed = LevelParser.parseLevel(widget.levelFile);
     return LevelParser.isDeepSeaLawn(parsed.levelDef, widget.levelFile);
   }
 
-  int get _gridCols => _isDeepSeaLawn ? 10 : 9;
-  int get _gridRows => _isDeepSeaLawn ? 6 : 5;
+  bool get _isIncompatibleExpeditionLawn {
+    if (!_isExpedition) return false;
+    final parsed = LevelParser.parseLevel(widget.levelFile);
+    return LevelParser.isUnderwaterWorldSixRowLawn(
+      parsed.levelDef,
+      widget.levelFile,
+    );
+  }
+
+  int get _gridCols => _isExpedition ? 9 : (_isDeepSeaLawn ? 10 : 9);
+  int get _gridRows => _isExpedition ? 5 : (_isDeepSeaLawn ? 6 : 5);
   double get _gridAspectRatio =>
       (_gridCols * _assetWidth) / (_gridRows * _assetHeight);
 
@@ -76,6 +114,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   late List<List<String?>> _gridState;
   late TextEditingController _sequenceIntervalCtrl;
   String _selectedImg = _availableAssets[0];
+  bool _isExpedition = false;
 
   @override
   void initState() {
@@ -86,23 +125,42 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
 
   void _loadData() {
     final alias = _alias;
+    final isExpeditionAlias = _isExpeditionAlias(alias);
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
         aliases: [alias],
         objClass: 'TunnelDefendModuleProperties',
-        objData: TunnelDefendModuleData().toJson(),
+        objData: isExpeditionAlias
+            ? TunnelDefendModuleData(
+                brickMapIndex: 3,
+                reportError: false,
+              ).toJson(includeTunnelSequenceInterval: false)
+            : TunnelDefendModuleData(reportError: true).toJson(),
       ),
     );
     if (!widget.levelFile.objects.contains(_moduleObj)) {
       widget.levelFile.objects.add(_moduleObj);
     }
+    final objData = _moduleObj.objData is Map
+        ? Map<String, dynamic>.from(_moduleObj.objData as Map)
+        : <String, dynamic>{};
+    _isExpedition =
+        isExpeditionAlias || (objData['BrickMapIndex'] as num?)?.toInt() == 3;
     try {
       _data = TunnelDefendModuleData.fromJson(
-        Map<String, dynamic>.from(_moduleObj.objData as Map),
+        objData,
+        defaultReportError: _isExpedition ? false : true,
       );
     } catch (_) {
-      _data = TunnelDefendModuleData();
+      _data = TunnelDefendModuleData(
+        brickMapIndex: _isExpedition ? 3 : 1,
+        reportError: !_isExpedition,
+      );
+    }
+    if (_isExpedition) {
+      _data.brickMapIndex = 3;
+      _data.roads = _normalizeExpeditionRoads(_data.roads);
     }
     _gridState = List.generate(_gridCols, (_) => List.filled(_gridRows, null));
     for (final road in _data.roads) {
@@ -110,7 +168,8 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
           road.gridX < _gridCols &&
           road.gridY >= 0 &&
           road.gridY < _gridRows) {
-        _gridState[road.gridX][road.gridY] = road.img;
+        _gridState[road.gridX][road.gridY] =
+            _isExpedition ? _expeditionBlockedMarker : road.img;
       }
     }
     _selectedImg = _availableAssets[0];
@@ -125,37 +184,82 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     super.dispose();
   }
 
+  static bool _isExpeditionAlias(String alias) =>
+      alias == _expeditionAlias || alias.startsWith('SoudacheTunnelDefendStage');
+
+  static List<TunnelRoadData> _normalizeExpeditionRoads(
+    Iterable<TunnelRoadData> roads,
+  ) {
+    final byCoord = <String, TunnelRoadData>{};
+    for (final road in roads) {
+      if (road.gridX < 0 || road.gridX > 8 || road.gridY < 0 || road.gridY > 4) {
+        continue;
+      }
+      byCoord['${road.gridY}:${road.gridX}'] = TunnelRoadData(
+        gridX: road.gridX,
+        gridY: road.gridY,
+        img: '',
+      );
+    }
+    final out = byCoord.values.toList()
+      ..sort((a, b) {
+        final row = a.gridY.compareTo(b.gridY);
+        if (row != 0) return row;
+        return a.gridX.compareTo(b.gridX);
+      });
+    return out;
+  }
+
+  String _roadsKey(Iterable<TunnelRoadData> roads) {
+    return _normalizeExpeditionRoads(
+      roads,
+    ).map((r) => '${r.gridY}:${r.gridX}').join('|');
+  }
+
   void _sync() {
     final roads = <TunnelRoadData>[];
     for (var x = 0; x < _gridCols; x++) {
       for (var y = 0; y < _gridRows; y++) {
         final img = _gridState[x][y];
-        if (img != null && img.isNotEmpty) {
+        if (_isExpedition) {
+          if (img == _expeditionBlockedMarker) {
+            roads.add(TunnelRoadData(gridX: x, gridY: y, img: ''));
+          }
+        } else if (img != null && img.isNotEmpty) {
           roads.add(TunnelRoadData(gridX: x, gridY: y, img: img));
         }
       }
     }
-    for (final road in _data.roads) {
-      if (road.gridX < 0 ||
-          road.gridX >= _gridCols ||
-          road.gridY < 0 ||
-          road.gridY >= _gridRows) {
-        roads.add(road);
+    if (!_isExpedition) {
+      for (final road in _data.roads) {
+        if (road.gridX < 0 ||
+            road.gridX >= _gridCols ||
+            road.gridY < 0 ||
+            road.gridY >= _gridRows) {
+          roads.add(road);
+        }
       }
     }
     _data = TunnelDefendModuleData(
-      roads: roads,
-      brickMapIndex: _data.brickMapIndex,
+      roads: _isExpedition ? _normalizeExpeditionRoads(roads) : roads,
+      brickMapIndex: _isExpedition ? 3 : _data.brickMapIndex,
       tunnelSequenceInterval: _data.tunnelSequenceInterval,
+      reportError: _data.reportError,
     );
-    _moduleObj.objData = _data.toJson();
+    _moduleObj.objData = _data.toJson(
+      includeTunnelSequenceInterval: !_isExpedition,
+    );
     widget.onChanged();
     setState(() {});
   }
 
   void _handleGridClick(int x, int y) {
     final current = _gridState[x][y];
-    if (current == _selectedImg) {
+    if (_isExpedition) {
+      _gridState[x][y] = current == _expeditionBlockedMarker
+          ? null
+          : _expeditionBlockedMarker;
+    } else if (current == _selectedImg) {
       _gridState[x][y] = null;
     } else {
       _gridState[x][y] = _selectedImg;
@@ -170,11 +274,18 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
-          l10n?.tunnelDefendClearConfirmTitle ?? 'Clear all tunnel components?',
+          _isExpedition
+              ? (l10n?.expeditionTilesClearConfirmTitle ??
+                    'Clear all non-plantable tiles?')
+              : (l10n?.tunnelDefendClearConfirmTitle ??
+                    'Clear all tunnel components?'),
         ),
         content: Text(
-          l10n?.tunnelDefendClearConfirmMessage ??
-              'Remove all placed tunnel components from the grid. This cannot be undone.',
+          _isExpedition
+              ? (l10n?.expeditionTilesClearConfirmMessage ??
+                    'Remove all placed non-plantable tiles from the grid. This cannot be undone.')
+              : (l10n?.tunnelDefendClearConfirmMessage ??
+                    'Remove all placed tunnel components from the grid. This cannot be undone.'),
         ),
         actions: [
           TextButton(
@@ -218,6 +329,231 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
 
   String _roadDisplayName(String img) =>
       img.replaceAll('IMAGE_UI_MAUSOLEUM_TUNNEL_', '');
+
+  String _expeditionPresetTitle(AppLocalizations? l10n, String alias) {
+    switch (alias) {
+      case 'SoudacheTunnelDefendStage1':
+        return l10n?.expeditionTilesPresetFloor1 ??
+            'Expedition Gate - Floor 1';
+      case 'SoudacheTunnelDefendStage2':
+        return l10n?.expeditionTilesPresetFloor2 ??
+            'Expedition Gate - Floor 2';
+      case 'SoudacheTunnelDefendStage3':
+        return l10n?.expeditionTilesPresetFloor3 ??
+            'Expedition Gate - Floor 3';
+      default:
+        return alias;
+    }
+  }
+
+  List<TunnelRoadData> _expeditionPresetRoads(String alias) {
+    final objData = ReferenceRepository.instance.objectForAlias(alias)?.objData;
+    if (objData is! Map) return const [];
+    final data = TunnelDefendModuleData.fromJson(
+      Map<String, dynamic>.from(objData),
+      defaultReportError: false,
+    );
+    return _normalizeExpeditionRoads(data.roads);
+  }
+
+  Future<void> _applyExpeditionPreset(String alias) async {
+    final targetRoads = _expeditionPresetRoads(alias);
+    final currentKey = _roadsKey(_data.roads);
+    final targetKey = _roadsKey(targetRoads);
+    if (currentKey == targetKey) return;
+
+    var shouldApply = true;
+    if (_data.roads.isNotEmpty) {
+      final l10n = AppLocalizations.of(context);
+      shouldApply =
+          await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text(
+                l10n?.expeditionTilesSwitchPresetTitle ??
+                    'Switch preset layout',
+              ),
+              content: Text(
+                l10n?.expeditionTilesSwitchPresetMessage ??
+                    'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text(l10n?.cancel ?? 'Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: Text(l10n?.switchAction ?? 'Switch'),
+                ),
+              ],
+            ),
+          ) ??
+          false;
+    }
+    if (!shouldApply || !mounted) return;
+
+    for (var x = 0; x < _gridCols; x++) {
+      for (var y = 0; y < _gridRows; y++) {
+        _gridState[x][y] = null;
+      }
+    }
+    for (final road in targetRoads) {
+      _gridState[road.gridX][road.gridY] = _expeditionBlockedMarker;
+    }
+    _sync();
+  }
+
+  Widget _buildErrorBanner({
+    required ThemeData theme,
+    required String title,
+    required String message,
+  }) {
+    return Card(
+      color: theme.colorScheme.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(editorErrorIcon, color: theme.colorScheme.onErrorContainer),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    message,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReportErrorSwitch(
+    ThemeData theme,
+    AppLocalizations? l10n,
+    Color accentColor,
+  ) {
+    return Card(
+      child: SwitchListTile(
+        title: Text(l10n?.sodPlantingPromptTitle ?? 'Sod Planting Prompt'),
+        subtitle: Text(
+          _isExpedition
+              ? (l10n?.expeditionTilesSodPromptBody ??
+                    'Whether to show a Sod requirement prompt when planting.')
+              : (l10n?.tunnelDefendSodPromptBody ??
+                    'Whether to show a Sod requirement prompt when planting. Enabled by default.'),
+        ),
+        value: _data.reportError,
+        activeColor: accentColor,
+        onChanged: (value) {
+          setState(() => _data.reportError = value);
+          _moduleObj.objData = _data.toJson(
+            includeTunnelSequenceInterval: !_isExpedition,
+          );
+          widget.onChanged();
+        },
+      ),
+    );
+  }
+
+  Widget _buildExpeditionPresetSelector(
+    ThemeData theme,
+    AppLocalizations? l10n,
+    Color accentColor,
+  ) {
+    final currentKey = _roadsKey(_data.roads);
+    String? selectedAlias;
+    for (final alias in _expeditionPresetAliases) {
+      if (currentKey == _roadsKey(_expeditionPresetRoads(alias))) {
+        selectedAlias = alias;
+        break;
+      }
+    }
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n?.expeditionTilesPresetLayout ?? 'Preset Layout',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: accentColor,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final alias in _expeditionPresetAliases)
+                  ChoiceChip(
+                    label: Text(_expeditionPresetTitle(l10n, alias)),
+                    selected: selectedAlias == alias,
+                    onSelected: (_) => _applyExpeditionPreset(alias),
+                  ),
+                if (selectedAlias == null && _data.roads.isNotEmpty)
+                  Chip(
+                    label: Text(l10n?.customLayout ?? 'Custom layout'),
+                    avatar: const Icon(Icons.edit, size: 18),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildGridCellContent(int col, int row, String? imgName) {
+    if (_isExpedition) {
+      final hasPreviewRoad = _expeditionPreviewRoads.contains((col, row));
+      final isBlocked = imgName == _expeditionBlockedMarker;
+      if (!hasPreviewRoad && !isBlocked) return null;
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          if (hasPreviewRoad)
+            AssetImageWidget(
+              assetPath: _expeditionRoadAsset,
+              altCandidates: imageAltCandidates(_expeditionRoadAsset),
+              fit: BoxFit.cover,
+            ),
+          if (isBlocked)
+            AssetImageWidget(
+              assetPath: _expeditionBlockedAsset,
+              altCandidates: imageAltCandidates(_expeditionBlockedAsset),
+              fit: BoxFit.cover,
+            ),
+        ],
+      );
+    }
+    if (imgName == null) return null;
+    final assetPath = 'assets/images/tunnels/$imgName.webp';
+    return AssetImageWidget(
+      assetPath: assetPath,
+      altCandidates: imageAltCandidates(assetPath),
+      fit: BoxFit.contain,
+    );
+  }
 
   Future<void> _requestDeleteOutsideLawn() async {
     final outside = _roadsOutsideLawn;
@@ -270,8 +606,11 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
       roads: inside,
       brickMapIndex: _data.brickMapIndex,
       tunnelSequenceInterval: _data.tunnelSequenceInterval,
+      reportError: _data.reportError,
     );
-    _moduleObj.objData = _data.toJson();
+    _moduleObj.objData = _data.toJson(
+      includeTunnelSequenceInterval: !_isExpedition,
+    );
     widget.onChanged();
     setState(() {});
   }
@@ -307,7 +646,10 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
         foregroundColor: Colors.white,
         title: buildEditorObjectAppBarTitle(
           context: context,
-          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          localizedName: _isExpedition
+              ? (l10n?.moduleTitle_SouDaCheTunnelDefendDefault ??
+                    'Expedition Tiles')
+              : resolveModuleTitleByObjClass(context, _objClass),
           isEvent: false,
           objClass: _objClass,
           foregroundColor: Colors.white,
@@ -319,30 +661,72 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
-                title: l10n?.tunnelDefendTitle ?? 'Tunnel defend',
+                title: _isExpedition
+                    ? (l10n?.expeditionTilesHelpTitle ??
+                          'Expedition Tiles Module')
+                    : (l10n?.tunnelDefendTitle ?? 'Tunnel defend'),
                 themeColor: accentColor,
-                sections: [
-                  HelpSectionData(
-                    title: l10n?.overview ?? 'Overview',
-                    body:
-                        l10n?.tunnelDefendHelpOverview ??
-                        'Add mausoleum tunnel paths. Some zombies and plants interact with tunnels.',
-                  ),
-                  HelpSectionData(
-                    title: l10n?.tunnelDefendHelpUsage ?? 'Usage',
-                    body:
-                        l10n?.tunnelDefendHelpUsageBody ??
-                        'Select a tunnel piece below, then tap the grid to place. Tap the same piece again to remove. Tap a different piece to replace.',
-                  ),
-                  HelpSectionData(
-                    title:
-                        l10n?.tunnelDefendHelpSequenceInterval ??
-                        'Sequence interval',
-                    body:
-                        l10n?.tunnelDefendHelpSequenceIntervalBody ??
-                        'Delay between tunnel sequence steps. Lower values make pathways appear faster.',
-                  ),
-                ],
+                sections: _isExpedition
+                    ? [
+                        HelpSectionData(
+                          title: l10n?.overview ?? 'Overview',
+                          body:
+                              l10n?.expeditionTilesHelpOverview ??
+                              'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns.',
+                        ),
+                        HelpSectionData(
+                          title:
+                              l10n?.expeditionTilesHelpEditing ??
+                              'Tile Editing',
+                          body:
+                              l10n?.expeditionTilesHelpEditingBody ??
+                              'Tap a tile on the lawn to add or remove a non-plantable tile.',
+                        ),
+                        HelpSectionData(
+                          title:
+                              l10n?.expeditionTilesHelpPresets ??
+                              'Preset Layouts',
+                          body:
+                              l10n?.expeditionTilesHelpPresetsBody ??
+                              'The editor includes the three official Expedition Gate layouts. Switching presets replaces the current non-plantable tiles.',
+                        ),
+                        HelpSectionData(
+                          title:
+                              l10n?.expeditionTilesHelpSodPrompt ??
+                              'Planting Prompt',
+                          body:
+                              l10n?.expeditionTilesHelpSodPromptBody ??
+                              'The Sod Planting Prompt controls whether the game shows a Sod requirement prompt on restricted tiles.',
+                        ),
+                        HelpSectionData(
+                          title: l10n?.lastStandHelpNotes ?? 'Notes',
+                          body:
+                              l10n?.expeditionTilesHelpNotesBody ??
+                              'Use Expedition Tiles with Expedition Gate lawns. Do not use it with six-row Underwater World lawns.',
+                        ),
+                      ]
+                    : [
+                        HelpSectionData(
+                          title: l10n?.overview ?? 'Overview',
+                          body:
+                              l10n?.tunnelDefendHelpOverview ??
+                              'Add mausoleum tunnel paths. Some zombies and plants interact with tunnels.',
+                        ),
+                        HelpSectionData(
+                          title: l10n?.tunnelDefendHelpUsage ?? 'Usage',
+                          body:
+                              l10n?.tunnelDefendHelpUsageBody ??
+                              'Select a tunnel piece below, then tap the grid to place. Tap the same piece again to remove. Tap a different piece to replace.',
+                        ),
+                        HelpSectionData(
+                          title:
+                              l10n?.tunnelDefendHelpSequenceInterval ??
+                              'Sequence interval',
+                          body:
+                              l10n?.tunnelDefendHelpSequenceIntervalBody ??
+                              'Delay between tunnel sequence steps. Lower values make pathways appear faster.',
+                        ),
+                      ],
               );
             },
           ),
@@ -353,7 +737,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -362,59 +746,81 @@ ModuleAliasInputField(
               accentColor: accentColor,
             ),
             const SizedBox(height: 16),
-            InputDecorator(
-              decoration: InputDecoration(
-                labelText:
-                    l10n?.tunnelDefendTileStylePreset ?? 'Tile style preset',
-                filled: true,
+            if (_isIncompatibleExpeditionLawn) ...[
+              _buildErrorBanner(
+                theme: theme,
+                title: l10n?.stageMismatch ?? 'Lawn Type Mismatch',
+                message:
+                    l10n?.expeditionTilesUnderwaterMismatchWarning ??
+                    'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.',
               ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
-                  isExpanded: true,
-                  value: _data.brickMapIndex == 2 ? 2 : 1,
-                  items: [
-                    DropdownMenuItem(
-                      value: 1,
-                      child: Text(l10n?.tunnelDefendTileStylePart1 ?? 'part 1'),
-                    ),
-                    DropdownMenuItem(
-                      value: 2,
-                      child: Text(l10n?.tunnelDefendTileStylePart2 ?? 'part 2'),
-                    ),
-                  ],
-                  onChanged: (v) {
-                    if (v == null) return;
-                    setState(() {
-                      _data.brickMapIndex = v;
-                      _moduleObj.objData = _data.toJson();
-                    });
-                    widget.onChanged();
-                  },
+              const SizedBox(height: 16),
+            ],
+            if (_isExpedition) ...[
+              _buildExpeditionPresetSelector(theme, l10n, accentColor),
+              const SizedBox(height: 12),
+              _buildReportErrorSwitch(theme, l10n, accentColor),
+            ] else ...[
+              InputDecorator(
+                decoration: InputDecoration(
+                  labelText:
+                      l10n?.tunnelDefendTileStylePreset ?? 'Tile style preset',
+                  filled: true,
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<int>(
+                    isExpanded: true,
+                    value: _data.brickMapIndex == 2 ? 2 : 1,
+                    items: [
+                      DropdownMenuItem(
+                        value: 1,
+                        child: Text(
+                          l10n?.tunnelDefendTileStylePart1 ?? 'part 1',
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: 2,
+                        child: Text(
+                          l10n?.tunnelDefendTileStylePart2 ?? 'part 2',
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() {
+                        _data.brickMapIndex = v;
+                        _moduleObj.objData = _data.toJson();
+                      });
+                      widget.onChanged();
+                    },
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _sequenceIntervalCtrl,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
+              const SizedBox(height: 12),
+              TextField(
+                controller: _sequenceIntervalCtrl,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: InputDecoration(
+                  labelText:
+                      l10n?.tunnelDefendSequenceInterval ??
+                      'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
+                  filled: true,
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (value) {
+                  final parsed = double.tryParse(value);
+                  if (parsed != null && parsed >= 0) {
+                    setState(() => _data.tunnelSequenceInterval = parsed);
+                    _moduleObj.objData = _data.toJson();
+                    widget.onChanged();
+                  }
+                },
               ),
-              decoration: InputDecoration(
-                labelText:
-                    l10n?.tunnelDefendSequenceInterval ??
-                    'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
-                filled: true,
-                border: const OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                final parsed = double.tryParse(value);
-                if (parsed != null && parsed >= 0) {
-                  setState(() => _data.tunnelSequenceInterval = parsed);
-                  _moduleObj.objData = _data.toJson();
-                  widget.onChanged();
-                }
-              },
-            ),
+              const SizedBox(height: 12),
+              _buildReportErrorSwitch(theme, l10n, accentColor),
+            ],
             const SizedBox(height: 16),
             scaleTableForDesktop(
               context: context,
@@ -449,16 +855,11 @@ ModuleAliasInputField(
                                         ),
                                       ),
                                       clipBehavior: Clip.hardEdge,
-                                      child: imgName != null
-                                          ? AssetImageWidget(
-                                              assetPath:
-                                                  'assets/images/tunnels/$imgName.webp',
-                                              altCandidates: imageAltCandidates(
-                                                'assets/images/tunnels/$imgName.webp',
-                                              ),
-                                              fit: BoxFit.contain,
-                                            )
-                                          : null,
+                                      child: _buildGridCellContent(
+                                        col,
+                                        row,
+                                        imgName,
+                                      ),
                                     ),
                                   ),
                                 );
@@ -481,7 +882,7 @@ ModuleAliasInputField(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${l10n?.tunnelDefendPlacedCount ?? 'Placed'}: ${_data.roads.length}',
+                      '${_isExpedition ? (l10n?.expeditionTilesBlockedCount ?? 'Non-plantable tiles') : (l10n?.tunnelDefendPlacedCount ?? 'Placed')}: ${_data.roads.length}',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -499,7 +900,9 @@ ModuleAliasInputField(
                 ),
               ),
             ),
-            if (_isDefaultLawnSize && _roadsOutsideLawn.isNotEmpty) ...[
+            if (!_isExpedition &&
+                _isDefaultLawnSize &&
+                _roadsOutsideLawn.isNotEmpty) ...[
               const SizedBox(height: 16),
               Card(
                 color: gridBg,
@@ -556,123 +959,126 @@ ModuleAliasInputField(
                 ),
               ),
             ],
-            const SizedBox(height: 16),
-            Card(
-              color: gridBg,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n?.tunnelDefendSelectComponent ?? 'Select component',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
+            if (!_isExpedition) ...[
+              const SizedBox(height: 16),
+              Card(
+                color: gridBg,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n?.tunnelDefendSelectComponent ??
+                            'Select component',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final cellWidth = 88.0;
-                        const spacing = 12.0;
-                        final cols =
-                            (constraints.maxWidth / (cellWidth + spacing))
-                                .floor()
-                                .clamp(1, 999);
-                        final rows = (_availableAssets.length / cols).ceil();
-                        final heightNeeded = rows * _assetHeight;
-                        final height =
-                            (heightNeeded < 420 ? heightNeeded : 420.0)
-                                .toDouble();
-                        return SizedBox(
-                          height: height,
-                          child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 88,
-                                  childAspectRatio: 0.75,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                ),
-                            itemCount: _availableAssets.length,
-                            itemBuilder: (context, i) {
-                              final asset = _availableAssets[i];
-                              final isSelected = _selectedImg == asset;
-                              return GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.selectionClick();
-                                  setState(() => _selectedImg = asset);
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? accentColor.withValues(alpha: 0.15)
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
+                      const SizedBox(height: 10),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final cellWidth = 88.0;
+                          const spacing = 12.0;
+                          final cols =
+                              (constraints.maxWidth / (cellWidth + spacing))
+                                  .floor()
+                                  .clamp(1, 999);
+                          final rows = (_availableAssets.length / cols).ceil();
+                          final heightNeeded = rows * _assetHeight;
+                          final height =
+                              (heightNeeded < 420 ? heightNeeded : 420.0)
+                                  .toDouble();
+                          return SizedBox(
+                            height: height,
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 88,
+                                    childAspectRatio: 0.75,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12,
+                                  ),
+                              itemCount: _availableAssets.length,
+                              itemBuilder: (context, i) {
+                                final asset = _availableAssets[i];
+                                final isSelected = _selectedImg == asset;
+                                return GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    setState(() => _selectedImg = asset);
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
                                       color: isSelected
-                                          ? accentColor
+                                          ? accentColor.withValues(alpha: 0.15)
                                           : Colors.transparent,
-                                      width: 2,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? accentColor
+                                            : Colors.transparent,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 4,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Expanded(
+                                          flex: 3,
+                                          child: AssetImageWidget(
+                                            assetPath:
+                                                'assets/images/tunnels/$asset.webp',
+                                            altCandidates: imageAltCandidates(
+                                              'assets/images/tunnels/$asset.webp',
+                                            ),
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Flexible(
+                                          flex: 1,
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              asset.replaceAll(
+                                                'IMAGE_UI_MAUSOLEUM_TUNNEL_',
+                                                '',
+                                              ),
+                                              style: theme.textTheme.labelMedium
+                                                  ?.copyWith(
+                                                    color: isSelected
+                                                        ? accentColor
+                                                        : theme
+                                                              .colorScheme
+                                                              .onSurface,
+                                                  ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 4,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: AssetImageWidget(
-                                          assetPath:
-                                              'assets/images/tunnels/$asset.webp',
-                                          altCandidates: imageAltCandidates(
-                                            'assets/images/tunnels/$asset.webp',
-                                          ),
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Flexible(
-                                        flex: 1,
-                                        child: FittedBox(
-                                          fit: BoxFit.scaleDown,
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            asset.replaceAll(
-                                              'IMAGE_UI_MAUSOLEUM_TUNNEL_',
-                                              '',
-                                            ),
-                                            style: theme.textTheme.labelMedium
-                                                ?.copyWith(
-                                                  color: isSelected
-                                                      ? accentColor
-                                                      : theme
-                                                            .colorScheme
-                                                            .onSurface,
-                                                ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

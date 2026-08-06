@@ -118,7 +118,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
               itemBuilder: (context, index) {
                 final meta = filteredModules[index];
                 final isAlreadyAdded = widget.existingObjClasses.contains(
-                  meta.objClass,
+                  meta.selectionKey,
                 );
                 final isEnabled = !isAlreadyAdded || meta.allowMultiple;
                 return Padding(

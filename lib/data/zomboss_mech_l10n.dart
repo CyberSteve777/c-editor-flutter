@@ -55,6 +55,16 @@ abstract class ZombossMechL10n {
     return _lookup(context, genericActionKey(objclass), fb) ?? fb;
   }
 
+  /// Display label for objclass fields: localized class name plus raw objclass.
+  static String objclassLabel(BuildContext context, String objclass) {
+    final key = genericActionKey(objclass);
+    final localized = ResourceNames.lookup(context, key);
+    if (localized == key || localized.isEmpty || localized == objclass) {
+      return objclass;
+    }
+    return '$localized ($objclass)';
+  }
+
   /// Per-implementation alias label (picker rows). Falls back to [alias].
   static String implementationLabel(
     BuildContext context,

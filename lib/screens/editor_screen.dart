@@ -934,10 +934,24 @@ class _EditorScreenState extends State<EditorScreen> {
       if (info != null) {
         if (info.source == 'CurrentLevel') {
           final obj = _ec.state.parsedData!.objectMap[info.alias];
-          if (obj != null) existingObjClasses.add(obj.objClass);
+          if (obj != null) {
+            existingObjClasses.add(
+              ModuleRegistry.getMetadataForAlias(
+                info.alias,
+                obj.objClass,
+              ).selectionKey,
+            );
+          }
         } else {
           final cls = ReferenceRepository.instance.getObjClass(info.alias);
-          if (cls != null) existingObjClasses.add(cls);
+          if (cls != null) {
+            existingObjClasses.add(
+              ModuleRegistry.getMetadataForAlias(
+                info.alias,
+                cls,
+              ).selectionKey,
+            );
+          }
         }
       }
     }
@@ -994,11 +1008,17 @@ class _EditorScreenState extends State<EditorScreen> {
       def.modules.add(rtid);
 
       final objData = Map<String, dynamic>.from(meta.initialData ?? {});
-      if (meta.objClass == 'TunnelDefendModuleProperties') {
+      if (meta.defaultAlias == 'SouDaCheTunnelDefendDefault') {
+        objData['BrickMapIndex'] = 3;
+        objData['reportError'] = false;
+        objData['Roads'] = objData['Roads'] ?? [];
+        objData.remove('TunnelSequenceInterval');
+      } else if (meta.objClass == 'TunnelDefendModuleProperties') {
         final stageAlias = RtidParser.parse(def.stageModule)?.alias ?? '';
         objData['BrickMapIndex'] = stageAlias == 'UnchartedMausoleum2Stage'
             ? 2
             : 1;
+        objData['reportError'] = objData['reportError'] ?? true;
       }
       _ec.state.levelFile!.objects.add(
         PvzObject(aliases: [alias], objClass: meta.objClass, objData: objData),

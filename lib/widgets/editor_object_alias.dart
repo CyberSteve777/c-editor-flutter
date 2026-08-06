@@ -40,10 +40,11 @@ Widget buildEditorObjectAppBarTitle({
       foregroundColor ??
       theme.appBarTheme.foregroundColor ??
       theme.colorScheme.onSurface;
-  final titleText = isEvent
-      ? (l10n?.editNamedEvent(localizedName) ?? 'Edit $localizedName event')
-      : (l10n?.editNamedModule(localizedName) ??
-            'Edit $localizedName module');
+  final titleText = _editorObjectTitleText(
+    context: context,
+    localizedName: localizedName,
+    isEvent: isEvent,
+  );
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,6 +59,43 @@ Widget buildEditorObjectAppBarTitle({
       ),
     ],
   );
+}
+
+String _editorObjectTitleText({
+  required BuildContext context,
+  required String localizedName,
+  required bool isEvent,
+}) {
+  final l10n = AppLocalizations.of(context);
+  if (_nameAlreadyIncludesObjectKind(localizedName, isEvent: isEvent)) {
+    final edit = l10n?.edit ?? 'Edit';
+    final separator =
+        Localizations.localeOf(context).languageCode == 'zh' ? '' : ' ';
+    return '$edit$separator$localizedName';
+  }
+  return isEvent
+      ? (l10n?.editNamedEvent(localizedName) ?? 'Edit $localizedName event')
+      : (l10n?.editNamedModule(localizedName) ??
+            'Edit $localizedName module');
+}
+
+bool _nameAlreadyIncludesObjectKind(
+  String localizedName, {
+  required bool isEvent,
+}) {
+  final normalized = localizedName.trim().toLowerCase();
+  final suffixes = isEvent
+      ? const [
+          '\u4e8b\u4ef6',
+          'event',
+          '\u0441\u043e\u0431\u044b\u0442\u0438\u0435',
+        ]
+      : const [
+          '\u6a21\u5757',
+          'module',
+          '\u043c\u043e\u0434\u0443\u043b\u044c',
+        ];
+  return suffixes.any(normalized.endsWith);
 }
 
 Color editorObjectAccentColor(BuildContext context, {Color? appBarColor}) {

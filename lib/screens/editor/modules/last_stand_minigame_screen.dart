@@ -93,7 +93,12 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.lastStandSettings),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: resolveModuleTitleByObjClass(context, _objClass),
+          isEvent: false,
+          objClass: _objClass,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l10n.back,

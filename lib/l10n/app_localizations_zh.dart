@@ -5980,6 +5980,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '地宫秘境场地中的地砖需通过「地宫坑道」模块铺设。若未添加该模块，场地可能会显得较为空旷。';
 
   @override
+  String get recommendedExpeditionTilesTitle => '可以搭配「远征地砖」模块使用';
+
+  @override
+  String get recommendedExpeditionTilesBody =>
+      '添加「远征地砖」模块，可以规避地图本体缺少瓷砖地图的问题，并获得更加还原远征之门模式的关卡体验。';
+
+  @override
   String get selectedPosition => '选中位置';
 
   @override
@@ -6119,6 +6126,85 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tunnelDefendHelpSequenceIntervalBody => '坑道序列步骤之间的延迟。数值越小，路径出现越快。';
 
   @override
+  String get sodPlantingPromptTitle => '种植草垛提示';
+
+  @override
+  String get expeditionTilesSodPromptBody => '种植植物时是否提示需要草垛';
+
+  @override
+  String get tunnelDefendSodPromptBody => '种植植物时是否提示需要草垛，默认开启';
+
+  @override
+  String get expeditionTilesPresetLayout => '布局预设';
+
+  @override
+  String get expeditionTilesPresetFloor1 => '远征之门第一层';
+
+  @override
+  String get expeditionTilesPresetFloor2 => '远征之门第二层';
+
+  @override
+  String get expeditionTilesPresetFloor3 => '远征之门第三层';
+
+  @override
+  String get customLayout => '自定义布局';
+
+  @override
+  String get switchAction => '切换';
+
+  @override
+  String get expeditionTilesSwitchPresetTitle => '切换预设布局';
+
+  @override
+  String get expeditionTilesSwitchPresetMessage =>
+      '是否切换至预设布局？这将移除场上所有已放置的禁种地块，此操作不可撤销。';
+
+  @override
+  String get expeditionTilesUnderwaterMismatchWarning =>
+      '当前地图为海底世界外观，与「远征地砖」模块不适配，会导致关卡闪退。';
+
+  @override
+  String get expeditionTilesBlockedCount => '禁种地块';
+
+  @override
+  String get expeditionTilesClearConfirmTitle => '确定要清空全部禁种地块吗？';
+
+  @override
+  String get expeditionTilesClearConfirmMessage => '将移除场上所有已放置的禁种地块，此操作不可撤销。';
+
+  @override
+  String get expeditionTilesHelpTitle => '远征地砖模块';
+
+  @override
+  String get expeditionTilesHelpOverview =>
+      '远征地砖模块用于配置远征之门地图中的不可种植区域。该模块沿用地宫坑道的地块数据结构，并通过远征模式专用的地砖地图显示禁种区域。';
+
+  @override
+  String get expeditionTilesHelpEditing => '地块编辑';
+
+  @override
+  String get expeditionTilesHelpEditingBody =>
+      '点击草坪上的任意地块，可以添加或取消禁种地块。禁种地块会覆盖原有地砖，关卡中无法在这些位置种植植物。漩涡地砖仅用于还原远征之门地图的初始外观，不代表该位置禁止种植。';
+
+  @override
+  String get expeditionTilesHelpPresets => '预设布局';
+
+  @override
+  String get expeditionTilesHelpPresetsBody =>
+      '编辑器提供远征之门第一层、第二层和第三层三种官方布局。切换预设会替换当前已放置的所有禁种地块，且无法撤销；应用预设后仍可继续手动调整。';
+
+  @override
+  String get expeditionTilesHelpSodPrompt => '种植提示';
+
+  @override
+  String get expeditionTilesHelpSodPromptBody =>
+      '“种植草垛提示”用于控制在受限制地块种植时是否显示需要草垛的提示。远征地砖默认关闭该提示，地宫坑道默认开启。';
+
+  @override
+  String get expeditionTilesHelpNotesBody =>
+      '远征地砖适用于远征之门等五行地图。请勿与“海底世界-海底两万里”或“海底世界-亚特兰蒂斯”等海底世界外观的六行地图搭配使用，否则会导致关卡闪退。';
+
+  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
       '最终阶段限时挑战';
 
@@ -6158,6 +6244,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moduleDesc_TunnelDefendModuleProperties => '设置地宫秘境的坑道及地砖样式';
+
+  @override
+  String get moduleTitle_SouDaCheTunnelDefendDefault => '远征地砖';
+
+  @override
+  String get moduleDesc_SouDaCheTunnelDefendDefault => '设置远征之门地图的不可种植区域';
 
   @override
   String get moduleTitle_WitchModuleProperties => '女巫登场';

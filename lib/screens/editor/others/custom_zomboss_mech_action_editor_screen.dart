@@ -67,6 +67,13 @@ class _CustomZombossMechActionEditorScreenState
   ZombossMechObjclassGroup? get _group =>
       _groups.where((g) => g.objclass == _objclass).firstOrNull;
 
+  String _actionTypeLabel(
+    BuildContext context,
+    ZombossMechObjclassGroup group,
+  ) {
+    return ZombossMechL10n.objclassLabel(context, group.objclass);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -264,12 +271,7 @@ class _CustomZombossMechActionEditorScreenState
             selectedItemBuilder: (context) => [
               for (final g in _groups)
                 Text(
-                  ZombossMechL10n.actionLabel(
-                    context,
-                    widget.catalog.id,
-                    g.objclass,
-                    fallback: g.objclass,
-                  ),
+                  _actionTypeLabel(context, g),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -279,12 +281,7 @@ class _CustomZombossMechActionEditorScreenState
                 DropdownMenuItem(
                   value: g.objclass,
                   child: Text(
-                    ZombossMechL10n.actionLabel(
-                      context,
-                      widget.catalog.id,
-                      g.objclass,
-                      fallback: g.objclass,
-                    ),
+                    _actionTypeLabel(context, g),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

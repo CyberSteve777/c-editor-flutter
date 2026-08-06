@@ -79,7 +79,7 @@ class ZombossMechActionDetailScreen extends StatelessWidget {
                       label:
                           l10n?.zombossMechActionBaseObjclass ??
                           'Action Type (objclass)',
-                      value: objclass,
+                      value: ZombossMechL10n.objclassLabel(context, objclass),
                     ),
                 ],
               ),
