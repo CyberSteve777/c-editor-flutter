@@ -53,6 +53,7 @@
   { "alias": "SnowNightStage", "type": "seasons", "iconName": "Stage_SnowNight.webp" },
   { "alias": "SnowRoofStage", "type": "seasons", "iconName": "Stage_SnowRoof.webp" },
   { "alias": "UnchartedArbordayStage", "type": "seasons", "iconName": "Stage_WSSS.webp" },
+  { "alias": "KongfuBossStage", "type": "special", "iconName": "Stage_KongfuBoss.webp" },
   { "alias": "TheatreDarkStage", "type": "special", "iconName": "Stage_TheatreDark.webp" },
   { "alias": "BeachSnakeStage", "type": "special", "iconName": "Stage_BeachSnake.webp" },
   { "alias": "IceageRiverCrossingStage", "type": "special", "iconName": "Stage_IceageRiverCrossing.webp" },

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../pvz_models.dart';
 import '../rtid_parser.dart';
-import '../tag_assets.dart';
 
 /// Loads ResilienceConfig.json and provides presets for ZombieResilience.
 class ResilienceConfigRepository {
@@ -106,6 +105,5 @@ class ResilienceConfigEntry {
   final ZombieResilienceData data;
 }
 
-/// WeakType indices for ZombieResilience (1–6).
-/// 1=Physics, 2=Poison, 3=Electric, 4=Magic, 5=Ice, 6=Fire
-const weakTypeIcons = TagAssets.attributeIcons;
+// WeakType values for ZombieResilience:
+// 1=Physics, 2=Poison, 3=Electric, 4=Magic, 5=Ice, 6=Fire.

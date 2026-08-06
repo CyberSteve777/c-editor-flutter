@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:c_editor/data/pvz_models.dart';
 
+import 'package:c_editor/data/resilience_weak_type.dart';
+
 import 'package:c_editor/data/resilience_shield_utils.dart';
 
 import 'package:c_editor/data/rtid_parser.dart';
@@ -314,7 +316,9 @@ class _CustomResilienceShieldEditorScreenState
           DropdownButtonFormField<int>(
             isExpanded: true,
 
-            initialValue: _data.weakType.clamp(1, 6),
+            initialValue: resilienceWeakTypeJsonValues.contains(_data.weakType)
+                ? _data.weakType
+                : null,
 
             decoration: InputDecoration(
               labelText:
@@ -323,7 +327,11 @@ class _CustomResilienceShieldEditorScreenState
               border: const OutlineInputBorder(),
             ),
 
-            items: [1, 2, 3, 4, 5, 6].map((wt) {
+            hint: resilienceWeakTypeJsonValues.contains(_data.weakType)
+                ? null
+                : Text(resilienceWeakTypeLabel(l10n, _data.weakType)),
+
+            items: resilienceWeakTypeJsonValues.map((wt) {
               return DropdownMenuItem(
                 value: wt,
 

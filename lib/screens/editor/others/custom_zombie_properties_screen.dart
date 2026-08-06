@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/custom_zombie_property_sync.dart';
 import 'package:c_editor/data/tag_assets.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/resilience_shield_utils.dart';
@@ -182,7 +183,7 @@ class _CustomZombiePropertiesScreenState
         (o) => o.aliases?.contains(RtidParser.parse(rtid)?.alias ?? '') == true,
       );
       _selectedResilienceRtid = rtid;
-      _propsObj?.objData = _propsData.toJson();
+      _writeObjectsWithoutNotifying();
       WidgetsBinding.instance.addPostFrameCallback((_) => widget.onChanged());
       return;
     }
@@ -255,15 +256,29 @@ class _CustomZombiePropertiesScreenState
   bool get _supportsResilienceShield =>
       ZombiePropertiesRepository.supportsResilienceShield(_typeData.typeName);
 
+  String? get _currentResilienceRtid =>
+      _selectedResilienceRtid ??
+      (_propsData.resilience is String ? _propsData.resilience as String : null);
+
   void _stripUnsupportedResilience() {
     final r = _propsData.resilience;
     if (r == null) return;
+    final oldRtid = r is String ? r : _selectedResilienceRtid;
     _propsData.resilience = null;
     _selectedResilienceRtid = null;
     _customResilienceObj = null;
     _customResilienceData = ZombieResilienceData();
     _customResilienceCodename = '';
-    _propsObj?.objData = _propsData.toJson();
+    _writeObjectsWithoutNotifying();
+    _deleteUnusedCustomResilience(oldRtid);
+  }
+
+  void _deleteUnusedCustomResilience(String? rtid) {
+    if (!ResilienceShieldUtils.isCustomRtid(rtid)) return;
+    if (rtid == _currentResilienceRtid) return;
+    if (ResilienceShieldUtils.countReferences(widget.levelFile, rtid!) == 0) {
+      ResilienceShieldUtils.deleteCustomShield(widget.levelFile, rtid);
+    }
   }
 
   ResilienceConfigEntry? _currentResilienceEntry() {
@@ -276,6 +291,7 @@ class _CustomZombiePropertiesScreenState
   }
 
   Future<void> _pickResilienceShield() async {
+    final oldRtid = _currentResilienceRtid;
     final rtid = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -293,6 +309,7 @@ class _CustomZombiePropertiesScreenState
     if (!mounted || rtid == null) return;
     setState(() => _applySelectedResilienceRtid(rtid));
     _sync();
+    _deleteUnusedCustomResilience(oldRtid);
   }
 
   Widget _buildResilienceShieldCard(ThemeData theme, AppLocalizations? l10n) {
@@ -383,13 +400,24 @@ class _CustomZombiePropertiesScreenState
     );
   }
 
-  void _sync() {
-    final allZero = _resistances.every((e) => e == 0.0);
-    _typeData.resistences = allZero ? null : List<double>.from(_resistances);
-    _typeObj?.objData = _typeData.toJson();
-    _propsObj?.objData = _propsData.toJson();
+  void _sync({bool patchResistances = false}) {
+    _writeObjectsWithoutNotifying(patchResistances: patchResistances);
     widget.onChanged();
     setState(() {});
+  }
+
+  void _writeObjectsWithoutNotifying({bool patchResistances = false}) {
+    final typeObj = _typeObj;
+    final propsObj = _propsObj;
+    if (typeObj == null || propsObj == null) return;
+    CustomZombiePropertySync.sync(
+      typeObj: typeObj,
+      propsObj: propsObj,
+      typeData: _typeData,
+      propsData: _propsData,
+      resistances: _resistances,
+      patchResistances: patchResistances,
+    );
   }
 
   String _formatRect(RectData? rect) {
@@ -1204,16 +1232,23 @@ class _CustomZombiePropertiesScreenState
                                 if (checked) {
                                   final options = _resilienceShieldOptions();
                                   if (options.isNotEmpty) {
+                                    final oldRtid = _currentResilienceRtid;
                                     _applySelectedResilienceRtid(
                                       options.first.rtid,
                                     );
                                     _sync();
+                                    _deleteUnusedCustomResilience(oldRtid);
                                   } else {
                                     await _pickResilienceShield();
                                   }
                                 } else {
+                                  final oldRtid = _currentResilienceRtid;
                                   _propsData.resilience = null;
+                                  _selectedResilienceRtid = null;
+                                  _customResilienceObj = null;
+                                  _customResilienceCodename = '';
                                   _sync();
+                                  _deleteUnusedCustomResilience(oldRtid);
                                 }
                                 setState(() {});
                               },
@@ -1345,7 +1380,7 @@ class _CustomZombiePropertiesScreenState
       iconPath: iconPath,
       onChanged: (v) {
         _resistances[index] = v.clamp(0.0, 1.0);
-        _sync();
+        _sync(patchResistances: true);
       },
     );
   }

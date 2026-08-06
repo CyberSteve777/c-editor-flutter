@@ -949,7 +949,7 @@ abstract class AppLocalizations {
   /// No description provided for @levelTypeOldStyle.
   ///
   /// In en, this message translates to:
-  /// **'Old-Style'**
+  /// **'Wave Generator'**
   String get levelTypeOldStyle;
 
   /// No description provided for @levelTypeUnknown.
@@ -2047,7 +2047,7 @@ abstract class AppLocalizations {
   /// No description provided for @feature2.
   ///
   /// In en, this message translates to:
-  /// **'Multi-mode: I, Zombie, Vasebreaker, Last Stand, ZombossMech battle, and more.'**
+  /// **'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Mech battle, and more.'**
   String get feature2;
 
   /// No description provided for @feature3.
@@ -2275,13 +2275,13 @@ abstract class AppLocalizations {
   /// No description provided for @templateZombossMechExample.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech battle level template'**
+  /// **'Zomboss Mech battle level template'**
   String get templateZombossMechExample;
 
   /// No description provided for @templateZombossBattleExample.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss battle level template'**
+  /// **'Non-mech Zomboss battle level template'**
   String get templateZombossBattleExample;
 
   /// No description provided for @templateCustomZombieExample.
@@ -2299,13 +2299,13 @@ abstract class AppLocalizations {
   /// No description provided for @templateOldStyleExample.
   ///
   /// In en, this message translates to:
-  /// **'Old-style level'**
+  /// **'Wave Generator level template'**
   String get templateOldStyleExample;
 
   /// No description provided for @templateCustomStageExample.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage level template'**
+  /// **'Custom lawn level template'**
   String get templateCustomStageExample;
 
   /// No description provided for @unsavedChanges.
@@ -2935,13 +2935,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMech.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech Battle'**
+  /// **'Zomboss Mech battle'**
   String get zombossMech;
 
   /// No description provided for @zombossBattle.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Battle'**
+  /// **'Non-mech Zomboss battle'**
   String get zombossBattle;
 
   /// No description provided for @moveSourceSameAsDest.
@@ -3769,13 +3769,13 @@ abstract class AppLocalizations {
   /// No description provided for @conflictDesc_ZombossDeathDrop.
   ///
   /// In en, this message translates to:
-  /// **'Loot Drop in ZombossMech battle mode will prevent proper level completion.'**
+  /// **'Loot Drop in Zomboss Mech battle mode will prevent proper level completion.'**
   String get conflictDesc_ZombossDeathDrop;
 
   /// No description provided for @conflictDesc_ZombossBattleDeathDrop.
   ///
   /// In en, this message translates to:
-  /// **'Loot Drop in Zomboss battle mode will prevent proper level completion.'**
+  /// **'Loot Drop in Non-mech Zomboss battle mode will prevent proper level completion.'**
   String get conflictDesc_ZombossBattleDeathDrop;
 
   /// No description provided for @conflictDesc_WinConditionExclusive.
@@ -4627,7 +4627,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_ZombossBattleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech Battle'**
+  /// **'Zomboss Mech battle'**
   String get moduleTitle_ZombossBattleModuleProperties;
 
   /// No description provided for @moduleDesc_ZombossBattleModuleProperties.
@@ -4651,7 +4651,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_ZombossLastStandMinigameProperties.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Battle'**
+  /// **'Non-mech Zomboss battle'**
   String get moduleTitle_ZombossLastStandMinigameProperties;
 
   /// No description provided for @moduleDesc_ZombossLastStandMinigameProperties.
@@ -9337,13 +9337,13 @@ abstract class AppLocalizations {
   /// No description provided for @missingZombossMechModule.
   ///
   /// In en, this message translates to:
-  /// **'Missing ZombossMech battle module (ZombossBattleModuleProperties)'**
+  /// **'Missing Zomboss Mech battle module (ZombossBattleModuleProperties)'**
   String get missingZombossMechModule;
 
   /// No description provided for @missingZombossBattleModule.
   ///
   /// In en, this message translates to:
-  /// **'Missing Zomboss battle module (ZombossLastStandMinigameProperties)'**
+  /// **'Missing Non-mech Zomboss battle module (ZombossLastStandMinigameProperties)'**
   String get missingZombossBattleModule;
 
   /// No description provided for @challengeNoConfig.
@@ -11453,7 +11453,7 @@ abstract class AppLocalizations {
   /// No description provided for @tunnelDefendHelpSodPromptBody.
   ///
   /// In en, this message translates to:
-  /// **'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Underground Palace Pathways enables this prompt by default.'**
+  /// **'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Underground Palace Pathways module enables this prompt by default.'**
   String get tunnelDefendHelpSodPromptBody;
 
   /// No description provided for @sodPlantingPromptTitle.
@@ -11597,7 +11597,7 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesHelpSodPromptBody.
   ///
   /// In en, this message translates to:
-  /// **'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Expedition Tiles disables this prompt by default.'**
+  /// **'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Expedition Tiles module disables this prompt by default.'**
   String get expeditionTilesHelpSodPromptBody;
 
   /// No description provided for @expeditionTilesHelpNotesBody.
@@ -12563,13 +12563,13 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleHelpRequirementsBody.
   ///
   /// In en, this message translates to:
-  /// **'Only takes effect together with the Zomboss Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).'**
+  /// **'Only takes effect together with the Zomboss Mech Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).'**
   String get glacierModuleHelpRequirementsBody;
 
   /// No description provided for @glacierModuleCompatibilityWarning.
   ///
   /// In en, this message translates to:
-  /// **'This module only works with the Zomboss Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.'**
+  /// **'This module only works with the Zomboss Mech Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.'**
   String get glacierModuleCompatibilityWarning;
 
   /// No description provided for @glacierModuleColumn.

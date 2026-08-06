@@ -1,31 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/repository/resilience_config_repository.dart';
+
+import 'package:c_editor/data/resilience_weak_type.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 
-String resilienceWeakTypeLabel(AppLocalizations? l10n, int weakType) {
-  switch (weakType) {
-    case 1:
-      return l10n?.resiliencePhysics ?? 'Physics';
-    case 2:
-      return l10n?.resiliencePoison ?? 'Poison';
-    case 3:
-      return l10n?.resilienceElectric ?? 'Electric';
-    case 4:
-      return l10n?.resilienceMagic ?? 'Magic';
-    case 5:
-      return l10n?.resilienceIce ?? 'Ice';
-    case 6:
-      return l10n?.resilienceFire ?? 'Fire';
-    default:
-      return '$weakType';
-  }
-}
+String resilienceWeakTypeLabel(AppLocalizations? l10n, int weakType) =>
+    resilienceWeakTypeLabelForValue(l10n, weakType);
 
-String? resilienceWeakTypeIconPath(int weakType) {
-  if (weakType < 1 || weakType >= weakTypeIcons.length) return null;
-  return weakTypeIcons[weakType];
-}
+String? resilienceWeakTypeIconPath(int weakType) =>
+    resilienceWeakTypeIconForValue(weakType);
 
 class ResilienceWeakTypeIcon extends StatelessWidget {
   const ResilienceWeakTypeIcon({

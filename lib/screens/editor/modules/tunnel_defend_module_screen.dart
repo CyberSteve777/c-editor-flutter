@@ -169,8 +169,9 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
           road.gridX < _gridCols &&
           road.gridY >= 0 &&
           road.gridY < _gridRows) {
-        _gridState[road.gridX][road.gridY] =
-            _isExpedition ? _expeditionBlockedMarker : road.img;
+        _gridState[road.gridX][road.gridY] = _isExpedition
+            ? _expeditionBlockedMarker
+            : road.img;
       }
     }
     _selectedImg = _availableAssets[0];
@@ -186,14 +187,18 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   }
 
   static bool _isExpeditionAlias(String alias) =>
-      alias == _expeditionAlias || alias.startsWith('SoudacheTunnelDefendStage');
+      alias == _expeditionAlias ||
+      alias.startsWith('SoudacheTunnelDefendStage');
 
   static List<TunnelRoadData> _normalizeExpeditionRoads(
     Iterable<TunnelRoadData> roads,
   ) {
     final byCoord = <String, TunnelRoadData>{};
     for (final road in roads) {
-      if (road.gridX < 0 || road.gridX > 8 || road.gridY < 0 || road.gridY > 4) {
+      if (road.gridX < 0 ||
+          road.gridX > 8 ||
+          road.gridY < 0 ||
+          road.gridY > 4) {
         continue;
       }
       byCoord['${road.gridY}:${road.gridX}'] = TunnelRoadData(
@@ -334,14 +339,11 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   String _expeditionPresetTitle(AppLocalizations? l10n, String alias) {
     switch (alias) {
       case 'SoudacheTunnelDefendStage1':
-        return l10n?.expeditionTilesPresetFloor1 ??
-            'Expedition Gate - Floor 1';
+        return l10n?.expeditionTilesPresetFloor1 ?? 'Expedition Gate - Floor 1';
       case 'SoudacheTunnelDefendStage2':
-        return l10n?.expeditionTilesPresetFloor2 ??
-            'Expedition Gate - Floor 2';
+        return l10n?.expeditionTilesPresetFloor2 ?? 'Expedition Gate - Floor 2';
       case 'SoudacheTunnelDefendStage3':
-        return l10n?.expeditionTilesPresetFloor3 ??
-            'Expedition Gate - Floor 3';
+        return l10n?.expeditionTilesPresetFloor3 ?? 'Expedition Gate - Floor 3';
       default:
         return alias;
     }
@@ -505,7 +507,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                   ? constraints.maxWidth
                   : _settingsMaxWidth,
             ),
-            child: child,
+            child: SizedBox(width: double.infinity, child: child),
           ),
         );
       },
@@ -532,22 +534,46 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final alias in _expeditionPresetAliases)
-                  ChoiceChip(
-                    label: Text(_expeditionPresetTitle(l10n, alias)),
-                    selected: selectedAlias == alias,
-                    onSelected: (_) => _applyExpeditionPreset(alias),
-                  ),
-                if (selectedAlias == null && _data.roads.isNotEmpty)
-                  Chip(
-                    label: Text(l10n?.customLayout ?? 'Custom layout'),
-                    avatar: const Icon(Icons.edit, size: 18),
-                  ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final maxWidth = constraints.maxWidth;
+                final columns = maxWidth >= 720
+                    ? 3
+                    : maxWidth >= 460
+                    ? 2
+                    : 1;
+                final chipWidth = (maxWidth - 8 * (columns - 1)) / columns;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final alias in _expeditionPresetAliases)
+                      SizedBox(
+                        width: chipWidth,
+                        child: ChoiceChip(
+                          showCheckmark: false,
+                          label: _ExpeditionPresetChipLabel(
+                            label: _expeditionPresetTitle(l10n, alias),
+                            selected: selectedAlias == alias,
+                          ),
+                          selected: selectedAlias == alias,
+                          onSelected: (_) => _applyExpeditionPreset(alias),
+                        ),
+                      ),
+                    if (selectedAlias == null && _data.roads.isNotEmpty)
+                      SizedBox(
+                        width: chipWidth,
+                        child: Chip(
+                          label: _ExpeditionPresetChipLabel(
+                            label: l10n?.customLayout ?? 'Custom layout',
+                            selected: true,
+                            icon: Icons.edit,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -1027,8 +1053,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n?.tunnelDefendSelectComponent ??
-                            'Select component',
+                        l10n?.tunnelDefendSelectComponent ?? 'Select component',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: accentColor,
@@ -1140,6 +1165,35 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ExpeditionPresetChipLabel extends StatelessWidget {
+  const _ExpeditionPresetChipLabel({
+    required this.label,
+    required this.selected,
+    this.icon = Icons.check,
+  });
+
+  final String label;
+  final bool selected;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        SizedBox(
+          width: 20,
+          child: selected ? Icon(icon, size: 18) : const SizedBox.shrink(),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+      ],
     );
   }
 }

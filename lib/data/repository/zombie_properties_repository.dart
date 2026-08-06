@@ -115,6 +115,32 @@ class ZombiePropertiesRepository {
     return {'type': t, 'props': p};
   }
 
+  static PvzObject? getOriginalTypeObject(String typeName) {
+    return instance._originalTypeJson[typeName];
+  }
+
+  static PvzObject? getOriginalPropertyObject(String typeName) {
+    return instance._originalPropsJson[typeName];
+  }
+
+  static Map<String, dynamic>? cloneOriginalTypeData(String typeName) {
+    final data = instance._originalTypeJson[typeName]?.objData;
+    if (data is! Map) return null;
+    return _cloneMap(data);
+  }
+
+  static Map<String, dynamic>? cloneOriginalPropertyData(String typeName) {
+    final data = instance._originalPropsJson[typeName]?.objData;
+    if (data is! Map) return null;
+    return _cloneMap(data);
+  }
+
+  static Map<String, dynamic> _cloneMap(Map data) {
+    return Map<String, dynamic>.from(
+      jsonDecode(jsonEncode(data)) as Map<String, dynamic>,
+    );
+  }
+
   /// Whether the base zombie's default property sheet defines a [Resilience]
   /// shield (distinct from [ZombieTypeData.resistences]).
   static bool supportsResilienceShield(String typeName) {

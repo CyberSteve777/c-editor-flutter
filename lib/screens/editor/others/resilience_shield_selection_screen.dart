@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:c_editor/data/pvz_models.dart';
 
+import 'package:c_editor/data/resilience_weak_type.dart';
+
 import 'package:c_editor/data/resilience_shield_utils.dart';
 
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -351,7 +353,7 @@ class _ResilienceShieldSelectionScreenState
                         ),
                       ),
 
-                      for (var wt = 1; wt <= 6; wt++)
+                      for (final wt in resilienceWeakTypeJsonValues)
                         Padding(
                           padding: const EdgeInsets.only(right: 8),
 

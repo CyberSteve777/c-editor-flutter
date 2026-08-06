@@ -476,7 +476,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelTypeIPlant => 'I, Plant';
 
   @override
-  String get levelTypeOldStyle => 'Old-Style';
+  String get levelTypeOldStyle => 'Wave Generator';
 
   @override
   String get levelTypeUnknown => 'Unknown';
@@ -1091,7 +1091,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feature2 =>
-      'Multi-mode: I, Zombie, Vasebreaker, Last Stand, ZombossMech battle, and more.';
+      'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Mech battle, and more.';
 
   @override
   String get feature3 =>
@@ -1219,10 +1219,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateVaseBreakerExample => 'Vasebreaker level template';
 
   @override
-  String get templateZombossMechExample => 'ZombossMech battle level template';
+  String get templateZombossMechExample => 'Zomboss Mech battle level template';
 
   @override
-  String get templateZombossBattleExample => 'Zomboss battle level template';
+  String get templateZombossBattleExample =>
+      'Non-mech Zomboss battle level template';
 
   @override
   String get templateCustomZombieExample => 'Custom zombie level template';
@@ -1231,10 +1232,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateIPlantExample => 'I, Plant level template';
 
   @override
-  String get templateOldStyleExample => 'Old-style level';
+  String get templateOldStyleExample => 'Wave Generator level template';
 
   @override
-  String get templateCustomStageExample => 'Custom stage level template';
+  String get templateCustomStageExample => 'Custom lawn level template';
 
   @override
   String get unsavedChanges => 'Unsaved changes';
@@ -1551,10 +1552,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaseBreaker => 'Vasebreaker';
 
   @override
-  String get zombossMech => 'ZombossMech Battle';
+  String get zombossMech => 'Zomboss Mech battle';
 
   @override
-  String get zombossBattle => 'Zomboss Battle';
+  String get zombossBattle => 'Non-mech Zomboss battle';
 
   @override
   String get moveSourceSameAsDest => 'Source and target folder are the same';
@@ -2031,11 +2032,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get conflictDesc_ZombossDeathDrop =>
-      'Loot Drop in ZombossMech battle mode will prevent proper level completion.';
+      'Loot Drop in Zomboss Mech battle mode will prevent proper level completion.';
 
   @override
   String get conflictDesc_ZombossBattleDeathDrop =>
-      'Loot Drop in Zomboss battle mode will prevent proper level completion.';
+      'Loot Drop in Non-mech Zomboss battle mode will prevent proper level completion.';
 
   @override
   String get conflictDesc_WinConditionExclusive =>
@@ -2542,7 +2543,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable I, Zombie mode (requires zombie bank and preset plants)';
 
   @override
-  String get moduleTitle_ZombossBattleModuleProperties => 'ZombossMech Battle';
+  String get moduleTitle_ZombossBattleModuleProperties => 'Zomboss Mech battle';
 
   @override
   String get moduleDesc_ZombossBattleModuleProperties =>
@@ -2556,7 +2557,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Controls ZombossMech cutscenes and health bar display';
 
   @override
-  String get moduleTitle_ZombossLastStandMinigameProperties => 'Zomboss Battle';
+  String get moduleTitle_ZombossLastStandMinigameProperties =>
+      'Non-mech Zomboss battle';
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
@@ -5190,11 +5192,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get missingZombossMechModule =>
-      'Missing ZombossMech battle module (ZombossBattleModuleProperties)';
+      'Missing Zomboss Mech battle module (ZombossBattleModuleProperties)';
 
   @override
   String get missingZombossBattleModule =>
-      'Missing Zomboss battle module (ZombossLastStandMinigameProperties)';
+      'Missing Non-mech Zomboss battle module (ZombossLastStandMinigameProperties)';
 
   @override
   String get challengeNoConfig =>
@@ -6434,7 +6436,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tunnelDefendHelpSodPromptBody =>
-      'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Underground Palace Pathways enables this prompt by default.';
+      'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Underground Palace Pathways module enables this prompt by default.';
 
   @override
   String get sodPlantingPromptTitle => 'Sod Planting Prompt';
@@ -6518,7 +6520,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpSodPromptBody =>
-      'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Expedition Tiles disables this prompt by default.';
+      'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Expedition Tiles module disables this prompt by default.';
 
   @override
   String get expeditionTilesHelpNotesBody =>
@@ -7079,11 +7081,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glacierModuleHelpRequirementsBody =>
-      'Only takes effect together with the Zomboss Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).';
+      'Only takes effect together with the Zomboss Mech Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).';
 
   @override
   String get glacierModuleCompatibilityWarning =>
-      'This module only works with the Zomboss Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.';
+      'This module only works with the Zomboss Mech Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.';
 
   @override
   String glacierModuleColumn(int columnIndex) {

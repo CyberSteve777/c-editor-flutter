@@ -469,7 +469,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get levelTypeIPlant => '我是植物';
 
   @override
-  String get levelTypeOldStyle => '旧式关卡';
+  String get levelTypeOldStyle => '波次生成器';
 
   @override
   String get levelTypeUnknown => '未知';
@@ -1193,10 +1193,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templateVaseBreakerExample => '砸罐子示例';
 
   @override
-  String get templateZombossMechExample => '僵王机甲战示例';
+  String get templateZombossMechExample => '机甲僵王战示例';
 
   @override
-  String get templateZombossBattleExample => '僵王战示例';
+  String get templateZombossBattleExample => '非机甲僵王战示例';
 
   @override
   String get templateCustomZombieExample => '自定义僵尸示例';
@@ -1205,7 +1205,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templateIPlantExample => '我是植物示例';
 
   @override
-  String get templateOldStyleExample => '旧式关卡';
+  String get templateOldStyleExample => '波次生成器示例';
 
   @override
   String get templateCustomStageExample => '自定义地图示例';
@@ -1525,10 +1525,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get vaseBreaker => '砸罐子';
 
   @override
-  String get zombossMech => '僵王机甲战';
+  String get zombossMech => '机甲僵王战';
 
   @override
-  String get zombossBattle => '僵王战';
+  String get zombossBattle => '非机甲僵王战';
 
   @override
   String get moveSourceSameAsDest => '源目录和目标目录相同';
@@ -1980,10 +1980,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conflictDesc_EvilDaveVictory => '我是僵尸模式不能使用僵尸胜利条件。';
 
   @override
-  String get conflictDesc_ZombossDeathDrop => '僵王机甲战中死亡掉落会阻止关卡正常完成。';
+  String get conflictDesc_ZombossDeathDrop => '机甲僵王战中死亡掉落会阻止关卡正常完成。';
 
   @override
-  String get conflictDesc_ZombossBattleDeathDrop => '僵王战中死亡掉落会阻止关卡正常完成。';
+  String get conflictDesc_ZombossBattleDeathDrop => '非机甲僵王战中死亡掉落会阻止关卡正常完成。';
 
   @override
   String get conflictDesc_WinConditionExclusive =>
@@ -2438,23 +2438,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_EvilDaveProperties => '启用我是僵尸模式，需配置僵尸卡槽和预置植物';
 
   @override
-  String get moduleTitle_ZombossBattleModuleProperties => '僵王机甲战模式';
+  String get moduleTitle_ZombossBattleModuleProperties => '机甲僵王战';
 
   @override
-  String get moduleDesc_ZombossBattleModuleProperties => '配置僵王机甲战模式参数以及机甲种类';
+  String get moduleDesc_ZombossBattleModuleProperties => '配置机甲僵王战模式参数以及机甲种类';
 
   @override
-  String get moduleTitle_ZombossBattleIntroProperties => '僵王机甲转场';
+  String get moduleTitle_ZombossBattleIntroProperties => '机甲僵王战转场';
 
   @override
-  String get moduleDesc_ZombossBattleIntroProperties => '控制僵王机甲战前的过场动画与血条显示';
+  String get moduleDesc_ZombossBattleIntroProperties => '控制机甲僵王战前的过场动画与血条显示';
 
   @override
-  String get moduleTitle_ZombossLastStandMinigameProperties => '僵王战';
+  String get moduleTitle_ZombossLastStandMinigameProperties => '非机甲僵王战';
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
-      '配置非机甲僵王战（功夫、秦始皇等）';
+      '配置气功教主、地宫之主等非机甲僵王战';
 
   @override
   String get moduleTitle_SeedRainProperties => '种子雨';
@@ -6127,13 +6127,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tunnelDefendHelpSodPromptBody =>
-      '“种植草垛提示”用于控制在受限制地块种植时是否显示需要草垛的提示。地宫坑道默认开启该提示。';
+      '“种植草垛提示”用于控制在受限制地块种植时是否显示“请先放置草垛”的提示。地宫坑道模块默认开启该提示。';
 
   @override
   String get sodPlantingPromptTitle => '种植草垛提示';
 
   @override
-  String get expeditionTilesSodPromptBody => '种植植物时是否提示需要草垛';
+  String get expeditionTilesSodPromptBody => '种植植物时是否提示需要草垛，默认关闭';
 
   @override
   String get tunnelDefendSodPromptBody => '种植植物时是否提示需要草垛，默认开启';
@@ -6207,7 +6207,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpSodPromptBody =>
-      '“种植草垛提示”用于控制在受限制地块种植时是否显示需要草垛的提示。远征地砖默认关闭该提示。';
+      '“种植草垛提示”用于控制在受限制地块种植时是否显示“请先放置草垛”的提示。远征地砖模块默认关闭该提示。';
 
   @override
   String get expeditionTilesHelpNotesBody =>
