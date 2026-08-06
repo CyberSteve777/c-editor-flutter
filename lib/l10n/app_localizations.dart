@@ -11450,6 +11450,12 @@ abstract class AppLocalizations {
   /// **'Delay between tunnel sequence steps. Lower values make pathways appear faster.'**
   String get tunnelDefendHelpSequenceIntervalBody;
 
+  /// No description provided for @tunnelDefendHelpSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Underground Palace Pathways enables this prompt by default.'**
+  String get tunnelDefendHelpSodPromptBody;
+
   /// No description provided for @sodPlantingPromptTitle.
   ///
   /// In en, this message translates to:
@@ -11549,7 +11555,7 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art.'**
+  /// **'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art. Planting Sod on a non-plantable tile can restore that tile\'s planting function.'**
   String get expeditionTilesHelpOverview;
 
   /// No description provided for @expeditionTilesHelpEditing.
@@ -11561,7 +11567,7 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesHelpEditingBody.
   ///
   /// In en, this message translates to:
-  /// **'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles are only a preview of Expedition Gate\'s starting appearance and do not mean those positions are blocked.'**
+  /// **'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles and blank tiles are both plantable areas; the whirlpool tiles here only recreate the initial lawn layout used by this module.'**
   String get expeditionTilesHelpEditingBody;
 
   /// No description provided for @expeditionTilesHelpPresets.
@@ -11585,7 +11591,7 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesHelpSodPromptBody.
   ///
   /// In en, this message translates to:
-  /// **'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Expedition Tiles disables this prompt by default, while Underground Palace Pathways enables it by default.'**
+  /// **'The \"Sod Planting Prompt\" controls whether a Sod requirement prompt appears when planting on restricted tiles. Expedition Tiles disables this prompt by default.'**
   String get expeditionTilesHelpSodPromptBody;
 
   /// No description provided for @expeditionTilesHelpNotesBody.
@@ -11593,6 +11599,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expedition Tiles is intended for five-row lawns such as Expedition Gate. Do not use it with six-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.'**
   String get expeditionTilesHelpNotesBody;
+
+  /// No description provided for @tunnelExpeditionCompatibilityWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Underground Palace Pathways with Expedition Tiles carefully'**
+  String get tunnelExpeditionCompatibilityWarningTitle;
+
+  /// No description provided for @tunnelExpeditionCompatibilityWarningBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.'**
+  String get tunnelExpeditionCompatibilityWarningBody;
 
   /// No description provided for @moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties.
   ///

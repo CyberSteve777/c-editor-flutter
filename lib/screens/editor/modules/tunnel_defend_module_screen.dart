@@ -39,6 +39,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   static const _expeditionBlockedAsset =
       'assets/images/tunnels/SouDaCheTunnelRoadBlocked.webp';
   late String _alias;
+  static const _settingsMaxWidth = 720.0;
   static const _assetWidth = 128.0;
   static const _assetHeight = 152.0;
 
@@ -473,6 +474,16 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     );
   }
 
+  Widget _buildSettingsWidth(Widget child) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _settingsMaxWidth),
+        child: child,
+      ),
+    );
+  }
+
   Widget _buildExpeditionPresetSelector(
     ThemeData theme,
     AppLocalizations? l10n,
@@ -615,7 +626,6 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     setState(() {});
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -631,8 +641,12 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final accentColor = isDark ? pvzBrownDark : pvzBrownLight;
-    final gridBg = isDark ? const Color(0xFF3E2723) : const Color(0xFFEFEBE9);
+    final accentColor = _isExpedition
+        ? (isDark ? const Color(0xFF006D7A) : const Color(0xFF008FA1))
+        : (isDark ? pvzBrownDark : pvzBrownLight);
+    final gridBg = _isExpedition
+        ? (isDark ? const Color(0xFF102B33) : const Color(0xFFE0F7FA))
+        : (isDark ? const Color(0xFF3E2723) : const Color(0xFFEFEBE9));
     const gridBorder = Color(0xFF9E9E9E);
 
     return Scaffold(
@@ -656,7 +670,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.help_outline, color: gridBg),
+            icon: const Icon(Icons.help_outline),
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () {
               showEditorHelpDialog(
@@ -672,7 +686,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                           title: l10n?.overview ?? 'Overview',
                           body:
                               l10n?.expeditionTilesHelpOverview ??
-                              'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns.',
+                              'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns. Planting Sod on a non-plantable tile can restore that tile\'s planting function.',
                         ),
                         HelpSectionData(
                           title:
@@ -680,7 +694,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                               'Tile Editing',
                           body:
                               l10n?.expeditionTilesHelpEditingBody ??
-                              'Tap a tile on the lawn to add or remove a non-plantable tile.',
+                              'Tap a tile on the lawn to add or remove a non-plantable tile. Whirlpool tiles and blank tiles are both plantable areas; the whirlpool tiles here only recreate the initial lawn layout used by this module.',
                         ),
                         HelpSectionData(
                           title:
@@ -696,7 +710,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                               'Planting Prompt',
                           body:
                               l10n?.expeditionTilesHelpSodPromptBody ??
-                              'The Sod Planting Prompt controls whether the game shows a Sod requirement prompt on restricted tiles.',
+                              'The Sod Planting Prompt controls whether the game shows a Sod requirement prompt on restricted tiles. Expedition Tiles disables this prompt by default.',
                         ),
                         HelpSectionData(
                           title: l10n?.lastStandHelpNotes ?? 'Notes',
@@ -726,6 +740,14 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                               l10n?.tunnelDefendHelpSequenceIntervalBody ??
                               'Delay between tunnel sequence steps. Lower values make pathways appear faster.',
                         ),
+                        HelpSectionData(
+                          title:
+                              l10n?.expeditionTilesHelpSodPrompt ??
+                              'Planting Prompt',
+                          body:
+                              l10n?.tunnelDefendHelpSodPromptBody ??
+                              'The Sod Planting Prompt controls whether the game shows a Sod requirement prompt on restricted tiles. Underground Palace Pathways enables this prompt by default.',
+                        ),
                       ],
               );
             },
@@ -737,89 +759,104 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: accentColor,
+            _buildSettingsWidth(
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+                accentColor: accentColor,
+              ),
             ),
             const SizedBox(height: 16),
             if (_isIncompatibleExpeditionLawn) ...[
-              _buildErrorBanner(
-                theme: theme,
-                title: l10n?.stageMismatch ?? 'Lawn Type Mismatch',
-                message:
-                    l10n?.expeditionTilesUnderwaterMismatchWarning ??
-                    'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.',
+              _buildSettingsWidth(
+                _buildErrorBanner(
+                  theme: theme,
+                  title: l10n?.stageMismatch ?? 'Lawn Type Mismatch',
+                  message:
+                      l10n?.expeditionTilesUnderwaterMismatchWarning ??
+                      'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.',
+                ),
               ),
               const SizedBox(height: 16),
             ],
             if (_isExpedition) ...[
-              _buildExpeditionPresetSelector(theme, l10n, accentColor),
+              _buildSettingsWidth(
+                _buildExpeditionPresetSelector(theme, l10n, accentColor),
+              ),
               const SizedBox(height: 12),
-              _buildReportErrorSwitch(theme, l10n, accentColor),
+              _buildSettingsWidth(
+                _buildReportErrorSwitch(theme, l10n, accentColor),
+              ),
             ] else ...[
-              InputDecorator(
-                decoration: InputDecoration(
-                  labelText:
-                      l10n?.tunnelDefendTileStylePreset ?? 'Tile style preset',
-                  filled: true,
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<int>(
-                    isExpanded: true,
-                    value: _data.brickMapIndex == 2 ? 2 : 1,
-                    items: [
-                      DropdownMenuItem(
-                        value: 1,
-                        child: Text(
-                          l10n?.tunnelDefendTileStylePart1 ?? 'part 1',
+              _buildSettingsWidth(
+                InputDecorator(
+                  decoration: InputDecoration(
+                    labelText:
+                        l10n?.tunnelDefendTileStylePreset ??
+                        'Tile style preset',
+                    filled: true,
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      isExpanded: true,
+                      value: _data.brickMapIndex == 2 ? 2 : 1,
+                      items: [
+                        DropdownMenuItem(
+                          value: 1,
+                          child: Text(
+                            l10n?.tunnelDefendTileStylePart1 ?? 'part 1',
+                          ),
                         ),
-                      ),
-                      DropdownMenuItem(
-                        value: 2,
-                        child: Text(
-                          l10n?.tunnelDefendTileStylePart2 ?? 'part 2',
+                        DropdownMenuItem(
+                          value: 2,
+                          child: Text(
+                            l10n?.tunnelDefendTileStylePart2 ?? 'part 2',
+                          ),
                         ),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      if (v == null) return;
-                      setState(() {
-                        _data.brickMapIndex = v;
-                        _moduleObj.objData = _data.toJson();
-                      });
-                      widget.onChanged();
-                    },
+                      ],
+                      onChanged: (v) {
+                        if (v == null) return;
+                        setState(() {
+                          _data.brickMapIndex = v;
+                          _moduleObj.objData = _data.toJson();
+                        });
+                        widget.onChanged();
+                      },
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
-              TextField(
-                controller: _sequenceIntervalCtrl,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
+              _buildSettingsWidth(
+                TextField(
+                  controller: _sequenceIntervalCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText:
+                        l10n?.tunnelDefendSequenceInterval ??
+                        'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
+                    filled: true,
+                    border: const OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    final parsed = double.tryParse(value);
+                    if (parsed != null && parsed >= 0) {
+                      setState(() => _data.tunnelSequenceInterval = parsed);
+                      _moduleObj.objData = _data.toJson();
+                      widget.onChanged();
+                    }
+                  },
                 ),
-                decoration: InputDecoration(
-                  labelText:
-                      l10n?.tunnelDefendSequenceInterval ??
-                      'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
-                  filled: true,
-                  border: const OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  final parsed = double.tryParse(value);
-                  if (parsed != null && parsed >= 0) {
-                    setState(() => _data.tunnelSequenceInterval = parsed);
-                    _moduleObj.objData = _data.toJson();
-                    widget.onChanged();
-                  }
-                },
               ),
               const SizedBox(height: 12),
-              _buildReportErrorSwitch(theme, l10n, accentColor),
+              _buildSettingsWidth(
+                _buildReportErrorSwitch(theme, l10n, accentColor),
+              ),
             ],
             const SizedBox(height: 16),
             scaleTableForDesktop(

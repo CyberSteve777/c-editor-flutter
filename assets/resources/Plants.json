@@ -3560,6 +3560,7 @@
             "Orange",
             "Ranger",
             "Physical",
+            "Hidden",
             "Chinese"
         ],
         "icon": "icon_soudacheMegagatling.webp"
@@ -3571,6 +3572,7 @@
             "Orange",
             "Ranger",
             "Fire",
+            "Hidden",
             "Chinese"
         ],
         "icon": "icon_soudacheMegagatlingFire.webp"
@@ -3582,6 +3584,7 @@
             "Orange",
             "Ranger",
             "Electric",
+            "Hidden",
             "Chinese"
         ],
         "icon": "icon_soudacheMegagatlingElectric.webp"

@@ -220,6 +220,8 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
           levelDef,
           _levelFileFromObjectMap(),
         );
+    final showTunnelExpeditionCompatibilityWarning =
+        hasTunnelDefendModule && hasExpeditionTilesModule;
 
     return Stack(
       children: [
@@ -476,6 +478,17 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                 message:
                     l10n?.recommendedExpeditionTilesBody ??
                     'Add the "Expedition Tiles" module to work around the lawn\'s missing tiles and create an experience that more closely matches Expedition Gate.',
+              ),
+            ],
+            if (showTunnelExpeditionCompatibilityWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                title:
+                    l10n?.tunnelExpeditionCompatibilityWarningTitle ??
+                    'Use Underground Palace Pathways with Expedition Tiles carefully',
+                message:
+                    l10n?.tunnelExpeditionCompatibilityWarningBody ??
+                    'Using the "Underground Palace Pathways" module together with the "Expedition Tiles" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.',
               ),
             ],
             if (showExpeditionTilesMismatchWarning) ...[

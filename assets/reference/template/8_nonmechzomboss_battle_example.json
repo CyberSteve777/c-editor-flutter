@@ -1,0 +1,113 @@
+{
+	"objects": [
+		{
+			"objclass": "LevelDefinition",
+			"objdata": {
+				"Name": "非机甲僵王战示例",
+				"LevelNumber": 8,
+				"Description": "本关为非机甲僵王战示例关",
+				"StageModule": "RTID(KongfuBossStage@LevelModules)",
+				"Loot": "RTID(DefaultLoot@LevelModules)",
+				"StartingSun": 200,
+				"VictoryModule": "RTID(VictoryOutro@LevelModules)",
+				"MusicType": "MiniGame_A",
+				"DisablePeavine": true,
+				"Modules": [
+					"RTID(DefaultSunDropper@LevelModules)",
+					"RTID(SeedBank@CurrentLevel)",
+					"RTID(pvz1CopycatsModule@CurrentLevel)",
+					"RTID(ZombossLastStand@CurrentLevel)",
+					"RTID(DefaultZombieWinCondition@LevelModules)"
+				]
+			}
+		},
+		{
+			"aliases": [
+				"pvz1CopycatsModule"
+			],
+			"objclass": "PVZ1CopycatsModuleProperties",
+			"objdata": {
+				"ZombieWeight": 0,
+				"SpawnPlantLevel": 5,
+				"PlantBlackList": [
+					"forg",
+					"powerlily",
+					"squash",
+					"jalapeno",
+					"gravebuster",
+					"imitater",
+					"cherry_bomb",
+					"empea",
+					"powerplant",
+					"coffeebean",
+					"lilypad",
+					"flowerpot",
+					"heathseeker",
+					"tanglekelp",
+					"guacodile",
+					"ghostpepper",
+					"hurrikale",
+					"olive",
+					"cobcannon",
+					"hotpotato",
+					"goldleaf",
+					"flattenedshroom",
+					"goldbloom",
+					"lavaguava",
+					"jackfruit",
+					"thymewarp",
+					"intensivecarrot",
+					"grapeshot",
+					"escaperoot",
+					"pumpkin",
+					"powervine",
+					"perfumeshroom",
+					"kelpguard",
+					"oxygenalgae",
+					"seashroom"
+				],
+				"ZombieWhiteList": []
+			}
+		},
+		{
+			"aliases": [
+				"SeedBank"
+			],
+			"objclass": "SeedBankProperties",
+			"objdata": {
+				"PresetPlantList": [
+					"minigame_imitater_sun",
+					"minigame_imitater_sun",
+					"firepeashooter",
+					"primalpeashooter",
+					"electricpeashooter",
+					"snowpea",
+					"minigame_imitater_adc5",
+					"turnip"
+				],
+				"SelectionMethod": "preset"
+			}
+		},
+		{
+			"aliases": [
+				"ZombossLastStand"
+			],
+			"objclass": "ZombossLastStandMinigameProperties",
+			"objdata": {
+				"ResourceGroupNames": [
+					"ZombieKongFuZombossQigongGroup",
+					"ZombieKongFuZombossQigongEffectGroup",
+					"ZombossQigongAudio"
+				],
+				"StartingPlantfood": 0,
+				"StartingSun": 999,
+				"ZombossInitialGridCol": 6,
+				"ZombossInitialGridRow": 3,
+				"ZombossStartStageIndex": 0,
+				"ZombossTypeName": "kongfu_zomboss_qigong_12TH",
+				"SkipPlanting": true
+			}
+		}
+	],
+	"version": 1
+}

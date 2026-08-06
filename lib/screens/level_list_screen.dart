@@ -3201,6 +3201,37 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isNarrow = screenWidth < 500;
+
+    final Widget fab;
+    if (isNarrow) {
+      fab = FloatingActionButton(
+        heroTag: 'uploadLevel',
+        onPressed: widget.onPressed,
+        tooltip: widget.label,
+        child: const Icon(Icons.cloud_upload),
+      );
+    } else {
+      fab = FloatingActionButton.extended(
+        heroTag: 'uploadLevel',
+        onPressed: widget.onPressed,
+        icon: const Icon(Icons.cloud_upload),
+        label: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: (screenWidth - 160)
+                .clamp(0.0, double.infinity)
+                .toDouble(),
+          ),
+          child: Text(
+            widget.label,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
+      );
+    }
+
     return SizeTransition(
       sizeFactor: _reveal,
       axisAlignment: 1,
@@ -3210,48 +3241,7 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
           position: _slide,
           child: IgnorePointer(
             ignoring: !widget.visible,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final screenWidth = MediaQuery.sizeOf(context).width;
-                final isNarrow = screenWidth < 500;
-
-                final Widget fab;
-                if (isNarrow) {
-                  fab = FloatingActionButton(
-                    heroTag: 'uploadLevel',
-                    onPressed: widget.onPressed,
-                    tooltip: widget.label,
-                    child: const Icon(Icons.cloud_upload),
-                  );
-                } else {
-                  fab = FloatingActionButton.extended(
-                    heroTag: 'uploadLevel',
-                    onPressed: widget.onPressed,
-                    icon: const Icon(Icons.cloud_upload),
-                    label: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: (screenWidth - 160).clamp(
-                          0,
-                          double.infinity,
-                        ),
-                      ),
-                      child: Text(
-                        widget.label,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  );
-                }
-
-                return Align(
-                  alignment: Alignment.centerRight,
-                  widthFactor: 1,
-                  heightFactor: 1,
-                  child: fab,
-                );
-              },
-            ),
+            child: fab,
           ),
         ),
       ),

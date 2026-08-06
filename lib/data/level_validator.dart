@@ -90,11 +90,9 @@ class LevelValidator {
       ));
     }
 
-    // 5. Tunnel Defend Recommendation (Warning)
-    if (_shouldRecommendTunnelDefendModule(
-      levelDef,
-      _hasTunnelDefendModule(parsedData),
-    )) {
+    // 5. Tunnel Defend / Expedition Tiles recommendations (Warnings)
+    final hasTunnelDefend = _hasTunnelDefendModule(parsedData);
+    if (_shouldRecommendTunnelDefendModule(levelDef, hasTunnelDefend)) {
       issues.add(ValidationIssue(
         title: l10n.recommendedTunnelDefendTitle,
         message: l10n.recommendedTunnelDefendBody,
@@ -109,6 +107,15 @@ class LevelValidator {
         ValidationIssue(
           title: l10n.recommendedExpeditionTilesTitle,
           message: l10n.recommendedExpeditionTilesBody,
+          isError: false,
+        ),
+      );
+    }
+    if (hasTunnelDefend && hasExpeditionTiles) {
+      issues.add(
+        ValidationIssue(
+          title: l10n.tunnelExpeditionCompatibilityWarningTitle,
+          message: l10n.tunnelExpeditionCompatibilityWarningBody,
           isError: false,
         ),
       );

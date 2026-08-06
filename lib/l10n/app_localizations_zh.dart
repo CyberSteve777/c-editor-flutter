@@ -6126,6 +6126,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tunnelDefendHelpSequenceIntervalBody => '坑道序列步骤之间的延迟。数值越小，路径出现越快。';
 
   @override
+  String get tunnelDefendHelpSodPromptBody =>
+      '“种植草垛提示”用于控制在受限制地块种植时是否显示需要草垛的提示。地宫坑道默认开启该提示。';
+
+  @override
   String get sodPlantingPromptTitle => '种植草垛提示';
 
   @override
@@ -6177,14 +6181,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpOverview =>
-      '远征地砖模块用于配置远征之门地图中的不可种植区域。该模块沿用地宫坑道的地块数据结构，并通过远征模式专用的地砖地图显示禁种区域。';
+      '远征地砖模块用于配置远征之门地图中的不可种植区域。该模块沿用地宫坑道的地块数据结构，并通过远征模式专用的地砖地图显示禁种区域。可以在禁种地块上种植草垛来恢复其种植职能。';
 
   @override
   String get expeditionTilesHelpEditing => '地块编辑';
 
   @override
   String get expeditionTilesHelpEditingBody =>
-      '点击草坪上的任意地块，可以添加或取消禁种地块。禁种地块会覆盖原有地砖，关卡中无法在这些位置种植植物。漩涡地砖仅用于还原远征之门地图的初始外观，不代表该位置禁止种植。';
+      '点击草坪上的任意地块，可以添加或取消禁种地块。禁种地块会覆盖原有地砖，关卡中无法在这些位置种植植物。漩涡地砖和空白地砖都是允许种植的区域，漩涡地砖在此的作用仅为还原在该模组下的初始地图布局。';
 
   @override
   String get expeditionTilesHelpPresets => '预设布局';
@@ -6198,11 +6202,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpSodPromptBody =>
-      '“种植草垛提示”用于控制在受限制地块种植时是否显示需要草垛的提示。远征地砖默认关闭该提示，地宫坑道默认开启。';
+      '“种植草垛提示”用于控制在受限制地块种植时是否显示需要草垛的提示。远征地砖默认关闭该提示。';
 
   @override
   String get expeditionTilesHelpNotesBody =>
       '远征地砖适用于远征之门等五行地图。请勿与“海底世界-海底两万里”或“海底世界-亚特兰蒂斯”等海底世界外观的六行地图搭配使用，否则会导致关卡闪退。';
+
+  @override
+  String get tunnelExpeditionCompatibilityWarningTitle =>
+      '「地宫坑道」与「远征地砖」同时使用需注意';
+
+  @override
+  String get tunnelExpeditionCompatibilityWarningBody =>
+      '同时使用「地宫坑道」模块与「远征地砖」模块时，可能会出现地砖贴图互相覆盖的现象，影响关卡整体观感。如一定要同时使用，请万分注意。';
 
   @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
