@@ -97,7 +97,6 @@
 			],
 			"objclass": "SeedBankProperties",
 			"objdata": {
-				"SelectionMethod": "chooser",
 				"PresetPlantList": [
 					"mapleblade",
 					"pumpkin"
@@ -175,7 +174,10 @@
 					"gatlingpea",
 					"cactus",
 					"cobcannon"
-				]
+				],
+				"SelectionMethod": "chooser",
+				"GlobalLevel": 1,
+				"OverrideSeedSlotsCount": 8
 			}
 		},
 		{

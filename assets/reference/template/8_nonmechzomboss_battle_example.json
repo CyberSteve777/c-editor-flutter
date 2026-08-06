@@ -13,6 +13,7 @@
 				"MusicType": "MiniGame_A",
 				"DisablePeavine": true,
 				"Modules": [
+					"RTID(DefaultCustomLevel@LevelModules)",
 					"RTID(DefaultSunDropper@LevelModules)",
 					"RTID(SeedBank@CurrentLevel)",
 					"RTID(pvz1CopycatsModule@CurrentLevel)",

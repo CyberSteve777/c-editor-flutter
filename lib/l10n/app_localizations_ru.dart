@@ -6430,6 +6430,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.';
 
   @override
+  String expeditionTilesSwitchPresetBetweenMessage(String from, String to) {
+    return 'Switch from \"$from\" to \"$to\"? This will replace the current non-plantable tile layout and cannot be undone.';
+  }
+
+  @override
   String get expeditionTilesUnderwaterMismatchWarning =>
       'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.';
 

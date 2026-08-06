@@ -1027,6 +1027,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       list = [];
     }
     if (list.isEmpty) list = await LevelRepository.getTemplateList();
+    list = _normalizeTemplateList(list);
     if (!mounted) return;
     if (list.isEmpty) {
       _showMessage(l10n?.noTemplates ?? 'No templates found');
@@ -1042,6 +1043,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       case '1_blank_level.json':
         return l10n.templateBlankLevel;
       case '2_card_pick_example.json':
+      case '2_chooser_example.json':
         return l10n.templateCardPickExample;
       case '3_conveyor_example.json':
         return l10n.templateConveyorExample;
@@ -1054,12 +1056,14 @@ class _LevelListScreenState extends State<LevelListScreen> {
       case '7_zombossmech_battle_example.json':
         return l10n.templateZombossMechExample;
       case '8_zomboss_battle_example.json':
+      case '8_nonmechzomboss_battle_example.json':
         return l10n.templateZombossBattleExample;
       case '9_custom_zombie_example.json':
         return l10n.templateCustomZombieExample;
       case '10_i_plant_example.json':
         return l10n.templateIPlantExample;
       case '11_old_style_example.json':
+      case '11_wave_generator_example.json':
         return l10n.templateOldStyleExample;
       case '12_custom_stage_example.json':
         return l10n.templateCustomStageExample;
@@ -1089,7 +1093,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   onTap: () async {
                     Navigator.pop(ctx);
                     _selectedTemplate = t;
-                    final defaultBase = t.replaceFirst(RegExp(r'\.json$'), '');
+                    final defaultBase = _resolveTemplateAssetName(
+                      t,
+                    ).replaceFirst(RegExp(r'\.json$'), '');
                     if (_pathStack.isNotEmpty) {
                       _newLevelNameInput =
                           await LevelRepository.getNextAvailableNameForTemplate(
@@ -1151,19 +1157,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     var name = _newLevelNameInput.trim();
     if (!name.toLowerCase().endsWith('.json')) name += '.json';
-    // Load template from assets
-    String content;
-    try {
-      content = await rootBundle.loadString(
-        'assets/reference/template/$_selectedTemplate',
-      );
-    } catch (_) {
-      content =
-          '{"objects":[{"objclass":"LevelDefinition","objdata":{"Name":"","LevelNumber":1,"Description":"","StageModule":"RTID(TutorialStage@LevelModules)","Loot":"RTID(DefaultLoot@LevelModules)","StartingSun":200,"VictoryModule":"RTID(VictoryOutro@LevelModules)","MusicType":"MainPath","Modules":[]}}],"version":1}';
+    final content = await _loadTemplateContent(_selectedTemplate);
+    if (content == null) {
+      if (mounted) _showWarningMessage(l10n.levelCreateFail);
+      return;
     }
+    final templateAssetName = _resolveTemplateAssetName(_selectedTemplate);
     final ok = await LevelRepository.createLevelFromTemplate(
       _pathStack.last.path,
-      _selectedTemplate,
+      templateAssetName,
       name,
       content,
     );
@@ -1193,6 +1195,45 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   static const _compactHeaderBreakpoint = 300.0;
+
+  static const Map<String, String> _templateAssetAliases = {
+    '2_card_pick_example.json': '2_chooser_example.json',
+    '8_zomboss_battle_example.json': '8_nonmechzomboss_battle_example.json',
+    '11_old_style_example.json': '11_wave_generator_example.json',
+  };
+
+  static List<String> _normalizeTemplateList(List<String> templates) {
+    final seen = <String>{};
+    final normalized = <String>[];
+    for (final template in templates) {
+      final actual = _resolveTemplateAssetName(template);
+      if (seen.add(actual)) normalized.add(actual);
+    }
+    return normalized;
+  }
+
+  static String _resolveTemplateAssetName(String template) {
+    return _templateAssetAliases[template] ?? template;
+  }
+
+  static Iterable<String> _templateAssetCandidates(String template) sync* {
+    yield template;
+    final resolved = _resolveTemplateAssetName(template);
+    if (resolved != template) yield resolved;
+  }
+
+  Future<String?> _loadTemplateContent(String template) async {
+    for (final candidate in _templateAssetCandidates(template)) {
+      try {
+        return await rootBundle.loadString(
+          'assets/reference/template/$candidate',
+        );
+      } catch (_) {
+        // Try the next compatibility candidate.
+      }
+    }
+    return null;
+  }
 
   List<Widget> _buildLevelListHeaderChildren({
     required ThemeData theme,
@@ -3232,17 +3273,13 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
       );
     }
 
-    return SizeTransition(
-      sizeFactor: _reveal,
-      axisAlignment: 1,
-      child: FadeTransition(
-        opacity: _reveal,
-        child: SlideTransition(
-          position: _slide,
-          child: IgnorePointer(
-            ignoring: !widget.visible,
-            child: fab,
-          ),
+    return FadeTransition(
+      opacity: _reveal,
+      child: SlideTransition(
+        position: _slide,
+        child: IgnorePointer(
+          ignoring: !widget.visible,
+          child: fab,
         ),
       ),
     );

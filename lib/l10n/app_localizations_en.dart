@@ -2247,17 +2247,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get realmExclusivePlantChooserBlockedTitle => 'Cannot select plant';
+  String get realmExclusivePlantChooserBlockedTitle =>
+      'Cannot select this plant';
 
   @override
   String get realmExclusivePlantChooserBlockedMessage =>
       'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.';
 
   @override
-  String get hiddenPlantChooserBlockedLabel => 'Cannot select plant';
+  String get hiddenPlantChooserBlockedLabel => 'Cannot select this plant';
 
   @override
-  String get hiddenPlantChooserBlockedTitle => 'Cannot select plant';
+  String get hiddenPlantChooserBlockedTitle => 'Cannot select this plant';
 
   @override
   String get hiddenPlantChooserBlockedMessage =>
@@ -6440,7 +6441,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expeditionTilesSodPromptBody =>
-      'Whether to show a Sod requirement prompt when planting.';
+      'Whether to show a Sod requirement prompt when planting. Disabled by default.';
 
   @override
   String get tunnelDefendSodPromptBody =>
@@ -6472,6 +6473,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.';
 
   @override
+  String expeditionTilesSwitchPresetBetweenMessage(String from, String to) {
+    return 'Switch from \"$from\" to \"$to\"? ';
+  }
+
+  @override
   String get expeditionTilesUnderwaterMismatchWarning =>
       'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.';
 
@@ -6491,7 +6497,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpOverview =>
-      'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art. Planting Sod on a non-plantable tile can restore that tile\'s planting function.';
+      'The Expedition Tiles module configures non-plantable areas on the Expedition Gate lawn. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art. Planting Sod on a non-plantable tile can restore that tile\'s planting function.';
 
   @override
   String get expeditionTilesHelpEditing => 'Tile Editing';
@@ -6516,11 +6522,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpNotesBody =>
-      'Expedition Tiles is intended for five-row lawns such as Expedition Gate. Do not use it with six-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.';
+      'Expedition Tiles is intended for 5-row lawns such as Expedition Gate. Do not use it with 6-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.';
 
   @override
   String get tunnelExpeditionCompatibilityWarningTitle =>
-      'Use Underground Palace Pathways with Expedition Tiles carefully';
+      'Module Compatibility Warning';
 
   @override
   String get tunnelExpeditionCompatibilityWarningBody =>
@@ -6577,7 +6583,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_SouDaCheTunnelDefendDefault =>
-      'Configure non-plantable areas on Expedition Gate lawns.';
+      'Configures non-plantable areas on the Expedition Gate lawn';
 
   @override
   String get moduleTitle_WitchModuleProperties => 'Fright Witch';

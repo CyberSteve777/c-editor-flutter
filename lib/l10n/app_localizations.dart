@@ -4135,7 +4135,7 @@ abstract class AppLocalizations {
   /// No description provided for @realmExclusivePlantChooserBlockedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Cannot select plant'**
+  /// **'Cannot select this plant'**
   String get realmExclusivePlantChooserBlockedTitle;
 
   /// No description provided for @realmExclusivePlantChooserBlockedMessage.
@@ -4147,13 +4147,13 @@ abstract class AppLocalizations {
   /// No description provided for @hiddenPlantChooserBlockedLabel.
   ///
   /// In en, this message translates to:
-  /// **'Cannot select plant'**
+  /// **'Cannot select this plant'**
   String get hiddenPlantChooserBlockedLabel;
 
   /// No description provided for @hiddenPlantChooserBlockedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Cannot select plant'**
+  /// **'Cannot select this plant'**
   String get hiddenPlantChooserBlockedTitle;
 
   /// No description provided for @hiddenPlantChooserBlockedMessage.
@@ -11465,7 +11465,7 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesSodPromptBody.
   ///
   /// In en, this message translates to:
-  /// **'Whether to show a Sod requirement prompt when planting.'**
+  /// **'Whether to show a Sod requirement prompt when planting. Disabled by default.'**
   String get expeditionTilesSodPromptBody;
 
   /// No description provided for @tunnelDefendSodPromptBody.
@@ -11522,6 +11522,12 @@ abstract class AppLocalizations {
   /// **'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.'**
   String get expeditionTilesSwitchPresetMessage;
 
+  /// No description provided for @expeditionTilesSwitchPresetBetweenMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch from \"{from}\" to \"{to}\"? '**
+  String expeditionTilesSwitchPresetBetweenMessage(String from, String to);
+
   /// No description provided for @expeditionTilesUnderwaterMismatchWarning.
   ///
   /// In en, this message translates to:
@@ -11555,7 +11561,7 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'The Expedition Tiles module configures non-plantable areas on Expedition Gate lawns. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art. Planting Sod on a non-plantable tile can restore that tile\'s planting function.'**
+  /// **'The Expedition Tiles module configures non-plantable areas on the Expedition Gate lawn. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art. Planting Sod on a non-plantable tile can restore that tile\'s planting function.'**
   String get expeditionTilesHelpOverview;
 
   /// No description provided for @expeditionTilesHelpEditing.
@@ -11597,13 +11603,13 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesHelpNotesBody.
   ///
   /// In en, this message translates to:
-  /// **'Expedition Tiles is intended for five-row lawns such as Expedition Gate. Do not use it with six-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.'**
+  /// **'Expedition Tiles is intended for 5-row lawns such as Expedition Gate. Do not use it with 6-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.'**
   String get expeditionTilesHelpNotesBody;
 
   /// No description provided for @tunnelExpeditionCompatibilityWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Use Underground Palace Pathways with Expedition Tiles carefully'**
+  /// **'Module Compatibility Warning'**
   String get tunnelExpeditionCompatibilityWarningTitle;
 
   /// No description provided for @tunnelExpeditionCompatibilityWarningBody.
@@ -11693,7 +11699,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_SouDaCheTunnelDefendDefault.
   ///
   /// In en, this message translates to:
-  /// **'Configure non-plantable areas on Expedition Gate lawns.'**
+  /// **'Configures non-plantable areas on the Expedition Gate lawn'**
   String get moduleDesc_SouDaCheTunnelDefendDefault;
 
   /// No description provided for @moduleTitle_WitchModuleProperties.

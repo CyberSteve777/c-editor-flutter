@@ -39,7 +39,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   static const _expeditionBlockedAsset =
       'assets/images/tunnels/SouDaCheTunnelRoadBlocked.webp';
   late String _alias;
-  static const _settingsMaxWidth = 720.0;
+  static const _settingsMaxWidth = 960.0;
   static const _assetWidth = 128.0;
   static const _assetHeight = 152.0;
 
@@ -357,6 +357,16 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     return _normalizeExpeditionRoads(data.roads);
   }
 
+  String? _currentExpeditionPresetAlias() {
+    final currentKey = _roadsKey(_data.roads);
+    for (final alias in _expeditionPresetAliases) {
+      if (currentKey == _roadsKey(_expeditionPresetRoads(alias))) {
+        return alias;
+      }
+    }
+    return null;
+  }
+
   Future<void> _applyExpeditionPreset(String alias) async {
     final targetRoads = _expeditionPresetRoads(alias);
     final currentKey = _roadsKey(_data.roads);
@@ -366,6 +376,19 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     var shouldApply = true;
     if (_data.roads.isNotEmpty) {
       final l10n = AppLocalizations.of(context);
+      final currentPresetAlias = _currentExpeditionPresetAlias();
+      final fromPresetTitle = currentPresetAlias == null
+          ? null
+          : _expeditionPresetTitle(l10n, currentPresetAlias);
+      final toPresetTitle = _expeditionPresetTitle(l10n, alias);
+      final message = currentPresetAlias != null
+          ? (l10n?.expeditionTilesSwitchPresetBetweenMessage(
+                  fromPresetTitle!,
+                  toPresetTitle,
+                ) ??
+                'Switch from "$fromPresetTitle" to "$toPresetTitle"? This will replace the current non-plantable tile layout and cannot be undone.')
+          : (l10n?.expeditionTilesSwitchPresetMessage ??
+                'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.');
       shouldApply =
           await showDialog<bool>(
             context: context,
@@ -374,10 +397,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                 l10n?.expeditionTilesSwitchPresetTitle ??
                     'Switch preset layout',
               ),
-              content: Text(
-                l10n?.expeditionTilesSwitchPresetMessage ??
-                    'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.',
-              ),
+              content: Text(message),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
@@ -475,12 +495,20 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
   }
 
   Widget _buildSettingsWidth(Widget child) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: _settingsMaxWidth),
-        child: child,
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: constraints.maxWidth < _settingsMaxWidth
+                  ? constraints.maxWidth
+                  : _settingsMaxWidth,
+            ),
+            child: child,
+          ),
+        );
+      },
     );
   }
 
@@ -489,14 +517,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
     AppLocalizations? l10n,
     Color accentColor,
   ) {
-    final currentKey = _roadsKey(_data.roads);
-    String? selectedAlias;
-    for (final alias in _expeditionPresetAliases) {
-      if (currentKey == _roadsKey(_expeditionPresetRoads(alias))) {
-        selectedAlias = alias;
-        break;
-      }
-    }
+    final selectedAlias = _currentExpeditionPresetAlias();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),

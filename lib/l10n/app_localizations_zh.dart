@@ -2176,17 +2176,17 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get realmExclusivePlantChooserBlockedTitle => '无法选择植物';
+  String get realmExclusivePlantChooserBlockedTitle => '无法选择该植物';
 
   @override
   String get realmExclusivePlantChooserBlockedMessage =>
       '秘境专属植物无法在选卡模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。';
 
   @override
-  String get hiddenPlantChooserBlockedLabel => '无法选择植物';
+  String get hiddenPlantChooserBlockedLabel => '无法选择该植物';
 
   @override
-  String get hiddenPlantChooserBlockedTitle => '无法选择植物';
+  String get hiddenPlantChooserBlockedTitle => '无法选择该植物';
 
   @override
   String get hiddenPlantChooserBlockedMessage =>
@@ -6164,6 +6164,11 @@ class AppLocalizationsZh extends AppLocalizations {
       '是否切换至预设布局？这将移除场上所有已放置的禁种地块，此操作不可撤销。';
 
   @override
+  String expeditionTilesSwitchPresetBetweenMessage(String from, String to) {
+    return '是否从“$from”切换至“$to”？';
+  }
+
+  @override
   String get expeditionTilesUnderwaterMismatchWarning =>
       '当前地图为海底世界外观，与「远征地砖」模块不适配，会导致关卡闪退。';
 
@@ -6209,8 +6214,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '远征地砖适用于远征之门等五行地图。请勿与“海底世界-海底两万里”或“海底世界-亚特兰蒂斯”等海底世界外观的六行地图搭配使用，否则会导致关卡闪退。';
 
   @override
-  String get tunnelExpeditionCompatibilityWarningTitle =>
-      '「地宫坑道」与「远征地砖」同时使用需注意';
+  String get tunnelExpeditionCompatibilityWarningTitle => '模块兼容性提示';
 
   @override
   String get tunnelExpeditionCompatibilityWarningBody =>

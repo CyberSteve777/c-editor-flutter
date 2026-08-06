@@ -159,6 +159,12 @@ class _EditorScreenState extends State<EditorScreen> {
 
   EditorCubit get _ec => context.read<EditorCubit>();
 
+  String get _selectionStateBucketId {
+    final filePath = _ec.filePath;
+    if (filePath.isNotEmpty) return 'level:$filePath';
+    return 'level:${_ec.fileName}';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -463,6 +469,7 @@ class _EditorScreenState extends State<EditorScreen> {
               context,
               MaterialPageRoute(
                 builder: (_) => ZombieSelectionScreen(
+                  stateBucketId: _selectionStateBucketId,
                   editorCubit: _ec,
                   multiSelect: false,
                   onZombieSelected: (id) {
@@ -1114,6 +1121,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1149,6 +1157,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1184,6 +1193,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1276,6 +1286,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1348,6 +1359,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1368,6 +1380,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1405,6 +1418,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1425,6 +1439,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1462,6 +1477,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1482,6 +1498,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1516,6 +1533,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1565,6 +1583,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1602,6 +1621,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1747,6 +1767,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -2007,6 +2028,7 @@ class _EditorScreenState extends State<EditorScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => ZombieSelectionScreen(
+          stateBucketId: _selectionStateBucketId,
           editorCubit: _ec,
           multiSelect: false,
           onZombieSelected: (id) {
@@ -2416,6 +2438,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: true,
                     onZombieSelected: (_) {},
@@ -2448,6 +2471,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -2704,6 +2728,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -2774,6 +2799,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => PlantSelectionScreen(
+                        stateBucketId: _selectionStateBucketId,
                         isMultiSelect: true,
                         excludeIds: excludeIds ?? const [],
                         initialSelectedIds: initialSelectedIds ?? const [],
@@ -2801,6 +2827,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: true,
                     onZombieSelected: (_) {},
@@ -3005,6 +3032,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
