@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Zombie move fast module editor. Ported from Z-Editor-master ZombieMoveFastModulePropertiesEP.kt
@@ -26,6 +28,8 @@ class ZombieMoveFastModuleScreen extends StatefulWidget {
 class _ZombieMoveFastModuleScreenState
     extends State<ZombieMoveFastModuleScreen> {
   static const _objClass = 'ZombieMoveFastModuleProperties';
+  static const _stopColumnField = 'StopColumn';
+  static const _speedUpField = 'SpeedUp';
   late String _alias;
   late PvzObject _moduleObj;
   late ZombieMoveFastModulePropertiesData _data;
@@ -78,7 +82,6 @@ class _ZombieMoveFastModuleScreenState
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -91,10 +94,12 @@ class _ZombieMoveFastModuleScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
         title: buildEditorObjectAppBarTitle(
@@ -112,16 +117,16 @@ class _ZombieMoveFastModuleScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 Text(
-                  'Params',
+                  l10n?.parameters ?? 'Parameters',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -130,9 +135,13 @@ ModuleAliasInputField(
                 TextField(
                   controller: _stopColCtrl,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Stop column (StopColumn)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: localizedPropertyLabel(
+                      context,
+                      l10n?.stopColumn ?? 'Stop Column',
+                      _stopColumnField,
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                   onChanged: (v) {
                     final n = int.tryParse(v);
@@ -148,9 +157,13 @@ ModuleAliasInputField(
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(
-                    labelText: 'Speed up (SpeedUp)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: localizedPropertyLabel(
+                      context,
+                      l10n?.speedUp ?? 'Speed Multiplier',
+                      _speedUpField,
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                   onChanged: (v) {
                     final n = double.tryParse(v);

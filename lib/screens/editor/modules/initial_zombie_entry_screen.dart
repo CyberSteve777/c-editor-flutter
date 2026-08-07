@@ -201,9 +201,10 @@ class _InitialZombieEntryScreenState extends State<InitialZombieEntryScreen> {
                       children: [
                         Row(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                 Text(
                                   AppLocalizations.of(
                                         context,
@@ -220,7 +221,8 @@ class _InitialZombieEntryScreenState extends State<InitialZombieEntryScreen> {
                                     color: theme.colorScheme.primary,
                                   ),
                                 ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -637,6 +639,7 @@ class _InitialZombieEditDialogState extends State<_InitialZombieEditDialog> {
               ),
             ] else ...[
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue:
                     InitialZombieEntryScreen.presetConditionIds.contains(
                       _condition,

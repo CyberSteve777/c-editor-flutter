@@ -328,12 +328,16 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                         children: [
                           Icon(Icons.water, color: theme.colorScheme.secondary),
                           const SizedBox(width: 8),
-                          Text(
+                        Expanded(
+                          child: Text(
                             l10n?.fishPropertiesButton ?? 'Fish properties',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                        ),
                         ],
                       ),
                       const SizedBox(height: 12),

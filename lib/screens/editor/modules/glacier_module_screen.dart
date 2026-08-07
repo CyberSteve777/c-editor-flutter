@@ -360,9 +360,9 @@ class _EntryRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: SizedBox(
-        width: double.infinity,
-        child: Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final row = Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
@@ -512,8 +512,16 @@ class _EntryRow extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
               onPressed: onRemove,
             ),
-          ],
-        ),
+            ],
+          );
+          if (constraints.maxWidth < 720) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(width: 720, child: row),
+            );
+          }
+          return row;
+        },
       ),
     );
   }

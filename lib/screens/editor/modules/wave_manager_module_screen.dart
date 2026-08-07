@@ -228,7 +228,6 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
         _localizedText(context, zh: '当前值：$value', en: 'Current: $value');
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -327,7 +326,7 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -348,9 +347,7 @@ ModuleAliasInputField(
                       Icon(
                         isPropsValid ? Icons.check_circle : editorWarningIcon,
                         color: isPropsValid
-                            ? (isDark
-                                  ? Colors.white
-                                  : const Color(0xFF2E7D32))
+                            ? (isDark ? Colors.white : const Color(0xFF2E7D32))
                             : theme.colorScheme.onError,
                       ),
                       const SizedBox(width: 8),
@@ -393,8 +390,7 @@ ModuleAliasInputField(
                                 padding: const EdgeInsets.only(top: 8),
                                 child: FilledButton(
                                   style: FilledButton.styleFrom(
-                                    backgroundColor:
-                                        theme.colorScheme.onError,
+                                    backgroundColor: theme.colorScheme.onError,
                                     foregroundColor:
                                         theme.colorScheme.onPrimary,
                                   ),
@@ -532,22 +528,21 @@ ModuleAliasInputField(
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Text(
-                    l10n?.zombiePool ?? 'Zombie pool',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: sectionColor,
-                    ),
+              EditorResponsiveActionRow(
+                content: Text(
+                  l10n?.zombiePool ?? 'Zombie pool',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: sectionColor,
                   ),
-                  const Spacer(),
-                  TextButton.icon(
-                    onPressed: _addZombie,
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n?.add ?? 'Add'),
-                  ),
-                ],
+                ),
+                action: TextButton.icon(
+                  onPressed: _addZombie,
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n?.add ?? 'Add'),
+                ),
               ),
               const SizedBox(height: 8),
               ..._firstGroup.zombiePool.asMap().entries.map((entry) {
@@ -658,14 +653,14 @@ ModuleAliasInputField(
     required String label,
     required ValueChanged<String> onChanged,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        decoration: decoration,
+        onChanged: onChanged,
       ),
-      onChanged: onChanged,
     );
   }
 }

@@ -321,17 +321,21 @@ class _SpawnGraveStonesEventScreenState
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+            EditorResponsiveFieldRow(
+              breakpoint: 480,
               children: [
                 Text(
                   l10n?.positionsCount(posCount) ?? 'Positions: $posCount',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Spacer(),
                 Text(
                   l10n?.totalItemsCount(itemCount) ?? 'Total items: $itemCount',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: itemCount > posCount

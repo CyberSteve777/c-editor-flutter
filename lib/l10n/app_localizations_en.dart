@@ -168,7 +168,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Total Plant Food (including drops, events, etc.)';
 
   @override
-  String get appTitle => 'My Levels';
+  String get appTitle => 'My Level Library';
 
   @override
   String get about => 'About';
@@ -180,7 +180,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Toggle theme';
 
   @override
+<<<<<<< HEAD
+  String get switchFolder => 'Switch level library';
+
+  @override
+  String get manageLibraries => 'Manage Level Libraries';
+
+  @override
+  String get addLibrary => 'Add library';
+
+  @override
+  String get libraryName => 'Library name';
+
+  @override
+  String get libraryPath => 'Path';
+
+  @override
+  String get deleteLibraryTitle => 'Remove library?';
+
+  @override
+  String deleteLibraryMessage(String name) {
+    return 'Are you sure you want to remove \"$name\" from the library list? This will NOT delete any files on your disk.';
+  }
+
+  @override
+  String get defaultLibraryName => 'Default library';
+
+  @override
+  String get renameLibrary => 'Rename library';
+
+  @override
+  String get activeLibrary => 'Active';
+
+  @override
+  String get noLibrariesFound => 'No libraries added yet';
+=======
   String get switchFolder => 'Switch folder';
+>>>>>>> upstream/dev
 
   @override
   String get clearCache => 'Clear cache';
@@ -190,12 +226,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uiSize => 'UI size';
-
-  @override
-  String get plantTagInternational => 'International';
-
-  @override
-  String get plantTagChinese => 'China Only';
 
   @override
   String get aboutSoftware => 'About';
@@ -450,7 +480,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelTypeIPlant => 'I, Plant';
 
   @override
-  String get levelTypeOldStyle => 'Old-Style';
+  String get levelTypeOldStyle => 'Wave Generator';
 
   @override
   String get levelTypeUnknown => 'Unknown';
@@ -740,7 +770,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploadLevelConfirm =>
-      'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
+      'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the level library folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
 
   @override
   String get back => 'Back';
@@ -967,6 +997,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelCreateFail => 'Create failed, file already exists';
 
   @override
+  String get templateLoadFail => 'Could not load the selected level template';
+
+  @override
   String get adjustUiSize => 'Adjust UI size';
 
   @override
@@ -1065,7 +1098,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feature2 =>
-      'Multi-mode: I, Zombie, Vasebreaker, Last Stand, ZombossMech battle, and more.';
+      'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Mech battle, and more.';
 
   @override
   String get feature3 =>
@@ -1193,10 +1226,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateVaseBreakerExample => 'Vasebreaker level template';
 
   @override
-  String get templateZombossMechExample => 'ZombossMech battle level template';
+  String get templateZombossMechExample => 'Zomboss Mech battle level template';
 
   @override
-  String get templateZombossBattleExample => 'Zomboss battle level template';
+  String get templateZombossBattleExample =>
+      'Non-mech Zomboss battle level template';
 
   @override
   String get templateCustomZombieExample => 'Custom zombie level template';
@@ -1205,10 +1239,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateIPlantExample => 'I, Plant level template';
 
   @override
-  String get templateOldStyleExample => 'Old-style level';
+  String get templateOldStyleExample => 'Wave Generator level template';
 
   @override
-  String get templateCustomStageExample => 'Custom stage level template';
+  String get templateCustomLawnExample => 'Custom lawn level template';
 
   @override
   String get unsavedChanges => 'Unsaved changes';
@@ -1287,6 +1321,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagHenaiAtlantis => 'Heian Ages / Underwater World';
 
   @override
+  String get zombieTagMoon => 'Moon Base';
+
+  @override
   String get zombieTagTaleZCorp => 'Fairytale Forest / ZCorp Takeover';
 
   @override
@@ -1312,6 +1349,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieTagCustom => 'Memory Lane Variants';
+
+  @override
+  String get zombieTagExpedition => 'Expedition Gate Variants';
 
   @override
   String get zombieTagPet => 'Pet';
@@ -1467,6 +1507,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plantTagWorldAtlantis => 'Underwater World';
 
   @override
+  String get plantTagWorldMoon => 'Moon Base';
+
+  @override
   String get plantTagWorldFairytale => 'Fairytale Forest';
 
   @override
@@ -1483,6 +1526,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get plantTagSpecial => 'Magic Hats';
+
+  @override
+  String get plantTagHidden => 'Hidden Plants';
+
+  @override
+  String get plantTagInternational => 'International';
+
+  @override
+  String get plantTagChinese => 'China Only';
 
   @override
   String get removeModuleConfirm =>
@@ -1507,10 +1559,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaseBreaker => 'Vasebreaker';
 
   @override
-  String get zombossMech => 'ZombossMech Battle';
+  String get zombossMech => 'Zomboss Mech battle';
 
   @override
-  String get zombossBattle => 'Zomboss Battle';
+  String get zombossBattle => 'Non-mech Zomboss battle';
 
   @override
   String get moveSourceSameAsDest => 'Source and target folder are the same';
@@ -1715,7 +1767,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flagInterval => 'Flag interval';
 
   @override
-  String get waveManagerHelpTitle => 'Wave Manager';
+  String get waveManagerHelpTitle => 'Wave Manager module';
 
   @override
   String get waveManagerHelpOverviewTitle => 'Overview';
@@ -1737,6 +1789,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get waveManagerHelpTimeBody =>
       'The delay before the first wave depends on whether the level uses a conveyor belt: 5 seconds with a conveyor, or 12 seconds without. Flag wave delay refers to the time between the red warning message and zombie spawn.';
+
+  @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHint =>
+      'Currently, editing first wave delay only affects conveyor belt levels; regular levels use the default value.';
+
+  @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHelp =>
+      'Currently, editing first wave delay only affects conveyor belt evels; regular levels use the default value.';
 
   @override
   String get waveManagerHelpMusicTitle => 'Level Jam';
@@ -1907,7 +1967,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelNumber => 'Level number';
 
   @override
-  String get startingSun => 'Starting sun';
+  String get startingSun => 'Starting Sun';
+
+  @override
+  String get startingPlantfood => 'Starting Plant Food';
 
   @override
   String get stageModule => 'Lawn module';
@@ -1984,11 +2047,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get conflictDesc_ZombossDeathDrop =>
-      'Loot Drop in ZombossMech battle mode will prevent proper level completion.';
+      'Loot Drop in Zomboss Mech battle mode will prevent proper level completion.';
 
   @override
   String get conflictDesc_ZombossBattleDeathDrop =>
-      'Loot Drop in Zomboss battle mode will prevent proper level completion.';
+      'Loot Drop in Non-mech Zomboss battle mode will prevent proper level completion.';
 
   @override
   String get conflictDesc_WinConditionExclusive =>
@@ -2158,11 +2221,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Adding Power Tile tool packets requires the level to include the Power Tile module. Add the module and continue?';
 
   @override
-  String get conveyorPlantWearCostume => 'Display costume (iAvatar)';
+  String get conveyorPlantWearCostume =>
+      'Display costume (iAvatar; no longer works)';
 
   @override
   String get conveyorPlantWearCostumeTooltip =>
-      'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work when the Creative Courtyard module is enabled.';
+      'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work in the current version.';
 
   @override
   String get modifyConveyorAddPoolTitle => 'Add to Conveyor Pool';
@@ -2200,11 +2264,63 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get realmExclusivePlantChooserBlockedTitle => 'Cannot select plant';
+  String get realmExclusivePlantChooserBlockedTitle =>
+      'Cannot select this plant';
 
   @override
   String get realmExclusivePlantChooserBlockedMessage =>
       'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.';
+
+  @override
+  String get hiddenPlantChooserBlockedLabel => 'Cannot select this plant';
+
+  @override
+  String get hiddenPlantChooserBlockedTitle => 'Cannot select this plant';
+
+  @override
+  String get hiddenPlantChooserBlockedMessage =>
+      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.';
+
+  @override
+  String get comingSoonPlantBlockedLabel => 'A Message from Space';
+
+  @override
+  String get comingSoonPlantBlockedTitle => 'A Message from Space';
+
+  @override
+  String get comingSoonPlantBlockedMessage =>
+      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+
+  @override
+  String get stayTunedMoonZombieBlockedLabel => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonZombieBlockedTitle => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonZombieBlockedMessage =>
+      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedLabel =>
+      'ZCorp\'s story is not over';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedTitle => 'Under Construction';
+
+  @override
+  String get stayTunedTaleZCorpZombieBlockedMessage =>
+      'Part 2 of ZCorp Secret Realm is coming soon. Stay tuned!';
+
+  @override
+  String get stayTunedZombieBlockedLabel => 'Stay tuned';
+
+  @override
+  String get stayTunedZombieBlockedTitle => 'To Be Continued';
+
+  @override
+  String get stayTunedZombieBlockedMessage =>
+      'More zombies are approaching. Stay tuned for future updates!';
 
   @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
@@ -2251,7 +2367,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spermWhaleModuleTitle => 'Whale Approaching Settings';
 
   @override
-  String get spermWhaleModuleHelpTitle => 'Whale Approaching';
+  String get spermWhaleModuleHelpTitle => 'Whale Approaching module';
 
   @override
   String get spermWhaleModuleParameters => 'Parameters';
@@ -2392,6 +2508,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enables scoring system based on zombie kills';
 
   @override
+  String get moduleTitle_SouDaCheDamageTextModuleProperties =>
+      'Damage Number Display';
+
+  @override
+  String get moduleDesc_SouDaCheDamageTextModuleProperties =>
+      'Shows the damage value dealt by each plant attack during the level';
+
+  @override
   String get moduleTitle_BowlingMinigameProperties => 'Bulb Bowling';
 
   @override
@@ -2435,7 +2559,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable I, Zombie mode (requires zombie bank and preset plants)';
 
   @override
-  String get moduleTitle_ZombossBattleModuleProperties => 'ZombossMech Battle';
+  String get moduleTitle_ZombossBattleModuleProperties => 'Zomboss Mech battle';
 
   @override
   String get moduleDesc_ZombossBattleModuleProperties =>
@@ -2449,7 +2573,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Controls ZombossMech cutscenes and health bar display';
 
   @override
-  String get moduleTitle_ZombossLastStandMinigameProperties => 'Zomboss Battle';
+  String get moduleTitle_ZombossLastStandMinigameProperties =>
+      'Non-mech Zomboss battle';
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
@@ -2552,7 +2677,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noConditions => 'No conditions';
 
   @override
-  String get frozenPlantPlacementHelpTitle => 'Legacy Preset Plants';
+  String get frozenPlantPlacementHelpTitle => 'Legacy Preset Plants module';
 
   @override
   String get frozenPlantPlacementHelpOverviewTitle => 'Overview';
@@ -2606,6 +2731,51 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_ProtectTheGridItemChallengeProperties =>
       'Sets grid items that must be protected from destruction';
+
+  @override
+  String get moduleTitle_MoldColonyChallengeProps => 'Mold Zone';
+
+  @override
+  String get moduleDesc_MoldColonyChallengeProps =>
+      'Sets the lawn tiles covered by mold colonies';
+
+  @override
+  String get moldColonyLocationsTitle => 'Mold colonies layout (Locations)';
+
+  @override
+  String moldColonyLocationsValue(Object value) {
+    return 'Current value: $value';
+  }
+
+  @override
+  String get moldColonyLevelModulesError =>
+      'Error: the mold colonies layout reference uses LevelModules. Switch it to a current-level object.';
+
+  @override
+  String get moldColonyInvalidLinkError =>
+      'Error: Locations must reference a BoardGridMapProps object in the current level for the mold colonies layout.';
+
+  @override
+  String moldColonyRepairLink(Object alias) {
+    return 'Repair link to: $alias';
+  }
+
+  @override
+  String get moldColonies => 'Mold colonies';
+
+  @override
+  String get moldColonyEmpty => 'Empty';
+
+  @override
+  String get moldColonyHelpOverview =>
+      'Configures the lawn tiles covered by mold colonies. Mold colonies prevent the player from planting on the corresponding tiles.';
+
+  @override
+  String get moldColonyHelpGridTitle => 'Grid controls';
+
+  @override
+  String get moldColonyHelpGridBody =>
+      'Tap a tile to switch between empty (plantable) and mold colonies (not plantable). The selected row and column are shown above the grid.';
 
   @override
   String get moduleTitle_ZombiePotionModuleProperties => 'Dark Alchemy';
@@ -2702,7 +2872,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bronzeModuleTitle => 'Bronze Matrix Statues';
 
   @override
-  String get bronzeModuleHelpTitle => 'Bronze Matrix Statues';
+  String get bronzeModuleHelpTitle => 'Bronze Matrix Statues module';
 
   @override
   String get bronzeModuleHelpOverview => 'Overview';
@@ -3227,7 +3397,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resilience => 'Resistances (Resistences)';
 
   @override
-  String get resilienceArmor => 'Resilience Bar';
+  String get resilienceArmor => 'Resilience Shield';
 
   @override
   String get enableResilience => 'Enable resilience';
@@ -3323,7 +3493,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectionPreMade => 'Pre-made';
 
   @override
-  String get selectionDefinedByUser => 'Defined by user';
+  String get selectionDefinedByUser => 'Custom';
 
   @override
   String get aliasAlreadyTakenTitle => 'Alias already taken';
@@ -3386,6 +3556,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
+  String get helpDialogGotIt => 'Got it';
+
+  @override
   String get width => 'Width';
 
   @override
@@ -3441,7 +3614,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addModuleAliasTitle => 'Add module';
 
   @override
-  String get aliasLabel => 'Alias';
+  String get aliasLabel => 'Alias (English letters only)';
 
   @override
   String get add => 'Add';
@@ -3591,10 +3764,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'BowlingFoulLine is a 0-based column index from the left edge of the lawn. Zombies and bowling bulbs interact with plants to the right of this line.';
 
   @override
-  String get stopColumn => 'Stop column (StopColumn, range: 0-9 or 0-10)';
+  String get stopColumn => 'Stop Column';
 
   @override
-  String get speedUp => 'Speed multiplier (SpeedUp)';
+  String get speedUp => 'Speed Multiplier';
 
   @override
   String get baseCostIncreased =>
@@ -4315,11 +4488,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleHelpZombiePotionBody =>
-      'Spawns specified grid iems types (like potions) at random rows from right to left within a defined time interval. Stops spawning when the maximum number of grid items is reached.';
+      'This module periodically spawns specified grid item types in random rows, moving from right to left.';
+
+  @override
+  String get moduleHelpZombiePotionMechanism => 'Spawn Mechanism';
+
+  @override
+  String get moduleHelpZombiePotionMechanismBody =>
+      'Grid items spawn randomly within the configured time interval. If the number of matching grid items on the lawn reaches the limit, spawning pauses.';
+
+  @override
+  String get moduleHelpZombiePotionPotionTypes => 'Potion Types';
 
   @override
   String get moduleHelpZombiePotionTypes =>
-      'Potions are randomly selected from the specified types. To spawn multiple grid items at fixed intervals, add multiple instances of this module.';
+      'One type is randomly selected from the configured list. To spawn multiple grid items at fixed intervals, add this module multiple times in the level.';
 
   @override
   String get moduleHelpUnknownBody =>
@@ -4359,6 +4542,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get portalType => 'Portal type (PortalType)';
 
   @override
+  String get selectPortalType => 'Select Portal Type';
+
+  @override
+  String get noPortalTypesFound => 'No portal types found.';
+
+  @override
+  String get noPortalTypeSelected => 'No portal type selected.';
+
+  @override
   String get direction => 'Direction';
 
   @override
@@ -4369,6 +4561,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get columnRange => 'Column range';
+
+  @override
+  String get eventColumnRangeBoundaryHint =>
+      'The lawn’s left edge is column 0 and the right edge is column 9. The start column must be less than the end column.';
+
+  @override
+  String get eventColumnRangeExampleHint =>
+      'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.';
 
   @override
   String get zombieLevels => 'Zombie level';
@@ -4436,7 +4636,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smokePollutionModuleTitle => 'Smoke pollution module';
 
   @override
-  String get smokePollutionModuleHelpTitle => 'Smoke pollution module help';
+  String get smokePollutionModuleHelpTitle => 'Smoke pollution module';
 
   @override
   String get smokePollutionModuleHelpOverview => 'Overview';
@@ -4470,6 +4670,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombiePotion => 'Dark Alchemy module';
 
   @override
+  String get zombiePotionSettings => 'Zombie Potion Settings';
+
+  @override
+  String get zombiePotionHelpTitle => 'Zombie Potion module';
+
+  @override
   String get eventTimeRift => 'Event: Spacetime Portal';
 
   @override
@@ -4483,6 +4689,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lastStandSettings => 'Last Stand Settings';
+
+  @override
+  String get lastStandInitialResourceSettings => 'Initial Resource Settings';
+
+  @override
+  String get lastStandManualStartupHint =>
+      'After adding the Last Stand module, the editor automatically enables Manual Startup in the Wave Manager module.';
+
+  @override
+  String get lastStandHelpTitle => 'Last Stand module';
+
+  @override
+  String get lastStandHelpOverviewBody =>
+      'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap \"LET\'S ROCK!\".';
+
+  @override
+  String get lastStandHelpNotes => 'Notes';
+
+  @override
+  String get lastStandHelpNotesBody =>
+      'Last Stand requires Manual Startup to be enabled in the Wave Manager; otherwise zombies will appear automatically. The editor manages this switch automatically when the Last Stand module is added or removed.';
 
   @override
   String get roofFlowerPot => 'Roof Pots module';
@@ -4642,14 +4869,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxSunOverride => 'Max sun limit (MaxSunOverride)';
 
   @override
-  String get maxSunHelpTitle => 'Max Sun Limit';
+  String get maxSunHelpTitle => 'Max Sun Limit module';
 
   @override
   String get maxSunHelpOverview =>
       'Originally used for Penny’s Pursuit difficulty settings. This module overrides the maximum amount of sun that can be stored in a level.';
 
   @override
-  String get startingPlantfoodHelpTitle => 'Starting Plant Food';
+  String get startingPlantfoodHelpTitle => 'Starting Plant Food module';
 
   @override
   String get startingPlantfoodHelpOverview =>
@@ -4859,7 +5086,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pipe => 'Pipe';
 
   @override
-  String get stageMismatch => 'Lawn mismatch';
+  String get stageMismatch => 'Lawn Type Mismatch';
 
   @override
   String get currentStageNotPirate =>
@@ -4884,7 +5111,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectWeatherType => 'Select weather type';
 
   @override
-  String get counts => 'Count Settings';
+  String get counts => 'Quantity Control';
+
+  @override
+  String get initialCount => 'Initial Count';
+
+  @override
+  String get maximumCount => 'Maximum Count';
+
+  @override
+  String get spawnInterval => 'Spawn Interval';
+
+  @override
+  String get minimumIntervalSeconds => 'Minimum Interval (seconds)';
+
+  @override
+  String get maximumIntervalSeconds => 'Maximum Interval (seconds)';
+
+  @override
+  String get potionTypeList => 'Potion Type List';
 
   @override
   String get initial => 'Initial count (InitialPotionCount)';
@@ -5016,11 +5261,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get missingZombossMechModule =>
-      'Missing ZombossMech battle module (ZombossBattleModuleProperties)';
+      'Missing Zomboss Mech battle module (ZombossBattleModuleProperties)';
 
   @override
   String get missingZombossBattleModule =>
-      'Missing Zomboss battle module (ZombossLastStandMinigameProperties)';
+      'Missing Non-mech Zomboss battle module (ZombossLastStandMinigameProperties)';
 
   @override
   String get challengeNoConfig =>
@@ -5170,76 +5415,79 @@ class AppLocalizationsEn extends AppLocalizations {
       'Zombies can spawn in any row from 1–6, or in a random row.';
 
   @override
-  String get ztPerksSectionTitle => 'Ztalemate perks';
+  String get ztPerksSectionTitle => 'Zombie Perks';
 
   @override
   String get ztPerksSectionHint =>
-      'Each perk type can only be applied once per zombie.';
+      'A zombie cannot have multiple perks of the same type.';
 
   @override
-  String get ztPerksNone => 'No perks assigned.';
+  String get ztPerksNone => 'No perks have been added yet.';
 
   @override
-  String get ztPerksAdd => 'Add perk';
+  String get ztPerksAdd => 'Add';
+
+  @override
+  String get ztPerksAddTitle => 'Add Zombie Perks';
 
   @override
   String get ztPerksTypeAlreadyAssigned =>
-      'Another perk of this type is already assigned.';
+      'A perk of this type is already assigned to this zombie.';
 
   @override
   String get eventHelpJitteredZtPerks =>
-      'Assign Ztalemate Escape buffs to individual zombies. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
+      'Assign Ztalemate Escape perkss to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
 
   @override
-  String get ztPerkCategoryCrystal => 'Crystal';
+  String get ztPerkCategoryCrystal => 'Crystallization';
 
   @override
-  String get ztPerkCategoryAttack => 'Attack';
+  String get ztPerkCategoryAttack => 'Strength';
 
   @override
-  String get ztPerkCategorySpeed => 'Speed';
+  String get ztPerkCategorySpeed => 'Rapidity';
 
   @override
-  String get ztPerkCategoryShield => 'Shield';
+  String get ztPerkCategoryShield => 'Energy-Shield';
 
   @override
-  String get ztPerkCategoryGravity => 'Gravity';
+  String get ztPerkCategoryGravity => 'Hypergravity';
 
   @override
-  String get ztPerkCategoryImmuneControl => 'Control immunity';
+  String get ztPerkCategoryImmuneControl => 'Unyielding';
 
   @override
-  String get ztPerkCategoryAntiControl => 'Control resistance';
+  String get ztPerkCategoryAntiControl => 'Concentration';
 
   @override
-  String get ztPerksViewStats => 'View stats';
+  String get ztPerksViewStats => 'View Stats';
 
   @override
-  String get ztPerkPropDamageTakenInterval => 'Damage taken interval';
+  String get ztPerkPropDamageTakenInterval => 'Damage interval';
 
   @override
-  String get ztPerkPropDamageTotalTaken => 'Damage total taken';
+  String get ztPerkPropDamageTotalTaken => 'Total damage taken';
 
   @override
-  String get ztPerkPropDamageTakenPerTime => 'Damage taken per time';
+  String get ztPerkPropDamageTakenPerTime => 'Damage per hit';
 
   @override
-  String get ztPerkPropHpReduced => 'HP reduced';
+  String get ztPerkPropHpReduced => 'Health reduction';
 
   @override
-  String get ztPerkPropShieldNum => 'Shield layers';
+  String get ztPerkPropShieldNum => 'Shield charges';
 
   @override
-  String get ztPerkPropReducedControlPercent => 'Control reduction';
+  String get ztPerkPropReducedControlPercent => 'Control effect reduction';
 
   @override
   String get ztPerkPropReducedDamagePercent => 'Damage reduction';
 
   @override
-  String get ztPerkPropImprovedDamagePercent => 'Damage boost';
+  String get ztPerkPropImprovedDamagePercent => 'Attack power increase';
 
   @override
-  String get ztPerkPropImprovedSpeedPercent => 'Speed boost';
+  String get ztPerkPropImprovedSpeedPercent => 'Walking speed increase';
 
   @override
   String ztPerkDescCrystal(
@@ -5247,26 +5495,25 @@ class AppLocalizationsEn extends AppLocalizations {
     String damagePerHit,
     String hpReduced,
   ) {
-    return 'Grants immunity against instant-kill effects. Damage can only be received once every $interval seconds, each hit deals $damagePerHit damage, and health is reduced by $hpReduced.';
+    return 'Grants immunity to instant-kill effects, allows damage to be taken only once every $interval seconds, reduces all damage taken to $damagePerHit, and reduces health by $hpReduced.';
   }
 
   @override
-  String get ztPerkDescGravity =>
-      'Knockback or knockoff effects are no longer effective.';
+  String get ztPerkDescGravity => 'Immune to knockback and knockoff effects.';
 
   @override
   String ztPerkDescShield(String shieldNum) {
-    return 'The first $shieldNum instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.';
+    return 'Negates the first $shieldNum instances of damage and grants immunity to instant-kill effects for the perk\'s duration.';
   }
 
   @override
   String ztPerkDescImmuneControl(String percent) {
-    return '$percent more resistance against control effects.';
+    return 'Grants $percent more resistance against control effects.';
   }
 
   @override
   String ztPerkDescAntiControl(String percent) {
-    return 'When under the influence of a control effect, received damage is reduced by $percent.';
+    return 'When under the influence of a control effect, damage taken is reduced by $percent.';
   }
 
   @override
@@ -5280,31 +5527,31 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get ztPerksCategoryInfoTitle => 'Perk descriptions';
+  String get ztPerksCategoryInfoTitle => 'Perk Descriptions';
 
   @override
   String get ztPerkCategoryDescNumericHint =>
-      'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.';
+      'A, B, X, N, and P represent values that vary by perk tier.';
 
   @override
   String get ztPerkCategoryDescCrystal =>
-      'Grants immunity against instant-kill effects. Damage can only be received once every A seconds, each hit deals B damage, and health is reduced by X.';
+      'Grants immunity to instant-kill effects, allows damage to be taken only once every A seconds, reduces all damage taken to B, and reduces health by X.';
 
   @override
   String get ztPerkCategoryDescGravity =>
-      'Knockback or knockoff effects are no longer effective.';
+      'Immune to knockback and knockoff effects.';
 
   @override
   String get ztPerkCategoryDescShield =>
-      'The first N instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.';
+      'Negates the first N instances of damage and grants immunity to instant-kill effects for the perk\'s duration.';
 
   @override
   String get ztPerkCategoryDescImmuneControl =>
-      'P% more resistance against control effects.';
+      'Grants P% more resistance against control effects.';
 
   @override
   String get ztPerkCategoryDescAntiControl =>
-      'When under the influence of a control effect, received damage is reduced by P%.';
+      'When under the influence of a control effect, damage taken is reduced by P%.';
 
   @override
   String get ztPerkCategoryDescAttack => 'Attack power increased by P%.';
@@ -5333,7 +5580,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reverseZombieFactionSubtitle =>
-      'Placed zombies will belong to the plant faction. Useful for Plant Wars (ZvZ) mini-game.';
+      'When enabled, placed zombies belong to the plant faction and can be used in Plant Wars (ZvZ).';
 
   @override
   String get initialWeight => 'Initial weight';
@@ -5523,7 +5770,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get potionTypes => 'Potion Types (PotionTypes)';
 
   @override
-  String get noPotionTypes => 'No potion types configured; add one to continue';
+  String get noPotionTypes =>
+      'No potion types configured. Add a potion type to continue.';
 
   @override
   String get conveyorCardPool => 'Conveyor Pool';
@@ -5671,8 +5919,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waveDropConfigTitle => 'Drop configuration';
 
   @override
-  String get waveDropTotalLabel =>
-      'Total carrier zombies (AdditionalPlantfood)';
+  String get waveDropTotalLabel => 'Total drops (AdditionalPlantfood)';
+
+  @override
+  String get waveDropAddZombiesFirst =>
+      'Add zombies to this wave before configuring drops.';
+
+  @override
+  String get waveDropIncreaseTotalBeforePlants =>
+      'Increase total drops before adding plants.';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
@@ -6044,7 +6299,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Interval variation range (SunCountdownRange)';
 
   @override
-  String get sunDropperHelpTitle => 'Sun Dropper';
+  String get sunDropperHelpTitle => 'Sun Dropper module';
 
   @override
   String get sunDropperHelpIntro =>
@@ -6091,6 +6346,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get recommendedTunnelDefendBody =>
       'The tiles in Underground Palace Secret Realm lawns must be placed through the \"Underground Palace Pathways\" module. If this module is not added, the lawns may appear overly empty in-game.';
+
+  @override
+  String get recommendedExpeditionTilesTitle =>
+      'Works with the \"Expedition Tiles\" module';
+
+  @override
+  String get recommendedExpeditionTilesBody =>
+      'Add the \"Expedition Tiles\" module to work around the lawn\'s missing tiles and create an experience that more closely matches Expedition Gate.';
 
   @override
   String get selectedPosition => 'Selected position';
@@ -6243,6 +6506,106 @@ class AppLocalizationsEn extends AppLocalizations {
       'Delay between tunnel sequence steps. Lower values make pathways appear faster.';
 
   @override
+  String get tunnelDefendHelpSodPromptBody =>
+      'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Underground Palace Pathways module enables this prompt by default.';
+
+  @override
+  String get sodPlantingPromptTitle => 'Sod Planting Prompt';
+
+  @override
+  String get expeditionTilesSodPromptBody =>
+      'Whether to show a Sod requirement prompt when planting. Disabled by default.';
+
+  @override
+  String get tunnelDefendSodPromptBody =>
+      'Whether to show a Sod requirement prompt when planting. Enabled by default.';
+
+  @override
+  String get expeditionTilesPresetLayout => 'Preset Layout';
+
+  @override
+  String get expeditionTilesPresetFloor1 => 'Expedition Gate – Floor 1';
+
+  @override
+  String get expeditionTilesPresetFloor2 => 'Expedition Gate – Floor 2';
+
+  @override
+  String get expeditionTilesPresetFloor3 => 'Expedition Gate – Floor 3';
+
+  @override
+  String get customLayout => 'Custom layout';
+
+  @override
+  String get switchAction => 'Switch';
+
+  @override
+  String get expeditionTilesSwitchPresetTitle => 'Switch preset layout';
+
+  @override
+  String get expeditionTilesSwitchPresetMessage =>
+      'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.';
+
+  @override
+  String expeditionTilesSwitchPresetBetweenMessage(String from, String to) {
+    return 'Switch from \"$from\" to \"$to\"? ';
+  }
+
+  @override
+  String get expeditionTilesUnderwaterMismatchWarning =>
+      'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.';
+
+  @override
+  String get expeditionTilesBlockedCount => 'Non-plantable tiles';
+
+  @override
+  String get expeditionTilesClearConfirmTitle =>
+      'Clear all non-plantable tiles?';
+
+  @override
+  String get expeditionTilesClearConfirmMessage =>
+      'This will remove all placed non-plantable tiles from the lawn. This action cannot be undone.';
+
+  @override
+  String get expeditionTilesHelpTitle => 'Expedition Tiles module';
+
+  @override
+  String get expeditionTilesHelpOverview =>
+      'The Expedition Tiles module configures non-plantable areas on the Expedition Gate lawn. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art. Planting Sod on a non-plantable tile can restore that tile\'s planting function.';
+
+  @override
+  String get expeditionTilesHelpEditing => 'Tile Editing';
+
+  @override
+  String get expeditionTilesHelpEditingBody =>
+      'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles and blank tiles are both plantable areas; the whirlpool tiles here only recreate the initial lawn layout used by this module.';
+
+  @override
+  String get expeditionTilesHelpPresets => 'Preset Layouts';
+
+  @override
+  String get expeditionTilesHelpPresetsBody =>
+      'The editor includes the three official Expedition Gate layouts for Floor 1, Floor 2, and Floor 3. Switching presets replaces all placed non-plantable tiles and cannot be undone; after applying a preset, you can still adjust tiles manually.';
+
+  @override
+  String get expeditionTilesHelpSodPrompt => 'Planting Prompt';
+
+  @override
+  String get expeditionTilesHelpSodPromptBody =>
+      'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Expedition Tiles module disables this prompt by default.';
+
+  @override
+  String get expeditionTilesHelpNotesBody =>
+      'Expedition Tiles is intended for 5-row lawns such as Expedition Gate. Do not use it with 6-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.';
+
+  @override
+  String get tunnelExpeditionCompatibilityWarningTitle =>
+      'Module Compatibility Warning';
+
+  @override
+  String get tunnelExpeditionCompatibilityWarningBody =>
+      'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.';
+
+  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
       'Final stage time limit';
 
@@ -6255,7 +6618,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finalStageTimeLimitedChallengeHelpTitle =>
-      'Final stage time limit challenge';
+      'Final stage time limit challenge module';
 
   @override
   String get finalStageTimeLimitedChallengeHelpIntro =>
@@ -6287,6 +6650,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_TunnelDefendModuleProperties =>
       'Configures pathways and tile styles for Underground Palace secret realm levels';
+
+  @override
+  String get moduleTitle_SouDaCheTunnelDefendDefault => 'Expedition Tiles';
+
+  @override
+  String get moduleDesc_SouDaCheTunnelDefendDefault =>
+      'Configures non-plantable areas on the Expedition Gate lawn';
 
   @override
   String get moduleTitle_WitchModuleProperties => 'Fright Witch';
@@ -6782,11 +7152,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glacierModuleHelpRequirementsBody =>
-      'Only takes effect together with the Zomboss Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).';
+      'Only takes effect together with the Zomboss Mech Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).';
 
   @override
   String get glacierModuleCompatibilityWarning =>
-      'This module only works with the Zomboss Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.';
+      'This module only works with the Zomboss Mech Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.';
 
   @override
   String glacierModuleColumn(int columnIndex) {
@@ -7276,7 +7646,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionCategorySpecial => 'Special';
 
   @override
-  String get zombossMechActionCategorySpawn => 'Spawn';
+  String get zombossMechActionCategorySpawn => 'Summon';
+
+  @override
+  String get zombossMechActionCategoryCustom => 'Custom';
 
   @override
   String get zombossMechActionCategoryRetreat => 'Retreat';
@@ -7288,11 +7661,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechCustomActionLabel => 'Custom (CurrentLevel)';
 
   @override
+  String zombossCustomActionBaseAction(String action) {
+    return 'Base Action: $action';
+  }
+
+  @override
+  String zombossPresetDerivedBaseAction(String action) {
+    return 'Based on Preset Custom Action: $action';
+  }
+
+  @override
   String get zombossMechActionAliasHint =>
       'Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.';
 
   @override
-  String get zombossMechActionBaseObjclass => 'Base objclass';
+  String get zombossMechActionBaseObjclass => 'Action Type (objclass)';
+
+  @override
+  String get zombossMechActionBaseAction => 'Base Action';
+
+  @override
+  String get zombossMechActionDetails => 'Action Details';
+
+  @override
+  String get zombossMechActionRtid => 'RTID';
+
+  @override
+  String get zombossMechActionFields => 'Action Fields';
+
+  @override
+  String get zombossMechPropertiesViewTitle => 'ZombossMech Properties';
+
+  @override
+  String get viewZombossMechProperties => 'View Properties';
 
   @override
   String get zombossMechEditRetreatAction => 'Choose retreat action';
@@ -7305,6 +7706,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechNoZombiesInList => 'No zombies in list';
+
+  @override
+  String get zombossMechSpawnBallSettings =>
+      'SpawnBall contents (ZombieDropProps)';
+
+  @override
+  String get zombossMechAwardDropInvalidTitle => 'Invalid SpawnBall reference';
+
+  @override
+  String zombossMechAwardDropInvalidBody(String rtid) {
+    return 'AwardDrop points to \"$rtid\", but it is not a valid CurrentLevel ZombieDropProps object. The game may fail to load this action.';
+  }
+
+  @override
+  String get zombossMechAwardDropClearInvalid =>
+      'Clear invalid value and restore default';
 
   @override
   String get zombossMechCatalogActionReadOnly =>
@@ -7826,7 +8243,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waveGeneratorWaveScreenSubtitle => 'Wave generator wave';
 
   @override
-  String get waveGeneratorWaveScreenHelpTitle => 'Wave editor';
+  String get waveGeneratorWaveScreenHelpTitle => 'Wave Editor';
 
   @override
   String get waveGeneratorWaveScreenHelpBody =>
@@ -7877,10 +8294,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get customStageProperties => 'Custom stage properties';
+  String get customStageProperties => 'Custom lawn properties';
 
   @override
-  String get customStageNotFound => 'Custom stage object not found.';
+  String get customStageNotFound => 'Custom lawn object not found.';
 
   @override
   String get customStageSectionGeneral => 'General';
@@ -7898,7 +8315,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customStageSectionAdvanced => 'Advanced Settings';
 
   @override
-  String get customStageAlias => 'Stage alias (English only)';
+  String get customStageAlias => 'Stage alias (English letters only)';
 
   @override
   String get customStageNoResourceGroups => 'No resource groups in list';
@@ -8018,7 +8435,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick a base lawn appearance and edit it locally in this level.';
 
   @override
-  String get customStageAliasPromptTitle => 'Custom stage alias';
+  String get customStageAliasPromptTitle => 'Custom lawn alias';
 
   @override
   String get customStageAliasTaken =>
@@ -8041,14 +8458,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customStageSwitchToBuiltinMessage =>
-      'This permanently removes the custom stage data from this level. This cannot be undone.';
+      'This permanently removes the custom lawn data from this level. This cannot be undone.';
 
   @override
   String get customStageDeleteTitle => 'Delete custom lawn?';
 
   @override
   String get customStageDeleteMessage =>
-      'This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.';
+      'This permanently removes the custom lawn data from this level. If it is the active lawn, the level will switch to the default built-in lawn.';
 
   @override
   String get customStagePresetSectionTitle => 'Preset custom lawns';
@@ -8186,4 +8603,92 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mismatch_zlib_magic =>
       'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4';
+
+  @override
+  String get customPortalAdd => '+ Custom Portal';
+
+  @override
+  String customPortalName(int index) {
+    return 'Custom Portal $index';
+  }
+
+  @override
+  String get customPortalCreateTitle => 'Create Custom Portal';
+
+  @override
+  String get customPortalEditTitle => 'Edit Custom Portal';
+
+  @override
+  String get customPortalSelectBaseTitle => 'Select a Base Portal';
+
+  @override
+  String get customPortalBlankTemplate => 'Blank Portal Template';
+
+  @override
+  String get customPortalBlankTemplateSubtitle =>
+      'Start with the standard portal structure and no zombies.';
+
+  @override
+  String get customPortalBuiltInBases => 'Built-in Portals';
+
+  @override
+  String get customPortalUnusedTitle => 'Remove Unused Custom Portal?';
+
+  @override
+  String customPortalUnusedMessage(int index) {
+    return 'Custom Portal $index is no longer used. Remove its associated data objects from this level?';
+  }
+
+  @override
+  String get customPortalAppearanceSection => 'Portal Appearance';
+
+  @override
+  String get customPortalSpawnSection => 'Zombie Spawning';
+
+  @override
+  String get customPortalWorld => 'World Appearance';
+
+  @override
+  String get customPortalWorldTwister => 'Temporal Energy';
+
+  @override
+  String get customPortalPopAnimation => 'Portal Animation';
+
+  @override
+  String get customPortalAnimationModern => 'Modern Day\'s Portal';
+
+  @override
+  String get customPortalAnimationMemoryLane => 'Memory Lane\'s Portal';
+
+  @override
+  String get customPortalAnimationHydra => 'Zombot Spell Chanter\'s Mirror';
+
+  @override
+  String get customPortalSpawnMethod => 'Zombie Spawn Method';
+
+  @override
+  String get customPortalSpawnMethodShuffled => 'Shuffled Sequence';
+
+  @override
+  String get customPortalSpawnMethodInOrder => 'In Order';
+
+  @override
+  String get customPortalSpawnMethodHydra =>
+      'Zombot Spell Chanter\'s Random Spawn';
+
+  @override
+  String get customPortalZombieTypes => 'Spawnable Zombie Types';
+
+  @override
+  String get customPortalMinimumQuantity => 'Minimum Spawn Quantity';
+
+  @override
+  String get customPortalMaximumQuantity => 'Maximum Spawn Quantity';
+
+  @override
+  String get customPortalSpawnInterval => 'Zombie Spawn Interval';
+
+  @override
+  String get customPortalSpawnIntervalSubtitle =>
+      'Optionally set the minimum and maximum time between zombie spawns.';
 }

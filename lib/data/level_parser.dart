@@ -14,6 +14,15 @@ class LevelParser {
 
   static const pirateStageObjclasses = {'PirateStageProperties'};
 
+  static const underwaterWorldSixRowStageAliases = {
+    'DeepseaStage',
+    'DeepseaLandStage',
+  };
+
+  static const soudacheStageAlias = 'SouDaCheStage';
+  static const _soudacheBackgroundGroup = 'DelayLoad_Background_SouDaChe';
+  static const _soudacheBackgroundPrefix = 'IMAGE_BACKGROUNDS_SOUDACHE';
+
   static const levelJamMusicStageObjclasses = {
     'EightiesStageProperties',
     'ModernStageProperties',
@@ -172,6 +181,29 @@ class LevelParser {
   static bool isDeepSeaLawnFromFile(PvzLevelFile levelFile) {
     final parsed = parseLevel(levelFile);
     return isDeepSeaLawn(parsed.levelDef, levelFile);
+  }
+
+  static bool isUnderwaterWorldSixRowLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final info = levelDef == null ? null : RtidParser.parse(levelDef.stageModule);
+    if (info != null && underwaterWorldSixRowStageAliases.contains(info.alias)) {
+      return true;
+    }
+    return isDeepSeaLawn(levelDef, levelFile);
+  }
+
+  static bool isSouDaCheLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final info = levelDef == null ? null : RtidParser.parse(levelDef.stageModule);
+    if (info != null && info.alias == soudacheStageAlias) return true;
+    final objdata = resolveStageObjdata(levelDef, levelFile);
+    if (objdata == null) return false;
+    return objdata['BackgroundResourceGroup'] == _soudacheBackgroundGroup ||
+        objdata['BackgroundImagePrefix'] == _soudacheBackgroundPrefix;
   }
 
   static bool isSubmarineEnabledOnLawn(

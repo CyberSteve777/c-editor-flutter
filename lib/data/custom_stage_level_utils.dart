@@ -7,6 +7,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 abstract final class CustomStageLevelUtils {
   static const currentLevel = 'CurrentLevel';
   static const defaultBuiltinStageRtid = 'RTID(TutorialStage@LevelModules)';
+  static const _preferredLawnAppearanceStageAliases = {'KongfuBossStage'};
 
   static const ambientAudioOptions = [
     'Amb_Tutorial_Garden_BG_LP',
@@ -114,6 +115,12 @@ abstract final class CustomStageLevelUtils {
     required String objclass,
     required Map<String, dynamic> objdata,
   }) {
+    final preferredOption = _preferredStageBaseOptionForObjdata(
+      objclass: objclass,
+      objdata: objdata,
+    );
+    if (preferredOption != null) return 'stage_${preferredOption.alias}';
+
     final display = _resolveLawnAppearanceDisplay(
       objclass: objclass,
       objdata: objdata,
@@ -136,6 +143,12 @@ abstract final class CustomStageLevelUtils {
     if (supportsBeachMinigame(objdata) && isBeachMinigameEnabled(objdata)) {
       return 'Stage_BeachSnake.webp';
     }
+    final preferredOption = _preferredStageBaseOptionForObjdata(
+      objclass: objclass,
+      objdata: objdata,
+    );
+    if (preferredOption != null) return preferredOption.iconName;
+
     final display = _resolveLawnAppearanceDisplay(
       objclass: objclass,
       objdata: objdata,
@@ -148,6 +161,20 @@ abstract final class CustomStageLevelUtils {
       objdata: objdata,
     );
     return option?.iconName;
+  }
+
+  static StageBaseOption? _preferredStageBaseOptionForObjdata({
+    required String objclass,
+    required Map<String, dynamic> objdata,
+  }) {
+    final option = StageCatalogRepository.stageBaseOptionForObjdata(
+      objclass: objclass,
+      objdata: objdata,
+    );
+    if (option == null) return null;
+    return _preferredLawnAppearanceStageAliases.contains(option.alias)
+        ? option
+        : null;
   }
 
   static const lawnAppearanceFieldNames = [
@@ -224,11 +251,12 @@ abstract final class CustomStageLevelUtils {
     required String alias,
     required String objclass,
     required Map<String, dynamic> objdata,
+    List<String>? aliases,
     bool prepend = false,
   }) {
     final obj = PvzObject(
       objClass: objclass,
-      aliases: [alias],
+      aliases: aliases ?? [alias],
       objData: cloneJson(objdata),
     );
     if (prepend) {

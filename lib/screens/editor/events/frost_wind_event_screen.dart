@@ -175,13 +175,16 @@ class _FrostWindEventScreenState extends State<FrostWindEventScreen> {
                               color: theme.colorScheme.secondary,
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              l10n?.windN(idx + 1) ?? 'Wind #${idx + 1}',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Text(
+                                l10n?.windN(idx + 1) ?? 'Wind #${idx + 1}',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            const Spacer(),
                             IconButton(
                               icon: const Icon(Icons.delete_outline),
                               onPressed: () => _removeWind(idx),
@@ -189,14 +192,17 @@ class _FrostWindEventScreenState extends State<FrostWindEventScreen> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Row(
+                        Wrap(
+                          spacing: 16,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Text(
                               l10n?.rowNShort(wind.row + 1) ??
                                   'Row: ${wind.row + 1}',
                             ),
-                            const SizedBox(width: 16),
-                            Row(
+                            Wrap(
+                              spacing: 8,
                               children: [
                                 ChoiceChip(
                                   label: Text(l10n?.left ?? 'Left'),
@@ -209,7 +215,6 @@ class _FrostWindEventScreenState extends State<FrostWindEventScreen> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
                                 ChoiceChip(
                                   label: Text(l10n?.right ?? 'Right'),
                                   selected:

@@ -53,6 +53,8 @@ class ObjectOrderRegistry {
     'InitialGridItemGulliverTunnelProperties',
     'ProtectThePlantChallengeProperties',
     'ProtectTheGridItemChallengeProperties',
+    'MoldColonyChallengeProps',
+    'BoardGridMapProps',
     'GlacierModuleProperties',
     'ZombossBattleIntroProperties',
     'ZombossBattleModuleProperties',

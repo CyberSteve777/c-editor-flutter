@@ -287,9 +287,10 @@ ModuleAliasInputField(
                       children: [
                         Row(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                 Text(
                                   l10n.frozenPlantPlacementSelectedPosition,
                                   style: theme.textTheme.bodySmall?.copyWith(
@@ -303,7 +304,8 @@ ModuleAliasInputField(
                                     color: theme.colorScheme.primary,
                                   ),
                                 ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -696,6 +698,7 @@ class _PlacementEditDialogState extends State<_PlacementEditDialog> {
           ),
           const Divider(),
           DropdownButtonFormField<String?>(
+            isExpanded: true,
             initialValue: _condition,
             decoration: InputDecoration(
               labelText: l10n.frozenPlantPlacementCondition,

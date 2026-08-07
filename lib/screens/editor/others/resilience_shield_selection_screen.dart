@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:c_editor/data/pvz_models.dart';
 
+import 'package:c_editor/data/resilience_weak_type.dart';
+
 import 'package:c_editor/data/resilience_shield_utils.dart';
 
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -20,6 +22,23 @@ enum _FilterAxis { bySource, byType }
 
 /// Sentinel values for type-axis sub-filters.
 const _typeAll = -1;
+
+class _ResilienceSelectionViewState {
+  _ResilienceSelectionViewState({
+    required this.axis,
+    required this.sourceChoice,
+    required this.typeChoice,
+    required this.scrollOffset,
+  });
+
+  _FilterAxis axis;
+  String sourceChoice;
+  int typeChoice;
+  double scrollOffset;
+}
+
+final Map<String, _ResilienceSelectionViewState>
+_resilienceSelectionViewStates = {};
 
 /// Picks a preset or level-local resilience shield; returns RTID string.
 
@@ -55,9 +74,14 @@ class _ResilienceShieldSelectionScreenState
 
   String _query = '';
 
-  final ScrollController _listScrollController = ScrollController();
+  late final ScrollController _listScrollController;
 
-  bool _listScrollAtTop = true;
+  late bool _listScrollAtTop;
+
+  String get _viewStateKey =>
+      'level:${identityHashCode(widget.levelFile)}:resilience';
+
+  bool get _canRememberScroll => _query.trim().isEmpty;
 
   bool get _showCreateFab =>
       _axis == _FilterAxis.bySource &&
@@ -67,11 +91,17 @@ class _ResilienceShieldSelectionScreenState
   void initState() {
     super.initState();
 
-    _listScrollController.addListener(_onListScroll);
+    final remembered = _resilienceSelectionViewStates[_viewStateKey];
+
+    if (remembered != null) {
+      _axis = remembered.axis;
+      _sourceChoice = remembered.sourceChoice;
+      _typeChoice = remembered.typeChoice;
+    }
 
     final current = widget.currentRtid;
 
-    if (current != null) {
+    if (remembered == null && current != null) {
       final info = ResilienceShieldUtils.listItems(
         widget.levelFile,
       ).where((e) => e.rtid == current).firstOrNull;
@@ -88,10 +118,19 @@ class _ResilienceShieldSelectionScreenState
         }
       }
     }
+
+    final initialOffset = remembered?.scrollOffset ?? 0;
+    _listScrollAtTop = initialOffset <= 0;
+    _listScrollController = ScrollController(initialScrollOffset: initialOffset)
+      ..addListener(_onListScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
   }
 
   @override
   void dispose() {
+    _rememberScrollOffset();
     _listScrollController.removeListener(_onListScroll);
 
     _listScrollController.dispose();
@@ -102,9 +141,101 @@ class _ResilienceShieldSelectionScreenState
   void _onListScroll() {
     if (!_listScrollController.hasClients) return;
 
+    _rememberScrollOffset();
+
     final atTop = _listScrollController.offset <= 0;
 
     if (atTop != _listScrollAtTop && mounted) {
+      setState(() => _listScrollAtTop = atTop);
+    }
+  }
+
+  void _setAxis(_FilterAxis axis) {
+    if (_axis == axis) return;
+    setState(() {
+      _axis = axis;
+      if (axis == _FilterAxis.bySource) {
+        _sourceChoice = ResilienceShieldUtils.catalogSource;
+      } else {
+        _typeChoice = _typeAll;
+      }
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSourceChoice(String source) {
+    if (_sourceChoice == source) return;
+    setState(() {
+      _sourceChoice = source;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setTypeChoice(int type) {
+    if (_typeChoice == type) return;
+    setState(() {
+      _typeChoice = type;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setQuery(String query) {
+    if (_query == query) return;
+    setState(() {
+      _query = query;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+  }
+
+  void _rememberViewState({double? scrollOffset}) {
+    final state = _resilienceSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _ResilienceSelectionViewState(
+        axis: _axis,
+        sourceChoice: _sourceChoice,
+        typeChoice: _typeChoice,
+        scrollOffset: 0,
+      ),
+    );
+    state.axis = _axis;
+    state.sourceChoice = _sourceChoice;
+    state.typeChoice = _typeChoice;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+  }
+
+  void _rememberScrollOffset() {
+    if (!_canRememberScroll || !_listScrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _listScrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_listScrollController.hasClients) return;
+      _listScrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_listScrollController.hasClients) return;
+    final offset =
+        _resilienceSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _listScrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_listScrollController.offset != target) {
+      _listScrollController.jumpTo(target);
+    }
+    final atTop = target <= 0;
+    if (_listScrollAtTop != atTop) {
       setState(() => _listScrollAtTop = atTop);
     }
   }
@@ -244,7 +375,11 @@ class _ResilienceShieldSelectionScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.resilienceSelectShield ?? 'Select resilience shield'),
+        title: Text(
+          l10n?.resilienceSelectShield ?? 'Select resilience shield',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
 
       body: Stack(
@@ -268,11 +403,7 @@ class _ResilienceShieldSelectionScreenState
 
                         selected: _axis == _FilterAxis.bySource,
 
-                        onSelected: (_) => setState(() {
-                          _axis = _FilterAxis.bySource;
-
-                          _sourceChoice = ResilienceShieldUtils.catalogSource;
-                        }),
+                        onSelected: (_) => _setAxis(_FilterAxis.bySource),
                       ),
                     ),
 
@@ -284,11 +415,7 @@ class _ResilienceShieldSelectionScreenState
 
                         selected: _axis == _FilterAxis.byType,
 
-                        onSelected: (_) => setState(() {
-                          _axis = _FilterAxis.byType;
-
-                          _typeChoice = _typeAll;
-                        }),
+                        onSelected: (_) => _setAxis(_FilterAxis.byType),
                       ),
                     ),
                   ],
@@ -312,9 +439,8 @@ class _ResilienceShieldSelectionScreenState
                               _sourceChoice ==
                               ResilienceShieldUtils.catalogSource,
 
-                          onSelected: (_) => setState(
-                            () => _sourceChoice =
-                                ResilienceShieldUtils.catalogSource,
+                          onSelected: (_) => _setSourceChoice(
+                            ResilienceShieldUtils.catalogSource,
                           ),
                         ),
                       ),
@@ -331,9 +457,8 @@ class _ResilienceShieldSelectionScreenState
                               _sourceChoice ==
                               ResilienceShieldUtils.customSource,
 
-                          onSelected: (_) => setState(
-                            () => _sourceChoice =
-                                ResilienceShieldUtils.customSource,
+                          onSelected: (_) => _setSourceChoice(
+                            ResilienceShieldUtils.customSource,
                           ),
                         ),
                       ),
@@ -346,12 +471,11 @@ class _ResilienceShieldSelectionScreenState
 
                           selected: _typeChoice == _typeAll,
 
-                          onSelected: (_) =>
-                              setState(() => _typeChoice = _typeAll),
+                          onSelected: (_) => _setTypeChoice(_typeAll),
                         ),
                       ),
 
-                      for (var wt = 1; wt <= 6; wt++)
+                      for (final wt in resilienceWeakTypeJsonValues)
                         Padding(
                           padding: const EdgeInsets.only(right: 8),
 
@@ -365,7 +489,7 @@ class _ResilienceShieldSelectionScreenState
 
                             selected: _typeChoice == wt,
 
-                            onSelected: (_) => setState(() => _typeChoice = wt),
+                            onSelected: (_) => _setTypeChoice(wt),
                           ),
                         ),
                     ],
@@ -383,9 +507,9 @@ class _ResilienceShieldSelectionScreenState
 
                   useOutlineBorder: true,
 
-                  onChanged: (v) => setState(() => _query = v),
+                  onChanged: _setQuery,
 
-                  onClear: () => setState(() => _query = ''),
+                  onClear: () => _setQuery(''),
                 ),
               ),
 
@@ -420,10 +544,16 @@ class _ResilienceShieldSelectionScreenState
                               size: 28,
                             ),
 
-                            title: Text(item.alias),
+                            title: Text(
+                              item.alias,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
 
                             subtitle: Text(
                               item.displayRtid,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
 
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,

@@ -8,6 +8,7 @@ import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_properties_screen.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_base_selection_screen.dart';
+import 'package:c_editor/screens/editor/others/zomboss_mech_properties_view_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/reserved_column_preview_grid.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
@@ -293,6 +294,22 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
     });
   }
 
+  void _openPropertiesView() {
+    final catalog = _currentCatalog;
+    if (catalog == null || _isCustomSelected) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZombossMechPropertiesViewScreen(
+          catalog: catalog,
+          levelFile: widget.levelFile,
+          mechType: _battleData.zombossMechType,
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
   String _displayName(BuildContext context, String key) {
     final name = ResourceNames.lookup(context, key);
     return name == key ? key : name;
@@ -448,6 +465,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
         Tooltip(
           message: l10n?.zombossMechVariationHint ?? '',
           child: DropdownButtonFormField<String>(
+            isExpanded: true,
             initialValue: _variationDropdownValue(
               variations,
               variations.contains(_battleData.zombossMechType)
@@ -487,6 +505,16 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
                 icon: const Icon(Icons.edit),
                 label: Text(l10n?.editCustomZombossMech ?? 'Edit'),
               ),
+            ),
+          ),
+        ] else if (catalog != null) ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _openPropertiesView,
+              icon: const Icon(Icons.info_outline),
+              label: Text(l10n?.viewZombossMechProperties ?? 'View properties'),
             ),
           ),
         ],

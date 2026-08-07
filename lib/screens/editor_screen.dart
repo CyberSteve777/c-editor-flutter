@@ -4,12 +4,15 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
+import 'package:c_editor/data/mold_colony_module_utils.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -51,6 +54,7 @@ import 'package:c_editor/screens/editor/modules/pickup_collectable_tutorial_scre
 import 'package:c_editor/screens/editor/modules/zombie_sun_drop_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/power_tile_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/protect_grid_item_challenge_screen.dart';
+import 'package:c_editor/screens/editor/modules/mold_colony_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/protect_plant_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/roof_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/rain_dark_properties_screen.dart';
@@ -158,6 +162,12 @@ class _EditorScreenState extends State<EditorScreen> {
   TabController? _tabController;
 
   EditorCubit get _ec => context.read<EditorCubit>();
+
+  String get _selectionStateBucketId {
+    final filePath = _ec.filePath;
+    if (filePath.isNotEmpty) return 'level:$filePath';
+    return 'level:${_ec.fileName}';
+  }
 
   @override
   void initState() {
@@ -463,6 +473,7 @@ class _EditorScreenState extends State<EditorScreen> {
               context,
               MaterialPageRoute(
                 builder: (_) => ZombieSelectionScreen(
+                  stateBucketId: _selectionStateBucketId,
                   editorCubit: _ec,
                   multiSelect: false,
                   onZombieSelected: (id) {
@@ -579,12 +590,14 @@ class _EditorScreenState extends State<EditorScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n?.customStageAliasPromptTitle ?? 'Custom stage alias'),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n?.customStageAlias ?? 'Stage alias',
+        content: EditorResponsiveInputField(
+          label: l10n?.customStageAlias ?? 'Stage alias',
+          decoration: const InputDecoration(),
+          builder: (context, decoration) => TextField(
+            controller: controller,
+            decoration: decoration,
+            autofocus: true,
           ),
-          autofocus: true,
         ),
         actions: [
           TextButton(
@@ -680,6 +693,7 @@ class _EditorScreenState extends State<EditorScreen> {
       context,
       MaterialPageRoute(
         builder: (ctx) => StageBaseSelectionScreen(
+          stateBucketId: '$_selectionStateBucketId:stage-base',
           onStageBaseSelected: (option) {
             baseOption = option;
             Navigator.pop(ctx);
@@ -754,6 +768,10 @@ class _EditorScreenState extends State<EditorScreen> {
       alias: alias,
       objclass: preset.objclass,
       objdata: preset.objdata,
+      aliases: CustomStagePresetRepository.aliasesForPresetInstance(
+        primaryAlias: alias,
+        preset: preset,
+      ),
       prepend: true,
     );
     levelDef.stageModule = rtid;
@@ -934,10 +952,21 @@ class _EditorScreenState extends State<EditorScreen> {
       if (info != null) {
         if (info.source == 'CurrentLevel') {
           final obj = _ec.state.parsedData!.objectMap[info.alias];
-          if (obj != null) existingObjClasses.add(obj.objClass);
+          if (obj != null) {
+            existingObjClasses.add(
+              ModuleRegistry.getMetadataForAlias(
+                info.alias,
+                obj.objClass,
+              ).selectionKey,
+            );
+          }
         } else {
           final cls = ReferenceRepository.instance.getObjClass(info.alias);
-          if (cls != null) existingObjClasses.add(cls);
+          if (cls != null) {
+            existingObjClasses.add(
+              ModuleRegistry.getMetadataForAlias(info.alias, cls).selectionKey,
+            );
+          }
         }
       }
     }
@@ -994,15 +1023,30 @@ class _EditorScreenState extends State<EditorScreen> {
       def.modules.add(rtid);
 
       final objData = Map<String, dynamic>.from(meta.initialData ?? {});
-      if (meta.objClass == 'TunnelDefendModuleProperties') {
+      if (meta.defaultAlias == 'SouDaCheTunnelDefendDefault') {
+        objData['BrickMapIndex'] = 3;
+        objData['reportError'] = false;
+        objData['Roads'] = objData['Roads'] ?? [];
+        objData.remove('TunnelSequenceInterval');
+      } else if (meta.objClass == 'TunnelDefendModuleProperties') {
         final stageAlias = RtidParser.parse(def.stageModule)?.alias ?? '';
         objData['BrickMapIndex'] = stageAlias == 'UnchartedMausoleum2Stage'
             ? 2
             : 1;
+        objData['reportError'] = objData['reportError'] ?? true;
       }
-      _ec.state.levelFile!.objects.add(
-        PvzObject(aliases: [alias], objClass: meta.objClass, objData: objData),
+      final moduleObject = PvzObject(
+        aliases: [alias],
+        objClass: meta.objClass,
+        objData: objData,
       );
+      _ec.state.levelFile!.objects.add(moduleObject);
+      if (meta.objClass == MoldColonyModuleUtils.moduleObjClass) {
+        MoldColonyModuleUtils.ensureCurrentLevelLayout(
+          levelFile: _ec.state.levelFile!,
+          moduleObject: moduleObject,
+        );
+      }
     } else {
       final rtid = RtidParser.build(alias, source);
       def.modules.add(rtid);
@@ -1016,11 +1060,30 @@ class _EditorScreenState extends State<EditorScreen> {
     final def = _ec.state.parsedData?.levelDef;
     if (def == null) return;
 
-    def.modules.remove(rtid);
     final info = RtidParser.parse(rtid);
+    String? moldLocations;
+    if (info != null && info.source == 'CurrentLevel') {
+      final moduleObject = _ec.state.levelFile!.objects.firstWhereOrNull(
+        (object) => object.aliases?.contains(info.alias) == true,
+      );
+      if (moduleObject?.objClass == MoldColonyModuleUtils.moduleObjClass &&
+          moduleObject?.objData is Map) {
+        moldLocations = MoldColonyChallengePropsData.fromJson(
+          Map<String, dynamic>.from(moduleObject!.objData as Map),
+        ).locations;
+      }
+    }
+
+    def.modules.remove(rtid);
     if (info != null && info.source == 'CurrentLevel') {
       _ec.state.levelFile!.objects.removeWhere(
         (o) => o.aliases?.contains(info.alias) == true,
+      );
+    }
+    if (moldLocations != null) {
+      MoldColonyModuleUtils.removeUnreferencedLayout(
+        levelFile: _ec.state.levelFile!,
+        locations: moldLocations,
       );
     }
     if (info?.alias == FinalStageTimeLimitedModuleUtils.alias) {
@@ -1094,6 +1157,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1129,6 +1193,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1164,6 +1229,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1256,6 +1322,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1328,6 +1395,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1348,6 +1416,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1385,6 +1454,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1405,6 +1475,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1442,6 +1513,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1462,6 +1534,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1496,6 +1569,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1545,6 +1619,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1582,6 +1657,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1727,6 +1803,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1987,6 +2064,7 @@ class _EditorScreenState extends State<EditorScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => ZombieSelectionScreen(
+          stateBucketId: _selectionStateBucketId,
           editorCubit: _ec,
           multiSelect: false,
           onZombieSelected: (id) {
@@ -2396,6 +2474,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: true,
                     onZombieSelected: (_) {},
@@ -2428,6 +2507,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -2650,6 +2730,21 @@ class _EditorScreenState extends State<EditorScreen> {
       }
       return;
     }
+    if (info.source == 'CurrentLevel' &&
+        objClass == MoldColonyModuleUtils.moduleObjClass) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MoldColonyChallengeScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (info.source == 'CurrentLevel' && objClass == 'SeedRainProperties') {
       Navigator.push(
         context,
@@ -2684,6 +2779,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -2747,17 +2843,20 @@ class _EditorScreenState extends State<EditorScreen> {
                   excludeIds,
                   initialSelectedIds,
                   blockRealmExclusiveInChooser = false,
+                  blockHiddenPlantsInChooser = false,
                   allowDuplicateSelection = false,
                 }) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => PlantSelectionScreen(
+                        stateBucketId: _selectionStateBucketId,
                         isMultiSelect: true,
                         excludeIds: excludeIds ?? const [],
                         initialSelectedIds: initialSelectedIds ?? const [],
                         blockRealmExclusiveInChooser:
                             blockRealmExclusiveInChooser,
+                        blockHiddenPlantsInChooser: blockHiddenPlantsInChooser,
                         allowDuplicateSelection: allowDuplicateSelection,
                         onPlantSelected: (_) {},
                         onMultiPlantSelected: (ids) {
@@ -2778,6 +2877,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: true,
                     onZombieSelected: (_) {},
@@ -2982,6 +3082,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -3350,7 +3451,9 @@ class _EditorScreenState extends State<EditorScreen> {
                             );
                             if (!mounted) return;
                           }
-                          WidgetsBinding.instance.addPostFrameCallback((_) async {
+                          WidgetsBinding.instance.addPostFrameCallback((
+                            _,
+                          ) async {
                             if (!context.mounted) return;
                             await Navigator.push(
                               context,
@@ -3387,7 +3490,9 @@ class _EditorScreenState extends State<EditorScreen> {
                       enabled: _ec.state.levelFile != null,
                       child: ListTile(
                         leading: const Icon(Icons.code),
-                        title: Text(l10n?.tooltipJsonViewer ?? 'View/edit JSON'),
+                        title: Text(
+                          l10n?.tooltipJsonViewer ?? 'View/edit JSON',
+                        ),
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
@@ -3433,7 +3538,9 @@ class _EditorScreenState extends State<EditorScreen> {
                     await _save();
                     if (!mounted) return;
                     if (hadChanges) {
-                      await Future<void>.delayed(const Duration(milliseconds: 32));
+                      await Future<void>.delayed(
+                        const Duration(milliseconds: 32),
+                      );
                       if (!mounted) return;
                     }
                     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -3489,145 +3596,154 @@ class _EditorScreenState extends State<EditorScreen> {
                             children: [
                               TabBar(
                                 isScrollable: shouldScroll,
-                                tabAlignment:
-                                    shouldScroll
-                                        ? TabAlignment.start
-                                        : TabAlignment.fill,
+                                tabAlignment: shouldScroll
+                                    ? TabAlignment.start
+                                    : TabAlignment.fill,
                                 dividerHeight: 0,
                                 indicatorSize: TabBarIndicatorSize.tab,
                                 tabs: _ec.state.availableTabs.map((t) {
-                              IconData icon;
-                              String label;
-                              switch (t) {
-                                case EditorTabType.settings:
-                                  icon = Icons.settings;
-                                  label = l10n?.settings ?? 'Settings';
-                                  break;
-                                case EditorTabType.timeline:
-                                  icon = Icons.timeline;
-                                  label = l10n?.timeline ?? 'Timeline';
-                                  break;
-                                case EditorTabType.waveGenerator:
-                                  icon = Icons.waves;
-                                  label =
-                                      l10n?.waveGeneratorTabLabel ?? 'Waves';
-                                  break;
-                                case EditorTabType.iZombie:
-                                  icon = Icons.groups;
-                                  label = l10n?.iZombie ?? 'I, Zombie';
-                                  break;
-                                case EditorTabType.vaseBreaker:
-                                  icon = Icons.inventory_2;
-                                  label = l10n?.vaseBreaker ?? 'Vase breaker';
-                                  break;
-                                case EditorTabType.zombossMech:
-                                  icon = Icons.warning_amber;
-                                  label =
-                                      l10n?.zombossMech ?? 'ZombossMech Battle';
-                                  break;
-                                case EditorTabType.zombossBattle:
-                                  icon = Icons.castle;
-                                  label =
-                                      l10n?.zombossBattle ?? 'Zomboss Battle';
-                                  break;
-                              }
-                              return Tab(text: label, icon: Icon(icon));
-                            }).toList(),
-                          ),
-                          Expanded(
-                            child: TabBarView(
-                              children: _ec.state.availableTabs.map<Widget>((
-                                t,
-                              ) {
-                                switch (t) {
-                                  case EditorTabType.settings:
-                                    return LevelSettingsTab(
-                                      levelDef: _ec.state.parsedData!.levelDef,
-                                      objectMap:
-                                          _ec.state.parsedData!.objectMap,
-                                      missingModules:
-                                          _calculateMissingModules(),
-                                      missingModuleWarnings:
-                                          _getMissingModuleWarnings(),
-                                      showGlacierModuleCompatibilityWarning:
-                                          _showGlacierModuleCompatibilityWarning(),
-                                      onEditBasicInfo: _handleEditBasicInfo,
-                                      onEditModule: _handleEditModule,
-                                      onRemoveModule: _handleRemoveModule,
-                                      onReorderModules: _handleReorderModules,
-                                      onNavigateToAddModule:
-                                          _handleNavigateToAddModule,
-                                    );
-                                  case EditorTabType.timeline:
-                                    return WaveTimelineTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      parsed: _ec.state.parsedData!,
-                                      onChanged: _markDirty,
-                                      onEditEvent: _handleEditEvent,
-                                      onAddEvent: _handleAddEvent,
-                                      onEditWaveManagerSettings:
-                                          _handleEditWaveManagerSettings,
-                                      onEditCustomZombie:
-                                          _handleEditCustomZombie,
-                                      onEditCustomFish: _handleEditCustomFish,
-                                      onOpenModule: _handleEditModule,
-                                      openWaveSheetNotifier:
-                                          _ec.openWaveSheetNotifier,
-                                      onCreateContainer: () =>
-                                          _handleCreateWaveContainer(),
-                                      onDeleteContainer: () =>
-                                          _handleDeleteWaveContainer(),
-                                    );
-                                  case EditorTabType.waveGenerator:
-                                    return WaveGeneratorTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      parsed: _ec.state.parsedData!,
-                                      onChanged: _markDirty,
-                                      onOpenModule: _handleEditModule,
-                                      onEditWaveGeneratorSettings:
-                                          _handleEditWaveGeneratorSettings,
-                                      onEditWave: _handleEditWaveGeneratorWave,
-                                    );
-                                  case EditorTabType.iZombie:
-                                    return IZombieTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                    );
-                                  case EditorTabType.vaseBreaker:
-                                    return VaseBreakerTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                      editorCubit: _ec,
-                                      onAddModule: (objClass) {
-                                        _addModule(
-                                          ModuleRegistry.getMetadata(objClass),
+                                  IconData icon;
+                                  String label;
+                                  switch (t) {
+                                    case EditorTabType.settings:
+                                      icon = Icons.settings;
+                                      label = l10n?.settings ?? 'Settings';
+                                      break;
+                                    case EditorTabType.timeline:
+                                      icon = Icons.timeline;
+                                      label = l10n?.timeline ?? 'Timeline';
+                                      break;
+                                    case EditorTabType.waveGenerator:
+                                      icon = Icons.waves;
+                                      label =
+                                          l10n?.waveGeneratorTabLabel ??
+                                          'Waves';
+                                      break;
+                                    case EditorTabType.iZombie:
+                                      icon = Icons.groups;
+                                      label = l10n?.iZombie ?? 'I, Zombie';
+                                      break;
+                                    case EditorTabType.vaseBreaker:
+                                      icon = Icons.inventory_2;
+                                      label =
+                                          l10n?.vaseBreaker ?? 'Vase breaker';
+                                      break;
+                                    case EditorTabType.zombossMech:
+                                      icon = Icons.warning_amber;
+                                      label =
+                                          l10n?.zombossMech ??
+                                          'ZombossMech Battle';
+                                      break;
+                                    case EditorTabType.zombossBattle:
+                                      icon = Icons.castle;
+                                      label =
+                                          l10n?.zombossBattle ??
+                                          'Zomboss Battle';
+                                      break;
+                                  }
+                                  return Tab(text: label, icon: Icon(icon));
+                                }).toList(),
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  children: _ec.state.availableTabs.map<Widget>((
+                                    t,
+                                  ) {
+                                    switch (t) {
+                                      case EditorTabType.settings:
+                                        return LevelSettingsTab(
+                                          levelDef:
+                                              _ec.state.parsedData!.levelDef,
+                                          objectMap:
+                                              _ec.state.parsedData!.objectMap,
+                                          missingModules:
+                                              _calculateMissingModules(),
+                                          missingModuleWarnings:
+                                              _getMissingModuleWarnings(),
+                                          showGlacierModuleCompatibilityWarning:
+                                              _showGlacierModuleCompatibilityWarning(),
+                                          onEditBasicInfo: _handleEditBasicInfo,
+                                          onEditModule: _handleEditModule,
+                                          onRemoveModule: _handleRemoveModule,
+                                          onReorderModules:
+                                              _handleReorderModules,
+                                          onNavigateToAddModule:
+                                              _handleNavigateToAddModule,
                                         );
-                                      },
-                                    );
-                                  case EditorTabType.zombossMech:
-                                    return ZombossMechBattleTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                      onOpenGlacierModule:
-                                          _openGlacierModuleSettings,
-                                    );
-                                  case EditorTabType.zombossBattle:
-                                    return ZombossBattleTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                    );
-                                }
-                              }).toList(),
-                            ),
-                          ),
-                        ],
+                                      case EditorTabType.timeline:
+                                        return WaveTimelineTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          parsed: _ec.state.parsedData!,
+                                          onChanged: _markDirty,
+                                          onEditEvent: _handleEditEvent,
+                                          onAddEvent: _handleAddEvent,
+                                          onEditWaveManagerSettings:
+                                              _handleEditWaveManagerSettings,
+                                          onEditCustomZombie:
+                                              _handleEditCustomZombie,
+                                          onEditCustomFish:
+                                              _handleEditCustomFish,
+                                          onOpenModule: _handleEditModule,
+                                          openWaveSheetNotifier:
+                                              _ec.openWaveSheetNotifier,
+                                          onCreateContainer: () =>
+                                              _handleCreateWaveContainer(),
+                                          onDeleteContainer: () =>
+                                              _handleDeleteWaveContainer(),
+                                        );
+                                      case EditorTabType.waveGenerator:
+                                        return WaveGeneratorTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          parsed: _ec.state.parsedData!,
+                                          onChanged: _markDirty,
+                                          onOpenModule: _handleEditModule,
+                                          onEditWaveGeneratorSettings:
+                                              _handleEditWaveGeneratorSettings,
+                                          onEditWave:
+                                              _handleEditWaveGeneratorWave,
+                                        );
+                                      case EditorTabType.iZombie:
+                                        return IZombieTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                        );
+                                      case EditorTabType.vaseBreaker:
+                                        return VaseBreakerTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                          editorCubit: _ec,
+                                          onAddModule: (objClass) {
+                                            _addModule(
+                                              ModuleRegistry.getMetadata(
+                                                objClass,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      case EditorTabType.zombossMech:
+                                        return ZombossMechBattleTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                          onOpenGlacierModule:
+                                              _openGlacierModuleSettings,
+                                        );
+                                      case EditorTabType.zombossBattle:
+                                        return ZombossBattleTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                        );
+                                    }
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          );
+                  ),
+                ),
+        );
         if (isDesktop) {
           body = Shortcuts(
             shortcuts: const {
@@ -3686,7 +3802,7 @@ class _UiScalePresetLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
+    return Row(
       children: [
         _UiScalePresetLabel(
           label: smallLabel,

@@ -19,12 +19,14 @@ class ZombossMechRobotSpawnListEditor extends StatelessWidget {
     required this.entries,
     required this.onChanged,
     this.levelFile,
+    this.editable = true,
   });
 
   final String fieldLabel;
   final List<ZombossRobotSpawnEntry> entries;
   final ValueChanged<List<ZombossRobotSpawnEntry>> onChanged;
   final PvzLevelFile? levelFile;
+  final bool editable;
 
   bool get _isDeepSeaLawn =>
       levelFile != null && LevelParser.isDeepSeaLawnFromFile(levelFile!);
@@ -63,12 +65,13 @@ class ZombossMechRobotSpawnListEditor extends StatelessWidget {
                 Expanded(
                   child: Text(fieldLabel, style: theme.textTheme.titleSmall),
                 ),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  tooltip: l10n?.zombossMechAddZombie ?? 'Add zombie',
-                  onPressed: () => _addEntry(context),
-                  icon: const Icon(Icons.add_circle_outline),
-                ),
+                if (editable)
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: l10n?.zombossMechAddZombie ?? 'Add zombie',
+                    onPressed: () => _addEntry(context),
+                    icon: const Icon(Icons.add_circle_outline),
+                  ),
               ],
             ),
           ),
@@ -84,6 +87,7 @@ class ZombossMechRobotSpawnListEditor extends StatelessWidget {
             _RobotSpawnEntryCard(
               entry: entries[i],
               maxRowIndex: _maxRowIndex,
+              editable: editable,
               onChanged: (updated) {
                 final next = List<ZombossRobotSpawnEntry>.from(entries);
                 next[i] = updated;
@@ -126,6 +130,7 @@ class _RobotSpawnEntryCard extends StatelessWidget {
   const _RobotSpawnEntryCard({
     required this.entry,
     required this.maxRowIndex,
+    required this.editable,
     required this.onChanged,
     required this.onRemove,
     required this.onPickZombie,
@@ -133,6 +138,7 @@ class _RobotSpawnEntryCard extends StatelessWidget {
 
   final ZombossRobotSpawnEntry entry;
   final int maxRowIndex;
+  final bool editable;
   final ValueChanged<ZombossRobotSpawnEntry> onChanged;
   final VoidCallback onRemove;
   final VoidCallback onPickZombie;
@@ -205,52 +211,56 @@ class _RobotSpawnEntryCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      TextButton.icon(
-                        onPressed: onPickZombie,
-                        icon: const Icon(Icons.swap_horiz, size: 20),
-                        label: Text(
-                          l10n?.switchZombie ?? 'Switch zombie',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 4,
+                      if (editable)
+                        TextButton.icon(
+                          onPressed: onPickZombie,
+                          icon: const Icon(Icons.swap_horiz, size: 20),
+                          label: Text(
+                            l10n?.switchZombie ?? 'Switch zombie',
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          visualDensity: VisualDensity.compact,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 20),
-                  onPressed: onRemove,
-                  tooltip: l10n?.remove ?? 'Remove',
-                ),
+                if (editable)
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 20),
+                    onPressed: onRemove,
+                    tooltip: l10n?.remove ?? 'Remove',
+                  ),
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            EditorResponsiveFieldRow(
               children: [
                 Expanded(
                   flex: 2,
                   child: TextFormField(
                     initialValue: '${entry.weight}',
+                    readOnly: !editable,
                     decoration: editorInputDecoration(
                       context,
                       labelText: l10n?.zombossMechRobotSpawnWeight ?? 'Weight',
                     ),
                     keyboardType: TextInputType.number,
-                    onChanged: (v) {
-                      final parsed = int.tryParse(v);
-                      if (parsed != null && parsed >= 0) {
-                        entry.weight = parsed;
-                        onChanged(entry);
-                      }
-                    },
+                    onChanged: editable
+                        ? (v) {
+                            final parsed = int.tryParse(v);
+                            if (parsed != null && parsed >= 0) {
+                              entry.weight = parsed;
+                              onChanged(entry);
+                            }
+                          }
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -273,11 +283,13 @@ class _RobotSpawnEntryCard extends StatelessWidget {
                       for (var r = 0; r <= maxRowIndex; r++)
                         DropdownMenuItem(value: r, child: Text('$r')),
                     ],
-                    onChanged: (v) {
-                      if (v == null) return;
-                      entry.row = v;
-                      onChanged(entry);
-                    },
+                    onChanged: editable
+                        ? (v) {
+                            if (v == null) return;
+                            entry.row = v;
+                            onChanged(entry);
+                          }
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -294,11 +306,13 @@ class _RobotSpawnEntryCard extends StatelessWidget {
                       for (final lv in _levelOptions)
                         DropdownMenuItem(value: lv, child: Text('$lv')),
                     ],
-                    onChanged: (v) {
-                      if (v == null) return;
-                      entry.level = v;
-                      onChanged(entry);
-                    },
+                    onChanged: editable
+                        ? (v) {
+                            if (v == null) return;
+                            entry.level = v;
+                            onChanged(entry);
+                          }
+                        : null,
                   ),
                 ),
               ],
@@ -314,10 +328,12 @@ class _RobotSpawnEntryCard extends StatelessWidget {
                 Switch(
                   value: entry.hasPlantfood,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  onChanged: (v) {
-                    entry.hasPlantfood = v;
-                    onChanged(entry);
-                  },
+                  onChanged: editable
+                      ? (v) {
+                          entry.hasPlantfood = v;
+                          onChanged(entry);
+                        }
+                      : null,
                 ),
               ],
             ),

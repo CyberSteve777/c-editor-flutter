@@ -3,7 +3,7 @@
     {
       "objclass": "LevelDefinition",
       "objdata": {
-        "Description": "本关为僵王机甲战示例关",
+        "Description": "本关为机甲僵王战示例关",
         "LevelNumber": 7,
         "Loot": "RTID(DefaultLoot@LevelModules)",
         "Modules": [
@@ -14,7 +14,7 @@
           "RTID(ZombossBattle@CurrentLevel)"
         ],
         "MusicType": "MainPath",
-        "Name": "僵王机甲战示例",
+        "Name": "机甲僵王战示例",
         "StageModule": "RTID(FutureStage@LevelModules)",
         "StartingSun": 200,
         "VictoryModule": "RTID(ZombossVictoryOutro@LevelModules)"

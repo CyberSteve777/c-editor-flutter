@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:c_editor/data/asset_loader.dart';
 import 'package:c_editor/data/models/custom_stage_preset.dart';
+import 'package:c_editor/data/pvz_models.dart';
+
+enum CustomStageOrigin { presetTemplate, presetDerived, userCreated }
 
 abstract final class CustomStagePresetRepository {
   static const String _resourcePath =
@@ -36,11 +40,69 @@ abstract final class CustomStagePresetRepository {
 
   static List<CustomStagePreset> get presets => List.unmodifiable(_presets);
 
-  static bool isPresetCustomStageAlias(String alias) {
+  @visibleForTesting
+  static void resetForTest() {
+    _isLoaded = false;
+    _presets.clear();
+  }
+
+  static CustomStagePreset? presetById(String id) {
     for (final preset in _presets) {
-      if (_matchesSuggestedAlias(alias, preset.alias)) return true;
+      if (preset.id == id) return preset;
     }
-    return false;
+    return null;
+  }
+
+  static CustomStagePreset? presetForObject(PvzObject object) {
+    final alias = object.aliases?.isNotEmpty == true
+        ? object.aliases!.first
+        : null;
+    if (alias == null) return null;
+    return presetForAlias(alias);
+  }
+
+  static CustomStagePreset? presetForAlias(String alias) {
+    for (final preset in _presets) {
+      if (_matchesSuggestedAlias(alias, preset.alias)) return preset;
+    }
+    return null;
+  }
+
+  static CustomStageOrigin originForObject(PvzObject object) {
+    final preset = presetForObject(object);
+    if (preset == null) return CustomStageOrigin.userCreated;
+    return _matchesPresetData(object, preset)
+        ? CustomStageOrigin.presetTemplate
+        : CustomStageOrigin.presetDerived;
+  }
+
+  static List<String> aliasesForPresetInstance({
+    required String primaryAlias,
+    required CustomStagePreset preset,
+  }) {
+    return [primaryAlias];
+  }
+
+  static List<String> preservePresetMarkerAliases({
+    required String primaryAlias,
+    required Iterable<String>? existingAliases,
+  }) {
+    return [primaryAlias];
+  }
+
+  static bool isMetadataAlias(String alias) =>
+      PvzObject.isEditorMetadataAlias(alias);
+
+  static bool isPresetCustomStageAlias(String alias) {
+    return presetForAlias(alias) != null;
+  }
+
+  static bool _matchesPresetData(PvzObject object, CustomStagePreset preset) {
+    if (object.objClass != preset.objclass) return false;
+    final data = object.objData is Map
+        ? Map<String, dynamic>.from(object.objData as Map)
+        : const <String, dynamic>{};
+    return const DeepCollectionEquality().equals(data, preset.objdata);
   }
 
   static bool _matchesSuggestedAlias(String alias, String suggestedAlias) {

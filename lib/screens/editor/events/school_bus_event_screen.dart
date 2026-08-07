@@ -245,6 +245,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DropdownButtonFormField<int>(
+                        isExpanded: true,
                         initialValue: des.row.clamp(1, _maxRow),
                         items: List.generate(_maxRow, (i) => i + 1)
                             .map(
@@ -271,6 +272,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: busType,
                         items: [
                           DropdownMenuItem(
@@ -302,56 +304,62 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        key: ValueKey('hp_${params.schoolBusHitPoints}'),
-                        initialValue: params.schoolBusHitPoints.toString(),
-                        decoration: InputDecoration(
-                          labelText:
-                              l10n?.schoolBusHitPoints ??
-                              'Truck health (SchoolBusHitPoints)',
-                          border: const OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.schoolBusHitPoints ??
+                            'Truck health (SchoolBusHitPoints)',
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                           isDense: true,
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final hp = int.tryParse(v);
-                          if (hp != null && hp > 0) {
-                            _updateParams(
-                              SchoolBusParamsData(
-                                schoolBusHitPoints: hp,
-                                schoolBusSpeed: params.schoolBusSpeed,
-                                zombies: params.zombies,
-                              ),
-                            );
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          key: ValueKey('hp_${params.schoolBusHitPoints}'),
+                          initialValue: params.schoolBusHitPoints.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final hp = int.tryParse(v);
+                            if (hp != null && hp > 0) {
+                              _updateParams(
+                                SchoolBusParamsData(
+                                  schoolBusHitPoints: hp,
+                                  schoolBusSpeed: params.schoolBusSpeed,
+                                  zombies: params.zombies,
+                                ),
+                              );
+                            }
+                          },
+                        ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        key: ValueKey('sp_${params.schoolBusSpeed}'),
-                        initialValue: params.schoolBusSpeed.toString(),
-                        decoration: InputDecoration(
-                          labelText:
-                              l10n?.schoolBusSpeed ??
-                              'Truck speed (SchoolBusSpeed)',
-                          border: const OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.schoolBusSpeed ??
+                            'Truck speed (SchoolBusSpeed)',
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                           isDense: true,
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                        builder: (context, decoration) => TextFormField(
+                          key: ValueKey('sp_${params.schoolBusSpeed}'),
+                          initialValue: params.schoolBusSpeed.toString(),
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final sp = double.tryParse(v);
+                            if (sp != null && sp >= 0) {
+                              _updateParams(
+                                SchoolBusParamsData(
+                                  schoolBusHitPoints: params.schoolBusHitPoints,
+                                  schoolBusSpeed: sp,
+                                  zombies: params.zombies,
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        onChanged: (v) {
-                          final sp = double.tryParse(v);
-                          if (sp != null && sp >= 0) {
-                            _updateParams(
-                              SchoolBusParamsData(
-                                schoolBusHitPoints: params.schoolBusHitPoints,
-                                schoolBusSpeed: sp,
-                                zombies: params.zombies,
-                              ),
-                            );
-                          }
-                        },
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -415,6 +423,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                               SizedBox(
                                 width: 200,
                                 child: DropdownButtonFormField<int>(
+                                  isExpanded: true,
                                   initialValue: z.level.clamp(
                                     _levelMin,
                                     _levelMax,

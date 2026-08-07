@@ -193,9 +193,10 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
                         children: [
                           Row(
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                   Text(
                                     l10n?.selectedPosition ??
                                         'Selected position',
@@ -212,7 +213,8 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
+                          ],
                           ),
                           const SizedBox(height: 16),
                           _buildGrid(),

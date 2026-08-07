@@ -466,7 +466,10 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           l10n?.fishSelectedPosition ?? 'Selected:',
@@ -474,7 +477,6 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Text(
                           '${l10n?.fishRow ?? "Row"}=$_selectedRow, ${l10n?.fishColumn ?? "Column"}=$_selectedCol',
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -638,11 +640,15 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                     size: 20,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    l10n?.outsideLawnItems ?? 'Objects outside the lawn',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.error,
+                  Expanded(
+                    child: Text(
+                      l10n?.outsideLawnItems ?? 'Objects outside the lawn',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.error,
+                      ),
                     ),
                   ),
                 ],

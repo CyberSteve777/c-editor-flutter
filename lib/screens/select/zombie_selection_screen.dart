@@ -17,6 +17,27 @@ import 'package:c_editor/widgets/editor_components.dart'
 
 /// Placeholder when a zombie has no icon or icon fails to load.
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
+const String _kStayTunedZombieId = 'stay_tuned';
+
+enum _ZombieBlockedReason {
+  stayTunedMoon,
+  stayTunedTaleZCorp,
+  stayTunedFallback,
+}
+
+class _ZombieSelectionViewState {
+  _ZombieSelectionViewState({
+    required this.category,
+    required this.tag,
+    this.scrollOffset = 0,
+  });
+
+  ZombieCategory category;
+  ZombieTag tag;
+  double scrollOffset;
+}
+
+final Map<String, _ZombieSelectionViewState> _zombieSelectionViewStates = {};
 
 /// Zombie selection. Ported from Z-Editor-master ZombieSelectionScreen.kt
 class ZombieSelectionScreen extends StatefulWidget {
@@ -30,6 +51,7 @@ class ZombieSelectionScreen extends StatefulWidget {
     this.excludeIds = const [],
     this.initialSelectedIds = const [],
     this.allowDuplicateSelection = false,
+    this.stateBucketId,
   });
 
   final bool multiSelect;
@@ -49,6 +71,9 @@ class ZombieSelectionScreen extends StatefulWidget {
   /// When true, each tap adds another entry (batch append mode).
   final bool allowDuplicateSelection;
 
+  /// Keeps chooser tab and scroll state local to the current editing context.
+  final String? stateBucketId;
+
   @override
   State<ZombieSelectionScreen> createState() => _ZombieSelectionScreenState();
 }
@@ -58,20 +83,53 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
   final Set<String> _selectedIds = {};
   final List<String> _selectedIdsWithDuplicates = [];
   bool _isLoaded = false;
-  ZombieCategory _selectedCategory = ZombieCategory.main;
-  ZombieTag _selectedTag = ZombieTag.all;
+  late ZombieCategory _selectedCategory;
+  late ZombieTag _selectedTag;
+  late final ScrollController _scrollController;
+
+  String get _viewStateKey {
+    final explicit = widget.stateBucketId;
+    if (explicit != null && explicit.isNotEmpty) return explicit;
+    final filePath = widget.editorCubit?.filePath;
+    if (filePath != null && filePath.isNotEmpty) return 'level:$filePath';
+    return 'global';
+  }
+
+  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
 
   @override
   void initState() {
     super.initState();
+    final rememberedState = _zombieSelectionViewStates[_viewStateKey];
+    _selectedCategory = rememberedState?.category ?? ZombieCategory.main;
+    _selectedTag = rememberedState?.tag ?? ZombieTag.all;
+    _normalizeSelectedTag();
+    _scrollController = ScrollController(
+      initialScrollOffset: rememberedState?.scrollOffset ?? 0,
+    )..addListener(_rememberScrollOffset);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
     if (widget.multiSelect &&
         !widget.allowDuplicateSelection &&
         widget.initialSelectedIds.isNotEmpty) {
       _selectedIds.addAll(widget.initialSelectedIds);
     }
     ZombieRepository().init().then((_) {
-      if (mounted) setState(() => _isLoaded = true);
+      if (mounted) {
+        setState(() {
+          _removeBlockedSelections();
+          _isLoaded = true;
+        });
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   int get _selectedCount => widget.allowDuplicateSelection
@@ -85,6 +143,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         ZombieTag.all,
         ZombieTag.evildave,
         ZombieTag.custom,
+        ZombieTag.expedition,
         ZombieTag.chinese,
         ZombieTag.international,
       ];
@@ -104,6 +163,70 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       final tags = _visibleTagsFor(category);
       _selectedTag = tags.isNotEmpty ? tags.first : ZombieTag.all;
     });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setTag(ZombieTag tag) {
+    if (_selectedTag == tag) return;
+    setState(() => _selectedTag = tag);
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+  }
+
+  void _normalizeSelectedTag() {
+    if (_selectedCategory == ZombieCategory.collection) {
+      _selectedTag = ZombieTag.all;
+      return;
+    }
+    final tags = _visibleTagsFor(_selectedCategory);
+    if (!tags.contains(_selectedTag)) {
+      _selectedTag = tags.first;
+    }
+  }
+
+  void _rememberViewState({double? scrollOffset}) {
+    final state = _zombieSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _ZombieSelectionViewState(
+        category: _selectedCategory,
+        tag: _selectedTag,
+      ),
+    );
+    state.category = _selectedCategory;
+    state.tag = _selectedTag;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+  }
+
+  void _rememberScrollOffset() {
+    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _scrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final offset = _zombieSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _scrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_scrollController.offset != target) {
+      _scrollController.jumpTo(target);
+    }
   }
 
   void _toggleFavorite(BuildContext context, String id) async {
@@ -122,6 +245,76 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       ),
     );
     setState(() {});
+  }
+
+  _ZombieBlockedReason? _zombieBlockedReason(ZombieInfo zombie) {
+    if (zombie.id != _kStayTunedZombieId) return null;
+    final hasMoon = zombie.tags.contains(ZombieTag.moon);
+    final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
+    // The shared stay_tuned entry uses generic copy on the all-zombies tab.
+    if (hasMoon && _selectedTag == ZombieTag.moon) {
+      return _ZombieBlockedReason.stayTunedMoon;
+    }
+    if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
+      return _ZombieBlockedReason.stayTunedTaleZCorp;
+    }
+    return _ZombieBlockedReason.stayTunedFallback;
+  }
+
+  _ZombieBlockedReason? _zombieBlockedReasonForId(String id) {
+    if (id != _kStayTunedZombieId) return null;
+    final zombie = ZombieRepository().getZombieById(id);
+    if (zombie == null) return _ZombieBlockedReason.stayTunedFallback;
+    return _zombieBlockedReason(zombie);
+  }
+
+  void _removeBlockedSelections() {
+    bool isBlocked(String id) => _zombieBlockedReasonForId(id) != null;
+    _selectedIds.removeWhere(isBlocked);
+    _selectedIdsWithDuplicates.removeWhere(isBlocked);
+  }
+
+  List<String> _filterSelectableZombieIds(List<String> ids) {
+    return ids.where((id) => _zombieBlockedReasonForId(id) == null).toList();
+  }
+
+  Future<void> _showZombieBlockedDialog(
+    BuildContext context,
+    _ZombieBlockedReason reason,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final (title, message) = switch (reason) {
+      _ZombieBlockedReason.stayTunedMoon => (
+        l10n?.stayTunedMoonZombieBlockedTitle ?? 'A Message from Space',
+        l10n?.stayTunedMoonZombieBlockedMessage ??
+            'The brand-new world, Moon Base, is coming in the '
+                'not-too-distant future. Stay tuned!',
+      ),
+      _ZombieBlockedReason.stayTunedTaleZCorp => (
+        l10n?.stayTunedTaleZCorpZombieBlockedTitle ?? 'To be continued',
+        l10n?.stayTunedTaleZCorpZombieBlockedMessage ??
+            'ZCorp Chapter Two is coming soon. Stay tuned!',
+      ),
+      _ZombieBlockedReason.stayTunedFallback => (
+        l10n?.stayTunedZombieBlockedTitle ?? 'To be continued',
+        l10n?.stayTunedZombieBlockedMessage ??
+            'This content is not officially available yet. Stay tuned for '
+                'future updates!',
+      ),
+    };
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n?.ok ?? 'OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   List<ZombieInfo> _categoryFilteredZombies(ZombieRepository repo) {
@@ -164,13 +357,10 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     final zombies = excludeSet.isEmpty
         ? allZombies
         : allZombies.where((z) => !excludeSet.contains(z.id)).toList();
+    _normalizeSelectedTag();
     final visibleTags = _visibleTagsFor(_selectedCategory);
     final tagIndex = visibleTags.indexOf(_selectedTag);
     final safeTagIndex = tagIndex < 0 ? 0 : tagIndex;
-    if (_selectedCategory != ZombieCategory.collection &&
-        !visibleTags.contains(_selectedTag)) {
-      _selectedTag = visibleTags.first;
-    }
     final themeColor = theme.brightness == Brightness.dark
         ? pvzPurpleDark
         : pvzPurpleLight;
@@ -193,18 +383,22 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
           ? FloatingActionButton(
               backgroundColor: themeColor,
               foregroundColor: theme.colorScheme.surface,
-              onPressed: () async {
-                final ids = widget.allowDuplicateSelection
-                    ? List<String>.from(_selectedIdsWithDuplicates)
-                    : _selectedIds.toList();
-                await maybeShowKongfuRocketFlickPrompt(
-                  context,
-                  ids,
-                  editorCubit: widget.editorCubit,
-                );
-                if (!context.mounted) return;
-                widget.onMultiZombieSelected?.call(ids);
-              },
+              onPressed: _isLoaded
+                  ? () async {
+                      final ids = _filterSelectableZombieIds(
+                        widget.allowDuplicateSelection
+                            ? List<String>.from(_selectedIdsWithDuplicates)
+                            : _selectedIds.toList(),
+                      );
+                      await maybeShowKongfuRocketFlickPrompt(
+                        context,
+                        ids,
+                        editorCubit: widget.editorCubit,
+                      );
+                      if (!context.mounted) return;
+                      widget.onMultiZombieSelected?.call(ids);
+                    }
+                  : null,
               child: const Icon(Icons.check),
             )
           : null,
@@ -232,8 +426,8 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                               : (l10n?.searchZombie ?? 'Search zombie'),
                           query: _searchQuery,
                           fillColor: theme.colorScheme.surface,
-                          onChanged: (v) => setState(() => _searchQuery = v),
-                          onClear: () => setState(() => _searchQuery = ''),
+                          onChanged: _setSearchQuery,
+                          onClear: () => _setSearchQuery(''),
                         ),
                       ),
                       DefaultTabController(
@@ -283,9 +477,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                         AccentBarFilterTabRow(
                           key: ValueKey('${_selectedCategory.name}_tags'),
                           selectedIndex: safeTagIndex,
-                          onSelected: (index) => setState(
-                            () => _selectedTag = visibleTags[index],
-                          ),
+                          onSelected: (index) => _setTag(visibleTags[index]),
                           tabs: visibleTags.map((tag) {
                             final iconPath = tag.iconAssetPath;
                             return Row(
@@ -296,9 +488,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                                     assetPath: iconPath,
                                     width: 18,
                                     height: 18,
-                                    altCandidates: imageAltCandidates(
-                                      iconPath,
-                                    ),
+                                    altCandidates: imageAltCandidates(iconPath),
                                   ),
                                   const SizedBox(width: 6),
                                 ],
@@ -342,6 +532,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                     ),
                   )
                 : GridView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(12),
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -360,12 +551,22 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                           : (_selectedIds.contains(zombie.id) ? 1 : 0);
                       final isSelected = selectionCount > 0;
                       final isFavorite = repo.isFavorite(zombie.id);
+                      final blockedReason = _zombieBlockedReason(zombie);
+                      final isEnabled = blockedReason == null;
                       return _ZombieGridItem(
                         zombie: zombie,
                         isSelected: isSelected,
                         isFavorite: isFavorite,
+                        isEnabled: isEnabled,
                         selectionColor: widget.multiSelect ? themeColor : null,
                         onTap: () async {
+                          if (blockedReason != null) {
+                            await _showZombieBlockedDialog(
+                              context,
+                              blockedReason,
+                            );
+                            return;
+                          }
                           if (widget.multiSelect) {
                             setState(() {
                               if (widget.allowDuplicateSelection) {
@@ -400,6 +601,7 @@ class _ZombieGridItem extends StatelessWidget {
     required this.zombie,
     required this.isSelected,
     required this.isFavorite,
+    required this.isEnabled,
     required this.onTap,
     required this.onLongPress,
     this.selectionColor,
@@ -408,6 +610,7 @@ class _ZombieGridItem extends StatelessWidget {
   final ZombieInfo zombie;
   final bool isSelected;
   final bool isFavorite;
+  final bool isEnabled;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
   final Color? selectionColor;
@@ -423,95 +626,98 @@ class _ZombieGridItem extends StatelessWidget {
     final bgColor = isSelected
         ? accent.withValues(alpha: 0.08)
         : Colors.transparent;
-    return Material(
-      color: bgColor,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
+    return Opacity(
+      opacity: isEnabled ? 1.0 : 0.5,
+      child: Material(
+        color: bgColor,
         borderRadius: BorderRadius.circular(8),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: borderColor, width: isSelected ? 2 : 0),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  ClipOval(
-                    child: SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: hasIcon
-                          ? AssetImageWidget(
-                              assetPath: iconPath,
-                              altCandidates: imageAltCandidates(iconPath),
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                              errorWidget: Image.asset(
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: borderColor, width: isSelected ? 2 : 0),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  children: [
+                    ClipOval(
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: hasIcon
+                            ? AssetImageWidget(
+                                assetPath: iconPath,
+                                altCandidates: imageAltCandidates(iconPath),
+                                width: 44,
+                                height: 44,
+                                fit: BoxFit.cover,
+                                errorWidget: Image.asset(
+                                  _kUnknownIconPath,
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.asset(
                                 _kUnknownIconPath,
                                 width: 44,
                                 height: 44,
                                 fit: BoxFit.cover,
                               ),
-                            )
-                          : Image.asset(
-                              _kUnknownIconPath,
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                  if (isFavorite)
-                    Positioned(
-                      right: -2,
-                      top: -2,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFFFC107),
-                            width: 0.5,
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(2),
-                        child: const Icon(
-                          Icons.star,
-                          size: 12,
-                          color: Color(0xFFFFC107),
-                        ),
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                ResourceNames.lookup(context, zombie.name),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 9,
+                    if (isFavorite)
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFFFFC107),
+                              width: 0.5,
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(2),
+                          child: const Icon(
+                            Icons.star,
+                            size: 12,
+                            color: Color(0xFFFFC107),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                zombie.id,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 8,
+                const SizedBox(height: 4),
+                Text(
+                  ResourceNames.lookup(context, zombie.name),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 9,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+                Text(
+                  zombie.id,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 8,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
       ),

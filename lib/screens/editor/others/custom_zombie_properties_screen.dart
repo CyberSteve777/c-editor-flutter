@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/custom_zombie_property_sync.dart';
 import 'package:c_editor/data/tag_assets.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/resilience_shield_utils.dart';
@@ -182,7 +183,7 @@ class _CustomZombiePropertiesScreenState
         (o) => o.aliases?.contains(RtidParser.parse(rtid)?.alias ?? '') == true,
       );
       _selectedResilienceRtid = rtid;
-      _propsObj?.objData = _propsData.toJson();
+      _writeObjectsWithoutNotifying();
       WidgetsBinding.instance.addPostFrameCallback((_) => widget.onChanged());
       return;
     }
@@ -255,15 +256,31 @@ class _CustomZombiePropertiesScreenState
   bool get _supportsResilienceShield =>
       ZombiePropertiesRepository.supportsResilienceShield(_typeData.typeName);
 
+  String? get _currentResilienceRtid =>
+      _selectedResilienceRtid ??
+      (_propsData.resilience is String
+          ? _propsData.resilience as String
+          : null);
+
   void _stripUnsupportedResilience() {
     final r = _propsData.resilience;
     if (r == null) return;
+    final oldRtid = r is String ? r : _selectedResilienceRtid;
     _propsData.resilience = null;
     _selectedResilienceRtid = null;
     _customResilienceObj = null;
     _customResilienceData = ZombieResilienceData();
     _customResilienceCodename = '';
-    _propsObj?.objData = _propsData.toJson();
+    _writeObjectsWithoutNotifying();
+    _deleteUnusedCustomResilience(oldRtid);
+  }
+
+  void _deleteUnusedCustomResilience(String? rtid) {
+    if (!ResilienceShieldUtils.isCustomRtid(rtid)) return;
+    if (rtid == _currentResilienceRtid) return;
+    if (ResilienceShieldUtils.countReferences(widget.levelFile, rtid!) == 0) {
+      ResilienceShieldUtils.deleteCustomShield(widget.levelFile, rtid);
+    }
   }
 
   ResilienceConfigEntry? _currentResilienceEntry() {
@@ -276,6 +293,7 @@ class _CustomZombiePropertiesScreenState
   }
 
   Future<void> _pickResilienceShield() async {
+    final oldRtid = _currentResilienceRtid;
     final rtid = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -293,9 +311,10 @@ class _CustomZombiePropertiesScreenState
     if (!mounted || rtid == null) return;
     setState(() => _applySelectedResilienceRtid(rtid));
     _sync();
+    _deleteUnusedCustomResilience(oldRtid);
   }
 
-  Widget _buildResilienceShieldCard(ThemeData theme, AppLocalizations? l10n) {
+  Widget _buildResilienceShieldCard(AppLocalizations? l10n) {
     final entry = _currentResilienceEntry();
     final alias =
         entry?.alias ??
@@ -304,39 +323,13 @@ class _CustomZombiePropertiesScreenState
     final source =
         RtidParser.parse(_selectedResilienceRtid ?? '')?.source ?? '';
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: _pickResilienceShield,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n?.resilienceSelectedShieldLabel ??
-                      'Selected Resilience Shield:',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Text(
-                alias.isNotEmpty && source.isNotEmpty
-                    ? '$alias@$source'
-                    : (l10n?.resiliencePresetSelect ??
-                          'Selected resilience shield'),
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
-      ),
+    return ResilienceShieldSelectionCard(
+      label:
+          l10n?.resilienceSelectedShieldLabel ?? 'Selected Resilience Shield:',
+      value: alias.isNotEmpty && source.isNotEmpty
+          ? '$alias@$source'
+          : (l10n?.resiliencePresetSelect ?? 'Selected resilience shield'),
+      onTap: _pickResilienceShield,
     );
   }
 
@@ -383,13 +376,24 @@ class _CustomZombiePropertiesScreenState
     );
   }
 
-  void _sync() {
-    final allZero = _resistances.every((e) => e == 0.0);
-    _typeData.resistences = allZero ? null : List<double>.from(_resistances);
-    _typeObj?.objData = _typeData.toJson();
-    _propsObj?.objData = _propsData.toJson();
+  void _sync({bool patchResistances = false}) {
+    _writeObjectsWithoutNotifying(patchResistances: patchResistances);
     widget.onChanged();
     setState(() {});
+  }
+
+  void _writeObjectsWithoutNotifying({bool patchResistances = false}) {
+    final typeObj = _typeObj;
+    final propsObj = _propsObj;
+    if (typeObj == null || propsObj == null) return;
+    CustomZombiePropertySync.sync(
+      typeObj: typeObj,
+      propsObj: propsObj,
+      typeData: _typeData,
+      propsData: _propsData,
+      resistances: _resistances,
+      patchResistances: patchResistances,
+    );
   }
 
   String _formatRect(RectData? rect) {
@@ -604,14 +608,14 @@ class _CustomZombiePropertiesScreenState
     required String label,
     bool isDouble = false,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
+        onChanged: (_) {},
       ),
-      onChanged: (_) {},
     );
   }
 
@@ -646,6 +650,8 @@ class _CustomZombiePropertiesScreenState
     final theme = Theme.of(context);
     return Text(
       title,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
       style: theme.textTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.bold,
         color: _themeColor,
@@ -656,10 +662,27 @@ class _CustomZombiePropertiesScreenState
   Widget _sectionCard({required Widget child}) {
     return SizedBox(
       width: double.infinity,
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: child,
-      ),
+      child: Card(margin: EdgeInsets.zero, child: child),
+    );
+  }
+
+  Widget _responsiveFieldPair({required Widget first, required Widget second}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 600) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [first, const SizedBox(height: 12), second],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: first),
+            const SizedBox(width: 12),
+            Expanded(child: second),
+          ],
+        );
+      },
     );
   }
 
@@ -675,7 +698,11 @@ class _CustomZombiePropertiesScreenState
             icon: const Icon(Icons.arrow_back),
             onPressed: widget.onBack,
           ),
-          title: Text(l10n?.customZombie ?? 'Custom zombie'),
+          title: Text(
+            l10n?.customZombie ?? 'Custom zombie',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         body: Center(
           child: Text(
@@ -695,6 +722,8 @@ class _CustomZombiePropertiesScreenState
           ),
           title: Text(
             l10n?.customZombieProperties ?? 'Custom zombie properties',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           backgroundColor: themeColor,
           foregroundColor: theme.colorScheme.onPrimary,
@@ -734,7 +763,11 @@ class _CustomZombiePropertiesScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.customZombieProperties ?? 'Custom zombie properties'),
+        title: Text(
+          l10n?.customZombieProperties ?? 'Custom zombie properties',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         backgroundColor: themeColor,
         foregroundColor: theme.colorScheme.onPrimary,
         actions: [
@@ -819,30 +852,23 @@ class _CustomZombiePropertiesScreenState
                           },
                         ),
                         const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _doubleInput(
-                                label: l10n?.speed ?? 'Speed',
-                                value: _propsData.speed,
-                                onChanged: (v) {
-                                  _propsData.speed = v;
-                                  _sync();
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _doubleInput(
-                                label: l10n?.speedVariance ?? 'Speed variance',
-                                value: _propsData.speedVariance ?? 0.1,
-                                onChanged: (v) {
-                                  _propsData.speedVariance = v;
-                                  _sync();
-                                },
-                              ),
-                            ),
-                          ],
+                        _responsiveFieldPair(
+                          first: _doubleInput(
+                            label: l10n?.speed ?? 'Speed',
+                            value: _propsData.speed,
+                            onChanged: (v) {
+                              _propsData.speed = v;
+                              _sync();
+                            },
+                          ),
+                          second: _doubleInput(
+                            label: l10n?.speedVariance ?? 'Speed variance',
+                            value: _propsData.speedVariance ?? 0.1,
+                            onChanged: (v) {
+                              _propsData.speedVariance = v;
+                              _sync();
+                            },
+                          ),
                         ),
                         const SizedBox(height: 12),
                         _doubleInput(
@@ -934,6 +960,7 @@ class _CustomZombiePropertiesScreenState
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: DropdownButtonFormField<String>(
+                          isExpanded: true,
                           initialValue:
                               _propsData.groundTrackName == 'ground_swatch'
                               ? 'ground_swatch'
@@ -950,12 +977,16 @@ class _CustomZombiePropertiesScreenState
                               child: Text(
                                 l10n?.groundTrackNormal ??
                                     'Normal ground (ground_swatch)',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             DropdownMenuItem(
                               value: '',
                               child: Text(
                                 l10n?.groundTrackNone ?? 'None (null)',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -994,8 +1025,7 @@ class _CustomZombiePropertiesScreenState
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _cardSectionTitle(
-                            l10n?.appearanceBehavior ??
-                                'Appearance & behavior',
+                            l10n?.appearanceBehavior ?? 'Appearance & behavior',
                           ),
                           const SizedBox(height: 12),
                           InkWell(
@@ -1009,12 +1039,16 @@ class _CustomZombiePropertiesScreenState
                                     children: [
                                       Text(
                                         l10n?.sizeType ?? 'SizeType',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         _propsData.sizeType ?? 'null',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                         style: theme.textTheme.bodySmall
                                             ?.copyWith(
                                               color: theme
@@ -1204,23 +1238,30 @@ class _CustomZombiePropertiesScreenState
                                 if (checked) {
                                   final options = _resilienceShieldOptions();
                                   if (options.isNotEmpty) {
+                                    final oldRtid = _currentResilienceRtid;
                                     _applySelectedResilienceRtid(
                                       options.first.rtid,
                                     );
                                     _sync();
+                                    _deleteUnusedCustomResilience(oldRtid);
                                   } else {
                                     await _pickResilienceShield();
                                   }
                                 } else {
+                                  final oldRtid = _currentResilienceRtid;
                                   _propsData.resilience = null;
+                                  _selectedResilienceRtid = null;
+                                  _customResilienceObj = null;
+                                  _customResilienceCodename = '';
                                   _sync();
+                                  _deleteUnusedCustomResilience(oldRtid);
                                 }
                                 setState(() {});
                               },
                             ),
                             if (_isResilienceEnabled) ...[
                               const Divider(height: 24),
-                              _buildResilienceShieldCard(theme, l10n),
+                              _buildResilienceShieldCard(l10n),
                               const SizedBox(height: 16),
                               _buildResilienceParametersSummary(l10n),
                             ],
@@ -1251,26 +1292,19 @@ class _CustomZombiePropertiesScreenState
                         for (var i = 0; i < 3; i++)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: _resistanceInput(
-                                    context: context,
-                                    index: 1 + i * 2,
-                                    label: _resLabel(context, 1 + i * 2),
-                                    iconPath: _resIcons[1 + i * 2],
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _resistanceInput(
-                                    context: context,
-                                    index: 2 + i * 2,
-                                    label: _resLabel(context, 2 + i * 2),
-                                    iconPath: _resIcons[2 + i * 2],
-                                  ),
-                                ),
-                              ],
+                            child: _responsiveFieldPair(
+                              first: _resistanceInput(
+                                context: context,
+                                index: 1 + i * 2,
+                                label: _resLabel(context, 1 + i * 2),
+                                iconPath: _resIcons[1 + i * 2],
+                              ),
+                              second: _resistanceInput(
+                                context: context,
+                                index: 2 + i * 2,
+                                label: _resLabel(context, 2 + i * 2),
+                                iconPath: _resIcons[2 + i * 2],
+                              ),
                             ),
                           ),
                         Text(
@@ -1288,6 +1322,8 @@ class _CustomZombiePropertiesScreenState
                 Text(
                   l10n?.zombieTypeLabel(_typeData.typeName) ??
                       'Zombie type: ${_typeData.typeName}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -1297,6 +1333,8 @@ class _CustomZombiePropertiesScreenState
                         RtidParser.parse(_typeData.properties)?.alias ?? '',
                       ) ??
                       'Property alias: ${RtidParser.parse(_typeData.properties)?.alias ?? ''}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -1345,7 +1383,7 @@ class _CustomZombiePropertiesScreenState
       iconPath: iconPath,
       onChanged: (v) {
         _resistances[index] = v.clamp(0.0, 1.0);
-        _sync();
+        _sync(patchResistances: true);
       },
     );
   }
@@ -1371,11 +1409,15 @@ class _CustomZombiePropertiesScreenState
                 children: [
                   Text(
                     title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -1469,14 +1511,10 @@ class _DoubleInputFieldState extends State<_DoubleInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return _ResponsiveNumberTextField(
+      label: widget.label,
       controller: _controller,
       focusNode: _focusNode,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: widget.label,
-        border: const OutlineInputBorder(),
-      ),
       onChanged: (v) {
         final n = double.tryParse(v);
         if (n != null) widget.onChanged(n);
@@ -1542,32 +1580,62 @@ class _ResilienceInputFieldState extends State<_ResilienceInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return _ResponsiveNumberTextField(
+      label: widget.label,
       controller: _controller,
       focusNode: _focusNode,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: widget.label,
-        border: const OutlineInputBorder(),
-        prefixIcon: widget.iconPath != null
-            ? Padding(
-                padding: const EdgeInsets.all(8),
-                child: AssetImageWidget(
-                  assetPath: widget.iconPath!,
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.contain,
-                  altCandidates: imageAltCandidates(widget.iconPath!),
-                ),
-              )
-            : null,
-      ),
+      prefixIcon: widget.iconPath != null
+          ? Padding(
+              padding: const EdgeInsets.all(8),
+              child: AssetImageWidget(
+                assetPath: widget.iconPath!,
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                altCandidates: imageAltCandidates(widget.iconPath!),
+              ),
+            )
+          : null,
       onChanged: (v) {
         final val = double.tryParse(v);
         if (val != null) {
           widget.onChanged(val.clamp(0.0, 1.0));
         }
       },
+    );
+  }
+}
+
+class _ResponsiveNumberTextField extends StatelessWidget {
+  const _ResponsiveNumberTextField({
+    required this.label,
+    required this.controller,
+    required this.focusNode,
+    required this.onChanged,
+    this.prefixIcon,
+  });
+
+  final String label;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final ValueChanged<String> onChanged;
+  final Widget? prefixIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        prefixIcon: prefixIcon,
+      ),
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        focusNode: focusNode,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
+        onChanged: onChanged,
+      ),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -34,6 +35,7 @@ class SeedBankPropertiesScreen extends StatefulWidget {
     List<String>? excludeIds,
     List<String>? initialSelectedIds,
     bool blockRealmExclusiveInChooser,
+    bool blockHiddenPlantsInChooser,
     bool allowDuplicateSelection,
   })
   onRequestPlantSelection;
@@ -93,7 +95,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
     );
     _syncGridItemModeFromPreset();
     if (_data.selectionMethod == 'chooser' && _data.zombieMode != true) {
-      _stripRealmExclusiveFromPreset();
+      _stripChooserOnlyBlockedPlantsFromPreset();
     }
   }
 
@@ -113,8 +115,19 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
         plant.hasInternalTag('_internal_mausoleum');
   }
 
-  void _stripRealmExclusiveFromPreset() {
-    _data.presetPlantList.removeWhere(_isRealmExclusivePlantId);
+  bool _isHiddenPlantId(String id) {
+    if (kSeedBankGridItemIds.contains(id)) return false;
+    final plant = PlantRepository().getPlantInfoById(id);
+    if (plant == null) return false;
+    return plant.tags.contains(PlantTag.hidden);
+  }
+
+  bool _isChooserOnlyBlockedPlantId(String id) {
+    return _isRealmExclusivePlantId(id) || _isHiddenPlantId(id);
+  }
+
+  void _stripChooserOnlyBlockedPlantsFromPreset() {
+    _data.presetPlantList.removeWhere(_isChooserOnlyBlockedPlantId);
   }
 
   void _removeGridItemsFromPreset() {
@@ -143,6 +156,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
         });
       },
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
       allowDuplicateSelection: true,
     );
   }
@@ -158,6 +172,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       excludeIds: _data.plantBlackList,
       initialSelectedIds: _data.plantWhiteList,
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
     );
   }
 
@@ -172,6 +187,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       excludeIds: _data.plantWhiteList,
       initialSelectedIds: _data.plantBlackList,
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
     );
   }
 
@@ -218,7 +234,6 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       _sync();
     });
   }
-
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -273,15 +288,15 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: isZombieMode ? izombieColor : null,
-            ),
-            const SizedBox(height: 16),
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+                accentColor: isZombieMode ? izombieColor : null,
+              ),
+              const SizedBox(height: 16),
               _buildBasicRulesCard(context, isZombieMode, l10n),
               const SizedBox(height: 16),
               if (isZombieMode)
@@ -399,10 +414,14 @@ ModuleAliasInputField(
                       : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  l10n?.basicRules ?? 'Basic rules',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n?.basicRules ?? 'Basic rules',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -428,7 +447,7 @@ ModuleAliasInputField(
                       : (v) {
                           setState(() {
                             _data.selectionMethod = 'chooser';
-                            _stripRealmExclusiveFromPreset();
+                            _stripChooserOnlyBlockedPlantsFromPreset();
                             _sync();
                           });
                         },
@@ -458,42 +477,36 @@ ModuleAliasInputField(
             const SizedBox(height: 12),
             Opacity(
               opacity: isZombieMode ? 0.5 : 1,
-              child: Row(
+              child: EditorResponsiveFieldRow(
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: '${_data.globalLevel ?? 0}',
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.seedBankPlantLevelLabel ??
-                            'Plant level (0-5)',
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (s) {
-                        final v = int.tryParse(s) ?? 0;
-                        final clamped = v.clamp(0, 5);
-                        _data.globalLevel = clamped == 0 ? null : clamped;
-                        _sync();
-                      },
+                  TextFormField(
+                    initialValue: '${_data.globalLevel ?? 0}',
+                    decoration: InputDecoration(
+                      labelText:
+                          l10n?.seedBankPlantLevelLabel ?? 'Plant level (0-5)',
+                      border: const OutlineInputBorder(),
                     ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (s) {
+                      final v = int.tryParse(s) ?? 0;
+                      final clamped = v.clamp(0, 5);
+                      _data.globalLevel = clamped == 0 ? null : clamped;
+                      _sync();
+                    },
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: '${_data.overrideSeedSlotsCount ?? 0}',
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (s) {
-                        final v = int.tryParse(s) ?? 0;
-                        _data.overrideSeedSlotsCount = v.clamp(0, 9);
-                        _sync();
-                      },
+                  TextFormField(
+                    initialValue: '${_data.overrideSeedSlotsCount ?? 0}',
+                    decoration: InputDecoration(
+                      labelText:
+                          l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
+                      border: const OutlineInputBorder(),
                     ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (s) {
+                      final v = int.tryParse(s) ?? 0;
+                      _data.overrideSeedSlotsCount = v.clamp(0, 9);
+                      _sync();
+                    },
                   ),
                 ],
               ),

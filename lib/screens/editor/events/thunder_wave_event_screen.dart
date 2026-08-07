@@ -277,6 +277,7 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
             ),
             Expanded(
               child: DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue:
                     entry.type == _typePositive || entry.type == _typeNegative
                     ? entry.type

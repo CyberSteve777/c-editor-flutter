@@ -95,19 +95,6 @@ abstract class LevelRepositoryBase {
     '.smf',
   };
 
-  static const List<String> defaultTemplateList = [
-    '1_blank_level.json',
-    '2_card_pick_example.json',
-    '3_conveyor_example.json',
-    '4_last_stand_example.json',
-    '5_i_zombie_example.json',
-    '6_vase_breaker_example.json',
-    '7_zombossmech_battle_example.json',
-    '8_zomboss_battle_example.json',
-    '9_custom_zombie_example.json',
-    '10_i_plant_example.json',
-  ];
-
   Future<String?> getSavedFolderPath();
   Future<void> setSavedFolderPath(String path);
 
@@ -207,7 +194,6 @@ abstract class LevelRepositoryBase {
   }
   Future<bool> createLevelFromTemplate(
     String currentDirPath,
-    String templateName,
     String newFileName,
     String assetContent,
   );
@@ -372,23 +358,6 @@ abstract class LevelRepositoryBase {
     );
     final newFileName = '$suggested$ext';
     return moveFileWithName(srcDirPath, fileName, destDirPath, newFileName);
-  }
-
-  Future<List<String>> getTemplateList() async {
-    return List.from(defaultTemplateList);
-  }
-
-  List<String> parseTemplateManifest(String jsonString) {
-    try {
-      final list = jsonDecode(jsonString) as List<dynamic>?;
-      if (list == null) return [];
-      return list
-          .map((e) => e.toString())
-          .where((s) => s.endsWith('.json'))
-          .toList();
-    } catch (_) {
-      return [];
-    }
   }
 
   Future<String> getFirstAvailableIndexedName(

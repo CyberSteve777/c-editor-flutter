@@ -228,6 +228,7 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
         Tooltip(
           message: l10n?.zombossBattleVariationHint ?? '',
           child: DropdownButtonFormField<String>(
+            isExpanded: true,
             initialValue: variations.contains(_data.zombossTypeName)
                 ? _data.zombossTypeName
                 : (variations.isNotEmpty ? variations.first : null),

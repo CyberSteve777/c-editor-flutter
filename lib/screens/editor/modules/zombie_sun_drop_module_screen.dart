@@ -406,48 +406,43 @@ class _SunValuesEditDialogState extends State<_SunValuesEditDialog> {
               final j = i + 1;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
+                child: EditorResponsiveFieldRow(
                   children: [
-                    Expanded(
-                      child: TextField(
-                        focusNode: _focusNodes[i],
-                        controller: _controllers[i],
-                        decoration: editorInputDecoration(
-                          context,
-                          labelText:
-                              '${l10n?.zombieSunDropTier ?? 'Tier'} ${i + 1}',
-                          focusColor: widget.themeColor,
-                          isFocused: _focusNodes[i].hasFocus,
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null && n >= 0) {
-                            setState(() => _values[i] = n);
-                          }
-                        },
+                    TextField(
+                      focusNode: _focusNodes[i],
+                      controller: _controllers[i],
+                      decoration: editorInputDecoration(
+                        context,
+                        labelText:
+                            '${l10n?.zombieSunDropTier ?? 'Tier'} ${i + 1}',
+                        focusColor: widget.themeColor,
+                        isFocused: _focusNodes[i].hasFocus,
                       ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (v) {
+                        final n = int.tryParse(v);
+                        if (n != null && n >= 0) {
+                          setState(() => _values[i] = n);
+                        }
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        focusNode: _focusNodes[j],
-                        controller: _controllers[j],
-                        decoration: editorInputDecoration(
-                          context,
-                          labelText:
-                              '${l10n?.zombieSunDropTier ?? 'Tier'} ${j + 1}',
-                          focusColor: widget.themeColor,
-                          isFocused: _focusNodes[j].hasFocus,
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null && n >= 0) {
-                            setState(() => _values[j] = n);
-                          }
-                        },
+                    TextField(
+                      focusNode: _focusNodes[j],
+                      controller: _controllers[j],
+                      decoration: editorInputDecoration(
+                        context,
+                        labelText:
+                            '${l10n?.zombieSunDropTier ?? 'Tier'} ${j + 1}',
+                        focusColor: widget.themeColor,
+                        isFocused: _focusNodes[j].hasFocus,
                       ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (v) {
+                        final n = int.tryParse(v);
+                        if (n != null && n >= 0) {
+                          setState(() => _values[j] = n);
+                        }
+                      },
                     ),
                   ],
                 ),

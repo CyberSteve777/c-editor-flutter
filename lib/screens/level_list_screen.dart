@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/data/app_links.dart';
+import 'package:c_editor/data/level_template_utils.dart';
 import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/level_repository_base.dart';
@@ -1017,16 +1018,17 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   void _openTemplateSelector() async {
     final l10n = AppLocalizations.of(context);
-    List<String> list;
+    List<String> list = [];
     try {
-      final manifest = await rootBundle.loadString(
-        'assets/reference/template/manifest.json',
+      final assetManifest = await AssetManifest.loadFromAssetBundle(
+        rootBundle,
       );
-      list = LevelRepository.parseTemplateManifest(manifest);
+      list = LevelTemplateUtils.fromBundledAssetPaths(
+        assetManifest.listAssets(),
+      );
     } catch (_) {
-      list = [];
+      // The empty state below reports that bundled templates are unavailable.
     }
-    if (list.isEmpty) list = await LevelRepository.getTemplateList();
     if (!mounted) return;
     if (list.isEmpty) {
       _showMessage(l10n?.noTemplates ?? 'No templates found');
@@ -1037,34 +1039,34 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   static String _templateDisplayName(String filename, AppLocalizations? l10n) {
-    if (l10n == null) return filename.replaceFirst(RegExp(r'\.json$'), '');
-    switch (filename) {
-      case '1_blank_level.json':
+    if (l10n == null) return LevelTemplateUtils.defaultLevelName(filename);
+    switch (LevelTemplateUtils.idOf(filename)) {
+      case 1:
         return l10n.templateBlankLevel;
-      case '2_card_pick_example.json':
+      case 2:
         return l10n.templateCardPickExample;
-      case '3_conveyor_example.json':
+      case 3:
         return l10n.templateConveyorExample;
-      case '4_last_stand_example.json':
+      case 4:
         return l10n.templateLastStandExample;
-      case '5_i_zombie_example.json':
+      case 5:
         return l10n.templateIZombieExample;
-      case '6_vase_breaker_example.json':
+      case 6:
         return l10n.templateVaseBreakerExample;
-      case '7_zombossmech_battle_example.json':
+      case 7:
         return l10n.templateZombossMechExample;
-      case '8_zomboss_battle_example.json':
+      case 8:
         return l10n.templateZombossBattleExample;
-      case '9_custom_zombie_example.json':
+      case 9:
         return l10n.templateCustomZombieExample;
-      case '10_i_plant_example.json':
+      case 10:
         return l10n.templateIPlantExample;
-      case '11_old_style_example.json':
+      case 11:
         return l10n.templateOldStyleExample;
-      case '12_custom_stage_example.json':
-        return l10n.templateCustomStageExample;
+      case 12:
+        return l10n.templateCustomLawnExample;
       default:
-        return filename.replaceFirst(RegExp(r'\.json$'), '');
+        return LevelTemplateUtils.defaultLevelName(filename);
     }
   }
 
@@ -1089,7 +1091,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   onTap: () async {
                     Navigator.pop(ctx);
                     _selectedTemplate = t;
-                    final defaultBase = t.replaceFirst(RegExp(r'\.json$'), '');
+                    final defaultBase = LevelTemplateUtils.defaultLevelName(t);
                     if (_pathStack.isNotEmpty) {
                       _newLevelNameInput =
                           await LevelRepository.getNextAvailableNameForTemplate(
@@ -1151,19 +1153,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context)!;
     var name = _newLevelNameInput.trim();
     if (!name.toLowerCase().endsWith('.json')) name += '.json';
-    // Load template from assets
-    String content;
-    try {
-      content = await rootBundle.loadString(
-        'assets/reference/template/$_selectedTemplate',
-      );
-    } catch (_) {
-      content =
-          '{"objects":[{"objclass":"LevelDefinition","objdata":{"Name":"","LevelNumber":1,"Description":"","StageModule":"RTID(TutorialStage@LevelModules)","Loot":"RTID(DefaultLoot@LevelModules)","StartingSun":200,"VictoryModule":"RTID(VictoryOutro@LevelModules)","MusicType":"MainPath","Modules":[]}}],"version":1}';
+    final content = await _loadTemplateContent(_selectedTemplate);
+    if (content == null) {
+      if (mounted) _showWarningMessage(l10n.templateLoadFail);
+      return;
     }
     final ok = await LevelRepository.createLevelFromTemplate(
       _pathStack.last.path,
-      _selectedTemplate,
       name,
       content,
     );
@@ -1193,6 +1189,16 @@ class _LevelListScreenState extends State<LevelListScreen> {
   }
 
   static const _compactHeaderBreakpoint = 300.0;
+
+  Future<String?> _loadTemplateContent(String template) async {
+    try {
+      return await rootBundle.loadString(
+        '${LevelTemplateUtils.templateAssetDirectory}$template',
+      );
+    } catch (_) {
+      return null;
+    }
+  }
 
   List<Widget> _buildLevelListHeaderChildren({
     required ThemeData theme,
@@ -2133,10 +2139,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
             children: [
               Text(
                 l10n.confirmDeleteMessage(
-                  target.name,
                   target.isDirectory
                       ? l10n.folderDeleteDetail
                       : l10n.levelDeleteDetail,
+                  target.name,
                 ),
               ),
               const SizedBox(height: 16),
@@ -3201,47 +3207,44 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
 
   @override
   Widget build(BuildContext context) {
-    return SizeTransition(
-      sizeFactor: _reveal,
-      alignment: Alignment.bottomRight,
-      child: FadeTransition(
-        opacity: _reveal,
-        child: SlideTransition(
-          position: _slide,
-          child: IgnorePointer(
-            ignoring: !widget.visible,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final screenWidth = MediaQuery.sizeOf(context).width;
-                final isNarrow = screenWidth < 500;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isNarrow = screenWidth < 500;
 
-                if (isNarrow) {
-                  return FloatingActionButton(
-                    heroTag: 'uploadLevel',
-                    onPressed: widget.onPressed,
-                    tooltip: widget.label,
-                    child: const Icon(Icons.cloud_upload),
-                  );
-                }
-
-                return FloatingActionButton.extended(
-                  heroTag: 'uploadLevel',
-                  onPressed: widget.onPressed,
-                  icon: const Icon(Icons.cloud_upload),
-                  label: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: (screenWidth - 160).clamp(0, double.infinity),
-                    ),
-                    child: Text(
-                      widget.label,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                );
-              },
-            ),
+    final Widget fab;
+    if (isNarrow) {
+      fab = FloatingActionButton(
+        heroTag: 'uploadLevel',
+        onPressed: widget.onPressed,
+        tooltip: widget.label,
+        child: const Icon(Icons.cloud_upload),
+      );
+    } else {
+      fab = FloatingActionButton.extended(
+        heroTag: 'uploadLevel',
+        onPressed: widget.onPressed,
+        icon: const Icon(Icons.cloud_upload),
+        label: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: (screenWidth - 160)
+                .clamp(0.0, double.infinity)
+                .toDouble(),
           ),
+          child: Text(
+            widget.label,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
+      );
+    }
+
+    return FadeTransition(
+      opacity: _reveal,
+      child: SlideTransition(
+        position: _slide,
+        child: IgnorePointer(
+          ignoring: !widget.visible,
+          child: fab,
         ),
       ),
     );

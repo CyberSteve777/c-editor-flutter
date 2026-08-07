@@ -214,11 +214,10 @@ ModuleAliasInputField(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                    EditorResponsiveActionRow(
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                             Text(
                               l10n.selectedPosition,
                               style: theme.textTheme.bodySmall?.copyWith(
@@ -232,15 +231,13 @@ ModuleAliasInputField(
                                 color: theme.colorScheme.primary,
                               ),
                             ),
-                          ],
-                        ),
-                        const Spacer(),
-                        FilledButton.icon(
-                          onPressed: _addPlant,
-                          icon: const Icon(Icons.add, size: 18),
-                          label: Text(l10n.addPlant),
-                        ),
-                      ],
+                        ],
+                      ),
+                      action: FilledButton.icon(
+                        onPressed: _addPlant,
+                        icon: const Icon(Icons.add, size: 18),
+                        label: Text(l10n.addPlant),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     _buildGrid(theme),

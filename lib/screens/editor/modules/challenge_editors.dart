@@ -5,6 +5,7 @@ import 'package:c_editor/data/repository/challenge_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/modules/star_challenge_property_editors.dart';
 import 'package:c_editor/theme/app_theme.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 /// Shows challenge editor in an alert dialog instead of a separate screen.
 Future<void> showChallengeEditorDialog(
@@ -458,21 +459,21 @@ class _BeatTheLevelEditorState extends State<_BeatTheLevelEditor> {
           },
         ),
         const SizedBox(height: 12),
-        TextField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            labelText: ChallengeResourceL10n.property(
-              context,
-              _objClass,
-              'DescriptiveName',
-              l10n?.descriptiveName,
-            ),
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label: ChallengeResourceL10n.property(
+            context,
+            _objClass,
+            'DescriptiveName',
+            l10n?.descriptiveName,
           ),
-          onChanged: (v) {
-            _data['DescriptiveName'] = v;
-            _save();
-          },
+          builder: (context, decoration) => TextField(
+            controller: _nameController,
+            decoration: decoration,
+            onChanged: (v) {
+              _data['DescriptiveName'] = v;
+              _save();
+            },
+          ),
         ),
       ],
     );
@@ -493,21 +494,17 @@ class _SimpleCountEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = object.objData as Map<String, dynamic>;
-    return TextFormField(
-      initialValue: (data[field] ?? 0).toString(),
-      decoration: InputDecoration(
-        labelText: ChallengeResourceL10n.property(
-          context,
-          object.objClass,
-          field,
-        ),
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: ChallengeResourceL10n.property(context, object.objClass, field),
+      builder: (context, decoration) => TextFormField(
+        initialValue: (data[field] ?? 0).toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (val) {
+          data[field] = int.tryParse(val) ?? 0;
+          onChanged();
+        },
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (val) {
-        data[field] = int.tryParse(val) ?? 0;
-        onChanged();
-      },
     );
   }
 }
@@ -528,17 +525,17 @@ class _SimpleDoubleEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = object.objData as Map<String, dynamic>;
-    return TextFormField(
-      initialValue: (data[field] ?? 0.0).toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        initialValue: (data[field] ?? 0.0).toString(),
+        decoration: decoration,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: (val) {
+          data[field] = double.tryParse(val) ?? 0.0;
+          onChanged();
+        },
       ),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      onChanged: (val) {
-        data[field] = double.tryParse(val) ?? 0.0;
-        onChanged();
-      },
     );
   }
 }
@@ -558,17 +555,17 @@ class _KillZombiesInTimeEditor extends StatelessWidget {
     final data = object.objData as Map<String, dynamic>;
     return Column(
       children: [
-        TextFormField(
-          initialValue: (data['ZombiesToKill'] ?? 10).toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.zombiesToKill ?? 'Zombies To Kill',
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label: l10n?.zombiesToKill ?? 'Zombies To Kill',
+          builder: (context, decoration) => TextFormField(
+            initialValue: (data['ZombiesToKill'] ?? 10).toString(),
+            decoration: decoration,
+            keyboardType: TextInputType.number,
+            onChanged: (val) {
+              data['ZombiesToKill'] = int.tryParse(val) ?? 10;
+              onChanged();
+            },
           ),
-          keyboardType: TextInputType.number,
-          onChanged: (val) {
-            data['ZombiesToKill'] = int.tryParse(val) ?? 10;
-            onChanged();
-          },
         ),
         const SizedBox(height: 12),
         TextFormField(
@@ -637,18 +634,17 @@ class _ProtectThePlantEditorState extends State<_ProtectThePlantEditor> {
     final l10n = widget.l10n ?? AppLocalizations.of(context);
     return Column(
       children: [
-        TextFormField(
-          initialValue: _data.mustProtectCount.toString(),
-          decoration: InputDecoration(
-            labelText:
-                l10n?.mustProtectCountAll ?? 'Must Protect Count (0 = All)',
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label: l10n?.mustProtectCountAll ?? 'Must Protect Count (0 = All)',
+          builder: (context, decoration) => TextFormField(
+            initialValue: _data.mustProtectCount.toString(),
+            decoration: decoration,
+            keyboardType: TextInputType.number,
+            onChanged: (val) {
+              _data.mustProtectCount = int.tryParse(val) ?? 0;
+              _save();
+            },
           ),
-          keyboardType: TextInputType.number,
-          onChanged: (val) {
-            _data.mustProtectCount = int.tryParse(val) ?? 0;
-            _save();
-          },
         ),
         const SizedBox(height: 16),
         Text(
@@ -687,36 +683,31 @@ class _ProtectThePlantEditorState extends State<_ProtectThePlantEditor> {
                         ),
                       ],
                     ),
-                    Row(
+                    EditorResponsiveFieldRow(
                       children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridX.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridX ?? 'Grid X',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridX = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridX.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridX ?? 'Grid X',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridX = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridY.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridY ?? 'Grid Y',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridY = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridY.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridY ?? 'Grid Y',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridY = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
                       ],
                     ),
@@ -798,19 +789,19 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
             _save();
           },
         ),
-        TextFormField(
-          initialValue: _data.mustProtectCount.toString(),
-          decoration: InputDecoration(
-            labelText:
-                l10n?.mustProtectCount(_data.mustProtectCount) ??
-                'Must Protect Count',
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label:
+              l10n?.mustProtectCount(_data.mustProtectCount) ??
+              'Must Protect Count',
+          builder: (context, decoration) => TextFormField(
+            initialValue: _data.mustProtectCount.toString(),
+            decoration: decoration,
+            keyboardType: TextInputType.number,
+            onChanged: (val) {
+              _data.mustProtectCount = int.tryParse(val) ?? 0;
+              _save();
+            },
           ),
-          keyboardType: TextInputType.number,
-          onChanged: (val) {
-            _data.mustProtectCount = int.tryParse(val) ?? 0;
-            _save();
-          },
         ),
         const SizedBox(height: 16),
         Text(
@@ -832,7 +823,7 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            initialValue: '${item.gridItemType}',
+                            initialValue: item.gridItemType,
                             decoration: InputDecoration(
                               labelText: l10n?.gridItemType ?? 'Grid Item Type',
                               border: const OutlineInputBorder(),
@@ -849,36 +840,31 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
                         ),
                       ],
                     ),
-                    Row(
+                    EditorResponsiveFieldRow(
                       children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridX.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridX ?? 'Grid X',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridX = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridX.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridX ?? 'Grid X',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridX = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridY.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridY ?? 'Grid Y',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridY = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridY.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridY ?? 'Grid Y',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridY = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
                       ],
                     ),
@@ -1005,6 +991,10 @@ class _ZombiePotionModuleEditor extends StatefulWidget {
 }
 
 class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
+  static const _initialField = 'Initial';
+  static const _maxCountField = 'MaxCount';
+  static const _potionSpawnTimerField = 'PotionSpawnTimer';
+
   late ZombiePotionModulePropertiesData _data;
 
   @override
@@ -1022,14 +1012,18 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = widget.l10n ?? AppLocalizations.of(context);
+    final AppLocalizations l10n = widget.l10n ?? AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
           initialValue: _data.initialPotionCount.toString(),
           decoration: InputDecoration(
-            labelText: l10n?.initialPotionCount ?? 'Initial Potion Count',
+            labelText: localizedPropertyLabel(
+              context,
+              l10n.initialCount,
+              _initialField,
+            ),
             border: const OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
@@ -1042,7 +1036,11 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
         TextFormField(
           initialValue: _data.maxPotionCount.toString(),
           decoration: InputDecoration(
-            labelText: l10n?.maxPotionCount ?? 'Max Potion Count',
+            labelText: localizedPropertyLabel(
+              context,
+              l10n.maximumCount,
+              _maxCountField,
+            ),
             border: const OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
@@ -1053,46 +1051,44 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
         ),
         const SizedBox(height: 8),
         Text(
-          l10n?.spawnTimer ?? 'Spawn Timer (Min/Max seconds)',
+          localizedPropertyLabel(
+            context,
+            l10n.spawnInterval,
+            _potionSpawnTimerField,
+          ),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        Row(
+        EditorResponsiveFieldRow(
           children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: _data.potionSpawnTimer.min.toString(),
-                decoration: InputDecoration(
-                  labelText: l10n?.minSec ?? 'Min',
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (val) {
-                  _data.potionSpawnTimer.min = int.tryParse(val) ?? 12;
-                  _save();
-                },
+            TextFormField(
+              initialValue: _data.potionSpawnTimer.min.toString(),
+              decoration: InputDecoration(
+                labelText: l10n.minimumIntervalSeconds,
+                border: const OutlineInputBorder(),
               ),
+              keyboardType: TextInputType.number,
+              onChanged: (val) {
+                _data.potionSpawnTimer.min = int.tryParse(val) ?? 12;
+                _save();
+              },
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                initialValue: _data.potionSpawnTimer.max.toString(),
-                decoration: InputDecoration(
-                  labelText: l10n?.maxSec ?? 'Max',
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (val) {
-                  _data.potionSpawnTimer.max = int.tryParse(val) ?? 16;
-                  _save();
-                },
+            TextFormField(
+              initialValue: _data.potionSpawnTimer.max.toString(),
+              decoration: InputDecoration(
+                labelText: l10n.maximumIntervalSeconds,
+                border: const OutlineInputBorder(),
               ),
+              keyboardType: TextInputType.number,
+              onChanged: (val) {
+                _data.potionSpawnTimer.max = int.tryParse(val) ?? 16;
+                _save();
+              },
             ),
           ],
         ),
         const SizedBox(height: 16),
         Text(
-          l10n?.potionTypesConfigured(_data.potionTypes.length) ??
-              'Potion types: ${_data.potionTypes.length} configured',
+          l10n.potionTypesConfigured(_data.potionTypes.length),
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),

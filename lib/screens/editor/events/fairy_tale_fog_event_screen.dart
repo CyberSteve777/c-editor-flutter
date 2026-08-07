@@ -168,6 +168,7 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue:
                             _fogOptions.any((e) => e.$1 == _data.fogType)
                             ? _data.fogType
@@ -196,26 +197,26 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                         },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.movingTime.toString(),
-                        decoration: const InputDecoration(
-                          labelText: 'Moving time (MovingTime)',
-                          border: OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label: 'Moving time (MovingTime)',
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.movingTime.toString(),
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final n = double.tryParse(v);
+                            if (n != null) {
+                              _data = FairyTaleFogWaveActionData(
+                                movingTime: n,
+                                fogType: _data.fogType,
+                                range: _data.range,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        onChanged: (v) {
-                          final n = double.tryParse(v);
-                          if (n != null) {
-                            _data = FairyTaleFogWaveActionData(
-                              movingTime: n,
-                              fogType: _data.fogType,
-                              range: _data.range,
-                            );
-                            _sync();
-                          }
-                        },
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -225,7 +226,7 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      EditorResponsiveFieldRow(
                         children: [
                           Expanded(
                             child: TextFormField(
@@ -283,7 +284,7 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      EditorResponsiveFieldRow(
                         children: [
                           Expanded(
                             child: TextFormField(

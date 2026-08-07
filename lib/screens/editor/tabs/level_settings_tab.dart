@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/registry/conflict_registry.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -8,10 +9,11 @@ import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/asset_image.dart';
 
 bool _shouldRecommendTunnelDefendModule(
   LevelDefinitionData levelDef,
-  Set<String> moduleObjClasses,
+  bool hasTunnelDefendModule,
 ) {
   final stageInfo = RtidParser.parse(levelDef.stageModule);
   final alias = stageInfo?.alias ?? '';
@@ -19,7 +21,23 @@ bool _shouldRecommendTunnelDefendModule(
       alias != 'UnchartedMausoleum2Stage') {
     return false;
   }
-  return !moduleObjClasses.contains('TunnelDefendModuleProperties');
+  return !hasTunnelDefendModule;
+}
+
+bool _isExpeditionTilesModule({
+  required String alias,
+  required String objClass,
+  required dynamic objData,
+}) {
+  if (objClass != 'TunnelDefendModuleProperties') return false;
+  if (alias == 'SouDaCheTunnelDefendDefault' ||
+      alias.startsWith('SoudacheTunnelDefendStage')) {
+    return true;
+  }
+  if (objData is Map) {
+    return (objData['BrickMapIndex'] as num?)?.toInt() == 3;
+  }
+  return false;
 }
 
 class ModuleUIInfo {
@@ -29,7 +47,9 @@ class ModuleUIInfo {
   final String friendlyName;
   final String description;
   final IconData icon;
+  final String? assetIconPath;
   final bool isCore;
+  final bool isExpeditionTiles;
 
   const ModuleUIInfo({
     required this.rtid,
@@ -38,7 +58,9 @@ class ModuleUIInfo {
     required this.friendlyName,
     required this.description,
     required this.icon,
+    this.assetIconPath,
     required this.isCore,
+    this.isExpeditionTiles = false,
   });
 }
 
@@ -150,7 +172,15 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
       }
       objClass ??= 'UnknownObject';
 
-      final metadata = ModuleRegistry.getMetadata(objClass);
+      final metadata = ModuleRegistry.getMetadataForAlias(alias, objClass);
+      final rawObjData = info?.source == 'CurrentLevel'
+          ? widget.objectMap[alias]?.objData
+          : ReferenceRepository.instance.objectForAlias(alias)?.objData;
+      final isExpeditionTiles = _isExpeditionTilesModule(
+        alias: alias,
+        objClass: objClass,
+        objData: rawObjData,
+      );
 
       return ModuleUIInfo(
         rtid: rtid,
@@ -159,7 +189,9 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
         friendlyName: metadata.getTitle(context),
         description: metadata.getDescription(context),
         icon: metadata.icon,
+        assetIconPath: metadata.assetIconPath,
         isCore: metadata.isCore,
+        isExpeditionTiles: isExpeditionTiles,
       );
     }).toList();
 
@@ -173,10 +205,27 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
       context,
       existingObjClasses,
     );
-    final showTunnelDefendRecommendation = _shouldRecommendTunnelDefendModule(
-      levelDef,
-      existingObjClasses,
+    final hasTunnelDefendModule = currentModulesList.any(
+      (m) =>
+          m.objClass == 'TunnelDefendModuleProperties' &&
+          !m.isExpeditionTiles,
     );
+    final showTunnelDefendRecommendation =
+        _shouldRecommendTunnelDefendModule(levelDef, hasTunnelDefendModule);
+    final hasExpeditionTilesModule = currentModulesList.any(
+      (m) => m.isExpeditionTiles,
+    );
+    final showExpeditionTilesRecommendation =
+        LevelParser.isSouDaCheLawn(levelDef, _levelFileFromObjectMap()) &&
+        !hasExpeditionTilesModule;
+    final showExpeditionTilesMismatchWarning =
+        hasExpeditionTilesModule &&
+        LevelParser.isUnderwaterWorldSixRowLawn(
+          levelDef,
+          _levelFileFromObjectMap(),
+        );
+    final showTunnelExpeditionCompatibilityWarning =
+        hasTunnelDefendModule && hasExpeditionTilesModule;
 
     return Stack(
       children: [
@@ -262,11 +311,15 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      l10n?.addNewModule ?? 'Add new module',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        l10n?.addNewModule ?? 'Add new module',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -294,13 +347,17 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                             ).colorScheme.onErrorContainer,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            pair.first,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onErrorContainer,
+                          Expanded(
+                            child: Text(
+                              pair.first,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
+                              ),
                             ),
                           ),
                         ],
@@ -424,6 +481,37 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                     'The tiles in Underground Palace Secret Realm lawns must be placed through the "Underground Palace Pathways" module. If this module is not added, the lawns may appear overly empty in-game.',
               ),
             ],
+            if (showExpeditionTilesRecommendation) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                title:
+                    l10n?.recommendedExpeditionTilesTitle ??
+                    'Works with the "Expedition Tiles" module',
+                message:
+                    l10n?.recommendedExpeditionTilesBody ??
+                    'Add the "Expedition Tiles" module to work around the lawn\'s missing tiles and create an experience that more closely matches Expedition Gate.',
+              ),
+            ],
+            if (showTunnelExpeditionCompatibilityWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                title:
+                    l10n?.tunnelExpeditionCompatibilityWarningTitle ??
+                    'Use Underground Palace Pathways with Expedition Tiles carefully',
+                message:
+                    l10n?.tunnelExpeditionCompatibilityWarningBody ??
+                    'Using the "Underground Palace Pathways" module together with the "Expedition Tiles" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.',
+              ),
+            ],
+            if (showExpeditionTilesMismatchWarning) ...[
+              const SizedBox(height: 12),
+              _ErrorBanner(
+                title: l10n?.stageMismatch ?? 'Lawn Type Mismatch',
+                message:
+                    l10n?.expeditionTilesUnderwaterMismatchWarning ??
+                    'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.',
+              ),
+            ],
           ],
         ),
         if (pendingDeleteRtid != null)
@@ -454,6 +542,10 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     );
   }
 
+  PvzLevelFile _levelFileFromObjectMap() {
+    return PvzLevelFile(objects: widget.objectMap.values.toList());
+  }
+
   static String _moduleReorderHint(
     BuildContext context,
     AppLocalizations? l10n,
@@ -466,6 +558,52 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
               'Drag the ⋮⋮ handle to reorder.')
         : (l10n?.presetPlantListReorderHint ??
               'Long press the ⋮⋮ handle and drag to reorder.');
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  const _ErrorBanner({required this.title, required this.message});
+
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      color: theme.colorScheme.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(editorErrorIcon, color: theme.colorScheme.onErrorContainer),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    message,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -572,7 +710,18 @@ class _ReorderableModuleTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(info.icon, color: iconColor, size: isCore ? 28 : 20),
+              if (info.assetIconPath != null)
+                SizedBox(
+                  width: isCore ? 28 : 20,
+                  height: isCore ? 28 : 20,
+                  child: AssetImageWidget(
+                    assetPath: info.assetIconPath!,
+                    fit: BoxFit.contain,
+                    altCandidates: imageAltCandidates(info.assetIconPath!),
+                  ),
+                )
+              else
+                Icon(info.icon, color: iconColor, size: isCore ? 28 : 20),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

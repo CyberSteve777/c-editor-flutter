@@ -76,6 +76,51 @@ class EditorWarningBanner extends StatelessWidget {
   }
 }
 
+/// Shared hint for event editors that expose ColumnStart / ColumnEnd.
+class EventColumnRangeHint extends StatelessWidget {
+  const EventColumnRangeHint({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final style = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+      height: 1.55,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.eventColumnRangeBoundaryHint ??
+              'The lawn’s left edge is column 0 and the right edge is column 9. The start column must be less than the end column.',
+          style: style,
+          softWrap: true,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          l10n?.eventColumnRangeExampleHint ??
+              'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.',
+          style: style,
+          softWrap: true,
+        ),
+      ],
+    );
+  }
+}
+
+String localizedPropertyLabel(
+  BuildContext context,
+  String localizedName,
+  String codeName,
+) {
+  final languageCode = Localizations.localeOf(context).languageCode;
+  return languageCode == 'zh'
+      ? '$localizedName（$codeName）'
+      : '$localizedName ($codeName)';
+}
+
 /// Shared editor UI components. Ported from Z-Editor-master EditorComponents.kt
 
 /// Square add button with rounded corners and + symbol.
@@ -132,7 +177,15 @@ class PvzAddButton extends StatelessWidget {
           btn,
           if (label!.isNotEmpty) ...[
             const SizedBox(width: 8),
-            Text(label!, style: Theme.of(context).textTheme.labelLarge),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 160),
+              child: Text(
+                label!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+            ),
           ],
         ],
       );
@@ -160,6 +213,220 @@ abstract final class EditorItemCardLayout {
     if (cellWidth <= 0 || !cellWidth.isFinite) return 1.0;
     const referenceCell = 52.0;
     return (cellWidth / referenceCell).clamp(0.4, 1.0);
+  }
+}
+
+/// Keeps related form controls side by side when there is enough room and
+/// stacks them when UI scaling leaves the editor with a narrow layout.
+class EditorResponsiveFieldRow extends StatelessWidget {
+  const EditorResponsiveFieldRow({
+    super.key,
+    required this.children,
+    this.breakpoint = 600,
+    this.spacing = 12,
+  });
+
+  final List<Widget> children;
+  final double breakpoint;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final fields = children
+            .where(
+              (child) =>
+                  child is! SizedBox ||
+                  child.child != null ||
+                  child.width == null ||
+                  child.height != null,
+            )
+            .map((child) => child is Flexible ? child.child : child)
+            .toList(growable: false);
+        final stack = constraints.maxWidth < breakpoint;
+        if (stack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < fields.length; i++) ...[
+                if (i > 0) SizedBox(height: spacing),
+                fields[i],
+              ],
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < fields.length; i++) ...[
+              if (i > 0) SizedBox(width: spacing),
+              Expanded(child: fields[i]),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// A label and its field use separate lines in compact editor layouts.
+class EditorResponsiveLabelField extends StatelessWidget {
+  const EditorResponsiveLabelField({
+    super.key,
+    required this.label,
+    required this.field,
+    this.labelWidth = 120,
+    this.breakpoint = 520,
+    this.spacing = 12,
+  });
+
+  final Widget label;
+  final Widget field;
+  final double labelWidth;
+  final double breakpoint;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < breakpoint) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              label,
+              SizedBox(height: spacing / 2),
+              field,
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: labelWidth, child: label),
+            SizedBox(width: spacing),
+            Expanded(child: field),
+          ],
+        );
+      },
+    );
+  }
+}
+
+typedef EditorInputFieldBuilder =
+    Widget Function(BuildContext context, InputDecoration decoration);
+
+/// Keeps an outlined input label readable at large text scales. Short labels
+/// stay in the field; labels that cannot fit move above it and wrap fully.
+class EditorResponsiveInputField extends StatelessWidget {
+  const EditorResponsiveInputField({
+    super.key,
+    required this.label,
+    required this.builder,
+    this.decoration = const InputDecoration(border: OutlineInputBorder()),
+    this.labelSpacing = 8,
+    this.externalLabelStyle,
+  });
+
+  final String label;
+  final EditorInputFieldBuilder builder;
+  final InputDecoration decoration;
+  final double labelSpacing;
+  final TextStyle? externalLabelStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final theme = Theme.of(context);
+        final labelStyle =
+            decoration.floatingLabelStyle ??
+            decoration.labelStyle ??
+            theme.inputDecorationTheme.floatingLabelStyle ??
+            theme.inputDecorationTheme.labelStyle ??
+            theme.textTheme.bodyLarge ??
+            const TextStyle(fontSize: 16);
+        final reservedWidth =
+            48.0 +
+            (decoration.prefixIcon == null ? 0 : 48) +
+            (decoration.suffixIcon == null ? 0 : 48);
+        final availableLabelWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth - reservedWidth
+            : double.infinity;
+        final labelPainter = TextPainter(
+          text: TextSpan(text: label, style: labelStyle),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: 1,
+        )..layout(maxWidth: availableLabelWidth > 0 ? availableLabelWidth : 0);
+        final showExternalLabel = labelPainter.didExceedMaxLines;
+        final effectiveDecoration = showExternalLabel
+            ? decoration
+            : decoration.copyWith(labelText: label);
+        final field = builder(context, effectiveDecoration);
+
+        if (!showExternalLabel) return field;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              label,
+              style:
+                  externalLabelStyle ??
+                  theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            SizedBox(height: labelSpacing),
+            field,
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Keeps a heading or status label clear of its trailing action. The action
+/// moves below the text when a scaled editor no longer has enough width.
+class EditorResponsiveActionRow extends StatelessWidget {
+  const EditorResponsiveActionRow({
+    super.key,
+    required this.content,
+    required this.action,
+    this.breakpoint = 520,
+    this.spacing = 12,
+  });
+
+  final Widget content;
+  final Widget action;
+  final double breakpoint;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < breakpoint) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              content,
+              SizedBox(height: spacing / 2),
+              Align(alignment: Alignment.centerRight, child: action),
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(child: content),
+            SizedBox(width: spacing),
+            action,
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -537,12 +804,8 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
 
   ScrollbarThemeData _desktopScrollbarTheme() {
     return ScrollbarThemeData(
-      thumbColor: WidgetStateProperty.all(
-        Colors.white.withValues(alpha: 0.75),
-      ),
-      trackColor: WidgetStateProperty.all(
-        Colors.white.withValues(alpha: 0.18),
-      ),
+      thumbColor: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.75)),
+      trackColor: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.18)),
       trackBorderColor: WidgetStateProperty.all(Colors.transparent),
       thickness: WidgetStateProperty.all(6),
       radius: const Radius.circular(4),
@@ -608,10 +871,7 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
           controller: _scrollController,
           thumbVisibility: true,
           interactive: true,
-          child: _buildScrollableRow(
-            tabColors,
-            alignTabsToBottom: true,
-          ),
+          child: _buildScrollableRow(tabColors, alignTabsToBottom: true),
         ),
       ),
     );
@@ -664,13 +924,15 @@ class AccentBarChoiceChip extends StatelessWidget {
           highlightColor: Colors.transparent,
           overlayColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.pressed)) {
-              return (selected ? selectedFg : unselectedFg)
-                  .withValues(alpha: 0.12);
+              return (selected ? selectedFg : unselectedFg).withValues(
+                alpha: 0.12,
+              );
             }
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.focused)) {
-              return (selected ? selectedFg : unselectedFg)
-                  .withValues(alpha: 0.08);
+              return (selected ? selectedFg : unselectedFg).withValues(
+                alpha: 0.08,
+              );
             }
             return null;
           }),
@@ -806,71 +1068,83 @@ void showEditorHelpDialog(
 }) {
   showDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Row(
-        children: [
-          Icon(
-            Icons.help_outline,
-            color: themeColor ?? Theme.of(ctx).colorScheme.primary,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-        ],
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: sections
-              .map(
-                (s) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '• ${s.title}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color:
-                              themeColor ?? Theme.of(ctx).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12),
-                        child: Text(
-                          s.body,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text(
-            'OK',
-            style: TextStyle(
+    builder: (ctx) {
+      final l10n = AppLocalizations.of(ctx);
+      final confirmLabel =
+          l10n?.helpDialogGotIt ?? MaterialLocalizations.of(ctx).okButtonLabel;
+      return AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.help_outline,
               color: themeColor ?? Theme.of(ctx).colorScheme.primary,
             ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: sections
+                .map(
+                  (s) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '• ${s.title}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color:
+                                themeColor ?? Theme.of(ctx).colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            s.body,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ),
-      ],
-    ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              confirmLabel,
+              style: TextStyle(
+                color: themeColor ?? Theme.of(ctx).colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
+      );
+    },
   );
 }
 
@@ -883,7 +1157,8 @@ class HelpSectionData {
 const _kWaveDropConfigTitleIconSize = 32.0;
 const _kPlantDropIconCardSize = 56.0;
 const _kPlantFoodIconPath = 'assets/images/others/plantfood.png';
-const _kPlantDropTagIconPath = 'assets/images/tags/plants/rarity/Plant_Green.webp';
+const _kPlantDropTagIconPath =
+    'assets/images/tags/plants/rarity/Plant_Green.webp';
 
 /// Plant drop token: icon plus a full-height remove strip (easier to tap than a
 /// corner overlay on a small square).
@@ -907,10 +1182,10 @@ class PlantDropIconCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final removeHint = label != null && label!.isNotEmpty
-        ? '${l10n?.remove ?? 'Remove'} $label'
-        : (l10n?.remove ?? 'Remove');
+        ? '${l10n.remove} $label'
+        : l10n.remove;
 
     final chipRow = Row(
       mainAxisSize: MainAxisSize.min,
@@ -1031,13 +1306,17 @@ class WaveDropConfigCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
     final leafColor = isDark ? pvzGreenLight : pvzGreenDark;
     final plantCount = plants.length;
-    final plantFoodOnlyCount = (totalDropCount - plantCount).clamp(0, totalDropCount);
+    final plantFoodOnlyCount = (totalDropCount - plantCount).clamp(
+      0,
+      totalDropCount,
+    );
     final canIncreaseTotal = totalDropCount < zombieCount;
-    final canAddPlant = onAddPlant != null &&
+    final canAddPlant =
+        onAddPlant != null &&
         zombieCount > 0 &&
         totalDropCount > 0 &&
         plantCount < totalDropCount;
@@ -1059,7 +1338,7 @@ class WaveDropConfigCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    l10n?.waveDropConfigTitle ?? 'Drop configuration',
+                    l10n.waveDropConfigTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -1079,22 +1358,23 @@ class WaveDropConfigCard extends StatelessWidget {
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 36, minHeight: 36),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
                       icon: const Icon(Icons.remove),
                       onPressed: totalDropCount > 0
                           ? () => onTotalDropCountChanged(totalDropCount - 1)
                           : null,
                     ),
-                    Text(
-                      '$totalDropCount',
-                      style: theme.textTheme.titleMedium,
-                    ),
+                    Text('$totalDropCount', style: theme.textTheme.titleMedium),
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 36, minHeight: 36),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
                       icon: const Icon(Icons.add),
                       onPressed: canIncreaseTotal
                           ? () => onTotalDropCountChanged(totalDropCount + 1)
@@ -1108,8 +1388,7 @@ class WaveDropConfigCard extends StatelessWidget {
                   child: counterRow,
                 );
                 final labelText = Text(
-                  l10n?.waveDropTotalLabel ??
-                      'Total carrier zombies (AdditionalPlantfood)',
+                  l10n.waveDropTotalLabel,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -1140,7 +1419,7 @@ class WaveDropConfigCard extends StatelessWidget {
             if (zombieCount == 0) ...[
               const SizedBox(height: 8),
               Text(
-                'Add zombies to this wave before configuring drops.',
+                l10n.waveDropAddZombiesFirst,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -1155,14 +1434,14 @@ class WaveDropConfigCard extends StatelessWidget {
                   if (plantFoodOnlyCount > 0)
                     _DropCountBadge(
                       iconPath: _kPlantFoodIconPath,
-                      label: l10n?.waveDropPlantFoodOnlyCount(plantFoodOnlyCount) ??
-                          '$plantFoodOnlyCount plant food',
+                      label: l10n.waveDropPlantFoodOnlyCount(
+                        plantFoodOnlyCount,
+                      ),
                     ),
                   if (plantCount > 0)
                     _DropCountBadge(
                       iconPath: _kPlantDropTagIconPath,
-                      label: l10n?.waveDropPlantsCount(plantCount) ??
-                          '$plantCount plants',
+                      label: l10n.waveDropPlantsCount(plantCount),
                     ),
                 ],
               ),
@@ -1183,7 +1462,7 @@ class WaveDropConfigCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    l10n?.dropConfigPlants ?? 'Drop config (Plants)',
+                    l10n.dropConfigPlants,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -1232,7 +1511,7 @@ class WaveDropConfigCard extends StatelessWidget {
                 zombieCount > 0) ...[
               const SizedBox(height: 8),
               Text(
-                'Increase total drops before adding plants.',
+                l10n.waveDropIncreaseTotalBeforePlants,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -1259,7 +1538,8 @@ class _DropCountBadge extends StatelessWidget {
         const iconSize = 20.0;
         const gap = 6.0;
         const horizontalPadding = 20.0;
-        final maxWidth = constraints.hasBoundedWidth && constraints.maxWidth.isFinite
+        final maxWidth =
+            constraints.hasBoundedWidth && constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : double.infinity;
         final maxLabelWidth = math.max(

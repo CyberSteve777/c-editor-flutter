@@ -3449,7 +3449,97 @@
             "Electric",
             "Chinese"
         ],
-        "icon": "icon_pineclone.webp"
+        "icon": "icon_pineclone.gif"
+    },
+    {
+        "id": "smallcherry",
+        "name": "plant_smallcherry",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_smallcherry.webp"
+    },
+    {
+        "id": "smallChestnut",
+        "name": "plant_smallChestnut",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_smallChestnut.webp"
+    },
+    {
+        "id": "minishroom",
+        "name": "plant_minishroom",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_minishroom.webp"
+    },
+    {
+        "id": "dragonbabybruit",
+        "name": "plant_dragonbabybruit",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_dragonbabybruit.webp"
+    },
+    {
+        "id": "bitpeashooter",
+        "name": "plant_bitpeashooter",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_bitpeashooter.webp"
+    },
+    {
+        "id": "frog",
+        "name": "plant_frog",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_frog.webp"
+    },
+    {
+        "id": "sea_puffshroom",
+        "name": "plant_seapuffshroom",
+        "tags": [
+            "White",
+            "Vanguard",
+            "Physical",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_puffshroom.webp"
+    },
+    {
+        "id": "armorflame",
+        "name": "plant_armorflame",
+        "tags": [
+            "Red",
+            "Ranger",
+            "Fire",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_armorflame.webp"
     },
     {
         "id": "moonflower_iz",
@@ -3458,9 +3548,46 @@
             "Green",
             "Support",
             "Magic",
+            "Hidden",
             "Chinese"
         ],
         "icon": "icon_moonflower.webp"
+    },
+    {
+        "id": "soudacheMegagatling",
+        "name": "plant_soudacheMegagatling",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Physical",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_soudacheMegagatling.webp"
+    },
+    {
+        "id": "soudacheMegagatling_Fire",
+        "name": "plant_soudacheMegagatlingFire",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Fire",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_soudacheMegagatlingFire.webp"
+    },
+    {
+        "id": "soudacheMegagatling_Electric",
+        "name": "plant_soudacheMegagatlingElectric",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Electric",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_soudacheMegagatlingElectric.webp"
     },
     {
         "id": "uncharted_phatbeet",
@@ -4015,5 +4142,11 @@
             "Chinese"
         ],
         "icon": "icon_minigame_imitater_orange.png"
+    },
+    {
+        "id": "coming_soon",
+        "name": "plant_coming_soon",
+        "tags": [],
+        "icon": "to_be_continued.png"
     }
 ]

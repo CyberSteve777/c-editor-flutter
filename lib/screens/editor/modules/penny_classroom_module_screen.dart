@@ -179,23 +179,28 @@ ModuleAliasInputField(
               onChanged: widget.onChanged,
             ),
             const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Icon(Icons.layers),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.batchLevelFormat(_batchLevel.round()),
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                  EditorResponsiveActionRow(
+                    content: Row(
+                      children: [
+                        const Icon(Icons.layers),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.batchLevelFormat(_batchLevel.round()),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      FilledButton(
-                        onPressed: entries.isEmpty ? null : _applyBatch,
-                        child: Text(l10n.applyBatch),
-                      ),
-                    ],
+                      ],
+                    ),
+                    action: FilledButton(
+                      onPressed: entries.isEmpty ? null : _applyBatch,
+                      child: Text(l10n.applyBatch),
+                    ),
                   ),
                   Slider(
                     value: _batchLevel,

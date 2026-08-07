@@ -1,0 +1,209 @@
+[
+  {
+    "id": "nightmare_stomp_spawn",
+    "nameKey": "zombossCustomActionPreset_nightmareStompSpawn",
+    "sourceKey": "zombossCustomActionPresetSource_memoryLaneS31Week4Boss",
+    "applicableMechs": [
+      "zombossmech_egypt_memo",
+      "zombossmech_pirate_memo",
+      "zombossmech_cowboy_memo",
+      "zombossmech_future_memo"
+    ],
+    "sourceAlias": "ZombossModernSpawnCharge3",
+    "objclass": "ZombieDropZombiesOnBoardActionDefinition",
+    "sortIndex": 10,
+    "fields": [
+      { "name": "Weight", "type": "int", "default": 15 },
+      { "name": "RepeatMin", "type": "int", "default": 0 },
+      { "name": "RepeatMax", "type": "int", "default": 0 },
+      { "name": "ColumnStart", "type": "string", "default": "9" },
+      { "name": "ColumnEnd", "type": "string", "default": "10" },
+      { "name": "MinSpawn", "type": "string", "default": "3" },
+      { "name": "MaxSpawn", "type": "string", "default": "3" },
+      {
+        "name": "ZombieNames",
+        "type": "List<zombieType>",
+        "default": ["bobsled_punk"]
+      },
+      { "name": "ZombieWeights", "type": "List<int>", "default": [100] },
+      { "name": "TimeBeforeSpawn", "type": "float", "default": 1.0 },
+      { "name": "ZombieFallTime", "type": "float", "default": 0.5 },
+      { "name": "RampUpAnimation", "type": "string", "default": "" },
+      { "name": "LoopingAnimation", "type": "string", "default": "stomp" },
+      { "name": "RampDownAnimation", "type": "string", "default": "" },
+      { "name": "EffectTypeToShow", "type": "string", "default": "" },
+      { "name": "DropAudioEvent", "type": "string", "default": "" }
+    ],
+    "objdata": {
+      "Weight": 15,
+      "RepeatMin": 0,
+      "RepeatMax": 0,
+      "ColumnEnd": "10",
+      "ColumnStart": "9",
+      "MinSpawn": "3",
+      "MaxSpawn": "3",
+      "ZombieNames": ["bobsled_punk"],
+      "ZombieWeights": [100],
+      "TimeBeforeSpawn": 1.0,
+      "ZombieFallTime": 0.5,
+      "RampUpAnimation": "",
+      "LoopingAnimation": "stomp",
+      "RampDownAnimation": "",
+      "EffectTypeToShow": ""
+    }
+  },
+  {
+    "id": "sport_tank_spawn",
+    "nameKey": "zombossCustomActionPreset_sportTankSpawn",
+    "sourceKey": "zombossCustomActionPresetSource_memoryLaneS30Week8Boss",
+    "applicableMechs": ["zombossmech_iceage_memo"],
+    "sourceAlias": "ZombieIceAgeSpawnBallAction",
+    "objclass": "ZombieDropActionDefinition",
+    "sortIndex": 20,
+    "fields": [
+      { "name": "Weight", "type": "int", "default": 10 },
+      { "name": "RepeatMin", "type": "int", "default": 0 },
+      { "name": "RepeatMax", "type": "int", "default": 0 },
+      { "name": "Invulnerable", "type": "string", "default": "false" },
+      { "name": "Animation", "type": "string", "default": "wind_1" },
+      {
+        "name": "AwardDrop",
+        "type": "string",
+        "default": "RTID(SpawnBall@CurrentLevel)"
+      },
+      { "name": "EffectPam", "type": "string", "default": "" },
+      { "name": "EffectAnim", "type": "string", "default": "" },
+      { "name": "EffectOffsetX", "type": "int", "default": 0 },
+      { "name": "EffectOffsetY", "type": "int", "default": 0 }
+    ],
+    "objdata": {
+      "Weight": 10,
+      "RepeatMin": 0,
+      "RepeatMax": 0,
+      "Invulnerable": "false",
+      "Animation": "wind_1",
+      "AwardDrop": "RTID(SpawnBall@CurrentLevel)",
+      "EffectPam": "",
+      "EffectAnim": "",
+      "EffectOffsetX": 0,
+      "EffectOffsetY": 0
+    },
+    "dependencies": [
+      {
+        "id": "spawn_ball",
+        "alias": "SpawnBall",
+        "objclass": "ZombieDropProps",
+        "fields": [
+          {
+            "name": "ZombieHordes",
+            "type": "List<object>",
+            "fields": [
+              { "name": "Type", "type": "zombieType", "default": "sportzball_imp" },
+              { "name": "Hypnotized", "type": "bool", "default": false },
+              { "name": "BasicQuantity", "type": "int", "default": 2 },
+              { "name": "DynamicQuantity", "type": "int", "default": 1 },
+              { "name": "TossGridXRange", "type": "int", "default": 0 },
+              { "name": "TossGridYRange", "type": "int", "default": 5 },
+              {
+                "name": "SpawnGridXDelta",
+                "type": "object",
+                "fields": [
+                  { "name": "Min", "type": "int", "default": -1 },
+                  { "name": "Max", "type": "int", "default": -1 }
+                ]
+              },
+              {
+                "name": "SpawnGridYDelta",
+                "type": "object",
+                "fields": [
+                  { "name": "Min", "type": "float", "default": -0.5 },
+                  { "name": "Max", "type": "float", "default": 0.5 }
+                ]
+              },
+              { "name": "SpawnGridZDelta", "type": "int", "default": 0 },
+              { "name": "TossDuration", "type": "int", "default": 2 },
+              { "name": "TossApexHeight", "type": "int", "default": 150 }
+            ]
+          },
+          { "name": "Collectables", "type": "List<string>" }
+        ],
+        "objdata": {
+          "ZombieHordes": [
+            {
+              "Type": "sportzball_imp",
+              "Hypnotized": false,
+              "BasicQuantity": 2,
+              "DynamicQuantity": 1,
+              "TossGridXRange": 0,
+              "TossGridYRange": 5,
+              "SpawnGridXDelta": {
+                "Min": -1,
+                "Max": -1
+              },
+              "SpawnGridYDelta": {
+                "Min": -0.5,
+                "Max": 0.5
+              },
+              "SpawnGridZDelta": 0,
+              "TossDuration": 2,
+              "TossApexHeight": 150
+            }
+          ],
+          "Collectables": ["spacetime_plantfood"]
+        }
+      }
+    ],
+    "dependencyRtidFields": {
+      "AwardDrop": "spawn_ball"
+    }
+  },
+  {
+    "id": "sport_wind_spawn",
+    "nameKey": "zombossCustomActionPreset_sportWindSpawn",
+    "sourceKey": "zombossCustomActionPresetSource_memoryLaneS30Week8Boss",
+    "applicableMechs": ["zombossmech_iceage_memo"],
+    "sourceAlias": "ZombossIceAgeSpawnZombieAction3",
+    "objclass": "ZombieDropZombiesOnBoardActionDefinition",
+    "sortIndex": 21,
+    "fields": [
+      { "name": "Weight", "type": "int", "default": 10 },
+      { "name": "RepeatMin", "type": "int", "default": 0 },
+      { "name": "RepeatMax", "type": "int", "default": 0 },
+      { "name": "ColumnStart", "type": "string", "default": "7" },
+      { "name": "ColumnEnd", "type": "string", "default": "8" },
+      { "name": "MinSpawn", "type": "string", "default": "3" },
+      { "name": "MaxSpawn", "type": "string", "default": "4" },
+      {
+        "name": "ZombieNames",
+        "type": "List<zombieType>",
+        "default": ["bobsled_punk", "modern_allstar"]
+      },
+      { "name": "ZombieWeights", "type": "List<int>", "default": [100, 20] },
+      { "name": "TimeBeforeSpawn", "type": "float", "default": 1.0 },
+      { "name": "ZombieFallTime", "type": "float", "default": 0 },
+      { "name": "RampUpAnimation", "type": "string", "default": "" },
+      { "name": "LoopingAnimation", "type": "string", "default": "wind_1" },
+      { "name": "RampDownAnimation", "type": "string", "default": "" },
+      { "name": "EffectTypeToShow", "type": "string", "default": "" },
+      { "name": "DropAudioEvent", "type": "string", "default": "" }
+    ],
+    "objdata": {
+      "Weight": 10,
+      "RepeatMin": 0,
+      "RepeatMax": 0,
+      "ColumnEnd": "8",
+      "ColumnStart": "7",
+      "MinSpawn": "3",
+      "MaxSpawn": "4",
+      "ZombieNames": ["bobsled_punk", "modern_allstar"],
+      "ZombieWeights": [100, 20],
+      "TimeBeforeSpawn": 1.0,
+      "ZombieFallTime": 0,
+      "RampUpAnimation": "",
+      "LoopingAnimation": "wind_1",
+      "RampDownAnimation": "",
+      "EffectTypeToShow": "",
+      "DropAudioEvent": ""
+    }
+  }
+]

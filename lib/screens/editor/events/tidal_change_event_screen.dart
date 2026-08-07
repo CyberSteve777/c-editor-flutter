@@ -286,8 +286,11 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Container(
                             width: 20,
@@ -301,12 +304,10 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           Text(
                             l10n?.water ?? 'Water',
                             style: theme.textTheme.bodySmall,
                           ),
-                          const SizedBox(width: 24),
                           Container(
                             width: 20,
                             height: 20,
@@ -319,7 +320,6 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           Text(
                             l10n?.land ?? 'Land',
                             style: theme.textTheme.bodySmall,

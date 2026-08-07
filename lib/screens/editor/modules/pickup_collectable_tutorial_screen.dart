@@ -408,6 +408,7 @@ ModuleAliasInputField(
   ) {
     // final currentLabel = _lootLabel(_data.lootType, l10n);
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: _lootTypes.any((e) => e.value == _data.lootType)
           ? _data.lootType
           : _lootTypes.first.value,

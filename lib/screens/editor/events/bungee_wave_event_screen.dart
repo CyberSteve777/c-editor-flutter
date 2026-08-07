@@ -211,7 +211,7 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      EditorResponsiveFieldRow(
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,9 +232,10 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
                               ),
                             ],
                           ),
-                          const Spacer(),
                           Text(
                             '(X: ${_data.target.mX}, Y: ${_data.target.mY})',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

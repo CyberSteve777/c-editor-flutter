@@ -357,102 +357,106 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    l10n?.barrelWaveRow ?? 'Row',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
+            EditorResponsiveLabelField(
+              labelWidth: 100,
+              label: Text(
+                l10n?.barrelWaveRow ?? 'Row',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              field: DropdownButtonFormField<int>(
+                isExpanded: true,
+                initialValue: entry.row.clamp(1, _maxRow),
+                items: List.generate(_maxRow, (i) => i + 1)
+                    .map(
+                      (r) => DropdownMenuItem(value: r, child: Text('$r')),
+                    )
+                    .toList(),
+                onChanged: (v) {
+                  if (v != null) {
+                    _updateBarrel(
+                      index,
+                      BarrelEntryData(
+                        row: v,
+                        type: entry.type,
+                        params: entry.params,
+                      ),
+                    );
+                  }
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  isDense: true,
                 ),
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    initialValue: entry.row.clamp(1, _maxRow),
-                    items: List.generate(_maxRow, (i) => i + 1)
-                        .map(
-                          (r) => DropdownMenuItem(value: r, child: Text('$r')),
-                        )
-                        .toList(),
-                    onChanged: (v) {
-                      if (v != null) {
-                        _updateBarrel(
-                          index,
-                          BarrelEntryData(
-                            row: v,
-                            type: entry.type,
-                            params: entry.params,
-                          ),
-                        );
-                      }
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    l10n?.barrelWaveType ?? 'Type',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                ),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: entry.type,
-                    items: [
-                      DropdownMenuItem(
-                        value: _barrelTypeEmpty,
-                        child: Text(_barrelTypeLabel(_barrelTypeEmpty, l10n)),
-                      ),
-                      DropdownMenuItem(
-                        value: _barrelTypeZombie,
-                        child: Text(_barrelTypeLabel(_barrelTypeZombie, l10n)),
-                      ),
-                      DropdownMenuItem(
-                        value: _barrelTypeExplosive,
-                        child: Text(
-                          _barrelTypeLabel(_barrelTypeExplosive, l10n),
-                        ),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      if (v != null) {
-                        final oldParams = entry.params ?? BarrelParamsData();
-                        final params = BarrelParamsData(
-                          barrelHitPoints: oldParams.barrelHitPoints,
-                          barrelSpeed: oldParams.barrelSpeed,
-                          barrelBlowDamageAmount: v == _barrelTypeExplosive
-                              ? (oldParams.barrelBlowDamageAmount ?? 3000)
-                              : null,
-                          zombies: v == _barrelTypeZombie
-                              ? List<BarrelZombieData>.from(oldParams.zombies)
-                              : [],
-                        );
-                        _updateBarrel(
-                          index,
-                          BarrelEntryData(
-                            row: entry.row,
-                            type: v,
-                            params: params,
-                          ),
-                        );
-                      }
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      isDense: true,
+            EditorResponsiveLabelField(
+              labelWidth: 100,
+              label: Text(
+                l10n?.barrelWaveType ?? 'Type',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              field: DropdownButtonFormField<String>(
+                isExpanded: true,
+                initialValue: entry.type,
+                items: [
+                  DropdownMenuItem(
+                    value: _barrelTypeEmpty,
+                    child: Text(
+                      _barrelTypeLabel(_barrelTypeEmpty, l10n),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  DropdownMenuItem(
+                    value: _barrelTypeZombie,
+                    child: Text(
+                      _barrelTypeLabel(_barrelTypeZombie, l10n),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: _barrelTypeExplosive,
+                    child: Text(
+                      _barrelTypeLabel(_barrelTypeExplosive, l10n),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+                onChanged: (v) {
+                  if (v != null) {
+                    final oldParams = entry.params ?? BarrelParamsData();
+                    final params = BarrelParamsData(
+                      barrelHitPoints: oldParams.barrelHitPoints,
+                      barrelSpeed: oldParams.barrelSpeed,
+                      barrelBlowDamageAmount: v == _barrelTypeExplosive
+                          ? (oldParams.barrelBlowDamageAmount ?? 3000)
+                          : null,
+                      zombies: v == _barrelTypeZombie
+                          ? List<BarrelZombieData>.from(oldParams.zombies)
+                          : [],
+                    );
+                    _updateBarrel(
+                      index,
+                      BarrelEntryData(
+                        row: entry.row,
+                        type: v,
+                        params: params,
+                      ),
+                    );
+                  }
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  isDense: true,
                 ),
-              ],
+              ),
             ),
             const SizedBox(height: 12),
             _buildParamsFields(index, entry, theme, l10n),
@@ -545,99 +549,78 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
   ) {
     final params = entry.params ?? BarrelParamsData();
     final isExplosive = entry.type == _barrelTypeExplosive;
+    Widget labeledField(String label, Widget field) {
+      return EditorResponsiveLabelField(
+        labelWidth: 100,
+        label: Text(
+          label,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        field: field,
+      );
+    }
 
     return Column(
       children: [
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: Text(
-                l10n?.barrelWaveHitPoints ?? 'Hit points',
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
+        labeledField(
+          l10n?.barrelWaveHitPoints ?? 'Hit points',
+          TextFormField(
+            initialValue: params.barrelHitPoints.toString(),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              isDense: true,
             ),
-            Expanded(
-              child: TextFormField(
-                initialValue: params.barrelHitPoints.toString(),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (v) {
-                  final hp = int.tryParse(v);
-                  if (hp != null && hp > 0) {
-                    _updateBarrelParams(index, entry, barrelHitPoints: hp);
-                  }
-                },
-              ),
-            ),
-          ],
+            keyboardType: TextInputType.number,
+            onChanged: (v) {
+              final hp = int.tryParse(v);
+              if (hp != null && hp > 0) {
+                _updateBarrelParams(index, entry, barrelHitPoints: hp);
+              }
+            },
+          ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: Text(
-                l10n?.barrelWaveSpeed ?? 'Speed',
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
+        labeledField(
+          l10n?.barrelWaveSpeed ?? 'Speed',
+          TextFormField(
+            initialValue: params.barrelSpeed.toString(),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              isDense: true,
             ),
-            Expanded(
-              child: TextFormField(
-                initialValue: params.barrelSpeed.toString(),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                onChanged: (v) {
-                  final sp = double.tryParse(v);
-                  if (sp != null && sp >= 0) {
-                    _updateBarrelParams(index, entry, barrelSpeed: sp);
-                  }
-                },
-              ),
-            ),
-          ],
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            onChanged: (v) {
+              final sp = double.tryParse(v);
+              if (sp != null && sp >= 0) {
+                _updateBarrelParams(index, entry, barrelSpeed: sp);
+              }
+            },
+          ),
         ),
         if (isExplosive) ...[
           const SizedBox(height: 8),
-          Row(
-            children: [
-              SizedBox(
-                width: 100,
-                child: Text(
-                  l10n?.barrelWaveExplosionDamage ?? 'Explosion damage',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
+          labeledField(
+            l10n?.barrelWaveExplosionDamage ?? 'Explosion damage',
+            TextFormField(
+              initialValue: (params.barrelBlowDamageAmount ?? 3000).toString(),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                isDense: true,
               ),
-              Expanded(
-                child: TextFormField(
-                  initialValue: (params.barrelBlowDamageAmount ?? 3000)
-                      .toString(),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    isDense: true,
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) {
-                    final dmg = int.tryParse(v);
-                    if (dmg != null && dmg >= 0) {
-                      _updateBarrelParams(
-                        index,
-                        entry,
-                        barrelBlowDamageAmount: dmg,
-                      );
-                    }
-                  },
-                ),
-              ),
-            ],
+              keyboardType: TextInputType.number,
+              onChanged: (v) {
+                final dmg = int.tryParse(v);
+                if (dmg != null && dmg >= 0) {
+                  _updateBarrelParams(
+                    index,
+                    entry,
+                    barrelBlowDamageAmount: dmg,
+                  );
+                }
+              },
+            ),
           ),
         ],
       ],

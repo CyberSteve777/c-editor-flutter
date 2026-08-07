@@ -133,7 +133,6 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
     _sync();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -199,14 +198,14 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 Text(
                   l10n?.airDropShipModuleAppearances ?? 'Appearances',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -301,33 +300,34 @@ ModuleAliasInputField(
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  initialValue: '${selectedWave.wave}',
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.moduleWaveFieldZeroBased ??
-                                        'Wave (0 = wave 1, 1 = wave 2, ...)',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 0) {
-                                      _updateWave(
-                                        _selectedIndex,
-                                        DropShipAppearWaveData(
-                                          wave: n,
-                                          imp: selectedWave.imp,
-                                          impLv: selectedWave.impLv,
-                                          rowRange: selectedWave.rowRange,
-                                          colRange: selectedWave.colRange,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.moduleWaveFieldZeroBased ??
+                                      'Wave (0 = wave 1, 1 = wave 2, ...)',
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue: '${selectedWave.wave}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 0) {
+                                            _updateWave(
+                                              _selectedIndex,
+                                              DropShipAppearWaveData(
+                                                wave: n,
+                                                imp: selectedWave.imp,
+                                                impLv: selectedWave.impLv,
+                                                rowRange: selectedWave.rowRange,
+                                                colRange: selectedWave.colRange,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -389,7 +389,7 @@ ModuleAliasInputField(
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
                                 child: TextFormField(
@@ -457,7 +457,7 @@ ModuleAliasInputField(
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
                                 child: TextFormField(

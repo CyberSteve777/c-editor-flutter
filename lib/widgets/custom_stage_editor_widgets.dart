@@ -9,7 +9,7 @@ Color customStageAccent(BuildContext context) =>
 
 InputDecoration customStageInputDecoration(
   BuildContext context, {
-  required String labelText,
+  String? labelText,
 }) {
   final accent = customStageAccent(context);
   return editorInputDecoration(
@@ -43,6 +43,14 @@ Color customStageBadgeColor(BuildContext context) =>
     ? const Color(0xFF1976D2)
     : const Color(0xFF42A5F5);
 
+Color userCustomResourceBadgeColor(BuildContext context) =>
+    const Color(0xFFFFC107);
+
+Color presetCustomResourceBadgeColor(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+    ? const Color(0xFF1B5E20)
+    : const Color(0xFF2E7D32);
+
 double customStageBadgeFontSize(BuildContext context) {
   final platform = Theme.of(context).platform;
   final isDesktop =
@@ -66,10 +74,22 @@ class CustomStageBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return CustomResourceBadge(color: customStageBadgeColor(context));
+  }
+}
+
+/// Shared "C" badge shape used by custom resources.
+class CustomResourceBadge extends StatelessWidget {
+  const CustomResourceBadge({super.key, required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: customStageBadgePadding(context),
       decoration: BoxDecoration(
-        color: customStageBadgeColor(context),
+        color: color,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

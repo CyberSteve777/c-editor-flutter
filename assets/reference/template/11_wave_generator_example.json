@@ -3,10 +3,15 @@
 		{
 			"objclass": "LevelDefinition",
 			"objdata": {
-				"Description": "Example of old-style level",
-				"LevelIndex": 424,
-				"LevelNumber": 24,
+				"Name": "波次生成器示例",
+				"LevelNumber": 11,
+				"Description": "本关为波次生成器示例关",
+				"StageModule": "RTID(KongfuStage@LevelModules)",
 				"Loot": "RTID(DefaultLoot@LevelModules)",
+				"StartingSun": 200,
+				"VictoryModule": "RTID(VictoryOutro@LevelModules)",
+				"MusicType": "MainPath",
+				"DisablePeavine": true,
 				"Modules": [
 					"RTID(StandardIntro@LevelModules)",
 					"RTID(BronzeDeadWinCon@LevelModules)",
@@ -16,45 +21,9 @@
 					"RTID(MechanismPlank@CurrentLevel)",
 					"RTID(EnergyGrid@CurrentLevel)",
 					"RTID(ConveyorBelt@CurrentLevel)",
-					"RTID(ChallengeModule@CurrentLevel)",
 					"RTID(Bronze@CurrentLevel)",
 					"RTID(DefaultCustomLevel@LevelModules)"
-				],
-				"Name": "Old-style level",
-				"NormalPresentTable": "kongfu_normal_01",
-				"ShinyPresentTable": "kongfu_shiny_01",
-				"StageModule": "RTID(KongfuStage@LevelModules)",
-				"ShowZombies": [
-					"kongfu_monk_basic",
-					"kongfu_monk_drink",
-					"kongfu_monk_cone",
-					"kongfu_monk_imp",
-					"kongfu_monk_nunchaku"
 				]
-			}
-		},
-		{
-			"aliases": [
-				"ChallengeModule"
-			],
-			"objclass": "StarChallengeModuleProperties",
-			"objdata": {
-				"Challenges": [
-					[
-						"RTID(BeatTheLevel@CurrentLevel)"
-					]
-				],
-				"ChallengesAlwaysAvailable": true
-			}
-		},
-		{
-			"aliases": [
-				"BeatTheLevel"
-			],
-			"objclass": "StarChallengeBeatTheLevelProps",
-			"objdata": {
-				"Description": "[STARCHALLENGE_KONGFU_BRONZE]",
-				"DescriptiveName": "[STARCHALLENGE_KONGFU_BRONZE_NAME]"
 			}
 		},
 		{

@@ -403,7 +403,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Levels'**
+  /// **'My Level Library'**
   String get appTitle;
 
   /// No description provided for @about.
@@ -427,9 +427,75 @@ abstract class AppLocalizations {
   /// No description provided for @switchFolder.
   ///
   /// In en, this message translates to:
+<<<<<<< HEAD
+  /// **'Switch level library'**
+  String get switchFolder;
+
+  /// No description provided for @manageLibraries.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Level Libraries'**
+  String get manageLibraries;
+
+  /// No description provided for @addLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Add library'**
+  String get addLibrary;
+
+  /// No description provided for @libraryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Library name'**
+  String get libraryName;
+
+  /// No description provided for @libraryPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get libraryPath;
+
+  /// No description provided for @deleteLibraryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove library?'**
+  String get deleteLibraryTitle;
+
+  /// No description provided for @deleteLibraryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove \"{name}\" from the library list? This will NOT delete any files on your disk.'**
+  String deleteLibraryMessage(String name);
+
+  /// No description provided for @defaultLibraryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Default library'**
+  String get defaultLibraryName;
+
+  /// No description provided for @renameLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename library'**
+  String get renameLibrary;
+
+  /// No description provided for @activeLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeLibrary;
+
+  /// No description provided for @noLibrariesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No libraries added yet'**
+  String get noLibrariesFound;
+
+=======
   /// **'Switch folder'**
   String get switchFolder;
 
+>>>>>>> upstream/dev
   /// No description provided for @clearCache.
   ///
   /// In en, this message translates to:
@@ -447,18 +513,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'UI size'**
   String get uiSize;
-
-  /// No description provided for @plantTagInternational.
-  ///
-  /// In en, this message translates to:
-  /// **'International'**
-  String get plantTagInternational;
-
-  /// No description provided for @plantTagChinese.
-  ///
-  /// In en, this message translates to:
-  /// **'China Only'**
-  String get plantTagChinese;
 
   /// No description provided for @aboutSoftware.
   ///
@@ -901,7 +955,7 @@ abstract class AppLocalizations {
   /// No description provided for @levelTypeOldStyle.
   ///
   /// In en, this message translates to:
-  /// **'Old-Style'**
+  /// **'Wave Generator'**
   String get levelTypeOldStyle;
 
   /// No description provided for @levelTypeUnknown.
@@ -1417,7 +1471,7 @@ abstract class AppLocalizations {
   /// No description provided for @uploadLevelConfirm.
   ///
   /// In en, this message translates to:
-  /// **'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
+  /// **'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the level library folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
   String get uploadLevelConfirm;
 
   /// No description provided for @back.
@@ -1834,6 +1888,12 @@ abstract class AppLocalizations {
   /// **'Create failed, file already exists'**
   String get levelCreateFail;
 
+  /// No description provided for @templateLoadFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the selected level template'**
+  String get templateLoadFail;
+
   /// No description provided for @adjustUiSize.
   ///
   /// In en, this message translates to:
@@ -1999,7 +2059,7 @@ abstract class AppLocalizations {
   /// No description provided for @feature2.
   ///
   /// In en, this message translates to:
-  /// **'Multi-mode: I, Zombie, Vasebreaker, Last Stand, ZombossMech battle, and more.'**
+  /// **'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Mech battle, and more.'**
   String get feature2;
 
   /// No description provided for @feature3.
@@ -2227,13 +2287,13 @@ abstract class AppLocalizations {
   /// No description provided for @templateZombossMechExample.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech battle level template'**
+  /// **'Zomboss Mech battle level template'**
   String get templateZombossMechExample;
 
   /// No description provided for @templateZombossBattleExample.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss battle level template'**
+  /// **'Non-mech Zomboss battle level template'**
   String get templateZombossBattleExample;
 
   /// No description provided for @templateCustomZombieExample.
@@ -2251,14 +2311,14 @@ abstract class AppLocalizations {
   /// No description provided for @templateOldStyleExample.
   ///
   /// In en, this message translates to:
-  /// **'Old-style level'**
+  /// **'Wave Generator level template'**
   String get templateOldStyleExample;
 
-  /// No description provided for @templateCustomStageExample.
+  /// No description provided for @templateCustomLawnExample.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage level template'**
-  String get templateCustomStageExample;
+  /// **'Custom lawn level template'**
+  String get templateCustomLawnExample;
 
   /// No description provided for @unsavedChanges.
   ///
@@ -2410,6 +2470,12 @@ abstract class AppLocalizations {
   /// **'Heian Ages / Underwater World'**
   String get zombieTagHenaiAtlantis;
 
+  /// No description provided for @zombieTagMoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Base'**
+  String get zombieTagMoon;
+
   /// No description provided for @zombieTagTaleZCorp.
   ///
   /// In en, this message translates to:
@@ -2463,6 +2529,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Memory Lane Variants'**
   String get zombieTagCustom;
+
+  /// No description provided for @zombieTagExpedition.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate Variants'**
+  String get zombieTagExpedition;
 
   /// No description provided for @zombieTagPet.
   ///
@@ -2770,6 +2842,12 @@ abstract class AppLocalizations {
   /// **'Underwater World'**
   String get plantTagWorldAtlantis;
 
+  /// No description provided for @plantTagWorldMoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Base'**
+  String get plantTagWorldMoon;
+
   /// No description provided for @plantTagWorldFairytale.
   ///
   /// In en, this message translates to:
@@ -2805,6 +2883,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Magic Hats'**
   String get plantTagSpecial;
+
+  /// No description provided for @plantTagHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Plants'**
+  String get plantTagHidden;
+
+  /// No description provided for @plantTagInternational.
+  ///
+  /// In en, this message translates to:
+  /// **'International'**
+  String get plantTagInternational;
+
+  /// No description provided for @plantTagChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'China Only'**
+  String get plantTagChinese;
 
   /// No description provided for @removeModuleConfirm.
   ///
@@ -2851,13 +2947,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMech.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech Battle'**
+  /// **'Zomboss Mech battle'**
   String get zombossMech;
 
   /// No description provided for @zombossBattle.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Battle'**
+  /// **'Non-mech Zomboss battle'**
   String get zombossBattle;
 
   /// No description provided for @moveSourceSameAsDest.
@@ -3205,7 +3301,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveManagerHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave Manager'**
+  /// **'Wave Manager module'**
   String get waveManagerHelpTitle;
 
   /// No description provided for @waveManagerHelpOverviewTitle.
@@ -3243,6 +3339,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The delay before the first wave depends on whether the level uses a conveyor belt: 5 seconds with a conveyor, or 12 seconds without. Flag wave delay refers to the time between the red warning message and zombie spawn.'**
   String get waveManagerHelpTimeBody;
+
+  /// No description provided for @waveManagerFirstWaveDelayConveyorOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently, editing first wave delay only affects conveyor belt levels; regular levels use the default value.'**
+  String get waveManagerFirstWaveDelayConveyorOnlyHint;
+
+  /// No description provided for @waveManagerFirstWaveDelayConveyorOnlyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently, editing first wave delay only affects conveyor belt evels; regular levels use the default value.'**
+  String get waveManagerFirstWaveDelayConveyorOnlyHelp;
 
   /// No description provided for @waveManagerHelpMusicTitle.
   ///
@@ -3547,8 +3655,14 @@ abstract class AppLocalizations {
   /// No description provided for @startingSun.
   ///
   /// In en, this message translates to:
-  /// **'Starting sun'**
+  /// **'Starting Sun'**
   String get startingSun;
+
+  /// No description provided for @startingPlantfood.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Plant Food'**
+  String get startingPlantfood;
 
   /// No description provided for @stageModule.
   ///
@@ -3679,13 +3793,13 @@ abstract class AppLocalizations {
   /// No description provided for @conflictDesc_ZombossDeathDrop.
   ///
   /// In en, this message translates to:
-  /// **'Loot Drop in ZombossMech battle mode will prevent proper level completion.'**
+  /// **'Loot Drop in Zomboss Mech battle mode will prevent proper level completion.'**
   String get conflictDesc_ZombossDeathDrop;
 
   /// No description provided for @conflictDesc_ZombossBattleDeathDrop.
   ///
   /// In en, this message translates to:
-  /// **'Loot Drop in Zomboss battle mode will prevent proper level completion.'**
+  /// **'Loot Drop in Non-mech Zomboss battle mode will prevent proper level completion.'**
   String get conflictDesc_ZombossBattleDeathDrop;
 
   /// No description provided for @conflictDesc_WinConditionExclusive.
@@ -3979,13 +4093,13 @@ abstract class AppLocalizations {
   /// No description provided for @conveyorPlantWearCostume.
   ///
   /// In en, this message translates to:
-  /// **'Display costume (iAvatar)'**
+  /// **'Display costume (iAvatar; no longer works)'**
   String get conveyorPlantWearCostume;
 
   /// No description provided for @conveyorPlantWearCostumeTooltip.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work when the Creative Courtyard module is enabled.'**
+  /// **'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work in the current version.'**
   String get conveyorPlantWearCostumeTooltip;
 
   /// No description provided for @modifyConveyorAddPoolTitle.
@@ -4045,7 +4159,7 @@ abstract class AppLocalizations {
   /// No description provided for @realmExclusivePlantChooserBlockedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Cannot select plant'**
+  /// **'Cannot select this plant'**
   String get realmExclusivePlantChooserBlockedTitle;
 
   /// No description provided for @realmExclusivePlantChooserBlockedMessage.
@@ -4053,6 +4167,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.'**
   String get realmExclusivePlantChooserBlockedMessage;
+
+  /// No description provided for @hiddenPlantChooserBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select this plant'**
+  String get hiddenPlantChooserBlockedLabel;
+
+  /// No description provided for @hiddenPlantChooserBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select this plant'**
+  String get hiddenPlantChooserBlockedTitle;
+
+  /// No description provided for @hiddenPlantChooserBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.'**
+  String get hiddenPlantChooserBlockedMessage;
+
+  /// No description provided for @comingSoonPlantBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get comingSoonPlantBlockedLabel;
+
+  /// No description provided for @comingSoonPlantBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get comingSoonPlantBlockedTitle;
+
+  /// No description provided for @comingSoonPlantBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!'**
+  String get comingSoonPlantBlockedMessage;
+
+  /// No description provided for @stayTunedMoonZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedLabel;
+
+  /// No description provided for @stayTunedMoonZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedTitle;
+
+  /// No description provided for @stayTunedMoonZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!'**
+  String get stayTunedMoonZombieBlockedMessage;
+
+  /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ZCorp\'s story is not over'**
+  String get stayTunedTaleZCorpZombieBlockedLabel;
+
+  /// No description provided for @stayTunedTaleZCorpZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Under Construction'**
+  String get stayTunedTaleZCorpZombieBlockedTitle;
+
+  /// No description provided for @stayTunedTaleZCorpZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Part 2 of ZCorp Secret Realm is coming soon. Stay tuned!'**
+  String get stayTunedTaleZCorpZombieBlockedMessage;
+
+  /// No description provided for @stayTunedZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay tuned'**
+  String get stayTunedZombieBlockedLabel;
+
+  /// No description provided for @stayTunedZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To Be Continued'**
+  String get stayTunedZombieBlockedTitle;
+
+  /// No description provided for @stayTunedZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'More zombies are approaching. Stay tuned for future updates!'**
+  String get stayTunedZombieBlockedMessage;
 
   /// No description provided for @missingModuleForPlantsWarning.
   ///
@@ -4129,7 +4333,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Whale Approaching'**
+  /// **'Whale Approaching module'**
   String get spermWhaleModuleHelpTitle;
 
   /// No description provided for @spermWhaleModuleParameters.
@@ -4360,6 +4564,18 @@ abstract class AppLocalizations {
   /// **'Enables scoring system based on zombie kills'**
   String get moduleDesc_LevelScoringModuleProperties;
 
+  /// No description provided for @moduleTitle_SouDaCheDamageTextModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Number Display'**
+  String get moduleTitle_SouDaCheDamageTextModuleProperties;
+
+  /// No description provided for @moduleDesc_SouDaCheDamageTextModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows the damage value dealt by each plant attack during the level'**
+  String get moduleDesc_SouDaCheDamageTextModuleProperties;
+
   /// No description provided for @moduleTitle_BowlingMinigameProperties.
   ///
   /// In en, this message translates to:
@@ -4435,7 +4651,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_ZombossBattleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech Battle'**
+  /// **'Zomboss Mech battle'**
   String get moduleTitle_ZombossBattleModuleProperties;
 
   /// No description provided for @moduleDesc_ZombossBattleModuleProperties.
@@ -4459,7 +4675,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_ZombossLastStandMinigameProperties.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Battle'**
+  /// **'Non-mech Zomboss battle'**
   String get moduleTitle_ZombossLastStandMinigameProperties;
 
   /// No description provided for @moduleDesc_ZombossLastStandMinigameProperties.
@@ -4639,7 +4855,7 @@ abstract class AppLocalizations {
   /// No description provided for @frozenPlantPlacementHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Legacy Preset Plants'**
+  /// **'Legacy Preset Plants module'**
   String get frozenPlantPlacementHelpTitle;
 
   /// No description provided for @frozenPlantPlacementHelpOverviewTitle.
@@ -4731,6 +4947,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sets grid items that must be protected from destruction'**
   String get moduleDesc_ProtectTheGridItemChallengeProperties;
+
+  /// No description provided for @moduleTitle_MoldColonyChallengeProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Mold Zone'**
+  String get moduleTitle_MoldColonyChallengeProps;
+
+  /// No description provided for @moduleDesc_MoldColonyChallengeProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets the lawn tiles covered by mold colonies'**
+  String get moduleDesc_MoldColonyChallengeProps;
+
+  /// No description provided for @moldColonyLocationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mold colonies layout (Locations)'**
+  String get moldColonyLocationsTitle;
+
+  /// No description provided for @moldColonyLocationsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current value: {value}'**
+  String moldColonyLocationsValue(Object value);
+
+  /// No description provided for @moldColonyLevelModulesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: the mold colonies layout reference uses LevelModules. Switch it to a current-level object.'**
+  String get moldColonyLevelModulesError;
+
+  /// No description provided for @moldColonyInvalidLinkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Locations must reference a BoardGridMapProps object in the current level for the mold colonies layout.'**
+  String get moldColonyInvalidLinkError;
+
+  /// No description provided for @moldColonyRepairLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair link to: {alias}'**
+  String moldColonyRepairLink(Object alias);
+
+  /// No description provided for @moldColonies.
+  ///
+  /// In en, this message translates to:
+  /// **'Mold colonies'**
+  String get moldColonies;
+
+  /// No description provided for @moldColonyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get moldColonyEmpty;
+
+  /// No description provided for @moldColonyHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Configures the lawn tiles covered by mold colonies. Mold colonies prevent the player from planting on the corresponding tiles.'**
+  String get moldColonyHelpOverview;
+
+  /// No description provided for @moldColonyHelpGridTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid controls'**
+  String get moldColonyHelpGridTitle;
+
+  /// No description provided for @moldColonyHelpGridBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a tile to switch between empty (plantable) and mold colonies (not plantable). The selected row and column are shown above the grid.'**
+  String get moldColonyHelpGridBody;
 
   /// No description provided for @moduleTitle_ZombiePotionModuleProperties.
   ///
@@ -4897,7 +5185,7 @@ abstract class AppLocalizations {
   /// No description provided for @bronzeModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Bronze Matrix Statues'**
+  /// **'Bronze Matrix Statues module'**
   String get bronzeModuleHelpTitle;
 
   /// No description provided for @bronzeModuleHelpOverview.
@@ -5839,7 +6127,7 @@ abstract class AppLocalizations {
   /// No description provided for @resilienceArmor.
   ///
   /// In en, this message translates to:
-  /// **'Resilience Bar'**
+  /// **'Resilience Shield'**
   String get resilienceArmor;
 
   /// No description provided for @enableResilience.
@@ -6019,7 +6307,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectionDefinedByUser.
   ///
   /// In en, this message translates to:
-  /// **'Defined by user'**
+  /// **'Custom'**
   String get selectionDefinedByUser;
 
   /// No description provided for @aliasAlreadyTakenTitle.
@@ -6124,6 +6412,12 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get ok;
 
+  /// No description provided for @helpDialogGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get helpDialogGotIt;
+
   /// No description provided for @width.
   ///
   /// In en, this message translates to:
@@ -6217,7 +6511,7 @@ abstract class AppLocalizations {
   /// No description provided for @aliasLabel.
   ///
   /// In en, this message translates to:
-  /// **'Alias'**
+  /// **'Alias (English letters only)'**
   String get aliasLabel;
 
   /// No description provided for @add.
@@ -6487,13 +6781,13 @@ abstract class AppLocalizations {
   /// No description provided for @stopColumn.
   ///
   /// In en, this message translates to:
-  /// **'Stop column (StopColumn, range: 0-9 or 0-10)'**
+  /// **'Stop Column'**
   String get stopColumn;
 
   /// No description provided for @speedUp.
   ///
   /// In en, this message translates to:
-  /// **'Speed multiplier (SpeedUp)'**
+  /// **'Speed Multiplier'**
   String get speedUp;
 
   /// No description provided for @baseCostIncreased.
@@ -7735,13 +8029,31 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpZombiePotionBody.
   ///
   /// In en, this message translates to:
-  /// **'Spawns specified grid iems types (like potions) at random rows from right to left within a defined time interval. Stops spawning when the maximum number of grid items is reached.'**
+  /// **'This module periodically spawns specified grid item types in random rows, moving from right to left.'**
   String get moduleHelpZombiePotionBody;
+
+  /// No description provided for @moduleHelpZombiePotionMechanism.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Mechanism'**
+  String get moduleHelpZombiePotionMechanism;
+
+  /// No description provided for @moduleHelpZombiePotionMechanismBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid items spawn randomly within the configured time interval. If the number of matching grid items on the lawn reaches the limit, spawning pauses.'**
+  String get moduleHelpZombiePotionMechanismBody;
+
+  /// No description provided for @moduleHelpZombiePotionPotionTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Potion Types'**
+  String get moduleHelpZombiePotionPotionTypes;
 
   /// No description provided for @moduleHelpZombiePotionTypes.
   ///
   /// In en, this message translates to:
-  /// **'Potions are randomly selected from the specified types. To spawn multiple grid items at fixed intervals, add multiple instances of this module.'**
+  /// **'One type is randomly selected from the configured list. To spawn multiple grid items at fixed intervals, add this module multiple times in the level.'**
   String get moduleHelpZombiePotionTypes;
 
   /// No description provided for @moduleHelpUnknownBody.
@@ -7810,6 +8122,24 @@ abstract class AppLocalizations {
   /// **'Portal type (PortalType)'**
   String get portalType;
 
+  /// No description provided for @selectPortalType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Portal Type'**
+  String get selectPortalType;
+
+  /// No description provided for @noPortalTypesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No portal types found.'**
+  String get noPortalTypesFound;
+
+  /// No description provided for @noPortalTypeSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No portal type selected.'**
+  String get noPortalTypeSelected;
+
   /// No description provided for @direction.
   ///
   /// In en, this message translates to:
@@ -7833,6 +8163,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Column range'**
   String get columnRange;
+
+  /// No description provided for @eventColumnRangeBoundaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The lawn’s left edge is column 0 and the right edge is column 9. The start column must be less than the end column.'**
+  String get eventColumnRangeBoundaryHint;
+
+  /// No description provided for @eventColumnRangeExampleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.'**
+  String get eventColumnRangeExampleHint;
 
   /// No description provided for @zombieLevels.
   ///
@@ -7963,7 +8305,7 @@ abstract class AppLocalizations {
   /// No description provided for @smokePollutionModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Smoke pollution module help'**
+  /// **'Smoke pollution module'**
   String get smokePollutionModuleHelpTitle;
 
   /// No description provided for @smokePollutionModuleHelpOverview.
@@ -8020,6 +8362,18 @@ abstract class AppLocalizations {
   /// **'Dark Alchemy module'**
   String get zombiePotion;
 
+  /// No description provided for @zombiePotionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Potion Settings'**
+  String get zombiePotionSettings;
+
+  /// No description provided for @zombiePotionHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Potion module'**
+  String get zombiePotionHelpTitle;
+
   /// No description provided for @eventTimeRift.
   ///
   /// In en, this message translates to:
@@ -8049,6 +8403,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last Stand Settings'**
   String get lastStandSettings;
+
+  /// No description provided for @lastStandInitialResourceSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial Resource Settings'**
+  String get lastStandInitialResourceSettings;
+
+  /// No description provided for @lastStandManualStartupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After adding the Last Stand module, the editor automatically enables Manual Startup in the Wave Manager module.'**
+  String get lastStandManualStartupHint;
+
+  /// No description provided for @lastStandHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Stand module'**
+  String get lastStandHelpTitle;
+
+  /// No description provided for @lastStandHelpOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When this module is enabled, the level starts in a setup phase instead of immediately spawning zombies. Players can spend the starting sun to place plants, and waves begin only after they tap \"LET\'S ROCK!\".'**
+  String get lastStandHelpOverviewBody;
+
+  /// No description provided for @lastStandHelpNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get lastStandHelpNotes;
+
+  /// No description provided for @lastStandHelpNotesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Stand requires Manual Startup to be enabled in the Wave Manager; otherwise zombies will appear automatically. The editor manages this switch automatically when the Last Stand module is added or removed.'**
+  String get lastStandHelpNotesBody;
 
   /// No description provided for @roofFlowerPot.
   ///
@@ -8359,7 +8749,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxSunHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Max Sun Limit'**
+  /// **'Max Sun Limit module'**
   String get maxSunHelpTitle;
 
   /// No description provided for @maxSunHelpOverview.
@@ -8371,7 +8761,7 @@ abstract class AppLocalizations {
   /// No description provided for @startingPlantfoodHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Starting Plant Food'**
+  /// **'Starting Plant Food module'**
   String get startingPlantfoodHelpTitle;
 
   /// No description provided for @startingPlantfoodHelpOverview.
@@ -8761,7 +9151,7 @@ abstract class AppLocalizations {
   /// No description provided for @stageMismatch.
   ///
   /// In en, this message translates to:
-  /// **'Lawn mismatch'**
+  /// **'Lawn Type Mismatch'**
   String get stageMismatch;
 
   /// No description provided for @currentStageNotPirate.
@@ -8809,8 +9199,44 @@ abstract class AppLocalizations {
   /// No description provided for @counts.
   ///
   /// In en, this message translates to:
-  /// **'Count Settings'**
+  /// **'Quantity Control'**
   String get counts;
+
+  /// No description provided for @initialCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial Count'**
+  String get initialCount;
+
+  /// No description provided for @maximumCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Count'**
+  String get maximumCount;
+
+  /// No description provided for @spawnInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Interval'**
+  String get spawnInterval;
+
+  /// No description provided for @minimumIntervalSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Interval (seconds)'**
+  String get minimumIntervalSeconds;
+
+  /// No description provided for @maximumIntervalSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Interval (seconds)'**
+  String get maximumIntervalSeconds;
+
+  /// No description provided for @potionTypeList.
+  ///
+  /// In en, this message translates to:
+  /// **'Potion Type List'**
+  String get potionTypeList;
 
   /// No description provided for @initial.
   ///
@@ -9019,13 +9445,13 @@ abstract class AppLocalizations {
   /// No description provided for @missingZombossMechModule.
   ///
   /// In en, this message translates to:
-  /// **'Missing ZombossMech battle module (ZombossBattleModuleProperties)'**
+  /// **'Missing Zomboss Mech battle module (ZombossBattleModuleProperties)'**
   String get missingZombossMechModule;
 
   /// No description provided for @missingZombossBattleModule.
   ///
   /// In en, this message translates to:
-  /// **'Missing Zomboss battle module (ZombossLastStandMinigameProperties)'**
+  /// **'Missing Non-mech Zomboss battle module (ZombossLastStandMinigameProperties)'**
   String get missingZombossBattleModule;
 
   /// No description provided for @challengeNoConfig.
@@ -9277,121 +9703,127 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerksSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Ztalemate perks'**
+  /// **'Zombie Perks'**
   String get ztPerksSectionTitle;
 
   /// No description provided for @ztPerksSectionHint.
   ///
   /// In en, this message translates to:
-  /// **'Each perk type can only be applied once per zombie.'**
+  /// **'A zombie cannot have multiple perks of the same type.'**
   String get ztPerksSectionHint;
 
   /// No description provided for @ztPerksNone.
   ///
   /// In en, this message translates to:
-  /// **'No perks assigned.'**
+  /// **'No perks have been added yet.'**
   String get ztPerksNone;
 
   /// No description provided for @ztPerksAdd.
   ///
   /// In en, this message translates to:
-  /// **'Add perk'**
+  /// **'Add'**
   String get ztPerksAdd;
+
+  /// No description provided for @ztPerksAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Zombie Perks'**
+  String get ztPerksAddTitle;
 
   /// No description provided for @ztPerksTypeAlreadyAssigned.
   ///
   /// In en, this message translates to:
-  /// **'Another perk of this type is already assigned.'**
+  /// **'A perk of this type is already assigned to this zombie.'**
   String get ztPerksTypeAlreadyAssigned;
 
   /// No description provided for @eventHelpJitteredZtPerks.
   ///
   /// In en, this message translates to:
-  /// **'Assign Ztalemate Escape buffs to individual zombies. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).'**
+  /// **'Assign Ztalemate Escape perkss to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).'**
   String get eventHelpJitteredZtPerks;
 
   /// No description provided for @ztPerkCategoryCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Crystal'**
+  /// **'Crystallization'**
   String get ztPerkCategoryCrystal;
 
   /// No description provided for @ztPerkCategoryAttack.
   ///
   /// In en, this message translates to:
-  /// **'Attack'**
+  /// **'Strength'**
   String get ztPerkCategoryAttack;
 
   /// No description provided for @ztPerkCategorySpeed.
   ///
   /// In en, this message translates to:
-  /// **'Speed'**
+  /// **'Rapidity'**
   String get ztPerkCategorySpeed;
 
   /// No description provided for @ztPerkCategoryShield.
   ///
   /// In en, this message translates to:
-  /// **'Shield'**
+  /// **'Energy-Shield'**
   String get ztPerkCategoryShield;
 
   /// No description provided for @ztPerkCategoryGravity.
   ///
   /// In en, this message translates to:
-  /// **'Gravity'**
+  /// **'Hypergravity'**
   String get ztPerkCategoryGravity;
 
   /// No description provided for @ztPerkCategoryImmuneControl.
   ///
   /// In en, this message translates to:
-  /// **'Control immunity'**
+  /// **'Unyielding'**
   String get ztPerkCategoryImmuneControl;
 
   /// No description provided for @ztPerkCategoryAntiControl.
   ///
   /// In en, this message translates to:
-  /// **'Control resistance'**
+  /// **'Concentration'**
   String get ztPerkCategoryAntiControl;
 
   /// No description provided for @ztPerksViewStats.
   ///
   /// In en, this message translates to:
-  /// **'View stats'**
+  /// **'View Stats'**
   String get ztPerksViewStats;
 
   /// No description provided for @ztPerkPropDamageTakenInterval.
   ///
   /// In en, this message translates to:
-  /// **'Damage taken interval'**
+  /// **'Damage interval'**
   String get ztPerkPropDamageTakenInterval;
 
   /// No description provided for @ztPerkPropDamageTotalTaken.
   ///
   /// In en, this message translates to:
-  /// **'Damage total taken'**
+  /// **'Total damage taken'**
   String get ztPerkPropDamageTotalTaken;
 
   /// No description provided for @ztPerkPropDamageTakenPerTime.
   ///
   /// In en, this message translates to:
-  /// **'Damage taken per time'**
+  /// **'Damage per hit'**
   String get ztPerkPropDamageTakenPerTime;
 
   /// No description provided for @ztPerkPropHpReduced.
   ///
   /// In en, this message translates to:
-  /// **'HP reduced'**
+  /// **'Health reduction'**
   String get ztPerkPropHpReduced;
 
   /// No description provided for @ztPerkPropShieldNum.
   ///
   /// In en, this message translates to:
-  /// **'Shield layers'**
+  /// **'Shield charges'**
   String get ztPerkPropShieldNum;
 
   /// No description provided for @ztPerkPropReducedControlPercent.
   ///
   /// In en, this message translates to:
-  /// **'Control reduction'**
+  /// **'Control effect reduction'**
   String get ztPerkPropReducedControlPercent;
 
   /// No description provided for @ztPerkPropReducedDamagePercent.
@@ -9403,19 +9835,19 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkPropImprovedDamagePercent.
   ///
   /// In en, this message translates to:
-  /// **'Damage boost'**
+  /// **'Attack power increase'**
   String get ztPerkPropImprovedDamagePercent;
 
   /// No description provided for @ztPerkPropImprovedSpeedPercent.
   ///
   /// In en, this message translates to:
-  /// **'Speed boost'**
+  /// **'Walking speed increase'**
   String get ztPerkPropImprovedSpeedPercent;
 
   /// No description provided for @ztPerkDescCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Grants immunity against instant-kill effects. Damage can only be received once every {interval} seconds, each hit deals {damagePerHit} damage, and health is reduced by {hpReduced}.'**
+  /// **'Grants immunity to instant-kill effects, allows damage to be taken only once every {interval} seconds, reduces all damage taken to {damagePerHit}, and reduces health by {hpReduced}.'**
   String ztPerkDescCrystal(
     String interval,
     String damagePerHit,
@@ -9425,25 +9857,25 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkDescGravity.
   ///
   /// In en, this message translates to:
-  /// **'Knockback or knockoff effects are no longer effective.'**
+  /// **'Immune to knockback and knockoff effects.'**
   String get ztPerkDescGravity;
 
   /// No description provided for @ztPerkDescShield.
   ///
   /// In en, this message translates to:
-  /// **'The first {shieldNum} instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.'**
+  /// **'Negates the first {shieldNum} instances of damage and grants immunity to instant-kill effects for the perk\'s duration.'**
   String ztPerkDescShield(String shieldNum);
 
   /// No description provided for @ztPerkDescImmuneControl.
   ///
   /// In en, this message translates to:
-  /// **'{percent} more resistance against control effects.'**
+  /// **'Grants {percent} more resistance against control effects.'**
   String ztPerkDescImmuneControl(String percent);
 
   /// No description provided for @ztPerkDescAntiControl.
   ///
   /// In en, this message translates to:
-  /// **'When under the influence of a control effect, received damage is reduced by {percent}.'**
+  /// **'When under the influence of a control effect, damage taken is reduced by {percent}.'**
   String ztPerkDescAntiControl(String percent);
 
   /// No description provided for @ztPerkDescAttack.
@@ -9461,43 +9893,43 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerksCategoryInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Perk descriptions'**
+  /// **'Perk Descriptions'**
   String get ztPerksCategoryInfoTitle;
 
   /// No description provided for @ztPerkCategoryDescNumericHint.
   ///
   /// In en, this message translates to:
-  /// **'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.'**
+  /// **'A, B, X, N, and P represent values that vary by perk tier.'**
   String get ztPerkCategoryDescNumericHint;
 
   /// No description provided for @ztPerkCategoryDescCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Grants immunity against instant-kill effects. Damage can only be received once every A seconds, each hit deals B damage, and health is reduced by X.'**
+  /// **'Grants immunity to instant-kill effects, allows damage to be taken only once every A seconds, reduces all damage taken to B, and reduces health by X.'**
   String get ztPerkCategoryDescCrystal;
 
   /// No description provided for @ztPerkCategoryDescGravity.
   ///
   /// In en, this message translates to:
-  /// **'Knockback or knockoff effects are no longer effective.'**
+  /// **'Immune to knockback and knockoff effects.'**
   String get ztPerkCategoryDescGravity;
 
   /// No description provided for @ztPerkCategoryDescShield.
   ///
   /// In en, this message translates to:
-  /// **'The first N instances of damage are invalidated, and immunity to instant-kill effects persists throughout the perk\'s duration.'**
+  /// **'Negates the first N instances of damage and grants immunity to instant-kill effects for the perk\'s duration.'**
   String get ztPerkCategoryDescShield;
 
   /// No description provided for @ztPerkCategoryDescImmuneControl.
   ///
   /// In en, this message translates to:
-  /// **'P% more resistance against control effects.'**
+  /// **'Grants P% more resistance against control effects.'**
   String get ztPerkCategoryDescImmuneControl;
 
   /// No description provided for @ztPerkCategoryDescAntiControl.
   ///
   /// In en, this message translates to:
-  /// **'When under the influence of a control effect, received damage is reduced by P%.'**
+  /// **'When under the influence of a control effect, damage taken is reduced by P%.'**
   String get ztPerkCategoryDescAntiControl;
 
   /// No description provided for @ztPerkCategoryDescAttack.
@@ -9545,7 +9977,7 @@ abstract class AppLocalizations {
   /// No description provided for @reverseZombieFactionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Placed zombies will belong to the plant faction. Useful for Plant Wars (ZvZ) mini-game.'**
+  /// **'When enabled, placed zombies belong to the plant faction and can be used in Plant Wars (ZvZ).'**
   String get reverseZombieFactionSubtitle;
 
   /// No description provided for @initialWeight.
@@ -9869,7 +10301,7 @@ abstract class AppLocalizations {
   /// No description provided for @noPotionTypes.
   ///
   /// In en, this message translates to:
-  /// **'No potion types configured; add one to continue'**
+  /// **'No potion types configured. Add a potion type to continue.'**
   String get noPotionTypes;
 
   /// No description provided for @conveyorCardPool.
@@ -10127,8 +10559,20 @@ abstract class AppLocalizations {
   /// No description provided for @waveDropTotalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Total carrier zombies (AdditionalPlantfood)'**
+  /// **'Total drops (AdditionalPlantfood)'**
   String get waveDropTotalLabel;
+
+  /// No description provided for @waveDropAddZombiesFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add zombies to this wave before configuring drops.'**
+  String get waveDropAddZombiesFirst;
+
+  /// No description provided for @waveDropIncreaseTotalBeforePlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase total drops before adding plants.'**
+  String get waveDropIncreaseTotalBeforePlants;
 
   /// No description provided for @waveDropPlantFoodOnlyCount.
   ///
@@ -10781,7 +11225,7 @@ abstract class AppLocalizations {
   /// No description provided for @sunDropperHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sun Dropper'**
+  /// **'Sun Dropper module'**
   String get sunDropperHelpTitle;
 
   /// No description provided for @sunDropperHelpIntro.
@@ -10855,6 +11299,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The tiles in Underground Palace Secret Realm lawns must be placed through the \"Underground Palace Pathways\" module. If this module is not added, the lawns may appear overly empty in-game.'**
   String get recommendedTunnelDefendBody;
+
+  /// No description provided for @recommendedExpeditionTilesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Works with the \"Expedition Tiles\" module'**
+  String get recommendedExpeditionTilesTitle;
+
+  /// No description provided for @recommendedExpeditionTilesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the \"Expedition Tiles\" module to work around the lawn\'s missing tiles and create an experience that more closely matches Expedition Gate.'**
+  String get recommendedExpeditionTilesBody;
 
   /// No description provided for @selectedPosition.
   ///
@@ -11108,6 +11564,174 @@ abstract class AppLocalizations {
   /// **'Delay between tunnel sequence steps. Lower values make pathways appear faster.'**
   String get tunnelDefendHelpSequenceIntervalBody;
 
+  /// No description provided for @tunnelDefendHelpSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Underground Palace Pathways module enables this prompt by default.'**
+  String get tunnelDefendHelpSodPromptBody;
+
+  /// No description provided for @sodPlantingPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sod Planting Prompt'**
+  String get sodPlantingPromptTitle;
+
+  /// No description provided for @expeditionTilesSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether to show a Sod requirement prompt when planting. Disabled by default.'**
+  String get expeditionTilesSodPromptBody;
+
+  /// No description provided for @tunnelDefendSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether to show a Sod requirement prompt when planting. Enabled by default.'**
+  String get tunnelDefendSodPromptBody;
+
+  /// No description provided for @expeditionTilesPresetLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset Layout'**
+  String get expeditionTilesPresetLayout;
+
+  /// No description provided for @expeditionTilesPresetFloor1.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate – Floor 1'**
+  String get expeditionTilesPresetFloor1;
+
+  /// No description provided for @expeditionTilesPresetFloor2.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate – Floor 2'**
+  String get expeditionTilesPresetFloor2;
+
+  /// No description provided for @expeditionTilesPresetFloor3.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Gate – Floor 3'**
+  String get expeditionTilesPresetFloor3;
+
+  /// No description provided for @customLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom layout'**
+  String get customLayout;
+
+  /// No description provided for @switchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get switchAction;
+
+  /// No description provided for @expeditionTilesSwitchPresetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch preset layout'**
+  String get expeditionTilesSwitchPresetTitle;
+
+  /// No description provided for @expeditionTilesSwitchPresetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to the preset layout? This will remove all placed non-plantable tiles from the lawn and cannot be undone.'**
+  String get expeditionTilesSwitchPresetMessage;
+
+  /// No description provided for @expeditionTilesSwitchPresetBetweenMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch from \"{from}\" to \"{to}\"? '**
+  String expeditionTilesSwitchPresetBetweenMessage(String from, String to);
+
+  /// No description provided for @expeditionTilesUnderwaterMismatchWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The current lawn uses an Underwater World appearance, which is incompatible with the Expedition Tiles module and will cause the level to crash.'**
+  String get expeditionTilesUnderwaterMismatchWarning;
+
+  /// No description provided for @expeditionTilesBlockedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-plantable tiles'**
+  String get expeditionTilesBlockedCount;
+
+  /// No description provided for @expeditionTilesClearConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all non-plantable tiles?'**
+  String get expeditionTilesClearConfirmTitle;
+
+  /// No description provided for @expeditionTilesClearConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove all placed non-plantable tiles from the lawn. This action cannot be undone.'**
+  String get expeditionTilesClearConfirmMessage;
+
+  /// No description provided for @expeditionTilesHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Tiles module'**
+  String get expeditionTilesHelpTitle;
+
+  /// No description provided for @expeditionTilesHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'The Expedition Tiles module configures non-plantable areas on the Expedition Gate lawn. It uses the same tile data structure as Underground Palace Pathways and displays restricted areas with Expedition-specific tile art. Planting Sod on a non-plantable tile can restore that tile\'s planting function.'**
+  String get expeditionTilesHelpOverview;
+
+  /// No description provided for @expeditionTilesHelpEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Tile Editing'**
+  String get expeditionTilesHelpEditing;
+
+  /// No description provided for @expeditionTilesHelpEditingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles and blank tiles are both plantable areas; the whirlpool tiles here only recreate the initial lawn layout used by this module.'**
+  String get expeditionTilesHelpEditingBody;
+
+  /// No description provided for @expeditionTilesHelpPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset Layouts'**
+  String get expeditionTilesHelpPresets;
+
+  /// No description provided for @expeditionTilesHelpPresetsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The editor includes the three official Expedition Gate layouts for Floor 1, Floor 2, and Floor 3. Switching presets replaces all placed non-plantable tiles and cannot be undone; after applying a preset, you can still adjust tiles manually.'**
+  String get expeditionTilesHelpPresetsBody;
+
+  /// No description provided for @expeditionTilesHelpSodPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Planting Prompt'**
+  String get expeditionTilesHelpSodPrompt;
+
+  /// No description provided for @expeditionTilesHelpSodPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The \"Sod Planting Prompt\" controls whether a \"Plant a Sod first\" prompt appears when planting on restricted tiles. Expedition Tiles module disables this prompt by default.'**
+  String get expeditionTilesHelpSodPromptBody;
+
+  /// No description provided for @expeditionTilesHelpNotesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Tiles is intended for 5-row lawns such as Expedition Gate. Do not use it with 6-row Underwater World appearances such as 20,000 Leagues Under the Sea or Atlantis, or the level will crash.'**
+  String get expeditionTilesHelpNotesBody;
+
+  /// No description provided for @tunnelExpeditionCompatibilityWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Module Compatibility Warning'**
+  String get tunnelExpeditionCompatibilityWarningTitle;
+
+  /// No description provided for @tunnelExpeditionCompatibilityWarningBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.'**
+  String get tunnelExpeditionCompatibilityWarningBody;
+
   /// No description provided for @moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties.
   ///
   /// In en, this message translates to:
@@ -11129,7 +11753,7 @@ abstract class AppLocalizations {
   /// No description provided for @finalStageTimeLimitedChallengeHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Final stage time limit challenge'**
+  /// **'Final stage time limit challenge module'**
   String get finalStageTimeLimitedChallengeHelpTitle;
 
   /// No description provided for @finalStageTimeLimitedChallengeHelpIntro.
@@ -11179,6 +11803,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configures pathways and tile styles for Underground Palace secret realm levels'**
   String get moduleDesc_TunnelDefendModuleProperties;
+
+  /// No description provided for @moduleTitle_SouDaCheTunnelDefendDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Expedition Tiles'**
+  String get moduleTitle_SouDaCheTunnelDefendDefault;
+
+  /// No description provided for @moduleDesc_SouDaCheTunnelDefendDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Configures non-plantable areas on the Expedition Gate lawn'**
+  String get moduleDesc_SouDaCheTunnelDefendDefault;
 
   /// No description provided for @moduleTitle_WitchModuleProperties.
   ///
@@ -12041,13 +12677,13 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleHelpRequirementsBody.
   ///
   /// In en, this message translates to:
-  /// **'Only takes effect together with the Zomboss Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).'**
+  /// **'Only takes effect together with the Zomboss Mech Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).'**
   String get glacierModuleHelpRequirementsBody;
 
   /// No description provided for @glacierModuleCompatibilityWarning.
   ///
   /// In en, this message translates to:
-  /// **'This module only works with the Zomboss Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.'**
+  /// **'This module only works with the Zomboss Mech Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.'**
   String get glacierModuleCompatibilityWarning;
 
   /// No description provided for @glacierModuleColumn.
@@ -12941,8 +13577,14 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechActionCategorySpawn.
   ///
   /// In en, this message translates to:
-  /// **'Spawn'**
+  /// **'Summon'**
   String get zombossMechActionCategorySpawn;
+
+  /// No description provided for @zombossMechActionCategoryCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get zombossMechActionCategoryCustom;
 
   /// No description provided for @zombossMechActionCategoryRetreat.
   ///
@@ -12962,6 +13604,18 @@ abstract class AppLocalizations {
   /// **'Custom (CurrentLevel)'**
   String get zombossMechCustomActionLabel;
 
+  /// No description provided for @zombossCustomActionBaseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Action: {action}'**
+  String zombossCustomActionBaseAction(String action);
+
+  /// No description provided for @zombossPresetDerivedBaseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on Preset Custom Action: {action}'**
+  String zombossPresetDerivedBaseAction(String action);
+
   /// No description provided for @zombossMechActionAliasHint.
   ///
   /// In en, this message translates to:
@@ -12971,8 +13625,44 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechActionBaseObjclass.
   ///
   /// In en, this message translates to:
-  /// **'Base objclass'**
+  /// **'Action Type (objclass)'**
   String get zombossMechActionBaseObjclass;
+
+  /// No description provided for @zombossMechActionBaseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Action'**
+  String get zombossMechActionBaseAction;
+
+  /// No description provided for @zombossMechActionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Details'**
+  String get zombossMechActionDetails;
+
+  /// No description provided for @zombossMechActionRtid.
+  ///
+  /// In en, this message translates to:
+  /// **'RTID'**
+  String get zombossMechActionRtid;
+
+  /// No description provided for @zombossMechActionFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Fields'**
+  String get zombossMechActionFields;
+
+  /// No description provided for @zombossMechPropertiesViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ZombossMech Properties'**
+  String get zombossMechPropertiesViewTitle;
+
+  /// No description provided for @viewZombossMechProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'View Properties'**
+  String get viewZombossMechProperties;
 
   /// No description provided for @zombossMechEditRetreatAction.
   ///
@@ -12997,6 +13687,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No zombies in list'**
   String get zombossMechNoZombiesInList;
+
+  /// No description provided for @zombossMechSpawnBallSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'SpawnBall contents (ZombieDropProps)'**
+  String get zombossMechSpawnBallSettings;
+
+  /// No description provided for @zombossMechAwardDropInvalidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid SpawnBall reference'**
+  String get zombossMechAwardDropInvalidTitle;
+
+  /// No description provided for @zombossMechAwardDropInvalidBody.
+  ///
+  /// In en, this message translates to:
+  /// **'AwardDrop points to \"{rtid}\", but it is not a valid CurrentLevel ZombieDropProps object. The game may fail to load this action.'**
+  String zombossMechAwardDropInvalidBody(String rtid);
+
+  /// No description provided for @zombossMechAwardDropClearInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear invalid value and restore default'**
+  String get zombossMechAwardDropClearInvalid;
 
   /// No description provided for @zombossMechCatalogActionReadOnly.
   ///
@@ -13931,7 +14645,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorWaveScreenHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave editor'**
+  /// **'Wave Editor'**
   String get waveGeneratorWaveScreenHelpTitle;
 
   /// No description provided for @waveGeneratorWaveScreenHelpBody.
@@ -14015,13 +14729,13 @@ abstract class AppLocalizations {
   /// No description provided for @customStageProperties.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage properties'**
+  /// **'Custom lawn properties'**
   String get customStageProperties;
 
   /// No description provided for @customStageNotFound.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage object not found.'**
+  /// **'Custom lawn object not found.'**
   String get customStageNotFound;
 
   /// No description provided for @customStageSectionGeneral.
@@ -14057,7 +14771,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageAlias.
   ///
   /// In en, this message translates to:
-  /// **'Stage alias (English only)'**
+  /// **'Stage alias (English letters only)'**
   String get customStageAlias;
 
   /// No description provided for @customStageNoResourceGroups.
@@ -14261,7 +14975,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageAliasPromptTitle.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage alias'**
+  /// **'Custom lawn alias'**
   String get customStageAliasPromptTitle;
 
   /// No description provided for @customStageAliasTaken.
@@ -14303,7 +15017,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageSwitchToBuiltinMessage.
   ///
   /// In en, this message translates to:
-  /// **'This permanently removes the custom stage data from this level. This cannot be undone.'**
+  /// **'This permanently removes the custom lawn data from this level. This cannot be undone.'**
   String get customStageSwitchToBuiltinMessage;
 
   /// No description provided for @customStageDeleteTitle.
@@ -14315,7 +15029,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageDeleteMessage.
   ///
   /// In en, this message translates to:
-  /// **'This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.'**
+  /// **'This permanently removes the custom lawn data from this level. If it is the active lawn, the level will switch to the default built-in lawn.'**
   String get customStageDeleteMessage;
 
   /// No description provided for @customStagePresetSectionTitle.
@@ -14569,6 +15283,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4'**
   String get mismatch_zlib_magic;
+
+  /// No description provided for @customPortalAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Custom Portal'**
+  String get customPortalAdd;
+
+  /// No description provided for @customPortalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Portal {index}'**
+  String customPortalName(int index);
+
+  /// No description provided for @customPortalCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Custom Portal'**
+  String get customPortalCreateTitle;
+
+  /// No description provided for @customPortalEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Custom Portal'**
+  String get customPortalEditTitle;
+
+  /// No description provided for @customPortalSelectBaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Base Portal'**
+  String get customPortalSelectBaseTitle;
+
+  /// No description provided for @customPortalBlankTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Blank Portal Template'**
+  String get customPortalBlankTemplate;
+
+  /// No description provided for @customPortalBlankTemplateSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the standard portal structure and no zombies.'**
+  String get customPortalBlankTemplateSubtitle;
+
+  /// No description provided for @customPortalBuiltInBases.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in Portals'**
+  String get customPortalBuiltInBases;
+
+  /// No description provided for @customPortalUnusedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Unused Custom Portal?'**
+  String get customPortalUnusedTitle;
+
+  /// No description provided for @customPortalUnusedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Portal {index} is no longer used. Remove its associated data objects from this level?'**
+  String customPortalUnusedMessage(int index);
+
+  /// No description provided for @customPortalAppearanceSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Portal Appearance'**
+  String get customPortalAppearanceSection;
+
+  /// No description provided for @customPortalSpawnSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Spawning'**
+  String get customPortalSpawnSection;
+
+  /// No description provided for @customPortalWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World Appearance'**
+  String get customPortalWorld;
+
+  /// No description provided for @customPortalWorldTwister.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporal Energy'**
+  String get customPortalWorldTwister;
+
+  /// No description provided for @customPortalPopAnimation.
+  ///
+  /// In en, this message translates to:
+  /// **'Portal Animation'**
+  String get customPortalPopAnimation;
+
+  /// No description provided for @customPortalAnimationModern.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Day\'s Portal'**
+  String get customPortalAnimationModern;
+
+  /// No description provided for @customPortalAnimationMemoryLane.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory Lane\'s Portal'**
+  String get customPortalAnimationMemoryLane;
+
+  /// No description provided for @customPortalAnimationHydra.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombot Spell Chanter\'s Mirror'**
+  String get customPortalAnimationHydra;
+
+  /// No description provided for @customPortalSpawnMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Spawn Method'**
+  String get customPortalSpawnMethod;
+
+  /// No description provided for @customPortalSpawnMethodShuffled.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffled Sequence'**
+  String get customPortalSpawnMethodShuffled;
+
+  /// No description provided for @customPortalSpawnMethodInOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'In Order'**
+  String get customPortalSpawnMethodInOrder;
+
+  /// No description provided for @customPortalSpawnMethodHydra.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombot Spell Chanter\'s Random Spawn'**
+  String get customPortalSpawnMethodHydra;
+
+  /// No description provided for @customPortalZombieTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawnable Zombie Types'**
+  String get customPortalZombieTypes;
+
+  /// No description provided for @customPortalMinimumQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Spawn Quantity'**
+  String get customPortalMinimumQuantity;
+
+  /// No description provided for @customPortalMaximumQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Spawn Quantity'**
+  String get customPortalMaximumQuantity;
+
+  /// No description provided for @customPortalSpawnInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Spawn Interval'**
+  String get customPortalSpawnInterval;
+
+  /// No description provided for @customPortalSpawnIntervalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optionally set the minimum and maximum time between zombie spawns.'**
+  String get customPortalSpawnIntervalSubtitle;
 }
 
 class _AppLocalizationsDelegate

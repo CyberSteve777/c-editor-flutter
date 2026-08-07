@@ -233,10 +233,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
     final isElite = _isElite(z);
     final baseType = _resolveBaseTypeName(z);
     final info = ZombieRepository().getZombieById(baseType);
-    final displayName = ResourceNames.lookup(
-      context,
-      info?.name ?? baseType,
-    );
+    final displayName = ResourceNames.lookup(context, info?.name ?? baseType);
     final iconPath = info?.iconAssetPath;
     final isCustom = _isCustomZombie(z);
 
@@ -265,7 +262,8 @@ class _StormEventScreenState extends State<StormEventScreen> {
           );
         });
       },
-      onLevelChanged: (level) => _updateZombieLevel(index, level == 0 ? null : level),
+      onLevelChanged: (level) =>
+          _updateZombieLevel(index, level == 0 ? null : level),
       onCopy: () {
         final copy = StormZombieData(
           type: z.type,
@@ -287,13 +285,12 @@ class _StormEventScreenState extends State<StormEventScreen> {
           parentContext: context,
           levelFile: widget.levelFile,
           zombieTypeRtid: z.type,
-          onRemove: (eraseOrphan) => _removeZombie(
-            index,
-            eraseOrphanProperties: eraseOrphan,
-          ),
+          onRemove: (eraseOrphan) =>
+              _removeZombie(index, eraseOrphanProperties: eraseOrphan),
         );
       },
-      customPropertiesActions: widget.onEditCustomZombie != null ||
+      customPropertiesActions:
+          widget.onEditCustomZombie != null ||
               widget.onInjectCustomZombie != null
           ? CustomZombiePropertiesSheetActions(
               levelFile: widget.levelFile,
@@ -302,7 +299,8 @@ class _StormEventScreenState extends State<StormEventScreen> {
               onEditCustomZombie: widget.onEditCustomZombie,
               onInjectCustomZombie: widget.onInjectCustomZombie,
               onCloseSheet: () => Navigator.of(context).pop(),
-              onRtidSelected: (rtid) => _replaceZombieType(index, rtid, z.level),
+              onRtidSelected: (rtid) =>
+                  _replaceZombieType(index, rtid, z.level),
             )
           : null,
     );
@@ -425,59 +423,56 @@ class _StormEventScreenState extends State<StormEventScreen> {
                             .toList(),
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      EditorResponsiveFieldRow(
                         children: [
-                          Expanded(
-                            child: TextFormField(
-                              initialValue: _data.columnStart.toString(),
-                              decoration: InputDecoration(
-                                labelText: l10n?.columnStart ?? 'Column start',
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                final n = int.tryParse(v);
-                                if (n != null) {
-                                  _data = StormZombieSpawnerPropsData(
-                                    columnStart: n,
-                                    columnEnd: _data.columnEnd,
-                                    groupSize: _data.groupSize,
-                                    timeBetweenGroups: _data.timeBetweenGroups,
-                                    type: _data.type,
-                                    zombies: _data.zombies,
-                                  );
-                                  _sync();
-                                }
-                              },
+                          TextFormField(
+                            initialValue: _data.columnStart.toString(),
+                            decoration: InputDecoration(
+                              labelText: l10n?.columnStart ?? 'Column start',
+                              border: OutlineInputBorder(),
                             ),
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              final n = int.tryParse(v);
+                              if (n != null) {
+                                _data = StormZombieSpawnerPropsData(
+                                  columnStart: n,
+                                  columnEnd: _data.columnEnd,
+                                  groupSize: _data.groupSize,
+                                  timeBetweenGroups: _data.timeBetweenGroups,
+                                  type: _data.type,
+                                  zombies: _data.zombies,
+                                );
+                                _sync();
+                              }
+                            },
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextFormField(
-                              initialValue: _data.columnEnd.toString(),
-                              decoration: InputDecoration(
-                                labelText: l10n?.columnEnd ?? 'Column end',
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                final n = int.tryParse(v);
-                                if (n != null) {
-                                  _data = StormZombieSpawnerPropsData(
-                                    columnStart: _data.columnStart,
-                                    columnEnd: n,
-                                    groupSize: _data.groupSize,
-                                    timeBetweenGroups: _data.timeBetweenGroups,
-                                    type: _data.type,
-                                    zombies: _data.zombies,
-                                  );
-                                  _sync();
-                                }
-                              },
+                          TextFormField(
+                            initialValue: _data.columnEnd.toString(),
+                            decoration: InputDecoration(
+                              labelText: l10n?.columnEnd ?? 'Column end',
+                              border: OutlineInputBorder(),
                             ),
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              final n = int.tryParse(v);
+                              if (n != null) {
+                                _data = StormZombieSpawnerPropsData(
+                                  columnStart: _data.columnStart,
+                                  columnEnd: n,
+                                  groupSize: _data.groupSize,
+                                  timeBetweenGroups: _data.timeBetweenGroups,
+                                  type: _data.type,
+                                  zombies: _data.zombies,
+                                );
+                                _sync();
+                              }
+                            },
                           ),
                         ],
                       ),
+                      const SizedBox(height: 12),
+                      const EventColumnRangeHint(),
                       const SizedBox(height: 12),
                       TextFormField(
                         initialValue: _data.groupSize.toString(),
@@ -502,45 +497,41 @@ class _StormEventScreenState extends State<StormEventScreen> {
                         },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.timeBetweenGroups.toString(),
-                        decoration: InputDecoration(
-                          labelText:
-                              l10n?.timeBetweenGroups ?? 'Time between groups',
-                          border: OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label: l10n?.timeBetweenGroups ?? 'Time between groups',
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.timeBetweenGroups.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = StormZombieSpawnerPropsData(
+                                columnStart: _data.columnStart,
+                                columnEnd: _data.columnEnd,
+                                groupSize: _data.groupSize,
+                                timeBetweenGroups: n,
+                                type: _data.type,
+                                zombies: _data.zombies,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = StormZombieSpawnerPropsData(
-                              columnStart: _data.columnStart,
-                              columnEnd: _data.columnEnd,
-                              groupSize: _data.groupSize,
-                              timeBetweenGroups: n,
-                              type: _data.type,
-                              zombies: _data.zombies,
-                            );
-                            _sync();
-                          }
-                        },
                       ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n?.zombiesCount(_data.zombies.length) ??
-                        'Zombies (${_data.zombies.length})',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              Text(
+                l10n?.zombiesCount(_data.zombies.length) ??
+                    'Zombies (${_data.zombies.length})',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               ZombieFlatLaneDragDropEditor(

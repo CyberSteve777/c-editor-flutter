@@ -221,42 +221,37 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
+                    EditorResponsiveFieldRow(
                       children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _startColController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: l10n?.startColumn ?? 'Start column',
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (v) {
-                              final n = int.tryParse(v);
-                              if (n != null && n >= 0 && n <= _maxColumn) {
-                                _data.flowerPotStartColumn = n;
-                                _sync();
-                              }
-                            },
+                        TextField(
+                          controller: _startColController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: l10n?.startColumn ?? 'Start column',
+                            border: const OutlineInputBorder(),
                           ),
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null && n >= 0 && n <= _maxColumn) {
+                              _data.flowerPotStartColumn = n;
+                              _sync();
+                            }
+                          },
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: TextField(
-                            controller: _endColController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: l10n?.endColumn ?? 'End column',
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (v) {
-                              final n = int.tryParse(v);
-                              if (n != null && n >= 0 && n <= _maxColumn) {
-                                _data.flowerPotEndColumn = n;
-                                _sync();
-                              }
-                            },
+                        TextField(
+                          controller: _endColController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: l10n?.endColumn ?? 'End column',
+                            border: const OutlineInputBorder(),
                           ),
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null && n >= 0 && n <= _maxColumn) {
+                              _data.flowerPotEndColumn = n;
+                              _sync();
+                            }
+                          },
                         ),
                       ],
                     ),

@@ -101,7 +101,6 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
     setState(() {});
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -155,14 +154,14 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -179,9 +178,11 @@ ModuleAliasInputField(
                       const SizedBox(height: 12),
                       TextField(
                         controller: _flameSpeedCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'FlameSpeed',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText:
+                              l10n?.bombPropertiesFlameSpeed ??
+                              'Fuse Burn Speed (FlameSpeed)',
+                          border: const OutlineInputBorder(),
                         ),
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
@@ -227,44 +228,39 @@ ModuleAliasInputField(
                       ...List.generate(_data.fuseLengths.length, (i) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                child: Text(
-                                  l10n?.rowN(i + 1) ?? 'Row ${i + 1}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                          child: EditorResponsiveLabelField(
+                            labelWidth: 80,
+                            label: Text(
+                              l10n?.rowN(i + 1) ?? 'Row ${i + 1}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
                               ),
-                              Expanded(
-                                child: TextFormField(
-                                  key: ValueKey(
-                                    'fuse_${i}_${_data.fuseLengths[i]}',
-                                  ),
-                                  initialValue: _data.fuseLengths[i],
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.bombPropertiesFuseLength ??
-                                        'Length',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (v) {
-                                    final lengths = List<String>.from(
-                                      _data.fuseLengths,
-                                    );
-                                    lengths[i] = v;
-                                    _data = BombPropertiesData(
-                                      flameSpeed: _data.flameSpeed,
-                                      fuseLengths: lengths,
-                                    );
-                                    _sync();
-                                  },
-                                ),
+                            ),
+                            field: TextFormField(
+                              key: ValueKey(
+                                'fuse_${i}_${_data.fuseLengths[i]}',
                               ),
-                            ],
+                              initialValue: _data.fuseLengths[i],
+                              decoration: InputDecoration(
+                                labelText:
+                                    l10n?.bombPropertiesFuseLength ?? 'Length',
+                                border: const OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.text,
+                              onChanged: (v) {
+                                final lengths = List<String>.from(
+                                  _data.fuseLengths,
+                                );
+                                lengths[i] = v;
+                                _data = BombPropertiesData(
+                                  flameSpeed: _data.flameSpeed,
+                                  fuseLengths: lengths,
+                                );
+                                _sync();
+                              },
+                            ),
                           ),
                         );
                       }),

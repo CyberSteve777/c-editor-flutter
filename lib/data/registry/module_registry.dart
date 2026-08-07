@@ -8,12 +8,14 @@ class ModuleMetadata {
   final String titleKey;
   final String descriptionKey;
   final IconData icon;
+  final String? assetIconPath;
   final bool isCore;
   final ModuleCategory category;
   final String defaultAlias;
   final String defaultSource;
   final bool allowMultiple;
   final dynamic Function()? initialDataFactory;
+  final String? uniqueKey;
   // In Flutter, we might use a route name or a widget builder
   // For now, we'll just store the route name or ID
   final String routeId;
@@ -23,17 +25,20 @@ class ModuleMetadata {
     required this.titleKey,
     required this.descriptionKey,
     required this.icon,
+    this.assetIconPath,
     required this.isCore,
     required this.category,
     required this.defaultAlias,
     this.defaultSource = 'CurrentLevel',
     this.allowMultiple = false,
     this.initialDataFactory,
+    this.uniqueKey,
     required this.routeId,
     this.objClass = '',
   });
 
   String get effectiveAlias => defaultAlias;
+  String get selectionKey => uniqueKey ?? objClass;
 
   Map<String, dynamic>? get initialData {
     final obj = initialDataFactory?.call();
@@ -68,6 +73,22 @@ class ModuleRegistry {
       routeId: 'Unknown',
       objClass: objClass,
     );
+  }
+
+  static ModuleMetadata getMetadataForAlias(String alias, String objClass) {
+    if (objClass == 'TunnelDefendModuleProperties' &&
+        (alias == 'SouDaCheTunnelDefendDefault' ||
+            alias.startsWith('SoudacheTunnelDefendStage'))) {
+      return registry['SouDaCheTunnelDefendDefault']!.copyWith(
+        objClass: objClass,
+      );
+    }
+    for (final meta in registry.values) {
+      if (meta.defaultAlias == alias && meta.objClass == objClass) {
+        return meta.copyWith(objClass: objClass);
+      }
+    }
+    return getMetadata(objClass);
   }
 
   static List<ModuleMetadata> getAllModules() => all;
@@ -111,6 +132,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_StarChallengeModuleProperties;
       case 'moduleTitle_LevelScoringModuleProperties':
         return l10n.moduleTitle_LevelScoringModuleProperties;
+      case 'moduleTitle_SouDaCheDamageTextModuleProperties':
+        return l10n.moduleTitle_SouDaCheDamageTextModuleProperties;
       case 'moduleTitle_BowlingMinigameProperties':
         return l10n.moduleTitle_BowlingMinigameProperties;
       case 'moduleTitle_NewBowlingMinigameProperties':
@@ -155,6 +178,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_ProtectThePlantChallengeProperties;
       case 'moduleTitle_ProtectTheGridItemChallengeProperties':
         return l10n.moduleTitle_ProtectTheGridItemChallengeProperties;
+      case 'moduleTitle_MoldColonyChallengeProps':
+        return l10n.moduleTitle_MoldColonyChallengeProps;
       case 'moduleTitle_ZombiePotionModuleProperties':
         return l10n.moduleTitle_ZombiePotionModuleProperties;
       case 'moduleTitle_PiratePlankProperties':
@@ -187,6 +212,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_LawnMowerProperties;
       case 'moduleTitle_TunnelDefendModuleProperties':
         return l10n.moduleTitle_TunnelDefendModuleProperties;
+      case 'moduleTitle_SouDaCheTunnelDefendDefault':
+        return l10n.moduleTitle_SouDaCheTunnelDefendDefault;
       case 'moduleTitle_ZombieRushModuleProperties':
         return l10n.moduleTitle_ZombieRushModuleProperties;
       case 'moduleTitle_RenaiModuleProperties':
@@ -257,6 +284,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_StarChallengeModuleProperties;
       case 'moduleDesc_LevelScoringModuleProperties':
         return l10n.moduleDesc_LevelScoringModuleProperties;
+      case 'moduleDesc_SouDaCheDamageTextModuleProperties':
+        return l10n.moduleDesc_SouDaCheDamageTextModuleProperties;
       case 'moduleDesc_BowlingMinigameProperties':
         return l10n.moduleDesc_BowlingMinigameProperties;
       case 'moduleDesc_NewBowlingMinigameProperties':
@@ -301,6 +330,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_ProtectThePlantChallengeProperties;
       case 'moduleDesc_ProtectTheGridItemChallengeProperties':
         return l10n.moduleDesc_ProtectTheGridItemChallengeProperties;
+      case 'moduleDesc_MoldColonyChallengeProps':
+        return l10n.moduleDesc_MoldColonyChallengeProps;
       case 'moduleDesc_ZombiePotionModuleProperties':
         return l10n.moduleDesc_ZombiePotionModuleProperties;
       case 'moduleDesc_PiratePlankProperties':
@@ -333,6 +364,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_LawnMowerProperties;
       case 'moduleDesc_TunnelDefendModuleProperties':
         return l10n.moduleDesc_TunnelDefendModuleProperties;
+      case 'moduleDesc_SouDaCheTunnelDefendDefault':
+        return l10n.moduleDesc_SouDaCheTunnelDefendDefault;
       case 'moduleDesc_ZombieRushModuleProperties':
         return l10n.moduleDesc_ZombieRushModuleProperties;
       case 'moduleDesc_RenaiModuleProperties':
@@ -530,6 +563,16 @@ class ModuleRegistry {
       category: ModuleCategory.base,
       defaultAlias: 'LevelScoring',
       initialDataFactory: () => LevelScoringData(),
+      routeId: 'UnknownDetail',
+    ),
+    'SouDaCheDamageTextModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_SouDaCheDamageTextModuleProperties',
+      descriptionKey: 'moduleDesc_SouDaCheDamageTextModuleProperties',
+      icon: Icons.numbers,
+      isCore: false,
+      category: ModuleCategory.base,
+      defaultAlias: 'SouDaCheDamageTextModule',
+      initialDataFactory: () => <String, dynamic>{},
       routeId: 'UnknownDetail',
     ),
     'LawnMowerProperties': const ModuleMetadata(
@@ -843,6 +886,17 @@ class ModuleRegistry {
       initialDataFactory: () => ProtectTheGridItemChallengePropertiesData(),
       routeId: 'ProtectTheGridItem',
     ),
+    'MoldColonyChallengeProps': ModuleMetadata(
+      titleKey: 'moduleTitle_MoldColonyChallengeProps',
+      descriptionKey: 'moduleDesc_MoldColonyChallengeProps',
+      icon: Icons.grid_3x3,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.scene,
+      defaultAlias: 'DoNotPlantBeforeLine',
+      initialDataFactory: () => MoldColonyChallengePropsData(),
+      routeId: 'MoldColony',
+    ),
     'PiratePlankProperties': ModuleMetadata(
       titleKey: 'moduleTitle_PiratePlankProperties',
       descriptionKey: 'moduleDesc_PiratePlankProperties',
@@ -1010,7 +1064,22 @@ class ModuleRegistry {
       isCore: true,
       category: ModuleCategory.scene,
       defaultAlias: 'TunnelDefend',
-      initialDataFactory: () => TunnelDefendModuleData(),
+      initialDataFactory: () => TunnelDefendModuleData(reportError: true),
+      routeId: 'TunnelDefendModule',
+    ),
+    'SouDaCheTunnelDefendDefault': ModuleMetadata(
+      titleKey: 'moduleTitle_SouDaCheTunnelDefendDefault',
+      descriptionKey: 'moduleDesc_SouDaCheTunnelDefendDefault',
+      icon: Icons.grid_view,
+      isCore: true,
+      category: ModuleCategory.scene,
+      defaultAlias: 'SouDaCheTunnelDefendDefault',
+      uniqueKey: 'SouDaCheTunnelDefendDefault',
+      objClass: 'TunnelDefendModuleProperties',
+      initialDataFactory: () => TunnelDefendModuleData(
+        brickMapIndex: 3,
+        reportError: false,
+      ).toJson(includeTunnelSequenceInterval: false),
       routeId: 'TunnelDefendModule',
     ),
     'InitialGridItemGulliverTunnelProperties': ModuleMetadata(
@@ -1105,7 +1174,11 @@ class ModuleRegistry {
 
   static List<ModuleMetadata> get all {
     return registry.entries
-        .map((e) => e.value.copyWith(objClass: e.key))
+        .map(
+          (e) => e.value.copyWith(
+            objClass: e.value.objClass.isEmpty ? e.key : e.value.objClass,
+          ),
+        )
         .toList();
   }
 }
@@ -1115,12 +1188,14 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
     String? titleKey,
     String? descriptionKey,
     IconData? icon,
+    String? assetIconPath,
     bool? isCore,
     ModuleCategory? category,
     String? defaultAlias,
     String? defaultSource,
     bool? allowMultiple,
     dynamic Function()? initialDataFactory,
+    String? uniqueKey,
     String? routeId,
     String? objClass,
   }) {
@@ -1128,12 +1203,14 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
       titleKey: titleKey ?? this.titleKey,
       descriptionKey: descriptionKey ?? this.descriptionKey,
       icon: icon ?? this.icon,
+      assetIconPath: assetIconPath ?? this.assetIconPath,
       isCore: isCore ?? this.isCore,
       category: category ?? this.category,
       defaultAlias: defaultAlias ?? this.defaultAlias,
       defaultSource: defaultSource ?? this.defaultSource,
       allowMultiple: allowMultiple ?? this.allowMultiple,
       initialDataFactory: initialDataFactory ?? this.initialDataFactory,
+      uniqueKey: uniqueKey ?? this.uniqueKey,
       routeId: routeId ?? this.routeId,
       objClass: objClass ?? this.objClass,
     );

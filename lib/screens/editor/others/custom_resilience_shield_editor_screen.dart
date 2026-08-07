@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:c_editor/data/pvz_models.dart';
 
+import 'package:c_editor/data/resilience_weak_type.dart';
+
 import 'package:c_editor/data/resilience_shield_utils.dart';
 
 import 'package:c_editor/data/rtid_parser.dart';
@@ -9,6 +11,8 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 
 import 'package:c_editor/widgets/alias_rename_dialog.dart';
+
+import 'package:c_editor/widgets/editor_components.dart';
 
 import 'package:c_editor/widgets/resilience_shield_widgets.dart';
 
@@ -260,6 +264,8 @@ class _CustomResilienceShieldEditorScreenState
           _isNew
               ? (l10n?.resilienceCreateCustom ?? 'New custom shield')
               : (l10n?.resilienceEditCustom ?? 'Edit custom shield'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
 
         actions: [
@@ -271,165 +277,145 @@ class _CustomResilienceShieldEditorScreenState
         padding: const EdgeInsets.all(16),
 
         children: [
-          TextFormField(
-            controller: _codenameCtrl,
-
+          EditorResponsiveInputField(
+            label: l10n?.resilienceCodename ?? 'Resilience codename (aliases)',
             decoration: InputDecoration(
-              labelText:
-                  l10n?.resilienceCodename ?? 'Resilience codename (aliases)',
-
               hintText:
                   l10n?.resilienceCodenameHint ?? 'e.g. CustomResilience0',
-
               border: const OutlineInputBorder(),
             ),
-
-            onFieldSubmitted: _tryApplyAlias,
-
-            onEditingComplete: () => _tryApplyAlias(_codenameCtrl.text),
+            builder: (context, decoration) => TextFormField(
+              controller: _codenameCtrl,
+              decoration: decoration,
+              onFieldSubmitted: _tryApplyAlias,
+              onEditingComplete: () => _tryApplyAlias(_codenameCtrl.text),
+            ),
           ),
 
           const SizedBox(height: 12),
 
-          TextFormField(
-            controller: _amountCtrl,
-
-            keyboardType: TextInputType.number,
-
-            decoration: InputDecoration(
-              labelText: l10n?.resilienceAmount ?? 'Resilience value (Amount)',
-
-              border: const OutlineInputBorder(),
+          EditorResponsiveInputField(
+            label: l10n?.resilienceAmount ?? 'Resilience value (Amount)',
+            builder: (context, decoration) => TextFormField(
+              controller: _amountCtrl,
+              keyboardType: TextInputType.number,
+              decoration: decoration,
+              onChanged: (v) {
+                final n = int.tryParse(v);
+                if (n != null) setState(() => _data.amount = n);
+              },
             ),
-
-            onChanged: (v) {
-              final n = int.tryParse(v);
-
-              if (n != null) setState(() => _data.amount = n);
-            },
           ),
 
           const SizedBox(height: 12),
 
-          DropdownButtonFormField<int>(
-            isExpanded: true,
-
-            initialValue: _data.weakType.clamp(1, 6),
-
-            decoration: InputDecoration(
-              labelText:
-                  l10n?.resilienceWeakType ?? 'Resilience type (WeakType)',
-
-              border: const OutlineInputBorder(),
+          EditorResponsiveInputField(
+            label: l10n?.resilienceWeakType ?? 'Resilience type (WeakType)',
+            builder: (context, decoration) => DropdownButtonFormField<int>(
+              isExpanded: true,
+              initialValue:
+                  resilienceWeakTypeJsonValues.contains(_data.weakType)
+                  ? _data.weakType
+                  : null,
+              decoration: decoration,
+              hint: resilienceWeakTypeJsonValues.contains(_data.weakType)
+                  ? null
+                  : Text(
+                      resilienceWeakTypeLabel(l10n, _data.weakType),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+              items: resilienceWeakTypeJsonValues.map((wt) {
+                return DropdownMenuItem(
+                  value: wt,
+                  child: ResilienceWeakTypeLabelRow(
+                    weakType: wt,
+                    label: resilienceWeakTypeLabel(l10n, wt),
+                  ),
+                );
+              }).toList(),
+              onChanged: (v) {
+                if (v != null) setState(() => _data.weakType = v);
+              },
             ),
-
-            items: [1, 2, 3, 4, 5, 6].map((wt) {
-              return DropdownMenuItem(
-                value: wt,
-
-                child: ResilienceWeakTypeLabelRow(
-                  weakType: wt,
-
-                  label: resilienceWeakTypeLabel(l10n, wt),
-                ),
-              );
-            }).toList(),
-
-            onChanged: (v) {
-              if (v != null) setState(() => _data.weakType = v);
-            },
           ),
 
           const SizedBox(height: 12),
 
-          TextFormField(
-            controller: _recoverSpeedCtrl,
-
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-
-            decoration: InputDecoration(
-              labelText:
-                  l10n?.resilienceRecoverSpeed ??
-                  'Resilience bar recovery speed (RecoverSpeed)',
-
-              border: const OutlineInputBorder(),
+          EditorResponsiveInputField(
+            label:
+                l10n?.resilienceRecoverSpeed ??
+                'Resilience bar recovery speed (RecoverSpeed)',
+            builder: (context, decoration) => TextFormField(
+              controller: _recoverSpeedCtrl,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: decoration,
+              onChanged: (v) {
+                final n = double.tryParse(v);
+                if (n != null) setState(() => _data.recoverSpeed = n);
+              },
             ),
-
-            onChanged: (v) {
-              final n = double.tryParse(v);
-
-              if (n != null) setState(() => _data.recoverSpeed = n);
-            },
           ),
 
           const SizedBox(height: 12),
 
-          TextFormField(
-            controller: _damageThresholdCtrl,
-
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-
-            decoration: InputDecoration(
-              labelText:
-                  l10n?.resilienceDamageThresholdPerSecond ??
-                  'Zombie damage threshold per second (DamageThresholdPerSecond)',
-
-              border: const OutlineInputBorder(),
+          EditorResponsiveInputField(
+            label:
+                l10n?.resilienceDamageThresholdPerSecond ??
+                'Zombie damage threshold per second (DamageThresholdPerSecond)',
+            builder: (context, decoration) => TextFormField(
+              controller: _damageThresholdCtrl,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: decoration,
+              onChanged: (v) {
+                final n = double.tryParse(v);
+                if (n != null) {
+                  setState(() => _data.damageThresholdPerSecond = n);
+                }
+              },
             ),
-
-            onChanged: (v) {
-              final n = double.tryParse(v);
-
-              if (n != null) setState(() => _data.damageThresholdPerSecond = n);
-            },
           ),
 
           const SizedBox(height: 12),
 
-          TextFormField(
-            controller: _baseThresholdCtrl,
-
-            keyboardType: TextInputType.number,
-
-            decoration: InputDecoration(
-              labelText:
-                  l10n?.resilienceBaseDamageThreshold ??
-                  'Resilience base damage threshold (ResilienceBaseDamageThreshold)',
-
-              border: const OutlineInputBorder(),
+          EditorResponsiveInputField(
+            label:
+                l10n?.resilienceBaseDamageThreshold ??
+                'Resilience base damage threshold (ResilienceBaseDamageThreshold)',
+            builder: (context, decoration) => TextFormField(
+              controller: _baseThresholdCtrl,
+              keyboardType: TextInputType.number,
+              decoration: decoration,
+              onChanged: (v) {
+                final n = int.tryParse(v);
+                if (n != null) {
+                  setState(() => _data.resilienceBaseDamageThreshold = n);
+                }
+              },
             ),
-
-            onChanged: (v) {
-              final n = int.tryParse(v);
-
-              if (n != null) {
-                setState(() => _data.resilienceBaseDamageThreshold = n);
-              }
-            },
           ),
 
           const SizedBox(height: 12),
 
-          TextFormField(
-            controller: _extraThresholdCtrl,
-
-            keyboardType: TextInputType.number,
-
-            decoration: InputDecoration(
-              labelText:
-                  l10n?.resilienceExtraDamageThreshold ??
-                  'Resilience extra damage threshold (ResilienceExtraDamageThreshold)',
-
-              border: const OutlineInputBorder(),
+          EditorResponsiveInputField(
+            label:
+                l10n?.resilienceExtraDamageThreshold ??
+                'Resilience extra damage threshold (ResilienceExtraDamageThreshold)',
+            builder: (context, decoration) => TextFormField(
+              controller: _extraThresholdCtrl,
+              keyboardType: TextInputType.number,
+              decoration: decoration,
+              onChanged: (v) {
+                final n = int.tryParse(v);
+                if (n != null) {
+                  setState(() => _data.resilienceExtraDamageThreshold = n);
+                }
+              },
             ),
-
-            onChanged: (v) {
-              final n = int.tryParse(v);
-
-              if (n != null) {
-                setState(() => _data.resilienceExtraDamageThreshold = n);
-              }
-            },
           ),
         ],
       ),

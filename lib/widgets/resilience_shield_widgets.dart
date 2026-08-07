@@ -1,31 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/repository/resilience_config_repository.dart';
+
+import 'package:c_editor/data/resilience_weak_type.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 
-String resilienceWeakTypeLabel(AppLocalizations? l10n, int weakType) {
-  switch (weakType) {
-    case 1:
-      return l10n?.resiliencePhysics ?? 'Physics';
-    case 2:
-      return l10n?.resiliencePoison ?? 'Poison';
-    case 3:
-      return l10n?.resilienceElectric ?? 'Electric';
-    case 4:
-      return l10n?.resilienceMagic ?? 'Magic';
-    case 5:
-      return l10n?.resilienceIce ?? 'Ice';
-    case 6:
-      return l10n?.resilienceFire ?? 'Fire';
-    default:
-      return '$weakType';
-  }
-}
+String resilienceWeakTypeLabel(AppLocalizations? l10n, int weakType) =>
+    resilienceWeakTypeLabelForValue(l10n, weakType);
 
-String? resilienceWeakTypeIconPath(int weakType) {
-  if (weakType < 1 || weakType >= weakTypeIcons.length) return null;
-  return weakTypeIcons[weakType];
-}
+String? resilienceWeakTypeIconPath(int weakType) =>
+    resilienceWeakTypeIconForValue(weakType);
 
 class ResilienceWeakTypeIcon extends StatelessWidget {
   const ResilienceWeakTypeIcon({
@@ -90,6 +73,64 @@ class ResilienceWeakTypeLabelRow extends StatelessWidget {
   }
 }
 
+class ResilienceShieldSelectionCard extends StatelessWidget {
+  const ResilienceShieldSelectionCard({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.chevron_right,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class ResilienceShieldParameterRow extends StatelessWidget {
   const ResilienceShieldParameterRow({
     super.key,
@@ -105,37 +146,53 @@ class ResilienceShieldParameterRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+    final labelWidget = Text(
+      label,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+    );
+    final valueWidget = weakType != null
+        ? ResilienceWeakTypeLabelRow(
+            weakType: weakType!,
+            label: value,
+            iconSize: 18,
+            valueBold: true,
+          )
+        : Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: weakType != null
-                ? ResilienceWeakTypeLabelRow(
-                    weakType: weakType!,
-                    label: value,
-                    iconSize: 18,
-                    valueBold: true,
-                  )
-                : Text(
-                    value,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-          ),
-        ],
+          );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 600) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                labelWidget,
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: valueWidget,
+                ),
+              ],
+            );
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 3, child: labelWidget),
+              const SizedBox(width: 24),
+              Expanded(flex: 2, child: valueWidget),
+            ],
+          );
+        },
       ),
     );
   }

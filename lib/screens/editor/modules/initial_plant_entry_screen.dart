@@ -181,9 +181,10 @@ class _InitialPlantEntryScreenState extends State<InitialPlantEntryScreen> {
                       children: [
                         Row(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                 Text(
                                   l10n?.selectedPosition ?? 'Selected position',
                                   style: theme.textTheme.bodySmall?.copyWith(
@@ -197,7 +198,8 @@ class _InitialPlantEntryScreenState extends State<InitialPlantEntryScreen> {
                                     color: theme.colorScheme.primary,
                                   ),
                                 ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),

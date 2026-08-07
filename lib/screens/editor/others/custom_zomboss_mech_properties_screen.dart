@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/models/zomboss_custom_action_preset.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
+import 'package:c_editor/screens/editor/others/zomboss_mech_action_detail_screen.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_action_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
@@ -264,6 +267,86 @@ class _CustomZombossMechPropertiesScreenState
     if (mounted) _sync();
   }
 
+  Future<void> _editStageAction({
+    required int stageIndex,
+    required int actionIndex,
+    required String rtid,
+  }) async {
+    var editRtid = rtid;
+    final origin = ZombossCustomActionPresetRepository.originForRtid(
+      widget.levelFile,
+      rtid,
+    );
+    ZombossPresetActionCreation? temporaryDerived;
+
+    if (origin == ZombossCustomActionOrigin.presetTemplate) {
+      temporaryDerived =
+          ZombossCustomActionPresetRepository.deriveFromPresetInstance(
+            widget.levelFile,
+            rtid,
+          );
+      if (temporaryDerived != null) {
+        editRtid = temporaryDerived.rtid;
+        final stages = _stages;
+        if (stageIndex >= 0 && stageIndex < stages.length) {
+          final actions = _stageActions(stages[stageIndex]);
+          if (actionIndex >= 0 && actionIndex < actions.length) {
+            actions[actionIndex] = editRtid;
+            stages[stageIndex]['Actions'] = actions;
+            _propsData['Stages'] = stages;
+            _sync();
+          }
+        }
+      }
+    }
+
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomZombossMechActionEditorScreen(
+          catalog: widget.catalog,
+          levelFile: widget.levelFile,
+          existingRtid: editRtid,
+          propsData: _propsData,
+          onPropsSync: _sync,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+    if (temporaryDerived != null && result == null) {
+      final stages = _stages;
+      if (stageIndex >= 0 && stageIndex < stages.length) {
+        final actions = _stageActions(stages[stageIndex]);
+        if (actionIndex >= 0 && actionIndex < actions.length) {
+          actions[actionIndex] = rtid;
+          stages[stageIndex]['Actions'] = actions;
+          _propsData['Stages'] = stages;
+        }
+      }
+      ZombossCustomActionPresetRepository.removeCreatedObjects(
+        widget.levelFile,
+        temporaryDerived,
+      );
+      _sync();
+      return;
+    }
+    _sync();
+  }
+
+  Future<void> _openActionDetails(String rtid) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZombossMechActionDetailScreen(
+          catalog: widget.catalog,
+          levelFile: widget.levelFile,
+          rtid: rtid,
+        ),
+      ),
+    );
+  }
+
   Future<void> _confirmRemoveStageAction(
     int stageIndex,
     int actionIndex,
@@ -306,7 +389,18 @@ class _CustomZombossMechPropertiesScreenState
       ),
     );
     if (ok == true) {
-      ZombossMechActionUtils.deleteCustomActionObject(widget.levelFile, rtid);
+      final origin = ZombossCustomActionPresetRepository.originForRtid(
+        widget.levelFile,
+        rtid,
+      );
+      if (origin == ZombossCustomActionOrigin.userCreated) {
+        ZombossMechActionUtils.deleteCustomActionObject(widget.levelFile, rtid);
+      } else {
+        ZombossCustomActionPresetRepository.deleteActionObjectAndUnusedPresetDependencies(
+          widget.levelFile,
+          rtid,
+        );
+      }
       widget.onChanged();
       if (mounted) setState(() {});
     }
@@ -467,7 +561,13 @@ class _CustomZombossMechPropertiesScreenState
                     _confirmRemoveStageAction(i, actionIndex),
                 onAddAction: () => _pickAction(stageIndex: i, retreat: false),
                 onPickRetreat: () => _pickAction(stageIndex: i, retreat: true),
-                onEditCustomAction: _editCustomAction,
+                onEditStageAction: (actionIndex, rtid) => _editStageAction(
+                  stageIndex: i,
+                  actionIndex: actionIndex,
+                  rtid: rtid,
+                ),
+                onEditRetreatAction: _editCustomAction,
+                onInspectAction: _openActionDetails,
                 phaseLabel:
                     l10n?.zombossMechPhaseNumber(i + 1) ?? 'Phase ${i + 1}',
                 hitPointsLabel: l10n?.zombossMechHitPoints ?? 'Hit points',
@@ -538,7 +638,9 @@ class _StageCard extends StatelessWidget {
     required this.onRemoveAction,
     required this.onAddAction,
     required this.onPickRetreat,
-    required this.onEditCustomAction,
+    required this.onEditStageAction,
+    required this.onEditRetreatAction,
+    required this.onInspectAction,
     required this.phaseLabel,
     required this.hitPointsLabel,
     required this.actionsLabel,
@@ -562,7 +664,9 @@ class _StageCard extends StatelessWidget {
   final ValueChanged<int> onRemoveAction;
   final VoidCallback onAddAction;
   final VoidCallback onPickRetreat;
-  final ValueChanged<String> onEditCustomAction;
+  final void Function(int actionIndex, String rtid) onEditStageAction;
+  final ValueChanged<String> onEditRetreatAction;
+  final ValueChanged<String> onInspectAction;
   final String phaseLabel;
   final String hitPointsLabel;
   final String actionsLabel;
@@ -696,8 +800,11 @@ class _StageCard extends StatelessWidget {
                           tag: tag,
                           reorderIndex: actionIndex,
                           onEdit: isCustom
-                              ? () => onEditCustomAction(rtid)
+                              ? () => onEditStageAction(actionIndex, rtid)
                               : null,
+                          onInspect: isCustom
+                              ? null
+                              : () => onInspectAction(rtid),
                           onRemove: () => onRemoveAction(actionIndex),
                         );
                       },
@@ -740,8 +847,12 @@ class _StageCard extends StatelessWidget {
                           'retreat',
                       onSwap: onPickRetreat,
                       onEdit: ZombossMechActionUtils.isCustomRtid(retreatRtid)
-                          ? () => onEditCustomAction(retreatRtid)
+                          ? () => onEditRetreatAction(retreatRtid)
                           : null,
+                      onInspect:
+                          ZombossMechActionUtils.isCustomRtid(retreatRtid)
+                          ? null
+                          : () => onInspectAction(retreatRtid),
                     ),
                   ],
                 ),

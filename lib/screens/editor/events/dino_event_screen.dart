@@ -225,9 +225,13 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          Text(
-                            l10n?.dinoRow(_data.dinoRow + 1) ??
-                                'Row: ${_data.dinoRow + 1}',
+                          Expanded(
+                            child: Text(
+                              l10n?.dinoRow(_data.dinoRow + 1) ??
+                                  'Row: ${_data.dinoRow + 1}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           IconButton(

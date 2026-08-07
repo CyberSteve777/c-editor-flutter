@@ -7,7 +7,9 @@ import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/pvz_models/LocationData.dart';
+import 'package:c_editor/data/pvz_models/ZombieTypeData.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
+import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 
 /// Dropdown value for the custom (memo) zombossmech variation in the battle tab.
@@ -116,7 +118,11 @@ class ZombossMechRepository {
 
   static ZombossMechInfo? findBaseForVariation(String variation) {
     return allZombossMechs
-        .where((b) => b.variations.contains(variation))
+        .where(
+          (b) =>
+              b.variations.contains(variation) ||
+              (b.hasCustomInstance && b.editableInstance == variation),
+        )
         .firstOrNull;
   }
 
@@ -136,7 +142,9 @@ class ZombossMechRepository {
   static String resolveBaseId(String? preferredBaseId, String variation) {
     if (preferredBaseId != null) {
       final base = getBase(preferredBaseId);
-      if (base != null && base.variations.contains(variation)) {
+      if (base != null &&
+          (base.variations.contains(variation) ||
+              (base.hasCustomInstance && base.editableInstance == variation))) {
         return preferredBaseId;
       }
     }
@@ -256,5 +264,32 @@ class ZombossMechRepository {
     final propsRtid = (typeObj!.objData as Map)['Properties'] as String?;
     if (propsRtid == null || propsRtid.isEmpty) return null;
     return ZombossMechActionUtils.displayLabel(propsRtid);
+  }
+
+  static String? propertiesAliasForVariation(String mechType) {
+    if (!ZombiePropertiesRepository.isInitialized) return null;
+    final typeName = ZombiePropertiesRepository.getTypeNameByAlias(mechType);
+    final template = ZombiePropertiesRepository.getTemplateJson(typeName);
+    final typeObj = template?['type'];
+    if (typeObj?.objData is! Map) return null;
+    final typeData = ZombieTypeData.fromJson(
+      Map<String, dynamic>.from(typeObj!.objData as Map),
+    );
+    return RtidParser.parse(typeData.properties)?.alias;
+  }
+
+  static Map<String, dynamic>? propertiesDataForVariation(
+    String mechType, {
+    ZombossMechCatalogEntry? catalog,
+  }) {
+    final effectiveCatalog = catalog ?? findCatalogForVariation(mechType);
+    if (effectiveCatalog == null) return null;
+    final alias = propertiesAliasForVariation(mechType);
+    if (alias == null || alias.isEmpty) return null;
+    for (final group in effectiveCatalog.properties) {
+      final data = group.implementations[alias];
+      if (data != null) return ZombossMechActionUtils.cloneMap(data);
+    }
+    return null;
   }
 }

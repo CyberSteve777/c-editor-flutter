@@ -9,15 +9,25 @@ class PvzObject {
   factory PvzObject.fromJson(Map<String, dynamic> json) {
     final aliases = json['aliases'] as List<dynamic>?;
     return PvzObject(
-      aliases: aliases?.cast<String>(),
+      aliases: aliases
+          ?.map((alias) => alias.toString())
+          .where((alias) => !isEditorMetadataAlias(alias))
+          .toList(),
       objClass: json['objclass'] as String? ?? '',
       objData: json['objdata'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-    if (aliases != null) 'aliases': aliases,
+    if (aliases != null)
+      'aliases': aliases!
+          .where((alias) => !isEditorMetadataAlias(alias))
+          .toList(),
     'objclass': objClass,
     'objdata': objData,
   };
+
+  /// Legacy editor-only aliases must never enter a playable level JSON.
+  static bool isEditorMetadataAlias(String alias) =>
+      alias.startsWith('__c_editor_');
 }

@@ -8,6 +8,8 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
 
+final Map<String, double> _stageBackgroundSelectionScrollOffsets = {};
+
 /// Picker for [BackgroundImagePrefix] based on imported DelayLoad groups.
 class StageBackgroundSelectionScreen extends StatefulWidget {
   const StageBackgroundSelectionScreen({
@@ -17,6 +19,7 @@ class StageBackgroundSelectionScreen extends StatefulWidget {
     required this.onSelected,
     required this.onBack,
     this.onImportFromStage,
+    this.stateBucketId,
   });
 
   final List<StageBackgroundOption> Function() optionsBuilder;
@@ -24,6 +27,7 @@ class StageBackgroundSelectionScreen extends StatefulWidget {
   final void Function(StageBackgroundOption option) onSelected;
   final VoidCallback onBack;
   final Future<bool> Function()? onImportFromStage;
+  final String? stateBucketId;
 
   @override
   State<StageBackgroundSelectionScreen> createState() =>
@@ -33,17 +37,31 @@ class StageBackgroundSelectionScreen extends StatefulWidget {
 class _StageBackgroundSelectionScreenState
     extends State<StageBackgroundSelectionScreen> {
   String _searchQuery = '';
-  final ScrollController _listScrollController = ScrollController();
-  bool _listScrollAtTop = true;
+  late final ScrollController _listScrollController;
+  late bool _listScrollAtTop;
+
+  String get _viewStateKey => widget.stateBucketId?.isNotEmpty == true
+      ? widget.stateBucketId!
+      : 'global';
+
+  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
 
   @override
   void initState() {
     super.initState();
-    _listScrollController.addListener(_onListScroll);
+    final initialOffset =
+        _stageBackgroundSelectionScrollOffsets[_viewStateKey] ?? 0;
+    _listScrollAtTop = initialOffset <= 0;
+    _listScrollController = ScrollController(initialScrollOffset: initialOffset)
+      ..addListener(_onListScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
   }
 
   @override
   void dispose() {
+    _rememberScrollOffset();
     _listScrollController.removeListener(_onListScroll);
     _listScrollController.dispose();
     super.dispose();
@@ -51,8 +69,48 @@ class _StageBackgroundSelectionScreenState
 
   void _onListScroll() {
     if (!_listScrollController.hasClients) return;
+    _rememberScrollOffset();
     final atTop = _listScrollController.offset <= 0;
     if (atTop != _listScrollAtTop && mounted) {
+      setState(() => _listScrollAtTop = atTop);
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() {
+      _searchQuery = query;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+  }
+
+  void _rememberScrollOffset() {
+    if (!_canRememberScroll || !_listScrollController.hasClients) return;
+    _stageBackgroundSelectionScrollOffsets[_viewStateKey] =
+        _listScrollController.offset;
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _stageBackgroundSelectionScrollOffsets[_viewStateKey] = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_listScrollController.hasClients) return;
+      _listScrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_listScrollController.hasClients) return;
+    final offset = _stageBackgroundSelectionScrollOffsets[_viewStateKey] ?? 0;
+    final position = _listScrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_listScrollController.offset != target) {
+      _listScrollController.jumpTo(target);
+    }
+    final atTop = target <= 0;
+    if (_listScrollAtTop != atTop) {
       setState(() => _listScrollAtTop = atTop);
     }
   }
@@ -120,8 +178,8 @@ class _StageBackgroundSelectionScreenState
             child: SelectionSearchField(
               hintText: l10n?.searchStageBackground ?? 'Search lawn',
               query: _searchQuery,
-              onChanged: (v) => setState(() => _searchQuery = v),
-              onClear: () => setState(() => _searchQuery = ''),
+              onChanged: _setSearchQuery,
+              onClear: () => _setSearchQuery(''),
             ),
           ),
         ),
