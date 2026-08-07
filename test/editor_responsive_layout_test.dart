@@ -69,6 +69,51 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('responsive input field moves an oversized label above', (
+    tester,
+  ) async {
+    const fieldKey = Key('responsive-input');
+    const label =
+        'A very long localized input label that must remain fully visible';
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 240,
+        child: EditorResponsiveInputField(
+          label: label,
+          builder: (context, decoration) =>
+              TextField(key: fieldKey, decoration: decoration),
+        ),
+      ),
+    );
+
+    final field = tester.widget<TextField>(find.byKey(fieldKey));
+    expect(field.decoration?.labelText, isNull);
+    expect(find.text(label), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('responsive input field keeps a short inline label', (
+    tester,
+  ) async {
+    const fieldKey = Key('short-responsive-input');
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 500,
+        child: EditorResponsiveInputField(
+          label: 'Value',
+          builder: (context, decoration) =>
+              TextField(key: fieldKey, decoration: decoration),
+        ),
+      ),
+    );
+
+    final field = tester.widget<TextField>(find.byKey(fieldKey));
+    expect(field.decoration?.labelText, 'Value');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('responsive action row moves the action below long content', (
     tester,
   ) async {

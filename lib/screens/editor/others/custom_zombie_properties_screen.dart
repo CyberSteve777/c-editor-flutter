@@ -258,7 +258,9 @@ class _CustomZombiePropertiesScreenState
 
   String? get _currentResilienceRtid =>
       _selectedResilienceRtid ??
-      (_propsData.resilience is String ? _propsData.resilience as String : null);
+      (_propsData.resilience is String
+          ? _propsData.resilience as String
+          : null);
 
   void _stripUnsupportedResilience() {
     final r = _propsData.resilience;
@@ -323,8 +325,7 @@ class _CustomZombiePropertiesScreenState
 
     return ResilienceShieldSelectionCard(
       label:
-          l10n?.resilienceSelectedShieldLabel ??
-          'Selected Resilience Shield:',
+          l10n?.resilienceSelectedShieldLabel ?? 'Selected Resilience Shield:',
       value: alias.isNotEmpty && source.isNotEmpty
           ? '$alias@$source'
           : (l10n?.resiliencePresetSelect ?? 'Selected resilience shield'),
@@ -607,14 +608,14 @@ class _CustomZombiePropertiesScreenState
     required String label,
     bool isDouble = false,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
+        onChanged: (_) {},
       ),
-      onChanged: (_) {},
     );
   }
 
@@ -661,17 +662,11 @@ class _CustomZombiePropertiesScreenState
   Widget _sectionCard({required Widget child}) {
     return SizedBox(
       width: double.infinity,
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: child,
-      ),
+      child: Card(margin: EdgeInsets.zero, child: child),
     );
   }
 
-  Widget _responsiveFieldPair({
-    required Widget first,
-    required Widget second,
-  }) {
+  Widget _responsiveFieldPair({required Widget first, required Widget second}) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 600) {
@@ -1030,8 +1025,7 @@ class _CustomZombiePropertiesScreenState
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _cardSectionTitle(
-                            l10n?.appearanceBehavior ??
-                                'Appearance & behavior',
+                            l10n?.appearanceBehavior ?? 'Appearance & behavior',
                           ),
                           const SizedBox(height: 12),
                           InkWell(
@@ -1444,7 +1438,7 @@ class _CustomZombiePropertiesScreenState
     required ValueChanged<bool> onChanged,
   }) {
     return SwitchListTile(
-      title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
+      title: Text(title),
       value: checked,
       onChanged: onChanged,
     );
@@ -1517,14 +1511,10 @@ class _DoubleInputFieldState extends State<_DoubleInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return _ResponsiveNumberTextField(
+      label: widget.label,
       controller: _controller,
       focusNode: _focusNode,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: widget.label,
-        border: const OutlineInputBorder(),
-      ),
       onChanged: (v) {
         final n = double.tryParse(v);
         if (n != null) widget.onChanged(n);
@@ -1590,32 +1580,62 @@ class _ResilienceInputFieldState extends State<_ResilienceInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return _ResponsiveNumberTextField(
+      label: widget.label,
       controller: _controller,
       focusNode: _focusNode,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: widget.label,
-        border: const OutlineInputBorder(),
-        prefixIcon: widget.iconPath != null
-            ? Padding(
-                padding: const EdgeInsets.all(8),
-                child: AssetImageWidget(
-                  assetPath: widget.iconPath!,
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.contain,
-                  altCandidates: imageAltCandidates(widget.iconPath!),
-                ),
-              )
-            : null,
-      ),
+      prefixIcon: widget.iconPath != null
+          ? Padding(
+              padding: const EdgeInsets.all(8),
+              child: AssetImageWidget(
+                assetPath: widget.iconPath!,
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                altCandidates: imageAltCandidates(widget.iconPath!),
+              ),
+            )
+          : null,
       onChanged: (v) {
         final val = double.tryParse(v);
         if (val != null) {
           widget.onChanged(val.clamp(0.0, 1.0));
         }
       },
+    );
+  }
+}
+
+class _ResponsiveNumberTextField extends StatelessWidget {
+  const _ResponsiveNumberTextField({
+    required this.label,
+    required this.controller,
+    required this.focusNode,
+    required this.onChanged,
+    this.prefixIcon,
+  });
+
+  final String label;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final ValueChanged<String> onChanged;
+  final Widget? prefixIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        prefixIcon: prefixIcon,
+      ),
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        focusNode: focusNode,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
+        onChanged: onChanged,
+      ),
     );
   }
 }

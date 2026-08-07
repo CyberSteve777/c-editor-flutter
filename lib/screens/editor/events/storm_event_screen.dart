@@ -497,28 +497,27 @@ class _StormEventScreenState extends State<StormEventScreen> {
                         },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.timeBetweenGroups.toString(),
-                        decoration: InputDecoration(
-                          labelText:
-                              l10n?.timeBetweenGroups ?? 'Time between groups',
-                          border: OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label: l10n?.timeBetweenGroups ?? 'Time between groups',
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.timeBetweenGroups.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = StormZombieSpawnerPropsData(
+                                columnStart: _data.columnStart,
+                                columnEnd: _data.columnEnd,
+                                groupSize: _data.groupSize,
+                                timeBetweenGroups: n,
+                                type: _data.type,
+                                zombies: _data.zombies,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = StormZombieSpawnerPropsData(
-                              columnStart: _data.columnStart,
-                              columnEnd: _data.columnEnd,
-                              groupSize: _data.groupSize,
-                              timeBetweenGroups: n,
-                              type: _data.type,
-                              zombies: _data.zombies,
-                            );
-                            _sync();
-                          }
-                        },
                       ),
                     ],
                   ),

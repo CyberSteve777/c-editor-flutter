@@ -314,6 +314,79 @@ class EditorResponsiveLabelField extends StatelessWidget {
   }
 }
 
+typedef EditorInputFieldBuilder =
+    Widget Function(BuildContext context, InputDecoration decoration);
+
+/// Keeps an outlined input label readable at large text scales. Short labels
+/// stay in the field; labels that cannot fit move above it and wrap fully.
+class EditorResponsiveInputField extends StatelessWidget {
+  const EditorResponsiveInputField({
+    super.key,
+    required this.label,
+    required this.builder,
+    this.decoration = const InputDecoration(border: OutlineInputBorder()),
+    this.labelSpacing = 8,
+    this.externalLabelStyle,
+  });
+
+  final String label;
+  final EditorInputFieldBuilder builder;
+  final InputDecoration decoration;
+  final double labelSpacing;
+  final TextStyle? externalLabelStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final theme = Theme.of(context);
+        final labelStyle =
+            decoration.floatingLabelStyle ??
+            decoration.labelStyle ??
+            theme.inputDecorationTheme.floatingLabelStyle ??
+            theme.inputDecorationTheme.labelStyle ??
+            theme.textTheme.bodyLarge ??
+            const TextStyle(fontSize: 16);
+        final reservedWidth =
+            48.0 +
+            (decoration.prefixIcon == null ? 0 : 48) +
+            (decoration.suffixIcon == null ? 0 : 48);
+        final availableLabelWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth - reservedWidth
+            : double.infinity;
+        final labelPainter = TextPainter(
+          text: TextSpan(text: label, style: labelStyle),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: 1,
+        )..layout(maxWidth: availableLabelWidth > 0 ? availableLabelWidth : 0);
+        final showExternalLabel = labelPainter.didExceedMaxLines;
+        final effectiveDecoration = showExternalLabel
+            ? decoration
+            : decoration.copyWith(labelText: label);
+        final field = builder(context, effectiveDecoration);
+
+        if (!showExternalLabel) return field;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              label,
+              style:
+                  externalLabelStyle ??
+                  theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            SizedBox(height: labelSpacing),
+            field,
+          ],
+        );
+      },
+    );
+  }
+}
+
 /// Keeps a heading or status label clear of its trailing action. The action
 /// moves below the text when a scaled editor no longer has enough width.
 class EditorResponsiveActionRow extends StatelessWidget {

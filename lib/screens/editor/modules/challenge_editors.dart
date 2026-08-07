@@ -459,21 +459,21 @@ class _BeatTheLevelEditorState extends State<_BeatTheLevelEditor> {
           },
         ),
         const SizedBox(height: 12),
-        TextField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            labelText: ChallengeResourceL10n.property(
-              context,
-              _objClass,
-              'DescriptiveName',
-              l10n?.descriptiveName,
-            ),
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label: ChallengeResourceL10n.property(
+            context,
+            _objClass,
+            'DescriptiveName',
+            l10n?.descriptiveName,
           ),
-          onChanged: (v) {
-            _data['DescriptiveName'] = v;
-            _save();
-          },
+          builder: (context, decoration) => TextField(
+            controller: _nameController,
+            decoration: decoration,
+            onChanged: (v) {
+              _data['DescriptiveName'] = v;
+              _save();
+            },
+          ),
         ),
       ],
     );
@@ -494,21 +494,17 @@ class _SimpleCountEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = object.objData as Map<String, dynamic>;
-    return TextFormField(
-      initialValue: (data[field] ?? 0).toString(),
-      decoration: InputDecoration(
-        labelText: ChallengeResourceL10n.property(
-          context,
-          object.objClass,
-          field,
-        ),
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: ChallengeResourceL10n.property(context, object.objClass, field),
+      builder: (context, decoration) => TextFormField(
+        initialValue: (data[field] ?? 0).toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (val) {
+          data[field] = int.tryParse(val) ?? 0;
+          onChanged();
+        },
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (val) {
-        data[field] = int.tryParse(val) ?? 0;
-        onChanged();
-      },
     );
   }
 }
@@ -529,17 +525,17 @@ class _SimpleDoubleEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = object.objData as Map<String, dynamic>;
-    return TextFormField(
-      initialValue: (data[field] ?? 0.0).toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        initialValue: (data[field] ?? 0.0).toString(),
+        decoration: decoration,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: (val) {
+          data[field] = double.tryParse(val) ?? 0.0;
+          onChanged();
+        },
       ),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      onChanged: (val) {
-        data[field] = double.tryParse(val) ?? 0.0;
-        onChanged();
-      },
     );
   }
 }
@@ -559,17 +555,17 @@ class _KillZombiesInTimeEditor extends StatelessWidget {
     final data = object.objData as Map<String, dynamic>;
     return Column(
       children: [
-        TextFormField(
-          initialValue: (data['ZombiesToKill'] ?? 10).toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.zombiesToKill ?? 'Zombies To Kill',
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label: l10n?.zombiesToKill ?? 'Zombies To Kill',
+          builder: (context, decoration) => TextFormField(
+            initialValue: (data['ZombiesToKill'] ?? 10).toString(),
+            decoration: decoration,
+            keyboardType: TextInputType.number,
+            onChanged: (val) {
+              data['ZombiesToKill'] = int.tryParse(val) ?? 10;
+              onChanged();
+            },
           ),
-          keyboardType: TextInputType.number,
-          onChanged: (val) {
-            data['ZombiesToKill'] = int.tryParse(val) ?? 10;
-            onChanged();
-          },
         ),
         const SizedBox(height: 12),
         TextFormField(
@@ -638,18 +634,17 @@ class _ProtectThePlantEditorState extends State<_ProtectThePlantEditor> {
     final l10n = widget.l10n ?? AppLocalizations.of(context);
     return Column(
       children: [
-        TextFormField(
-          initialValue: _data.mustProtectCount.toString(),
-          decoration: InputDecoration(
-            labelText:
-                l10n?.mustProtectCountAll ?? 'Must Protect Count (0 = All)',
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label: l10n?.mustProtectCountAll ?? 'Must Protect Count (0 = All)',
+          builder: (context, decoration) => TextFormField(
+            initialValue: _data.mustProtectCount.toString(),
+            decoration: decoration,
+            keyboardType: TextInputType.number,
+            onChanged: (val) {
+              _data.mustProtectCount = int.tryParse(val) ?? 0;
+              _save();
+            },
           ),
-          keyboardType: TextInputType.number,
-          onChanged: (val) {
-            _data.mustProtectCount = int.tryParse(val) ?? 0;
-            _save();
-          },
         ),
         const SizedBox(height: 16),
         Text(
@@ -794,19 +789,19 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
             _save();
           },
         ),
-        TextFormField(
-          initialValue: _data.mustProtectCount.toString(),
-          decoration: InputDecoration(
-            labelText:
-                l10n?.mustProtectCount(_data.mustProtectCount) ??
-                'Must Protect Count',
-            border: const OutlineInputBorder(),
+        EditorResponsiveInputField(
+          label:
+              l10n?.mustProtectCount(_data.mustProtectCount) ??
+              'Must Protect Count',
+          builder: (context, decoration) => TextFormField(
+            initialValue: _data.mustProtectCount.toString(),
+            decoration: decoration,
+            keyboardType: TextInputType.number,
+            onChanged: (val) {
+              _data.mustProtectCount = int.tryParse(val) ?? 0;
+              _save();
+            },
           ),
-          keyboardType: TextInputType.number,
-          onChanged: (val) {
-            _data.mustProtectCount = int.tryParse(val) ?? 0;
-            _save();
-          },
         ),
         const SizedBox(height: 16),
         Text(

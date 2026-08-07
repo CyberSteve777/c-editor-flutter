@@ -195,7 +195,6 @@ class _ConveyorSeedBankPropertiesScreenState
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -235,14 +234,14 @@ class _ConveyorSeedBankPropertiesScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
               _ConveyorPlantListEditor(
                 l10n: l10n,
                 items: _data.initialPlantList,
@@ -943,17 +942,17 @@ class _NumberField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (s) {
+          final v = int.tryParse(s) ?? 0;
+          onChanged(v);
+        },
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (s) {
-        final v = int.tryParse(s) ?? 0;
-        onChanged(v);
-      },
     );
   }
 }
@@ -971,17 +970,17 @@ class _DoubleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: (s) {
+          final v = double.tryParse(s) ?? 0.0;
+          onChanged(v);
+        },
       ),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      onChanged: (s) {
-        final v = double.tryParse(s) ?? 0.0;
-        onChanged(v);
-      },
     );
   }
 }

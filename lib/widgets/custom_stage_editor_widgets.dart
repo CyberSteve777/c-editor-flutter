@@ -9,7 +9,7 @@ Color customStageAccent(BuildContext context) =>
 
 InputDecoration customStageInputDecoration(
   BuildContext context, {
-  required String labelText,
+  String? labelText,
 }) {
   final accent = customStageAccent(context);
   return editorInputDecoration(

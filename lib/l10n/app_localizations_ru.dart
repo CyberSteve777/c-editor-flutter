@@ -5385,6 +5385,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ztPerksAdd => 'Добавить бафф';
 
   @override
+  String get ztPerksAddTitle => 'Добавить баффы зомби';
+
+  @override
   String get ztPerksTypeAlreadyAssigned => 'Бафф этого типа уже назначен.';
 
   @override

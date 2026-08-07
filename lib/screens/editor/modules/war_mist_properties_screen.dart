@@ -102,11 +102,17 @@ class _WarMistPropertiesScreenState extends State<WarMistPropertiesScreen> {
 
   Color _fogColor(bool isDark) {
     if (isDark) {
-      return Color.lerp(Colors.white, Colors.grey, 0.45)!
-          .withValues(alpha: 0.72);
+      return Color.lerp(
+        Colors.white,
+        Colors.grey,
+        0.45,
+      )!.withValues(alpha: 0.72);
     }
-    return Color.lerp(const Color(0xFFBDBDBD), const Color(0xFF616161), 0.55)!
-        .withValues(alpha: 0.72);
+    return Color.lerp(
+      const Color(0xFFBDBDBD),
+      const Color(0xFF616161),
+      0.55,
+    )!.withValues(alpha: 0.72);
   }
 
   @override
@@ -190,20 +196,20 @@ class _WarMistPropertiesScreenState extends State<WarMistPropertiesScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _normValController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: l10n?.normalValueX ?? 'Normal value X',
-                        border: const OutlineInputBorder(),
+                    EditorResponsiveInputField(
+                      label: l10n?.normalValueX ?? 'Normal value X',
+                      builder: (context, decoration) => TextField(
+                        controller: _normValController,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            _data.normValX = n;
+                            _sync();
+                          }
+                        },
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          _data.normValX = n;
-                          _sync();
-                        }
-                      },
                     ),
                     const SizedBox(height: 16),
                     TextField(

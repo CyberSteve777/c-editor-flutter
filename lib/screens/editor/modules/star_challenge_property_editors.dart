@@ -17,6 +17,7 @@ import 'package:c_editor/screens/select/zombie_condition_selection_screen.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
+import 'package:c_editor/widgets/editor_components.dart';
 
 String _resolveZombieDisplayType(String typeName) {
   final alias = ZombiePropertiesRepository.getTypeNameByAlias(typeName);
@@ -83,15 +84,15 @@ class StarChallengeLabeledIntField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      key: ValueKey('$label-$value'),
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        key: ValueKey('$label-$value'),
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (s) => onChanged(int.tryParse(s) ?? value),
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (s) => onChanged(int.tryParse(s) ?? value),
     );
   }
 }
@@ -144,16 +145,19 @@ class _StarChallengeDescriptionFieldState
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: widget.label,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         alignLabelWithHint: true,
       ),
-      minLines: widget.minLines,
-      maxLines: widget.maxLines,
-      onChanged: widget.onChanged,
+      builder: (context, decoration) => TextField(
+        controller: _controller,
+        decoration: decoration,
+        minLines: widget.minLines,
+        maxLines: widget.maxLines,
+        onChanged: widget.onChanged,
+      ),
     );
   }
 }

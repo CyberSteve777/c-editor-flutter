@@ -83,7 +83,6 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -140,7 +139,7 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -162,22 +161,22 @@ ModuleAliasInputField(
                       ),
                     ),
                     const SizedBox(height: 12),
-                    TextField(
-                      controller: _startLocCtrl,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.startingWaveLocation ??
-                            'Starting wave location',
-                        border: const OutlineInputBorder(),
+                    EditorResponsiveInputField(
+                      label:
+                          l10n?.startingWaveLocation ??
+                          'Starting wave location',
+                      builder: (context, decoration) => TextField(
+                        controller: _startLocCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null) {
+                            _data.startingWaveLocation = n;
+                            _sync();
+                          }
+                        },
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null) {
-                          _data.startingWaveLocation = n;
-                          _sync();
-                        }
-                      },
                     ),
                   ],
                 ),

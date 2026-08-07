@@ -343,14 +343,14 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
   ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        initialValue: value,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
+      child: EditorResponsiveInputField(
+        label: label,
+        builder: (context, decoration) => TextFormField(
+          initialValue: value,
+          decoration: decoration,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          onChanged: onChanged,
         ),
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        onChanged: onChanged,
       ),
     );
   }

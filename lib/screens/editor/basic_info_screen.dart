@@ -97,16 +97,16 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
     required VoidCallback onChanged,
   }) {
     final focusColor = Theme.of(context).colorScheme.primary;
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      decoration: editorInputDecoration(
-        context,
-        labelText: label,
-        focusColor: focusColor,
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: editorInputDecoration(context, focusColor: focusColor),
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        decoration: decoration,
+        onChanged: (_) => onChanged(),
       ),
-      onChanged: (_) => onChanged(),
     );
   }
 

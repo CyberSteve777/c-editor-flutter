@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
@@ -588,12 +589,14 @@ class _EditorScreenState extends State<EditorScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n?.customStageAliasPromptTitle ?? 'Custom stage alias'),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n?.customStageAlias ?? 'Stage alias',
+        content: EditorResponsiveInputField(
+          label: l10n?.customStageAlias ?? 'Stage alias',
+          decoration: const InputDecoration(),
+          builder: (context, decoration) => TextField(
+            controller: controller,
+            decoration: decoration,
+            autofocus: true,
           ),
-          autofocus: true,
         ),
         actions: [
           TextButton(
@@ -955,10 +958,7 @@ class _EditorScreenState extends State<EditorScreen> {
           final cls = ReferenceRepository.instance.getObjClass(info.alias);
           if (cls != null) {
             existingObjClasses.add(
-              ModuleRegistry.getMetadataForAlias(
-                info.alias,
-                cls,
-              ).selectionKey,
+              ModuleRegistry.getMetadataForAlias(info.alias, cls).selectionKey,
             );
           }
         }
@@ -2850,8 +2850,7 @@ class _EditorScreenState extends State<EditorScreen> {
                         initialSelectedIds: initialSelectedIds ?? const [],
                         blockRealmExclusiveInChooser:
                             blockRealmExclusiveInChooser,
-                        blockHiddenPlantsInChooser:
-                            blockHiddenPlantsInChooser,
+                        blockHiddenPlantsInChooser: blockHiddenPlantsInChooser,
                         allowDuplicateSelection: allowDuplicateSelection,
                         onPlantSelected: (_) {},
                         onMultiPlantSelected: (ids) {
@@ -3446,7 +3445,9 @@ class _EditorScreenState extends State<EditorScreen> {
                             );
                             if (!mounted) return;
                           }
-                          WidgetsBinding.instance.addPostFrameCallback((_) async {
+                          WidgetsBinding.instance.addPostFrameCallback((
+                            _,
+                          ) async {
                             if (!context.mounted) return;
                             await Navigator.push(
                               context,
@@ -3483,7 +3484,9 @@ class _EditorScreenState extends State<EditorScreen> {
                       enabled: _ec.state.levelFile != null,
                       child: ListTile(
                         leading: const Icon(Icons.code),
-                        title: Text(l10n?.tooltipJsonViewer ?? 'View/edit JSON'),
+                        title: Text(
+                          l10n?.tooltipJsonViewer ?? 'View/edit JSON',
+                        ),
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
@@ -3529,7 +3532,9 @@ class _EditorScreenState extends State<EditorScreen> {
                     await _save();
                     if (!mounted) return;
                     if (hadChanges) {
-                      await Future<void>.delayed(const Duration(milliseconds: 32));
+                      await Future<void>.delayed(
+                        const Duration(milliseconds: 32),
+                      );
                       if (!mounted) return;
                     }
                     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -3585,145 +3590,154 @@ class _EditorScreenState extends State<EditorScreen> {
                             children: [
                               TabBar(
                                 isScrollable: shouldScroll,
-                                tabAlignment:
-                                    shouldScroll
-                                        ? TabAlignment.start
-                                        : TabAlignment.fill,
+                                tabAlignment: shouldScroll
+                                    ? TabAlignment.start
+                                    : TabAlignment.fill,
                                 dividerHeight: 0,
                                 indicatorSize: TabBarIndicatorSize.tab,
                                 tabs: _ec.state.availableTabs.map((t) {
-                              IconData icon;
-                              String label;
-                              switch (t) {
-                                case EditorTabType.settings:
-                                  icon = Icons.settings;
-                                  label = l10n?.settings ?? 'Settings';
-                                  break;
-                                case EditorTabType.timeline:
-                                  icon = Icons.timeline;
-                                  label = l10n?.timeline ?? 'Timeline';
-                                  break;
-                                case EditorTabType.waveGenerator:
-                                  icon = Icons.waves;
-                                  label =
-                                      l10n?.waveGeneratorTabLabel ?? 'Waves';
-                                  break;
-                                case EditorTabType.iZombie:
-                                  icon = Icons.groups;
-                                  label = l10n?.iZombie ?? 'I, Zombie';
-                                  break;
-                                case EditorTabType.vaseBreaker:
-                                  icon = Icons.inventory_2;
-                                  label = l10n?.vaseBreaker ?? 'Vase breaker';
-                                  break;
-                                case EditorTabType.zombossMech:
-                                  icon = Icons.warning_amber;
-                                  label =
-                                      l10n?.zombossMech ?? 'ZombossMech Battle';
-                                  break;
-                                case EditorTabType.zombossBattle:
-                                  icon = Icons.castle;
-                                  label =
-                                      l10n?.zombossBattle ?? 'Zomboss Battle';
-                                  break;
-                              }
-                              return Tab(text: label, icon: Icon(icon));
-                            }).toList(),
-                          ),
-                          Expanded(
-                            child: TabBarView(
-                              children: _ec.state.availableTabs.map<Widget>((
-                                t,
-                              ) {
-                                switch (t) {
-                                  case EditorTabType.settings:
-                                    return LevelSettingsTab(
-                                      levelDef: _ec.state.parsedData!.levelDef,
-                                      objectMap:
-                                          _ec.state.parsedData!.objectMap,
-                                      missingModules:
-                                          _calculateMissingModules(),
-                                      missingModuleWarnings:
-                                          _getMissingModuleWarnings(),
-                                      showGlacierModuleCompatibilityWarning:
-                                          _showGlacierModuleCompatibilityWarning(),
-                                      onEditBasicInfo: _handleEditBasicInfo,
-                                      onEditModule: _handleEditModule,
-                                      onRemoveModule: _handleRemoveModule,
-                                      onReorderModules: _handleReorderModules,
-                                      onNavigateToAddModule:
-                                          _handleNavigateToAddModule,
-                                    );
-                                  case EditorTabType.timeline:
-                                    return WaveTimelineTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      parsed: _ec.state.parsedData!,
-                                      onChanged: _markDirty,
-                                      onEditEvent: _handleEditEvent,
-                                      onAddEvent: _handleAddEvent,
-                                      onEditWaveManagerSettings:
-                                          _handleEditWaveManagerSettings,
-                                      onEditCustomZombie:
-                                          _handleEditCustomZombie,
-                                      onEditCustomFish: _handleEditCustomFish,
-                                      onOpenModule: _handleEditModule,
-                                      openWaveSheetNotifier:
-                                          _ec.openWaveSheetNotifier,
-                                      onCreateContainer: () =>
-                                          _handleCreateWaveContainer(),
-                                      onDeleteContainer: () =>
-                                          _handleDeleteWaveContainer(),
-                                    );
-                                  case EditorTabType.waveGenerator:
-                                    return WaveGeneratorTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      parsed: _ec.state.parsedData!,
-                                      onChanged: _markDirty,
-                                      onOpenModule: _handleEditModule,
-                                      onEditWaveGeneratorSettings:
-                                          _handleEditWaveGeneratorSettings,
-                                      onEditWave: _handleEditWaveGeneratorWave,
-                                    );
-                                  case EditorTabType.iZombie:
-                                    return IZombieTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                    );
-                                  case EditorTabType.vaseBreaker:
-                                    return VaseBreakerTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                      editorCubit: _ec,
-                                      onAddModule: (objClass) {
-                                        _addModule(
-                                          ModuleRegistry.getMetadata(objClass),
+                                  IconData icon;
+                                  String label;
+                                  switch (t) {
+                                    case EditorTabType.settings:
+                                      icon = Icons.settings;
+                                      label = l10n?.settings ?? 'Settings';
+                                      break;
+                                    case EditorTabType.timeline:
+                                      icon = Icons.timeline;
+                                      label = l10n?.timeline ?? 'Timeline';
+                                      break;
+                                    case EditorTabType.waveGenerator:
+                                      icon = Icons.waves;
+                                      label =
+                                          l10n?.waveGeneratorTabLabel ??
+                                          'Waves';
+                                      break;
+                                    case EditorTabType.iZombie:
+                                      icon = Icons.groups;
+                                      label = l10n?.iZombie ?? 'I, Zombie';
+                                      break;
+                                    case EditorTabType.vaseBreaker:
+                                      icon = Icons.inventory_2;
+                                      label =
+                                          l10n?.vaseBreaker ?? 'Vase breaker';
+                                      break;
+                                    case EditorTabType.zombossMech:
+                                      icon = Icons.warning_amber;
+                                      label =
+                                          l10n?.zombossMech ??
+                                          'ZombossMech Battle';
+                                      break;
+                                    case EditorTabType.zombossBattle:
+                                      icon = Icons.castle;
+                                      label =
+                                          l10n?.zombossBattle ??
+                                          'Zomboss Battle';
+                                      break;
+                                  }
+                                  return Tab(text: label, icon: Icon(icon));
+                                }).toList(),
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  children: _ec.state.availableTabs.map<Widget>((
+                                    t,
+                                  ) {
+                                    switch (t) {
+                                      case EditorTabType.settings:
+                                        return LevelSettingsTab(
+                                          levelDef:
+                                              _ec.state.parsedData!.levelDef,
+                                          objectMap:
+                                              _ec.state.parsedData!.objectMap,
+                                          missingModules:
+                                              _calculateMissingModules(),
+                                          missingModuleWarnings:
+                                              _getMissingModuleWarnings(),
+                                          showGlacierModuleCompatibilityWarning:
+                                              _showGlacierModuleCompatibilityWarning(),
+                                          onEditBasicInfo: _handleEditBasicInfo,
+                                          onEditModule: _handleEditModule,
+                                          onRemoveModule: _handleRemoveModule,
+                                          onReorderModules:
+                                              _handleReorderModules,
+                                          onNavigateToAddModule:
+                                              _handleNavigateToAddModule,
                                         );
-                                      },
-                                    );
-                                  case EditorTabType.zombossMech:
-                                    return ZombossMechBattleTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                      onOpenGlacierModule:
-                                          _openGlacierModuleSettings,
-                                    );
-                                  case EditorTabType.zombossBattle:
-                                    return ZombossBattleTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                    );
-                                }
-                              }).toList(),
-                            ),
-                          ),
-                        ],
+                                      case EditorTabType.timeline:
+                                        return WaveTimelineTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          parsed: _ec.state.parsedData!,
+                                          onChanged: _markDirty,
+                                          onEditEvent: _handleEditEvent,
+                                          onAddEvent: _handleAddEvent,
+                                          onEditWaveManagerSettings:
+                                              _handleEditWaveManagerSettings,
+                                          onEditCustomZombie:
+                                              _handleEditCustomZombie,
+                                          onEditCustomFish:
+                                              _handleEditCustomFish,
+                                          onOpenModule: _handleEditModule,
+                                          openWaveSheetNotifier:
+                                              _ec.openWaveSheetNotifier,
+                                          onCreateContainer: () =>
+                                              _handleCreateWaveContainer(),
+                                          onDeleteContainer: () =>
+                                              _handleDeleteWaveContainer(),
+                                        );
+                                      case EditorTabType.waveGenerator:
+                                        return WaveGeneratorTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          parsed: _ec.state.parsedData!,
+                                          onChanged: _markDirty,
+                                          onOpenModule: _handleEditModule,
+                                          onEditWaveGeneratorSettings:
+                                              _handleEditWaveGeneratorSettings,
+                                          onEditWave:
+                                              _handleEditWaveGeneratorWave,
+                                        );
+                                      case EditorTabType.iZombie:
+                                        return IZombieTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                        );
+                                      case EditorTabType.vaseBreaker:
+                                        return VaseBreakerTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                          editorCubit: _ec,
+                                          onAddModule: (objClass) {
+                                            _addModule(
+                                              ModuleRegistry.getMetadata(
+                                                objClass,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      case EditorTabType.zombossMech:
+                                        return ZombossMechBattleTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                          onOpenGlacierModule:
+                                              _openGlacierModuleSettings,
+                                        );
+                                      case EditorTabType.zombossBattle:
+                                        return ZombossBattleTab(
+                                          levelFile: _ec.state.levelFile!,
+                                          onChanged: _markDirty,
+                                        );
+                                    }
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          );
+                  ),
+                ),
+        );
         if (isDesktop) {
           body = Shortcuts(
             shortcuts: const {

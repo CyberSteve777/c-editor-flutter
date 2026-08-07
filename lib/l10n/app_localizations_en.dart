@@ -5424,6 +5424,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ztPerksAdd => 'Add';
 
   @override
+  String get ztPerksAddTitle => 'Add Zombie Perks';
+
+  @override
   String get ztPerksTypeAlreadyAssigned =>
       'A perk of this type is already assigned to this zombie.';
 

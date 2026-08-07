@@ -878,26 +878,29 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
               ),
               const SizedBox(height: 12),
               _buildSettingsWidth(
-                TextField(
-                  controller: _sequenceIntervalCtrl,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  decoration: InputDecoration(
-                    labelText:
-                        l10n?.tunnelDefendSequenceInterval ??
-                        'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
+                EditorResponsiveInputField(
+                  label:
+                      l10n?.tunnelDefendSequenceInterval ??
+                      'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
+                  decoration: const InputDecoration(
                     filled: true,
-                    border: const OutlineInputBorder(),
+                    border: OutlineInputBorder(),
                   ),
-                  onChanged: (value) {
-                    final parsed = double.tryParse(value);
-                    if (parsed != null && parsed >= 0) {
-                      setState(() => _data.tunnelSequenceInterval = parsed);
-                      _moduleObj.objData = _data.toJson();
-                      widget.onChanged();
-                    }
-                  },
+                  builder: (context, decoration) => TextField(
+                    controller: _sequenceIntervalCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: decoration,
+                    onChanged: (value) {
+                      final parsed = double.tryParse(value);
+                      if (parsed != null && parsed >= 0) {
+                        setState(() => _data.tunnelSequenceInterval = parsed);
+                        _moduleObj.objData = _data.toJson();
+                        widget.onChanged();
+                      }
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

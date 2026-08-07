@@ -98,7 +98,6 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -159,7 +158,7 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -266,19 +265,19 @@ ModuleAliasInputField(
   }) {
     return Tooltip(
       message: tooltip,
-      child: TextField(
-        controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
+      child: EditorResponsiveInputField(
+        label: label,
+        builder: (context, decoration) => TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: decoration,
+          onChanged: (v) {
+            final n = double.tryParse(v);
+            if (n != null && n >= 0) {
+              onValid(n);
+            }
+          },
         ),
-        onChanged: (v) {
-          final n = double.tryParse(v);
-          if (n != null && n >= 0) {
-            onValid(n);
-          }
-        },
       ),
     );
   }

@@ -189,7 +189,6 @@ class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -263,7 +262,7 @@ class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -591,7 +590,6 @@ class _PropagationDelayFieldState extends State<_PropagationDelayField> {
   Widget build(BuildContext context) {
     final base = editorInputDecoration(
       context,
-      labelText: widget.label,
       focusColor: widget.accentColor,
       isFocused: _focus.hasFocus,
     );
@@ -607,17 +605,21 @@ class _PropagationDelayFieldState extends State<_PropagationDelayField> {
         : base;
     return Tooltip(
       message: widget.tooltip.isNotEmpty ? widget.tooltip : widget.label,
-      child: TextField(
-        controller: _controller,
-        focusNode: _focus,
-        style: widget.compact ? Theme.of(context).textTheme.bodyMedium : null,
-        textAlign: widget.compact ? TextAlign.center : TextAlign.start,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      child: EditorResponsiveInputField(
+        label: widget.label,
         decoration: decoration,
-        onChanged: (s) {
-          final v = double.tryParse(s.trim());
-          if (v != null) widget.onChanged(v.clamp(0.0, 5.0));
-        },
+        builder: (context, decoration) => TextField(
+          controller: _controller,
+          focusNode: _focus,
+          style: widget.compact ? Theme.of(context).textTheme.bodyMedium : null,
+          textAlign: widget.compact ? TextAlign.center : TextAlign.start,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: decoration,
+          onChanged: (s) {
+            final v = double.tryParse(s.trim());
+            if (v != null) widget.onChanged(v.clamp(0.0, 5.0));
+          },
+        ),
       ),
     );
   }
@@ -713,19 +715,22 @@ class _CellEditDialogState extends State<_CellEditDialog> {
               const SizedBox(height: 12),
               Tooltip(
                 message: l10n?.powerTilePropagationDelayTooltip ?? '',
-                child: TextField(
-                  controller: _delayController,
-                  focusNode: _delayFocus,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
+                child: EditorResponsiveInputField(
+                  label:
+                      l10n?.powerTileDialogPropagationDelay ??
+                      'Propagation delay (seconds)',
                   decoration: editorInputDecoration(
                     context,
-                    labelText:
-                        l10n?.powerTileDialogPropagationDelay ??
-                        'Propagation delay (seconds)',
                     focusColor: accent,
                     isFocused: _delayFocus.hasFocus,
+                  ),
+                  builder: (context, decoration) => TextField(
+                    controller: _delayController,
+                    focusNode: _delayFocus,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: decoration,
                   ),
                 ),
               ),

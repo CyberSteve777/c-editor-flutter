@@ -266,70 +266,77 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        DropdownButtonFormField<int?>(
-                          isExpanded: true,
-                          initialValue:
-                              [null, 1, 2, 3].contains(currentArray.typeIndex)
-                              ? currentArray.typeIndex
-                              : null,
-                          decoration: InputDecoration(
-                            labelText: l10n?.typeIndex ?? 'Type index',
-                            border: const OutlineInputBorder(),
-                          ),
-                          items: [
-                            DropdownMenuItem<int?>(
-                              value: null,
-                              child: Text(l10n?.noStyle ?? 'No style'),
-                            ),
-                            ...([1, 2, 3].map(
-                              (i) => DropdownMenuItem<int?>(
-                                value: i,
-                                child: Text(l10n?.styleN(i) ?? 'Style $i'),
+                        EditorResponsiveInputField(
+                          label: l10n?.typeIndex ?? 'Type index',
+                          builder: (context, decoration) =>
+                              DropdownButtonFormField<int?>(
+                                isExpanded: true,
+                                initialValue:
+                                    [
+                                      null,
+                                      1,
+                                      2,
+                                      3,
+                                    ].contains(currentArray.typeIndex)
+                                    ? currentArray.typeIndex
+                                    : null,
+                                decoration: decoration,
+                                items: [
+                                  DropdownMenuItem<int?>(
+                                    value: null,
+                                    child: Text(l10n?.noStyle ?? 'No style'),
+                                  ),
+                                  ...([1, 2, 3].map(
+                                    (i) => DropdownMenuItem<int?>(
+                                      value: i,
+                                      child: Text(
+                                        l10n?.styleN(i) ?? 'Style $i',
+                                      ),
+                                    ),
+                                  )),
+                                ],
+                                onChanged: (v) {
+                                  _updateArray(
+                                    _selectedIndex,
+                                    MagicMirrorArrayData(
+                                      mirror1GridX: currentArray.mirror1GridX,
+                                      mirror1GridY: currentArray.mirror1GridY,
+                                      mirror2GridX: currentArray.mirror2GridX,
+                                      mirror2GridY: currentArray.mirror2GridY,
+                                      typeIndex: v,
+                                      mirrorExistDuration:
+                                          currentArray.mirrorExistDuration,
+                                    ),
+                                  );
+                                },
                               ),
-                            )),
-                          ],
-                          onChanged: (v) {
-                            _updateArray(
-                              _selectedIndex,
-                              MagicMirrorArrayData(
-                                mirror1GridX: currentArray.mirror1GridX,
-                                mirror1GridY: currentArray.mirror1GridY,
-                                mirror2GridX: currentArray.mirror2GridX,
-                                mirror2GridY: currentArray.mirror2GridY,
-                                typeIndex: v,
-                                mirrorExistDuration:
-                                    currentArray.mirrorExistDuration,
-                              ),
-                            );
-                          },
                         ),
                         const SizedBox(height: 12),
-                        TextFormField(
-                          initialValue: currentArray.mirrorExistDuration
-                              .toString(),
-                          decoration: InputDecoration(
-                            labelText:
-                                l10n?.existDurationSec ??
-                                'Exist duration (sec)',
-                            border: const OutlineInputBorder(),
+                        EditorResponsiveInputField(
+                          label:
+                              l10n?.existDurationSec ?? 'Exist duration (sec)',
+                          builder: (context, decoration) => TextFormField(
+                            initialValue: currentArray.mirrorExistDuration
+                                .toString(),
+                            decoration: decoration,
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              final n = int.tryParse(v);
+                              if (n != null) {
+                                _updateArray(
+                                  _selectedIndex,
+                                  MagicMirrorArrayData(
+                                    mirror1GridX: currentArray.mirror1GridX,
+                                    mirror1GridY: currentArray.mirror1GridY,
+                                    mirror2GridX: currentArray.mirror2GridX,
+                                    mirror2GridY: currentArray.mirror2GridY,
+                                    typeIndex: currentArray.typeIndex,
+                                    mirrorExistDuration: n,
+                                  ),
+                                );
+                              }
+                            },
                           ),
-                          keyboardType: TextInputType.number,
-                          onChanged: (v) {
-                            final n = int.tryParse(v);
-                            if (n != null) {
-                              _updateArray(
-                                _selectedIndex,
-                                MagicMirrorArrayData(
-                                  mirror1GridX: currentArray.mirror1GridX,
-                                  mirror1GridY: currentArray.mirror1GridY,
-                                  mirror2GridX: currentArray.mirror2GridX,
-                                  mirror2GridY: currentArray.mirror2GridY,
-                                  typeIndex: currentArray.typeIndex,
-                                  mirrorExistDuration: n,
-                                ),
-                              );
-                            }
-                          },
                         ),
                         const SizedBox(height: 12),
                         SegmentedButton<bool>(

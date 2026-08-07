@@ -378,14 +378,14 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
     required String label,
     required ValueChanged<String> onChanged,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        decoration: decoration,
+        onChanged: onChanged,
       ),
-      onChanged: onChanged,
     );
   }
 }

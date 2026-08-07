@@ -142,7 +142,7 @@ class ZombieZtalematePerksEditor extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
                       child: Text(
-                        l10n?.ztPerksAdd ?? 'Add perk',
+                        l10n?.ztPerksAddTitle ?? 'Add Zombie Perks',
                         style: theme.textTheme.headlineSmall,
                       ),
                     ),

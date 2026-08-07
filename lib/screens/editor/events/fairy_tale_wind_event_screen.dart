@@ -165,25 +165,25 @@ class _FairyTaleWindEventScreenState extends State<FairyTaleWindEventScreen> {
                         },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.velocityScale.toString(),
-                        decoration: const InputDecoration(
-                          labelText: 'Velocity scale (VelocityScale)',
-                          border: OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label: 'Velocity scale (VelocityScale)',
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.velocityScale.toString(),
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final n = double.tryParse(v);
+                            if (n != null) {
+                              _data = FairyTaleWindWaveActionData(
+                                duration: _data.duration,
+                                velocityScale: n,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        onChanged: (v) {
-                          final n = double.tryParse(v);
-                          if (n != null) {
-                            _data = FairyTaleWindWaveActionData(
-                              duration: _data.duration,
-                              velocityScale: n,
-                            );
-                            _sync();
-                          }
-                        },
                       ),
                     ],
                   ),

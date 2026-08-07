@@ -196,56 +196,55 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _flagIntervalController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText:
-                    l10n?.flagInterval ?? 'Flag interval (FlagWaveInterval)',
-                border: const OutlineInputBorder(),
+            EditorResponsiveInputField(
+              label: l10n?.flagInterval ?? 'Flag interval (FlagWaveInterval)',
+              builder: (context, decoration) => TextField(
+                controller: _flagIntervalController,
+                keyboardType: TextInputType.number,
+                decoration: decoration,
+                onChanged: _updateFlagInterval,
               ),
-              onChanged: _updateFlagInterval,
             ),
             const SizedBox(height: 16),
             EditorResponsiveFieldRow(
               children: [
-                TextField(
-                  controller: _maxHealthController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+                EditorResponsiveInputField(
+                  label:
+                      l10n?.waveManagerMaxHealthThreshold ??
+                      'Max health threshold',
+                  builder: (context, decoration) => TextField(
+                    controller: _maxHealthController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: decoration,
+                    onChanged: (v) {
+                      final n = double.tryParse(v);
+                      if (n != null && n >= 0 && n <= 1) {
+                        _wm.maxNextWaveHealthPercentage = n;
+                        _save();
+                      }
+                    },
                   ),
-                  decoration: InputDecoration(
-                    labelText:
-                        l10n?.waveManagerMaxHealthThreshold ??
-                        'Max health threshold',
-                    border: const OutlineInputBorder(),
-                  ),
-                  onChanged: (v) {
-                    final n = double.tryParse(v);
-                    if (n != null && n >= 0 && n <= 1) {
-                      _wm.maxNextWaveHealthPercentage = n;
-                      _save();
-                    }
-                  },
                 ),
-                TextField(
-                  controller: _minHealthController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+                EditorResponsiveInputField(
+                  label:
+                      l10n?.waveManagerMinHealthThreshold ??
+                      'Min health threshold',
+                  builder: (context, decoration) => TextField(
+                    controller: _minHealthController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: decoration,
+                    onChanged: (v) {
+                      final n = double.tryParse(v);
+                      if (n != null && n >= 0 && n <= 1) {
+                        _wm.minNextWaveHealthPercentage = n;
+                        _save();
+                      }
+                    },
                   ),
-                  decoration: InputDecoration(
-                    labelText:
-                        l10n?.waveManagerMinHealthThreshold ??
-                        'Min health threshold',
-                    border: const OutlineInputBorder(),
-                  ),
-                  onChanged: (v) {
-                    final n = double.tryParse(v);
-                    if (n != null && n >= 0 && n <= 1) {
-                      _wm.minNextWaveHealthPercentage = n;
-                      _save();
-                    }
-                  },
                 ),
               ],
             ),
@@ -270,28 +269,27 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
             const SizedBox(height: 12),
             EditorResponsiveFieldRow(
               children: [
-                TextField(
-                  controller: _firstWaveController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: widget.hasConveyor
-                        ? (l10n?.waveManagerFirstWaveDelayConveyor ??
-                              'First wave delay (conveyor)')
-                        : (l10n?.waveManagerFirstWaveDelayNormal ??
-                              'First wave delay (normal)'),
-                    border: const OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: widget.hasConveyor
+                      ? (l10n?.waveManagerFirstWaveDelayConveyor ??
+                            'First wave delay (conveyor)')
+                      : (l10n?.waveManagerFirstWaveDelayNormal ??
+                            'First wave delay (normal)'),
+                  builder: (context, decoration) => TextField(
+                    controller: _firstWaveController,
+                    keyboardType: TextInputType.number,
+                    decoration: decoration,
+                    onChanged: (_) => _updateTimeSettings(),
                   ),
-                  onChanged: (_) => _updateTimeSettings(),
                 ),
-                TextField(
-                  controller: _hugeWaveController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText:
-                        l10n?.waveManagerFlagWaveDelay ?? 'Flag wave delay',
-                    border: const OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: l10n?.waveManagerFlagWaveDelay ?? 'Flag wave delay',
+                  builder: (context, decoration) => TextField(
+                    controller: _hugeWaveController,
+                    keyboardType: TextInputType.number,
+                    decoration: decoration,
+                    onChanged: (_) => _updateTimeSettings(),
                   ),
-                  onChanged: (_) => _updateTimeSettings(),
                 ),
               ],
             ),

@@ -791,48 +791,47 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
             const SizedBox(height: 12),
             EditorResponsiveFieldRow(
               children: [
-                TextFormField(
-                  initialValue: d.columnStart.toString(),
-                  decoration: InputDecoration(
-                    labelText:
-                        l10n?.columnStartLabel ?? 'Start [ColumnStart]',
-                    border: OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: l10n?.columnStartLabel ?? 'Start [ColumnStart]',
+                  builder: (context, decoration) => TextFormField(
+                    initialValue: d.columnStart.toString(),
+                    decoration: decoration,
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null) {
+                        _data = SpawnZombiesFromGroundData(
+                          columnStart: n,
+                          columnEnd: d.columnEnd,
+                          additionalPlantFood: d.additionalPlantFood,
+                          spawnPlantName: d.spawnPlantName,
+                          zombies: d.zombies,
+                        );
+                        _sync();
+                      }
+                    },
                   ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data = SpawnZombiesFromGroundData(
-                        columnStart: n,
-                        columnEnd: d.columnEnd,
-                        additionalPlantFood: d.additionalPlantFood,
-                        spawnPlantName: d.spawnPlantName,
-                        zombies: d.zombies,
-                      );
-                      _sync();
-                    }
-                  },
                 ),
-                TextFormField(
-                  initialValue: d.columnEnd.toString(),
-                  decoration: InputDecoration(
-                    labelText: l10n?.columnEndLabel ?? 'End [ColumnEnd]',
-                    border: OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: l10n?.columnEndLabel ?? 'End [ColumnEnd]',
+                  builder: (context, decoration) => TextFormField(
+                    initialValue: d.columnEnd.toString(),
+                    decoration: decoration,
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null) {
+                        _data = SpawnZombiesFromGroundData(
+                          columnStart: d.columnStart,
+                          columnEnd: n,
+                          additionalPlantFood: d.additionalPlantFood,
+                          spawnPlantName: d.spawnPlantName,
+                          zombies: d.zombies,
+                        );
+                        _sync();
+                      }
+                    },
                   ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data = SpawnZombiesFromGroundData(
-                        columnStart: d.columnStart,
-                        columnEnd: n,
-                        additionalPlantFood: d.additionalPlantFood,
-                        spawnPlantName: d.spawnPlantName,
-                        zombies: d.zombies,
-                      );
-                      _sync();
-                    }
-                  },
                 ),
               ],
             ),
@@ -859,17 +858,17 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
               children: [
                 Icon(Icons.music_note, color: theme.colorScheme.secondary),
                 const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      l10n?.backgroundMusicLevelJam ??
-                          'Background music (LevelJam)',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                Expanded(
+                  child: Text(
+                    l10n?.backgroundMusicLevelJam ??
+                        'Background music (LevelJam)',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
               ],
             ),
             const SizedBox(height: 12),

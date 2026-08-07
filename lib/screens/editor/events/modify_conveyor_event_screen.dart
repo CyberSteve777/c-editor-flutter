@@ -754,15 +754,18 @@ class _McNumField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         isDense: true,
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (s) => onChanged(int.tryParse(s) ?? 0),
+      builder: (context, decoration) => TextFormField(
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (s) => onChanged(int.tryParse(s) ?? 0),
+      ),
     );
   }
 }
@@ -780,15 +783,18 @@ class _McDoubleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         isDense: true,
       ),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      onChanged: (s) => onChanged(double.tryParse(s) ?? 0.0),
+      builder: (context, decoration) => TextFormField(
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: (s) => onChanged(double.tryParse(s) ?? 0.0),
+      ),
     );
   }
 }

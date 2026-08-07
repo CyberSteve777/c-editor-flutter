@@ -1849,6 +1849,7 @@
   "ztPerksSectionHint": "Каждый тип баффа можно назначить зомби только один раз.",
   "ztPerksNone": "Баффы не назначены.",
   "ztPerksAdd": "Добавить бафф",
+  "ztPerksAddTitle": "Добавить баффы зомби",
   "ztPerksTypeAlreadyAssigned": "Бафф этого типа уже назначен.",
   "eventHelpJitteredZtPerks": "Назначайте баффы Ztalemate Escape отдельным зомби. Они сохраняются в массиве Titles. На одного зомби можно назначить только один бафф каждого типа (например, Crystal I и Crystal II вместе нельзя).",
   "ztPerkCategoryCrystal": "Кристалл",

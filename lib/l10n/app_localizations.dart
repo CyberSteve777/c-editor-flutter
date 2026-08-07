@@ -9718,6 +9718,12 @@ abstract class AppLocalizations {
   /// **'Add'**
   String get ztPerksAdd;
 
+  /// No description provided for @ztPerksAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Zombie Perks'**
+  String get ztPerksAddTitle;
+
   /// No description provided for @ztPerksTypeAlreadyAssigned.
   ///
   /// In en, this message translates to:

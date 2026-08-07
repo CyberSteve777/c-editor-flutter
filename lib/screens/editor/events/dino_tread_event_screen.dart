@@ -351,18 +351,21 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
     required int max,
     required ValueChanged<int> onChanged,
   }) {
-    return TextFormField(
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         isDense: true,
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (v) {
-        final n = int.tryParse(v);
-        if (n != null && n >= 0 && n <= max) onChanged(n);
-      },
+      builder: (context, decoration) => TextFormField(
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (v) {
+          final n = int.tryParse(v);
+          if (n != null && n >= 0 && n <= max) onChanged(n);
+        },
+      ),
     );
   }
 }

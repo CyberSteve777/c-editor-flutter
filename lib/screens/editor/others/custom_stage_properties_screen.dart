@@ -14,6 +14,7 @@ import 'package:c_editor/screens/select/stage_resource_group_import_screen.dart'
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/stage_resource_group_list_tile.dart';
 import 'package:c_editor/widgets/stage_zombie_type_picker_row.dart';
 
@@ -674,25 +675,26 @@ class _CustomStagePropertiesScreenState
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: TextField(
-                    controller: _aliasCtrl,
-                    decoration: customStageInputDecoration(
-                      context,
-                      labelText: l10n?.customStageAlias ?? 'Stage alias',
+                  child: EditorResponsiveInputField(
+                    label: l10n?.customStageAlias ?? 'Stage alias',
+                    decoration: customStageInputDecoration(context),
+                    builder: (context, decoration) => TextField(
+                      controller: _aliasCtrl,
+                      decoration: decoration,
+                      onChanged: (value) {
+                        final trimmed = value.trim();
+                        if (trimmed.isEmpty ||
+                            widget.levelFile.objects.any(
+                              (o) =>
+                                  o != _stageObj &&
+                                  o.aliases?.contains(trimmed) == true,
+                            )) {
+                          return;
+                        }
+                        _alias = trimmed;
+                        _sync(renameAlias: true);
+                      },
                     ),
-                    onChanged: (value) {
-                      final trimmed = value.trim();
-                      if (trimmed.isEmpty ||
-                          widget.levelFile.objects.any(
-                            (o) =>
-                                o != _stageObj &&
-                                o.aliases?.contains(trimmed) == true,
-                          )) {
-                        return;
-                      }
-                      _alias = trimmed;
-                      _sync(renameAlias: true);
-                    },
                   ),
                 ),
               ),
@@ -721,9 +723,8 @@ class _CustomStagePropertiesScreenState
               const SizedBox(height: 8),
               Card(
                 child: SwitchListTile(
-                  title: _ellipsisText(
+                  title: Text(
                     l10n?.customStageEnableAmbient ?? 'Enable ambient',
-                    maxLines: 2,
                   ),
                   value: _ambientEnabled,
                   activeThumbColor: accent,
@@ -741,36 +742,39 @@ class _CustomStagePropertiesScreenState
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      initialValue:
-                          CustomStageLevelUtils.ambientAudioOptions.contains(
-                            _objdata['AmbientAudioSuffix'],
-                          )
-                          ? _objdata['AmbientAudioSuffix'] as String
-                          : CustomStageLevelUtils.ambientAudioOptions.first,
-                      decoration: customStageInputDecoration(
-                        context,
-                        labelText: _fieldLabel(context, 'AmbientAudioSuffix'),
-                      ),
-                      items: CustomStageLevelUtils.ambientAudioOptions
-                          .map(
-                            (code) => DropdownMenuItem(
-                              value: code,
-                              child: _ellipsisText(
-                                ResourceNames.lookup(
-                                  context,
-                                  'ambientAudio_$code',
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) {
-                        if (value == null) return;
-                        _objdata['AmbientAudioSuffix'] = value;
-                        _sync();
-                      },
+                    child: EditorResponsiveInputField(
+                      label: _fieldLabel(context, 'AmbientAudioSuffix'),
+                      decoration: customStageInputDecoration(context),
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            initialValue:
+                                CustomStageLevelUtils.ambientAudioOptions
+                                    .contains(_objdata['AmbientAudioSuffix'])
+                                ? _objdata['AmbientAudioSuffix'] as String
+                                : CustomStageLevelUtils
+                                      .ambientAudioOptions
+                                      .first,
+                            decoration: decoration,
+                            items: CustomStageLevelUtils.ambientAudioOptions
+                                .map(
+                                  (code) => DropdownMenuItem(
+                                    value: code,
+                                    child: _ellipsisText(
+                                      ResourceNames.lookup(
+                                        context,
+                                        'ambientAudio_$code',
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              _objdata['AmbientAudioSuffix'] = value;
+                              _sync();
+                            },
+                          ),
                     ),
                   ),
                 ),
@@ -779,37 +783,40 @@ class _CustomStagePropertiesScreenState
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: DropdownButtonFormField<_DisabledStreetCellsMode>(
-                    isExpanded: true,
-                    initialValue: _disabledCellsMode,
-                    decoration: customStageInputDecoration(
-                      context,
-                      labelText: _fieldLabel(context, 'DisabledStreetCells'),
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                        value: _DisabledStreetCellsMode.empty,
-                        child: _ellipsisText(
-                          l10n?.customStageDisabledCellsEmpty ?? 'Empty',
+                  child: EditorResponsiveInputField(
+                    label: _fieldLabel(context, 'DisabledStreetCells'),
+                    decoration: customStageInputDecoration(context),
+                    builder: (context, decoration) =>
+                        DropdownButtonFormField<_DisabledStreetCellsMode>(
+                          isExpanded: true,
+                          initialValue: _disabledCellsMode,
+                          decoration: decoration,
+                          items: [
+                            DropdownMenuItem(
+                              value: _DisabledStreetCellsMode.empty,
+                              child: _ellipsisText(
+                                l10n?.customStageDisabledCellsEmpty ?? 'Empty',
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: _DisabledStreetCellsMode.defaultCells,
+                              child: _ellipsisText(
+                                l10n?.customStageDisabledCellsDefault ??
+                                    'Default',
+                              ),
+                            ),
+                          ],
+                          onChanged: (mode) {
+                            if (mode == null) return;
+                            CustomStageLevelUtils.applyDisabledStreetCellsMode(
+                              _objdata,
+                              objclass: _objclass,
+                              useDefault:
+                                  mode == _DisabledStreetCellsMode.defaultCells,
+                            );
+                            _sync();
+                          },
                         ),
-                      ),
-                      DropdownMenuItem(
-                        value: _DisabledStreetCellsMode.defaultCells,
-                        child: _ellipsisText(
-                          l10n?.customStageDisabledCellsDefault ?? 'Default',
-                        ),
-                      ),
-                    ],
-                    onChanged: (mode) {
-                      if (mode == null) return;
-                      CustomStageLevelUtils.applyDisabledStreetCellsMode(
-                        _objdata,
-                        objclass: _objclass,
-                        useDefault:
-                            mode == _DisabledStreetCellsMode.defaultCells,
-                      );
-                      _sync();
-                    },
                   ),
                 ),
               ),
@@ -822,25 +829,26 @@ class _CustomStagePropertiesScreenState
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: TextField(
-                        controller: _linkedAlphaCtrl,
-                        decoration: customStageInputDecoration(
+                      child: EditorResponsiveInputField(
+                        label: _fieldLabel(
                           context,
-                          labelText: _fieldLabel(
-                            context,
-                            'LinkedTilePropagationAlpha',
+                          'LinkedTilePropagationAlpha',
+                        ),
+                        decoration: customStageInputDecoration(context),
+                        builder: (context, decoration) => TextField(
+                          controller: _linkedAlphaCtrl,
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
                           ),
+                          onChanged: (value) {
+                            final parsed = double.tryParse(value);
+                            if (parsed != null) {
+                              _objdata['LinkedTilePropagationAlpha'] = parsed;
+                              _sync();
+                            }
+                          },
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        onChanged: (value) {
-                          final parsed = double.tryParse(value);
-                          if (parsed != null) {
-                            _objdata['LinkedTilePropagationAlpha'] = parsed;
-                            _sync();
-                          }
-                        },
                       ),
                     ),
                   ),
@@ -849,10 +857,9 @@ class _CustomStagePropertiesScreenState
                     const SizedBox(height: 8),
                   Card(
                     child: SwitchListTile(
-                      title: _ellipsisText(
+                      title: Text(
                         l10n?.customStageBeachMinigame ??
                             'Use minigame version',
-                        maxLines: 2,
                       ),
                       value: CustomStageLevelUtils.isBeachMinigameEnabled(
                         _objdata,
@@ -872,9 +879,8 @@ class _CustomStagePropertiesScreenState
                   const SizedBox(height: 8),
                   Card(
                     child: SwitchListTile(
-                      title: _ellipsisText(
+                      title: Text(
                         l10n?.customStageEnableSubmarine ?? 'Enable submarine',
-                        maxLines: 2,
                       ),
                       value: CustomStageLevelUtils.isSubmarineEnabled(_objdata),
                       activeThumbColor: accent,
@@ -892,27 +898,28 @@ class _CustomStagePropertiesScreenState
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(12),
-                        child: TextField(
-                          controller: _submarineHpCtrl,
-                          decoration: customStageInputDecoration(
-                            context,
-                            labelText:
-                                l10n?.customStageSubmarineHitpoints ??
-                                'Submarine hitpoints',
+                        child: EditorResponsiveInputField(
+                          label:
+                              l10n?.customStageSubmarineHitpoints ??
+                              'Submarine hitpoints',
+                          decoration: customStageInputDecoration(context),
+                          builder: (context, decoration) => TextField(
+                            controller: _submarineHpCtrl,
+                            decoration: decoration,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            onChanged: (value) {
+                              final hp = double.tryParse(value);
+                              if (hp == null) return;
+                              CustomStageLevelUtils.applySubmarineEnabled(
+                                _objdata,
+                                enabled: true,
+                                hitpoints: hp,
+                              );
+                              _sync();
+                            },
                           ),
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          onChanged: (value) {
-                            final hp = double.tryParse(value);
-                            if (hp == null) return;
-                            CustomStageLevelUtils.applySubmarineEnabled(
-                              _objdata,
-                              enabled: true,
-                              hitpoints: hp,
-                            );
-                            _sync();
-                          },
                         ),
                       ),
                     ),
@@ -923,10 +930,7 @@ class _CustomStagePropertiesScreenState
                   const SizedBox(height: 8),
                   Card(
                     child: SwitchListTile(
-                      title: _ellipsisText(
-                        _fieldLabel(context, 'HasGridItemAirShip'),
-                        maxLines: 2,
-                      ),
+                      title: Text(_fieldLabel(context, 'HasGridItemAirShip')),
                       value: CustomStageLevelUtils.readBool(
                         _objdata,
                         'HasGridItemAirShip',
@@ -947,10 +951,7 @@ class _CustomStagePropertiesScreenState
                   )) ...[
                     Card(
                       child: SwitchListTile(
-                        title: _ellipsisText(
-                          _fieldLabel(context, 'HasCannon'),
-                          maxLines: 2,
-                        ),
+                        title: Text(_fieldLabel(context, 'HasCannon')),
                         value: CustomStageLevelUtils.readBool(
                           _objdata,
                           'HasCannon',
@@ -985,27 +986,30 @@ class _CustomStagePropertiesScreenState
                                       .skycityCannonFieldNames)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
-                                  child: TextField(
-                                    controller: _skycityCtrls.putIfAbsent(
-                                      key,
-                                      () => TextEditingController(
-                                        text: '${_objdata[key] ?? ''}',
-                                      ),
-                                    ),
+                                  child: EditorResponsiveInputField(
+                                    label: _fieldLabel(context, key),
                                     decoration: customStageInputDecoration(
                                       context,
-                                      labelText: _fieldLabel(context, key),
                                     ),
-                                    keyboardType:
-                                        const TextInputType.numberWithOptions(
-                                          decimal: true,
+                                    builder: (context, decoration) => TextField(
+                                      controller: _skycityCtrls.putIfAbsent(
+                                        key,
+                                        () => TextEditingController(
+                                          text: '${_objdata[key] ?? ''}',
                                         ),
-                                    onChanged: (value) {
-                                      final parsed = num.tryParse(value);
-                                      if (parsed == null) return;
-                                      _objdata[key] = parsed;
-                                      _sync();
-                                    },
+                                      ),
+                                      decoration: decoration,
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                            decimal: true,
+                                          ),
+                                      onChanged: (value) {
+                                        final parsed = num.tryParse(value);
+                                        if (parsed == null) return;
+                                        _objdata[key] = parsed;
+                                        _sync();
+                                      },
+                                    ),
                                   ),
                                 ),
                             ],

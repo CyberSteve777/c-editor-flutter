@@ -5181,6 +5181,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ztPerksAdd => '添加';
 
   @override
+  String get ztPerksAddTitle => '为僵尸添加词条';
+
+  @override
   String get ztPerksTypeAlreadyAssigned => '该僵尸已拥有同类型词条，请选择其他词条。';
 
   @override
