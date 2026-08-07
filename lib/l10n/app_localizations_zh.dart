@@ -179,6 +179,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toggleTheme => '切换主题';
 
   @override
+<<<<<<< HEAD
   String get switchFolder => '切换关卡库';
 
   @override
@@ -212,6 +213,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noLibrariesFound => '暂无已添加的库';
+=======
+  String get switchFolder => '切换文件夹';
+>>>>>>> upstream/dev
 
   @override
   String get clearCache => '释放缓存';

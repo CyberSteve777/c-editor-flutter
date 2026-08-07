@@ -427,6 +427,7 @@ abstract class AppLocalizations {
   /// No description provided for @switchFolder.
   ///
   /// In en, this message translates to:
+<<<<<<< HEAD
   /// **'Switch level library'**
   String get switchFolder;
 
@@ -490,6 +491,11 @@ abstract class AppLocalizations {
   /// **'No libraries added yet'**
   String get noLibrariesFound;
 
+=======
+  /// **'Switch folder'**
+  String get switchFolder;
+
+>>>>>>> upstream/dev
   /// No description provided for @clearCache.
   ///
   /// In en, this message translates to:

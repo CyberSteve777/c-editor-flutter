@@ -180,6 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Toggle theme';
 
   @override
+<<<<<<< HEAD
   String get switchFolder => 'Switch level library';
 
   @override
@@ -213,6 +214,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noLibrariesFound => 'No libraries added yet';
+=======
+  String get switchFolder => 'Switch folder';
+>>>>>>> upstream/dev
 
   @override
   String get clearCache => 'Clear cache';

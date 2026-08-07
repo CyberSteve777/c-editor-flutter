@@ -60,22 +60,7 @@
   "about": "About",
   "refresh": "Refresh",
   "toggleTheme": "Toggle theme",
-  "switchFolder": "Switch level library",
-  "manageLibraries": "Manage Level Libraries",
-  "addLibrary": "Add library",
-  "libraryName": "Library name",
-  "libraryPath": "Path",
-  "deleteLibraryTitle": "Remove library?",
-  "deleteLibraryMessage": "Are you sure you want to remove \"{name}\" from the library list? This will NOT delete any files on your disk.",
-  "@deleteLibraryMessage": {
-    "placeholders": {
-      "name": { "type": "String" }
-    }
-  },
-  "defaultLibraryName": "Default library",
-  "renameLibrary": "Rename library",
-  "activeLibrary": "Active",
-  "noLibrariesFound": "No libraries added yet",
+  "switchFolder": "Switch folder",
   "clearCache": "Clear cache",
   "ultra": "Ultra",
   "uiSize": "UI size",
