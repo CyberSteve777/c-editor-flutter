@@ -61,22 +61,7 @@
   "about": "关于",
   "refresh": "刷新",
   "toggleTheme": "切换主题",
-  "switchFolder": "管理库",
-  "manageLibraries": "管理库",
-  "addLibrary": "添加库",
-  "libraryName": "库名称",
-  "libraryPath": "路径",
-  "deleteLibraryTitle": "确认删除库?",
-  "deleteLibraryMessage": "您确定要从库列表中移除 \"{name}\" 吗? 此操作不会删除磁盘上的任何文件。",
-  "@deleteLibraryMessage": {
-    "placeholders": {
-      "name": { "type": "String" }
-    }
-  },
-  "defaultLibraryName": "默认库",
-  "renameLibrary": "重命名库",
-  "activeLibrary": "活动",
-  "noLibrariesFound": "暂无已添加的库",
+  "switchFolder": "切换文件夹",
   "clearCache": "释放缓存",
   "uiSize": "界面大小",
   "aboutSoftware": "关于软件",

@@ -180,39 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Toggle theme';
 
   @override
-  String get switchFolder => 'Library manager';
-
-  @override
-  String get manageLibraries => 'Manage libraries';
-
-  @override
-  String get addLibrary => 'Add library';
-
-  @override
-  String get libraryName => 'Library name';
-
-  @override
-  String get libraryPath => 'Path';
-
-  @override
-  String get deleteLibraryTitle => 'Remove library?';
-
-  @override
-  String deleteLibraryMessage(String name) {
-    return 'Are you sure you want to remove \"$name\" from the library list? This will NOT delete any files on your disk.';
-  }
-
-  @override
-  String get defaultLibraryName => 'Default library';
-
-  @override
-  String get renameLibrary => 'Rename library';
-
-  @override
-  String get activeLibrary => 'Active';
-
-  @override
-  String get noLibrariesFound => 'No libraries added yet';
+  String get switchFolder => 'Switch folder';
 
   @override
   String get clearCache => 'Clear cache';

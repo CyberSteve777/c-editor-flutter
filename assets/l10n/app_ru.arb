@@ -61,22 +61,7 @@
   "about": "О программе",
   "refresh": "Обновить",
   "toggleTheme": "Переключить тему",
-  "switchFolder": "Управление папками",
-  "manageLibraries": "Управление папками",
-  "addLibrary": "Добавить папку",
-  "libraryName": "Название папки",
-  "libraryPath": "Путь",
-  "deleteLibraryTitle": "Удалить из списка?",
-  "deleteLibraryMessage": "Вы уверены, что хотите убрать «{name}» из списка? Сами файлы на диске удалены НЕ будут.",
-  "@deleteLibraryMessage": {
-    "placeholders": {
-      "name": { "type": "String" }
-    }
-  },
-  "defaultLibraryName": "Основная папка",
-  "renameLibrary": "Переименовать",
-  "activeLibrary": "Активна",
-  "noLibrariesFound": "Список папок пуст",
+  "switchFolder": "Сменить папку",
   "ultra": "Ультра",
   "clearCache": "Очистить кэш",
   "uiSize": "Размер интерфейса",

@@ -182,39 +182,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get toggleTheme => 'Переключить тему';
 
   @override
-  String get switchFolder => 'Управление папками';
-
-  @override
-  String get manageLibraries => 'Управление папками';
-
-  @override
-  String get addLibrary => 'Добавить папку';
-
-  @override
-  String get libraryName => 'Название папки';
-
-  @override
-  String get libraryPath => 'Путь';
-
-  @override
-  String get deleteLibraryTitle => 'Удалить из списка?';
-
-  @override
-  String deleteLibraryMessage(String name) {
-    return 'Вы уверены, что хотите убрать «$name» из списка? Сами файлы на диске удалены НЕ будут.';
-  }
-
-  @override
-  String get defaultLibraryName => 'Основная папка';
-
-  @override
-  String get renameLibrary => 'Переименовать';
-
-  @override
-  String get activeLibrary => 'Активна';
-
-  @override
-  String get noLibrariesFound => 'Список папок пуст';
+  String get switchFolder => 'Сменить папку';
 
   @override
   String get clearCache => 'Очистить кэш';

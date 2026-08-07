@@ -179,39 +179,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toggleTheme => '切换主题';
 
   @override
-  String get switchFolder => '管理库';
-
-  @override
-  String get manageLibraries => '管理库';
-
-  @override
-  String get addLibrary => '添加库';
-
-  @override
-  String get libraryName => '库名称';
-
-  @override
-  String get libraryPath => '路径';
-
-  @override
-  String get deleteLibraryTitle => '确认删除库?';
-
-  @override
-  String deleteLibraryMessage(String name) {
-    return '您确定要从库列表中移除 \"$name\" 吗? 此操作不会删除磁盘上的任何文件。';
-  }
-
-  @override
-  String get defaultLibraryName => '默认库';
-
-  @override
-  String get renameLibrary => '重命名库';
-
-  @override
-  String get activeLibrary => '活动';
-
-  @override
-  String get noLibrariesFound => '暂无已添加的库';
+  String get switchFolder => '切换文件夹';
 
   @override
   String get clearCache => '释放缓存';
