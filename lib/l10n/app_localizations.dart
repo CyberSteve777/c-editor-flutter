@@ -427,68 +427,8 @@ abstract class AppLocalizations {
   /// No description provided for @switchFolder.
   ///
   /// In en, this message translates to:
-  /// **'Library manager'**
+  /// **'Switch folder'**
   String get switchFolder;
-
-  /// No description provided for @manageLibraries.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage libraries'**
-  String get manageLibraries;
-
-  /// No description provided for @addLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Add library'**
-  String get addLibrary;
-
-  /// No description provided for @libraryName.
-  ///
-  /// In en, this message translates to:
-  /// **'Library name'**
-  String get libraryName;
-
-  /// No description provided for @libraryPath.
-  ///
-  /// In en, this message translates to:
-  /// **'Path'**
-  String get libraryPath;
-
-  /// No description provided for @deleteLibraryTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove library?'**
-  String get deleteLibraryTitle;
-
-  /// No description provided for @deleteLibraryMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to remove \"{name}\" from the library list? This will NOT delete any files on your disk.'**
-  String deleteLibraryMessage(String name);
-
-  /// No description provided for @defaultLibraryName.
-  ///
-  /// In en, this message translates to:
-  /// **'Default library'**
-  String get defaultLibraryName;
-
-  /// No description provided for @renameLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Rename library'**
-  String get renameLibrary;
-
-  /// No description provided for @activeLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get activeLibrary;
-
-  /// No description provided for @noLibrariesFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No libraries added yet'**
-  String get noLibrariesFound;
 
   /// No description provided for @clearCache.
   ///
