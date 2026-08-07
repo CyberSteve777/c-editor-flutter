@@ -3269,22 +3269,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get instantKillResistance => '即死抗性（受到秒杀攻击的免疫概率）';
 
   @override
-  String get resiliencePhysics => '物理 (Physics)';
+  String get resiliencePhysics => '物理';
 
   @override
-  String get resiliencePoison => '毒液 (Poison)';
+  String get resiliencePoison => '毒液';
 
   @override
-  String get resilienceElectric => '电能 (Electric)';
+  String get resilienceElectric => '电能';
 
   @override
-  String get resilienceMagic => '魔法 (Magic)';
+  String get resilienceMagic => '魔法';
 
   @override
-  String get resilienceIce => '寒冰 (Ice)';
+  String get resilienceIce => '寒冰';
 
   @override
-  String get resilienceFire => '火焰 (Fire)';
+  String get resilienceFire => '火焰';
 
   @override
   String get resilienceHint => '数值范围0.0-1.0，0.0表示无影响，1.0表示完全免疫';
@@ -3302,7 +3302,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectionPreMade => '预设';
 
   @override
-  String get selectionDefinedByUser => '用户自定义';
+  String get selectionDefinedByUser => '自定义';
 
   @override
   String get aliasAlreadyTakenTitle => '代号已被占用';
@@ -3319,10 +3319,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get resilienceSelectShield => '选择韧性条';
 
   @override
-  String get resilienceCreateCustom => '新建自定义护盾';
+  String get resilienceCreateCustom => '新建自定义韧性条';
 
   @override
-  String get resilienceEditCustom => '编辑自定义护盾';
+  String get resilienceEditCustom => '编辑自定义韧性条';
 
   @override
   String get resilienceSourceResilienceConfig => 'ResilienceConfig';
@@ -3337,7 +3337,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get resilienceNoShieldsFound => '未找到韧性条';
 
   @override
-  String get resilienceShieldInUseCannotDelete => '无法删除——本关卡中有僵尸正在使用此护盾。';
+  String get resilienceShieldInUseCannotDelete => '本关卡中有僵尸正在使用此韧性条，故无法删除。';
 
   @override
   String get resilienceShieldDeleteTitle => '删除自定义韧性条？';

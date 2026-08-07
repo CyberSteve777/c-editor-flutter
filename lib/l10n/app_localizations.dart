@@ -6301,7 +6301,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectionDefinedByUser.
   ///
   /// In en, this message translates to:
-  /// **'Defined by user'**
+  /// **'Custom'**
   String get selectionDefinedByUser;
 
   /// No description provided for @aliasAlreadyTakenTitle.

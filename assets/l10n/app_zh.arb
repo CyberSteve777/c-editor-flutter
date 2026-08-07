@@ -1247,7 +1247,7 @@
   "resilienceSourceCurrentLevel": "CurrentLevel",
   "resilienceTypeAll": "全部类型",
   "resilienceNoShieldsFound": "未找到韧性条",
-  "resilienceShieldInUseCannotDelete": 本关卡中有僵尸正在使用此韧性条，故无法删除。",
+  "resilienceShieldInUseCannotDelete": "本关卡中有僵尸正在使用此韧性条，故无法删除。",
   "resilienceShieldDeleteTitle": "删除自定义韧性条？",
   "resilienceShieldDeleteMessage": "从本关卡中删除「{alias}」？",
   "@resilienceShieldDeleteMessage": {

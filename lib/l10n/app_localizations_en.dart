@@ -3489,7 +3489,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectionPreMade => 'Pre-made';
 
   @override
-  String get selectionDefinedByUser => 'Defined by user';
+  String get selectionDefinedByUser => 'Custom';
 
   @override
   String get aliasAlreadyTakenTitle => 'Alias already taken';
