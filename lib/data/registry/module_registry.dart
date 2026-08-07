@@ -889,8 +889,7 @@ class ModuleRegistry {
     'MoldColonyChallengeProps': ModuleMetadata(
       titleKey: 'moduleTitle_MoldColonyChallengeProps',
       descriptionKey: 'moduleDesc_MoldColonyChallengeProps',
-      icon: Icons.grid_on,
-      assetIconPath: 'assets/images/griditems/fake_mold.webp',
+      icon: Icons.grid_3x3,
       isCore: true,
       allowMultiple: false,
       category: ModuleCategory.scene,

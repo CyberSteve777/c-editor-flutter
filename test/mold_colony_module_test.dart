@@ -137,7 +137,8 @@ void main() {
     );
     expect(metadata.category, ModuleCategory.scene);
     expect(metadata.defaultAlias, 'DoNotPlantBeforeLine');
-    expect(metadata.assetIconPath, 'assets/images/griditems/fake_mold.webp');
+    expect(metadata.icon, Icons.grid_3x3);
+    expect(metadata.assetIconPath, isNull);
     expect(metadata.initialData, {
       'Description': '',
       'Locations': 'RTID(Mold@CurrentLevel)',
