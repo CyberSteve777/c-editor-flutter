@@ -303,9 +303,10 @@ ModuleAliasInputField(
                       children: [
                         Row(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                 Text(
                                   l10n?.selectedPosition ?? 'Selected position',
                                   style: theme.textTheme.bodySmall?.copyWith(
@@ -319,7 +320,8 @@ ModuleAliasInputField(
                                     color: theme.colorScheme.primary,
                                   ),
                                 ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),

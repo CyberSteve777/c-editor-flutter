@@ -234,13 +234,17 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
                     size: 24,
                   ),
                   const SizedBox(width: 12),
-                  Text(
-                    l10n?.zombieTypeSpiderZombieName ??
-                        'Zombie type (SpiderZombieName)',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        l10n?.zombieTypeSpiderZombieName ??
+                            'Zombie type (SpiderZombieName)',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -323,13 +327,17 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
               children: [
                 Icon(Icons.groups, color: theme.colorScheme.primary, size: 24),
                 const SizedBox(width: 12),
-                Text(
+              Expanded(
+                child: Text(
                   l10n?.zombieTypeSpiderZombieName ??
                       'Zombie type (SpiderZombieName)',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
               ],
             ),
             const SizedBox(height: 12),

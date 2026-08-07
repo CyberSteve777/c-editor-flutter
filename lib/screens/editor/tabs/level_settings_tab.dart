@@ -311,11 +311,15 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      l10n?.addNewModule ?? 'Add new module',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        l10n?.addNewModule ?? 'Add new module',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -343,13 +347,17 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                             ).colorScheme.onErrorContainer,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            pair.first,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onErrorContainer,
+                          Expanded(
+                            child: Text(
+                              pair.first,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
+                              ),
                             ),
                           ),
                         ],

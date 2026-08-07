@@ -7,6 +7,7 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -413,10 +414,14 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
                       : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  l10n?.basicRules ?? 'Basic rules',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n?.basicRules ?? 'Basic rules',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -472,42 +477,36 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
             const SizedBox(height: 12),
             Opacity(
               opacity: isZombieMode ? 0.5 : 1,
-              child: Row(
+              child: EditorResponsiveFieldRow(
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: '${_data.globalLevel ?? 0}',
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.seedBankPlantLevelLabel ??
-                            'Plant level (0-5)',
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (s) {
-                        final v = int.tryParse(s) ?? 0;
-                        final clamped = v.clamp(0, 5);
-                        _data.globalLevel = clamped == 0 ? null : clamped;
-                        _sync();
-                      },
+                  TextFormField(
+                    initialValue: '${_data.globalLevel ?? 0}',
+                    decoration: InputDecoration(
+                      labelText:
+                          l10n?.seedBankPlantLevelLabel ?? 'Plant level (0-5)',
+                      border: const OutlineInputBorder(),
                     ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (s) {
+                      final v = int.tryParse(s) ?? 0;
+                      final clamped = v.clamp(0, 5);
+                      _data.globalLevel = clamped == 0 ? null : clamped;
+                      _sync();
+                    },
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: '${_data.overrideSeedSlotsCount ?? 0}',
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (s) {
-                        final v = int.tryParse(s) ?? 0;
-                        _data.overrideSeedSlotsCount = v.clamp(0, 9);
-                        _sync();
-                      },
+                  TextFormField(
+                    initialValue: '${_data.overrideSeedSlotsCount ?? 0}',
+                    decoration: InputDecoration(
+                      labelText:
+                          l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
+                      border: const OutlineInputBorder(),
                     ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (s) {
+                      final v = int.tryParse(s) ?? 0;
+                      _data.overrideSeedSlotsCount = v.clamp(0, 9);
+                      _sync();
+                    },
                   ),
                 ],
               ),

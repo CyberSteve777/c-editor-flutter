@@ -465,6 +465,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
         Tooltip(
           message: l10n?.zombossMechVariationHint ?? '',
           child: DropdownButtonFormField<String>(
+            isExpanded: true,
             initialValue: _variationDropdownValue(
               variations,
               variations.contains(_battleData.zombossMechType)

@@ -1803,6 +1803,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Задержка первой волны зависит от наличия конвейера.';
 
   @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHint =>
+      'Изменение текущей задержки первой волны действует только на уровни с конвейером; обычные уровни используют значение по умолчанию';
+
+  @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHelp =>
+      'Изменение текущей задержки первой волны действует только на уровни с конвейером; обычные уровни используют значение по умолчанию.';
+
+  @override
   String get waveManagerHelpMusicTitle => 'Тип музыки';
 
   @override

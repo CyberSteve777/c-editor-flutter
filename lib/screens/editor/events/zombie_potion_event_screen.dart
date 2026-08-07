@@ -197,9 +197,10 @@ class _ZombiePotionEventScreenState extends State<ZombiePotionEventScreen> {
                         children: [
                           Row(
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                   Text(
                                     l10n?.selectedPosition ??
                                         'Selected position',
@@ -216,7 +217,8 @@ class _ZombiePotionEventScreenState extends State<ZombiePotionEventScreen> {
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
+                          ],
                           ),
                           const SizedBox(height: 16),
                           _buildGrid(),

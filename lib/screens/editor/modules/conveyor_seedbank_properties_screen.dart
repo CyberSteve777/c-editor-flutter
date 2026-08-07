@@ -5,6 +5,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/tool_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
@@ -437,31 +438,30 @@ class _ConveyorPlantListEditor extends StatelessWidget {
               children: [
                 Icon(Icons.linear_scale, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
-                Text(
-                  l10n?.conveyorCardPool ?? 'Conveyor card pool',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n?.conveyorCardPool ?? 'Conveyor card pool',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            Row(
+            EditorResponsiveFieldRow(
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onAddPlant,
-                    icon: const Icon(Icons.eco, size: 18),
-                    label: Text(l10n?.addPlantConveyor ?? 'Add plant'),
-                  ),
+                OutlinedButton.icon(
+                  onPressed: onAddPlant,
+                  icon: const Icon(Icons.eco, size: 18),
+                  label: Text(l10n?.addPlantConveyor ?? 'Add plant'),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onAddTool,
-                    icon: const Icon(Icons.build, size: 18),
-                    label: Text(l10n?.addTool ?? 'Add tool'),
-                  ),
+                OutlinedButton.icon(
+                  onPressed: onAddTool,
+                  icon: const Icon(Icons.build, size: 18),
+                  label: Text(l10n?.addTool ?? 'Add tool'),
                 ),
               ],
             ),
@@ -597,7 +597,9 @@ class _PlantRow extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 2,
                         children: [
                           Text(
                             'Weight: ${plant.weight}',
@@ -606,7 +608,6 @@ class _PlantRow extends StatelessWidget {
                             ),
                           ),
                           if (!isTool) ...[
-                            const SizedBox(width: 8),
                             Text(
                               plant.iLevel != null
                                   ? (l10n?.levelFormat(plant.iLevel!) ??

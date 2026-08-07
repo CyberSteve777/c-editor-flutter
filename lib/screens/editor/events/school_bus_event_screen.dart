@@ -245,6 +245,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DropdownButtonFormField<int>(
+                        isExpanded: true,
                         initialValue: des.row.clamp(1, _maxRow),
                         items: List.generate(_maxRow, (i) => i + 1)
                             .map(
@@ -271,6 +272,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: busType,
                         items: [
                           DropdownMenuItem(
@@ -415,6 +417,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                               SizedBox(
                                 width: 200,
                                 child: DropdownButtonFormField<int>(
+                                  isExpanded: true,
                                   initialValue: z.level.clamp(
                                     _levelMin,
                                     _levelMax,

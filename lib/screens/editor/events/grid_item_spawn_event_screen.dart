@@ -475,21 +475,20 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n?.gridTypes ?? 'Grid types',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+              EditorResponsiveActionRow(
+                content: Text(
+                  l10n?.gridTypes ?? 'Grid types',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                  PvzAddButton(
-                    onPressed: _addGridType,
-                    size: 40,
-                    label: l10n?.add ?? 'Add',
-                  ),
-                ],
+                ),
+                action: PvzAddButton(
+                  onPressed: _addGridType,
+                  size: 40,
+                  label: l10n?.add ?? 'Add',
+                ),
               ),
               const SizedBox(height: 8),
               ..._data.gridTypes.asMap().entries.map((e) {
@@ -526,17 +525,14 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                 );
               }),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n?.zombiesCount(_data.zombies.length) ??
-                        'Zombies: ${_data.zombies.length}',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              Text(
+                l10n?.zombiesCount(_data.zombies.length) ??
+                    'Zombies: ${_data.zombies.length}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               ZombieFlatLaneDragDropEditor(

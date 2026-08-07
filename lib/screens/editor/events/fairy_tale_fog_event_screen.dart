@@ -168,6 +168,7 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue:
                             _fogOptions.any((e) => e.$1 == _data.fogType)
                             ? _data.fogType
@@ -225,7 +226,7 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      EditorResponsiveFieldRow(
                         children: [
                           Expanded(
                             child: TextFormField(
@@ -283,7 +284,7 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      EditorResponsiveFieldRow(
                         children: [
                           Expanded(
                             child: TextFormField(

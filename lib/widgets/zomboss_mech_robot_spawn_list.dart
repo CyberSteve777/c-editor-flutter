@@ -240,8 +240,7 @@ class _RobotSpawnEntryCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            EditorResponsiveFieldRow(
               children: [
                 Expanded(
                   flex: 2,

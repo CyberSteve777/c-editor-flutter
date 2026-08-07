@@ -532,22 +532,21 @@ ModuleAliasInputField(
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Text(
-                    l10n?.zombiePool ?? 'Zombie pool',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: sectionColor,
-                    ),
+              EditorResponsiveActionRow(
+                content: Text(
+                  l10n?.zombiePool ?? 'Zombie pool',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: sectionColor,
                   ),
-                  const Spacer(),
-                  TextButton.icon(
-                    onPressed: _addZombie,
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n?.add ?? 'Add'),
-                  ),
-                ],
+                ),
+                action: TextButton.icon(
+                  onPressed: _addZombie,
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n?.add ?? 'Add'),
+                ),
               ),
               const SizedBox(height: 8),
               ..._firstGroup.zombiePool.asMap().entries.map((entry) {

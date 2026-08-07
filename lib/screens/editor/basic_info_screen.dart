@@ -384,6 +384,7 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue:
                       _musicTypeOptions.map((e) => e.$1).contains(def.musicType)
                       ? def.musicType
@@ -414,6 +415,7 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _lootOptions.map((e) => e.$1).contains(def.loot)
                       ? def.loot
                       : _lootOptions.first.$1,
@@ -443,6 +445,7 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue:
                       _victoryOptions
                           .map((e) => e.$1)

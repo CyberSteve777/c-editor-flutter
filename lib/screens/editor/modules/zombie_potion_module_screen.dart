@@ -311,26 +311,25 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          localizedPropertyLabel(
-                            context,
-                            l10n.potionTypeList,
-                            _potionTypesField,
-                          ),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
+                    EditorResponsiveActionRow(
+                      content: Text(
+                        localizedPropertyLabel(
+                          context,
+                          l10n.potionTypeList,
+                          _potionTypesField,
                         ),
-                        const Spacer(),
-                        TextButton.icon(
-                          onPressed: _addPotionType,
-                          icon: const Icon(Icons.add),
-                          label: Text(l10n.add),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
                         ),
-                      ],
+                      ),
+                      action: TextButton.icon(
+                        onPressed: _addPotionType,
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.add),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     if (_data.potionTypes.isEmpty)

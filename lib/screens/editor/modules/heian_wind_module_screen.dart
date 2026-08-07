@@ -340,7 +340,7 @@ ModuleAliasInputField(
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
                                 flex: 2,
@@ -495,10 +495,11 @@ ModuleAliasInputField(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  EditorResponsiveFieldRow(
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<int>(
+                          isExpanded: true,
                           initialValue: dropdownValue,
                           decoration: InputDecoration(
                             labelText: l10n?.heianWindModuleRow ?? 'Row',
@@ -564,7 +565,7 @@ ModuleAliasInputField(
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Row(
+                  EditorResponsiveFieldRow(
                     children: [
                       Expanded(
                         child: TextFormField(

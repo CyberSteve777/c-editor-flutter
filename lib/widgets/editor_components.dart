@@ -177,7 +177,15 @@ class PvzAddButton extends StatelessWidget {
           btn,
           if (label!.isNotEmpty) ...[
             const SizedBox(width: 8),
-            Text(label!, style: Theme.of(context).textTheme.labelLarge),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 160),
+              child: Text(
+                label!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+            ),
           ],
         ],
       );
@@ -205,6 +213,147 @@ abstract final class EditorItemCardLayout {
     if (cellWidth <= 0 || !cellWidth.isFinite) return 1.0;
     const referenceCell = 52.0;
     return (cellWidth / referenceCell).clamp(0.4, 1.0);
+  }
+}
+
+/// Keeps related form controls side by side when there is enough room and
+/// stacks them when UI scaling leaves the editor with a narrow layout.
+class EditorResponsiveFieldRow extends StatelessWidget {
+  const EditorResponsiveFieldRow({
+    super.key,
+    required this.children,
+    this.breakpoint = 600,
+    this.spacing = 12,
+  });
+
+  final List<Widget> children;
+  final double breakpoint;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final fields = children
+            .where(
+              (child) =>
+                  child is! SizedBox ||
+                  child.child != null ||
+                  child.width == null ||
+                  child.height != null,
+            )
+            .map((child) => child is Flexible ? child.child : child)
+            .toList(growable: false);
+        final stack = constraints.maxWidth < breakpoint;
+        if (stack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < fields.length; i++) ...[
+                if (i > 0) SizedBox(height: spacing),
+                fields[i],
+              ],
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < fields.length; i++) ...[
+              if (i > 0) SizedBox(width: spacing),
+              Expanded(child: fields[i]),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// A label and its field use separate lines in compact editor layouts.
+class EditorResponsiveLabelField extends StatelessWidget {
+  const EditorResponsiveLabelField({
+    super.key,
+    required this.label,
+    required this.field,
+    this.labelWidth = 120,
+    this.breakpoint = 520,
+    this.spacing = 12,
+  });
+
+  final Widget label;
+  final Widget field;
+  final double labelWidth;
+  final double breakpoint;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < breakpoint) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              label,
+              SizedBox(height: spacing / 2),
+              field,
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: labelWidth, child: label),
+            SizedBox(width: spacing),
+            Expanded(child: field),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Keeps a heading or status label clear of its trailing action. The action
+/// moves below the text when a scaled editor no longer has enough width.
+class EditorResponsiveActionRow extends StatelessWidget {
+  const EditorResponsiveActionRow({
+    super.key,
+    required this.content,
+    required this.action,
+    this.breakpoint = 520,
+    this.spacing = 12,
+  });
+
+  final Widget content;
+  final Widget action;
+  final double breakpoint;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < breakpoint) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              content,
+              SizedBox(height: spacing / 2),
+              Align(alignment: Alignment.centerRight, child: action),
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(child: content),
+            SizedBox(width: spacing),
+            action,
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -858,9 +1007,16 @@ void showEditorHelpDialog(
               color: themeColor ?? Theme.of(ctx).colorScheme.primary,
             ),
             const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
             ),
           ],
         ),

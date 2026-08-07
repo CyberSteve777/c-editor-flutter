@@ -267,6 +267,7 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<int?>(
+                          isExpanded: true,
                           initialValue:
                               [null, 1, 2, 3].contains(currentArray.typeIndex)
                               ? currentArray.typeIndex

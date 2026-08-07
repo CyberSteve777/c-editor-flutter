@@ -620,6 +620,8 @@
   "waveManagerHelpFlagBody": "Каждые N волн — флаговая; последняя волна всегда флаговая.",
   "waveManagerHelpTimeTitle": "Контроль времени",
   "waveManagerHelpTimeBody": "Задержка первой волны зависит от наличия конвейера.",
+  "waveManagerFirstWaveDelayConveyorOnlyHint": "Изменение текущей задержки первой волны действует только на уровни с конвейером; обычные уровни используют значение по умолчанию",
+  "waveManagerFirstWaveDelayConveyorOnlyHelp": "Изменение текущей задержки первой волны действует только на уровни с конвейером; обычные уровни используют значение по умолчанию.",
   "waveManagerHelpMusicTitle": "Тип музыки",
   "waveManagerHelpMusicBody": "Только Modern; задает фиксированный фон.",
   "waveManagerBasicParams": "Базовые параметры",

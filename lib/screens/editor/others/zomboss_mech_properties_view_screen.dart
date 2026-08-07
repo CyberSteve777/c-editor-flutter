@@ -7,6 +7,7 @@ import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_action_detail_screen.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossMechPropertiesViewScreen extends StatelessWidget {
@@ -384,11 +385,11 @@ class _ReadOnlyValueRow extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(child: Text(label)),
-          SelectableText(value, style: theme.textTheme.titleMedium),
-        ],
+      child: EditorResponsiveLabelField(
+        breakpoint: 600,
+        labelWidth: 240,
+        label: Text(label),
+        field: SelectableText(value, style: theme.textTheme.titleMedium),
       ),
     );
   }

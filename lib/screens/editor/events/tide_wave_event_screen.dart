@@ -162,7 +162,9 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 8,
                         children: [
                           ChoiceChip(
                             label: Text(_typeLabel(_typeLeft, l10n)),
@@ -181,7 +183,6 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
                               _sync();
                             },
                           ),
-                          const SizedBox(width: 12),
                           ChoiceChip(
                             label: Text(_typeLabel(_typeRight, l10n)),
                             selected: _data.type == _typeRight,

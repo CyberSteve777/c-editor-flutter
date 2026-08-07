@@ -617,6 +617,7 @@ class _DefeatZombiesOfTypeChallengeEditorState
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
+          isExpanded: true,
           key: ValueKey(listType),
           initialValue: listType == 'blacklist' ? 'blacklist' : 'whitelist',
           decoration: InputDecoration(

@@ -301,7 +301,7 @@ ModuleAliasInputField(
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
                                 child: TextFormField(
@@ -389,7 +389,7 @@ ModuleAliasInputField(
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
                                 child: TextFormField(
@@ -457,7 +457,7 @@ ModuleAliasInputField(
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
                                 child: TextFormField(

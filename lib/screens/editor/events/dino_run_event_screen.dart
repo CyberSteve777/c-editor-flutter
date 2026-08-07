@@ -182,10 +182,14 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                         children: [
                           Icon(Icons.pets, color: dinoColor),
                           const SizedBox(width: 8),
-                          Text(
-                            l10n?.positionAndDuration ?? 'Position & timing',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              l10n?.positionAndDuration ?? 'Position & timing',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -193,10 +197,14 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          Text(
-                            l10n?.dinoRow(_data.dinoRow + 1) ??
-                                'Row (DinoRow): ${_data.dinoRow + 1}',
-                            style: theme.textTheme.bodyLarge,
+                          Expanded(
+                            child: Text(
+                              l10n?.dinoRow(_data.dinoRow + 1) ??
+                                  'Row (DinoRow): ${_data.dinoRow + 1}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           IconButton(

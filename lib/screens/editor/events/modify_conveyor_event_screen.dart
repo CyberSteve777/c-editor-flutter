@@ -385,22 +385,17 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+            EditorResponsiveFieldRow(
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _openAddPlantPicker,
-                    icon: const Icon(Icons.eco, size: 18),
-                    label: Text(l10n?.addPlantConveyor ?? 'Add plant'),
-                  ),
+                OutlinedButton.icon(
+                  onPressed: _openAddPlantPicker,
+                  icon: const Icon(Icons.eco, size: 18),
+                  label: Text(l10n?.addPlantConveyor ?? 'Add plant'),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _openAddToolPicker,
-                    icon: const Icon(Icons.build, size: 18),
-                    label: Text(l10n?.addTool ?? 'Add tool'),
-                  ),
+                OutlinedButton.icon(
+                  onPressed: _openAddToolPicker,
+                  icon: const Icon(Icons.build, size: 18),
+                  label: Text(l10n?.addTool ?? 'Add tool'),
                 ),
               ],
             ),
@@ -466,22 +461,17 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+            EditorResponsiveFieldRow(
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _openRemovePlantPicker,
-                    icon: const Icon(Icons.eco, size: 18),
-                    label: Text(l10n?.addPlantConveyor ?? 'Add plant'),
-                  ),
+                OutlinedButton.icon(
+                  onPressed: _openRemovePlantPicker,
+                  icon: const Icon(Icons.eco, size: 18),
+                  label: Text(l10n?.addPlantConveyor ?? 'Add plant'),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _openRemoveToolPicker,
-                    icon: const Icon(Icons.build, size: 18),
-                    label: Text(l10n?.addTool ?? 'Add tool'),
-                  ),
+                OutlinedButton.icon(
+                  onPressed: _openRemoveToolPicker,
+                  icon: const Icon(Icons.build, size: 18),
+                  label: Text(l10n?.addTool ?? 'Add tool'),
                 ),
               ],
             ),

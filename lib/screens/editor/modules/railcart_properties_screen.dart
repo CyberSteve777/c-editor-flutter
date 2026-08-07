@@ -275,6 +275,7 @@ ModuleAliasInputField(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     DropdownButtonFormField<String>(
+                      isExpanded: true,
                       key: ValueKey(_data.railcartType),
                       initialValue:
                           _cartTypeOptions.contains(_data.railcartType)
@@ -421,37 +422,33 @@ ModuleAliasInputField(
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${l10n?.railSegments ?? 'Rail segments'}: ${_data.rails.length}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        Text(
-                          '${l10n?.railcartCount ?? 'Railcart count'}: ${_data.railcarts.length}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                    Flexible(
-                      child: FilledButton.icon(
-                        onPressed: _clearAll,
-                        icon: const Icon(Icons.delete, size: 18),
-                        label: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(l10n?.clearAll ?? 'Clear all'),
-                        ),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: theme.colorScheme.error,
-                        ),
+                child: EditorResponsiveActionRow(
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${l10n?.railSegments ?? 'Rail segments'}: ${_data.rails.length}',
+                        style: theme.textTheme.bodyMedium,
                       ),
+                      Text(
+                        '${l10n?.railcartCount ?? 'Railcart count'}: ${_data.railcarts.length}',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  action: FilledButton.icon(
+                    onPressed: _clearAll,
+                    icon: const Icon(Icons.delete, size: 18),
+                    label: Text(
+                      l10n?.clearAll ?? 'Clear all',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.error,
+                    ),
+                  ),
                 ),
               ),
             ),

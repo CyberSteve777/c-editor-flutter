@@ -688,36 +688,31 @@ class _ProtectThePlantEditorState extends State<_ProtectThePlantEditor> {
                         ),
                       ],
                     ),
-                    Row(
+                    EditorResponsiveFieldRow(
                       children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridX.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridX ?? 'Grid X',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridX = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridX.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridX ?? 'Grid X',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridX = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridY.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridY ?? 'Grid Y',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridY = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridY.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridY ?? 'Grid Y',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridY = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
                       ],
                     ),
@@ -850,36 +845,31 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
                         ),
                       ],
                     ),
-                    Row(
+                    EditorResponsiveFieldRow(
                       children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridX.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridX ?? 'Grid X',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridX = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridX.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridX ?? 'Grid X',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridX = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridY.toString(),
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridY ?? 'Grid Y',
-                              border: const OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (val) {
-                              item.gridY = int.tryParse(val) ?? 0;
-                              _save();
-                            },
+                        TextFormField(
+                          initialValue: item.gridY.toString(),
+                          decoration: InputDecoration(
+                            labelText: l10n?.gridY ?? 'Grid Y',
+                            border: const OutlineInputBorder(),
                           ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            item.gridY = int.tryParse(val) ?? 0;
+                            _save();
+                          },
                         ),
                       ],
                     ),
@@ -1073,36 +1063,31 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
           ),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        Row(
+        EditorResponsiveFieldRow(
           children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: _data.potionSpawnTimer.min.toString(),
-                decoration: InputDecoration(
-                  labelText: l10n.minimumIntervalSeconds,
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (val) {
-                  _data.potionSpawnTimer.min = int.tryParse(val) ?? 12;
-                  _save();
-                },
+            TextFormField(
+              initialValue: _data.potionSpawnTimer.min.toString(),
+              decoration: InputDecoration(
+                labelText: l10n.minimumIntervalSeconds,
+                border: const OutlineInputBorder(),
               ),
+              keyboardType: TextInputType.number,
+              onChanged: (val) {
+                _data.potionSpawnTimer.min = int.tryParse(val) ?? 12;
+                _save();
+              },
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                initialValue: _data.potionSpawnTimer.max.toString(),
-                decoration: InputDecoration(
-                  labelText: l10n.maximumIntervalSeconds,
-                  border: const OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (val) {
-                  _data.potionSpawnTimer.max = int.tryParse(val) ?? 16;
-                  _save();
-                },
+            TextFormField(
+              initialValue: _data.potionSpawnTimer.max.toString(),
+              decoration: InputDecoration(
+                labelText: l10n.maximumIntervalSeconds,
+                border: const OutlineInputBorder(),
               ),
+              keyboardType: TextInputType.number,
+              onChanged: (val) {
+                _data.potionSpawnTimer.max = int.tryParse(val) ?? 16;
+                _save();
+              },
             ),
           ],
         ),

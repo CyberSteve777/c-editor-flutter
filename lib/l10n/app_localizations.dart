@@ -3334,6 +3334,18 @@ abstract class AppLocalizations {
   /// **'The delay before the first wave depends on whether the level uses a conveyor belt: 5 seconds with a conveyor, or 12 seconds without. Flag wave delay refers to the time between the red warning message and zombie spawn.'**
   String get waveManagerHelpTimeBody;
 
+  /// No description provided for @waveManagerFirstWaveDelayConveyorOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently, editing first wave delay only affects conveyor belt levels; regular levels use the default value.'**
+  String get waveManagerFirstWaveDelayConveyorOnlyHint;
+
+  /// No description provided for @waveManagerFirstWaveDelayConveyorOnlyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently, editing first wave delay only affects conveyor belt evels; regular levels use the default value.'**
+  String get waveManagerFirstWaveDelayConveyorOnlyHelp;
+
   /// No description provided for @waveManagerHelpMusicTitle.
   ///
   /// In en, this message translates to:
@@ -4075,13 +4087,13 @@ abstract class AppLocalizations {
   /// No description provided for @conveyorPlantWearCostume.
   ///
   /// In en, this message translates to:
-  /// **'Display costume (iAvatar)'**
+  /// **'Display costume (iAvatar; no longer works)'**
   String get conveyorPlantWearCostume;
 
   /// No description provided for @conveyorPlantWearCostumeTooltip.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work when the Creative Courtyard module is enabled.'**
+  /// **'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work in the current version.'**
   String get conveyorPlantWearCostumeTooltip;
 
   /// No description provided for @modifyConveyorAddPoolTitle.
@@ -6109,7 +6121,7 @@ abstract class AppLocalizations {
   /// No description provided for @resilienceArmor.
   ///
   /// In en, this message translates to:
-  /// **'Resilience Bar'**
+  /// **'Resilience Shield'**
   String get resilienceArmor;
 
   /// No description provided for @enableResilience.
@@ -9703,7 +9715,7 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerksAdd.
   ///
   /// In en, this message translates to:
-  /// **'Add Zombie Perks'**
+  /// **'Add'**
   String get ztPerksAdd;
 
   /// No description provided for @ztPerksTypeAlreadyAssigned.
@@ -14675,13 +14687,13 @@ abstract class AppLocalizations {
   /// No description provided for @customStageProperties.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage properties'**
+  /// **'Custom lawn properties'**
   String get customStageProperties;
 
   /// No description provided for @customStageNotFound.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage object not found.'**
+  /// **'Custom lawn object not found.'**
   String get customStageNotFound;
 
   /// No description provided for @customStageSectionGeneral.
@@ -14921,7 +14933,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageAliasPromptTitle.
   ///
   /// In en, this message translates to:
-  /// **'Custom stage alias'**
+  /// **'Custom lawn alias'**
   String get customStageAliasPromptTitle;
 
   /// No description provided for @customStageAliasTaken.
@@ -14963,7 +14975,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageSwitchToBuiltinMessage.
   ///
   /// In en, this message translates to:
-  /// **'This permanently removes the custom stage data from this level. This cannot be undone.'**
+  /// **'This permanently removes the custom lawn data from this level. This cannot be undone.'**
   String get customStageSwitchToBuiltinMessage;
 
   /// No description provided for @customStageDeleteTitle.
@@ -14975,7 +14987,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageDeleteMessage.
   ///
   /// In en, this message translates to:
-  /// **'This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.'**
+  /// **'This permanently removes the custom lawn data from this level. If it is the active lawn, the level will switch to the default built-in lawn.'**
   String get customStageDeleteMessage;
 
   /// No description provided for @customStagePresetSectionTitle.

@@ -165,9 +165,12 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
                 ),
                 HelpSectionData(
                   title: l10n?.waveManagerHelpTimeTitle ?? 'Time control',
-                  body:
-                      l10n?.waveManagerHelpTimeBody ??
-                      'First wave delay changes when a conveyor is present.',
+                  body: [
+                    l10n?.waveManagerHelpTimeBody ??
+                        'First wave delay changes when a conveyor is present.',
+                    l10n?.waveManagerFirstWaveDelayConveyorOnlyHelp ??
+                        'Editing the current first-wave delay only affects conveyor levels. Regular levels use the default value.',
+                  ].join('\n\n'),
                 ),
                 HelpSectionData(
                   title: l10n?.waveManagerHelpMusicTitle ?? 'Music type',
@@ -204,50 +207,45 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               onChanged: _updateFlagInterval,
             ),
             const SizedBox(height: 16),
-            Row(
+            EditorResponsiveFieldRow(
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _maxHealthController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.waveManagerMaxHealthThreshold ??
-                          'Max health threshold',
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (v) {
-                      final n = double.tryParse(v);
-                      if (n != null && n >= 0 && n <= 1) {
-                        _wm.maxNextWaveHealthPercentage = n;
-                        _save();
-                      }
-                    },
+                TextField(
+                  controller: _maxHealthController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
                   ),
+                  decoration: InputDecoration(
+                    labelText:
+                        l10n?.waveManagerMaxHealthThreshold ??
+                        'Max health threshold',
+                    border: const OutlineInputBorder(),
+                  ),
+                  onChanged: (v) {
+                    final n = double.tryParse(v);
+                    if (n != null && n >= 0 && n <= 1) {
+                      _wm.maxNextWaveHealthPercentage = n;
+                      _save();
+                    }
+                  },
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
-                    controller: _minHealthController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.waveManagerMinHealthThreshold ??
-                          'Min health threshold',
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (v) {
-                      final n = double.tryParse(v);
-                      if (n != null && n >= 0 && n <= 1) {
-                        _wm.minNextWaveHealthPercentage = n;
-                        _save();
-                      }
-                    },
+                TextField(
+                  controller: _minHealthController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
                   ),
+                  decoration: InputDecoration(
+                    labelText:
+                        l10n?.waveManagerMinHealthThreshold ??
+                        'Min health threshold',
+                    border: const OutlineInputBorder(),
+                  ),
+                  onChanged: (v) {
+                    final n = double.tryParse(v);
+                    if (n != null && n >= 0 && n <= 1) {
+                      _wm.minNextWaveHealthPercentage = n;
+                      _save();
+                    }
+                  },
                 ),
               ],
             ),
@@ -270,35 +268,30 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
+            EditorResponsiveFieldRow(
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _firstWaveController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: widget.hasConveyor
-                          ? (l10n?.waveManagerFirstWaveDelayConveyor ??
-                                'First wave delay (conveyor)')
-                          : (l10n?.waveManagerFirstWaveDelayNormal ??
-                                'First wave delay (normal)'),
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (_) => _updateTimeSettings(),
+                TextField(
+                  controller: _firstWaveController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: widget.hasConveyor
+                        ? (l10n?.waveManagerFirstWaveDelayConveyor ??
+                              'First wave delay (conveyor)')
+                        : (l10n?.waveManagerFirstWaveDelayNormal ??
+                              'First wave delay (normal)'),
+                    border: const OutlineInputBorder(),
                   ),
+                  onChanged: (_) => _updateTimeSettings(),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
-                    controller: _hugeWaveController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.waveManagerFlagWaveDelay ?? 'Flag wave delay',
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (_) => _updateTimeSettings(),
+                TextField(
+                  controller: _hugeWaveController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText:
+                        l10n?.waveManagerFlagWaveDelay ?? 'Flag wave delay',
+                    border: const OutlineInputBorder(),
                   ),
+                  onChanged: (_) => _updateTimeSettings(),
                 ),
               ],
             ),
@@ -309,6 +302,15 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
                         'Conveyor module detected; conveyor delay applied.')
                   : (l10n?.waveManagerConveyorNotDetected ??
                         'No conveyor module; normal delay applied.'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n?.waveManagerFirstWaveDelayConveyorOnlyHint ??
+                  'Editing the current first-wave delay only affects conveyor levels; regular levels use the default value',
+              softWrap: true,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -371,6 +373,7 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String?>(
+              isExpanded: true,
               initialValue: _wm.levelJam,
               decoration: InputDecoration(
                 labelText: l10n?.waveManagerLevelJam ?? 'Level Jam',

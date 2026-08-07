@@ -962,25 +962,24 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
               color: gridBg,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${_isExpedition ? (l10n?.expeditionTilesBlockedCount ?? 'Non-plantable tiles') : (l10n?.tunnelDefendPlacedCount ?? 'Placed')}: ${_data.roads.length}',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                child: EditorResponsiveActionRow(
+                  content: Text(
+                    '${_isExpedition ? (l10n?.expeditionTilesBlockedCount ?? 'Non-plantable tiles') : (l10n?.tunnelDefendPlacedCount ?? 'Placed')}: ${_data.roads.length}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    FilledButton.icon(
-                      onPressed: _data.roads.isEmpty ? null : _requestClearAll,
-                      style: FilledButton.styleFrom(
-                        backgroundColor: theme.colorScheme.error,
-                        foregroundColor: theme.colorScheme.onError,
-                      ),
-                      icon: const Icon(Icons.delete_outline, size: 18),
-                      label: Text(l10n?.tunnelDefendClearAll ?? 'Clear all'),
+                  ),
+                  action: FilledButton.icon(
+                    onPressed: _data.roads.isEmpty ? null : _requestClearAll,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.error,
+                      foregroundColor: theme.colorScheme.onError,
                     ),
-                  ],
+                    icon: const Icon(Icons.delete_outline, size: 18),
+                    label: Text(l10n?.tunnelDefendClearAll ?? 'Clear all'),
+                  ),
                 ),
               ),
             ),
@@ -995,48 +994,43 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: RichText(
-                              text: TextSpan(
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        l10n?.tunnelDefendPathOutsideLawn ??
-                                        'Path elements outside of the lawn: ',
-                                  ),
-                                  TextSpan(
-                                    text: _roadsOutsideLawn
-                                        .map(
-                                          (r) =>
-                                              '${_roadDisplayName(r.img)} (R${r.gridY + 1}:C${r.gridX + 1})',
-                                        )
-                                        .join(', '),
-                                  ),
-                                ],
+                      EditorResponsiveActionRow(
+                        content: RichText(
+                          text: TextSpan(
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            children: [
+                              TextSpan(
+                                text:
+                                    l10n?.tunnelDefendPathOutsideLawn ??
+                                    'Path elements outside of the lawn: ',
                               ),
-                            ),
+                              TextSpan(
+                                text: _roadsOutsideLawn
+                                    .map(
+                                      (r) =>
+                                          '${_roadDisplayName(r.img)} (R${r.gridY + 1}:C${r.gridX + 1})',
+                                    )
+                                    .join(', '),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 12),
-                          FilledButton.icon(
-                            onPressed: _requestDeleteOutsideLawn,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.amber.shade700,
-                              foregroundColor: Colors.black87,
-                            ),
-                            icon: const Icon(Icons.delete_outline, size: 18),
-                            label: Text(
-                              l10n?.tunnelDefendDeleteOutside ??
-                                  'Delete path elements outside lawn',
-                            ),
+                        ),
+                        action: FilledButton.icon(
+                          onPressed: _requestDeleteOutsideLawn,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.amber.shade700,
+                            foregroundColor: Colors.black87,
                           ),
-                        ],
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          label: Text(
+                            l10n?.tunnelDefendDeleteOutside ??
+                                'Delete path elements outside lawn',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
                     ],
                   ),

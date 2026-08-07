@@ -346,6 +346,21 @@ class _CustomStagePropertiesScreenState
     );
   }
 
+  Widget _ellipsisText(
+    String text, {
+    TextStyle? style,
+    int maxLines = 1,
+    TextAlign? textAlign,
+  }) {
+    return Text(
+      text,
+      style: style,
+      maxLines: maxLines,
+      overflow: TextOverflow.ellipsis,
+      textAlign: textAlign,
+    );
+  }
+
   Widget _warningCard(String message) {
     final theme = Theme.of(context);
     return Card(
@@ -393,7 +408,7 @@ class _CustomStagePropertiesScreenState
             Row(
               children: [
                 Expanded(
-                  child: Text(
+                  child: _ellipsisText(
                     title,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
@@ -439,9 +454,8 @@ class _CustomStagePropertiesScreenState
                 child: ReorderableListView.builder(
                   buildDefaultDragHandles: false,
                   itemCount: groups.length,
-                  onReorder: (oldIndex, newIndex) {
+                  onReorderItem: (oldIndex, newIndex) {
                     final next = List<String>.from(groups);
-                    if (newIndex > oldIndex) newIndex--;
                     final item = next.removeAt(oldIndex);
                     next.insert(newIndex, item);
                     onChanged(next);
@@ -509,13 +523,17 @@ class _CustomStagePropertiesScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    _ellipsisText(
                       label,
+                      maxLines: 2,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    Text(value, style: Theme.of(context).textTheme.titleMedium),
+                    _ellipsisText(
+                      value,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ],
                 ),
               ),
@@ -558,13 +576,13 @@ class _CustomStagePropertiesScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  _ellipsisText(
                     label,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  Text(
+                  _ellipsisText(
                     value,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -592,7 +610,9 @@ class _CustomStagePropertiesScreenState
             icon: const Icon(Icons.arrow_back),
             onPressed: widget.onBack,
           ),
-          title: Text(l10n?.customStageProperties ?? 'Custom stage properties'),
+          title: _ellipsisText(
+            l10n?.customStageProperties ?? 'Custom stage properties',
+          ),
         ),
         body: Center(
           child: Text(
@@ -631,7 +651,9 @@ class _CustomStagePropertiesScreenState
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.customStageProperties ?? 'Custom stage properties'),
+        title: _ellipsisText(
+          l10n?.customStageProperties ?? 'Custom stage properties',
+        ),
         backgroundColor: accent,
         foregroundColor: theme.colorScheme.onPrimary,
       ),
@@ -699,8 +721,9 @@ class _CustomStagePropertiesScreenState
               const SizedBox(height: 8),
               Card(
                 child: SwitchListTile(
-                  title: Text(
+                  title: _ellipsisText(
                     l10n?.customStageEnableAmbient ?? 'Enable ambient',
+                    maxLines: 2,
                   ),
                   value: _ambientEnabled,
                   activeThumbColor: accent,
@@ -719,6 +742,7 @@ class _CustomStagePropertiesScreenState
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: DropdownButtonFormField<String>(
+                      isExpanded: true,
                       initialValue:
                           CustomStageLevelUtils.ambientAudioOptions.contains(
                             _objdata['AmbientAudioSuffix'],
@@ -733,7 +757,7 @@ class _CustomStagePropertiesScreenState
                           .map(
                             (code) => DropdownMenuItem(
                               value: code,
-                              child: Text(
+                              child: _ellipsisText(
                                 ResourceNames.lookup(
                                   context,
                                   'ambientAudio_$code',
@@ -756,6 +780,7 @@ class _CustomStagePropertiesScreenState
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: DropdownButtonFormField<_DisabledStreetCellsMode>(
+                    isExpanded: true,
                     initialValue: _disabledCellsMode,
                     decoration: customStageInputDecoration(
                       context,
@@ -764,13 +789,13 @@ class _CustomStagePropertiesScreenState
                     items: [
                       DropdownMenuItem(
                         value: _DisabledStreetCellsMode.empty,
-                        child: Text(
+                        child: _ellipsisText(
                           l10n?.customStageDisabledCellsEmpty ?? 'Empty',
                         ),
                       ),
                       DropdownMenuItem(
                         value: _DisabledStreetCellsMode.defaultCells,
-                        child: Text(
+                        child: _ellipsisText(
                           l10n?.customStageDisabledCellsDefault ?? 'Default',
                         ),
                       ),
@@ -824,9 +849,10 @@ class _CustomStagePropertiesScreenState
                     const SizedBox(height: 8),
                   Card(
                     child: SwitchListTile(
-                      title: Text(
+                      title: _ellipsisText(
                         l10n?.customStageBeachMinigame ??
                             'Use minigame version',
+                        maxLines: 2,
                       ),
                       value: CustomStageLevelUtils.isBeachMinigameEnabled(
                         _objdata,
@@ -846,8 +872,9 @@ class _CustomStagePropertiesScreenState
                   const SizedBox(height: 8),
                   Card(
                     child: SwitchListTile(
-                      title: Text(
+                      title: _ellipsisText(
                         l10n?.customStageEnableSubmarine ?? 'Enable submarine',
+                        maxLines: 2,
                       ),
                       value: CustomStageLevelUtils.isSubmarineEnabled(_objdata),
                       activeThumbColor: accent,
@@ -896,7 +923,10 @@ class _CustomStagePropertiesScreenState
                   const SizedBox(height: 8),
                   Card(
                     child: SwitchListTile(
-                      title: Text(_fieldLabel(context, 'HasGridItemAirShip')),
+                      title: _ellipsisText(
+                        _fieldLabel(context, 'HasGridItemAirShip'),
+                        maxLines: 2,
+                      ),
                       value: CustomStageLevelUtils.readBool(
                         _objdata,
                         'HasGridItemAirShip',
@@ -917,7 +947,10 @@ class _CustomStagePropertiesScreenState
                   )) ...[
                     Card(
                       child: SwitchListTile(
-                        title: Text(_fieldLabel(context, 'HasCannon')),
+                        title: _ellipsisText(
+                          _fieldLabel(context, 'HasCannon'),
+                          maxLines: 2,
+                        ),
                         value: CustomStageLevelUtils.readBool(
                           _objdata,
                           'HasCannon',

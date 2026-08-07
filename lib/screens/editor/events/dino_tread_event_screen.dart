@@ -187,10 +187,14 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
                         children: [
                           Icon(Icons.pets, color: dinoColor),
                           const SizedBox(width: 8),
-                          Text(
-                            l10n?.positionAndArea ?? 'Position & area',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              l10n?.positionAndArea ?? 'Position & area',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],

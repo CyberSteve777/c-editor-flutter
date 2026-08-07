@@ -246,7 +246,11 @@ class _ResilienceShieldSelectionScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.resilienceSelectShield ?? 'Select resilience shield'),
+        title: Text(
+          l10n?.resilienceSelectShield ?? 'Select resilience shield',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
 
       body: Stack(
@@ -422,10 +426,16 @@ class _ResilienceShieldSelectionScreenState
                               size: 28,
                             ),
 
-                            title: Text(item.alias),
+                            title: Text(
+                              item.alias,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
 
                             subtitle: Text(
                               item.displayRtid,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
 
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,

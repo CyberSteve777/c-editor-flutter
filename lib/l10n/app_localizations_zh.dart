@@ -1749,6 +1749,14 @@ class AppLocalizationsZh extends AppLocalizations {
       '第一波僵尸到来前的时间间隔会随关卡是否有传送带而变化，若有传送带，则从自选卡的12秒变为5秒。旗帜波延迟指的是红字提示到僵尸刷新的间隔。';
 
   @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHint =>
+      '当前首波延迟的编辑仅对传送带关卡生效，常规关卡会采用默认值';
+
+  @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHelp =>
+      '当前首波延迟的编辑仅对传送带关卡生效，常规关卡会采用默认值。';
+
+  @override
   String get waveManagerHelpMusicTitle => '音乐类型';
 
   @override
@@ -2049,13 +2057,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stageTypeMain => '主线世界';
 
   @override
-  String get stageTypeExtra => '活动/秘境';
+  String get stageTypeExtra => '秘境/活动';
 
   @override
   String get stageTypeSeasons => '一代/季节';
 
   @override
-  String get stageTypeSpecial => '小游戏';
+  String get stageTypeSpecial => '特殊';
 
   @override
   String get search => '搜索';
@@ -2143,11 +2151,11 @@ class AppLocalizationsZh extends AppLocalizations {
       '添加能量瓷砖工具卡需要关卡中包含能量瓷砖模块。是否添加该模块并继续？';
 
   @override
-  String get conveyorPlantWearCostume => '显示装扮 (iAvatar)';
+  String get conveyorPlantWearCostume => '显示装扮 (iAvatar；已失效)';
 
   @override
   String get conveyorPlantWearCostumeTooltip =>
-      '启用后该植物在传送带上的卡牌将显示其装扮，该功能在庭院模块下不生效。';
+      '启用后该植物在传送带上的卡牌将显示其装扮，该功能在当前版本不生效。';
 
   @override
   String get modifyConveyorAddPoolTitle => '加入传送带池 (Add List)';
@@ -3282,7 +3290,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get resilienceHint => '数值范围0.0-1.0，0.0表示无影响，1.0表示完全免疫';
 
   @override
-  String get resilienceSelectedShieldLabel => '已选韧性护盾：';
+  String get resilienceSelectedShieldLabel => '已选韧性条：';
 
   @override
   String get selectionFilterBySource => '按来源';
@@ -3308,7 +3316,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get resilienceSelectShield => '选择韧性护盾';
+  String get resilienceSelectShield => '选择韧性条';
 
   @override
   String get resilienceCreateCustom => '新建自定义护盾';
@@ -3326,13 +3334,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get resilienceTypeAll => '全部类型';
 
   @override
-  String get resilienceNoShieldsFound => '未找到韧性护盾';
+  String get resilienceNoShieldsFound => '未找到韧性条';
 
   @override
   String get resilienceShieldInUseCannotDelete => '无法删除——本关卡中有僵尸正在使用此护盾。';
 
   @override
-  String get resilienceShieldDeleteTitle => '删除自定义韧性护盾？';
+  String get resilienceShieldDeleteTitle => '删除自定义韧性条？';
 
   @override
   String resilienceShieldDeleteMessage(String alias) {
@@ -5170,7 +5178,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ztPerksNone => '尚未添加任何词条。';
 
   @override
-  String get ztPerksAdd => '为僵尸添加词条';
+  String get ztPerksAdd => '添加';
 
   @override
   String get ztPerksTypeAlreadyAssigned => '该僵尸已拥有同类型词条，请选择其他词条。';

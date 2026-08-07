@@ -262,6 +262,8 @@ class _CustomResilienceShieldEditorScreenState
           _isNew
               ? (l10n?.resilienceCreateCustom ?? 'New custom shield')
               : (l10n?.resilienceEditCustom ?? 'Edit custom shield'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
 
         actions: [
@@ -329,7 +331,11 @@ class _CustomResilienceShieldEditorScreenState
 
             hint: resilienceWeakTypeJsonValues.contains(_data.weakType)
                 ? null
-                : Text(resilienceWeakTypeLabel(l10n, _data.weakType)),
+                : Text(
+                    resilienceWeakTypeLabel(l10n, _data.weakType),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
 
             items: resilienceWeakTypeJsonValues.map((wt) {
               return DropdownMenuItem(

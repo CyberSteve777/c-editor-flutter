@@ -1787,6 +1787,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'The delay before the first wave depends on whether the level uses a conveyor belt: 5 seconds with a conveyor, or 12 seconds without. Flag wave delay refers to the time between the red warning message and zombie spawn.';
 
   @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHint =>
+      'Currently, editing first wave delay only affects conveyor belt levels; regular levels use the default value.';
+
+  @override
+  String get waveManagerFirstWaveDelayConveyorOnlyHelp =>
+      'Currently, editing first wave delay only affects conveyor belt evels; regular levels use the default value.';
+
+  @override
   String get waveManagerHelpMusicTitle => 'Level Jam';
 
   @override
@@ -2209,11 +2217,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Adding Power Tile tool packets requires the level to include the Power Tile module. Add the module and continue?';
 
   @override
-  String get conveyorPlantWearCostume => 'Display costume (iAvatar)';
+  String get conveyorPlantWearCostume =>
+      'Display costume (iAvatar; no longer works)';
 
   @override
   String get conveyorPlantWearCostumeTooltip =>
-      'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work when the Creative Courtyard module is enabled.';
+      'When enabled, this plant’s packet on the conveyor belt will display its costume. This feature does not work in the current version.';
 
   @override
   String get modifyConveyorAddPoolTitle => 'Add to Conveyor Pool';
@@ -3384,7 +3393,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resilience => 'Resistances (Resistences)';
 
   @override
-  String get resilienceArmor => 'Resilience Bar';
+  String get resilienceArmor => 'Resilience Shield';
 
   @override
   String get enableResilience => 'Enable resilience';
@@ -5412,7 +5421,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ztPerksNone => 'No perks have been added yet.';
 
   @override
-  String get ztPerksAdd => 'Add Zombie Perks';
+  String get ztPerksAdd => 'Add';
 
   @override
   String get ztPerksTypeAlreadyAssigned =>
@@ -8259,10 +8268,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get customStageProperties => 'Custom stage properties';
+  String get customStageProperties => 'Custom lawn properties';
 
   @override
-  String get customStageNotFound => 'Custom stage object not found.';
+  String get customStageNotFound => 'Custom lawn object not found.';
 
   @override
   String get customStageSectionGeneral => 'General';
@@ -8400,7 +8409,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick a base lawn appearance and edit it locally in this level.';
 
   @override
-  String get customStageAliasPromptTitle => 'Custom stage alias';
+  String get customStageAliasPromptTitle => 'Custom lawn alias';
 
   @override
   String get customStageAliasTaken =>
@@ -8423,14 +8432,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customStageSwitchToBuiltinMessage =>
-      'This permanently removes the custom stage data from this level. This cannot be undone.';
+      'This permanently removes the custom lawn data from this level. This cannot be undone.';
 
   @override
   String get customStageDeleteTitle => 'Delete custom lawn?';
 
   @override
   String get customStageDeleteMessage =>
-      'This permanently removes the custom stage data from this level. If it is the active lawn, the level will switch to the default built-in lawn.';
+      'This permanently removes the custom lawn data from this level. If it is the active lawn, the level will switch to the default built-in lawn.';
 
   @override
   String get customStagePresetSectionTitle => 'Preset custom lawns';

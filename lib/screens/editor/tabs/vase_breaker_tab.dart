@@ -356,9 +356,13 @@ class _VaseBreakerTabState extends State<VaseBreakerTab> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n?.vaseListTitle ?? 'Vase List',
-              style: Theme.of(context).textTheme.titleMedium,
+            Expanded(
+              child: Text(
+                l10n?.vaseListTitle ?? 'Vase List',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
             IconButton(
               icon: const Icon(Icons.add),

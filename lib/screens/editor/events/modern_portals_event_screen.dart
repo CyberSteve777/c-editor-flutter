@@ -153,9 +153,10 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
                     children: [
                       Row(
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                               Text(
                                 l10n?.selectedPosition ?? 'Selected position',
                                 style: theme.textTheme.bodySmall?.copyWith(
@@ -169,7 +170,8 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
                                   color: theme.colorScheme.primary,
                                 ),
                               ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
