@@ -251,11 +251,12 @@ abstract final class CustomStageLevelUtils {
     required String alias,
     required String objclass,
     required Map<String, dynamic> objdata,
+    List<String>? aliases,
     bool prepend = false,
   }) {
     final obj = PvzObject(
       objClass: objclass,
-      aliases: [alias],
+      aliases: aliases ?? [alias],
       objData: cloneJson(objdata),
     );
     if (prepend) {

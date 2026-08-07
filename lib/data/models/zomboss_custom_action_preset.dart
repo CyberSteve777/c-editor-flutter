@@ -81,17 +81,20 @@ class ZombossCustomActionPresetDependency {
     required this.alias,
     required this.objclass,
     required this.objdata,
+    required this.fields,
   });
 
   final String id;
   final String alias;
   final String objclass;
   final Map<String, dynamic> objdata;
+  final List<ZombossMechFieldSpec> fields;
 
   factory ZombossCustomActionPresetDependency.fromJson(
     Map<String, dynamic> json,
   ) {
     final rawObjdata = json['objdata'];
+    final rawFields = json['fields'];
     return ZombossCustomActionPresetDependency(
       id: json['id'] as String? ?? '',
       alias: json['alias'] as String? ?? '',
@@ -99,6 +102,16 @@ class ZombossCustomActionPresetDependency {
       objdata: rawObjdata is Map
           ? Map<String, dynamic>.from(rawObjdata)
           : const {},
+      fields: rawFields is List
+          ? rawFields
+                .whereType<Map>()
+                .map(
+                  (field) => ZombossMechFieldSpec.fromJson(
+                    Map<String, dynamic>.from(field),
+                  ),
+                )
+                .toList()
+          : const [],
     );
   }
 }

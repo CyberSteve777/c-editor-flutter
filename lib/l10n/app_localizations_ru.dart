@@ -7629,6 +7629,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechActionBaseObjclass => 'Тип действия (objclass)';
 
   @override
+  String get zombossMechActionBaseAction => 'Базовое действие';
+
+  @override
   String get zombossMechActionDetails => 'Сведения о действии';
 
   @override
@@ -7654,6 +7657,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossMechNoZombiesInList => 'Список зомби пуст';
+
+  @override
+  String get zombossMechSpawnBallSettings =>
+      'Содержимое SpawnBall (ZombieDropProps)';
+
+  @override
+  String get zombossMechAwardDropInvalidTitle =>
+      'Недействительная ссылка SpawnBall';
+
+  @override
+  String zombossMechAwardDropInvalidBody(String rtid) {
+    return 'AwardDrop ссылается на «$rtid», но это не является корректным объектом ZombieDropProps текущего уровня. Игра может не загрузить это действие.';
+  }
+
+  @override
+  String get zombossMechAwardDropClearInvalid =>
+      'Очистить неверное значение и восстановить значение по умолчанию';
 
   @override
   String get zombossMechCatalogActionReadOnly =>
@@ -8547,4 +8567,93 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get mismatch_zlib_magic =>
       'Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4';
+
+  @override
+  String get customPortalAdd => '+ Пользовательский портал';
+
+  @override
+  String customPortalName(int index) {
+    return 'Пользовательский портал $index';
+  }
+
+  @override
+  String get customPortalCreateTitle => 'Создать пользовательский портал';
+
+  @override
+  String get customPortalEditTitle => 'Изменить пользовательский портал';
+
+  @override
+  String get customPortalSelectBaseTitle => 'Выберите базовый портал';
+
+  @override
+  String get customPortalBlankTemplate => 'Пустой шаблон портала';
+
+  @override
+  String get customPortalBlankTemplateSubtitle =>
+      'Стандартная структура портала без зомби.';
+
+  @override
+  String get customPortalBuiltInBases => 'Встроенные базовые порталы';
+
+  @override
+  String get customPortalUnusedTitle => 'Удалить неиспользуемый портал?';
+
+  @override
+  String customPortalUnusedMessage(int index) {
+    return 'Пользовательский портал $index больше не используется. Удалить связанные с ним объекты данных из уровня?';
+  }
+
+  @override
+  String get customPortalAppearanceSection => 'Внешний вид портала';
+
+  @override
+  String get customPortalSpawnSection => 'Появление зомби';
+
+  @override
+  String get customPortalWorld => 'Внешний вид мира';
+
+  @override
+  String get customPortalWorldTwister => 'Временная энергия';
+
+  @override
+  String get customPortalPopAnimation => 'Анимация портала';
+
+  @override
+  String get customPortalAnimationModern => 'Портал Современного Дня';
+
+  @override
+  String get customPortalAnimationMemoryLane => 'Портал Дороги воспоминаний';
+
+  @override
+  String get customPortalAnimationHydra => 'Зеркало Зомбота Сказочного Леса';
+
+  @override
+  String get customPortalSpawnMethod => 'Способ появления зомби';
+
+  @override
+  String get customPortalSpawnMethodShuffled =>
+      'Перемешанная последовательность';
+
+  @override
+  String get customPortalSpawnMethodInOrder => 'По порядку';
+
+  @override
+  String get customPortalSpawnMethodHydra =>
+      'Случайный выбор Зомбота Сказочного Леса';
+
+  @override
+  String get customPortalZombieTypes => 'Доступные типы зомби';
+
+  @override
+  String get customPortalMinimumQuantity => 'Минимальное количество';
+
+  @override
+  String get customPortalMaximumQuantity => 'Максимальное количество';
+
+  @override
+  String get customPortalSpawnInterval => 'Интервал появления зомби';
+
+  @override
+  String get customPortalSpawnIntervalSubtitle =>
+      'Необязательно задайте минимальное и максимальное время между появлениями зомби.';
 }

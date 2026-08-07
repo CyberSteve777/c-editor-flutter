@@ -45,7 +45,9 @@ Widget? customActionOriginBadge({
       context,
     ),
     ZombossCustomActionOrigin.presetDerived => customStageBadgeColor(context),
-    ZombossCustomActionOrigin.userCreated => const Color(0xFFFFC107),
+    ZombossCustomActionOrigin.userCreated => userCustomResourceBadgeColor(
+      context,
+    ),
   };
   return CustomResourceBadge(color: color);
 }

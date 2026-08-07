@@ -167,7 +167,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get totalPlantFoodTooltip => '本关能量豆总数（包括掉落、事件等）';
 
   @override
-  String get appTitle => '我的关卡';
+  String get appTitle => '我的关卡库';
 
   @override
   String get about => '关于';
@@ -179,26 +179,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toggleTheme => '切换主题';
 
   @override
-  String get switchFolder => '管理库';
+  String get switchFolder => '切换关卡库';
 
   @override
-  String get manageLibraries => '管理库';
+  String get manageLibraries => '管理关卡库';
 
   @override
-  String get addLibrary => '添加库';
+  String get addLibrary => '添加关卡库';
 
   @override
-  String get libraryName => '库名称';
+  String get libraryName => '关卡库名称';
 
   @override
   String get libraryPath => '路径';
 
   @override
-  String get deleteLibraryTitle => '确认删除库?';
+  String get deleteLibraryTitle => '确认删除关卡库?';
 
   @override
   String deleteLibraryMessage(String name) {
-    return '您确定要从库列表中移除 \"$name\" 吗? 此操作不会删除磁盘上的任何文件。';
+    return '您确定要从关卡库列表中移除 \"$name\" 吗? 此操作不会删除磁盘上的任何文件。';
   }
 
   @override
@@ -751,7 +751,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get uploadLevelConfirm =>
-      '即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将编辑器中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？';
+      '即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将关卡库所在的文件夹中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？';
 
   @override
   String get back => '返回';
@@ -4313,7 +4313,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get referenceModules => '参考模块';
 
   @override
-  String get portalType => '裂缝类型（PortalType）';
+  String get portalType => '裂缝类型 (PortalType)';
 
   @override
   String get selectPortalType => '选择裂缝类型';
@@ -4684,7 +4684,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get manualInput => '手动输入';
 
   @override
-  String get waveManagerModule => '波次管理模块';
+  String get waveManagerModule => '波次管理器模块说明';
 
   @override
   String get points => '积分';
@@ -7305,6 +7305,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechActionBaseObjclass => '动作类型 (objclass)';
 
   @override
+  String get zombossMechActionBaseAction => '基础动作';
+
+  @override
   String get zombossMechActionDetails => '动作详情';
 
   @override
@@ -7330,6 +7333,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechNoZombiesInList => '列表中暂无僵尸';
+
+  @override
+  String get zombossMechSpawnBallSettings => 'SpawnBall 掉落内容（ZombieDropProps）';
+
+  @override
+  String get zombossMechAwardDropInvalidTitle => 'SpawnBall 引用失效';
+
+  @override
+  String zombossMechAwardDropInvalidBody(String rtid) {
+    return 'AwardDrop 当前指向“$rtid”，但该引用不是关卡内结构有效的 ZombieDropProps 对象，游戏可能无法正常读取此动作。';
+  }
+
+  @override
+  String get zombossMechAwardDropClearInvalid => '清除无效值并恢复默认';
 
   @override
   String get zombossMechCatalogActionReadOnly => '默认动作无法在此编辑。请创建自定义动作以修改僵尸列表。';
@@ -8176,4 +8193,89 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mismatch_zlib_magic => 'PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头';
+
+  @override
+  String get customPortalAdd => '+ 自定义裂缝';
+
+  @override
+  String customPortalName(int index) {
+    return '自定义裂缝$index';
+  }
+
+  @override
+  String get customPortalCreateTitle => '创建自定义裂缝';
+
+  @override
+  String get customPortalEditTitle => '编辑自定义裂缝';
+
+  @override
+  String get customPortalSelectBaseTitle => '选择基础裂缝';
+
+  @override
+  String get customPortalBlankTemplate => '空白裂缝模板';
+
+  @override
+  String get customPortalBlankTemplateSubtitle => '使用标准裂缝结构创建，不预先添加僵尸';
+
+  @override
+  String get customPortalBuiltInBases => '默认裂缝';
+
+  @override
+  String get customPortalUnusedTitle => '清除未使用的自定义裂缝？';
+
+  @override
+  String customPortalUnusedMessage(int index) {
+    return '自定义裂缝$index已不再被使用，是否从关卡中清除其关联数据对象？';
+  }
+
+  @override
+  String get customPortalAppearanceSection => '裂缝外观';
+
+  @override
+  String get customPortalSpawnSection => '僵尸生成';
+
+  @override
+  String get customPortalWorld => '世界外观';
+
+  @override
+  String get customPortalWorldTwister => '时空能量';
+
+  @override
+  String get customPortalPopAnimation => '裂缝动画';
+
+  @override
+  String get customPortalAnimationModern => '摩登世界裂缝动画';
+
+  @override
+  String get customPortalAnimationMemoryLane => '回忆之旅裂缝动画';
+
+  @override
+  String get customPortalAnimationHydra => '魔咒吟唱者魔镜动画';
+
+  @override
+  String get customPortalSpawnMethod => '僵尸生成方式';
+
+  @override
+  String get customPortalSpawnMethodShuffled => '乱序依次生成';
+
+  @override
+  String get customPortalSpawnMethodInOrder => '按顺序生成';
+
+  @override
+  String get customPortalSpawnMethodHydra => '魔咒吟唱者随机生成';
+
+  @override
+  String get customPortalZombieTypes => '可生成的僵尸';
+
+  @override
+  String get customPortalMinimumQuantity => '最小生成数量';
+
+  @override
+  String get customPortalMaximumQuantity => '最大生成数量';
+
+  @override
+  String get customPortalSpawnInterval => '僵尸生成间隔';
+
+  @override
+  String get customPortalSpawnIntervalSubtitle => '设置两次僵尸生成之间的最短与最长时间。';
 }

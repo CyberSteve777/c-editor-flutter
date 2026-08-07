@@ -2618,6 +2618,7 @@
   },
   "zombossMechActionAliasHint": "Имя в RTID(псевдоним@CurrentLevel). Можно изменить позже; ссылки в этом листе свойств обновятся автоматически.",
   "zombossMechActionBaseObjclass": "Тип действия (objclass)",
+  "zombossMechActionBaseAction": "Базовое действие",
   "zombossMechActionDetails": "Сведения о действии",
   "zombossMechActionRtid": "RTID",
   "zombossMechActionFields": "Поля действия",
@@ -2627,6 +2628,15 @@
   "zombossMechAddZombie": "Добавить зомби",
   "zombossMechPickZombie": "Выбрать зомби",
   "zombossMechNoZombiesInList": "Список зомби пуст",
+  "zombossMechSpawnBallSettings": "Содержимое SpawnBall (ZombieDropProps)",
+  "zombossMechAwardDropInvalidTitle": "Недействительная ссылка SpawnBall",
+  "zombossMechAwardDropInvalidBody": "AwardDrop ссылается на «{rtid}», но это не является корректным объектом ZombieDropProps текущего уровня. Игра может не загрузить это действие.",
+  "@zombossMechAwardDropInvalidBody": {
+    "placeholders": {
+      "rtid": { "type": "String" }
+    }
+  },
+  "zombossMechAwardDropClearInvalid": "Очистить неверное значение и восстановить значение по умолчанию",
   "zombossMechCatalogActionReadOnly": "Встроенные действия здесь не редактируются. Создайте своё действие, чтобы изменить списки зомби.",
   "zombossMechRetreatDisabled": "Отключено",
   "zombossMechOpenGlacierModule": "Открыть настройки ледникового модуля",
@@ -2948,5 +2958,38 @@
   "invalid_rsg_magic": "Неверное магическое число RSG, должно начинаться с \"PGSR\"",
   "invalid_rsg_version": "Неверная версия RSG, должна быть 3 или 4",
   "invalid_rsg_compression_flag": "Неверный флаг сжатия RSG, поддерживаются только от 0 до 3",
-  "mismatch_zlib_magic": "Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4"
+  "mismatch_zlib_magic": "Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4",
+  "customPortalAdd": "+ Пользовательский портал",
+  "customPortalName": "Пользовательский портал {index}",
+  "@customPortalName": {
+    "placeholders": { "index": { "type": "int" } }
+  },
+  "customPortalCreateTitle": "Создать пользовательский портал",
+  "customPortalEditTitle": "Изменить пользовательский портал",
+  "customPortalSelectBaseTitle": "Выберите базовый портал",
+  "customPortalBlankTemplate": "Пустой шаблон портала",
+  "customPortalBlankTemplateSubtitle": "Стандартная структура портала без зомби.",
+  "customPortalBuiltInBases": "Встроенные базовые порталы",
+  "customPortalUnusedTitle": "Удалить неиспользуемый портал?",
+  "customPortalUnusedMessage": "Пользовательский портал {index} больше не используется. Удалить связанные с ним объекты данных из уровня?",
+  "@customPortalUnusedMessage": {
+    "placeholders": { "index": { "type": "int" } }
+  },
+  "customPortalAppearanceSection": "Внешний вид портала",
+  "customPortalSpawnSection": "Появление зомби",
+  "customPortalWorld": "Внешний вид мира",
+  "customPortalWorldTwister": "Временная энергия",
+  "customPortalPopAnimation": "Анимация портала",
+  "customPortalAnimationModern": "Портал Современного Дня",
+  "customPortalAnimationMemoryLane": "Портал Дороги воспоминаний",
+  "customPortalAnimationHydra": "Зеркало Зомбота Сказочного Леса",
+  "customPortalSpawnMethod": "Способ появления зомби",
+  "customPortalSpawnMethodShuffled": "Перемешанная последовательность",
+  "customPortalSpawnMethodInOrder": "По порядку",
+  "customPortalSpawnMethodHydra": "Случайный выбор Зомбота Сказочного Леса",
+  "customPortalZombieTypes": "Доступные типы зомби",
+  "customPortalMinimumQuantity": "Минимальное количество",
+  "customPortalMaximumQuantity": "Максимальное количество",
+  "customPortalSpawnInterval": "Интервал появления зомби",
+  "customPortalSpawnIntervalSubtitle": "Необязательно задайте минимальное и максимальное время между появлениями зомби."
 }

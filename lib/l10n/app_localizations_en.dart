@@ -168,7 +168,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Total Plant Food (including drops, events, etc.)';
 
   @override
-  String get appTitle => 'My Levels';
+  String get appTitle => 'My Level Library';
 
   @override
   String get about => 'About';
@@ -180,10 +180,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Toggle theme';
 
   @override
-  String get switchFolder => 'Library manager';
+  String get switchFolder => 'Switch level library';
 
   @override
-  String get manageLibraries => 'Manage libraries';
+  String get manageLibraries => 'Manage Level Libraries';
 
   @override
   String get addLibrary => 'Add library';
@@ -766,7 +766,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploadLevelConfirm =>
-      'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
+      'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the level library folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
 
   @override
   String get back => 'Back';
@@ -7674,6 +7674,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionBaseObjclass => 'Action Type (objclass)';
 
   @override
+  String get zombossMechActionBaseAction => 'Base Action';
+
+  @override
   String get zombossMechActionDetails => 'Action Details';
 
   @override
@@ -7699,6 +7702,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechNoZombiesInList => 'No zombies in list';
+
+  @override
+  String get zombossMechSpawnBallSettings =>
+      'SpawnBall contents (ZombieDropProps)';
+
+  @override
+  String get zombossMechAwardDropInvalidTitle => 'Invalid SpawnBall reference';
+
+  @override
+  String zombossMechAwardDropInvalidBody(String rtid) {
+    return 'AwardDrop points to \"$rtid\", but it is not a valid CurrentLevel ZombieDropProps object. The game may fail to load this action.';
+  }
+
+  @override
+  String get zombossMechAwardDropClearInvalid =>
+      'Clear invalid value and restore default';
 
   @override
   String get zombossMechCatalogActionReadOnly =>
@@ -8580,4 +8599,92 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mismatch_zlib_magic =>
       'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4';
+
+  @override
+  String get customPortalAdd => '+ Custom Portal';
+
+  @override
+  String customPortalName(int index) {
+    return 'Custom Portal $index';
+  }
+
+  @override
+  String get customPortalCreateTitle => 'Create Custom Portal';
+
+  @override
+  String get customPortalEditTitle => 'Edit Custom Portal';
+
+  @override
+  String get customPortalSelectBaseTitle => 'Select a Base Portal';
+
+  @override
+  String get customPortalBlankTemplate => 'Blank Portal Template';
+
+  @override
+  String get customPortalBlankTemplateSubtitle =>
+      'Start with the standard portal structure and no zombies.';
+
+  @override
+  String get customPortalBuiltInBases => 'Built-in Portals';
+
+  @override
+  String get customPortalUnusedTitle => 'Remove Unused Custom Portal?';
+
+  @override
+  String customPortalUnusedMessage(int index) {
+    return 'Custom Portal $index is no longer used. Remove its associated data objects from this level?';
+  }
+
+  @override
+  String get customPortalAppearanceSection => 'Portal Appearance';
+
+  @override
+  String get customPortalSpawnSection => 'Zombie Spawning';
+
+  @override
+  String get customPortalWorld => 'World Appearance';
+
+  @override
+  String get customPortalWorldTwister => 'Temporal Energy';
+
+  @override
+  String get customPortalPopAnimation => 'Portal Animation';
+
+  @override
+  String get customPortalAnimationModern => 'Modern Day\'s Portal';
+
+  @override
+  String get customPortalAnimationMemoryLane => 'Memory Lane\'s Portal';
+
+  @override
+  String get customPortalAnimationHydra => 'Zombot Spell Chanter\'s Mirror';
+
+  @override
+  String get customPortalSpawnMethod => 'Zombie Spawn Method';
+
+  @override
+  String get customPortalSpawnMethodShuffled => 'Shuffled Sequence';
+
+  @override
+  String get customPortalSpawnMethodInOrder => 'In Order';
+
+  @override
+  String get customPortalSpawnMethodHydra =>
+      'Zombot Spell Chanter\'s Random Spawn';
+
+  @override
+  String get customPortalZombieTypes => 'Spawnable Zombie Types';
+
+  @override
+  String get customPortalMinimumQuantity => 'Minimum Spawn Quantity';
+
+  @override
+  String get customPortalMaximumQuantity => 'Maximum Spawn Quantity';
+
+  @override
+  String get customPortalSpawnInterval => 'Zombie Spawn Interval';
+
+  @override
+  String get customPortalSpawnIntervalSubtitle =>
+      'Optionally set the minimum and maximum time between zombie spawns.';
 }

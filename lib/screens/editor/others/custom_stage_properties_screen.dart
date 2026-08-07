@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
 import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/stage_catalog_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -149,7 +150,11 @@ class _CustomStagePropertiesScreenState
     );
     _stageObj!.objData = _objdata;
     if (renameAlias) {
-      _stageObj!.aliases = [_alias];
+      _stageObj!.aliases =
+          CustomStagePresetRepository.preservePresetMarkerAliases(
+            primaryAlias: _alias,
+            existingAliases: _stageObj!.aliases,
+          );
       final levelDefObj = widget.levelFile.objects.firstWhereOrNull(
         (o) => o.objClass == 'LevelDefinition',
       );
@@ -206,6 +211,8 @@ class _CustomStagePropertiesScreenState
       MaterialPageRoute(
         builder: (ctx) => StageResourceGroupImportScreen(
           mode: mode,
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:stage-resource',
           existingGroups: existing,
           onImport:
               ({
@@ -283,6 +290,8 @@ class _CustomStagePropertiesScreenState
       context,
       MaterialPageRoute(
         builder: (ctx) => StageBackgroundSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:stage-background',
           optionsBuilder: () {
             final delayLoads = StageCatalogRepository.delayLoadGroupsInLists(
               _resourceGroups,

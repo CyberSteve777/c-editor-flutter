@@ -403,7 +403,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Levels'**
+  /// **'My Level Library'**
   String get appTitle;
 
   /// No description provided for @about.
@@ -427,13 +427,13 @@ abstract class AppLocalizations {
   /// No description provided for @switchFolder.
   ///
   /// In en, this message translates to:
-  /// **'Library manager'**
+  /// **'Switch level library'**
   String get switchFolder;
 
   /// No description provided for @manageLibraries.
   ///
   /// In en, this message translates to:
-  /// **'Manage libraries'**
+  /// **'Manage Level Libraries'**
   String get manageLibraries;
 
   /// No description provided for @addLibrary.
@@ -1465,7 +1465,7 @@ abstract class AppLocalizations {
   /// No description provided for @uploadLevelConfirm.
   ///
   /// In en, this message translates to:
-  /// **'You are about to leave the editor and open the official Advanced Creation Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the editor to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
+  /// **'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the level library folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
   String get uploadLevelConfirm;
 
   /// No description provided for @back.
@@ -13622,6 +13622,12 @@ abstract class AppLocalizations {
   /// **'Action Type (objclass)'**
   String get zombossMechActionBaseObjclass;
 
+  /// No description provided for @zombossMechActionBaseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Action'**
+  String get zombossMechActionBaseAction;
+
   /// No description provided for @zombossMechActionDetails.
   ///
   /// In en, this message translates to:
@@ -13675,6 +13681,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No zombies in list'**
   String get zombossMechNoZombiesInList;
+
+  /// No description provided for @zombossMechSpawnBallSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'SpawnBall contents (ZombieDropProps)'**
+  String get zombossMechSpawnBallSettings;
+
+  /// No description provided for @zombossMechAwardDropInvalidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid SpawnBall reference'**
+  String get zombossMechAwardDropInvalidTitle;
+
+  /// No description provided for @zombossMechAwardDropInvalidBody.
+  ///
+  /// In en, this message translates to:
+  /// **'AwardDrop points to \"{rtid}\", but it is not a valid CurrentLevel ZombieDropProps object. The game may fail to load this action.'**
+  String zombossMechAwardDropInvalidBody(String rtid);
+
+  /// No description provided for @zombossMechAwardDropClearInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear invalid value and restore default'**
+  String get zombossMechAwardDropClearInvalid;
 
   /// No description provided for @zombossMechCatalogActionReadOnly.
   ///
@@ -15247,6 +15277,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4'**
   String get mismatch_zlib_magic;
+
+  /// No description provided for @customPortalAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Custom Portal'**
+  String get customPortalAdd;
+
+  /// No description provided for @customPortalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Portal {index}'**
+  String customPortalName(int index);
+
+  /// No description provided for @customPortalCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Custom Portal'**
+  String get customPortalCreateTitle;
+
+  /// No description provided for @customPortalEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Custom Portal'**
+  String get customPortalEditTitle;
+
+  /// No description provided for @customPortalSelectBaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Base Portal'**
+  String get customPortalSelectBaseTitle;
+
+  /// No description provided for @customPortalBlankTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Blank Portal Template'**
+  String get customPortalBlankTemplate;
+
+  /// No description provided for @customPortalBlankTemplateSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the standard portal structure and no zombies.'**
+  String get customPortalBlankTemplateSubtitle;
+
+  /// No description provided for @customPortalBuiltInBases.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in Portals'**
+  String get customPortalBuiltInBases;
+
+  /// No description provided for @customPortalUnusedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Unused Custom Portal?'**
+  String get customPortalUnusedTitle;
+
+  /// No description provided for @customPortalUnusedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Portal {index} is no longer used. Remove its associated data objects from this level?'**
+  String customPortalUnusedMessage(int index);
+
+  /// No description provided for @customPortalAppearanceSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Portal Appearance'**
+  String get customPortalAppearanceSection;
+
+  /// No description provided for @customPortalSpawnSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Spawning'**
+  String get customPortalSpawnSection;
+
+  /// No description provided for @customPortalWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World Appearance'**
+  String get customPortalWorld;
+
+  /// No description provided for @customPortalWorldTwister.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporal Energy'**
+  String get customPortalWorldTwister;
+
+  /// No description provided for @customPortalPopAnimation.
+  ///
+  /// In en, this message translates to:
+  /// **'Portal Animation'**
+  String get customPortalPopAnimation;
+
+  /// No description provided for @customPortalAnimationModern.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Day\'s Portal'**
+  String get customPortalAnimationModern;
+
+  /// No description provided for @customPortalAnimationMemoryLane.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory Lane\'s Portal'**
+  String get customPortalAnimationMemoryLane;
+
+  /// No description provided for @customPortalAnimationHydra.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombot Spell Chanter\'s Mirror'**
+  String get customPortalAnimationHydra;
+
+  /// No description provided for @customPortalSpawnMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Spawn Method'**
+  String get customPortalSpawnMethod;
+
+  /// No description provided for @customPortalSpawnMethodShuffled.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffled Sequence'**
+  String get customPortalSpawnMethodShuffled;
+
+  /// No description provided for @customPortalSpawnMethodInOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'In Order'**
+  String get customPortalSpawnMethodInOrder;
+
+  /// No description provided for @customPortalSpawnMethodHydra.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombot Spell Chanter\'s Random Spawn'**
+  String get customPortalSpawnMethodHydra;
+
+  /// No description provided for @customPortalZombieTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawnable Zombie Types'**
+  String get customPortalZombieTypes;
+
+  /// No description provided for @customPortalMinimumQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Spawn Quantity'**
+  String get customPortalMinimumQuantity;
+
+  /// No description provided for @customPortalMaximumQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Spawn Quantity'**
+  String get customPortalMaximumQuantity;
+
+  /// No description provided for @customPortalSpawnInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Spawn Interval'**
+  String get customPortalSpawnInterval;
+
+  /// No description provided for @customPortalSpawnIntervalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optionally set the minimum and maximum time between zombie spawns.'**
+  String get customPortalSpawnIntervalSubtitle;
 }
 
 class _AppLocalizationsDelegate

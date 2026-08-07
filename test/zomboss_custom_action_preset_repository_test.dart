@@ -69,6 +69,7 @@ void main() {
       ZombossCustomActionPresetRepository.originForRtid(level, creation.rtid),
       ZombossCustomActionOrigin.presetTemplate,
     );
+    expect(level.toJson().toString(), isNot(contains('__c_editor_')));
   });
 
   test(
@@ -103,6 +104,24 @@ void main() {
         'RTID(SpawnBall_2@CurrentLevel)',
       );
 
+      final blueDependency = level.objects.firstWhere(
+        (object) => object.aliases?.contains('SpawnBall_2') == true,
+      );
+      final dependencyData = Map<String, dynamic>.from(
+        blueDependency.objData as Map,
+      );
+      dependencyData['Collectables'] = <String>[];
+      blueDependency.objData = dependencyData;
+      expect(
+        ZombossCustomActionPresetRepository.originForRtid(level, blue.rtid),
+        ZombossCustomActionOrigin.presetDerived,
+      );
+      final reopened = PvzLevelFile.fromJson(level.toJson());
+      expect(
+        ZombossCustomActionPresetRepository.originForRtid(reopened, blue.rtid),
+        ZombossCustomActionOrigin.presetDerived,
+      );
+
       ZombossCustomActionPresetRepository.removeCreatedObjects(level, blue);
 
       expect(
@@ -118,4 +137,85 @@ void main() {
       );
     },
   );
+
+  test('accepts a manually redirected valid SpawnBall dependency', () {
+    final preset = ZombossCustomActionPresetRepository.presetById(
+      'sport_tank_spawn',
+    )!;
+    final manualDependency = PvzObject(
+      aliases: ['ManualSpawnBall'],
+      objClass: 'ZombieDropProps',
+      objData: {
+        'ZombieHordes': [
+          {'Type': 'cowboy'},
+        ],
+        'Collectables': ['spacetime_plantfood'],
+        'UnknownField': true,
+      },
+    );
+    final action = PvzObject(
+      aliases: [preset.sourceAlias],
+      objClass: preset.objclass,
+      objData: {
+        ...preset.objdata,
+        'AwardDrop': 'RTID(ManualSpawnBall@CurrentLevel)',
+      },
+    );
+    final level = PvzLevelFile(objects: [action, manualDependency]);
+    final spec = ZombossCustomActionPresetRepository.dependencySpecForField(
+      action,
+      'AwardDrop',
+    )!;
+    expect(spec.fields.map((field) => field.name), [
+      'ZombieHordes',
+      'Collectables',
+    ]);
+
+    expect(
+      ZombossCustomActionPresetRepository.dependencyObjectForField(
+        level,
+        action,
+        'AwardDrop',
+      ),
+      same(manualDependency),
+    );
+    expect(
+      ZombossCustomActionPresetRepository.isValidDependencyObject(
+        manualDependency,
+        spec,
+      ),
+      isTrue,
+    );
+    expect(
+      ZombossCustomActionPresetRepository.isValidDependencyObject(
+        PvzObject(
+          aliases: ['Broken'],
+          objClass: 'ZombieDropProps',
+          objData: {'ZombieHordes': 'not-a-list', 'Collectables': []},
+        ),
+        spec,
+      ),
+      isFalse,
+    );
+  });
+
+  test('keeps a newly created action yellow without a JSON marker', () {
+    final preset = ZombossCustomActionPresetRepository.presetById(
+      'nightmare_stomp_spawn',
+    )!;
+    final object = PvzObject(
+      aliases: [preset.sourceAlias],
+      objClass: preset.objclass,
+      objData: Map<String, dynamic>.from(preset.objdata),
+    );
+
+    ZombossCustomActionPresetRepository.markUserCreated(object);
+
+    expect(
+      ZombossCustomActionPresetRepository.originForObject(object),
+      ZombossCustomActionOrigin.userCreated,
+    );
+    expect(object.aliases, [preset.sourceAlias]);
+    expect(object.toJson().toString(), isNot(contains('__c_editor_')));
+  });
 }

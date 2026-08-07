@@ -43,6 +43,9 @@ Color customStageBadgeColor(BuildContext context) =>
     ? const Color(0xFF1976D2)
     : const Color(0xFF42A5F5);
 
+Color userCustomResourceBadgeColor(BuildContext context) =>
+    const Color(0xFFFFC107);
+
 Color presetCustomResourceBadgeColor(BuildContext context) =>
     Theme.of(context).brightness == Brightness.dark
     ? const Color(0xFF1B5E20)

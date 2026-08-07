@@ -12,6 +12,7 @@ import 'package:c_editor/data/mold_colony_module_utils.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -692,6 +693,7 @@ class _EditorScreenState extends State<EditorScreen> {
       context,
       MaterialPageRoute(
         builder: (ctx) => StageBaseSelectionScreen(
+          stateBucketId: '$_selectionStateBucketId:stage-base',
           onStageBaseSelected: (option) {
             baseOption = option;
             Navigator.pop(ctx);
@@ -766,6 +768,10 @@ class _EditorScreenState extends State<EditorScreen> {
       alias: alias,
       objclass: preset.objclass,
       objdata: preset.objdata,
+      aliases: CustomStagePresetRepository.aliasesForPresetInstance(
+        primaryAlias: alias,
+        preset: preset,
+      ),
       prepend: true,
     );
     levelDef.stageModule = rtid;

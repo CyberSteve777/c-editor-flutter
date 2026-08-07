@@ -11,6 +11,19 @@ import 'package:c_editor/widgets/editor_components.dart';
 
 enum StageResourceGroupImportMode { global, fromStage }
 
+class _StageResourceGroupSelectionViewState {
+  _StageResourceGroupSelectionViewState({
+    required this.selectedType,
+    required this.scrollOffset,
+  });
+
+  String selectedType;
+  double scrollOffset;
+}
+
+final Map<String, _StageResourceGroupSelectionViewState>
+_stageResourceGroupSelectionViewStates = {};
+
 /// Import resource groups into custom stage lists.
 class StageResourceGroupImportScreen extends StatefulWidget {
   const StageResourceGroupImportScreen({
@@ -19,6 +32,7 @@ class StageResourceGroupImportScreen extends StatefulWidget {
     required this.existingGroups,
     required this.onImport,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final StageResourceGroupImportMode mode;
@@ -30,6 +44,7 @@ class StageResourceGroupImportScreen extends StatefulWidget {
   })
   onImport;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<StageResourceGroupImportScreen> createState() =>
@@ -38,8 +53,95 @@ class StageResourceGroupImportScreen extends StatefulWidget {
 
 class _StageResourceGroupImportScreenState
     extends State<StageResourceGroupImportScreen> {
+  static const _typeTabs = ['all', 'main', 'extra', 'seasons', 'special'];
+
   String _searchQuery = '';
+  late String _selectedType;
   bool _applySourceLawnAppearance = false;
+  late final ScrollController _scrollController;
+
+  String get _viewStateKey {
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    return '$bucket:${widget.mode.name}';
+  }
+
+  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+    final remembered = _stageResourceGroupSelectionViewStates[_viewStateKey];
+    _selectedType = _typeTabs.contains(remembered?.selectedType)
+        ? remembered!.selectedType
+        : 'all';
+    _scrollController = ScrollController(
+      initialScrollOffset: remembered?.scrollOffset ?? 0,
+    )..addListener(_rememberScrollOffset);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _setType(String type) {
+    if (_selectedType == type) return;
+    setState(() => _selectedType = type);
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+  }
+
+  void _rememberViewState({double? scrollOffset}) {
+    final state = _stageResourceGroupSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _StageResourceGroupSelectionViewState(
+        selectedType: _selectedType,
+        scrollOffset: 0,
+      ),
+    );
+    state.selectedType = _selectedType;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+  }
+
+  void _rememberScrollOffset() {
+    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _scrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final offset =
+        _stageResourceGroupSelectionViewStates[_viewStateKey]?.scrollOffset ??
+        0;
+    final position = _scrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_scrollController.offset != target) {
+      _scrollController.jumpTo(target);
+    }
+  }
 
   Iterable<String> _globalGroups() {
     return StageCatalogRepository.knownResourceGroups.where(
@@ -85,6 +187,11 @@ class _StageResourceGroupImportScreenState
 
   List<StageBaseOption> _filteredStages() {
     var items = StageCatalogRepository.stageBaseOptions();
+    if (_selectedType != 'all') {
+      items = items
+          .where((option) => _optionTypeName(option) == _selectedType)
+          .toList();
+    }
     if (normalizeSelectionSearchQuery(_searchQuery).isNotEmpty) {
       items = items.where((option) {
         final nameKey = _stageNameKey(option.alias);
@@ -106,6 +213,28 @@ class _StageResourceGroupImportScreenState
     context,
     StageCatalogRepository.resourceGroupKey(group),
   );
+
+  String _optionTypeName(StageBaseOption option) {
+    final raw = option.type.toString();
+    final dot = raw.lastIndexOf('.');
+    return dot < 0 ? raw : raw.substring(dot + 1);
+  }
+
+  String _typeLabel(String type, AppLocalizations? l10n) {
+    switch (type) {
+      case 'all':
+        return l10n?.stageTypeAll ?? 'All';
+      case 'main':
+        return l10n?.stageTypeMain ?? 'Main';
+      case 'extra':
+        return l10n?.stageTypeExtra ?? 'Extra';
+      case 'seasons':
+        return l10n?.stageTypeSeasons ?? 'Seasons';
+      case 'special':
+        return l10n?.stageTypeSpecial ?? 'Special';
+    }
+    return type;
+  }
 
   String _stageNameKey(String alias) => 'stage_$alias';
 
@@ -275,10 +404,25 @@ class _StageResourceGroupImportScreenState
                   ? (l10n?.searchStage ?? 'Search stage')
                   : (l10n?.searchResourceGroup ?? 'Search resource group'),
               query: _searchQuery,
-              onChanged: (v) => setState(() => _searchQuery = v),
-              onClear: () => setState(() => _searchQuery = ''),
+              onChanged: _setSearchQuery,
+              onClear: () => _setSearchQuery(''),
             ),
           ),
+          if (isFromStage)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                children: _typeTabs.map((type) {
+                  return AccentBarChoiceChip(
+                    label: _typeLabel(type, l10n),
+                    selected: _selectedType == type,
+                    onSelected: (_) => _setType(type),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  );
+                }).toList(),
+              ),
+            ),
           Expanded(
             child: isFromStage
                 ? _buildStagePicker(context, l10n, theme)
@@ -305,6 +449,7 @@ class _StageResourceGroupImportScreenState
     }
 
     return ListView.separated(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
       itemCount: groups.length,
       separatorBuilder: (context, index) => const SizedBox(height: 8),
@@ -349,6 +494,7 @@ class _StageResourceGroupImportScreenState
     }
 
     return GridView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,

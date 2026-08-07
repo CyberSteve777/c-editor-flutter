@@ -93,6 +93,40 @@
         "id": "spawn_ball",
         "alias": "SpawnBall",
         "objclass": "ZombieDropProps",
+        "fields": [
+          {
+            "name": "ZombieHordes",
+            "type": "List<object>",
+            "fields": [
+              { "name": "Type", "type": "zombieType", "default": "sportzball_imp" },
+              { "name": "Hypnotized", "type": "bool", "default": false },
+              { "name": "BasicQuantity", "type": "int", "default": 2 },
+              { "name": "DynamicQuantity", "type": "int", "default": 1 },
+              { "name": "TossGridXRange", "type": "int", "default": 0 },
+              { "name": "TossGridYRange", "type": "int", "default": 5 },
+              {
+                "name": "SpawnGridXDelta",
+                "type": "object",
+                "fields": [
+                  { "name": "Min", "type": "int", "default": -1 },
+                  { "name": "Max", "type": "int", "default": -1 }
+                ]
+              },
+              {
+                "name": "SpawnGridYDelta",
+                "type": "object",
+                "fields": [
+                  { "name": "Min", "type": "float", "default": -0.5 },
+                  { "name": "Max", "type": "float", "default": 0.5 }
+                ]
+              },
+              { "name": "SpawnGridZDelta", "type": "int", "default": 0 },
+              { "name": "TossDuration", "type": "int", "default": 2 },
+              { "name": "TossApexHeight", "type": "int", "default": 150 }
+            ]
+          },
+          { "name": "Collectables", "type": "List<string>" }
+        ],
         "objdata": {
           "ZombieHordes": [
             {

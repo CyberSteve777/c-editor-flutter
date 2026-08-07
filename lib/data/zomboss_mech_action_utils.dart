@@ -77,6 +77,55 @@ abstract class ZombossMechActionUtils {
     return defaultsFromFields(action.fields);
   }
 
+  /// Finds the catalog implementation a user-created action was based on.
+  ///
+  /// Custom actions intentionally carry no editor metadata in level JSON, so
+  /// the nearest original implementation is recovered from its data. The
+  /// custom alias is only used as a stable tie-breaker.
+  static ZombossMechCatalogAction? inferBaseCatalogAction({
+    required ZombossMechCatalogEntry catalog,
+    required String customAlias,
+    required String objclass,
+    required Map<String, dynamic> data,
+    bool retreatOnly = false,
+  }) {
+    final candidates = catalog.catalogActions.where((action) {
+      if (action.objclass != objclass) return false;
+      return retreatOnly ? action.tag == 'retreat' : action.tag != 'retreat';
+    }).toList();
+    if (candidates.isEmpty) return null;
+
+    const equality = DeepCollectionEquality();
+    for (final candidate in candidates) {
+      if (equality.equals(candidate.defaultData, data)) return candidate;
+    }
+
+    ZombossMechCatalogAction? best;
+    var bestScore = -0x7fffffff;
+    for (final candidate in candidates) {
+      var score = 0;
+      for (final entry in candidate.defaultData.entries) {
+        if (!data.containsKey(entry.key)) {
+          score -= 1;
+        } else if (equality.equals(data[entry.key], entry.value)) {
+          score += 3;
+        } else {
+          score -= 1;
+        }
+      }
+      if (customAlias == candidate.alias ||
+          customAlias.startsWith('${candidate.alias}_') ||
+          customAlias.startsWith('${candidate.alias}Custom')) {
+        score += 1;
+      }
+      if (score > bestScore) {
+        best = candidate;
+        bestScore = score;
+      }
+    }
+    return best;
+  }
+
   static Map<String, dynamic> defaultsFromFields(
     List<ZombossMechFieldSpec> fields,
   ) {
@@ -254,6 +303,7 @@ abstract class ZombossMechActionUtils {
       objData: _deepClone(data),
     );
     levelFile.objects.add(obj);
+    ZombossCustomActionPresetRepository.markUserCreated(obj);
     return obj;
   }
 

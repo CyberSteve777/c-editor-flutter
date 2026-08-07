@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/custom_portal_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -89,6 +90,30 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
     setState(() => _alias = newAlias);
   }
 
+  Future<void> _selectPortalType(String portalType) async {
+    final previous = _data.portalType;
+    if (previous == portalType) return;
+    _data = PortalEventData(
+      portalType: portalType,
+      portalColumn: _data.portalColumn,
+      portalRow: _data.portalRow,
+      spawnEffect: _data.spawnEffect,
+      spawnSoundID: _data.spawnSoundID,
+      ignoreGraveStone: _data.ignoreGraveStone,
+    );
+    _sync();
+    if (!mounted) return;
+    final removed = await CustomPortalLevelUtils.maybePromptRemoveUnused(
+      context: context,
+      levelFile: widget.levelFile,
+      portalType: previous,
+    );
+    if (removed) {
+      widget.onChanged();
+      if (mounted) setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -157,19 +182,19 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                              Text(
-                                l10n?.selectedPosition ?? 'Selected position',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                                Text(
+                                  l10n?.selectedPosition ?? 'Selected position',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'R${_data.portalRow + 1} : C${_data.portalColumn + 1}',
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
+                                Text(
+                                  'R${_data.portalRow + 1} : C${_data.portalColumn + 1}',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
                                 ),
-                              ),
                               ],
                             ),
                           ),
@@ -253,16 +278,10 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
                       const SizedBox(height: 12),
                       PortalTypeChooserGrid(
                         selectedPortalType: _data.portalType,
+                        levelFile: widget.levelFile,
+                        onLevelChanged: widget.onChanged,
                         onSelected: (def) {
-                          _data = PortalEventData(
-                            portalType: def.typeCode,
-                            portalColumn: _data.portalColumn,
-                            portalRow: _data.portalRow,
-                            spawnEffect: _data.spawnEffect,
-                            spawnSoundID: _data.spawnSoundID,
-                            ignoreGraveStone: _data.ignoreGraveStone,
-                          );
-                          _sync();
+                          _selectPortalType(def.typeCode);
                         },
                       ),
                     ],

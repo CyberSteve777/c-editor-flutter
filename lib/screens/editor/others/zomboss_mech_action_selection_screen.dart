@@ -17,6 +17,19 @@ import 'package:c_editor/widgets/animated_extended_fab.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
+class _ZombossActionSelectionViewState {
+  _ZombossActionSelectionViewState({
+    required this.category,
+    required this.scrollOffset,
+  });
+
+  String category;
+  double scrollOffset;
+}
+
+final Map<String, _ZombossActionSelectionViewState>
+_zombossActionSelectionViewStates = {};
+
 /// Picks a catalog or level-local zomboss action; returns RTID string.
 class ZombossMechActionSelectionScreen extends StatefulWidget {
   const ZombossMechActionSelectionScreen({
@@ -45,19 +58,39 @@ class _ZombossMechActionSelectionScreenState
     'special',
     ZombossMechActionOrdering.customFilter,
   ];
-  String _category = 'all';
+  late String _category;
   String _query = '';
-  final ScrollController _listScrollController = ScrollController();
-  bool _listScrollAtTop = true;
+  late final ScrollController _listScrollController;
+  late bool _listScrollAtTop;
+
+  String get _viewStateKey =>
+      'level:${identityHashCode(widget.levelFile)}:'
+      '${widget.catalog.id}:${widget.retreatOnly}';
+
+  bool get _canRememberScroll => _query.trim().isEmpty;
 
   @override
   void initState() {
     super.initState();
-    _listScrollController.addListener(_onListScroll);
+    final remembered = _zombossActionSelectionViewStates[_viewStateKey];
+    _category =
+        !widget.retreatOnly &&
+            remembered != null &&
+            _categories.contains(remembered.category)
+        ? remembered.category
+        : ZombossMechActionOrdering.allFilter;
+    final initialOffset = remembered?.scrollOffset ?? 0;
+    _listScrollAtTop = initialOffset <= 0;
+    _listScrollController = ScrollController(initialScrollOffset: initialOffset)
+      ..addListener(_onListScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
   }
 
   @override
   void dispose() {
+    _rememberScrollOffset();
     _listScrollController.removeListener(_onListScroll);
     _listScrollController.dispose();
     super.dispose();
@@ -65,8 +98,70 @@ class _ZombossMechActionSelectionScreenState
 
   void _onListScroll() {
     if (!_listScrollController.hasClients) return;
+    _rememberScrollOffset();
     final atTop = _listScrollController.offset <= 0;
     if (atTop != _listScrollAtTop && mounted) {
+      setState(() => _listScrollAtTop = atTop);
+    }
+  }
+
+  void _setCategory(String category) {
+    if (_category == category) return;
+    setState(() {
+      _category = category;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setQuery(String query) {
+    if (_query == query) return;
+    setState(() {
+      _query = query;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+  }
+
+  void _rememberViewState({double? scrollOffset}) {
+    final state = _zombossActionSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _ZombossActionSelectionViewState(
+        category: _category,
+        scrollOffset: 0,
+      ),
+    );
+    state.category = _category;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+  }
+
+  void _rememberScrollOffset() {
+    if (!_canRememberScroll || !_listScrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _listScrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_listScrollController.hasClients) return;
+      _listScrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_listScrollController.hasClients) return;
+    final offset =
+        _zombossActionSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _listScrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_listScrollController.offset != target) {
+      _listScrollController.jumpTo(target);
+    }
+    final atTop = target <= 0;
+    if (_listScrollAtTop != atTop) {
       setState(() => _listScrollAtTop = atTop);
     }
   }
@@ -160,7 +255,14 @@ class _ZombossMechActionSelectionScreenState
       if (group == null) continue;
       if (widget.retreatOnly && group.tag != 'retreat') continue;
       if (!widget.retreatOnly && group.tag == 'retreat') continue;
-      final origin = ZombossCustomActionPresetRepository.originForObject(obj);
+      final actionRtid = RtidParser.build(
+        alias,
+        ZombossMechActionUtils.customSource,
+      );
+      final origin = ZombossCustomActionPresetRepository.originForRtid(
+        widget.levelFile,
+        actionRtid,
+      );
       if (origin == ZombossCustomActionOrigin.presetTemplate) continue;
       final category = ZombossMechActionOrdering.categoryForGroup(
         group,
@@ -177,7 +279,16 @@ class _ZombossMechActionSelectionScreenState
         tag: group.tag,
         category: category,
         baseAliases: group.implementations.keys.toList(),
-        rtid: RtidParser.build(alias, ZombossMechActionUtils.customSource),
+        baseAlias: ZombossMechActionUtils.inferBaseCatalogAction(
+          catalog: widget.catalog,
+          customAlias: alias,
+          objclass: obj.objClass,
+          data: obj.objData is Map
+              ? Map<String, dynamic>.from(obj.objData as Map)
+              : const {},
+          retreatOnly: widget.retreatOnly,
+        )?.alias,
+        rtid: actionRtid,
         origin: origin,
         preset: ZombossCustomActionPresetRepository.presetForObject(obj),
       );
@@ -298,7 +409,7 @@ class _ZombossMechActionSelectionScreenState
                           child: ChoiceChip(
                             label: Text(_categoryLabel(context, cat)),
                             selected: _category == cat,
-                            onSelected: (_) => setState(() => _category = cat),
+                            onSelected: (_) => _setCategory(cat),
                           ),
                         ),
                     ],
@@ -310,8 +421,8 @@ class _ZombossMechActionSelectionScreenState
                   hintText: l10n?.search ?? 'Search',
                   query: _query,
                   useOutlineBorder: true,
-                  onChanged: (v) => setState(() => _query = v),
-                  onClear: () => setState(() => _query = ''),
+                  onChanged: _setQuery,
+                  onClear: () => _setQuery(''),
                 ),
               ),
               Expanded(
@@ -408,7 +519,8 @@ class _ActionListItem {
        alias = action.alias,
        objclass = action.objclass,
        tag = action.tag,
-       baseAliases = const [];
+       baseAliases = const [],
+       baseAlias = null;
 
   _ActionListItem.presetTemplate({
     required this.catalog,
@@ -425,7 +537,8 @@ class _ActionListItem {
        alias = template.sourceAlias,
        objclass = template.objclass,
        tag = 'spawn',
-       baseAliases = const [];
+       baseAliases = const [],
+       baseAlias = null;
 
   _ActionListItem.custom({
     required this.catalog,
@@ -434,6 +547,7 @@ class _ActionListItem {
     required this.tag,
     required this.category,
     required this.baseAliases,
+    required this.baseAlias,
     required this.rtid,
     required this.origin,
     required this.preset,
@@ -451,6 +565,7 @@ class _ActionListItem {
   final String tag;
   final ZombossMechActionMainCategory category;
   final List<String> baseAliases;
+  final String? baseAlias;
 
   bool get isCustom => origin != null;
   bool get canEditExisting =>
@@ -464,7 +579,9 @@ class _ActionListItem {
       ZombossCustomActionOrigin.presetTemplate =>
         presetCustomResourceBadgeColor(context),
       ZombossCustomActionOrigin.presetDerived => customStageBadgeColor(context),
-      ZombossCustomActionOrigin.userCreated => const Color(0xFFFFC107),
+      ZombossCustomActionOrigin.userCreated => userCustomResourceBadgeColor(
+        context,
+      ),
     };
     return CustomResourceBadge(color: color);
   }
@@ -503,6 +620,14 @@ class _ActionListItem {
   }
 
   String baseActionDisplayName(BuildContext context) {
+    final implementationAlias = baseAlias;
+    if (implementationAlias != null && implementationAlias.isNotEmpty) {
+      return ZombossMechL10n.implementationDisplayLabel(
+        context,
+        catalog.id,
+        implementationAlias,
+      );
+    }
     return ZombossMechL10n.actionLabel(
       context,
       catalog.id,

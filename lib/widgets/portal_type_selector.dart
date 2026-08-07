@@ -1,21 +1,44 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/custom_portal_level_utils.dart';
+import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/portal_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/screens/editor/others/custom_portal_properties_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 
 const _kUnknownZombieIcon = 'assets/images/others/unknown.webp';
 
-PortalWorldDef? portalDefinitionForType(String? typeCode) {
+PortalWorldDef? portalDefinitionForType(
+  String? typeCode, [
+  PvzLevelFile? levelFile,
+]) {
   if (typeCode == null || typeCode.isEmpty) return null;
+  if (levelFile != null) {
+    final custom = CustomPortalLevelUtils.find(levelFile, typeCode);
+    if (custom != null) {
+      return PortalWorldDef(
+        typeCode: custom.portalType,
+        name: 'Custom Portal ${custom.index}',
+        representativeZombies: custom.representativeZombies,
+        isCustom: true,
+        customIndex: custom.index,
+      );
+    }
+  }
   return PortalRepository.portalDefinitions.firstWhereOrNull(
     (def) => def.typeCode == typeCode,
   );
 }
 
 String portalTypeDisplayName(AppLocalizations? l10n, PortalWorldDef def) {
+  if (def.isCustom) {
+    final index = def.customIndex ?? 1;
+    return l10n?.customPortalName(index) ?? 'Custom Portal $index';
+  }
   return switch (def.typeCode) {
     'egypt' => l10n?.portalTypeEgypt ?? def.name,
     'egypt_2' => l10n?.portalTypeEgypt2 ?? def.name,
@@ -86,8 +109,12 @@ String portalTypeDisplayName(AppLocalizations? l10n, PortalWorldDef def) {
   };
 }
 
-String portalTypeDisplayNameForCode(BuildContext context, String typeCode) {
-  final def = portalDefinitionForType(typeCode);
+String portalTypeDisplayNameForCode(
+  BuildContext context,
+  String typeCode, [
+  PvzLevelFile? levelFile,
+]) {
+  final def = portalDefinitionForType(typeCode, levelFile);
   if (def == null) return typeCode;
   return portalTypeDisplayName(AppLocalizations.of(context), def);
 }
@@ -109,67 +136,320 @@ Future<void> showPortalTypePreviewDialog(
   );
 }
 
-class PortalTypeChooserGrid extends StatelessWidget {
+class PortalTypeChooserGrid extends StatefulWidget {
   const PortalTypeChooserGrid({
     super.key,
     required this.selectedPortalType,
     required this.onSelected,
+    this.levelFile,
+    this.onLevelChanged,
+    this.allowCustomPortal = true,
   });
 
   final String selectedPortalType;
   final ValueChanged<PortalWorldDef> onSelected;
+  final PvzLevelFile? levelFile;
+  final VoidCallback? onLevelChanged;
+  final bool allowCustomPortal;
+
+  @override
+  State<PortalTypeChooserGrid> createState() => _PortalTypeChooserGridState();
+}
+
+class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
+  List<PortalWorldDef> get _definitions {
+    final levelFile = widget.levelFile;
+    if (levelFile == null) return PortalRepository.portalDefinitions;
+    final custom = CustomPortalLevelUtils.list(levelFile)
+        .map(
+          (item) => PortalWorldDef(
+            typeCode: item.portalType,
+            name: 'Custom Portal ${item.index}',
+            representativeZombies: item.representativeZombies,
+            isCustom: true,
+            customIndex: item.index,
+          ),
+        )
+        .toList();
+    final customCodes = custom.map((item) => item.typeCode).toSet();
+    return [
+      ...PortalRepository.portalDefinitions.where(
+        (item) => !customCodes.contains(item.typeCode),
+      ),
+      ...custom,
+    ];
+  }
+
+  Future<void> _createCustomPortal() async {
+    final levelFile = widget.levelFile;
+    if (levelFile == null) return;
+    final basePortalType = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const _CustomPortalBaseSelectionScreen(),
+      ),
+    );
+    if (basePortalType == null || !mounted) return;
+    final created = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomPortalPropertiesScreen(
+          levelFile: levelFile,
+          basePortalType: basePortalType.isEmpty ? null : basePortalType,
+        ),
+      ),
+    );
+    if (created == null || !mounted) return;
+    widget.onLevelChanged?.call();
+    setState(() {});
+    final def = portalDefinitionForType(created, levelFile);
+    if (def != null) widget.onSelected(def);
+  }
+
+  Future<void> _editCustomPortal(PortalWorldDef def) async {
+    final levelFile = widget.levelFile;
+    if (levelFile == null) return;
+    final saved = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomPortalPropertiesScreen(
+          levelFile: levelFile,
+          existingPortalType: def.typeCode,
+        ),
+      ),
+    );
+    if (saved == null || !mounted) return;
+    widget.onLevelChanged?.call();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = <Widget>[
+      for (final def in _definitions) _buildPortalCard(context, def),
+      if (widget.allowCustomPortal && widget.levelFile != null)
+        _buildCreateCard(context),
+    ];
+    return Wrap(spacing: 8, runSpacing: 8, children: cards);
+  }
+
+  Widget _buildPortalCard(BuildContext context, PortalWorldDef def) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final isSelected = def.typeCode == widget.selectedPortalType;
+    return SizedBox(
+      width: 150,
+      child: Card(
+        color: isSelected ? theme.colorScheme.primaryContainer : null,
+        child: InkWell(
+          onTap: () => widget.onSelected(def),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                if (def.isCustom) ...[
+                  CustomResourceBadge(
+                    color: userCustomResourceBadgeColor(context),
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                Expanded(
+                  child: Text(
+                    portalTypeDisplayName(l10n, def),
+                    style: theme.textTheme.bodySmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(def.isCustom ? Icons.edit : Icons.info_outline),
+                  iconSize: 18,
+                  tooltip: def.isCustom
+                      ? (l10n?.edit ?? 'Edit')
+                      : (l10n?.info ?? 'Info'),
+                  onPressed: () {
+                    if (def.isCustom) {
+                      _editCustomPortal(def);
+                    } else {
+                      showPortalTypePreviewDialog(context, def);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCreateCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final accent = customStageAccent(context);
+    return SizedBox(
+      width: 150,
+      child: Card(
+        color: accent.withValues(alpha: 0.14),
+        child: InkWell(
+          onTap: _createCustomPortal,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add, color: accent, size: 18),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    l10n?.customPortalAdd ?? 'Custom portal',
+                    style: TextStyle(
+                      color: accent,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomPortalBaseSelectionScreen extends StatelessWidget {
+  const _CustomPortalBaseSelectionScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          l10n?.customPortalSelectBaseTitle ?? 'Select a base portal',
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.add_box_outlined),
+              title: Text(
+                l10n?.customPortalBlankTemplate ?? 'Blank portal template',
+              ),
+              subtitle: Text(
+                l10n?.customPortalBlankTemplateSubtitle ??
+                    'Start with the standard portal structure and no zombies.',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.pop(context, ''),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n?.customPortalBuiltInBases ?? 'Built-in portal bases',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          for (final def in PortalRepository.portalDefinitions) ...[
+            _PortalBaseSelectionCard(
+              def: def,
+              onTap: () => Navigator.pop(context, def.typeCode),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PortalBaseSelectionCard extends StatelessWidget {
+  const _PortalBaseSelectionCard({required this.def, required this.onTap});
+
+  final PortalWorldDef def;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: PortalRepository.portalDefinitions.map((def) {
-        final isSelected = def.typeCode == selectedPortalType;
-        return SizedBox(
-          width: 130,
-          child: Card(
-            color: isSelected ? theme.colorScheme.primaryContainer : null,
-            child: InkWell(
-              onTap: () => onSelected(def),
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
+    return Material(
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
+            ),
+          ),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: AssetImageWidget(
+                  assetPath: portalTypeIconAssetPath(def),
+                  width: 52,
+                  height: 52,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        portalTypeDisplayName(l10n, def),
-                        style: theme.textTheme.bodySmall,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      portalTypeDisplayName(l10n, def),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.info_outline),
-                      iconSize: 18,
-                      tooltip: l10n?.info ?? 'Info',
-                      onPressed: () {
-                        showPortalTypePreviewDialog(context, def);
-                      },
+                    const SizedBox(height: 3),
+                    Text(
+                      def.typeCode,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall,
                     ),
                   ],
                 ),
               ),
-            ),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right),
+            ],
           ),
-        );
-      }).toList(),
+        ),
+      ),
     );
   }
 }
 
 class PortalTypeSelectionScreen extends StatelessWidget {
-  const PortalTypeSelectionScreen({super.key, required this.currentPortalType});
+  const PortalTypeSelectionScreen({
+    super.key,
+    required this.currentPortalType,
+    this.levelFile,
+    this.onLevelChanged,
+  });
 
   final String currentPortalType;
+  final PvzLevelFile? levelFile;
+  final VoidCallback? onLevelChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -188,6 +468,8 @@ class PortalTypeSelectionScreen extends StatelessWidget {
               child: PortalTypeChooserGrid(
                 selectedPortalType: currentPortalType,
                 onSelected: (def) => Navigator.pop(context, def.typeCode),
+                levelFile: levelFile,
+                onLevelChanged: onLevelChanged,
               ),
             ),
     );
@@ -201,22 +483,39 @@ class PortalTypeSingleSelectField extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.editable = true,
+    this.levelFile,
+    this.onLevelChanged,
   });
 
   final String label;
   final String value;
   final ValueChanged<String> onChanged;
   final bool editable;
+  final PvzLevelFile? levelFile;
+  final VoidCallback? onLevelChanged;
 
   Future<void> _pick(BuildContext context) async {
     final selected = await Navigator.push<String>(
       context,
       MaterialPageRoute(
-        builder: (ctx) => PortalTypeSelectionScreen(currentPortalType: value),
+        builder: (ctx) => PortalTypeSelectionScreen(
+          currentPortalType: value,
+          levelFile: levelFile,
+          onLevelChanged: onLevelChanged,
+        ),
       ),
     );
     if (selected == null || !context.mounted) return;
+    final previous = value.trim();
     onChanged(selected);
+    if (previous != selected && levelFile != null && context.mounted) {
+      final removed = await CustomPortalLevelUtils.maybePromptRemoveUnused(
+        context: context,
+        levelFile: levelFile!,
+        portalType: previous,
+      );
+      if (removed) onLevelChanged?.call();
+    }
   }
 
   @override
@@ -224,7 +523,7 @@ class PortalTypeSingleSelectField extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final normalized = value.trim();
-    final def = portalDefinitionForType(normalized);
+    final def = portalDefinitionForType(normalized, levelFile);
     final hasValue = normalized.isNotEmpty;
     final iconPath = portalTypeIconAssetPath(def);
 
@@ -283,6 +582,12 @@ class PortalTypeSingleSelectField extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
+                    if (def?.isCustom == true) ...[
+                      CustomResourceBadge(
+                        color: userCustomResourceBadgeColor(context),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

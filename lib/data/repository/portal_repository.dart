@@ -1,19 +1,160 @@
+import 'dart:convert';
+
+import 'package:collection/collection.dart';
+import 'package:flutter/services.dart';
+import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/rtid_parser.dart';
+
 /// Portal world definition. Ported from Z-Editor-master PortalRepository.kt
 class PortalWorldDef {
   const PortalWorldDef({
     required this.typeCode,
     required this.name,
     required this.representativeZombies,
+    this.isCustom = false,
+    this.customIndex,
   });
 
   final String typeCode;
   final String name;
   final List<String> representativeZombies;
+  final bool isCustom;
+  final int? customIndex;
+}
+
+class PortalTemplate {
+  const PortalTemplate({
+    required this.typeCode,
+    required this.gridItemType,
+    required this.properties,
+  });
+
+  final String typeCode;
+  final PvzObject gridItemType;
+  final PvzObject properties;
 }
 
 /// Portal repository. Ported from Z-Editor-master PortalRepository.kt
 class PortalRepository {
   PortalRepository._();
+
+  static final Map<String, PortalTemplate> _templates = {};
+  static bool _isLoaded = false;
+
+  static const List<String> worldCodes = [
+    'egypt',
+    'pirate',
+    'west',
+    'future',
+    'dark',
+    'beach',
+    'iceage',
+    'lostcity',
+    'eighties',
+    'dino',
+    'kongfu',
+    'steam',
+    'renai',
+    'heian',
+    'twister',
+  ];
+
+  static const List<String> popAnimCodes = [
+    'POPANIM_EFFECTS_MODERN_PORTAL',
+    'POPANIM_EFFECTS_MODERN_PORTAL_PVZ1',
+    'POPANIM_EFFECTS_ZOMBOSS_HYDRA_MIRROR',
+  ];
+
+  static const List<String> spawnMethodCodes = [
+    'NonRandomShuffled',
+    'NonRandomInOrder',
+    'HydraRandom',
+  ];
+
+  static Future<void> init() async {
+    if (_isLoaded) return;
+    try {
+      final results = await Future.wait([
+        rootBundle.loadString('assets/reference/GridItemTypes.json'),
+        rootBundle.loadString('assets/reference/PropertySheets.json'),
+      ]);
+      final gridItems = _decodeObjects(results[0]);
+      final propertySheets = _decodeObjects(results[1]);
+      final propertiesByAlias = <String, PvzObject>{};
+      for (final object in propertySheets) {
+        if (object.objClass != 'GridItemZombiePortalProps') continue;
+        for (final alias in object.aliases ?? const <String>[]) {
+          propertiesByAlias.putIfAbsent(alias, () => object);
+        }
+      }
+
+      _templates.clear();
+      for (final object in gridItems) {
+        final data = object.objData;
+        if (object.objClass != 'GridItemType' || data is! Map) continue;
+        if (data['GridItemClass'] != 'GridItemZombiePortal') continue;
+        final alias = object.aliases?.firstOrNull;
+        if (alias == null || !alias.startsWith('zombieportal_')) continue;
+        final propertyInfo = RtidParser.parse(
+          data['Properties']?.toString() ?? '',
+        );
+        final properties = propertyInfo == null
+            ? null
+            : propertiesByAlias[propertyInfo.alias];
+        if (properties == null) continue;
+        final typeCode = alias.substring('zombieportal_'.length);
+        _templates.putIfAbsent(
+          typeCode,
+          () => PortalTemplate(
+            typeCode: typeCode,
+            gridItemType: object,
+            properties: properties,
+          ),
+        );
+      }
+    } finally {
+      _isLoaded = true;
+    }
+  }
+
+  static PortalTemplate? templateForType(String typeCode) =>
+      _templates[typeCode];
+
+  static Map<String, dynamic> blankPropertiesData() => {
+    'PopAnimRigClass': 'GridItemZombiePortal_AnimRig',
+    'Hitpoints': 600,
+    'Height': 'ground',
+    'PopAnim': 'POPANIM_EFFECTS_MODERN_PORTAL',
+    'PopAnimRenderOffset': {'x': 96, 'y': 125},
+    'SpawnAnimation': 'spawn',
+    'CloseAnimation': 'end',
+    'CanBeMowed': false,
+    'World': 'egypt',
+    'ZombieTypesToSpawn': <Map<String, dynamic>>[],
+    'ZombieSpawnMethod': 'NonRandomShuffled',
+    'ZombieSpawnPointOffset': -20,
+  };
+
+  static Map<String, dynamic> clonePropertiesData(String? typeCode) {
+    final raw = typeCode == null
+        ? null
+        : _templates[typeCode]?.properties.objData;
+    if (raw is Map) return cloneMap(Map<String, dynamic>.from(raw));
+    return blankPropertiesData();
+  }
+
+  static Map<String, dynamic> cloneMap(Map<String, dynamic> value) =>
+      Map<String, dynamic>.from(jsonDecode(jsonEncode(value)) as Map);
+
+  static List<PvzObject> _decodeObjects(String source) {
+    final decoded = jsonDecode(source);
+    final raw = decoded is Map ? decoded['objects'] : decoded;
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map((item) => PvzObject.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
+  }
 
   static const List<PortalWorldDef> portalDefinitions = [
     PortalWorldDef(

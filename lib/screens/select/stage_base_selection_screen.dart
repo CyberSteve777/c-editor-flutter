@@ -8,16 +8,31 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
 
+class _StageBaseSelectionViewState {
+  _StageBaseSelectionViewState({
+    required this.selectedType,
+    required this.scrollOffset,
+  });
+
+  String selectedType;
+  double scrollOffset;
+}
+
+final Map<String, _StageBaseSelectionViewState> _stageBaseSelectionViewStates =
+    {};
+
 /// Pick the source stage implementation for a level-local custom lawn.
 class StageBaseSelectionScreen extends StatefulWidget {
   const StageBaseSelectionScreen({
     super.key,
     required this.onStageBaseSelected,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final void Function(StageBaseOption option) onStageBaseSelected;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<StageBaseSelectionScreen> createState() =>
@@ -28,7 +43,87 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
   static const _typeTabs = ['all', 'main', 'extra', 'seasons', 'special'];
 
   String _searchQuery = '';
-  String _selectedType = 'all';
+  late String _selectedType;
+  late final ScrollController _scrollController;
+
+  String get _viewStateKey => widget.stateBucketId?.isNotEmpty == true
+      ? widget.stateBucketId!
+      : 'global';
+
+  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+    final remembered = _stageBaseSelectionViewStates[_viewStateKey];
+    _selectedType = _typeTabs.contains(remembered?.selectedType)
+        ? remembered!.selectedType
+        : 'all';
+    _scrollController = ScrollController(
+      initialScrollOffset: remembered?.scrollOffset ?? 0,
+    )..addListener(_rememberScrollOffset);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _setType(String type) {
+    if (_selectedType == type) return;
+    setState(() => _selectedType = type);
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+  }
+
+  void _rememberViewState({double? scrollOffset}) {
+    final state = _stageBaseSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _StageBaseSelectionViewState(
+        selectedType: _selectedType,
+        scrollOffset: 0,
+      ),
+    );
+    state.selectedType = _selectedType;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+  }
+
+  void _rememberScrollOffset() {
+    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _scrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final offset =
+        _stageBaseSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _scrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_scrollController.offset != target) {
+      _scrollController.jumpTo(target);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +168,8 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
                 child: SelectionSearchField(
                   hintText: l10n?.searchStage ?? 'Search stage',
                   query: _searchQuery,
-                  onChanged: (v) => setState(() => _searchQuery = v),
-                  onClear: () => setState(() => _searchQuery = ''),
+                  onChanged: _setSearchQuery,
+                  onClear: () => _setSearchQuery(''),
                 ),
               ),
               SingleChildScrollView(
@@ -85,7 +180,7 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
                     return AccentBarChoiceChip(
                       label: _typeLabel(type, l10n),
                       selected: _selectedType == type,
-                      onSelected: (_) => setState(() => _selectedType = type),
+                      onSelected: (_) => _setType(type),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                     );
                   }).toList(),
@@ -111,6 +206,7 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
               ),
             )
           : GridView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 180,

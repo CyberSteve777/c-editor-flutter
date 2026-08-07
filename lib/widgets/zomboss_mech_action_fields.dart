@@ -4,6 +4,7 @@ import 'package:c_editor/data/models/zomboss_robot_spawn_entry.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
+import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/portal_type_selector.dart';
 import 'package:c_editor/widgets/zomboss_mech_robot_spawn_list.dart';
@@ -23,6 +24,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
     this.levelFile,
     this.depth = 0,
     this.fieldNamePrefix = '',
+    this.hiddenFieldNames = const {},
   });
 
   final String mechId;
@@ -34,6 +36,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
   final PvzLevelFile? levelFile;
   final int depth;
   final String fieldNamePrefix;
+  final Set<String> hiddenFieldNames;
 
   String _fullFieldName(ZombossMechFieldSpec field) {
     if (fieldNamePrefix.isEmpty) return field.name;
@@ -59,6 +62,7 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
         fields.any((field) => field.name == 'ZombieWeights');
     for (final field in fields) {
       if (field.name.isEmpty || field.name.startsWith('#')) continue;
+      if (hiddenFieldNames.contains(field.name)) continue;
       if (hasWeightedZombieList && field.name == 'ZombieWeights') continue;
       children.add(_buildField(context, field));
     }
@@ -150,6 +154,8 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
           label: label,
           value: value.toString(),
           editable: editable,
+          levelFile: levelFile,
+          onLevelChanged: onChanged,
           onChanged: (next) {
             data[field.name] = next;
             onChanged();
@@ -184,6 +190,73 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
               fieldNamePrefix: _fullFieldName(field),
             ),
           ],
+        ),
+      );
+    }
+
+    if (field.type == 'List<object>' && field.objectFields.isNotEmpty) {
+      final raw = data[field.name];
+      final entries = raw is List
+          ? raw
+                .whereType<Map>()
+                .map(
+                  (entry) => ZombossMechActionUtils.cloneMap(
+                    Map<String, dynamic>.from(entry),
+                  ),
+                )
+                .toList()
+          : <Map<String, dynamic>>[];
+      return Padding(
+        padding: padding,
+        child: _ObjectListField(
+          label: label,
+          entries: entries,
+          editable: editable,
+          onAdd: () {
+            entries.add(
+              ZombossMechActionUtils.defaultsFromFields(field.objectFields),
+            );
+            data[field.name] = entries;
+            onChanged();
+          },
+          onRemove: (index) {
+            entries.removeAt(index);
+            data[field.name] = entries;
+            onChanged();
+          },
+          itemBuilder: (entry, index) => ZombossMechActionFieldsEditor(
+            mechId: mechId,
+            fields: field.objectFields,
+            data: entry,
+            onChanged: () {
+              data[field.name] = entries;
+              onChanged();
+            },
+            editable: editable,
+            objclass: objclass,
+            levelFile: levelFile,
+            depth: depth + 1,
+            fieldNamePrefix: _fullFieldName(field),
+          ),
+        ),
+      );
+    }
+
+    if (field.type == 'List<string>') {
+      final raw = data[field.name];
+      final values = raw is List
+          ? raw.map((value) => value.toString()).toList()
+          : <String>[];
+      return Padding(
+        padding: padding,
+        child: _StringListField(
+          label: label,
+          values: values,
+          editable: editable,
+          onChanged: (next) {
+            data[field.name] = next;
+            onChanged();
+          },
         ),
       );
     }
@@ -223,6 +296,139 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
       return values.take(expectedLength).toList();
     }
     return values;
+  }
+}
+
+class _ObjectListField extends StatelessWidget {
+  const _ObjectListField({
+    required this.label,
+    required this.entries,
+    required this.editable,
+    required this.onAdd,
+    required this.onRemove,
+    required this.itemBuilder,
+  });
+
+  final String label;
+  final List<Map<String, dynamic>> entries;
+  final bool editable;
+  final VoidCallback onAdd;
+  final ValueChanged<int> onRemove;
+  final Widget Function(Map<String, dynamic> entry, int index) itemBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(label, style: Theme.of(context).textTheme.titleSmall),
+            ),
+            if (editable)
+              IconButton(
+                tooltip: l10n?.add ?? 'Add',
+                onPressed: onAdd,
+                icon: const Icon(Icons.add_circle_outline),
+              ),
+          ],
+        ),
+        for (final indexed in entries.indexed)
+          Card(
+            margin: const EdgeInsets.only(top: 8),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 8, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (editable)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        tooltip: l10n?.remove ?? 'Remove',
+                        onPressed: () => onRemove(indexed.$1),
+                        icon: const Icon(Icons.delete_outline),
+                      ),
+                    ),
+                  itemBuilder(indexed.$2, indexed.$1),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _StringListField extends StatelessWidget {
+  const _StringListField({
+    required this.label,
+    required this.values,
+    required this.editable,
+    required this.onChanged,
+  });
+
+  final String label;
+  final List<String> values;
+  final bool editable;
+  final ValueChanged<List<String>> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(label, style: Theme.of(context).textTheme.titleSmall),
+            ),
+            if (editable)
+              IconButton(
+                tooltip: l10n?.add ?? 'Add',
+                onPressed: () => onChanged([...values, '']),
+                icon: const Icon(Icons.add_circle_outline),
+              ),
+          ],
+        ),
+        for (final indexed in values.indexed)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: TextFormField(
+              key: ValueKey('string-list-${indexed.$1}-${indexed.$2}'),
+              initialValue: indexed.$2,
+              readOnly: !editable,
+              decoration:
+                  editorInputDecoration(
+                    context,
+                    labelText: '${indexed.$1 + 1}',
+                  ).copyWith(
+                    suffixIcon: editable
+                        ? IconButton(
+                            tooltip: l10n?.remove ?? 'Remove',
+                            onPressed: () {
+                              final next = List<String>.from(values)
+                                ..removeAt(indexed.$1);
+                              onChanged(next);
+                            },
+                            icon: const Icon(Icons.close),
+                          )
+                        : null,
+                  ),
+              onChanged: editable
+                  ? (value) {
+                      final next = List<String>.from(values);
+                      next[indexed.$1] = value;
+                      onChanged(next);
+                    }
+                  : null,
+            ),
+          ),
+      ],
+    );
   }
 }
 

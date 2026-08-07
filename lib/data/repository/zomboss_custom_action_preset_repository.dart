@@ -13,11 +13,11 @@ abstract final class ZombossCustomActionPresetRepository {
   static const String _resourcePath =
       'assets/resources/ZombossMechCustomActionPresets.json';
   static const String currentLevelSource = 'CurrentLevel';
-  static const String _mainMarkerPrefix = '__c_editor_zomboss_action_preset__';
-  static const String _dependencyMarkerPrefix =
-      '__c_editor_zomboss_action_preset_dependency__';
 
   static final List<ZombossCustomActionPreset> _presets = [];
+  static final Expando<_PresetMarker> _runtimeMarkers = Expando<_PresetMarker>(
+    'zombossPresetOrigin',
+  );
   static bool _isLoaded = false;
 
   static Future<void> init() async {
@@ -63,9 +63,15 @@ abstract final class ZombossCustomActionPresetRepository {
   }
 
   static ZombossCustomActionPreset? presetForObject(PvzObject object) {
-    final marker = _mainMarkerForObject(object);
-    if (marker == null) return null;
-    return presetById(marker.presetId);
+    final runtimePreset = presetById(_runtimeMarkers[object]?.presetId ?? '');
+    if (runtimePreset != null) return runtimePreset;
+    final alias = object.aliases?.firstOrNull;
+    if (alias == null) return null;
+    return _presets.firstWhereOrNull(
+      (preset) =>
+          object.objClass == preset.objclass &&
+          _matchesSuggestedAlias(alias, preset.sourceAlias),
+    );
   }
 
   static ZombossCustomActionPreset? presetForRtid(
@@ -78,9 +84,20 @@ abstract final class ZombossCustomActionPresetRepository {
   }
 
   static ZombossCustomActionOrigin originForObject(PvzObject object) {
-    final marker = _mainMarkerForObject(object);
-    if (marker == null) return ZombossCustomActionOrigin.userCreated;
-    return marker.origin;
+    final runtime = _runtimeMarkers[object];
+    if (runtime != null) return runtime.origin;
+    final preset = presetForObject(object);
+    if (preset == null) return ZombossCustomActionOrigin.userCreated;
+    return _matchesPresetMainData(object, preset)
+        ? ZombossCustomActionOrigin.presetTemplate
+        : ZombossCustomActionOrigin.presetDerived;
+  }
+
+  static void markUserCreated(PvzObject object) {
+    _runtimeMarkers[object] = const _PresetMarker(
+      '',
+      ZombossCustomActionOrigin.userCreated,
+    );
   }
 
   static ZombossCustomActionOrigin originForRtid(
@@ -89,19 +106,24 @@ abstract final class ZombossCustomActionPresetRepository {
   ) {
     final object = _findObjectByRtid(levelFile, rtid);
     if (object == null) return ZombossCustomActionOrigin.userCreated;
-    return originForObject(object);
+    final runtime = _runtimeMarkers[object];
+    if (runtime != null) return runtime.origin;
+    final preset = presetForObject(object);
+    if (preset == null) return ZombossCustomActionOrigin.userCreated;
+    return _matchesPresetData(levelFile, object, preset)
+        ? ZombossCustomActionOrigin.presetTemplate
+        : ZombossCustomActionOrigin.presetDerived;
   }
 
   static bool isMetadataAlias(String alias) {
-    return alias.startsWith(_mainMarkerPrefix) ||
-        alias.startsWith(_dependencyMarkerPrefix);
+    return PvzObject.isEditorMetadataAlias(alias);
   }
 
   static List<String> aliasesWithPrimaryAlias(
     String primaryAlias,
     Iterable<String>? existingAliases,
   ) {
-    return [primaryAlias, ...?existingAliases?.where(isMetadataAlias)];
+    return [primaryAlias];
   }
 
   static List<ZombossMechObjclassGroup> actionGroupsForMech(String mechType) {
@@ -144,7 +166,7 @@ abstract final class ZombossCustomActionPresetRepository {
       createdAliases.add(alias);
       dependencyAliases[dependency.id] = alias;
       final object = PvzObject(
-        aliases: [alias, _dependencyMarker(preset.id, dependency.id)],
+        aliases: [alias],
         objClass: dependency.objclass,
         objData: _cloneMap(dependency.objdata),
       );
@@ -162,12 +184,13 @@ abstract final class ZombossCustomActionPresetRepository {
     final alias = _uniqueAlias(levelFile, preset.sourceAlias);
     createdAliases.add(alias);
     final object = PvzObject(
-      aliases: [
-        alias,
-        _mainMarker(preset.id, ZombossCustomActionOrigin.presetTemplate),
-      ],
+      aliases: [alias],
       objClass: preset.objclass,
       objData: data,
+    );
+    _runtimeMarkers[object] = _PresetMarker(
+      preset.id,
+      ZombossCustomActionOrigin.presetTemplate,
     );
     levelFile.objects.add(object);
     createdObjects.add(object);
@@ -185,12 +208,11 @@ abstract final class ZombossCustomActionPresetRepository {
   ) {
     final object = _findObjectByRtid(levelFile, rtid);
     if (object == null) return null;
-    final marker = _mainMarkerForObject(object);
-    if (marker == null ||
-        marker.origin != ZombossCustomActionOrigin.presetTemplate) {
+    if (originForRtid(levelFile, rtid) !=
+        ZombossCustomActionOrigin.presetTemplate) {
       return null;
     }
-    final preset = presetById(marker.presetId);
+    final preset = presetForObject(object);
     if (preset == null) return null;
 
     final data = _cloneMap(_mapData(object.objData));
@@ -210,7 +232,7 @@ abstract final class ZombossCustomActionPresetRepository {
       );
       createdAliases.add(alias);
       final dependencyObject = PvzObject(
-        aliases: [alias, _dependencyMarker(preset.id, dependency.id)],
+        aliases: [alias],
         objClass: oldDependency?.objClass ?? dependency.objclass,
         objData: _cloneMap(
           oldDependency == null
@@ -226,12 +248,13 @@ abstract final class ZombossCustomActionPresetRepository {
     final alias = _uniqueAlias(levelFile, preset.sourceAlias);
     createdAliases.add(alias);
     final derivedObject = PvzObject(
-      aliases: [
-        alias,
-        _mainMarker(preset.id, ZombossCustomActionOrigin.presetDerived),
-      ],
+      aliases: [alias],
       objClass: object.objClass,
       objData: data,
+    );
+    _runtimeMarkers[derivedObject] = _PresetMarker(
+      preset.id,
+      ZombossCustomActionOrigin.presetDerived,
     );
     levelFile.objects.add(derivedObject);
     createdObjects.add(derivedObject);
@@ -272,13 +295,21 @@ abstract final class ZombossCustomActionPresetRepository {
     final object = _findObjectByRtid(levelFile, rtid);
     if (object == null) return;
     final preset = presetForObject(object);
-    final dependencyRtids = preset == null
-        ? const <String>[]
-        : preset.dependencyRtidFields.keys
-              .map((field) => _mapData(object.objData)[field]?.toString())
-              .whereType<String>()
-              .where((value) => value.isNotEmpty)
-              .toList();
+    final dependencies =
+        <({String rtid, ZombossCustomActionPresetDependency spec})>[];
+    if (preset != null) {
+      for (final entry in preset.dependencyRtidFields.entries) {
+        final dependencyRtid = _mapData(object.objData)[entry.key]?.toString();
+        final spec = preset.dependencies.firstWhereOrNull(
+          (dependency) => dependency.id == entry.value,
+        );
+        if (dependencyRtid != null &&
+            dependencyRtid.isNotEmpty &&
+            spec != null) {
+          dependencies.add((rtid: dependencyRtid, spec: spec));
+        }
+      }
+    }
 
     final info = RtidParser.parse(rtid);
     if (info == null) return;
@@ -286,12 +317,15 @@ abstract final class ZombossCustomActionPresetRepository {
       (candidate) => candidate.aliases?.contains(info.alias) == true,
     );
 
-    for (final dependencyRtid in dependencyRtids) {
-      if (_countRtidReferences(levelFile, dependencyRtid) > 0) continue;
-      final dependency = _findObjectByRtid(levelFile, dependencyRtid);
-      if (dependency == null || !_hasDependencyMarker(dependency)) continue;
-      final depInfo = RtidParser.parse(dependencyRtid);
+    for (final entry in dependencies) {
+      if (_countRtidReferences(levelFile, entry.rtid) > 0) continue;
+      final dependency = _findObjectByRtid(levelFile, entry.rtid);
+      if (dependency == null || dependency.objClass != entry.spec.objclass) {
+        continue;
+      }
+      final depInfo = RtidParser.parse(entry.rtid);
       if (depInfo == null) continue;
+      if (!_matchesSuggestedAlias(depInfo.alias, entry.spec.alias)) continue;
       levelFile.objects.removeWhere(
         (candidate) => candidate.aliases?.contains(depInfo.alias) == true,
       );
@@ -304,6 +338,65 @@ abstract final class ZombossCustomActionPresetRepository {
   ) {
     return '$localizedName (${preset.sourceAlias})';
   }
+
+  static ZombossCustomActionPresetDependency? dependencySpecForField(
+    PvzObject action,
+    String fieldName,
+  ) {
+    final preset = presetForObject(action);
+    if (preset == null) return null;
+    final dependencyId = preset.dependencyRtidFields[fieldName];
+    if (dependencyId == null) return null;
+    return preset.dependencies.firstWhereOrNull(
+      (dependency) => dependency.id == dependencyId,
+    );
+  }
+
+  static PvzObject? dependencyObjectForField(
+    PvzLevelFile levelFile,
+    PvzObject action,
+    String fieldName,
+  ) {
+    final rtid = _mapData(action.objData)[fieldName]?.toString() ?? '';
+    return _findObjectByRtid(levelFile, rtid);
+  }
+
+  static bool isValidDependencyObject(
+    PvzObject? object,
+    ZombossCustomActionPresetDependency spec,
+  ) {
+    if (object == null || object.objClass != spec.objclass) return false;
+    final data = object.objData;
+    if (data is! Map) return false;
+    if (spec.objclass != 'ZombieDropProps') return true;
+    final hordes = data['ZombieHordes'];
+    final collectables = data['Collectables'];
+    if (hordes is! List || collectables is! List) return false;
+    if (collectables.any((item) => item is! String)) return false;
+    for (final horde in hordes) {
+      if (horde is! Map) return false;
+      final type = horde['Type'];
+      if (type is! String || type.isEmpty) return false;
+    }
+    return true;
+  }
+
+  static ({PvzObject object, String rtid}) createDependencyForField({
+    required PvzLevelFile levelFile,
+    required ZombossCustomActionPresetDependency spec,
+  }) {
+    final alias = _uniqueAlias(levelFile, spec.alias);
+    final object = PvzObject(
+      aliases: [alias],
+      objClass: spec.objclass,
+      objData: _cloneMap(spec.objdata),
+    );
+    levelFile.objects.add(object);
+    return (object: object, rtid: RtidParser.build(alias, currentLevelSource));
+  }
+
+  static Map<String, dynamic> cloneDependencyData(Map<String, dynamic> data) =>
+      _cloneMap(data);
 
   static PvzObject? _findObjectByRtid(PvzLevelFile levelFile, String rtid) {
     final info = RtidParser.parse(rtid);
@@ -328,36 +421,56 @@ abstract final class ZombossCustomActionPresetRepository {
     );
   }
 
-  static String _mainMarker(String presetId, ZombossCustomActionOrigin origin) {
-    return '$_mainMarkerPrefix${origin.name}__$presetId';
+  static bool _matchesSuggestedAlias(String alias, String sourceAlias) {
+    if (alias == sourceAlias) return true;
+    if (!alias.startsWith('${sourceAlias}_')) return false;
+    final suffix = alias.substring(sourceAlias.length + 1);
+    final number = int.tryParse(suffix);
+    return number != null && number >= 2;
   }
 
-  static String _dependencyMarker(String presetId, String dependencyId) {
-    return '$_dependencyMarkerPrefix${presetId}__$dependencyId';
-  }
-
-  static _PresetMarker? _mainMarkerForObject(PvzObject object) {
-    for (final alias in object.aliases ?? const <String>[]) {
-      if (!alias.startsWith(_mainMarkerPrefix)) continue;
-      final body = alias.substring(_mainMarkerPrefix.length);
-      final separator = body.indexOf('__');
-      if (separator <= 0) continue;
-      final originName = body.substring(0, separator);
-      final presetId = body.substring(separator + 2);
-      final origin = ZombossCustomActionOrigin.values.firstWhereOrNull(
-        (value) => value.name == originName,
+  static bool _matchesPresetData(
+    PvzLevelFile levelFile,
+    PvzObject object,
+    ZombossCustomActionPreset preset,
+  ) {
+    if (!_matchesPresetMainData(object, preset)) return false;
+    for (final entry in preset.dependencyRtidFields.entries) {
+      final dependencySpec = preset.dependencies.firstWhereOrNull(
+        (dependency) => dependency.id == entry.value,
       );
-      if (origin == null || presetId.isEmpty) continue;
-      return _PresetMarker(presetId, origin);
+      if (dependencySpec == null) return false;
+      final dependencyRtid = _mapData(object.objData)[entry.key]?.toString();
+      final dependency = dependencyRtid == null
+          ? null
+          : _findObjectByRtid(levelFile, dependencyRtid);
+      if (dependency == null ||
+          dependency.objClass != dependencySpec.objclass) {
+        return false;
+      }
+      if (!const DeepCollectionEquality().equals(
+        _mapData(dependency.objData),
+        dependencySpec.objdata,
+      )) {
+        return false;
+      }
     }
-    return null;
+    return true;
   }
 
-  static bool _hasDependencyMarker(PvzObject object) {
-    return object.aliases?.any(
-          (alias) => alias.startsWith(_dependencyMarkerPrefix),
-        ) ==
-        true;
+  static bool _matchesPresetMainData(
+    PvzObject object,
+    ZombossCustomActionPreset preset,
+  ) {
+    if (object.objClass != preset.objclass) return false;
+    final actual = _cloneMap(_mapData(object.objData));
+    final expected = _cloneMap(preset.objdata);
+    for (final field in preset.dependencyRtidFields.keys) {
+      final actualRtid = RtidParser.parse(actual[field]?.toString() ?? '');
+      if (actualRtid?.source != currentLevelSource) return false;
+      actual[field] = expected[field];
+    }
+    return const DeepCollectionEquality().equals(actual, expected);
   }
 
   static Map<String, dynamic> _mapData(dynamic value) {

@@ -79,6 +79,23 @@ abstract class ZombossMechL10n {
     return fb;
   }
 
+  /// Per-implementation picker label with the raw action alias kept visible.
+  static String implementationDisplayLabel(
+    BuildContext context,
+    String mechId,
+    String alias, {
+    String? fallback,
+  }) {
+    final localized = implementationLabel(
+      context,
+      mechId,
+      alias,
+      fallback: fallback,
+    );
+    if (localized.isEmpty || localized == alias) return alias;
+    return '$localized ($alias)';
+  }
+
   static String fieldLabel(
     BuildContext context,
     String mechId,
@@ -87,7 +104,11 @@ abstract class ZombossMechL10n {
     String? fallback,
   }) {
     final fb = fallback ?? fieldName;
-    final localized = _lookup(context, fieldKey(mechId, objclass, fieldName), fb);
+    final localized = _lookup(
+      context,
+      fieldKey(mechId, objclass, fieldName),
+      fb,
+    );
     if (localized != null && localized != fb) return localized;
     return _lookup(context, genericFieldKey(objclass, fieldName), fb) ?? fb;
   }

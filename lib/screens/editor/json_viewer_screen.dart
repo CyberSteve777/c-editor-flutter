@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:c_editor/data/custom_portal_level_utils.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
@@ -184,7 +185,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
 
   String _rawPrettyText() => _jsonEncoder.convert(widget.levelFile.toJson());
 
-  Future<void> _copyTextToClipboard(String text, {required String successMessage}) async {
+  Future<void> _copyTextToClipboard(
+    String text, {
+    required String successMessage,
+  }) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
     AppMessage.show(context, successMessage, icon: Icons.check_circle);
@@ -527,7 +531,8 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                             : Icons.data_object,
                       ),
                       tooltip:
-                          l10n?.tooltipToggleObjectView ?? 'Toggle object/raw view',
+                          l10n?.tooltipToggleObjectView ??
+                          'Toggle object/raw view',
                       onPressed: () {
                         setState(() {
                           _viewMode = _viewMode == _JsonViewMode.rawText
@@ -585,7 +590,9 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.copy),
-                            title: Text(l10n?.tooltipCopyJson ?? 'Copy level JSON'),
+                            title: Text(
+                              l10n?.tooltipCopyJson ?? 'Copy level JSON',
+                            ),
                           ),
                         ),
                         const PopupMenuDivider(),
@@ -856,6 +863,19 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     for (final obj in widget.levelFile.objects) {
       if (obj.objData != null) scan(obj.objData);
     }
+    // PortalType stores a short code rather than an RTID. Keep the matching
+    // memo property (and any numbered local GridItemType) reachable here.
+    for (final portal in CustomPortalLevelUtils.list(widget.levelFile)) {
+      if (CustomPortalLevelUtils.countUses(
+            widget.levelFile,
+            portal.portalType,
+          ) ==
+          0) {
+        continue;
+      }
+      used.addAll(portal.properties.aliases ?? const <String>[]);
+      used.addAll(portal.gridItemType?.aliases ?? const <String>[]);
+    }
     return used;
   }
 
@@ -996,10 +1016,9 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       lineStarts.add(runningOffset);
       runningOffset += line.length + 1;
     }
-    final activeMatch =
-        _matches.isEmpty
-            ? null
-            : _matches[_currentMatchIndex.clamp(0, _matches.length - 1)];
+    final activeMatch = _matches.isEmpty
+        ? null
+        : _matches[_currentMatchIndex.clamp(0, _matches.length - 1)];
 
     return Scrollbar(
       controller: _verticalController,
@@ -1044,59 +1063,57 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                   SelectionContainer.disabled(
                     child: SizedBox(
                       width: gutterW,
-                      child:
-                          row.isContinuation
-                              ? Text(
-                                contSymbol,
-                                textAlign: TextAlign.right,
-                                style: baseStyle.copyWith(
-                                  fontFamily: _codeFontFamily,
-                                  color: muted,
-                                  fontSize: _fontSize * 0.92,
-                                ),
-                              )
-                              : Text(
-                                '${row.logicalLineOneBased}',
-                                textAlign: TextAlign.right,
-                                style: baseStyle.copyWith(
-                                  fontFamily: _codeFontFamily,
-                                  color: muted,
-                                ),
+                      child: row.isContinuation
+                          ? Text(
+                              contSymbol,
+                              textAlign: TextAlign.right,
+                              style: baseStyle.copyWith(
+                                fontFamily: _codeFontFamily,
+                                color: muted,
+                                fontSize: _fontSize * 0.92,
                               ),
+                            )
+                          : Text(
+                              '${row.logicalLineOneBased}',
+                              textAlign: TextAlign.right,
+                              style: baseStyle.copyWith(
+                                fontFamily: _codeFontFamily,
+                                color: muted,
+                              ),
+                            ),
                     ),
                   ),
                   SelectionContainer.disabled(
                     child: const SizedBox(width: gutterTextGap),
                   ),
                   Expanded(
-                    child:
-                        _matches.isEmpty
-                            ? Text(row.text, style: baseStyle, softWrap: false)
-                            : RichText(
-                              text: TextSpan(
-                                style: baseStyle,
-                                children: buildHighlightedTextSpans(
-                                  text: row.text,
-                                  segmentStartInLine: row.segmentStartInLine,
-                                  segmentEndInLine:
-                                      row.segmentStartInLine + row.text.length,
-                                  baseStyle: baseStyle,
-                                  highlightStyle: highlightStyle,
-                                  activeHighlightStyle: activeHighlightStyle,
-                                  lineMatches: _matches
-                                      .where(
-                                        (m) =>
-                                            m.lineIndex ==
-                                            row.logicalLineOneBased - 1,
-                                      )
-                                      .toList(),
-                                  activeMatch: activeMatch,
-                                  lineStartOffset:
-                                      lineStarts[row.logicalLineOneBased - 1],
-                                ),
+                    child: _matches.isEmpty
+                        ? Text(row.text, style: baseStyle, softWrap: false)
+                        : RichText(
+                            text: TextSpan(
+                              style: baseStyle,
+                              children: buildHighlightedTextSpans(
+                                text: row.text,
+                                segmentStartInLine: row.segmentStartInLine,
+                                segmentEndInLine:
+                                    row.segmentStartInLine + row.text.length,
+                                baseStyle: baseStyle,
+                                highlightStyle: highlightStyle,
+                                activeHighlightStyle: activeHighlightStyle,
+                                lineMatches: _matches
+                                    .where(
+                                      (m) =>
+                                          m.lineIndex ==
+                                          row.logicalLineOneBased - 1,
+                                    )
+                                    .toList(),
+                                activeMatch: activeMatch,
+                                lineStartOffset:
+                                    lineStarts[row.logicalLineOneBased - 1],
                               ),
-                              softWrap: false,
                             ),
+                            softWrap: false,
+                          ),
                   ),
                 ],
               );
@@ -1254,10 +1271,12 @@ class _ObjectCodeCard extends StatelessWidget {
     final headerBg = isDark ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50);
     final deleteBtnBg = theme.colorScheme.error;
     // Light blue, tuned per theme so it stays readable on the green header.
-    final copyBtnBg =
-        isDark ? const Color(0xFF4FC3F7) : const Color(0xFF81D4FA);
-    final copyBtnFg =
-        isDark ? const Color(0xFF01579B) : const Color(0xFF0277BD);
+    final copyBtnBg = isDark
+        ? const Color(0xFF4FC3F7)
+        : const Color(0xFF81D4FA);
+    final copyBtnFg = isDark
+        ? const Color(0xFF01579B)
+        : const Color(0xFF0277BD);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -1340,10 +1359,10 @@ class _ObjectCodeCard extends StatelessWidget {
                 objectMatches: objectMatches,
                 activeMatch:
                     activeMatchIndex != null &&
-                            activeMatchIndex! >= 0 &&
-                            activeMatchIndex! < objectMatches.length
-                        ? objectMatches[activeMatchIndex!]
-                        : null,
+                        activeMatchIndex! >= 0 &&
+                        activeMatchIndex! < objectMatches.length
+                    ? objectMatches[activeMatchIndex!]
+                    : null,
               ),
             ),
         ],

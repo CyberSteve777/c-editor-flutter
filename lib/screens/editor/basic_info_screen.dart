@@ -179,9 +179,9 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
         );
       }
     }
-    final isPresetCustomStage =
-        stageInfo != null &&
-        CustomStagePresetRepository.isPresetCustomStageAlias(stageInfo.alias);
+    final customStageOrigin = customStageObj == null
+        ? null
+        : CustomStagePresetRepository.originForObject(customStageObj);
     final customSuffix =
         l10n?.customStageNameSuffix ??
         CustomStageLevelUtils.displayNameSuffixDefault;
@@ -309,7 +309,9 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
                                     top: 4,
                                     left: 4,
                                     child: _CurrentCustomStageBadge(
-                                      fromPreset: isPresetCustomStage,
+                                      origin:
+                                          customStageOrigin ??
+                                          CustomStageOrigin.userCreated,
                                     ),
                                   ),
                                 ],
@@ -545,36 +547,23 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
 }
 
 class _CurrentCustomStageBadge extends StatelessWidget {
-  const _CurrentCustomStageBadge({required this.fromPreset});
+  const _CurrentCustomStageBadge({required this.origin});
 
-  final bool fromPreset;
+  final CustomStageOrigin origin;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: customStageBadgePadding(context),
-      decoration: BoxDecoration(
-        color: _badgeColor(context),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        'C',
-        style: TextStyle(
-          fontSize: customStageBadgeFontSize(context),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
+    return CustomResourceBadge(color: _badgeColor(context));
   }
 
   Color _badgeColor(BuildContext context) {
-    if (fromPreset) {
-      return Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFF1B5E20)
-          : const Color(0xFF2E7D32);
-    }
-    return customStageBadgeColor(context);
+    return switch (origin) {
+      CustomStageOrigin.presetTemplate => presetCustomResourceBadgeColor(
+        context,
+      ),
+      CustomStageOrigin.presetDerived => customStageBadgeColor(context),
+      CustomStageOrigin.userCreated => userCustomResourceBadgeColor(context),
+    };
   }
 }
 
