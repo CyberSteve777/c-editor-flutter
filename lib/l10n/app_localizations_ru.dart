@@ -1005,6 +1005,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get levelCreateFail => 'Ошибка создания, файл уже существует';
 
   @override
+  String get templateLoadFail => 'Не удалось загрузить выбранный шаблон уровня';
+
+  @override
   String get adjustUiSize => 'Настроить размер интерфейса';
 
   @override
@@ -1250,7 +1253,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get templateOldStyleExample => 'Уровень старого типа';
 
   @override
-  String get templateCustomStageExample => 'Пример пользовательского газона';
+  String get templateCustomLawnExample => 'Пример пользовательского газона';
 
   @override
   String get unsavedChanges => 'Несохранённые изменения';
@@ -2725,6 +2728,51 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get moduleDesc_ProtectTheGridItemChallengeProperties =>
       'Предметы, которые нужно защитить';
+
+  @override
+  String get moduleTitle_MoldColonyChallengeProps => 'Зона плесени';
+
+  @override
+  String get moduleDesc_MoldColonyChallengeProps =>
+      'Настраивает клетки газона с колониями плесени, на которых нельзя сажать растения';
+
+  @override
+  String get moldColonyLocationsTitle => 'Схема колоний плесени (Locations)';
+
+  @override
+  String moldColonyLocationsValue(Object value) {
+    return 'Текущее значение: $value';
+  }
+
+  @override
+  String get moldColonyLevelModulesError =>
+      'Ошибка: ссылка на схему колоний плесени использует LevelModules. Переключите её на объект текущего уровня.';
+
+  @override
+  String get moldColonyInvalidLinkError =>
+      'Ошибка: Locations должен ссылаться на объект BoardGridMapProps текущего уровня со схемой колоний плесени.';
+
+  @override
+  String moldColonyRepairLink(Object alias) {
+    return 'Исправить ссылку на: $alias';
+  }
+
+  @override
+  String get moldColonies => 'Колонии плесени';
+
+  @override
+  String get moldColonyEmpty => 'Пусто';
+
+  @override
+  String get moldColonyHelpOverview =>
+      'Настраивает клетки газона, покрытые колониями плесени. На таких клетках игрок не может сажать растения.';
+
+  @override
+  String get moldColonyHelpGridTitle => 'Управление сеткой';
+
+  @override
+  String get moldColonyHelpGridBody =>
+      'Нажмите клетку, чтобы переключить её между пустой (можно сажать) и колониями плесени (сажать нельзя). Выбранные строка и столбец показаны над сеткой.';
 
   @override
   String get moduleTitle_ZombiePotionModuleProperties => 'Зелья зомби';

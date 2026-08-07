@@ -7,6 +7,7 @@ import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
+import 'package:c_editor/data/mold_colony_module_utils.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -51,6 +52,7 @@ import 'package:c_editor/screens/editor/modules/pickup_collectable_tutorial_scre
 import 'package:c_editor/screens/editor/modules/zombie_sun_drop_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/power_tile_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/protect_grid_item_challenge_screen.dart';
+import 'package:c_editor/screens/editor/modules/mold_colony_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/protect_plant_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/roof_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/rain_dark_properties_screen.dart';
@@ -1027,9 +1029,18 @@ class _EditorScreenState extends State<EditorScreen> {
             : 1;
         objData['reportError'] = objData['reportError'] ?? true;
       }
-      _ec.state.levelFile!.objects.add(
-        PvzObject(aliases: [alias], objClass: meta.objClass, objData: objData),
+      final moduleObject = PvzObject(
+        aliases: [alias],
+        objClass: meta.objClass,
+        objData: objData,
       );
+      _ec.state.levelFile!.objects.add(moduleObject);
+      if (meta.objClass == MoldColonyModuleUtils.moduleObjClass) {
+        MoldColonyModuleUtils.ensureCurrentLevelLayout(
+          levelFile: _ec.state.levelFile!,
+          moduleObject: moduleObject,
+        );
+      }
     } else {
       final rtid = RtidParser.build(alias, source);
       def.modules.add(rtid);
@@ -1043,11 +1054,30 @@ class _EditorScreenState extends State<EditorScreen> {
     final def = _ec.state.parsedData?.levelDef;
     if (def == null) return;
 
-    def.modules.remove(rtid);
     final info = RtidParser.parse(rtid);
+    String? moldLocations;
+    if (info != null && info.source == 'CurrentLevel') {
+      final moduleObject = _ec.state.levelFile!.objects.firstWhereOrNull(
+        (object) => object.aliases?.contains(info.alias) == true,
+      );
+      if (moduleObject?.objClass == MoldColonyModuleUtils.moduleObjClass &&
+          moduleObject?.objData is Map) {
+        moldLocations = MoldColonyChallengePropsData.fromJson(
+          Map<String, dynamic>.from(moduleObject!.objData as Map),
+        ).locations;
+      }
+    }
+
+    def.modules.remove(rtid);
     if (info != null && info.source == 'CurrentLevel') {
       _ec.state.levelFile!.objects.removeWhere(
         (o) => o.aliases?.contains(info.alias) == true,
+      );
+    }
+    if (moldLocations != null) {
+      MoldColonyModuleUtils.removeUnreferencedLayout(
+        levelFile: _ec.state.levelFile!,
+        locations: moldLocations,
       );
     }
     if (info?.alias == FinalStageTimeLimitedModuleUtils.alias) {
@@ -2694,6 +2724,21 @@ class _EditorScreenState extends State<EditorScreen> {
       }
       return;
     }
+    if (info.source == 'CurrentLevel' &&
+        objClass == MoldColonyModuleUtils.moduleObjClass) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MoldColonyChallengeScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (info.source == 'CurrentLevel' && objClass == 'SeedRainProperties') {
       Navigator.push(
         context,
@@ -3737,7 +3782,7 @@ class _UiScalePresetLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
+    return Row(
       children: [
         _UiScalePresetLabel(
           label: smallLabel,

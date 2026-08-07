@@ -993,6 +993,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelCreateFail => 'Create failed, file already exists';
 
   @override
+  String get templateLoadFail => 'Could not load the selected level template';
+
+  @override
   String get adjustUiSize => 'Adjust UI size';
 
   @override
@@ -1235,7 +1238,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateOldStyleExample => 'Wave Generator level template';
 
   @override
-  String get templateCustomStageExample => 'Custom lawn level template';
+  String get templateCustomLawnExample => 'Custom lawn level template';
 
   @override
   String get unsavedChanges => 'Unsaved changes';
@@ -1760,7 +1763,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flagInterval => 'Flag interval';
 
   @override
-  String get waveManagerHelpTitle => 'Wave Manager';
+  String get waveManagerHelpTitle => 'Wave Manager module';
 
   @override
   String get waveManagerHelpOverviewTitle => 'Overview';
@@ -2351,7 +2354,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spermWhaleModuleTitle => 'Whale Approaching Settings';
 
   @override
-  String get spermWhaleModuleHelpTitle => 'Whale Approaching';
+  String get spermWhaleModuleHelpTitle => 'Whale Approaching module';
 
   @override
   String get spermWhaleModuleParameters => 'Parameters';
@@ -2661,7 +2664,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noConditions => 'No conditions';
 
   @override
-  String get frozenPlantPlacementHelpTitle => 'Legacy Preset Plants';
+  String get frozenPlantPlacementHelpTitle => 'Legacy Preset Plants module';
 
   @override
   String get frozenPlantPlacementHelpOverviewTitle => 'Overview';
@@ -2715,6 +2718,51 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_ProtectTheGridItemChallengeProperties =>
       'Sets grid items that must be protected from destruction';
+
+  @override
+  String get moduleTitle_MoldColonyChallengeProps => 'Mold Zone';
+
+  @override
+  String get moduleDesc_MoldColonyChallengeProps =>
+      'Sets the lawn tiles covered by mold colonies';
+
+  @override
+  String get moldColonyLocationsTitle => 'Mold colonies layout (Locations)';
+
+  @override
+  String moldColonyLocationsValue(Object value) {
+    return 'Current value: $value';
+  }
+
+  @override
+  String get moldColonyLevelModulesError =>
+      'Error: the mold colonies layout reference uses LevelModules. Switch it to a current-level object.';
+
+  @override
+  String get moldColonyInvalidLinkError =>
+      'Error: Locations must reference a BoardGridMapProps object in the current level for the mold colonies layout.';
+
+  @override
+  String moldColonyRepairLink(Object alias) {
+    return 'Repair link to: $alias';
+  }
+
+  @override
+  String get moldColonies => 'Mold colonies';
+
+  @override
+  String get moldColonyEmpty => 'Empty';
+
+  @override
+  String get moldColonyHelpOverview =>
+      'Configures the lawn tiles covered by mold colonies. Mold colonies prevent the player from planting on the corresponding tiles.';
+
+  @override
+  String get moldColonyHelpGridTitle => 'Grid controls';
+
+  @override
+  String get moldColonyHelpGridBody =>
+      'Tap a tile to switch between empty (plantable) and mold colonies (not plantable). The selected row and column are shown above the grid.';
 
   @override
   String get moduleTitle_ZombiePotionModuleProperties => 'Dark Alchemy';
@@ -2811,7 +2859,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bronzeModuleTitle => 'Bronze Matrix Statues';
 
   @override
-  String get bronzeModuleHelpTitle => 'Bronze Matrix Statues';
+  String get bronzeModuleHelpTitle => 'Bronze Matrix Statues module';
 
   @override
   String get bronzeModuleHelpOverview => 'Overview';
@@ -4612,7 +4660,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombiePotionSettings => 'Zombie Potion Settings';
 
   @override
-  String get zombiePotionHelpTitle => 'Zombie Potion Module';
+  String get zombiePotionHelpTitle => 'Zombie Potion module';
 
   @override
   String get eventTimeRift => 'Event: Spacetime Portal';
@@ -4637,7 +4685,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'After adding the Last Stand module, the editor automatically enables Manual Startup in the Wave Manager module.';
 
   @override
-  String get lastStandHelpTitle => 'Last Stand Module';
+  String get lastStandHelpTitle => 'Last Stand module';
 
   @override
   String get lastStandHelpOverviewBody =>
@@ -4808,14 +4856,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxSunOverride => 'Max sun limit (MaxSunOverride)';
 
   @override
-  String get maxSunHelpTitle => 'Max Sun Limit';
+  String get maxSunHelpTitle => 'Max Sun Limit module';
 
   @override
   String get maxSunHelpOverview =>
       'Originally used for Penny’s Pursuit difficulty settings. This module overrides the maximum amount of sun that can be stored in a level.';
 
   @override
-  String get startingPlantfoodHelpTitle => 'Starting Plant Food';
+  String get startingPlantfoodHelpTitle => 'Starting Plant Food module';
 
   @override
   String get startingPlantfoodHelpOverview =>
@@ -6235,7 +6283,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Interval variation range (SunCountdownRange)';
 
   @override
-  String get sunDropperHelpTitle => 'Sun Dropper';
+  String get sunDropperHelpTitle => 'Sun Dropper module';
 
   @override
   String get sunDropperHelpIntro =>
@@ -6502,7 +6550,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'This will remove all placed non-plantable tiles from the lawn. This action cannot be undone.';
 
   @override
-  String get expeditionTilesHelpTitle => 'Expedition Tiles Module';
+  String get expeditionTilesHelpTitle => 'Expedition Tiles module';
 
   @override
   String get expeditionTilesHelpOverview =>
@@ -6554,7 +6602,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finalStageTimeLimitedChallengeHelpTitle =>
-      'Final stage time limit challenge';
+      'Final stage time limit challenge module';
 
   @override
   String get finalStageTimeLimitedChallengeHelpIntro =>
@@ -8160,7 +8208,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waveGeneratorWaveScreenSubtitle => 'Wave generator wave';
 
   @override
-  String get waveGeneratorWaveScreenHelpTitle => 'Wave editor';
+  String get waveGeneratorWaveScreenHelpTitle => 'Wave Editor';
 
   @override
   String get waveGeneratorWaveScreenHelpBody =>

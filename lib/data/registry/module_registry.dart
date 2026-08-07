@@ -8,6 +8,7 @@ class ModuleMetadata {
   final String titleKey;
   final String descriptionKey;
   final IconData icon;
+  final String? assetIconPath;
   final bool isCore;
   final ModuleCategory category;
   final String defaultAlias;
@@ -24,6 +25,7 @@ class ModuleMetadata {
     required this.titleKey,
     required this.descriptionKey,
     required this.icon,
+    this.assetIconPath,
     required this.isCore,
     required this.category,
     required this.defaultAlias,
@@ -176,6 +178,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_ProtectThePlantChallengeProperties;
       case 'moduleTitle_ProtectTheGridItemChallengeProperties':
         return l10n.moduleTitle_ProtectTheGridItemChallengeProperties;
+      case 'moduleTitle_MoldColonyChallengeProps':
+        return l10n.moduleTitle_MoldColonyChallengeProps;
       case 'moduleTitle_ZombiePotionModuleProperties':
         return l10n.moduleTitle_ZombiePotionModuleProperties;
       case 'moduleTitle_PiratePlankProperties':
@@ -326,6 +330,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_ProtectThePlantChallengeProperties;
       case 'moduleDesc_ProtectTheGridItemChallengeProperties':
         return l10n.moduleDesc_ProtectTheGridItemChallengeProperties;
+      case 'moduleDesc_MoldColonyChallengeProps':
+        return l10n.moduleDesc_MoldColonyChallengeProps;
       case 'moduleDesc_ZombiePotionModuleProperties':
         return l10n.moduleDesc_ZombiePotionModuleProperties;
       case 'moduleDesc_PiratePlankProperties':
@@ -880,6 +886,18 @@ class ModuleRegistry {
       initialDataFactory: () => ProtectTheGridItemChallengePropertiesData(),
       routeId: 'ProtectTheGridItem',
     ),
+    'MoldColonyChallengeProps': ModuleMetadata(
+      titleKey: 'moduleTitle_MoldColonyChallengeProps',
+      descriptionKey: 'moduleDesc_MoldColonyChallengeProps',
+      icon: Icons.grid_on,
+      assetIconPath: 'assets/images/griditems/fake_mold.webp',
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.scene,
+      defaultAlias: 'DoNotPlantBeforeLine',
+      initialDataFactory: () => MoldColonyChallengePropsData(),
+      routeId: 'MoldColony',
+    ),
     'PiratePlankProperties': ModuleMetadata(
       titleKey: 'moduleTitle_PiratePlankProperties',
       descriptionKey: 'moduleDesc_PiratePlankProperties',
@@ -1171,6 +1189,7 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
     String? titleKey,
     String? descriptionKey,
     IconData? icon,
+    String? assetIconPath,
     bool? isCore,
     ModuleCategory? category,
     String? defaultAlias,
@@ -1185,6 +1204,7 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
       titleKey: titleKey ?? this.titleKey,
       descriptionKey: descriptionKey ?? this.descriptionKey,
       icon: icon ?? this.icon,
+      assetIconPath: assetIconPath ?? this.assetIconPath,
       isCore: isCore ?? this.isCore,
       category: category ?? this.category,
       defaultAlias: defaultAlias ?? this.defaultAlias,

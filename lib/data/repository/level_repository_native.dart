@@ -678,7 +678,6 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   @override
   Future<bool> createLevelFromTemplate(
     String currentDirPath,
-    String templateName,
     String newFileName,
     String assetContent,
   ) async {

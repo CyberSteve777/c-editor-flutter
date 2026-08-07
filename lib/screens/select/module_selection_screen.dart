@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Module selection. Ported from Z-Editor-master ModuleSelectionScreen.kt
@@ -204,13 +205,24 @@ class _ModuleSelectionCard extends StatelessWidget {
                             .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    meta.icon,
-                    size: 28,
-                    color: isEnabled
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outline,
-                  ),
+                  child: meta.assetIconPath != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: AssetImageWidget(
+                            assetPath: meta.assetIconPath!,
+                            fit: BoxFit.contain,
+                            altCandidates: imageAltCandidates(
+                              meta.assetIconPath!,
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          meta.icon,
+                          size: 28,
+                          color: isEnabled
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.outline,
+                        ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

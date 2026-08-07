@@ -973,6 +973,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get levelCreateFail => '创建失败，已有同名文件';
 
   @override
+  String get templateLoadFail => '无法加载所选关卡模板';
+
+  @override
   String get adjustUiSize => '调整界面大小';
 
   @override
@@ -1027,7 +1030,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get rtonFormatDescription =>
-      'PopCap RTON 二进制序列化格式（Rijndael 加密）。用于 dynamic.rsb.smf 中的关卡数据。';
+      'PopCap RTON 二进制序列化格式（Rijndael 加密）。用于替换 dynamic.rsb.smf 中的关卡数据。';
 
   @override
   String get conversionRequiredTitle => '需要转换';
@@ -1082,15 +1085,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. 目录设置：首次进入请选择存放 JSON 关卡文件的目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于 dynamic.rsb.smf 中的关卡数据）。\n6. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8.如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
+      '1. 目录设置：首次进入请选择存放 JSON 关卡文件的目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8.如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageTextDesktop =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于 dynamic.rsb.smf 中的关卡数据）。\n6. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
+      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageTextMobile =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于 dynamic.rsb.smf 中的关卡数据）。\n6. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
+      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n7. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。\n8. 如有疑问或需要高创关卡制作帮助，欢迎加入Plants vs. Zombies Discord服务器，在 PvZ2C-Modding 子区中提问。';
 
   @override
   String get usageRecommendedLevelsLabel => '创意庭院·推荐关卡展示：';
@@ -1208,7 +1211,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templateOldStyleExample => '波次生成器示例';
 
   @override
-  String get templateCustomStageExample => '自定义地图示例';
+  String get templateCustomLawnExample => '自定义地图示例';
 
   @override
   String get unsavedChanges => '有未保存的更改';
@@ -2595,6 +2598,48 @@ class AppLocalizationsZh extends AppLocalizations {
       '设置关卡中必须保护且不能被破坏的物品';
 
   @override
+  String get moduleTitle_MoldColonyChallengeProps => '霉菌区域';
+
+  @override
+  String get moduleDesc_MoldColonyChallengeProps => '设置关卡中禁止种植的霉菌覆盖区域';
+
+  @override
+  String get moldColonyLocationsTitle => '关联霉菌布局 (Locations)';
+
+  @override
+  String moldColonyLocationsValue(Object value) {
+    return '当前值：$value';
+  }
+
+  @override
+  String get moldColonyLevelModulesError => '错误：引用源为 LevelModules，需切换为关卡自定义对象。';
+
+  @override
+  String get moldColonyInvalidLinkError =>
+      '错误：Locations 必须关联关卡内的 BoardGridMapProps 布局对象。';
+
+  @override
+  String moldColonyRepairLink(Object alias) {
+    return '一键修复关联至：$alias';
+  }
+
+  @override
+  String get moldColonies => '霉菌';
+
+  @override
+  String get moldColonyEmpty => '空地';
+
+  @override
+  String get moldColonyHelpOverview => '设置关卡中的霉菌覆盖区域。霉菌会阻止玩家在对应格子上种植植物。';
+
+  @override
+  String get moldColonyHelpGridTitle => '网格操作';
+
+  @override
+  String get moldColonyHelpGridBody =>
+      '点击格子可在空地（可种植）与霉菌（不可种植）之间切换。网格上方会显示当前选中的行列位置。';
+
+  @override
   String get moduleTitle_ZombiePotionModuleProperties => '僵尸药水';
 
   @override
@@ -2676,7 +2721,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bronzeModuleTitle => '铜人像';
 
   @override
-  String get bronzeModuleHelpTitle => '铜人像';
+  String get bronzeModuleHelpTitle => '铜人像模块说明';
 
   @override
   String get bronzeModuleHelpOverview => '简要介绍';
@@ -3564,7 +3609,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unknownModuleTitle => '模块编辑器开发中';
 
   @override
-  String get unknownModuleHelpTitle => '未解析模块';
+  String get unknownModuleHelpTitle => '未解析模块说明';
 
   @override
   String get unknownModuleHelpBody => '该模块暂时未注册到关卡解释器，暂无可用编辑器。';
@@ -4355,7 +4400,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get smokePollutionModuleTitle => '蒸汽毒雾模块';
 
   @override
-  String get smokePollutionModuleHelpTitle => '蒸汽毒雾模块';
+  String get smokePollutionModuleHelpTitle => '蒸汽毒雾模块说明';
 
   @override
   String get smokePollutionModuleHelpOverview => '概述';
@@ -6188,7 +6233,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get expeditionTilesClearConfirmMessage => '将移除场上所有已放置的禁种地块，此操作不可撤销。';
 
   @override
-  String get expeditionTilesHelpTitle => '远征地砖模块';
+  String get expeditionTilesHelpTitle => '远征地砖模块说明';
 
   @override
   String get expeditionTilesHelpOverview =>
@@ -7009,7 +7054,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieSunDropTitle => '僵尸掉落阳光配置';
 
   @override
-  String get zombieSunDropHelpTitle => '僵尸掉落阳光说明';
+  String get zombieSunDropHelpTitle => '僵尸掉落阳光模块说明';
 
   @override
   String get zombieSunDropHelpOverview =>
@@ -7050,7 +7095,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pickupCollectableTutorialTitle => '捡取教程属性';
 
   @override
-  String get pickupCollectableTutorialHelpTitle => '捡取教程说明';
+  String get pickupCollectableTutorialHelpTitle => '捡取教程模块说明';
 
   @override
   String get pickupCollectableTutorialHelpBasic => '基本描述';
@@ -7646,7 +7691,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorModuleTitle => '波次生成器';
 
   @override
-  String get waveGeneratorModuleHelpTitle => '波次生成器模块';
+  String get waveGeneratorModuleHelpTitle => '波次生成器模块说明';
 
   @override
   String get waveGeneratorModuleHelpOverview => '概述';

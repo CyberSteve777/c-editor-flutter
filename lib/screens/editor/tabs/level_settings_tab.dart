@@ -9,6 +9,7 @@ import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/asset_image.dart';
 
 bool _shouldRecommendTunnelDefendModule(
   LevelDefinitionData levelDef,
@@ -46,6 +47,7 @@ class ModuleUIInfo {
   final String friendlyName;
   final String description;
   final IconData icon;
+  final String? assetIconPath;
   final bool isCore;
   final bool isExpeditionTiles;
 
@@ -56,6 +58,7 @@ class ModuleUIInfo {
     required this.friendlyName,
     required this.description,
     required this.icon,
+    this.assetIconPath,
     required this.isCore,
     this.isExpeditionTiles = false,
   });
@@ -186,6 +189,7 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
         friendlyName: metadata.getTitle(context),
         description: metadata.getDescription(context),
         icon: metadata.icon,
+        assetIconPath: metadata.assetIconPath,
         isCore: metadata.isCore,
         isExpeditionTiles: isExpeditionTiles,
       );
@@ -698,7 +702,18 @@ class _ReorderableModuleTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(info.icon, color: iconColor, size: isCore ? 28 : 20),
+              if (info.assetIconPath != null)
+                SizedBox(
+                  width: isCore ? 28 : 20,
+                  height: isCore ? 28 : 20,
+                  child: AssetImageWidget(
+                    assetPath: info.assetIconPath!,
+                    fit: BoxFit.contain,
+                    altCandidates: imageAltCandidates(info.assetIconPath!),
+                  ),
+                )
+              else
+                Icon(info.icon, color: iconColor, size: isCore ? 28 : 20),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

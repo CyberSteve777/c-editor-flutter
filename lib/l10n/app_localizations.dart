@@ -1882,6 +1882,12 @@ abstract class AppLocalizations {
   /// **'Create failed, file already exists'**
   String get levelCreateFail;
 
+  /// No description provided for @templateLoadFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the selected level template'**
+  String get templateLoadFail;
+
   /// No description provided for @adjustUiSize.
   ///
   /// In en, this message translates to:
@@ -2302,11 +2308,11 @@ abstract class AppLocalizations {
   /// **'Wave Generator level template'**
   String get templateOldStyleExample;
 
-  /// No description provided for @templateCustomStageExample.
+  /// No description provided for @templateCustomLawnExample.
   ///
   /// In en, this message translates to:
   /// **'Custom lawn level template'**
-  String get templateCustomStageExample;
+  String get templateCustomLawnExample;
 
   /// No description provided for @unsavedChanges.
   ///
@@ -3289,7 +3295,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveManagerHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave Manager'**
+  /// **'Wave Manager module'**
   String get waveManagerHelpTitle;
 
   /// No description provided for @waveManagerHelpOverviewTitle.
@@ -4309,7 +4315,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Whale Approaching'**
+  /// **'Whale Approaching module'**
   String get spermWhaleModuleHelpTitle;
 
   /// No description provided for @spermWhaleModuleParameters.
@@ -4831,7 +4837,7 @@ abstract class AppLocalizations {
   /// No description provided for @frozenPlantPlacementHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Legacy Preset Plants'**
+  /// **'Legacy Preset Plants module'**
   String get frozenPlantPlacementHelpTitle;
 
   /// No description provided for @frozenPlantPlacementHelpOverviewTitle.
@@ -4923,6 +4929,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sets grid items that must be protected from destruction'**
   String get moduleDesc_ProtectTheGridItemChallengeProperties;
+
+  /// No description provided for @moduleTitle_MoldColonyChallengeProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Mold Zone'**
+  String get moduleTitle_MoldColonyChallengeProps;
+
+  /// No description provided for @moduleDesc_MoldColonyChallengeProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets the lawn tiles covered by mold colonies'**
+  String get moduleDesc_MoldColonyChallengeProps;
+
+  /// No description provided for @moldColonyLocationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mold colonies layout (Locations)'**
+  String get moldColonyLocationsTitle;
+
+  /// No description provided for @moldColonyLocationsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current value: {value}'**
+  String moldColonyLocationsValue(Object value);
+
+  /// No description provided for @moldColonyLevelModulesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: the mold colonies layout reference uses LevelModules. Switch it to a current-level object.'**
+  String get moldColonyLevelModulesError;
+
+  /// No description provided for @moldColonyInvalidLinkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Locations must reference a BoardGridMapProps object in the current level for the mold colonies layout.'**
+  String get moldColonyInvalidLinkError;
+
+  /// No description provided for @moldColonyRepairLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair link to: {alias}'**
+  String moldColonyRepairLink(Object alias);
+
+  /// No description provided for @moldColonies.
+  ///
+  /// In en, this message translates to:
+  /// **'Mold colonies'**
+  String get moldColonies;
+
+  /// No description provided for @moldColonyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get moldColonyEmpty;
+
+  /// No description provided for @moldColonyHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Configures the lawn tiles covered by mold colonies. Mold colonies prevent the player from planting on the corresponding tiles.'**
+  String get moldColonyHelpOverview;
+
+  /// No description provided for @moldColonyHelpGridTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid controls'**
+  String get moldColonyHelpGridTitle;
+
+  /// No description provided for @moldColonyHelpGridBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a tile to switch between empty (plantable) and mold colonies (not plantable). The selected row and column are shown above the grid.'**
+  String get moldColonyHelpGridBody;
 
   /// No description provided for @moduleTitle_ZombiePotionModuleProperties.
   ///
@@ -5089,7 +5167,7 @@ abstract class AppLocalizations {
   /// No description provided for @bronzeModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Bronze Matrix Statues'**
+  /// **'Bronze Matrix Statues module'**
   String get bronzeModuleHelpTitle;
 
   /// No description provided for @bronzeModuleHelpOverview.
@@ -8275,7 +8353,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombiePotionHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Zombie Potion Module'**
+  /// **'Zombie Potion module'**
   String get zombiePotionHelpTitle;
 
   /// No description provided for @eventTimeRift.
@@ -8323,7 +8401,7 @@ abstract class AppLocalizations {
   /// No description provided for @lastStandHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Last Stand Module'**
+  /// **'Last Stand module'**
   String get lastStandHelpTitle;
 
   /// No description provided for @lastStandHelpOverviewBody.
@@ -8653,7 +8731,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxSunHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Max Sun Limit'**
+  /// **'Max Sun Limit module'**
   String get maxSunHelpTitle;
 
   /// No description provided for @maxSunHelpOverview.
@@ -8665,7 +8743,7 @@ abstract class AppLocalizations {
   /// No description provided for @startingPlantfoodHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Starting Plant Food'**
+  /// **'Starting Plant Food module'**
   String get startingPlantfoodHelpTitle;
 
   /// No description provided for @startingPlantfoodHelpOverview.
@@ -11123,7 +11201,7 @@ abstract class AppLocalizations {
   /// No description provided for @sunDropperHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sun Dropper'**
+  /// **'Sun Dropper module'**
   String get sunDropperHelpTitle;
 
   /// No description provided for @sunDropperHelpIntro.
@@ -11567,7 +11645,7 @@ abstract class AppLocalizations {
   /// No description provided for @expeditionTilesHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Expedition Tiles Module'**
+  /// **'Expedition Tiles module'**
   String get expeditionTilesHelpTitle;
 
   /// No description provided for @expeditionTilesHelpOverview.
@@ -11651,7 +11729,7 @@ abstract class AppLocalizations {
   /// No description provided for @finalStageTimeLimitedChallengeHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Final stage time limit challenge'**
+  /// **'Final stage time limit challenge module'**
   String get finalStageTimeLimitedChallengeHelpTitle;
 
   /// No description provided for @finalStageTimeLimitedChallengeHelpIntro.
@@ -14513,7 +14591,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorWaveScreenHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave editor'**
+  /// **'Wave Editor'**
   String get waveGeneratorWaveScreenHelpTitle;
 
   /// No description provided for @waveGeneratorWaveScreenHelpBody.

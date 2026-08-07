@@ -207,19 +207,12 @@ class LevelRepository {
         isCancelled: isCancelled,
       );
 
-  static Future<List<String>> getTemplateList() => _impl.getTemplateList();
-
-  static List<String> parseTemplateManifest(String jsonString) =>
-      _impl.parseTemplateManifest(jsonString);
-
   static Future<bool> createLevelFromTemplate(
     String currentDirPath,
-    String templateName,
     String newFileName,
     String assetContent,
   ) => _impl.createLevelFromTemplate(
     currentDirPath,
-    templateName,
     newFileName,
     assetContent,
   );
