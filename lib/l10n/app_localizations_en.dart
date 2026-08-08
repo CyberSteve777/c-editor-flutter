@@ -8511,7 +8511,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-<<<<<<< HEAD
   String get invalid_rsb_version => 'Invalid RSB version, should be 3 or 4';
 
   @override
@@ -8589,13 +8588,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4';
 
   @override
-  String get customPortalAdd => 'New custom portal';
+  String get customPortalAdd => 'New Custom Portal';
 
   @override
   String get customPortalSingleName => 'Custom Portal';
-=======
-  String get customPortalAdd => '+ Custom Portal';
->>>>>>> upstream/dev
 
   @override
   String customPortalName(int index) {

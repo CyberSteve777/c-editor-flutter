@@ -8477,7 +8477,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-<<<<<<< HEAD
   String get invalid_rsb_version => 'Неверная версия RSB, должна быть 3 или 4';
 
   @override
@@ -8560,9 +8559,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get customPortalSingleName => 'Пользовательский портал';
-=======
-  String get customPortalAdd => '+ Пользовательский портал';
->>>>>>> upstream/dev
 
   @override
   String customPortalName(int index) {

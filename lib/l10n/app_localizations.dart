@@ -15104,10 +15104,154 @@ abstract class AppLocalizations {
   /// **'Validating {current} / {total}'**
   String validationProgress(int current, int total);
 
+  /// No description provided for @invalid_rsb_version.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSB version, should be 3 or 4'**
+  String get invalid_rsb_version;
+
+  /// No description provided for @invalid_file_list_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid File List Offset'**
+  String get invalid_file_list_offset;
+
+  /// No description provided for @invalid_rsb_ver_3_resource_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Resource Offset for RSB version 3'**
+  String get invalid_rsb_ver_3_resource_offset;
+
+  /// No description provided for @invalid_composite_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Composite Name'**
+  String get invalid_composite_name;
+
+  /// No description provided for @out_of_range_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of range for poolIndex'**
+  String get out_of_range_1;
+
+  /// No description provided for @out_of_range_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of range for packet index'**
+  String get out_of_range_2;
+
+  /// No description provided for @invalid_rsg_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG Name'**
+  String get invalid_rsg_name;
+
+  /// No description provided for @invalid_packet_width.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Packet Width'**
+  String get invalid_packet_width;
+
+  /// No description provided for @invalid_packet_height.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Packet Height'**
+  String get invalid_packet_height;
+
+  /// No description provided for @invalid_item_packet.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Item Packet'**
+  String get invalid_item_packet;
+
+  /// No description provided for @invalid_rsg_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG index'**
+  String get invalid_rsg_number;
+
+  /// No description provided for @invalid_part2_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Part2 Offset'**
+  String get invalid_part2_offset;
+
+  /// No description provided for @invalid_head_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Head Length'**
+  String get invalid_head_length;
+
+  /// No description provided for @rsb_is_corrupted.
+  ///
+  /// In en, this message translates to:
+  /// **'This RSB is corrupted'**
+  String get rsb_is_corrupted;
+
+  /// No description provided for @invalid_ptx_info_eachlength.
+  ///
+  /// In en, this message translates to:
+  /// **'PTX Info is invalid'**
+  String get invalid_ptx_info_eachlength;
+
+  /// No description provided for @invalid_end_offset.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid End Offset'**
+  String get invalid_end_offset;
+
+  /// No description provided for @invalid_rsb_head.
+  ///
+  /// In en, this message translates to:
+  /// **'Mismatch RSB magic, should starts with \"1BSR\"'**
+  String get invalid_rsb_head;
+
+  /// No description provided for @invalid_ptx_info_each_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid PTX Info'**
+  String get invalid_ptx_info_each_length;
+
+  /// No description provided for @category_out_of_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Category is out of length'**
+  String get category_out_of_length;
+
+  /// No description provided for @name_path_must_be_ascii.
+  ///
+  /// In en, this message translates to:
+  /// **'Name path must match ASCII'**
+  String get name_path_must_be_ascii;
+
+  /// No description provided for @invalid_rsg_magic.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG Magic, should starts with \"PGSR\"'**
+  String get invalid_rsg_magic;
+
+  /// No description provided for @invalid_rsg_version.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG version, should be 3 or 4'**
+  String get invalid_rsg_version;
+
+  /// No description provided for @invalid_rsg_compression_flag.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid RSG Compression flag, only 0 to 3 is supported'**
+  String get invalid_rsg_compression_flag;
+
+  /// No description provided for @mismatch_zlib_magic.
+  ///
+  /// In en, this message translates to:
+  /// **'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4'**
+  String get mismatch_zlib_magic;
+
   /// No description provided for @customPortalAdd.
   ///
   /// In en, this message translates to:
-  /// **'New custom portal'**
+  /// **'New Custom Portal'**
   String get customPortalAdd;
 
   /// No description provided for @customPortalSingleName.

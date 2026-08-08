@@ -8108,7 +8108,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-<<<<<<< HEAD
   String get invalid_rsb_version => '无效的 RSB 版本，应为 3 或 4';
 
   @override
@@ -8185,9 +8184,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get customPortalSingleName => '自定义裂缝';
-=======
-  String get customPortalAdd => '+ 自定义裂缝';
->>>>>>> upstream/dev
 
   @override
   String customPortalName(int index) {
