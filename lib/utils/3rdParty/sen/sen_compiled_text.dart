@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:rijndael/rijndael.dart';
 import 'package:c_editor/utils/pvz2c_crypto.dart';
-import 'package:c_editor/l10n/app_localizations.dart';
 
 import 'sen_buffer.dart';
 import 'sen_popcap_zlib.dart';
@@ -23,9 +22,8 @@ class CompiledText {
   SenBuffer decode(
     SenBuffer raw,
     RijndaelC rijndael,
-    bool use64BitVariant, [
-    AppLocalizations? localizations,
-  ]) {
+    bool use64BitVariant,
+  ) {
     final decoded = base64Decode(ascii.decode(raw.toBytes()));
     final buf = SenBuffer.fromBytes(Uint8List.fromList(decoded));
     final cipherBytes = buf.getBytes(buf.length - 2, 2);
@@ -33,7 +31,6 @@ class CompiledText {
     return PopCapZlib.uncompress(
       SenBuffer.fromBytes(plain),
       use64BitVariant,
-      localizations,
     );
   }
 
@@ -65,15 +62,13 @@ class CompiledText {
     String inFile,
     String outFile,
     RijndaelC rijndael,
-    bool use64BitVariant, [
-    AppLocalizations? localizations,
-  ]) {
+    bool use64BitVariant,
+  ) {
     final compiledText = CompiledText();
     final data = compiledText.decode(
       FileSystem.openSenBuffer(inFile),
       rijndael,
       use64BitVariant,
-      localizations,
     );
     FileSystem.saveSenBuffer(outFile, data);
   }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,8 @@ import 'package:path/path.dart' as p;
 
 enum ExportStep { disclaimer, selectingArchive, selectingLevels, reviewSelection, proposingAssignments, finalCheck, success }
 
+const _exportDisclaimerSkipKey = 'export_disclaimer_skip';
+
 bool _exportPathIsUnderPlugins(String entityPath) {
   return p
       .split(p.normalize(entityPath))
@@ -37,6 +40,10 @@ class _ExportScreenState extends State<ExportScreen> {
   final Map<String, ({String world, int level})> _levelAssignments = {};
   bool _noFilesFound = false;
   ExportStep _currentStep = ExportStep.disclaimer;
+  bool _doNotShowDisclaimerAgain = false;
+  /// True until SharedPreferences are read — avoids a one-frame disclaimer flash
+  /// when "Do not show again" is already saved.
+  bool _initializing = true;
 
   // State for custom file picker
   String? _rootPath;
@@ -56,16 +63,36 @@ class _ExportScreenState extends State<ExportScreen> {
 
   Future<void> _initRootPath() async {
     final prefs = await SharedPreferences.getInstance();
-    if (mounted) {
-      setState(() {
-        _rootPath = prefs.getString('folder_path');
-      });
+    final skipDisclaimer = prefs.getBool(_exportDisclaimerSkipKey) ?? false;
+    if (!mounted) return;
+    setState(() {
+      _rootPath = prefs.getString('folder_path');
+      _doNotShowDisclaimerAgain = skipDisclaimer;
+      if (skipDisclaimer) {
+        // Skip the disclaimer entirely — never paint it.
+        _currentStep = ExportStep.selectingArchive;
+        _isScanning = true;
+      }
+      _initializing = false;
+    });
+    if (skipDisclaimer) {
+      await _performGlobalScan();
     }
+  }
+
+  Future<void> _onDisclaimerProceed() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_exportDisclaimerSkipKey, _doNotShowDisclaimerAgain);
+    if (!mounted) return;
+    await _performGlobalScan();
   }
 
   Future<void> _performGlobalScan() async {
     if (_rootPath == null || _rootPath!.isEmpty) {
-      setState(() => _noFilesFound = true);
+      setState(() {
+        _noFilesFound = true;
+        _isScanning = false;
+      });
       return;
     }
 
@@ -746,7 +773,9 @@ class _ExportScreenState extends State<ExportScreen> {
                         ),
                       ],
               ),
-        body: _buildStepContent(l10n, theme),
+        body: _initializing
+            ? const Center(child: CircularProgressIndicator())
+            : _buildStepContent(l10n, theme),
       ),
     );
   }
@@ -884,8 +913,7 @@ class _ExportScreenState extends State<ExportScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (_currentStep == ExportStep.selectingArchive &&
-                    _externalDynamicDownloadAvailable &&
-                    !_noFilesFound)
+                    _externalDynamicDownloadAvailable)
                   TextButton.icon(
                     onPressed: _isScanning
                         ? null
@@ -1423,49 +1451,73 @@ class _ExportScreenState extends State<ExportScreen> {
         (packagesRsgPathFinal, rsgUnpackDir),
       );
 
-      // 7. Look for LEVELS folder
+      // 7. Match injected levels against the packet's resource list.
       setState(() {
         _exportProgress = 0.6;
         _exportStatus = l10n.exportStatusInjecting;
       });
 
-      // Search for LEVELS folder case-insensitively
-      Directory? levelsDir;
-      final resDir = Directory(p.join(rsgUnpackDir, "res"));
-      if (await resDir.exists()) {
-        await for (final entity in resDir.list(recursive: true)) {
-          if (entity is Directory && p.basename(entity.path).toLowerCase() == "levels") {
-            levelsDir = entity;
-            break;
-          }
-        }
+      // RsgPack repacks strictly from packet.json["res"], reading each file from
+      // the res/ folder. So injected levels MUST land on the exact path an
+      // existing res entry points to. Matching by basename case-insensitively is
+      // essential: PopCap stores RSG paths in upper case (e.g.
+      // LEVELS/EGYPT1.RTON), and on a case-sensitive filesystem (Android) a
+      // naive "egypt1.rton" write creates a new, unreferenced file that the
+      // repack silently ignores — which is why levels never got replaced.
+      final packetJsonPath = p.join(rsgUnpackDir, "packet.json");
+      final packet =
+          jsonDecode(await File(packetJsonPath).readAsString())
+              as Map<String, dynamic>;
+      final resList = (packet["res"] as List);
+
+      // Index existing LEVELS entries by lower-cased basename, and remember one
+      // sample path so new levels can mirror the archive's folder casing.
+      final Map<String, List> levelEntryByLowerName = {};
+      List? sampleLevelsSegments;
+      for (final res in resList) {
+        final segs = (res["path"] as List);
+        if (segs.isEmpty) continue;
+        final inLevels =
+            segs.any((s) => s.toString().toLowerCase() == "levels");
+        if (!inLevels) continue;
+        sampleLevelsSegments ??= segs;
+        levelEntryByLowerName[segs.last.toString().toLowerCase()] = segs;
       }
 
-      if (levelsDir == null) {
-        // Fallback: try to find it anywhere in rsgUnpackDir
-        await for (final entity in Directory(rsgUnpackDir).list(recursive: true)) {
-          if (entity is Directory && p.basename(entity.path).toLowerCase() == "levels") {
-            levelsDir = entity;
-            break;
-          }
-        }
+      if (levelEntryByLowerName.isEmpty) {
+        throw Exception(
+          "No LEVELS entries found in Packages.rsg (res count: ${resList.length}).",
+        );
       }
 
-      if (levelsDir == null) {
-        // Diagnostic: list folders in rsgUnpackDir
-        final allDirs = Directory(rsgUnpackDir).listSync(recursive: true)
-          .whereType<Directory>()
-          .map((e) => p.relative(e.path, from: rsgUnpackDir))
-          .take(10).join(", ");
-        throw Exception("LEVELS folder not found in Packages.rsg. Found dirs: ${allDirs.isEmpty ? 'none' : allDirs}");
-      }
-
-      // 8. Copy RTON files to LEVELS with replacement
+      // 8. Write each RTON to the exact path its res entry references, adding a
+      // new entry only when the level genuinely doesn't exist yet.
+      var packetChanged = false;
       for (final entry in rtonLevels.entries) {
-        final fileName = entry.key;
+        final fileName = entry.key; // e.g. egypt1.rton
         final data = entry.value;
-        final targetPath = p.join(levelsDir.path, fileName);
-        await File(targetPath).writeAsBytes(data);
+
+        List targetSegments;
+        final match = levelEntryByLowerName[fileName.toLowerCase()];
+        if (match != null) {
+          targetSegments = match; // overwrite existing, preserving its casing
+        } else {
+          final prefix = sampleLevelsSegments!
+              .sublist(0, sampleLevelsSegments.length - 1);
+          targetSegments = [...prefix, fileName];
+          resList.add({"path": targetSegments});
+          packetChanged = true;
+        }
+
+        final relPath = targetSegments.map((e) => e.toString()).join('/');
+        final targetFile = File(p.join(rsgUnpackDir, "res", relPath));
+        await targetFile.create(recursive: true);
+        await targetFile.writeAsBytes(data);
+      }
+
+      if (packetChanged) {
+        await File(packetJsonPath)
+            .writeAsString(const JsonEncoder.withIndent('\t').convert(packet));
       }
 
       // 9. Pack Packages.packet back to Packages.rsg
@@ -1548,6 +1600,21 @@ class _ExportScreenState extends State<ExportScreen> {
             textAlign: TextAlign.center,
           ),
         ],
+        const SizedBox(height: 24),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            value: _doNotShowDisclaimerAgain,
+            onChanged: _isScanning
+                ? null
+                : (value) {
+                    setState(() => _doNotShowDisclaimerAgain = value ?? false);
+                  },
+            title: Text(l10n.exportDisclaimerDoNotShowAgain),
+          ),
+        ),
       ],
     );
 
@@ -1584,7 +1651,7 @@ class _ExportScreenState extends State<ExportScreen> {
           ? null
           : (_noFilesFound
               ? () => Navigator.of(context).pop()
-              : _performGlobalScan),
+              : _onDisclaimerProceed),
       child: _isScanning
           ? const SizedBox(
               width: 20,
@@ -1734,10 +1801,10 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
                         : const Icon(Icons.help_outline),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
-                  flex: 3,
                   child: DropdownButtonFormField<String>(
+                    isExpanded: true,
                     decoration: InputDecoration(
                       labelText: l10n.exportWorld,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -1747,7 +1814,10 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
                     items: worlds.map((w) {
                       return DropdownMenuItem(
                         value: w.codename,
-                        child: Text(w.nameGetter(l10n)),
+                        child: Text(
+                          w.nameGetter(l10n),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       );
                     }).toList(),
                     onChanged: (val) {
@@ -1765,14 +1835,14 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 88,
                   child: TextFormField(
                     controller: _levelController,
                     decoration: InputDecoration(
                       labelText: l10n.exportLevelNumber,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                       border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
@@ -1796,13 +1866,15 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
                     },
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_drop_up),
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      visualDensity: VisualDensity.compact,
+                      constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
                       onPressed: () {
                         if (currentWorld != null) {
                           final currentLevel = widget.assignment?.level ?? 1;
@@ -1823,7 +1895,8 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
                     IconButton(
                       icon: const Icon(Icons.arrow_drop_down),
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      visualDensity: VisualDensity.compact,
+                      constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
                       onPressed: () {
                         if (currentWorld != null) {
                           final currentLevel = widget.assignment?.level ?? 1;

@@ -6,15 +6,13 @@ import 'sen_buffer.dart';
 import "sen_rsg_common.dart";
 import 'sen_file_system.dart';
 import "package:path/path.dart" as path;
-import 'package:c_editor/l10n/app_localizations.dart';
 
 /// [RsgPack] is a utility for packing Resource Stream Group (RSG) files.
 /// NOTE: This utility uses `dart:io` and is not supported on the Web platform.
 class RsgPack {
   static void process(
     String inFolder,
-    String outFile,
-    AppLocalizations? localizations, [
+    String outFile, [
     bool useResFolder = true,
   ]) {
     final packet = FileSystem.readJson(path.join(inFolder, "packet.json"));
@@ -23,7 +21,6 @@ class RsgPack {
       outFile,
       packet,
       useResFolder,
-      localizations,
     );
     return;
   }
@@ -33,7 +30,6 @@ class RsgPack {
     String outFile,
     dynamic packet,
     bool useResFolder,
-    AppLocalizations? localizations,
   ) {
     final rsg = ResourceStreamGroup();
     final resources = <String, Uint8List>{};
@@ -42,7 +38,7 @@ class RsgPack {
       final resPath = path.join(inFolder, useResFolder ? "res" : "", resKey);
       resources[(res["path"] as List).join("\\")] = FileSystem.readBuffer(resPath);
     }
-    final senFile = rsg.packRSG(packet, resources, localizations);
+    final senFile = rsg.packRSG(packet, resources);
     FileSystem.saveSenBuffer(outFile, senFile);
     return;
   }

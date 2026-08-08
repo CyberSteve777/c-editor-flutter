@@ -1,38 +1,36 @@
 import 'dart:typed_data';
 import 'sen_buffer.dart';
 import "sen_rsg_common.dart";
-import 'package:c_editor/l10n/app_localizations.dart';
 
 class ResourceStreamBundle {
+  /// Unpacks an RSB bundle.
+  ///
+  /// When [onExtractRsg] is provided, each inner .rsg packet is handed off
+  /// immediately (to be written to disk) instead of being accumulated in the
+  /// returned `rsg_files` map. This keeps the whole archive from sitting in
+  /// memory at once, which OOMs on phones.
   Map<String, dynamic> unpackRSB(
-    SenBuffer senFile,
-    AppLocalizations? localizations,
-  ) {
+    SenBuffer senFile, {
+    void Function(String fileName, Uint8List data)? onExtractRsg,
+  }) {
     final rsbHeadInfo = readRSBHead(
       senFile,
-      localizations,
     );
     if (rsbHeadInfo["version"] != 3 && rsbHeadInfo["version"] != 4) {
       throw Exception(
-        localizations == null
-            ? "Invalid RSB version"
-            : localizations.invalid_rsb_version,
+        "Invalid RSB version",
       );
     }
     if (rsbHeadInfo["version"] == 3 &&
         rsbHeadInfo["fileListBeginOffset"] != 0x6C) {
       throw Exception(
-        localizations != null
-            ? localizations.invalid_file_list_offset
-            : "Invalid File List Offset",
+        "Invalid File List Offset",
       );
     }
     if (rsbHeadInfo["version"] == 4 &&
         rsbHeadInfo["fileListBeginOffset"] != 0x70) {
       throw Exception(
-        localizations != null
-            ? localizations.invalid_file_list_offset
-            : "Invalid File List Offset",
+        "Invalid File List Offset",
       );
     }
     final fileList = fileListSplit(
@@ -56,7 +54,6 @@ class ResourceStreamBundle {
     final ptxInfoList = readPTXInfo(
       senFile,
       rsbHeadInfo,
-      localizations,
     );
     final manifest = {
       "version": rsbHeadInfo["version"],
@@ -67,15 +64,12 @@ class ResourceStreamBundle {
           rsbHeadInfo["part2BeginOffset"] == 0 &&
           rsbHeadInfo["part3BeginOffset"] == 0) {
         throw Exception(
-          localizations != null
-              ? localizations.invalid_rsb_ver_3_resource_offset
-              : "Invalid Resource Offset for RSB version 3",
+          "Invalid Resource Offset for RSB version 3",
         );
       }
       final resourcesDescription = readResourcesDescription(
         senFile,
         rsbHeadInfo,
-        localizations,
       );
       manifest["description"] = resourcesDescription;
     }
@@ -89,7 +83,7 @@ class ResourceStreamBundle {
               .toUpperCase()
               .replaceAll("_COMPOSITESHELL", "")) {
         throw Exception(
-          "${localizations == null ? "Invalid Composite name" : localizations.invalid_composite_name}: ${compositeInfo[i]["name"]}",
+          "Invalid Composite name: ${compositeInfo[i]["name"]}",
         );
       }
       final subGroupList = {};
@@ -100,9 +94,7 @@ class ResourceStreamBundle {
         while (rsgInfoList[rsgInfoCount]["poolIndex"] != packetIndex) {
           if (rsgInfoCount >= rsgInfoList.length) {
             throw Exception(
-              localizations == null
-                  ? "Out of range for poolIndex"
-                  : localizations.out_of_range_1,
+              "Out of range for poolIndex",
             );
           }
           rsgInfoCount++;
@@ -110,9 +102,7 @@ class ResourceStreamBundle {
         while (rsgList[rsgListCount]["poolIndex"] != packetIndex) {
           if (rsgInfoCount >= rsgList.length) {
             throw Exception(
-              localizations == null
-                  ? "Out of range for packet index"
-                  : localizations.out_of_range_2,
+              "Out of range for packet index",
             );
           }
           rsgListCount++;
@@ -120,7 +110,7 @@ class ResourceStreamBundle {
         if (rsgInfoList[rsgInfoCount]["name"].toUpperCase() !=
             rsgList[rsgListCount]["namePath"].toUpperCase()) {
           throw Exception(
-            "${localizations == null ? "Invalid RSG Name" : localizations.invalid_rsg_name}: ${rsgInfoList[rsgInfoCount]["name"]} | ${rsgList[rsgListCount]["name"]}. pool_index: $packetIndex",
+            "Invalid RSG Name: ${rsgInfoList[rsgInfoCount]["name"]} | ${rsgList[rsgListCount]["name"]}. pool_index: $packetIndex",
           );
         }
         rsgNameList.add(rsgInfoList[rsgInfoCount]["name"]);
@@ -131,7 +121,7 @@ class ResourceStreamBundle {
         final rsgFile = SenBuffer.fromBytes(packetFile);
         final rsgFunction = ResourceStreamGroup();
         final packetInfo =
-            rsgFunction.unpackRSG(rsgFile, localizations, extractFiles: false, getPacketInfo: true);
+            rsgFunction.unpackRSG(rsgFile, extractFiles: false, getPacketInfo: true);
         final resInfoList = [];
         final fileListLength = fileList.length;
         final ptxBeforeNumber = rsgInfoList[rsgInfoCount]["ptxBeforeNumber"];
@@ -183,16 +173,19 @@ class ResourceStreamBundle {
             }
             if (!existItemPacket) {
               throw Exception(
-                localizations == null
-                    ? "Invalid Item Packet"
-                    : localizations.invalid_item_packet,
+                "Invalid Item Packet",
               );
             }
             resInfoList.add(resInfo);
           }
           if (fileList[h]["poolIndex"] > packetIndex) break;
         }
-        extractedRsgFiles["${rsgInfoList[rsgInfoCount]["name"]}.rsg"] = packetFile;
+        final rsgFileName = "${rsgInfoList[rsgInfoCount]["name"]}.rsg";
+        if (onExtractRsg != null) {
+          onExtractRsg(rsgFileName, packetFile);
+        } else {
+          extractedRsgFiles[rsgFileName] = packetFile;
+        }
         final packetInfoList = {
           "version":
               senFile.readUInt32LE(rsgInfoList[rsgInfoCount]["rsgOffset"] + 4),
@@ -226,7 +219,6 @@ class ResourceStreamBundle {
   dynamic readResourcesDescription(
     SenBuffer senFile,
     dynamic rsbHeadInfo,
-    AppLocalizations? localizations,
   ) {
     senFile.readOffset = rsbHeadInfo["part1BeginOffset"];
     final part2Offset = rsbHeadInfo["part2BeginOffset"];
@@ -240,9 +232,7 @@ class ResourceStreamBundle {
       final subgroup = {};
       if (senFile.readUInt32LE() != 0x10) {
         throw Exception(
-          localizations == null
-              ? "Invalid RSG Number"
-              : localizations.invalid_rsg_number,
+          "Invalid RSG Number",
         );
       }
       final rsgInfoList = [];
@@ -293,17 +283,13 @@ class ResourceStreamBundle {
           {
             if (senFile.readUInt32LE() != 0x0) {
               throw Exception(
-                localizations == null
-                    ? "Invalid Part 2 Offset"
-                    : localizations.invalid_part2_offset,
+                "Invalid Part 2 Offset",
               );
             }
             final type = senFile.readUInt16LE();
             if (senFile.readUInt16LE() != 0x1C) {
               throw Exception(
-                localizations == null
-                    ? "Invalid Header Length"
-                    : localizations.invalid_head_length,
+                "Invalid Header Length",
               );
             }
             final ptxInfoEndOffsetPart2 = senFile.readUInt32LE();
@@ -337,9 +323,7 @@ class ResourceStreamBundle {
               final keyOffsetPart3 = senFile.readUInt32LE();
               if (senFile.readUInt32LE() != 0x0) {
                 throw Exception(
-                  localizations == null
-                      ? "RSB is corrupted"
-                      : localizations.rsb_is_corrupted,
+                  "RSB is corrupted",
                 );
               }
               final valueOffsetPart3 = senFile.readUInt32LE();
@@ -502,7 +486,6 @@ class ResourceStreamBundle {
   dynamic readPTXInfo(
     SenBuffer senFile,
     dynamic rsbHeadInfo,
-    AppLocalizations? localizations,
   ) {
     senFile.readOffset = rsbHeadInfo["ptxInfoBeginOffset"];
     final ptxInfoList = [];
@@ -510,9 +493,7 @@ class ResourceStreamBundle {
         rsbHeadInfo["ptxInfoEachLength"] != 0x14 &&
         rsbHeadInfo["ptxInfoEachLength"] != 0x18) {
       throw Exception(
-        localizations == null
-            ? "PTX Info is invalid"
-            : localizations.invalid_ptx_info_each_length,
+        "PTX Info is invalid",
       );
     }
     for (var i = 0; i < rsbHeadInfo["ptxNumber"]; i++) {
@@ -554,14 +535,11 @@ class ResourceStreamBundle {
 
   static dynamic readRSBHead(
     SenBuffer senFile,
-    AppLocalizations? localizations,
   ) {
     final magic = senFile.readString(4);
     if (magic != "1bsr") {
       throw Exception(
-        localizations == null
-            ? "Mismatch RSB magic, should starts with \"1BSR\""
-            : localizations.invalid_rsb_head,
+        "Mismatch RSB magic, should starts with \"1BSR\"",
       );
     }
     final version = senFile.readUInt32LE();
@@ -623,7 +601,6 @@ class ResourceStreamBundle {
   SenBuffer packRSB(
     Map<String, Uint8List> rsgFiles,
     dynamic manifest,
-    AppLocalizations? localizations,
   ) {
     final senFile = SenBuffer();
     senFile.writeString("1bsr");
@@ -635,9 +612,7 @@ class ResourceStreamBundle {
       fileListBeginOffset = 0x70;
     } else {
       throw Exception(
-        localizations != null
-            ? localizations.invalid_rsb_version
-            : "Invalid RSB version, should be 3 or 4",
+        "Invalid RSB version, should be 3 or 4",
       );
     }
     final rsbHeadInfo = {};
@@ -647,9 +622,7 @@ class ResourceStreamBundle {
     rsbHeadInfo["ptxInfoEachLength"] = ptxInfoSize;
     if (ptxInfoSize != 0x10 && ptxInfoSize != 0x14 && ptxInfoSize != 0x18) {
       throw Exception(
-        localizations == null
-            ? "Invalid PTX Info"
-            : localizations.invalid_ptx_info_each_length,
+        "Invalid PTX Info",
       );
     }
     final fileList = [];
@@ -693,7 +666,6 @@ class ResourceStreamBundle {
         comparePacketInfo(
           kSecond["packet_info"],
           rsgFile,
-          localizations,
         );
         var ptxNumber = 0;
         final resInfoLength = kSecond["packet_info"]["res"].length;
@@ -734,9 +706,7 @@ class ResourceStreamBundle {
           if (kSecond["category"][1] != null && kSecond["category"][1] != "") {
             if (kSecond["category"][1].length != 4) {
               throw Exception(
-                localizations == null
-                    ? "Category is out of length"
-                    : localizations.category_out_of_length,
+                "Category is out of length",
               );
             }
             compositeInfo.writeString(kSecond["category"][1]);
@@ -789,15 +759,12 @@ class ResourceStreamBundle {
     {
       final fileListPathTemp = fileListPack(
         fileList,
-        localizations,
       );
       final rsgListPathTemp = fileListPack(
         rsgFileList,
-        localizations,
       );
       final compositeListPathTemp = fileListPack(
         compositeList,
-        localizations,
       );
       final fileListPathTempLength = fileListPathTemp.length;
       rsbHeadInfo["fileListBeginOffset"] = fileListBeginOffset;
@@ -977,7 +944,6 @@ class ResourceStreamBundle {
 
   dynamic fileListPack(
     List<dynamic> fileList,
-    AppLocalizations? localizations,
   ) {
     fileList.sort(
       (a, b) =>
@@ -992,7 +958,7 @@ class ResourceStreamBundle {
       String path2 = fileList[i + 1]["namePath"].toUpperCase();
       if (isNotASCII(path2)) {
         throw Exception(
-          "${localizations != null ? localizations.name_path_must_be_ascii : "Name path must match ASCII"}: $path2",
+          "Name path must match ASCII: $path2",
         );
       }
       final longestLength =
@@ -1083,11 +1049,10 @@ class ResourceStreamBundle {
   void comparePacketInfo(
     dynamic modifyPacket,
     SenBuffer rsgFile,
-    AppLocalizations? localizations,
   ) {
     final rsgFunction = ResourceStreamGroup();
     dynamic oriPacket =
-        rsgFunction.unpackRSG(rsgFile, localizations, extractFiles: false, getPacketInfo: true);
+        rsgFunction.unpackRSG(rsgFile, extractFiles: false, getPacketInfo: true);
     if (oriPacket["version"] != modifyPacket["version"]) {
       throwError(
         "version",
