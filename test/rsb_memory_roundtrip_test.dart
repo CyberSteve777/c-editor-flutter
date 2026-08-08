@@ -21,12 +21,12 @@ void main() {
       };
       
       // Pack
-      final senFile = rsg.packRSG(packetInfo, resources, null);
+      final senFile = rsg.packRSG(packetInfo, resources);
       expect(senFile.length, greaterThan(0));
       
       // Unpack
       senFile.readOffset = 0; // RESET OFFSET
-      final unpacked = rsg.unpackRSG(senFile, null);
+      final unpacked = rsg.unpackRSG(senFile);
       
       expect(unpacked['version'], equals(3));
       expect(unpacked['files']['TEST.TXT'], equals(resources['TEST.TXT']));
@@ -49,7 +49,7 @@ void main() {
           {'path': ['dummy.txt']}
         ],
       };
-      final rsgSenFile = rsg.packRSG(rsgPacketInfo, rsgResources, null);
+      final rsgSenFile = rsg.packRSG(rsgPacketInfo, rsgResources);
       final rsgBytes = rsgSenFile.toBytes();
       
       // Prepare RSB manifest
@@ -83,12 +83,12 @@ void main() {
       };
       
       // Pack RSB
-      final rsbSenFile = rsb.packRSB(rsgFiles, manifest, null);
+      final rsbSenFile = rsb.packRSB(rsgFiles, manifest);
       expect(rsbSenFile.length, greaterThan(0));
       
       // Unpack RSB
       rsbSenFile.readOffset = 0; // RESET OFFSET
-      final unpacked = rsb.unpackRSB(rsbSenFile, null);
+      final unpacked = rsb.unpackRSB(rsbSenFile);
       
       expect(unpacked['manifest']['version'], equals(3));
       expect(unpacked['rsg_files'].containsKey('TestPacket.rsg'), isTrue);

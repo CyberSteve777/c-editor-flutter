@@ -337,7 +337,10 @@ class _VaseBreakerTabState extends State<VaseBreakerTab> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    l10n?.vaseCapacitySummary(current, total) ??
+                    l10n?.vaseCapacitySummary(
+                          current.toString(),
+                          total.toString(),
+                        ) ??
                         'Assigned: $current / Total Slots: $total',
                   ),
                 ],

@@ -1,7 +1,6 @@
 import "dart:typed_data";
 import 'sen_buffer.dart';
 import 'sen_zlib.dart';
-import 'package:c_editor/l10n/app_localizations.dart';
 
 class ResourceStreamGroup {
   /// Unpacks an RSG file and returns extracted data.
@@ -9,20 +8,25 @@ class ResourceStreamGroup {
   /// - 'version': RSG version
   /// - 'compression_flags': Compression flags
   /// - 'res': List of resource info
-  /// - 'files': Map<String, Uint8List> of extracted file data (only if [extractFiles] is true)
+  /// - 'files': Map of extracted file data (only if [extractFiles] is true and
+  ///   [onExtract] is null)
+  ///
+  /// When [onExtract] is provided, each file is handed off immediately and is
+  /// NOT kept in the returned map. This lets callers stream files to disk
+  /// instead of holding the whole packet (and a JSON dump of it) in memory,
+  /// which OOMs on phones for large packets like Packages.rsg.
   Map<String, dynamic> unpackRSG(
-    SenBuffer senFile,
-    AppLocalizations? localizations, {
+    SenBuffer senFile, {
     bool extractFiles = true,
     bool getPacketInfo = false,
+    void Function(String path, Uint8List data)? onExtract,
   }) {
     final rsgHeadInfo = readRSGHead(
-      senFile,
-      localizations,
-    );
+      senFile);
     final fileList = fileListSplit(senFile, rsgHeadInfo);
     final resInfo = [];
     final extractedFiles = <String, Uint8List>{};
+    final streaming = onExtract != null;
 
     final part0List = fileList["part0List"];
     final part1List = fileList["part1List"];
@@ -36,8 +40,13 @@ class ResourceStreamGroup {
       for (var i = 0; i < part0List.length; i++) {
         final resPath = part0List[i]["path"];
         if (!getPacketInfo && extractFiles) {
-          extractedFiles[resPath] =
+          final bytes =
               senPart0.getBytes(part0List[i]["size"], part0List[i]["offset"]);
+          if (streaming) {
+            onExtract(resPath, bytes);
+          } else {
+            extractedFiles[resPath] = bytes;
+          }
         }
         resInfo.add({
           "path": resPath.split("\\"),
@@ -52,8 +61,13 @@ class ResourceStreamGroup {
       for (var i = 0; i < part1List.length; i++) {
         final resPath = part1List[i]["path"];
         if (!getPacketInfo && extractFiles) {
-          extractedFiles[resPath] =
+          final bytes =
               senPart1.getBytes(part1List[i]["size"], part1List[i]["offset"]);
+          if (streaming) {
+            onExtract(resPath, bytes);
+          } else {
+            extractedFiles[resPath] = bytes;
+          }
         }
         resInfo.add(
           {
@@ -75,7 +89,7 @@ class ResourceStreamGroup {
       "version": rsgHeadInfo["version"],
       "compression_flags": rsgHeadInfo["flag"],
       "res": resInfo,
-      "files": extractedFiles,
+      if (!streaming) "files": extractedFiles,
     };
   }
 
@@ -189,31 +203,24 @@ class ResourceStreamGroup {
 
   dynamic readRSGHead(
     SenBuffer senFile,
-    AppLocalizations? localizations,
   ) {
     final magic = senFile.readString(4);
     if (magic != "pgsr") {
       throw Exception(
-        localizations == null
-            ? "Invalid RSG Magic, should starts with \"PGSR\""
-            : localizations.invalid_rsg_magic,
+        "Invalid RSG Magic, should starts with \"PGSR\"",
       );
     }
     final version = senFile.readUInt32LE();
     if (version != 3 && version != 4) {
       throw Exception(
-        localizations == null
-            ? "Invalid RSG version, should be 3 or 4"
-            : localizations.invalid_rsg_version,
+        "Invalid RSG version, should be 3 or 4",
       );
     }
     senFile.readOffset += 8;
     final flag = senFile.readUInt32LE();
     if (flag > 3 || flag < 0) {
       throw Exception(
-        localizations == null
-            ? "Invalid RSG Compression flag, only 0 to 3 is supported"
-            : localizations.invalid_rsg_compression_flag,
+        "Invalid RSG Compression flag, only 0 to 3 is supported",
       );
     }
     final fileOffset = senFile.readUInt32LE();
@@ -246,21 +253,16 @@ class ResourceStreamGroup {
   SenBuffer packRSG(
     dynamic packetInfo,
     Map<String, Uint8List> resources,
-    AppLocalizations? localizations,
   ) {
     if (packetInfo["version"] != 3 && packetInfo["version"] != 4) {
       throw Exception(
-        localizations == null
-            ? "Invalid RSG version, should be 3 or 4"
-            : localizations.invalid_rsg_version,
+        "Invalid RSG version, should be 3 or 4",
       );
     }
     if (packetInfo["compression_flags"] < 0 ||
         packetInfo["compression_flags"] > 3) {
       throw Exception(
-        localizations == null
-            ? "Invalid RSG Compression flag, only 0 to 3 is supported"
-            : localizations.invalid_rsg_compression_flag,
+        "Invalid RSG Compression flag, only 0 to 3 is supported",
       );
     }
     final senFile = SenBuffer();
@@ -271,21 +273,18 @@ class ResourceStreamGroup {
     senFile.writeOffset += 72;
     final pathTemps = fileListPack(
       packetInfo["res"],
-      localizations,
     );
     writeRSG(
       senFile,
       pathTemps,
       packetInfo["compression_flags"],
       resources,
-      localizations,
     );
     return senFile;
   }
 
   dynamic fileListPack(
     List<dynamic> resInfo,
-    AppLocalizations? localizations,
   ) {
     final resInfoList = resInfo;
     resInfoList.insert(0, {
@@ -305,7 +304,7 @@ class ResourceStreamGroup {
       String path2 = resInfoList[i + 1]["path"].join("\\").toUpperCase();
       if (isNotASCII(path2)) {
         throw Exception(
-          "${localizations == null ? "Name path must match ASCII" : localizations.name_path_must_be_ascii}: $path2",
+          "${"Name path must match ASCII"}: $path2",
         );
       }
       final longestLength =
@@ -357,15 +356,12 @@ class ResourceStreamGroup {
     dynamic pathTemps,
     int compressionFlag,
     Map<String, Uint8List> resources,
-    AppLocalizations? localizations,
   ) {
     final pathTempLength = pathTemps.length;
     final fileListBeginOffset = senFile.writeOffset;
     if (fileListBeginOffset != 0x5C) {
       throw Exception(
-        localizations == null
-            ? "Invalid File List Offset"
-            : localizations.invalid_file_list_offset,
+        "Invalid File List Offset",
       );
     }
     var dataGroup = SenBuffer();
