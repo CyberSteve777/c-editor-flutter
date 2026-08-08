@@ -7,7 +7,6 @@ import 'sen_buffer.dart';
 import "sen_rsb_common.dart";
 import 'sen_file_system.dart';
 import "package:path/path.dart" as path;
-import 'package:c_editor/l10n/app_localizations.dart';
 
 /// [RsbPack] is a utility for packing Resource Stream Bundle (RSB) files.
 /// NOTE: This utility uses `dart:io` and is not supported on the Web platform.
@@ -15,16 +14,14 @@ class RsbPack {
   static void process(
     String inFolder,
     String outFile,
-    AppLocalizations? localizations,
   ) {
-    process_package(inFolder, outFile, localizations);
+    process_package(inFolder, outFile);
     return;
   }
 
   static void process_package(
     String inFolder,
     String outFile,
-    AppLocalizations? localizations,
   ) {
     final rsb = ResourceStreamBundle();
     final manifest = FileSystem.readJson(path.join(inFolder, "manifest.json"));
@@ -41,7 +38,7 @@ class RsbPack {
       }
     }
 
-    final senFile = rsb.packRSB(rsgFiles, manifest, localizations);
+    final senFile = rsb.packRSB(rsgFiles, manifest);
     FileSystem.saveSenBuffer(outFile, senFile);
     return;
   }

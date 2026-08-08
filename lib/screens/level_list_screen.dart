@@ -2139,10 +2139,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
             children: [
               Text(
                 l10n.confirmDeleteMessage(
+                  target.name,
                   target.isDirectory
                       ? l10n.folderDeleteDetail
                       : l10n.levelDeleteDetail,
-                  target.name,
                 ),
               ),
               const SizedBox(height: 16),

@@ -641,6 +641,9 @@ class AppLocalizationsZh extends AppLocalizations {
       '本工具涉及对《植物大战僵尸 2》游戏数据的直接修改操作。\n\n• 使用本工具修改游戏数据可能违反游戏服务条款\n• 可能导致游戏账号被临时或永久封禁\n• 可能导致游戏存档损坏或数据丢失\n• 所有操作均为用户自行选择，风险自负\n\n免责声明：\n\n开发者在此明确声明：\n1. 本工具仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n2. 用户使用本工具所产生的一切后果，包括但不限于账号封禁、数据丢失、游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n3. 用户在使用本工具前应充分了解相关风险，并自行决定是否承担这些风险。\n4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。';
 
   @override
+  String get exportDisclaimerDoNotShowAgain => '不再显示';
+
+  @override
   String get importProgressTitle => '正在导入关卡…';
 
   @override
@@ -695,7 +698,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirmDelete => '确认删除';
 
   @override
-  String confirmDeleteMessage(Object detail, Object name) {
+  String confirmDeleteMessage(String name, String detail) {
     return '确定要删除 \"$name\" 吗？$detail';
   }
 
@@ -875,7 +878,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copyFail => '复制失败';
 
   @override
-  String moving(Object name) {
+  String moving(String name) {
     return '正在移动: $name';
   }
 
@@ -904,7 +907,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moveOverwrite => '覆盖';
 
   @override
-  String fileOverwritten(Object name) {
+  String fileOverwritten(String name) {
     return '文件已覆盖: $name';
   }
 
@@ -915,7 +918,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moveCancelled => '操作已取消';
 
   @override
-  String movedAs(Object name) {
+  String movedAs(String name) {
     return '已移动并另存为 $name';
   }
 
@@ -947,7 +950,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get adjustUiSize => '调整界面大小';
 
   @override
-  String currentScale(Object percent) {
+  String currentScale(String percent) {
     return '当前缩放: $percent%';
   }
 
@@ -1013,7 +1016,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conversionFailed => '转换失败';
 
   @override
-  String convertedMessage(Object name) {
+  String convertedMessage(String name) {
     return '已转换：$name';
   }
 
@@ -2052,7 +2055,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noPlantFound => '未找到植物';
 
   @override
-  String noResultsFor(Object query) {
+  String noResultsFor(String query) {
     return '没有关于“$query”的结果';
   }
 
@@ -2505,7 +2508,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get frozenPlantPlacementPlantList => '当前格子中的植物';
 
   @override
-  String frozenPlantPlacementEditPlant(Object name) {
+  String frozenPlantPlacementEditPlant(String name) {
     return '编辑 $name';
   }
 
@@ -2583,7 +2586,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moldColonyLocationsTitle => '关联霉菌布局 (Locations)';
 
   @override
-  String moldColonyLocationsValue(Object value) {
+  String moldColonyLocationsValue(String value) {
     return '当前值：$value';
   }
 
@@ -2595,7 +2598,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '错误：Locations 必须关联关卡内的 BoardGridMapProps 布局对象。';
 
   @override
-  String moldColonyRepairLink(Object alias) {
+  String moldColonyRepairLink(String alias) {
     return '一键修复关联至：$alias';
   }
 
@@ -2985,7 +2988,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get vaseCapacityTitle => '罐子容量';
 
   @override
-  String vaseCapacitySummary(Object current, Object total) {
+  String vaseCapacitySummary(String current, String total) {
     return '已配置：$current / 有效容量：$total';
   }
 
@@ -3079,7 +3082,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get propertyObjectNotFound => '未找到属性对象';
 
   @override
-  String propertyObjectNotFoundHint(Object alias) {
+  String propertyObjectNotFoundHint(String alias) {
     return '自定义僵尸的属性对象（$alias）在关卡中未找到。属性定义未指向关卡内部，因此无法在此编辑。';
   }
 
@@ -3319,12 +3322,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aliasAlreadyExists => '本关卡中已存在该代号。';
 
   @override
-  String zombieTypeLabel(Object type) {
+  String zombieTypeLabel(String type) {
     return '僵尸所属种类：$type';
   }
 
   @override
-  String propertyAliasLabel(Object alias) {
+  String propertyAliasLabel(String alias) {
     return '属性链接代号：$alias';
   }
 
@@ -3369,17 +3372,17 @@ class AppLocalizationsZh extends AppLocalizations {
       '软件实现自定义注入时会从对应的游戏文件中自动填入原僵尸的所有属性，可以在此基础上手动修改JSON文件。';
 
   @override
-  String editAlias(Object alias) {
+  String editAlias(String alias) {
     return '编辑 $alias';
   }
 
   @override
-  String editNamedEvent(Object name) {
+  String editNamedEvent(String name) {
     return '编辑$name事件';
   }
 
   @override
-  String editNamedModule(Object name) {
+  String editNamedModule(String name) {
     return '编辑$name模块';
   }
 
@@ -3420,7 +3423,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get removeItem => '移除物品';
 
   @override
-  String removeItemConfirm(Object name) {
+  String removeItemConfirm(String name) {
     return '确定要移除$name吗？';
   }
 
@@ -3505,7 +3508,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ignoreGravestone => '无视墓碑 (IgnoreGraveStone)';
 
   @override
-  String zombiePreview(Object name) {
+  String zombiePreview(String name) {
     return '$name - 僵尸预览';
   }
 
@@ -3607,7 +3610,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get invalidReference => '引用失效提示';
 
   @override
-  String aliasNotFound(Object alias) {
+  String aliasNotFound(String alias) {
     return '代号\"$alias\"找不到实体';
   }
 
@@ -3789,7 +3792,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fishTypeNotFound => '未找到海洋生物对象。';
 
   @override
-  String fishTypeLabel(Object type) {
+  String fishTypeLabel(String type) {
     return '海洋生物：$type';
   }
 
@@ -4978,12 +4981,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get yetiZombiesNotAllowed => '此处不允许添加雪人僵尸';
 
   @override
-  String fixToAlias(Object alias) {
+  String fixToAlias(String alias) {
     return '修复至 $alias';
   }
 
   @override
-  String editPresetZombie(Object name) {
+  String editPresetZombie(String name) {
     return '编辑预设僵尸：$name';
   }
 
@@ -5116,7 +5119,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get levelAccount => '等级：账户';
 
   @override
-  String levelDisplay(Object value) {
+  String levelDisplay(String value) {
     return '等级：$value';
   }
 
@@ -8105,82 +8108,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get invalid_rsb_version => '无效的 RSB 版本，应为 3 或 4';
-
-  @override
-  String get invalid_file_list_offset => '无效的文件列表偏移';
-
-  @override
-  String get invalid_rsb_ver_3_resource_offset => 'RSB 版本 3 的资源偏移无效';
-
-  @override
-  String get invalid_composite_name => '无效的 Composite 名称';
-
-  @override
-  String get out_of_range_1 => 'poolIndex 超出范围';
-
-  @override
-  String get out_of_range_2 => 'packet index 超出范围';
-
-  @override
-  String get invalid_rsg_name => '无效的 RSG 名称';
-
-  @override
-  String get invalid_packet_width => '无效的 packet 宽度';
-
-  @override
-  String get invalid_packet_height => '无效的 packet 高度';
-
-  @override
-  String get invalid_item_packet => '无效的 Item Packet';
-
-  @override
-  String get invalid_rsg_number => '无效的 RSG 索引';
-
-  @override
-  String get invalid_part2_offset => '无效的 Part2 偏移';
-
-  @override
-  String get invalid_head_length => '无效的标头长度';
-
-  @override
-  String get rsb_is_corrupted => '此 RSB 已损坏';
-
-  @override
-  String get invalid_ptx_info_eachlength => 'PTX 信息无效';
-
-  @override
-  String get invalid_end_offset => '无效的结束偏移';
-
-  @override
-  String get invalid_rsb_head => 'RSB Magic 不匹配，应以 \"1BSR\" 开头';
-
-  @override
-  String get invalid_ptx_info_each_length => '无效的 PTX 信息';
-
-  @override
-  String get category_out_of_length => '类别超出长度';
-
-  @override
-  String get name_path_must_be_ascii => '名称路径必须符合 ASCII';
-
-  @override
-  String get invalid_rsg_magic => '无效的 RSG Magic，应以 \"PGSR\" 开头';
-
-  @override
-  String get invalid_rsg_version => '无效的 RSG 版本，应为 3 或 4';
-
-  @override
-  String get invalid_rsg_compression_flag => '无效的 RSG 压缩标志，仅支持 0 到 3';
-
-  @override
-  String get mismatch_zlib_magic => 'PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头';
-
-  @override
-  String get customPortalAdd => '新建自定义裂缝';
-
-  @override
-  String get customPortalSingleName => '自定义裂缝';
+  String get customPortalAdd => '+ 自定义裂缝';
 
   @override
   String customPortalName(int index) {
