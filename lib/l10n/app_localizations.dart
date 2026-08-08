@@ -427,75 +427,9 @@ abstract class AppLocalizations {
   /// No description provided for @switchFolder.
   ///
   /// In en, this message translates to:
-<<<<<<< HEAD
-  /// **'Switch level library'**
-  String get switchFolder;
-
-  /// No description provided for @manageLibraries.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage Level Libraries'**
-  String get manageLibraries;
-
-  /// No description provided for @addLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Add library'**
-  String get addLibrary;
-
-  /// No description provided for @libraryName.
-  ///
-  /// In en, this message translates to:
-  /// **'Library name'**
-  String get libraryName;
-
-  /// No description provided for @libraryPath.
-  ///
-  /// In en, this message translates to:
-  /// **'Path'**
-  String get libraryPath;
-
-  /// No description provided for @deleteLibraryTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove library?'**
-  String get deleteLibraryTitle;
-
-  /// No description provided for @deleteLibraryMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to remove \"{name}\" from the library list? This will NOT delete any files on your disk.'**
-  String deleteLibraryMessage(String name);
-
-  /// No description provided for @defaultLibraryName.
-  ///
-  /// In en, this message translates to:
-  /// **'Default library'**
-  String get defaultLibraryName;
-
-  /// No description provided for @renameLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Rename library'**
-  String get renameLibrary;
-
-  /// No description provided for @activeLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get activeLibrary;
-
-  /// No description provided for @noLibrariesFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No libraries added yet'**
-  String get noLibrariesFound;
-
-=======
   /// **'Switch folder'**
   String get switchFolder;
 
->>>>>>> upstream/dev
   /// No description provided for @clearCache.
   ///
   /// In en, this message translates to:
@@ -1324,6 +1258,12 @@ abstract class AppLocalizations {
   /// **'This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.'**
   String get exportDisclaimerBody;
 
+  /// No description provided for @exportDisclaimerDoNotShowAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not show again'**
+  String get exportDisclaimerDoNotShowAgain;
+
   /// No description provided for @importProgressTitle.
   ///
   /// In en, this message translates to:
@@ -1430,7 +1370,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to delete \"{name}\"? {detail}'**
-  String confirmDeleteMessage(Object detail, Object name);
+  String confirmDeleteMessage(String name, String detail);
 
   /// No description provided for @folderDeleteDetail.
   ///
@@ -1772,7 +1712,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Moving: {name}'**
-  String moving(Object name);
+  String moving(String name);
 
   /// No description provided for @movePrompt.
   ///
@@ -1826,7 +1766,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'File was overwritten: {name}'**
-  String fileOverwritten(Object name);
+  String fileOverwritten(String name);
 
   /// No description provided for @moveSaveAsCopy.
   ///
@@ -1844,7 +1784,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Moved and saved as {name}'**
-  String movedAs(Object name);
+  String movedAs(String name);
 
   /// No description provided for @folderCreated.
   ///
@@ -1904,7 +1844,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Current scale: {percent}%'**
-  String currentScale(Object percent);
+  String currentScale(String percent);
 
   /// No description provided for @small.
   ///
@@ -2012,7 +1952,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Converted: {name}'**
-  String convertedMessage(Object name);
+  String convertedMessage(String name);
 
   /// No description provided for @softwareIntro.
   ///
@@ -3974,7 +3914,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'No results for \"{query}\"'**
-  String noResultsFor(Object query);
+  String noResultsFor(String query);
 
   /// No description provided for @noModulesInCategory.
   ///
@@ -4826,7 +4766,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Edit {name}'**
-  String frozenPlantPlacementEditPlant(Object name);
+  String frozenPlantPlacementEditPlant(String name);
 
   /// No description provided for @frozenPlantPlacementLevel.
   ///
@@ -4970,7 +4910,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Current value: {value}'**
-  String moldColonyLocationsValue(Object value);
+  String moldColonyLocationsValue(String value);
 
   /// No description provided for @moldColonyLevelModulesError.
   ///
@@ -4988,7 +4928,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Repair link to: {alias}'**
-  String moldColonyRepairLink(Object alias);
+  String moldColonyRepairLink(String alias);
 
   /// No description provided for @moldColonies.
   ///
@@ -5756,7 +5696,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Assigned: {current} / Total Slots: {total}'**
-  String vaseCapacitySummary(Object current, Object total);
+  String vaseCapacitySummary(String current, String total);
 
   /// No description provided for @vaseListTitle.
   ///
@@ -5936,7 +5876,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'The custom zombie\'s property object ({alias}) was not found in the level. The property definition does not point to level internals, so it cannot be edited here.'**
-  String propertyObjectNotFoundHint(Object alias);
+  String propertyObjectNotFoundHint(String alias);
 
   /// No description provided for @baseStats.
   ///
@@ -6398,13 +6338,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Zombie type: {type}'**
-  String zombieTypeLabel(Object type);
+  String zombieTypeLabel(String type);
 
   /// No description provided for @propertyAliasLabel.
   ///
   /// In en, this message translates to:
   /// **'Property alias: {alias}'**
-  String propertyAliasLabel(Object alias);
+  String propertyAliasLabel(String alias);
 
   /// No description provided for @ok.
   ///
@@ -6482,19 +6422,19 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Edit {alias}'**
-  String editAlias(Object alias);
+  String editAlias(String alias);
 
   /// No description provided for @editNamedEvent.
   ///
   /// In en, this message translates to:
   /// **'Edit {name} event'**
-  String editNamedEvent(Object name);
+  String editNamedEvent(String name);
 
   /// No description provided for @editNamedModule.
   ///
   /// In en, this message translates to:
   /// **'Edit {name} module'**
-  String editNamedModule(Object name);
+  String editNamedModule(String name);
 
   /// No description provided for @addEventAliasTitle.
   ///
@@ -6572,7 +6512,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Remove {name}?'**
-  String removeItemConfirm(Object name);
+  String removeItemConfirm(String name);
 
   /// No description provided for @groupN.
   ///
@@ -6722,7 +6662,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{name} - Zombie preview'**
-  String zombiePreview(Object name);
+  String zombiePreview(String name);
 
   /// No description provided for @weatherSettings.
   ///
@@ -6914,7 +6854,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Alias \"{alias}\" not found'**
-  String aliasNotFound(Object alias);
+  String aliasNotFound(String alias);
 
   /// No description provided for @invalidRefBody.
   ///
@@ -7250,7 +7190,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Sea creature type: {type}'**
-  String fishTypeLabel(Object type);
+  String fishTypeLabel(String type);
 
   /// No description provided for @customFishHelpIntro.
   ///
@@ -9434,13 +9374,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Fix to {alias}'**
-  String fixToAlias(Object alias);
+  String fixToAlias(String alias);
 
   /// No description provided for @editPresetZombie.
   ///
   /// In en, this message translates to:
   /// **'Edit preset zombie: {name}'**
-  String editPresetZombie(Object name);
+  String editPresetZombie(String name);
 
   /// No description provided for @missingZombossMechModule.
   ///
@@ -9668,7 +9608,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Level: {value}'**
-  String levelDisplay(Object value);
+  String levelDisplay(String value);
 
   /// No description provided for @eventStandardSpawnTitle.
   ///
@@ -15139,150 +15079,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Validating {current} / {total}'**
   String validationProgress(int current, int total);
-
-  /// No description provided for @invalid_rsb_version.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSB version, should be 3 or 4'**
-  String get invalid_rsb_version;
-
-  /// No description provided for @invalid_file_list_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid File List Offset'**
-  String get invalid_file_list_offset;
-
-  /// No description provided for @invalid_rsb_ver_3_resource_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Resource Offset for RSB version 3'**
-  String get invalid_rsb_ver_3_resource_offset;
-
-  /// No description provided for @invalid_composite_name.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Composite Name'**
-  String get invalid_composite_name;
-
-  /// No description provided for @out_of_range_1.
-  ///
-  /// In en, this message translates to:
-  /// **'Out of range for poolIndex'**
-  String get out_of_range_1;
-
-  /// No description provided for @out_of_range_2.
-  ///
-  /// In en, this message translates to:
-  /// **'Out of range for packet index'**
-  String get out_of_range_2;
-
-  /// No description provided for @invalid_rsg_name.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG Name'**
-  String get invalid_rsg_name;
-
-  /// No description provided for @invalid_packet_width.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Packet Width'**
-  String get invalid_packet_width;
-
-  /// No description provided for @invalid_packet_height.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Packet Height'**
-  String get invalid_packet_height;
-
-  /// No description provided for @invalid_item_packet.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Item Packet'**
-  String get invalid_item_packet;
-
-  /// No description provided for @invalid_rsg_number.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG index'**
-  String get invalid_rsg_number;
-
-  /// No description provided for @invalid_part2_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Part2 Offset'**
-  String get invalid_part2_offset;
-
-  /// No description provided for @invalid_head_length.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Head Length'**
-  String get invalid_head_length;
-
-  /// No description provided for @rsb_is_corrupted.
-  ///
-  /// In en, this message translates to:
-  /// **'This RSB is corrupted'**
-  String get rsb_is_corrupted;
-
-  /// No description provided for @invalid_ptx_info_eachlength.
-  ///
-  /// In en, this message translates to:
-  /// **'PTX Info is invalid'**
-  String get invalid_ptx_info_eachlength;
-
-  /// No description provided for @invalid_end_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid End Offset'**
-  String get invalid_end_offset;
-
-  /// No description provided for @invalid_rsb_head.
-  ///
-  /// In en, this message translates to:
-  /// **'Mismatch RSB magic, should starts with \"1BSR\"'**
-  String get invalid_rsb_head;
-
-  /// No description provided for @invalid_ptx_info_each_length.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid PTX Info'**
-  String get invalid_ptx_info_each_length;
-
-  /// No description provided for @category_out_of_length.
-  ///
-  /// In en, this message translates to:
-  /// **'Category is out of length'**
-  String get category_out_of_length;
-
-  /// No description provided for @name_path_must_be_ascii.
-  ///
-  /// In en, this message translates to:
-  /// **'Name path must match ASCII'**
-  String get name_path_must_be_ascii;
-
-  /// No description provided for @invalid_rsg_magic.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG Magic, should starts with \"PGSR\"'**
-  String get invalid_rsg_magic;
-
-  /// No description provided for @invalid_rsg_version.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG version, should be 3 or 4'**
-  String get invalid_rsg_version;
-
-  /// No description provided for @invalid_rsg_compression_flag.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG Compression flag, only 0 to 3 is supported'**
-  String get invalid_rsg_compression_flag;
-
-  /// No description provided for @mismatch_zlib_magic.
-  ///
-  /// In en, this message translates to:
-  /// **'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4'**
-  String get mismatch_zlib_magic;
 
   /// No description provided for @customPortalAdd.
   ///
