@@ -7600,6 +7600,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechActionBaseAction => 'Базовое действие';
 
   @override
+  String get zombossMechBaseActionAliasSyncTitle =>
+      'Обновить кодовое имя действия?';
+
+  @override
+  String zombossMechBaseActionAliasSyncMessage(String alias) {
+    return 'После смены базового действия также изменить кодовое имя действия на «$alias»?';
+  }
+
+  @override
+  String get zombossMechBaseActionAliasKeep => 'Сохранить текущее имя';
+
+  @override
+  String get zombossMechBaseActionAliasUpdate => 'Обновить имя';
+
+  @override
   String get zombossMechActionDetails => 'Сведения о действии';
 
   @override
@@ -7628,7 +7643,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossMechSpawnBallSettings =>
-      'Содержимое SpawnBall (ZombieDropProps)';
+      'Настройка выпадения (ZombieDropProps)';
 
   @override
   String get zombossMechAwardDropInvalidTitle =>
@@ -8537,7 +8552,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4';
 
   @override
-  String get customPortalAdd => '+ Пользовательский портал';
+  String get customPortalAdd => 'Пользовательский портал';
 
   @override
   String customPortalName(int index) {
@@ -8581,7 +8596,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customPortalWorld => 'Внешний вид мира';
 
   @override
-  String get customPortalWorldTwister => 'Временная энергия';
+  String get customPortalWorldTwister => 'Пусто';
 
   @override
   String get customPortalPopAnimation => 'Анимация портала';

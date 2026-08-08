@@ -180,43 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Toggle theme';
 
   @override
-<<<<<<< HEAD
-  String get switchFolder => 'Switch level library';
-
-  @override
-  String get manageLibraries => 'Manage Level Libraries';
-
-  @override
-  String get addLibrary => 'Add library';
-
-  @override
-  String get libraryName => 'Library name';
-
-  @override
-  String get libraryPath => 'Path';
-
-  @override
-  String get deleteLibraryTitle => 'Remove library?';
-
-  @override
-  String deleteLibraryMessage(String name) {
-    return 'Are you sure you want to remove \"$name\" from the library list? This will NOT delete any files on your disk.';
-  }
-
-  @override
-  String get defaultLibraryName => 'Default library';
-
-  @override
-  String get renameLibrary => 'Rename library';
-
-  @override
-  String get activeLibrary => 'Active';
-
-  @override
-  String get noLibrariesFound => 'No libraries added yet';
-=======
   String get switchFolder => 'Switch folder';
->>>>>>> upstream/dev
 
   @override
   String get clearCache => 'Clear cache';
@@ -3437,7 +3401,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Resilience extra damage threshold (ResilienceExtraDamageThreshold)';
 
   @override
-  String get resilienceCodename => 'Resilience codename (aliases)';
+  String get resilienceCodename =>
+      'Resilience codename (aliases; English letters only)';
 
   @override
   String get resilienceCodenameHint => 'e.g. CustomResilience0';
@@ -7681,6 +7646,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionBaseAction => 'Base Action';
 
   @override
+  String get zombossMechBaseActionAliasSyncTitle =>
+      'Update the action codename?';
+
+  @override
+  String zombossMechBaseActionAliasSyncMessage(String alias) {
+    return 'After changing the base action, also update the action codename to \"$alias\"?';
+  }
+
+  @override
+  String get zombossMechBaseActionAliasKeep => 'Keep Current Codename';
+
+  @override
+  String get zombossMechBaseActionAliasUpdate => 'Update Codename';
+
+  @override
   String get zombossMechActionDetails => 'Action Details';
 
   @override
@@ -7709,7 +7689,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechSpawnBallSettings =>
-      'SpawnBall contents (ZombieDropProps)';
+      'Drop Configuration (ZombieDropProps)';
 
   @override
   String get zombossMechAwardDropInvalidTitle => 'Invalid SpawnBall reference';
@@ -8605,7 +8585,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4';
 
   @override
-  String get customPortalAdd => '+ Custom Portal';
+  String get customPortalAdd => 'Custom Portal';
 
   @override
   String customPortalName(int index) {
@@ -8649,7 +8629,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customPortalWorld => 'World Appearance';
 
   @override
-  String get customPortalWorldTwister => 'Temporal Energy';
+  String get customPortalWorldTwister => 'Blank';
 
   @override
   String get customPortalPopAnimation => 'Portal Animation';

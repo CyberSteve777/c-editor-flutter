@@ -199,6 +199,22 @@ void main() {
     );
   });
 
+  test('uses decimal editors for SpawnBall offsets and toss duration', () {
+    final preset = ZombossCustomActionPresetRepository.presetById(
+      'sport_tank_spawn',
+    )!;
+    final dependency = preset.dependencies.single;
+    final hordes = dependency.fields.singleWhere(
+      (field) => field.name == 'ZombieHordes',
+    );
+    final byName = {for (final field in hordes.objectFields) field.name: field};
+    final xDelta = byName['SpawnGridXDelta']!;
+
+    expect(xDelta.objectFields.map((field) => field.type), ['float', 'float']);
+    expect(byName['SpawnGridZDelta']!.type, 'float');
+    expect(byName['TossDuration']!.type, 'float');
+  });
+
   test('keeps a newly created action yellow without a JSON marker', () {
     final preset = ZombossCustomActionPresetRepository.presetById(
       'nightmare_stomp_spawn',

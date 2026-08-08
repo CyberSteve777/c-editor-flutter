@@ -62,13 +62,11 @@ class PortalRepository {
   static const List<String> popAnimCodes = [
     'POPANIM_EFFECTS_MODERN_PORTAL',
     'POPANIM_EFFECTS_MODERN_PORTAL_PVZ1',
-    'POPANIM_EFFECTS_ZOMBOSS_HYDRA_MIRROR',
   ];
 
   static const List<String> spawnMethodCodes = [
     'NonRandomShuffled',
     'NonRandomInOrder',
-    'HydraRandom',
   ];
 
   static Future<void> init() async {

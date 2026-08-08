@@ -926,11 +926,11 @@
   "moduleDesc_CustomLevelModuleProperties": "开启后关卡适配庭院框架，并屏蔽装扮功能",
   "powerTileModuleRequiredTitle": "需要能量瓷砖模块",
   "powerTileModuleRequiredBody": "添加能量瓷砖工具卡需要关卡中包含能量瓷砖模块。是否添加该模块并继续？",
-  "conveyorPlantWearCostume": "显示装扮 (iAvatar；已失效)",
+  "conveyorPlantWearCostume": "显示装扮 (iAvatar，已失效)",
   "conveyorPlantWearCostumeTooltip": "启用后该植物在传送带上的卡牌将显示其装扮，该功能在当前版本不生效。",
   "modifyConveyorAddPoolTitle": "加入传送带池 (Add List)",
   "modifyConveyorAddPoolEmpty": "列表为空，请添加植物或工具卡",
-  "modifyConveyorRemovePoolTitle": "移出传送带池（Remove List; 在庭院模块下不生效）",
+  "modifyConveyorRemovePoolTitle": "移出传送带池（Remove List，在庭院模块下不生效）",
   "modifyConveyorEntryEditTitle": "编辑具体参数",
   "moduleTitle_UnchartedModeNo42UniverseModule": "平行宇宙模块",
   "moduleDesc_UnchartedModeNo42UniverseModule": "开启后可以选择平行宇宙植物",
@@ -1196,7 +1196,7 @@
   "resilienceDamageThresholdPerSecond": "僵尸每秒承伤上限 (DamageThresholdPerSecond)",
   "resilienceBaseDamageThreshold": "韧性条基础伤害上限 (ResilienceBaseDamageThreshold)",
   "resilienceExtraDamageThreshold": "韧性条额外伤害上限 (ResilienceExtraDamageThreshold)",
-  "resilienceCodename": "韧性条代码名 (aliases)",
+  "resilienceCodename": "韧性条代码名 (aliases，仅支持英文字母)",
   "resilienceCodenameHint": "例如： CustomResilience0",
   "weakTypeExplosive": "爆炸 (Explosive)",
   "instantKillResistance": "即死抗性（受到秒杀攻击的免疫概率）",
@@ -2604,6 +2604,15 @@
   "zombossMechActionAliasHint": "用于 RTID(僵王机甲@CurrentLevel) 的代号，可稍后修改；本属性表中的引用会自动更新。",
   "zombossMechActionBaseObjclass": "动作类型 (objclass)",
   "zombossMechActionBaseAction": "基础动作",
+  "zombossMechBaseActionAliasSyncTitle": "同步动作代号？",
+  "zombossMechBaseActionAliasSyncMessage": "切换基础动作后，是否同时将动作代号更新为“{alias}”？",
+  "@zombossMechBaseActionAliasSyncMessage": {
+    "placeholders": {
+      "alias": { "type": "String" }
+    }
+  },
+  "zombossMechBaseActionAliasKeep": "保留当前代号",
+  "zombossMechBaseActionAliasUpdate": "同步更换代号",
   "zombossMechActionDetails": "动作详情",
   "zombossMechActionRtid": "RTID",
   "zombossMechActionFields": "动作字段",
@@ -2613,7 +2622,7 @@
   "zombossMechAddZombie": "添加僵尸",
   "zombossMechPickZombie": "选择僵尸",
   "zombossMechNoZombiesInList": "列表中暂无僵尸",
-  "zombossMechSpawnBallSettings": "SpawnBall 掉落内容（ZombieDropProps）",
+  "zombossMechSpawnBallSettings": "掉落物配置 (ZombieDropProps)",
   "zombossMechAwardDropInvalidTitle": "SpawnBall 引用失效",
   "zombossMechAwardDropInvalidBody": "AwardDrop 当前指向“{rtid}”，但该引用不是关卡内结构有效的 ZombieDropProps 对象，游戏可能无法正常读取此动作。",
   "@zombossMechAwardDropInvalidBody": {
@@ -2944,7 +2953,7 @@
   "invalid_rsg_version": "无效的 RSG 版本，应为 3 或 4",
   "invalid_rsg_compression_flag": "无效的 RSG 压缩标志，仅支持 0 到 3",
   "mismatch_zlib_magic": "PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头",
-  "customPortalAdd": "+ 自定义裂缝",
+  "customPortalAdd": "自定义裂缝",
   "customPortalName": "自定义裂缝{index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2963,7 +2972,7 @@
   "customPortalAppearanceSection": "裂缝外观",
   "customPortalSpawnSection": "僵尸生成",
   "customPortalWorld": "世界外观",
-  "customPortalWorldTwister": "时空能量",
+  "customPortalWorldTwister": "空白",
   "customPortalPopAnimation": "裂缝动画",
   "customPortalAnimationModern": "摩登世界裂缝动画",
   "customPortalAnimationMemoryLane": "回忆之旅裂缝动画",

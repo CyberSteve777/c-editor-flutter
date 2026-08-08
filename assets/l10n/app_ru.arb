@@ -2604,6 +2604,15 @@
   "zombossMechActionAliasHint": "Имя в RTID(псевдоним@CurrentLevel). Можно изменить позже; ссылки в этом листе свойств обновятся автоматически.",
   "zombossMechActionBaseObjclass": "Тип действия (objclass)",
   "zombossMechActionBaseAction": "Базовое действие",
+  "zombossMechBaseActionAliasSyncTitle": "Обновить кодовое имя действия?",
+  "zombossMechBaseActionAliasSyncMessage": "После смены базового действия также изменить кодовое имя действия на «{alias}»?",
+  "@zombossMechBaseActionAliasSyncMessage": {
+    "placeholders": {
+      "alias": { "type": "String" }
+    }
+  },
+  "zombossMechBaseActionAliasKeep": "Сохранить текущее имя",
+  "zombossMechBaseActionAliasUpdate": "Обновить имя",
   "zombossMechActionDetails": "Сведения о действии",
   "zombossMechActionRtid": "RTID",
   "zombossMechActionFields": "Поля действия",
@@ -2613,7 +2622,7 @@
   "zombossMechAddZombie": "Добавить зомби",
   "zombossMechPickZombie": "Выбрать зомби",
   "zombossMechNoZombiesInList": "Список зомби пуст",
-  "zombossMechSpawnBallSettings": "Содержимое SpawnBall (ZombieDropProps)",
+  "zombossMechSpawnBallSettings": "Настройка выпадения (ZombieDropProps)",
   "zombossMechAwardDropInvalidTitle": "Недействительная ссылка SpawnBall",
   "zombossMechAwardDropInvalidBody": "AwardDrop ссылается на «{rtid}», но это не является корректным объектом ZombieDropProps текущего уровня. Игра может не загрузить это действие.",
   "@zombossMechAwardDropInvalidBody": {
@@ -2944,7 +2953,7 @@
   "invalid_rsg_version": "Неверная версия RSG, должна быть 3 или 4",
   "invalid_rsg_compression_flag": "Неверный флаг сжатия RSG, поддерживаются только от 0 до 3",
   "mismatch_zlib_magic": "Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4",
-  "customPortalAdd": "+ Пользовательский портал",
+  "customPortalAdd": "Пользовательский портал",
   "customPortalName": "Пользовательский портал {index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2963,7 +2972,7 @@
   "customPortalAppearanceSection": "Внешний вид портала",
   "customPortalSpawnSection": "Появление зомби",
   "customPortalWorld": "Внешний вид мира",
-  "customPortalWorldTwister": "Временная энергия",
+  "customPortalWorldTwister": "Пусто",
   "customPortalPopAnimation": "Анимация портала",
   "customPortalAnimationModern": "Портал Современного Дня",
   "customPortalAnimationMemoryLane": "Портал Дороги воспоминаний",

@@ -225,21 +225,42 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final cards = <Widget>[
-      for (final def in _definitions) _buildPortalCard(context, def),
-      if (widget.allowCustomPortal && widget.levelFile != null)
-        _buildCreateCard(context),
-    ];
-    return Wrap(spacing: 8, runSpacing: 8, children: cards);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 8.0;
+        const preferredWidth = 150.0;
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : preferredWidth;
+        final calculatedColumns =
+            ((availableWidth + spacing) / (preferredWidth + spacing)).floor();
+        final columnCount = calculatedColumns < 1 ? 1 : calculatedColumns;
+        final cardWidth =
+            (availableWidth - spacing * (columnCount - 1)) / columnCount;
+        final cards = <Widget>[
+          for (final def in _definitions)
+            _buildPortalCard(context, def, width: cardWidth),
+          if (widget.allowCustomPortal && widget.levelFile != null)
+            _buildCreateCard(context, width: cardWidth),
+        ];
+        return Wrap(spacing: spacing, runSpacing: spacing, children: cards);
+      },
+    );
   }
 
-  Widget _buildPortalCard(BuildContext context, PortalWorldDef def) {
+  Widget _buildPortalCard(
+    BuildContext context,
+    PortalWorldDef def, {
+    required double width,
+  }) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final isSelected = def.typeCode == widget.selectedPortalType;
     return SizedBox(
-      width: 150,
+      width: width,
+      height: 72,
       child: Card(
+        margin: EdgeInsets.zero,
         color: isSelected ? theme.colorScheme.primaryContainer : null,
         child: InkWell(
           onTap: () => widget.onSelected(def),
@@ -283,30 +304,39 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
     );
   }
 
-  Widget _buildCreateCard(BuildContext context) {
+  Widget _buildCreateCard(BuildContext context, {required double width}) {
     final l10n = AppLocalizations.of(context);
-    final accent = customStageAccent(context);
+    final theme = Theme.of(context);
+    final background =
+        theme.floatingActionButtonTheme.backgroundColor ??
+        theme.colorScheme.primaryContainer;
+    final foreground =
+        theme.floatingActionButtonTheme.foregroundColor ??
+        theme.colorScheme.onPrimaryContainer;
     return SizedBox(
-      width: 150,
+      width: width,
+      height: 72,
       child: Card(
-        color: accent.withValues(alpha: 0.14),
+        margin: EdgeInsets.zero,
+        color: background,
         child: InkWell(
           onTap: _createCustomPortal,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add, color: accent, size: 18),
+                Icon(Icons.add, color: foreground, size: 18),
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text(
                     l10n?.customPortalAdd ?? 'Custom portal',
                     style: TextStyle(
-                      color: accent,
+                      color: foreground,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -465,11 +495,14 @@ class PortalTypeSelectionScreen extends StatelessWidget {
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: PortalTypeChooserGrid(
-                selectedPortalType: currentPortalType,
-                onSelected: (def) => Navigator.pop(context, def.typeCode),
-                levelFile: levelFile,
-                onLevelChanged: onLevelChanged,
+              child: SizedBox(
+                width: double.infinity,
+                child: PortalTypeChooserGrid(
+                  selectedPortalType: currentPortalType,
+                  onSelected: (def) => Navigator.pop(context, def.typeCode),
+                  levelFile: levelFile,
+                  onLevelChanged: onLevelChanged,
+                ),
               ),
             ),
     );
@@ -615,6 +648,15 @@ class PortalTypeSingleSelectField extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (def != null)
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        tooltip: l10n?.info ?? 'Info',
+                        icon: const Icon(Icons.info_outline),
+                        onPressed: () {
+                          showPortalTypePreviewDialog(context, def);
+                        },
+                      ),
                     if (editable) const Icon(Icons.chevron_right),
                   ],
                 ),

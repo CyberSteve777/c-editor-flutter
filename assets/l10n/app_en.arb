@@ -1162,7 +1162,7 @@
   "resilienceDamageThresholdPerSecond": "Zombie damage threshold per second (DamageThresholdPerSecond)",
   "resilienceBaseDamageThreshold": "Resilience base damage threshold (ResilienceBaseDamageThreshold)",
   "resilienceExtraDamageThreshold": "Resilience extra damage threshold (ResilienceExtraDamageThreshold)",
-  "resilienceCodename": "Resilience codename (aliases)",
+  "resilienceCodename": "Resilience codename (aliases; English letters only)",
   "resilienceCodenameHint": "e.g. CustomResilience0",
   "resistances": "Resistances",
   "zombieResilience": "Armor / Resilience",
@@ -2573,6 +2573,15 @@
   "zombossMechActionAliasHint": "Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.",
   "zombossMechActionBaseObjclass": "Action Type (objclass)",
   "zombossMechActionBaseAction": "Base Action",
+  "zombossMechBaseActionAliasSyncTitle": "Update the action codename?",
+  "zombossMechBaseActionAliasSyncMessage": "After changing the base action, also update the action codename to \"{alias}\"?",
+  "@zombossMechBaseActionAliasSyncMessage": {
+    "placeholders": {
+      "alias": { "type": "String" }
+    }
+  },
+  "zombossMechBaseActionAliasKeep": "Keep Current Codename",
+  "zombossMechBaseActionAliasUpdate": "Update Codename",
   "zombossMechActionDetails": "Action Details",
   "zombossMechActionRtid": "RTID",
   "zombossMechActionFields": "Action Fields",
@@ -2582,7 +2591,7 @@
   "zombossMechAddZombie": "Add zombie",
   "zombossMechPickZombie": "Pick zombie",
   "zombossMechNoZombiesInList": "No zombies in list",
-  "zombossMechSpawnBallSettings": "SpawnBall contents (ZombieDropProps)",
+  "zombossMechSpawnBallSettings": "Drop Configuration (ZombieDropProps)",
   "zombossMechAwardDropInvalidTitle": "Invalid SpawnBall reference",
   "zombossMechAwardDropInvalidBody": "AwardDrop points to \"{rtid}\", but it is not a valid CurrentLevel ZombieDropProps object. The game may fail to load this action.",
   "@zombossMechAwardDropInvalidBody": {
@@ -2913,7 +2922,7 @@
   "invalid_rsg_version": "Invalid RSG version, should be 3 or 4",
   "invalid_rsg_compression_flag": "Invalid RSG Compression flag, only 0 to 3 is supported",
   "mismatch_zlib_magic": "Mismatch PopCap Zlib magic, should begins with 0xDEADFED4",
-  "customPortalAdd": "+ Custom Portal",
+  "customPortalAdd": "Custom Portal",
   "customPortalName": "Custom Portal {index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2932,7 +2941,7 @@
   "customPortalAppearanceSection": "Portal Appearance",
   "customPortalSpawnSection": "Zombie Spawning",
   "customPortalWorld": "World Appearance",
-  "customPortalWorldTwister": "Temporal Energy",
+  "customPortalWorldTwister": "Blank",
   "customPortalPopAnimation": "Portal Animation",
   "customPortalAnimationModern": "Modern Day's Portal",
   "customPortalAnimationMemoryLane": "Memory Lane's Portal",

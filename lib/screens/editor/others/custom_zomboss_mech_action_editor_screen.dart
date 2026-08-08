@@ -8,11 +8,13 @@ import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/data/zomboss_mech_action_ordering.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/alias_rename_dialog.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/zomboss_mech_action_fields.dart';
 
 /// Creates or edits a level-local zomboss action ([CurrentLevel]).
@@ -47,16 +49,13 @@ class _CustomZombossMechActionEditorScreenState
   late String _objclass;
   late String _baseActionAlias;
   late TextEditingController _aliasCtrl;
+  late bool _aliasManuallyEdited;
 
-  List<ZombossMechCatalogAction> get _baseActions => widget
-      .catalog
-      .catalogActions
-      .where(
-        (action) => widget.retreatOnly
-            ? action.tag == 'retreat'
-            : action.tag != 'retreat',
-      )
-      .toList(growable: false);
+  List<ZombossMechCatalogAction> get _baseActions {
+    if (widget.retreatOnly) return widget.catalog.retreatCatalogActions;
+    return ZombossMechActionOrdering.sortedCatalogActions(widget.catalog);
+  }
+
   List<ZombossMechObjclassGroup> get _groups {
     final groups = widget.retreatOnly
         ? widget.catalog.actions.where((g) => g.tag == 'retreat')
@@ -108,6 +107,15 @@ class _CustomZombossMechActionEditorScreenState
     return ZombossMechL10n.objclassLabel(context, group.objclass);
   }
 
+  String _actionTypeName(BuildContext context, ZombossMechObjclassGroup group) {
+    return ZombossMechL10n.actionLabel(
+      context,
+      widget.catalog.id,
+      group.objclass,
+      fallback: group.objclass,
+    );
+  }
+
   String _baseActionLabel(
     BuildContext context,
     ZombossMechCatalogAction action,
@@ -142,6 +150,14 @@ class _CustomZombossMechActionEditorScreenState
           : ZombossMechActionUtils.dataFromCatalogAction(action);
     }
     _aliasCtrl = TextEditingController(text: _alias);
+    _aliasManuallyEdited =
+        widget.existingRtid != null &&
+        !_looksLikeGeneratedAlias(_alias, _baseActionAlias);
+  }
+
+  bool _looksLikeGeneratedAlias(String alias, String baseAlias) {
+    if (alias == baseAlias) return true;
+    return RegExp('^${RegExp.escape(baseAlias)}_[0-9]+\$').hasMatch(alias);
   }
 
   void _loadExisting(String rtid) {
@@ -330,10 +346,16 @@ class _CustomZombossMechActionEditorScreenState
     );
   }
 
-  Future<bool> _tryApplyAlias(String newAlias) async {
+  Future<bool> _tryApplyAlias(
+    String newAlias, {
+    bool confirmRename = true,
+  }) async {
     final trimmed = newAlias.trim();
     if (trimmed.isEmpty) return false;
-    if (trimmed == _alias) return true;
+    if (trimmed == _alias) {
+      _aliasCtrl.text = trimmed;
+      return true;
+    }
 
     if (!ZombossMechActionUtils.isAliasAvailable(
       widget.levelFile,
@@ -346,14 +368,16 @@ class _CustomZombossMechActionEditorScreenState
     }
 
     if (widget.existingRtid != null || _obj != null) {
-      final confirmed = await showAliasRenameConfirmDialog(
-        context,
-        oldAlias: _alias,
-        newAlias: trimmed,
-      );
-      if (!confirmed) {
-        _aliasCtrl.text = _alias;
-        return false;
+      if (confirmRename) {
+        final confirmed = await showAliasRenameConfirmDialog(
+          context,
+          oldAlias: _alias,
+          newAlias: trimmed,
+        );
+        if (!confirmed) {
+          _aliasCtrl.text = _alias;
+          return false;
+        }
       }
       ZombossMechActionUtils.renameCustomActionInLevel(
         levelFile: widget.levelFile,
@@ -373,6 +397,7 @@ class _CustomZombossMechActionEditorScreenState
 
     setState(() {
       _alias = trimmed;
+      _aliasCtrl.text = trimmed;
       _syncObject();
     });
     return true;
@@ -399,12 +424,62 @@ class _CustomZombossMechActionEditorScreenState
     });
   }
 
-  void _onBaseActionChanged(String? alias) {
-    if (alias == null || alias == _baseActionAlias) return;
+  Future<void> _onBaseActionChanged(String alias) async {
+    if (alias == _baseActionAlias) return;
     final action = _baseActions
         .where((candidate) => candidate.alias == alias)
         .firstOrNull;
     if (action == null) return;
+
+    final suggestedAlias = ZombossMechActionUtils.uniqueCustomAlias(
+      widget.levelFile,
+      action.alias,
+      except: _obj,
+    );
+    var syncAlias = !_aliasManuallyEdited;
+    if (_aliasManuallyEdited) {
+      final l10n = AppLocalizations.of(context);
+      syncAlias =
+          await showDialog<bool>(
+            context: context,
+            builder: (dialogContext) => AlertDialog(
+              title: Text(
+                l10n?.zombossMechBaseActionAliasSyncTitle ??
+                    'Update the action codename?',
+              ),
+              content: Text(
+                l10n?.zombossMechBaseActionAliasSyncMessage(suggestedAlias) ??
+                    'Also update the action codename to "$suggestedAlias"?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: Text(
+                    l10n?.zombossMechBaseActionAliasKeep ??
+                        'Keep current codename',
+                  ),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: Text(
+                    l10n?.zombossMechBaseActionAliasUpdate ?? 'Update codename',
+                  ),
+                ),
+              ],
+            ),
+          ) ??
+          false;
+      if (!mounted) return;
+    }
+
+    if (syncAlias) {
+      final applied = await _tryApplyAlias(
+        suggestedAlias,
+        confirmRename: false,
+      );
+      if (!mounted) return;
+      if (applied) _aliasManuallyEdited = false;
+    }
     setState(() {
       _baseActionAlias = action.alias;
       _objclass = action.objclass;
@@ -466,75 +541,49 @@ class _CustomZombossMechActionEditorScreenState
                   l10n?.zombossMechActionAliasHint ??
                   'Codename used in RTID(alias@CurrentLevel).',
             ),
+            onChanged: (_) => _aliasManuallyEdited = true,
             onFieldSubmitted: _applyAlias,
-            onEditingComplete: () => _applyAlias(_aliasCtrl.text),
           ),
           const SizedBox(height: 12),
           if (_usesBaseActionPicker)
-            DropdownButtonFormField<String>(
-              isExpanded: true,
-              initialValue:
+            SeparatedOptionPickerField<String>(
+              labelText: l10n?.zombossMechActionBaseAction ?? 'Base Action',
+              value:
                   _baseActions.any((action) => action.alias == _baseActionAlias)
                   ? _baseActionAlias
                   : _baseActions.firstOrNull?.alias,
-              decoration: editorInputDecoration(
-                context,
-                labelText: l10n?.zombossMechActionBaseAction ?? 'Base Action',
-              ),
-              selectedItemBuilder: (context) => [
-                for (final action in _baseActions)
-                  Text(
-                    _baseActionLabel(context, action),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-              ],
               items: [
                 for (final action in _baseActions)
-                  DropdownMenuItem(
+                  SeparatedOptionPickerItem(
                     value: action.alias,
-                    child: Text(
-                      _baseActionLabel(context, action),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    label: ZombossMechL10n.implementationLabel(
+                      context,
+                      widget.catalog.id,
+                      action.alias,
                     ),
+                    subtitle: action.alias,
+                    fieldLabel: _baseActionLabel(context, action),
                   ),
               ],
               onChanged: _onBaseActionChanged,
             )
           else
-            DropdownButtonFormField<String>(
-              isExpanded: true,
-              initialValue: _groups.any((g) => g.objclass == _objclass)
+            SeparatedOptionPickerField<String>(
+              labelText: l10n?.zombossMechActionBaseObjclass ?? 'Base objclass',
+              value: _groups.any((g) => g.objclass == _objclass)
                   ? _objclass
                   : _groups.firstOrNull?.objclass,
-              decoration: editorInputDecoration(
-                context,
-                labelText:
-                    l10n?.zombossMechActionBaseObjclass ?? 'Base objclass',
-              ),
-              selectedItemBuilder: (context) => [
-                for (final g in _groups)
-                  Text(
-                    _actionTypeLabel(context, g),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-              ],
               items: [
                 for (final g in _groups)
-                  DropdownMenuItem(
+                  SeparatedOptionPickerItem(
                     value: g.objclass,
-                    child: Text(
-                      _actionTypeLabel(context, g),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    label: _actionTypeName(context, g),
+                    subtitle: g.objclass,
+                    fieldLabel: _actionTypeLabel(context, g),
                   ),
               ],
-              onChanged: widget.existingRtid == null
-                  ? _onObjclassChanged
-                  : null,
+              enabled: widget.existingRtid == null,
+              onChanged: (value) => _onObjclassChanged(value),
             ),
           const SizedBox(height: 16),
           if (group != null)

@@ -427,75 +427,9 @@ abstract class AppLocalizations {
   /// No description provided for @switchFolder.
   ///
   /// In en, this message translates to:
-<<<<<<< HEAD
-  /// **'Switch level library'**
-  String get switchFolder;
-
-  /// No description provided for @manageLibraries.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage Level Libraries'**
-  String get manageLibraries;
-
-  /// No description provided for @addLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Add library'**
-  String get addLibrary;
-
-  /// No description provided for @libraryName.
-  ///
-  /// In en, this message translates to:
-  /// **'Library name'**
-  String get libraryName;
-
-  /// No description provided for @libraryPath.
-  ///
-  /// In en, this message translates to:
-  /// **'Path'**
-  String get libraryPath;
-
-  /// No description provided for @deleteLibraryTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove library?'**
-  String get deleteLibraryTitle;
-
-  /// No description provided for @deleteLibraryMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to remove \"{name}\" from the library list? This will NOT delete any files on your disk.'**
-  String deleteLibraryMessage(String name);
-
-  /// No description provided for @defaultLibraryName.
-  ///
-  /// In en, this message translates to:
-  /// **'Default library'**
-  String get defaultLibraryName;
-
-  /// No description provided for @renameLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Rename library'**
-  String get renameLibrary;
-
-  /// No description provided for @activeLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get activeLibrary;
-
-  /// No description provided for @noLibrariesFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No libraries added yet'**
-  String get noLibrariesFound;
-
-=======
   /// **'Switch folder'**
   String get switchFolder;
 
->>>>>>> upstream/dev
   /// No description provided for @clearCache.
   ///
   /// In en, this message translates to:
@@ -6199,7 +6133,7 @@ abstract class AppLocalizations {
   /// No description provided for @resilienceCodename.
   ///
   /// In en, this message translates to:
-  /// **'Resilience codename (aliases)'**
+  /// **'Resilience codename (aliases; English letters only)'**
   String get resilienceCodename;
 
   /// No description provided for @resilienceCodenameHint.
@@ -13634,6 +13568,30 @@ abstract class AppLocalizations {
   /// **'Base Action'**
   String get zombossMechActionBaseAction;
 
+  /// No description provided for @zombossMechBaseActionAliasSyncTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the action codename?'**
+  String get zombossMechBaseActionAliasSyncTitle;
+
+  /// No description provided for @zombossMechBaseActionAliasSyncMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'After changing the base action, also update the action codename to \"{alias}\"?'**
+  String zombossMechBaseActionAliasSyncMessage(String alias);
+
+  /// No description provided for @zombossMechBaseActionAliasKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Current Codename'**
+  String get zombossMechBaseActionAliasKeep;
+
+  /// No description provided for @zombossMechBaseActionAliasUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Codename'**
+  String get zombossMechBaseActionAliasUpdate;
+
   /// No description provided for @zombossMechActionDetails.
   ///
   /// In en, this message translates to:
@@ -13691,7 +13649,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechSpawnBallSettings.
   ///
   /// In en, this message translates to:
-  /// **'SpawnBall contents (ZombieDropProps)'**
+  /// **'Drop Configuration (ZombieDropProps)'**
   String get zombossMechSpawnBallSettings;
 
   /// No description provided for @zombossMechAwardDropInvalidTitle.
@@ -15287,7 +15245,7 @@ abstract class AppLocalizations {
   /// No description provided for @customPortalAdd.
   ///
   /// In en, this message translates to:
-  /// **'+ Custom Portal'**
+  /// **'Custom Portal'**
   String get customPortalAdd;
 
   /// No description provided for @customPortalName.
@@ -15365,7 +15323,7 @@ abstract class AppLocalizations {
   /// No description provided for @customPortalWorldTwister.
   ///
   /// In en, this message translates to:
-  /// **'Temporal Energy'**
+  /// **'Blank'**
   String get customPortalWorldTwister;
 
   /// No description provided for @customPortalPopAnimation.

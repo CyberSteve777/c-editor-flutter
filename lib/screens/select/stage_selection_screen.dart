@@ -283,68 +283,75 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
           onPressed: widget.onBack,
         ),
         title: Text(l10n?.selectStage ?? 'Select lawn'),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(
-            _tab == _StagePickerTab.builtin ? 172 : 80,
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: SegmentedButton<_StagePickerTab>(
-                  segments: [
-                    ButtonSegment(
-                      value: _StagePickerTab.builtin,
-                      label: Text(l10n?.stageSelectionTabBuiltin ?? 'Built-in'),
-                      icon: const Icon(Icons.grass),
-                    ),
-                    ButtonSegment(
-                      value: _StagePickerTab.custom,
-                      label: Text(l10n?.stageSelectionTabCustom ?? 'Custom'),
-                      icon: const Icon(Icons.edit_note),
-                    ),
-                  ],
-                  selected: {_tab},
-                  onSelectionChanged: (values) {
-                    _setTab(values.first);
-                  },
-                ),
-              ),
-              if (_tab == _StagePickerTab.builtin) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SelectionSearchField(
-                    hintText: l10n?.searchStage ?? 'Search stage',
-                    query: _searchQuery,
-                    onChanged: _setSearchQuery,
-                    onClear: () => _setSearchQuery(''),
-                  ),
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    children: StageType.values.map((t) {
-                      return AccentBarChoiceChip(
-                        label: _typeLabel(t, l10n),
-                        selected: _selectedType == t,
-                        onSelected: (_) => _setType(t),
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
       ),
-      body: _tab == _StagePickerTab.builtin
-          ? _buildBuiltinTab(context, l10n, theme)
-          : _buildCustomTab(context, l10n, theme),
+      body: Column(
+        children: [
+          Material(
+            color:
+                theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: SegmentedButton<_StagePickerTab>(
+                    segments: [
+                      ButtonSegment(
+                        value: _StagePickerTab.builtin,
+                        label: Text(
+                          l10n?.stageSelectionTabBuiltin ?? 'Built-in',
+                        ),
+                        icon: const Icon(Icons.grass),
+                      ),
+                      ButtonSegment(
+                        value: _StagePickerTab.custom,
+                        label: Text(l10n?.stageSelectionTabCustom ?? 'Custom'),
+                        icon: const Icon(Icons.edit_note),
+                      ),
+                    ],
+                    selected: {_tab},
+                    onSelectionChanged: (values) {
+                      _setTab(values.first);
+                    },
+                  ),
+                ),
+                if (_tab == _StagePickerTab.builtin) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SelectionSearchField(
+                      hintText: l10n?.searchStage ?? 'Search stage',
+                      query: _searchQuery,
+                      onChanged: _setSearchQuery,
+                      onClear: () => _setSearchQuery(''),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: StageType.values.map((t) {
+                        return AccentBarChoiceChip(
+                          label: _typeLabel(t, l10n),
+                          selected: _selectedType == t,
+                          onSelected: (_) => _setType(t),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Expanded(
+            child: _tab == _StagePickerTab.builtin
+                ? _buildBuiltinTab(context, l10n, theme)
+                : _buildCustomTab(context, l10n, theme),
+          ),
+        ],
+      ),
     );
   }
 

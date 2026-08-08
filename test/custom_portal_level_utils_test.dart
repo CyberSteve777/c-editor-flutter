@@ -7,6 +7,14 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('PortalRepository', () {
+    test('excludes the buggy Hydra custom portal options', () {
+      expect(
+        PortalRepository.popAnimCodes,
+        isNot(contains('POPANIM_EFFECTS_ZOMBOSS_HYDRA_MIRROR')),
+      );
+      expect(PortalRepository.spawnMethodCodes, isNot(contains('HydraRandom')));
+    });
+
     test(
       'loads built-in portal templates and deep clones properties',
       () async {

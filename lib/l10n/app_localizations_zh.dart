@@ -179,43 +179,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toggleTheme => '切换主题';
 
   @override
-<<<<<<< HEAD
-  String get switchFolder => '切换关卡库';
-
-  @override
-  String get manageLibraries => '管理关卡库';
-
-  @override
-  String get addLibrary => '添加关卡库';
-
-  @override
-  String get libraryName => '关卡库名称';
-
-  @override
-  String get libraryPath => '路径';
-
-  @override
-  String get deleteLibraryTitle => '确认删除关卡库?';
-
-  @override
-  String deleteLibraryMessage(String name) {
-    return '您确定要从关卡库列表中移除 \"$name\" 吗? 此操作不会删除磁盘上的任何文件。';
-  }
-
-  @override
-  String get defaultLibraryName => '默认库';
-
-  @override
-  String get renameLibrary => '重命名库';
-
-  @override
-  String get activeLibrary => '活动';
-
-  @override
-  String get noLibrariesFound => '暂无已添加的库';
-=======
   String get switchFolder => '切换文件夹';
->>>>>>> upstream/dev
 
   @override
   String get clearCache => '释放缓存';
@@ -2155,7 +2119,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '添加能量瓷砖工具卡需要关卡中包含能量瓷砖模块。是否添加该模块并继续？';
 
   @override
-  String get conveyorPlantWearCostume => '显示装扮 (iAvatar；已失效)';
+  String get conveyorPlantWearCostume => '显示装扮 (iAvatar，已失效)';
 
   @override
   String get conveyorPlantWearCostumeTooltip =>
@@ -2168,7 +2132,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modifyConveyorAddPoolEmpty => '列表为空，请添加植物或工具卡';
 
   @override
-  String get modifyConveyorRemovePoolTitle => '移出传送带池（Remove List; 在庭院模块下不生效）';
+  String get modifyConveyorRemovePoolTitle => '移出传送带池（Remove List，在庭院模块下不生效）';
 
   @override
   String get modifyConveyorEntryEditTitle => '编辑具体参数';
@@ -3252,7 +3216,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '韧性条额外伤害上限 (ResilienceExtraDamageThreshold)';
 
   @override
-  String get resilienceCodename => '韧性条代码名 (aliases)';
+  String get resilienceCodename => '韧性条代码名 (aliases，仅支持英文字母)';
 
   @override
   String get resilienceCodenameHint => '例如： CustomResilience0';
@@ -7312,6 +7276,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechActionBaseAction => '基础动作';
 
   @override
+  String get zombossMechBaseActionAliasSyncTitle => '同步动作代号？';
+
+  @override
+  String zombossMechBaseActionAliasSyncMessage(String alias) {
+    return '切换基础动作后，是否同时将动作代号更新为“$alias”？';
+  }
+
+  @override
+  String get zombossMechBaseActionAliasKeep => '保留当前代号';
+
+  @override
+  String get zombossMechBaseActionAliasUpdate => '同步更换代号';
+
+  @override
   String get zombossMechActionDetails => '动作详情';
 
   @override
@@ -7339,7 +7317,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechNoZombiesInList => '列表中暂无僵尸';
 
   @override
-  String get zombossMechSpawnBallSettings => 'SpawnBall 掉落内容（ZombieDropProps）';
+  String get zombossMechSpawnBallSettings => '掉落物配置 (ZombieDropProps)';
 
   @override
   String get zombossMechAwardDropInvalidTitle => 'SpawnBall 引用失效';
@@ -8199,7 +8177,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mismatch_zlib_magic => 'PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头';
 
   @override
-  String get customPortalAdd => '+ 自定义裂缝';
+  String get customPortalAdd => '自定义裂缝';
 
   @override
   String customPortalName(int index) {
@@ -8242,7 +8220,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customPortalWorld => '世界外观';
 
   @override
-  String get customPortalWorldTwister => '时空能量';
+  String get customPortalWorldTwister => '空白';
 
   @override
   String get customPortalPopAnimation => '裂缝动画';
