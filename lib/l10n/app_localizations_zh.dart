@@ -2122,7 +2122,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '添加能量瓷砖工具卡需要关卡中包含能量瓷砖模块。是否添加该模块并继续？';
 
   @override
-  String get conveyorPlantWearCostume => '显示装扮 (iAvatar；已失效)';
+  String get conveyorPlantWearCostume => '显示装扮 (iAvatar，已失效)';
 
   @override
   String get conveyorPlantWearCostumeTooltip =>
@@ -2135,7 +2135,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modifyConveyorAddPoolEmpty => '列表为空，请添加植物或工具卡';
 
   @override
-  String get modifyConveyorRemovePoolTitle => '移出传送带池（Remove List; 在庭院模块下不生效）';
+  String get modifyConveyorRemovePoolTitle => '移出传送带池（Remove List，在庭院模块下不生效）';
 
   @override
   String get modifyConveyorEntryEditTitle => '编辑具体参数';
@@ -3219,7 +3219,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '韧性条额外伤害上限 (ResilienceExtraDamageThreshold)';
 
   @override
-  String get resilienceCodename => '韧性条代码名 (aliases)';
+  String get resilienceCodename => '韧性条代码名 (aliases，仅支持英文字母)';
 
   @override
   String get resilienceCodenameHint => '例如： CustomResilience0';
@@ -7279,6 +7279,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechActionBaseAction => '基础动作';
 
   @override
+  String get zombossMechBaseActionAliasSyncTitle => '同步动作代号？';
+
+  @override
+  String zombossMechBaseActionAliasSyncMessage(String alias) {
+    return '切换基础动作后，是否同时将动作代号更新为“$alias”？';
+  }
+
+  @override
+  String get zombossMechBaseActionAliasKeep => '保留当前代号';
+
+  @override
+  String get zombossMechBaseActionAliasUpdate => '同步更换代号';
+
+  @override
   String get zombossMechActionDetails => '动作详情';
 
   @override
@@ -7306,7 +7320,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechNoZombiesInList => '列表中暂无僵尸';
 
   @override
-  String get zombossMechSpawnBallSettings => 'SpawnBall 掉落内容（ZombieDropProps）';
+  String get zombossMechSpawnBallSettings => '掉落物配置 (ZombieDropProps)';
 
   @override
   String get zombossMechAwardDropInvalidTitle => 'SpawnBall 引用失效';
@@ -8094,7 +8108,82 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get customPortalAdd => '+ 自定义裂缝';
+  String get invalid_rsb_version => '无效的 RSB 版本，应为 3 或 4';
+
+  @override
+  String get invalid_file_list_offset => '无效的文件列表偏移';
+
+  @override
+  String get invalid_rsb_ver_3_resource_offset => 'RSB 版本 3 的资源偏移无效';
+
+  @override
+  String get invalid_composite_name => '无效的 Composite 名称';
+
+  @override
+  String get out_of_range_1 => 'poolIndex 超出范围';
+
+  @override
+  String get out_of_range_2 => 'packet index 超出范围';
+
+  @override
+  String get invalid_rsg_name => '无效的 RSG 名称';
+
+  @override
+  String get invalid_packet_width => '无效的 packet 宽度';
+
+  @override
+  String get invalid_packet_height => '无效的 packet 高度';
+
+  @override
+  String get invalid_item_packet => '无效的 Item Packet';
+
+  @override
+  String get invalid_rsg_number => '无效的 RSG 索引';
+
+  @override
+  String get invalid_part2_offset => '无效的 Part2 偏移';
+
+  @override
+  String get invalid_head_length => '无效的标头长度';
+
+  @override
+  String get rsb_is_corrupted => '此 RSB 已损坏';
+
+  @override
+  String get invalid_ptx_info_eachlength => 'PTX 信息无效';
+
+  @override
+  String get invalid_end_offset => '无效的结束偏移';
+
+  @override
+  String get invalid_rsb_head => 'RSB Magic 不匹配，应以 \"1BSR\" 开头';
+
+  @override
+  String get invalid_ptx_info_each_length => '无效的 PTX 信息';
+
+  @override
+  String get category_out_of_length => '类别超出长度';
+
+  @override
+  String get name_path_must_be_ascii => '名称路径必须符合 ASCII';
+
+  @override
+  String get invalid_rsg_magic => '无效的 RSG Magic，应以 \"PGSR\" 开头';
+
+  @override
+  String get invalid_rsg_version => '无效的 RSG 版本，应为 3 或 4';
+
+  @override
+  String get invalid_rsg_compression_flag => '无效的 RSG 压缩标志，仅支持 0 到 3';
+
+  @override
+  String get mismatch_zlib_magic => 'PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头';
+
+  @override
+  String get customPortalAdd => '新建自定义裂缝';
+
+  @override
+  String get customPortalSingleName => '自定义裂缝';
 
   @override
   String customPortalName(int index) {
@@ -8123,6 +8212,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customPortalUnusedTitle => '清除未使用的自定义裂缝？';
 
   @override
+  String get customPortalUnusedSingleMessage => '自定义裂缝已不再被使用，是否从关卡中清除其关联数据对象？';
+
+  @override
   String customPortalUnusedMessage(int index) {
     return '自定义裂缝$index已不再被使用，是否从关卡中清除其关联数据对象？';
   }
@@ -8137,7 +8229,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customPortalWorld => '世界外观';
 
   @override
-  String get customPortalWorldTwister => '时空能量';
+  String get customPortalWorldTwister => '空白';
 
   @override
   String get customPortalPopAnimation => '裂缝动画';

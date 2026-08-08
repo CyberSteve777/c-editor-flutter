@@ -78,4 +78,24 @@ void main() {
     expect(spawn, lessThan(rush));
     expect(rush, lessThan(fire));
   });
+
+  test('keeps Eighties phases in variation order instead of alias order', () {
+    final eighties = ZombossMechRepository.getCatalog(
+      'ZombieZombossMech_Eighties',
+    );
+    expect(eighties, isNotNull);
+
+    final aliases = ZombossMechActionOrdering.sortedCatalogActions(
+      eighties!,
+    ).map((action) => action.alias).toList();
+
+    expect(
+      aliases.indexOf('ZombossEightiesDropSpeaker_Punk'),
+      lessThan(aliases.indexOf('ZombossEightiesDropSpeaker_8bit')),
+    );
+    expect(
+      aliases.indexOf('ZombossEightiesFireSpeakerRay_Punk'),
+      lessThan(aliases.indexOf('ZombossEightiesFireSpeakerRay_Metal')),
+    );
+  });
 }

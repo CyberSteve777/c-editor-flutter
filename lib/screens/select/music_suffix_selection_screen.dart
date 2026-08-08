@@ -6,6 +6,7 @@ import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 /// Picker for `MusicSuffix` (codename + icon + localized title).
 ///
@@ -52,11 +53,16 @@ class _MusicSuffixSelectionScreenState
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.selectMusicSuffix ?? 'Select music suffix'),
+        title: Text(
+          l10n?.selectMusicSuffix ?? 'Select music suffix',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(64),
           child: Padding(
@@ -90,11 +96,14 @@ class _MusicSuffixSelectionScreenState
             )
           : GridView.builder(
               padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 180,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 0.72,
+                mainAxisExtent: responsiveSelectionGridTileExtent(
+                  context,
+                  baseExtent: 224,
+                ),
               ),
               itemCount: items.length,
               itemBuilder: (_, i) {

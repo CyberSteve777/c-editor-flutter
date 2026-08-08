@@ -8,6 +8,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/zomboss_battle_base_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/reserved_column_preview_grid.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossBattleTab extends StatefulWidget {
@@ -227,25 +228,22 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
         const SizedBox(height: 12),
         Tooltip(
           message: l10n?.zombossBattleVariationHint ?? '',
-          child: DropdownButtonFormField<String>(
-            isExpanded: true,
-            initialValue: variations.contains(_data.zombossTypeName)
+          child: SeparatedOptionPickerField<String>(
+            labelText: l10n?.zombossBattleVariationLabel ?? 'Zomboss variation',
+            value: variations.contains(_data.zombossTypeName)
                 ? _data.zombossTypeName
                 : (variations.isNotEmpty ? variations.first : null),
-            decoration: editorInputDecoration(
-              context,
-              labelText:
-                  l10n?.zombossBattleVariationLabel ?? 'Zomboss variation',
-            ),
             items: variations
                 .map(
-                  (v) => DropdownMenuItem(
+                  (v) => SeparatedOptionPickerItem(
                     value: v,
-                    child: Text(_displayName(context, v)),
+                    label: _displayName(context, v),
+                    subtitle: v,
                   ),
                 )
                 .toList(),
-            onChanged: variations.isEmpty ? null : _onVariationChanged,
+            enabled: variations.isNotEmpty,
+            onChanged: _onVariationChanged,
           ),
         ),
         const SizedBox(height: 24),

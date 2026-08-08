@@ -137,14 +137,18 @@ class EditorCubit extends Cubit<EditorState> {
     emit(state.copyWith(hasChanges: false));
   }
 
-  /// After external JSON edit; marks dirty and refreshes parsed data and tabs.
+  /// Refreshes editor state after the JSON viewer has already saved to disk.
   void onJsonViewerSaved() {
+    _refreshLevelState(hasChanges: false);
+  }
+
+  void _refreshLevelState({required bool hasChanges}) {
     final lf = state.levelFile;
     if (lf == null) return;
     final parsed = LevelParser.parseLevel(lf);
     emit(
       state.copyWith(
-        hasChanges: true,
+        hasChanges: hasChanges,
         parsedData: parsed,
         availableTabs: _computeAvailableTabs(lf, parsed),
       ),
@@ -176,16 +180,9 @@ class EditorCubit extends Cubit<EditorState> {
       ..addAll(newLevel.objects);
     lf.version = newLevel.version;
     if (markDirty) {
-      onJsonViewerSaved();
+      _refreshLevelState(hasChanges: true);
     } else {
-      final parsed = LevelParser.parseLevel(lf);
-      emit(
-        state.copyWith(
-          hasChanges: false,
-          parsedData: parsed,
-          availableTabs: _computeAvailableTabs(lf, parsed),
-        ),
-      );
+      _refreshLevelState(hasChanges: false);
     }
   }
 

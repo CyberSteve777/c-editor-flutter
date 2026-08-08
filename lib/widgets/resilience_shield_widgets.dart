@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/resilience_weak_type.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 
 String resilienceWeakTypeLabel(AppLocalizations? l10n, int weakType) =>
     resilienceWeakTypeLabelForValue(l10n, weakType);
@@ -79,11 +80,13 @@ class ResilienceShieldSelectionCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onTap,
+    this.isCustom = false,
   });
 
   final String label;
   final String value;
   final VoidCallback onTap;
+  final bool isCustom;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +111,12 @@ class ResilienceShieldSelectionCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
+                  if (isCustom) ...[
+                    CustomResourceBadge(
+                      color: userCustomResourceBadgeColor(context),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   Expanded(
                     child: Text(
                       value,

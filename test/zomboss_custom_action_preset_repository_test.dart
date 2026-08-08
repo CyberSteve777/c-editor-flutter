@@ -65,6 +65,13 @@ void main() {
       ),
       isTrue,
     );
+    final dependency = level.objects.firstWhere(
+      (object) => object.aliases?.contains('SpawnBall_2') == true,
+    );
+    expect(
+      Map<String, dynamic>.from(dependency.objData as Map)['Collectables'],
+      ['plantfood'],
+    );
     expect(
       ZombossCustomActionPresetRepository.originForRtid(level, creation.rtid),
       ZombossCustomActionOrigin.presetTemplate,
@@ -110,6 +117,7 @@ void main() {
       final dependencyData = Map<String, dynamic>.from(
         blueDependency.objData as Map,
       );
+      expect(dependencyData['Collectables'], ['plantfood']);
       dependencyData['Collectables'] = <String>[];
       blueDependency.objData = dependencyData;
       expect(
@@ -137,6 +145,45 @@ void main() {
       );
     },
   );
+
+  test('keeps legacy green tank presets green and derives plant food', () {
+    final preset = ZombossCustomActionPresetRepository.presetById(
+      'sport_tank_spawn',
+    )!;
+    final level = PvzLevelFile(objects: []);
+    final green = ZombossCustomActionPresetRepository.instantiatePreset(
+      level,
+      preset,
+    );
+    final dependency = level.objects.firstWhere(
+      (object) => object.objClass == 'ZombieDropProps',
+    );
+    final dependencyData = Map<String, dynamic>.from(dependency.objData as Map);
+    dependencyData['Collectables'] = <String>['spacetime_plantfood'];
+    dependency.objData = dependencyData;
+
+    final reopened = PvzLevelFile.fromJson(level.toJson());
+    expect(
+      ZombossCustomActionPresetRepository.originForRtid(reopened, green.rtid),
+      ZombossCustomActionOrigin.presetTemplate,
+    );
+
+    final blue = ZombossCustomActionPresetRepository.deriveFromPresetInstance(
+      reopened,
+      green.rtid,
+    )!;
+    final blueDependency = reopened.objects.firstWhere(
+      (object) => object.aliases?.contains('SpawnBall_2') == true,
+    );
+    expect(
+      Map<String, dynamic>.from(blueDependency.objData as Map)['Collectables'],
+      ['plantfood'],
+    );
+    expect(
+      ZombossCustomActionPresetRepository.originForRtid(reopened, blue.rtid),
+      ZombossCustomActionOrigin.presetDerived,
+    );
+  });
 
   test('accepts a manually redirected valid SpawnBall dependency', () {
     final preset = ZombossCustomActionPresetRepository.presetById(
@@ -197,6 +244,22 @@ void main() {
       ),
       isFalse,
     );
+  });
+
+  test('uses decimal editors for SpawnBall offsets and toss duration', () {
+    final preset = ZombossCustomActionPresetRepository.presetById(
+      'sport_tank_spawn',
+    )!;
+    final dependency = preset.dependencies.single;
+    final hordes = dependency.fields.singleWhere(
+      (field) => field.name == 'ZombieHordes',
+    );
+    final byName = {for (final field in hordes.objectFields) field.name: field};
+    final xDelta = byName['SpawnGridXDelta']!;
+
+    expect(xDelta.objectFields.map((field) => field.type), ['float', 'float']);
+    expect(byName['SpawnGridZDelta']!.type, 'float');
+    expect(byName['TossDuration']!.type, 'float');
   });
 
   test('keeps a newly created action yellow without a JSON marker', () {

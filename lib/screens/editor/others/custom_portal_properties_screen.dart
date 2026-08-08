@@ -5,6 +5,7 @@ import 'package:c_editor/data/repository/portal_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/zomboss_mech_weighted_zombie_list.dart';
 
 class CustomPortalPropertiesScreen extends StatefulWidget {
@@ -42,6 +43,21 @@ class _CustomPortalPropertiesScreenState
     _data = existingData is Map
         ? PortalRepository.cloneMap(Map<String, dynamic>.from(existingData))
         : PortalRepository.clonePropertiesData(widget.basePortalType);
+    _replaceBuggyHydraOptions();
+  }
+
+  void _replaceBuggyHydraOptions() {
+    if (_data['PopAnim'] == 'POPANIM_EFFECTS_ZOMBOSS_HYDRA_MIRROR') {
+      _data['PopAnim'] = PortalRepository.popAnimCodes.first;
+      _data['PopAnimRenderOffset'] = {'x': 96, 'y': 125};
+      _data['SpawnAnimation'] = 'spawn';
+      _data['CloseAnimation'] = 'end';
+    }
+    if (_data['ZombieSpawnMethod'] == 'HydraRandom') {
+      _data['ZombieSpawnMethod'] = PortalRepository.spawnMethodCodes.first;
+      _data.remove('MinQuantity');
+      _data.remove('MaxQuantity');
+    }
   }
 
   List<String> get _zombieIds {
@@ -78,14 +94,12 @@ class _CustomPortalPropertiesScreenState
   void _setPopAnim(String value) {
     setState(() {
       _data['PopAnim'] = value;
-      final isHydra = value == 'POPANIM_EFFECTS_ZOMBOSS_HYDRA_MIRROR';
-      final usesLargeOffset =
-          isHydra || value == 'POPANIM_EFFECTS_MODERN_PORTAL_PVZ1';
+      final usesLargeOffset = value == 'POPANIM_EFFECTS_MODERN_PORTAL_PVZ1';
       _data['PopAnimRenderOffset'] = usesLargeOffset
           ? {'x': 105, 'y': 115}
           : {'x': 96, 'y': 125};
-      _data['SpawnAnimation'] = isHydra ? 'zombiepass' : 'spawn';
-      _data['CloseAnimation'] = isHydra ? 'die' : 'end';
+      _data['SpawnAnimation'] = 'spawn';
+      _data['CloseAnimation'] = 'end';
     });
   }
 
@@ -118,6 +132,8 @@ class _CustomPortalPropertiesScreenState
           _isNew
               ? (l10n?.customPortalCreateTitle ?? 'Create custom portal')
               : (l10n?.customPortalEditTitle ?? 'Edit custom portal'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         actions: [
           TextButton(onPressed: _save, child: Text(l10n?.save ?? 'Save')),
@@ -165,33 +181,25 @@ class _CustomPortalPropertiesScreenState
                     },
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue:
+                  SeparatedOptionPickerField<String>(
+                    labelText: _portalPropertyLabel(
+                      l10n?.customPortalPopAnimation ?? 'Portal animation',
+                      'PopAnim',
+                    ),
+                    value:
                         PortalRepository.popAnimCodes.contains(_data['PopAnim'])
                         ? _data['PopAnim'].toString()
                         : null,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: _portalPropertyLabel(
-                        l10n?.customPortalPopAnimation ?? 'Portal animation',
-                        'PopAnim',
-                      ),
-                    ),
                     items: [
                       for (final code in PortalRepository.popAnimCodes)
-                        DropdownMenuItem(
+                        SeparatedOptionPickerItem(
                           value: code,
-                          child: Text(
-                            '${_popAnimName(l10n, code)} ($code)',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          label: _popAnimName(l10n, code),
+                          subtitle: code,
+                          fieldLabel: '${_popAnimName(l10n, code)} ($code)',
                         ),
                     ],
-                    onChanged: (value) {
-                      if (value != null) _setPopAnim(value);
-                    },
+                    onChanged: _setPopAnim,
                   ),
                 ],
               ),
@@ -211,68 +219,41 @@ class _CustomPortalPropertiesScreenState
                     ),
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue:
+                  SeparatedOptionPickerField<String>(
+                    labelText: _portalPropertyLabel(
+                      l10n?.customPortalSpawnMethod ?? 'Spawn method',
+                      'ZombieSpawnMethod',
+                    ),
+                    value:
                         PortalRepository.spawnMethodCodes.contains(spawnMethod)
                         ? spawnMethod
                         : null,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: _portalPropertyLabel(
-                        l10n?.customPortalSpawnMethod ?? 'Spawn method',
-                        'ZombieSpawnMethod',
-                      ),
-                    ),
                     items: [
                       for (final code in PortalRepository.spawnMethodCodes)
-                        DropdownMenuItem(
+                        SeparatedOptionPickerItem(
                           value: code,
-                          child: Text(
-                            '${_spawnMethodName(l10n, code)} ($code)',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          label: _spawnMethodName(l10n, code),
+                          subtitle: code,
+                          fieldLabel: '${_spawnMethodName(l10n, code)} ($code)',
                         ),
                     ],
                     onChanged: (value) {
-                      if (value == null) return;
-                      setState(() {
-                        _data['ZombieSpawnMethod'] = value;
-                        if (value == 'HydraRandom') {
-                          _data.putIfAbsent('MinQuantity', () => 1);
-                          _data.putIfAbsent('MaxQuantity', () => 1);
-                        }
-                      });
+                      setState(() => _data['ZombieSpawnMethod'] = value);
                     },
                   ),
-                  if (spawnMethod == 'HydraRandom') ...[
-                    const SizedBox(height: 12),
-                    _numberField(
-                      context,
-                      field: 'MinQuantity',
-                      label:
-                          l10n?.customPortalMinimumQuantity ??
-                          'Minimum quantity',
-                    ),
-                    const SizedBox(height: 12),
-                    _numberField(
-                      context,
-                      field: 'MaxQuantity',
-                      label:
-                          l10n?.customPortalMaximumQuantity ??
-                          'Maximum quantity',
-                    ),
-                  ],
                   const SizedBox(height: 16),
                   ZombossMechWeightedZombieListEditor(
                     fieldLabel: _portalPropertyLabel(
                       l10n?.customPortalZombieTypes ?? 'Zombie types',
                       'ZombieTypesToSpawn',
                     ),
-                    weightLabel: l10n?.zombieWeight ?? 'Zombie weight',
+                    weightLabel: _portalPropertyLabel(
+                      l10n?.zombieWeight ?? 'Zombie weight',
+                      'Weight',
+                    ),
                     zombieIds: _zombieIds,
                     weights: _zombieWeights,
+                    defaultWeight: 1,
                     editable: true,
                     onChanged: _setZombies,
                   ),
@@ -324,25 +305,6 @@ class _CustomPortalPropertiesScreenState
           ),
         ],
       ),
-    );
-  }
-
-  Widget _numberField(
-    BuildContext context, {
-    required String field,
-    required String label,
-  }) {
-    return TextFormField(
-      initialValue: '${_asInt(_data[field], 1)}',
-      keyboardType: const TextInputType.numberWithOptions(decimal: false),
-      decoration: editorInputDecoration(
-        context,
-        labelText: _portalPropertyLabel(label, field),
-      ),
-      onChanged: (value) {
-        final parsed = int.tryParse(value);
-        if (parsed != null) _data[field] = parsed;
-      },
     );
   }
 

@@ -3404,7 +3404,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Resilience extra damage threshold (ResilienceExtraDamageThreshold)';
 
   @override
-  String get resilienceCodename => 'Resilience codename (aliases)';
+  String get resilienceCodename =>
+      'Resilience codename (aliases; English letters only)';
 
   @override
   String get resilienceCodenameHint => 'e.g. CustomResilience0';
@@ -7648,6 +7649,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionBaseAction => 'Base Action';
 
   @override
+  String get zombossMechBaseActionAliasSyncTitle =>
+      'Update the action codename?';
+
+  @override
+  String zombossMechBaseActionAliasSyncMessage(String alias) {
+    return 'After changing the base action, also update the action codename to \"$alias\"?';
+  }
+
+  @override
+  String get zombossMechBaseActionAliasKeep => 'Keep Current Codename';
+
+  @override
+  String get zombossMechBaseActionAliasUpdate => 'Update Codename';
+
+  @override
   String get zombossMechActionDetails => 'Action Details';
 
   @override
@@ -7676,7 +7692,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechSpawnBallSettings =>
-      'SpawnBall contents (ZombieDropProps)';
+      'Drop Configuration (ZombieDropProps)';
 
   @override
   String get zombossMechAwardDropInvalidTitle => 'Invalid SpawnBall reference';
@@ -8495,7 +8511,87 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get customPortalAdd => '+ Custom Portal';
+  String get invalid_rsb_version => 'Invalid RSB version, should be 3 or 4';
+
+  @override
+  String get invalid_file_list_offset => 'Invalid File List Offset';
+
+  @override
+  String get invalid_rsb_ver_3_resource_offset =>
+      'Invalid Resource Offset for RSB version 3';
+
+  @override
+  String get invalid_composite_name => 'Invalid Composite Name';
+
+  @override
+  String get out_of_range_1 => 'Out of range for poolIndex';
+
+  @override
+  String get out_of_range_2 => 'Out of range for packet index';
+
+  @override
+  String get invalid_rsg_name => 'Invalid RSG Name';
+
+  @override
+  String get invalid_packet_width => 'Invalid Packet Width';
+
+  @override
+  String get invalid_packet_height => 'Invalid Packet Height';
+
+  @override
+  String get invalid_item_packet => 'Invalid Item Packet';
+
+  @override
+  String get invalid_rsg_number => 'Invalid RSG index';
+
+  @override
+  String get invalid_part2_offset => 'Invalid Part2 Offset';
+
+  @override
+  String get invalid_head_length => 'Invalid Head Length';
+
+  @override
+  String get rsb_is_corrupted => 'This RSB is corrupted';
+
+  @override
+  String get invalid_ptx_info_eachlength => 'PTX Info is invalid';
+
+  @override
+  String get invalid_end_offset => 'Invalid End Offset';
+
+  @override
+  String get invalid_rsb_head =>
+      'Mismatch RSB magic, should starts with \"1BSR\"';
+
+  @override
+  String get invalid_ptx_info_each_length => 'Invalid PTX Info';
+
+  @override
+  String get category_out_of_length => 'Category is out of length';
+
+  @override
+  String get name_path_must_be_ascii => 'Name path must match ASCII';
+
+  @override
+  String get invalid_rsg_magic =>
+      'Invalid RSG Magic, should starts with \"PGSR\"';
+
+  @override
+  String get invalid_rsg_version => 'Invalid RSG version, should be 3 or 4';
+
+  @override
+  String get invalid_rsg_compression_flag =>
+      'Invalid RSG Compression flag, only 0 to 3 is supported';
+
+  @override
+  String get mismatch_zlib_magic =>
+      'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4';
+
+  @override
+  String get customPortalAdd => 'New Custom Portal';
+
+  @override
+  String get customPortalSingleName => 'Custom Portal';
 
   @override
   String customPortalName(int index) {
@@ -8525,6 +8621,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customPortalUnusedTitle => 'Remove Unused Custom Portal?';
 
   @override
+  String get customPortalUnusedSingleMessage =>
+      'The custom portal is no longer used. Remove its associated data objects from this level?';
+
+  @override
   String customPortalUnusedMessage(int index) {
     return 'Custom Portal $index is no longer used. Remove its associated data objects from this level?';
   }
@@ -8539,7 +8639,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customPortalWorld => 'World Appearance';
 
   @override
-  String get customPortalWorldTwister => 'Temporal Energy';
+  String get customPortalWorldTwister => 'Blank';
 
   @override
   String get customPortalPopAnimation => 'Portal Animation';

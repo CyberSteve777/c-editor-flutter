@@ -234,7 +234,8 @@ abstract final class ZombossCustomActionPresetRepository {
       final dependencyObject = PvzObject(
         aliases: [alias],
         objClass: oldDependency?.objClass ?? dependency.objclass,
-        objData: _cloneMap(
+        objData: _normalizedDependencyDataForPreset(
+          preset,
           oldDependency == null
               ? dependency.objdata
               : _mapData(oldDependency.objData),
@@ -449,7 +450,10 @@ abstract final class ZombossCustomActionPresetRepository {
         return false;
       }
       if (!const DeepCollectionEquality().equals(
-        _mapData(dependency.objData),
+        _normalizedDependencyDataForPreset(
+          preset,
+          _mapData(dependency.objData),
+        ),
         dependencySpec.objdata,
       )) {
         return false;
@@ -481,6 +485,22 @@ abstract final class ZombossCustomActionPresetRepository {
 
   static Map<String, dynamic> _cloneMap(Map<String, dynamic> source) {
     return Map<String, dynamic>.from(_deepClone(source) as Map);
+  }
+
+  static Map<String, dynamic> _normalizedDependencyDataForPreset(
+    ZombossCustomActionPreset preset,
+    Map<String, dynamic> source,
+  ) {
+    final data = _cloneMap(source);
+    if (preset.id == 'sport_tank_spawn') {
+      final collectables = data['Collectables'];
+      if (collectables is List &&
+          collectables.length == 1 &&
+          collectables.single == 'spacetime_plantfood') {
+        data['Collectables'] = <String>['plantfood'];
+      }
+    }
+    return data;
   }
 
   static dynamic _deepClone(dynamic value) {

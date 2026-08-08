@@ -108,8 +108,8 @@
                 "name": "SpawnGridXDelta",
                 "type": "object",
                 "fields": [
-                  { "name": "Min", "type": "int", "default": -1 },
-                  { "name": "Max", "type": "int", "default": -1 }
+                  { "name": "Min", "type": "float", "default": -1 },
+                  { "name": "Max", "type": "float", "default": -1 }
                 ]
               },
               {
@@ -120,8 +120,8 @@
                   { "name": "Max", "type": "float", "default": 0.5 }
                 ]
               },
-              { "name": "SpawnGridZDelta", "type": "int", "default": 0 },
-              { "name": "TossDuration", "type": "int", "default": 2 },
+              { "name": "SpawnGridZDelta", "type": "float", "default": 0 },
+              { "name": "TossDuration", "type": "float", "default": 2 },
               { "name": "TossApexHeight", "type": "int", "default": 150 }
             ]
           },
@@ -149,7 +149,7 @@
               "TossApexHeight": 150
             }
           ],
-          "Collectables": ["spacetime_plantfood"]
+          "Collectables": ["plantfood"]
         }
       }
     ],

@@ -7,6 +7,7 @@ import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 class _StageBaseSelectionViewState {
   _StageBaseSelectionViewState({
@@ -154,11 +155,16 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.selectCustomStageBase ?? 'Select base lawn'),
+        title: Text(
+          l10n?.selectCustomStageBase ?? 'Select base lawn',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: Column(
@@ -208,11 +214,14 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
           : GridView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 180,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 0.72,
+                mainAxisExtent: responsiveSelectionGridTileExtent(
+                  context,
+                  baseExtent: 224,
+                ),
               ),
               itemCount: items.length,
               itemBuilder: (_, i) {

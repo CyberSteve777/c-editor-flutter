@@ -3,10 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:c_editor/data/custom_portal_level_utils.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/data/unused_level_object_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/utils/json_viewer_search.dart';
@@ -433,6 +432,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       final newLevel = PvzLevelFile.fromJson(json);
       widget.levelFile.objects.clear();
       widget.levelFile.objects.addAll(newLevel.objects);
+      widget.levelFile.version = newLevel.version;
       await LevelRepository.saveAndExport(widget.filePath, widget.levelFile);
       if (mounted) {
         _popEscapeHandler();
@@ -834,60 +834,11 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     );
   }
 
-  /// Collects all aliases referenced via RTID in the level file.
-  Set<String> _collectReferencedAliases() {
-    final used = <String>{};
-    void scan(dynamic value) {
-      if (value is Map) {
-        for (final entry in value.entries) {
-          if (entry.value is String) {
-            final rtid = entry.value as String;
-            final info = RtidParser.parse(rtid);
-            if (info != null) used.add(info.alias);
-          } else {
-            scan(entry.value);
-          }
-        }
-      } else if (value is List) {
-        for (final item in value) {
-          if (item is String) {
-            final info = RtidParser.parse(item);
-            if (info != null) used.add(info.alias);
-          } else {
-            scan(item);
-          }
-        }
-      }
-    }
-
-    for (final obj in widget.levelFile.objects) {
-      if (obj.objData != null) scan(obj.objData);
-    }
-    // PortalType stores a short code rather than an RTID. Keep the matching
-    // memo property (and any numbered local GridItemType) reachable here.
-    for (final portal in CustomPortalLevelUtils.list(widget.levelFile)) {
-      if (CustomPortalLevelUtils.countUses(
-            widget.levelFile,
-            portal.portalType,
-          ) ==
-          0) {
-        continue;
-      }
-      used.addAll(portal.properties.aliases ?? const <String>[]);
-      used.addAll(portal.gridItemType?.aliases ?? const <String>[]);
-    }
-    return used;
-  }
-
   void _showClearUnusedDialog() async {
-    final used = _collectReferencedAliases();
-    final toRemove = <PvzObject>[];
-    for (final obj in widget.levelFile.objects) {
-      if (obj.objClass == 'LevelDefinition') continue;
-      final aliases = obj.aliases ?? [];
-      final isUsed = aliases.any((a) => used.contains(a));
-      if (!isUsed) toRemove.add(obj);
-    }
+    final toRemove = await UnusedLevelObjectUtils.findUnusedObjects(
+      widget.levelFile,
+    );
+    if (!mounted) return;
     if (toRemove.isEmpty) {
       if (mounted) {
         final l10n = AppLocalizations.of(context);

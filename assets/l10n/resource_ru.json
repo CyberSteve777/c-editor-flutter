@@ -71,7 +71,7 @@
     "zombossMech_action_ZombieDropActionDefinition_field_EffectAnim": "Анимация эффекта (EffectAnim)",
     "zombossMech_action_ZombieDropActionDefinition_field_EffectOffsetX": "Смещение эффекта X (EffectOffsetX)",
     "zombossMech_action_ZombieDropActionDefinition_field_EffectOffsetY": "Смещение эффекта Y (EffectOffsetY)",
-    "zombossMech_action_ZombieDropProps": "Содержимое сброса зомби",
+    "zombossMech_action_ZombieDropProps": "Настройка выпадения",
     "zombossMech_action_ZombieDropProps_field_ZombieHordes": "Группы зомби (ZombieHordes)",
     "zombossMech_action_ZombieDropProps_field_ZombieHordes_Type": "Тип зомби (Type)",
     "zombossMech_action_ZombieDropProps_field_ZombieHordes_Hypnotized": "Загипнотизирован (Hypnotized)",

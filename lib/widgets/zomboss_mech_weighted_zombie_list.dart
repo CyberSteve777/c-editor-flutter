@@ -17,6 +17,7 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
     required this.weights,
     required this.editable,
     required this.onChanged,
+    this.defaultWeight = 100,
   });
 
   final String fieldLabel;
@@ -25,10 +26,11 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
   final List<int> weights;
   final bool editable;
   final void Function(List<String> zombieIds, List<int> weights) onChanged;
+  final int defaultWeight;
 
   int _weightAt(int index) {
     if (index >= 0 && index < weights.length) return weights[index];
-    return 100;
+    return defaultWeight;
   }
 
   Future<void> _pickZombie(BuildContext context) async {
@@ -38,7 +40,7 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
         builder: (ctx) => ZombieSelectionScreen(
           onZombieSelected: (id) {
             Navigator.pop(ctx);
-            onChanged([...zombieIds, id], [...weights, 100]);
+            onChanged([...zombieIds, id], [...weights, defaultWeight]);
           },
           onBack: () => Navigator.pop(ctx),
         ),
@@ -196,8 +198,6 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
         ? localized
         : widget.zombieId;
     final iconPath = info?.iconAssetPath ?? _kUnknownZombieIcon;
-    final weightFieldWidth =
-        MediaQuery.sizeOf(context).width < 420 ? 144.0 : 168.0;
 
     return Material(
       color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
@@ -205,77 +205,121 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
       child: InkWell(
         onTap: widget.editable ? widget.onTap : null,
         borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Row(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < 480;
+            final summary = _buildZombieSummary(
+              context,
+              displayName: displayName,
+              iconPath: iconPath,
+              showRemove: compact,
+            );
+            final weightField = _buildWeightField(context);
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              child: compact
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        summary,
+                        const SizedBox(height: 10),
+                        weightField,
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(child: summary),
+                        const SizedBox(width: 10),
+                        SizedBox(width: 168, child: weightField),
+                        if (widget.onRemove != null)
+                          IconButton(
+                            visualDensity: VisualDensity.compact,
+                            icon: const Icon(Icons.close, size: 18),
+                            tooltip:
+                                AppLocalizations.of(context)?.remove ??
+                                'Remove',
+                            onPressed: widget.onRemove,
+                          ),
+                      ],
+                    ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildZombieSummary(
+    BuildContext context, {
+    required String displayName,
+    required String iconPath,
+    required bool showRemove,
+  }) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: AssetImageWidget(
+            assetPath: iconPath,
+            width: 48,
+            height: 48,
+            fit: BoxFit.contain,
+            altCandidates: imageAltCandidates(iconPath),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: AssetImageWidget(
-                  assetPath: iconPath,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.contain,
-                  altCandidates: imageAltCandidates(iconPath),
+              Text(
+                displayName,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      displayName,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      widget.zombieId,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 2),
+              Text(
+                widget.zombieId,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontSize: 11,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(width: 10),
-              SizedBox(
-                width: weightFieldWidth,
-                child: TextFormField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  readOnly: !widget.editable,
-                  decoration: editorInputDecoration(
-                    context,
-                    labelText: widget.weightLabel,
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: widget.editable
-                      ? (value) {
-                          final parsed = int.tryParse(value);
-                          if (parsed != null) {
-                            widget.onWeightChanged?.call(parsed);
-                          }
-                        }
-                      : null,
-                ),
-              ),
-              if (widget.onRemove != null)
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.close, size: 18),
-                  tooltip: AppLocalizations.of(context)?.remove ?? 'Remove',
-                  onPressed: widget.onRemove,
-                ),
             ],
           ),
         ),
-      ),
+        if (showRemove && widget.onRemove != null)
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.close, size: 18),
+            tooltip: AppLocalizations.of(context)?.remove ?? 'Remove',
+            onPressed: widget.onRemove,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildWeightField(BuildContext context) {
+    return TextFormField(
+      controller: _controller,
+      focusNode: _focusNode,
+      readOnly: !widget.editable,
+      decoration: editorInputDecoration(context, labelText: widget.weightLabel),
+      keyboardType: TextInputType.number,
+      onChanged: widget.editable
+          ? (value) {
+              final parsed = int.tryParse(value);
+              if (parsed != null) {
+                widget.onWeightChanged?.call(parsed);
+              }
+            }
+          : null,
     );
   }
 }

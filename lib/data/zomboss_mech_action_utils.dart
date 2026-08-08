@@ -278,13 +278,40 @@ abstract class ZombossMechActionUtils {
     return keys.any(name.contains);
   }
 
-  static String uniqueCustomAlias(PvzLevelFile levelFile, String baseAlias) {
-    if (!levelFile.objects.any((o) => o.aliases?.contains(baseAlias) == true)) {
+  static bool usesSecondsUnit(ZombossMechFieldSpec field) {
+    final name = field.name.toLowerCase();
+    if (name.endsWith('times')) return false;
+    return name.contains('time') ||
+        name.contains('duration') ||
+        name.contains('delay') ||
+        name.contains('interval') ||
+        name.contains('cooldown');
+  }
+
+  static bool usesDecimalInput(ZombossMechFieldSpec field) {
+    if (field.type == 'float') return true;
+    if (field.type != 'int') return false;
+    if (usesSecondsUnit(field)) return true;
+    return const {
+      'EffectOffsetX',
+      'EffectOffsetY',
+      'SpawnGridZDelta',
+    }.contains(field.name);
+  }
+
+  static String uniqueCustomAlias(
+    PvzLevelFile levelFile,
+    String baseAlias, {
+    PvzObject? except,
+  }) {
+    if (!levelFile.objects.any(
+      (o) => o != except && o.aliases?.contains(baseAlias) == true,
+    )) {
       return baseAlias;
     }
     var i = 2;
     while (levelFile.objects.any(
-      (o) => o.aliases?.contains('${baseAlias}_$i') == true,
+      (o) => o != except && o.aliases?.contains('${baseAlias}_$i') == true,
     )) {
       i++;
     }

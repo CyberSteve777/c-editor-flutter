@@ -2622,6 +2622,15 @@
   "zombossMechActionAliasHint": "Имя в RTID(псевдоним@CurrentLevel). Можно изменить позже; ссылки в этом листе свойств обновятся автоматически.",
   "zombossMechActionBaseObjclass": "Тип действия (objclass)",
   "zombossMechActionBaseAction": "Базовое действие",
+  "zombossMechBaseActionAliasSyncTitle": "Обновить кодовое имя действия?",
+  "zombossMechBaseActionAliasSyncMessage": "После смены базового действия также изменить кодовое имя действия на «{alias}»?",
+  "@zombossMechBaseActionAliasSyncMessage": {
+    "placeholders": {
+      "alias": { "type": "String" }
+    }
+  },
+  "zombossMechBaseActionAliasKeep": "Сохранить текущее имя",
+  "zombossMechBaseActionAliasUpdate": "Обновить имя",
   "zombossMechActionDetails": "Сведения о действии",
   "zombossMechActionRtid": "RTID",
   "zombossMechActionFields": "Поля действия",
@@ -2631,7 +2640,7 @@
   "zombossMechAddZombie": "Добавить зомби",
   "zombossMechPickZombie": "Выбрать зомби",
   "zombossMechNoZombiesInList": "Список зомби пуст",
-  "zombossMechSpawnBallSettings": "Содержимое SpawnBall (ZombieDropProps)",
+  "zombossMechSpawnBallSettings": "Настройка выпадения (ZombieDropProps)",
   "zombossMechAwardDropInvalidTitle": "Недействительная ссылка SpawnBall",
   "zombossMechAwardDropInvalidBody": "AwardDrop ссылается на «{rtid}», но это не является корректным объектом ZombieDropProps текущего уровня. Игра может не загрузить это действие.",
   "@zombossMechAwardDropInvalidBody": {
@@ -2938,7 +2947,32 @@
       "total": { "type": "int" }
     }
   },
-  "customPortalAdd": "+ Пользовательский портал",
+  "invalid_rsb_version": "Неверная версия RSB, должна быть 3 или 4",
+  "invalid_file_list_offset": "Неверное смещение списка файлов",
+  "invalid_rsb_ver_3_resource_offset": "Неверное смещение ресурса для RSB версии 3",
+  "invalid_composite_name": "Неверное имя композита",
+  "out_of_range_1": "Выход за пределы диапазона poolIndex",
+  "out_of_range_2": "Выход за пределы диапазона индекса пакета",
+  "invalid_rsg_name": "Неверное имя RSG",
+  "invalid_packet_width": "Неверная ширина пакета",
+  "invalid_packet_height": "Неверная высота пакета",
+  "invalid_item_packet": "Неверный пакет элемента",
+  "invalid_rsg_number": "Неверный индекс RSG",
+  "invalid_part2_offset": "Неверное смещение Part2",
+  "invalid_head_length": "Неверная длина заголовка",
+  "rsb_is_corrupted": "Этот RSB поврежден",
+  "invalid_ptx_info_eachlength": "Информация PTX неверна",
+  "invalid_end_offset": "Неверное конечное смещение",
+  "invalid_rsb_head": "Несоответствие магического числа RSB, должно начинаться с \"1BSR\"",
+  "invalid_ptx_info_each_length": "Неверная информация PTX",
+  "category_out_of_length": "Категория выходит за пределы длины",
+  "name_path_must_be_ascii": "Путь имени должен соответствовать ASCII",
+  "invalid_rsg_magic": "Неверное магическое число RSG, должно начинаться с \"PGSR\"",
+  "invalid_rsg_version": "Неверная версия RSG, должна быть 3 или 4",
+  "invalid_rsg_compression_flag": "Неверный флаг сжатия RSG, поддерживаются только от 0 до 3",
+  "mismatch_zlib_magic": "Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4",
+  "customPortalAdd": "Новый пользовательский портал",
+  "customPortalSingleName": "Пользовательский портал",
   "customPortalName": "Пользовательский портал {index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2950,6 +2984,7 @@
   "customPortalBlankTemplateSubtitle": "Стандартная структура портала без зомби.",
   "customPortalBuiltInBases": "Встроенные базовые порталы",
   "customPortalUnusedTitle": "Удалить неиспользуемый портал?",
+  "customPortalUnusedSingleMessage": "Пользовательский портал больше не используется. Удалить связанные с ним объекты данных из уровня?",
   "customPortalUnusedMessage": "Пользовательский портал {index} больше не используется. Удалить связанные с ним объекты данных из уровня?",
   "@customPortalUnusedMessage": {
     "placeholders": { "index": { "type": "int" } }
@@ -2957,7 +2992,7 @@
   "customPortalAppearanceSection": "Внешний вид портала",
   "customPortalSpawnSection": "Появление зомби",
   "customPortalWorld": "Внешний вид мира",
-  "customPortalWorldTwister": "Временная энергия",
+  "customPortalWorldTwister": "Пусто",
   "customPortalPopAnimation": "Анимация портала",
   "customPortalAnimationModern": "Портал Современного Дня",
   "customPortalAnimationMemoryLane": "Портал Дороги воспоминаний",

@@ -44,14 +44,35 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
   }
 
   String _fieldLabel(BuildContext context, ZombossMechFieldSpec field) {
-    if (mechId.isEmpty || objclass.isEmpty) return field.name;
-    return ZombossMechL10n.fieldLabel(
-      context,
-      mechId,
-      objclass,
-      _fullFieldName(field),
-      fallback: field.name,
-    );
+    final label = mechId.isEmpty || objclass.isEmpty
+        ? field.name
+        : ZombossMechL10n.fieldLabel(
+            context,
+            mechId,
+            objclass,
+            _fullFieldName(field),
+            fallback: field.name,
+          );
+    if (!ZombossMechActionUtils.usesSecondsUnit(field) ||
+        _alreadyHasSecondsUnit(label)) {
+      return label;
+    }
+    var unit = AppLocalizations.of(context)?.unitSeconds ?? 'Unit: seconds';
+    final languageCode = Localizations.localeOf(context).languageCode;
+    if (languageCode != 'zh' && unit.isNotEmpty) {
+      unit = '${unit[0].toLowerCase()}${unit.substring(1)}';
+    }
+    final closeParen = label.lastIndexOf(')');
+    if (closeParen < 0) return '$label ($unit)';
+    final separator = languageCode == 'zh' ? '，' : ', ';
+    return '${label.substring(0, closeParen)}$separator$unit${label.substring(closeParen)}';
+  }
+
+  bool _alreadyHasSecondsUnit(String label) {
+    final normalized = label.toLowerCase();
+    return normalized.contains('秒') ||
+        normalized.contains('second') ||
+        normalized.contains('секунд');
   }
 
   @override
@@ -156,6 +177,9 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
           editable: editable,
           levelFile: levelFile,
           onLevelChanged: onChanged,
+          catalog: objclass == 'ZombossSpawnPortalActionDefinition'
+              ? PortalTypeCatalog.zomboss
+              : PortalTypeCatalog.regular,
           onChanged: (next) {
             data[field.name] = next;
             onChanged();
@@ -343,15 +367,23 @@ class _ObjectListField extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (editable)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        tooltip: l10n?.remove ?? 'Remove',
-                        onPressed: () => onRemove(indexed.$1),
-                        icon: const Icon(Icons.delete_outline),
+                  Row(
+                    children: [
+                      Text(
+                        '#${indexed.$1 + 1}',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
+                      const Spacer(),
+                      if (editable)
+                        IconButton(
+                          tooltip: l10n?.remove ?? 'Remove',
+                          onPressed: () => onRemove(indexed.$1),
+                          icon: const Icon(Icons.delete_outline),
+                        ),
+                    ],
+                  ),
                   itemBuilder(indexed.$2, indexed.$1),
                 ],
               ),
@@ -492,6 +524,24 @@ class _ScalarFieldState extends State<_ScalarField> {
   Widget build(BuildContext context) {
     final field = widget.field;
     final label = widget.label;
+    if (ZombossMechActionUtils.usesDecimalInput(field)) {
+      return TextFormField(
+        controller: _controller,
+        focusNode: _focusNode,
+        readOnly: !widget.editable,
+        decoration: editorInputDecoration(context, labelText: label),
+        keyboardType: const TextInputType.numberWithOptions(
+          decimal: true,
+          signed: true,
+        ),
+        onChanged: widget.editable
+            ? (v) {
+                final parsed = num.tryParse(v);
+                if (parsed != null) widget.onChanged(parsed);
+              }
+            : null,
+      );
+    }
     switch (field.type) {
       case 'bool':
         final checked = widget.value == true;
@@ -573,20 +623,6 @@ class _ScalarFieldState extends State<_ScalarField> {
               ],
             );
           },
-        );
-      case 'float':
-        return TextFormField(
-          controller: _controller,
-          focusNode: _focusNode,
-          readOnly: !widget.editable,
-          decoration: editorInputDecoration(context, labelText: label),
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          onChanged: widget.editable
-              ? (v) {
-                  final parsed = double.tryParse(v);
-                  if (parsed != null) widget.onChanged(parsed);
-                }
-              : null,
         );
       default:
         return TextFormField(

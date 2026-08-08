@@ -1180,7 +1180,7 @@
   "resilienceDamageThresholdPerSecond": "Zombie damage threshold per second (DamageThresholdPerSecond)",
   "resilienceBaseDamageThreshold": "Resilience base damage threshold (ResilienceBaseDamageThreshold)",
   "resilienceExtraDamageThreshold": "Resilience extra damage threshold (ResilienceExtraDamageThreshold)",
-  "resilienceCodename": "Resilience codename (aliases)",
+  "resilienceCodename": "Resilience codename (aliases; English letters only)",
   "resilienceCodenameHint": "e.g. CustomResilience0",
   "resistances": "Resistances",
   "zombieResilience": "Armor / Resilience",
@@ -2591,6 +2591,15 @@
   "zombossMechActionAliasHint": "Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.",
   "zombossMechActionBaseObjclass": "Action Type (objclass)",
   "zombossMechActionBaseAction": "Base Action",
+  "zombossMechBaseActionAliasSyncTitle": "Update the action codename?",
+  "zombossMechBaseActionAliasSyncMessage": "After changing the base action, also update the action codename to \"{alias}\"?",
+  "@zombossMechBaseActionAliasSyncMessage": {
+    "placeholders": {
+      "alias": { "type": "String" }
+    }
+  },
+  "zombossMechBaseActionAliasKeep": "Keep Current Codename",
+  "zombossMechBaseActionAliasUpdate": "Update Codename",
   "zombossMechActionDetails": "Action Details",
   "zombossMechActionRtid": "RTID",
   "zombossMechActionFields": "Action Fields",
@@ -2600,7 +2609,7 @@
   "zombossMechAddZombie": "Add zombie",
   "zombossMechPickZombie": "Pick zombie",
   "zombossMechNoZombiesInList": "No zombies in list",
-  "zombossMechSpawnBallSettings": "SpawnBall contents (ZombieDropProps)",
+  "zombossMechSpawnBallSettings": "Drop Configuration (ZombieDropProps)",
   "zombossMechAwardDropInvalidTitle": "Invalid SpawnBall reference",
   "zombossMechAwardDropInvalidBody": "AwardDrop points to \"{rtid}\", but it is not a valid CurrentLevel ZombieDropProps object. The game may fail to load this action.",
   "@zombossMechAwardDropInvalidBody": {
@@ -2907,7 +2916,32 @@
       "total": { "type": "int" }
     }
   },
-  "customPortalAdd": "+ Custom Portal",
+  "invalid_rsb_version": "Invalid RSB version, should be 3 or 4",
+  "invalid_file_list_offset": "Invalid File List Offset",
+  "invalid_rsb_ver_3_resource_offset": "Invalid Resource Offset for RSB version 3",
+  "invalid_composite_name": "Invalid Composite Name",
+  "out_of_range_1": "Out of range for poolIndex",
+  "out_of_range_2": "Out of range for packet index",
+  "invalid_rsg_name": "Invalid RSG Name",
+  "invalid_packet_width": "Invalid Packet Width",
+  "invalid_packet_height": "Invalid Packet Height",
+  "invalid_item_packet": "Invalid Item Packet",
+  "invalid_rsg_number": "Invalid RSG index",
+  "invalid_part2_offset": "Invalid Part2 Offset",
+  "invalid_head_length": "Invalid Head Length",
+  "rsb_is_corrupted": "This RSB is corrupted",
+  "invalid_ptx_info_eachlength": "PTX Info is invalid",
+  "invalid_end_offset": "Invalid End Offset",
+  "invalid_rsb_head": "Mismatch RSB magic, should starts with \"1BSR\"",
+  "invalid_ptx_info_each_length": "Invalid PTX Info",
+  "category_out_of_length": "Category is out of length",
+  "name_path_must_be_ascii": "Name path must match ASCII",
+  "invalid_rsg_magic": "Invalid RSG Magic, should starts with \"PGSR\"",
+  "invalid_rsg_version": "Invalid RSG version, should be 3 or 4",
+  "invalid_rsg_compression_flag": "Invalid RSG Compression flag, only 0 to 3 is supported",
+  "mismatch_zlib_magic": "Mismatch PopCap Zlib magic, should begins with 0xDEADFED4",
+  "customPortalAdd": "New Custom Portal",
+  "customPortalSingleName": "Custom Portal",
   "customPortalName": "Custom Portal {index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2919,6 +2953,7 @@
   "customPortalBlankTemplateSubtitle": "Start with the standard portal structure and no zombies.",
   "customPortalBuiltInBases": "Built-in Portals",
   "customPortalUnusedTitle": "Remove Unused Custom Portal?",
+  "customPortalUnusedSingleMessage": "The custom portal is no longer used. Remove its associated data objects from this level?",
   "customPortalUnusedMessage": "Custom Portal {index} is no longer used. Remove its associated data objects from this level?",
   "@customPortalUnusedMessage": {
     "placeholders": { "index": { "type": "int" } }
@@ -2926,7 +2961,7 @@
   "customPortalAppearanceSection": "Portal Appearance",
   "customPortalSpawnSection": "Zombie Spawning",
   "customPortalWorld": "World Appearance",
-  "customPortalWorldTwister": "Temporal Energy",
+  "customPortalWorldTwister": "Blank",
   "customPortalPopAnimation": "Portal Animation",
   "customPortalAnimationModern": "Modern Day's Portal",
   "customPortalAnimationMemoryLane": "Memory Lane's Portal",

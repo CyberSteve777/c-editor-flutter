@@ -4,6 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/asset_image.dart' show AssetImageWidget;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 /// Tool selection. Ported from Z-Editor-master ToolSelectionScreen.kt
 class ToolSelectionScreen extends StatefulWidget {
@@ -44,6 +45,7 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
+          toolbarHeight: responsiveSelectionToolbarHeight(context),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: widget.onBack,
@@ -53,6 +55,8 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
           title: Text(
             l10n?.selectToolCard ?? 'Select tool card',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(64),
@@ -101,7 +105,10 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
                       padding: const EdgeInsets.all(16),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
-                        childAspectRatio: 0.85,
+                        mainAxisExtent: responsiveSelectionGridTileExtent(
+                          context,
+                          baseExtent: 190,
+                        ),
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),

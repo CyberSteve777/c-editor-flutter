@@ -7,6 +7,7 @@ import 'package:c_editor/screens/select/grid_item_module_prompt.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 /// Grid item selection. Ported from Z-Editor-master GridItemSelectionScreen.kt
 class GridItemSelectionScreen extends StatefulWidget {
@@ -142,7 +143,11 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: crossAxisCount,
-                                  childAspectRatio: 0.85,
+                                  mainAxisExtent:
+                                      responsiveSelectionGridTileExtent(
+                                        context,
+                                        baseExtent: 190,
+                                      ),
                                   crossAxisSpacing: 12,
                                   mainAxisSpacing: 12,
                                 ),

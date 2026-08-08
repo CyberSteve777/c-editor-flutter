@@ -7603,6 +7603,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechActionBaseAction => 'Базовое действие';
 
   @override
+  String get zombossMechBaseActionAliasSyncTitle =>
+      'Обновить кодовое имя действия?';
+
+  @override
+  String zombossMechBaseActionAliasSyncMessage(String alias) {
+    return 'После смены базового действия также изменить кодовое имя действия на «$alias»?';
+  }
+
+  @override
+  String get zombossMechBaseActionAliasKeep => 'Сохранить текущее имя';
+
+  @override
+  String get zombossMechBaseActionAliasUpdate => 'Обновить имя';
+
+  @override
   String get zombossMechActionDetails => 'Сведения о действии';
 
   @override
@@ -7631,7 +7646,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossMechSpawnBallSettings =>
-      'Содержимое SpawnBall (ZombieDropProps)';
+      'Настройка выпадения (ZombieDropProps)';
 
   @override
   String get zombossMechAwardDropInvalidTitle =>
@@ -8462,7 +8477,88 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get customPortalAdd => '+ Пользовательский портал';
+  String get invalid_rsb_version => 'Неверная версия RSB, должна быть 3 или 4';
+
+  @override
+  String get invalid_file_list_offset => 'Неверное смещение списка файлов';
+
+  @override
+  String get invalid_rsb_ver_3_resource_offset =>
+      'Неверное смещение ресурса для RSB версии 3';
+
+  @override
+  String get invalid_composite_name => 'Неверное имя композита';
+
+  @override
+  String get out_of_range_1 => 'Выход за пределы диапазона poolIndex';
+
+  @override
+  String get out_of_range_2 => 'Выход за пределы диапазона индекса пакета';
+
+  @override
+  String get invalid_rsg_name => 'Неверное имя RSG';
+
+  @override
+  String get invalid_packet_width => 'Неверная ширина пакета';
+
+  @override
+  String get invalid_packet_height => 'Неверная высота пакета';
+
+  @override
+  String get invalid_item_packet => 'Неверный пакет элемента';
+
+  @override
+  String get invalid_rsg_number => 'Неверный индекс RSG';
+
+  @override
+  String get invalid_part2_offset => 'Неверное смещение Part2';
+
+  @override
+  String get invalid_head_length => 'Неверная длина заголовка';
+
+  @override
+  String get rsb_is_corrupted => 'Этот RSB поврежден';
+
+  @override
+  String get invalid_ptx_info_eachlength => 'Информация PTX неверна';
+
+  @override
+  String get invalid_end_offset => 'Неверное конечное смещение';
+
+  @override
+  String get invalid_rsb_head =>
+      'Несоответствие магического числа RSB, должно начинаться с \"1BSR\"';
+
+  @override
+  String get invalid_ptx_info_each_length => 'Неверная информация PTX';
+
+  @override
+  String get category_out_of_length => 'Категория выходит за пределы длины';
+
+  @override
+  String get name_path_must_be_ascii =>
+      'Путь имени должен соответствовать ASCII';
+
+  @override
+  String get invalid_rsg_magic =>
+      'Неверное магическое число RSG, должно начинаться с \"PGSR\"';
+
+  @override
+  String get invalid_rsg_version => 'Неверная версия RSG, должна быть 3 или 4';
+
+  @override
+  String get invalid_rsg_compression_flag =>
+      'Неверный флаг сжатия RSG, поддерживаются только от 0 до 3';
+
+  @override
+  String get mismatch_zlib_magic =>
+      'Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4';
+
+  @override
+  String get customPortalAdd => 'Новый пользовательский портал';
+
+  @override
+  String get customPortalSingleName => 'Пользовательский портал';
 
   @override
   String customPortalName(int index) {
@@ -8492,6 +8588,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customPortalUnusedTitle => 'Удалить неиспользуемый портал?';
 
   @override
+  String get customPortalUnusedSingleMessage =>
+      'Пользовательский портал больше не используется. Удалить связанные с ним объекты данных из уровня?';
+
+  @override
   String customPortalUnusedMessage(int index) {
     return 'Пользовательский портал $index больше не используется. Удалить связанные с ним объекты данных из уровня?';
   }
@@ -8506,7 +8606,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customPortalWorld => 'Внешний вид мира';
 
   @override
-  String get customPortalWorldTwister => 'Временная энергия';
+  String get customPortalWorldTwister => 'Пусто';
 
   @override
   String get customPortalPopAnimation => 'Анимация портала';
