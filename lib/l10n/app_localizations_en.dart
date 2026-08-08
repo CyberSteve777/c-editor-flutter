@@ -654,6 +654,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
 
   @override
+  String get exportDisclaimerDoNotShowAgain => 'Do not show again';
+
+  @override
   String get importProgressTitle => 'Importing levels…';
 
   @override
@@ -709,7 +712,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDelete => 'Confirm delete';
 
   @override
-  String confirmDeleteMessage(Object detail, Object name) {
+  String confirmDeleteMessage(String name, String detail) {
     return 'Are you sure you want to delete \"$name\"? $detail';
   }
 
@@ -894,7 +897,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copyFail => 'Copy failed';
 
   @override
-  String moving(Object name) {
+  String moving(String name) {
     return 'Moving: $name';
   }
 
@@ -924,7 +927,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moveOverwrite => 'Overwrite';
 
   @override
-  String fileOverwritten(Object name) {
+  String fileOverwritten(String name) {
     return 'File was overwritten: $name';
   }
 
@@ -935,7 +938,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moveCancelled => 'Operation cancelled';
 
   @override
-  String movedAs(Object name) {
+  String movedAs(String name) {
     return 'Moved and saved as $name';
   }
 
@@ -967,7 +970,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adjustUiSize => 'Adjust UI size';
 
   @override
-  String currentScale(Object percent) {
+  String currentScale(String percent) {
     return 'Current scale: $percent%';
   }
 
@@ -1034,7 +1037,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conversionFailed => 'Conversion failed';
 
   @override
-  String convertedMessage(Object name) {
+  String convertedMessage(String name) {
     return 'Converted: $name';
   }
 
@@ -2114,7 +2117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPlantFound => 'No plant found';
 
   @override
-  String noResultsFor(Object query) {
+  String noResultsFor(String query) {
     return 'No results for \"$query\"';
   }
 
@@ -2624,7 +2627,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get frozenPlantPlacementPlantList => 'Plant(s) in selected tile';
 
   @override
-  String frozenPlantPlacementEditPlant(Object name) {
+  String frozenPlantPlacementEditPlant(String name) {
     return 'Edit $name';
   }
 
@@ -2707,7 +2710,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moldColonyLocationsTitle => 'Mold colonies layout (Locations)';
 
   @override
-  String moldColonyLocationsValue(Object value) {
+  String moldColonyLocationsValue(String value) {
     return 'Current value: $value';
   }
 
@@ -2720,7 +2723,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Error: Locations must reference a BoardGridMapProps object in the current level for the mold colonies layout.';
 
   @override
-  String moldColonyRepairLink(Object alias) {
+  String moldColonyRepairLink(String alias) {
     return 'Repair link to: $alias';
   }
 
@@ -3165,7 +3168,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaseCapacityTitle => 'Vase Capacity';
 
   @override
-  String vaseCapacitySummary(Object current, Object total) {
+  String vaseCapacitySummary(String current, String total) {
     return 'Assigned: $current / Total Slots: $total';
   }
 
@@ -3259,7 +3262,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get propertyObjectNotFound => 'Property object not found';
 
   @override
-  String propertyObjectNotFoundHint(Object alias) {
+  String propertyObjectNotFoundHint(String alias) {
     return 'The custom zombie\'s property object ($alias) was not found in the level. The property definition does not point to level internals, so it cannot be edited here.';
   }
 
@@ -3508,12 +3511,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aliasAlreadyExists => 'Alias already exists in this level.';
 
   @override
-  String zombieTypeLabel(Object type) {
+  String zombieTypeLabel(String type) {
     return 'Zombie type: $type';
   }
 
   @override
-  String propertyAliasLabel(Object alias) {
+  String propertyAliasLabel(String alias) {
     return 'Property alias: $alias';
   }
 
@@ -3558,17 +3561,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Custom injection auto-fills all properties from game files. You can further edit the JSON file manually if needed.';
 
   @override
-  String editAlias(Object alias) {
+  String editAlias(String alias) {
     return 'Edit $alias';
   }
 
   @override
-  String editNamedEvent(Object name) {
+  String editNamedEvent(String name) {
     return 'Edit $name event';
   }
 
   @override
-  String editNamedModule(Object name) {
+  String editNamedModule(String name) {
     return 'Edit $name module';
   }
 
@@ -3609,7 +3612,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeItem => 'Remove item';
 
   @override
-  String removeItemConfirm(Object name) {
+  String removeItemConfirm(String name) {
     return 'Remove $name?';
   }
 
@@ -3694,7 +3697,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ignoreGravestone => 'Ignore tombstone (IgnoreGraveStone)';
 
   @override
-  String zombiePreview(Object name) {
+  String zombiePreview(String name) {
     return '$name - Zombie preview';
   }
 
@@ -3804,7 +3807,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidReference => 'Invalid reference';
 
   @override
-  String aliasNotFound(Object alias) {
+  String aliasNotFound(String alias) {
     return 'Alias \"$alias\" not found';
   }
 
@@ -3996,7 +3999,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fishTypeNotFound => 'Sea creature type object not found.';
 
   @override
-  String fishTypeLabel(Object type) {
+  String fishTypeLabel(String type) {
     return 'Sea creature type: $type';
   }
 
@@ -5215,12 +5218,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yetiZombiesNotAllowed => 'Yetis are not allowed here';
 
   @override
-  String fixToAlias(Object alias) {
+  String fixToAlias(String alias) {
     return 'Fix to $alias';
   }
 
   @override
-  String editPresetZombie(Object name) {
+  String editPresetZombie(String name) {
     return 'Edit preset zombie: $name';
   }
 
@@ -5357,7 +5360,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelAccount => 'Level: account';
 
   @override
-  String levelDisplay(Object value) {
+  String levelDisplay(String value) {
     return 'Level: $value';
   }
 
@@ -8508,6 +8511,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+<<<<<<< HEAD
   String get invalid_rsb_version => 'Invalid RSB version, should be 3 or 4';
 
   @override
@@ -8589,6 +8593,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customPortalSingleName => 'Custom Portal';
+=======
+  String get customPortalAdd => '+ Custom Portal';
+>>>>>>> upstream/dev
 
   @override
   String customPortalName(int index) {

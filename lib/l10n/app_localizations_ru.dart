@@ -664,6 +664,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Данный инструмент предназначен для прямого изменения данных игры «Plants vs. Zombies 2».\n\n• Использование этого инструмента для изменения игровых данных может нарушать условия обслуживания игры.\n• Это может привести к временной или постоянной блокировке вашей игровой учетной записи.\n• Это может привести к повреждению игровых сохранений или потере данных.\n• Все действия совершаются пользователем добрововольно, на свой страх и риск.\n\nОтказ от ответственности:\n\nРазработчик настоящим заявляет:\n1. Данный инструмент предназначен только для ознакомления и исследований; любые формы читерства в игре не поощряются.\n2. Все последствия использования данного инструмента, включая, помимо прочего, блокировку аккаунта, потерю данных и ухудшение игрового процесса, ложатся исключительно на пользователя. Разработчик не несет никакой прямой или косвенной ответственности.\n3. Пользователи должны полностью осознавать связанные с этим риски перед использованием данного инструмента и самостоятельно принимать решение о принятии этих рисков.\n4. Дальнейшее использование означает, что вы прочитали, поняли и согласны со всеми условиями данного отказа от ответственности.';
 
   @override
+  String get exportDisclaimerDoNotShowAgain => 'Больше не показывать';
+
+  @override
   String get importProgressTitle => 'Импорт уровней…';
 
   @override
@@ -720,7 +723,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get confirmDelete => 'Подтвердить удаление';
 
   @override
-  String confirmDeleteMessage(Object detail, Object name) {
+  String confirmDeleteMessage(String name, String detail) {
     return 'Вы уверены, что хотите удалить «$name»? $detail';
   }
 
@@ -906,7 +909,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get copyFail => 'Ошибка копирования';
 
   @override
-  String moving(Object name) {
+  String moving(String name) {
     return 'Перемещение: $name';
   }
 
@@ -936,7 +939,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moveOverwrite => 'Перезаписать';
 
   @override
-  String fileOverwritten(Object name) {
+  String fileOverwritten(String name) {
     return 'Файл перезаписан: $name';
   }
 
@@ -947,7 +950,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moveCancelled => 'Операция отменена';
 
   @override
-  String movedAs(Object name) {
+  String movedAs(String name) {
     return 'Перемещено и сохранено как $name';
   }
 
@@ -979,7 +982,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get adjustUiSize => 'Настроить размер интерфейса';
 
   @override
-  String currentScale(Object percent) {
+  String currentScale(String percent) {
     return 'Текущий масштаб: $percent%';
   }
 
@@ -1048,7 +1051,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get conversionFailed => 'Преобразование не удалось';
 
   @override
-  String convertedMessage(Object name) {
+  String convertedMessage(String name) {
     return 'Преобразовано: $name';
   }
 
@@ -2132,7 +2135,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noPlantFound => 'Растение не найдено';
 
   @override
-  String noResultsFor(Object query) {
+  String noResultsFor(String query) {
     return 'Нет результатов для «$query»';
   }
 
@@ -2631,7 +2634,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get frozenPlantPlacementPlantList => 'Список растений (по рядам)';
 
   @override
-  String frozenPlantPlacementEditPlant(Object name) {
+  String frozenPlantPlacementEditPlant(String name) {
     return 'Редактировать $name';
   }
 
@@ -2716,7 +2719,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moldColonyLocationsTitle => 'Схема колоний плесени (Locations)';
 
   @override
-  String moldColonyLocationsValue(Object value) {
+  String moldColonyLocationsValue(String value) {
     return 'Текущее значение: $value';
   }
 
@@ -2729,7 +2732,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Ошибка: Locations должен ссылаться на объект BoardGridMapProps текущего уровня со схемой колоний плесени.';
 
   @override
-  String moldColonyRepairLink(Object alias) {
+  String moldColonyRepairLink(String alias) {
     return 'Исправить ссылку на: $alias';
   }
 
@@ -3155,7 +3158,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get vaseCapacityTitle => 'Вместимость ваз';
 
   @override
-  String vaseCapacitySummary(Object current, Object total) {
+  String vaseCapacitySummary(String current, String total) {
     return 'Назначено: $current / Всего ячеек: $total';
   }
 
@@ -3250,7 +3253,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get propertyObjectNotFound => 'Объект свойств не найден';
 
   @override
-  String propertyObjectNotFoundHint(Object alias) {
+  String propertyObjectNotFoundHint(String alias) {
     return 'Объект свойств кастомного зомби ($alias) не найден в уровне. Определение свойств не указывает на внутренние данные уровня, поэтому его нельзя редактировать здесь.';
   }
 
@@ -3490,12 +3493,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aliasAlreadyExists => 'Такой псевдоним уже есть на этом уровне.';
 
   @override
-  String zombieTypeLabel(Object type) {
+  String zombieTypeLabel(String type) {
     return 'Тип зомби: $type';
   }
 
   @override
-  String propertyAliasLabel(Object alias) {
+  String propertyAliasLabel(String alias) {
     return 'Псевдоним свойств: $alias';
   }
 
@@ -3540,17 +3543,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Пользовательская инъекция автоматически заполняет все свойства из файлов игры. При необходимости можно дополнительно отредактировать JSON-файл вручную.';
 
   @override
-  String editAlias(Object alias) {
+  String editAlias(String alias) {
     return 'Редактировать $alias';
   }
 
   @override
-  String editNamedEvent(Object name) {
+  String editNamedEvent(String name) {
     return 'Редактировать событие «$name»';
   }
 
   @override
-  String editNamedModule(Object name) {
+  String editNamedModule(String name) {
     return 'Редактировать модуль «$name»';
   }
 
@@ -3591,7 +3594,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get removeItem => 'Удалить предмет';
 
   @override
-  String removeItemConfirm(Object name) {
+  String removeItemConfirm(String name) {
     return 'Удалить $name?';
   }
 
@@ -3676,7 +3679,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ignoreGravestone => 'Игнорировать надгробия (IgnoreGraveStone)';
 
   @override
-  String zombiePreview(Object name) {
+  String zombiePreview(String name) {
     return '$name - Превью зомби';
   }
 
@@ -3785,7 +3788,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get invalidReference => 'Недействительная ссылка';
 
   @override
-  String aliasNotFound(Object alias) {
+  String aliasNotFound(String alias) {
     return 'Псевдоним \"$alias\" не найден';
   }
 
@@ -3972,7 +3975,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get fishTypeNotFound => 'Объект типа рыбы не найден.';
 
   @override
-  String fishTypeLabel(Object type) {
+  String fishTypeLabel(String type) {
     return 'Тип рыбы: $type';
   }
 
@@ -5176,12 +5179,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get yetiZombiesNotAllowed => 'Yetis are not allowed here';
 
   @override
-  String fixToAlias(Object alias) {
+  String fixToAlias(String alias) {
     return 'Исправить на $alias';
   }
 
   @override
-  String editPresetZombie(Object name) {
+  String editPresetZombie(String name) {
     return 'Редактировать пресет зомби: $name';
   }
 
@@ -5318,7 +5321,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get levelAccount => 'Уровень: учётная запись';
 
   @override
-  String levelDisplay(Object value) {
+  String levelDisplay(String value) {
     return 'Уровень: $value';
   }
 
@@ -8474,6 +8477,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+<<<<<<< HEAD
   String get invalid_rsb_version => 'Неверная версия RSB, должна быть 3 или 4';
 
   @override
@@ -8556,6 +8560,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get customPortalSingleName => 'Пользовательский портал';
+=======
+  String get customPortalAdd => '+ Пользовательский портал';
+>>>>>>> upstream/dev
 
   @override
   String customPortalName(int index) {

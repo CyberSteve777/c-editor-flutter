@@ -11,18 +11,18 @@ typedef ExportRsbPaths = (String input, String output);
 /// Top-level isolate workers — no Flutter / widget context.
 void exportIsolateUnpackRsb(ExportRsbPaths paths) {
   Directory(paths.$2).createSync(recursive: true);
-  RsbUnpack.process(paths.$1, paths.$2, null);
+  RsbUnpack.process(paths.$1, paths.$2);
 }
 
 void exportIsolateUnpackRsg(ExportRsbPaths paths) {
   Directory(paths.$2).createSync(recursive: true);
-  RsgUnpack.process(paths.$1, paths.$2, null);
+  RsgUnpack.process(paths.$1, paths.$2);
 }
 
 void exportIsolatePackRsg(ExportRsbPaths paths) {
-  RsgPack.process(paths.$1, paths.$2, null);
+  RsgPack.process(paths.$1, paths.$2);
 }
 
 void exportIsolatePackRsb(ExportRsbPaths paths) {
-  RsbPack.process(paths.$1, paths.$2, null);
+  RsbPack.process(paths.$1, paths.$2);
 }
