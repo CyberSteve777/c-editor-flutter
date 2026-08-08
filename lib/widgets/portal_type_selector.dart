@@ -12,6 +12,8 @@ import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 
 const _kUnknownZombieIcon = 'assets/images/others/unknown.webp';
 
+enum PortalTypeCatalog { regular, zomboss }
+
 PortalWorldDef? portalDefinitionForType(
   String? typeCode, [
   PvzLevelFile? levelFile,
@@ -22,7 +24,7 @@ PortalWorldDef? portalDefinitionForType(
     if (custom != null) {
       return PortalWorldDef(
         typeCode: custom.portalType,
-        name: 'Custom Portal ${custom.index}',
+        name: 'Custom Portal',
         representativeZombies: custom.representativeZombies,
         isCustom: true,
         customIndex: custom.index,
@@ -36,8 +38,7 @@ PortalWorldDef? portalDefinitionForType(
 
 String portalTypeDisplayName(AppLocalizations? l10n, PortalWorldDef def) {
   if (def.isCustom) {
-    final index = def.customIndex ?? 1;
-    return l10n?.customPortalName(index) ?? 'Custom Portal $index';
+    return l10n?.customPortalSingleName ?? 'Custom Portal';
   }
   return switch (def.typeCode) {
     'egypt' => l10n?.portalTypeEgypt ?? def.name,
@@ -119,6 +120,13 @@ String portalTypeDisplayNameForCode(
   return portalTypeDisplayName(AppLocalizations.of(context), def);
 }
 
+String zombossPortalTypeDisplayName(BuildContext context, PortalWorldDef def) {
+  final resourceNameKey = def.resourceNameKey;
+  if (resourceNameKey == null || resourceNameKey.isEmpty) return def.name;
+  final localized = ResourceNames.lookup(context, resourceNameKey);
+  return localized == resourceNameKey ? def.name : localized;
+}
+
 String portalTypeIconAssetPath(PortalWorldDef? def) {
   final firstZombie = def?.representativeZombies.firstOrNull;
   if (firstZombie == null || firstZombie.isEmpty) return _kUnknownZombieIcon;
@@ -128,11 +136,13 @@ String portalTypeIconAssetPath(PortalWorldDef? def) {
 
 Future<void> showPortalTypePreviewDialog(
   BuildContext context,
-  PortalWorldDef def,
-) {
+  PortalWorldDef def, {
+  String? displayName,
+}) {
   return showDialog<void>(
     context: context,
-    builder: (ctx) => _PortalTypePreviewDialog(def: def),
+    builder: (ctx) =>
+        _PortalTypePreviewDialog(def: def, displayName: displayName),
   );
 }
 
@@ -157,6 +167,16 @@ class PortalTypeChooserGrid extends StatefulWidget {
 }
 
 class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
+  bool get _hasCustomPortal {
+    final levelFile = widget.levelFile;
+    return levelFile != null &&
+        CustomPortalLevelUtils.find(
+              levelFile,
+              CustomPortalLevelUtils.portalTypeBase,
+            ) !=
+            null;
+  }
+
   List<PortalWorldDef> get _definitions {
     final levelFile = widget.levelFile;
     if (levelFile == null) return PortalRepository.portalDefinitions;
@@ -164,7 +184,7 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
         .map(
           (item) => PortalWorldDef(
             typeCode: item.portalType,
-            name: 'Custom Portal ${item.index}',
+            name: 'Custom Portal',
             representativeZombies: item.representativeZombies,
             isCustom: true,
             customIndex: item.index,
@@ -183,6 +203,14 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
   Future<void> _createCustomPortal() async {
     final levelFile = widget.levelFile;
     if (levelFile == null) return;
+    final existing = portalDefinitionForType(
+      CustomPortalLevelUtils.portalTypeBase,
+      levelFile,
+    );
+    if (existing?.isCustom == true) {
+      await _editCustomPortal(existing!);
+      return;
+    }
     final basePortalType = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -240,7 +268,9 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
         final cards = <Widget>[
           for (final def in _definitions)
             _buildPortalCard(context, def, width: cardWidth),
-          if (widget.allowCustomPortal && widget.levelFile != null)
+          if (widget.allowCustomPortal &&
+              widget.levelFile != null &&
+              !_hasCustomPortal)
             _buildCreateCard(context, width: cardWidth),
         ];
         return Wrap(spacing: spacing, runSpacing: spacing, children: cards);
@@ -330,7 +360,7 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text(
-                    l10n?.customPortalAdd ?? 'Custom portal',
+                    l10n?.customPortalAdd ?? 'New custom portal',
                     style: TextStyle(
                       color: foreground,
                       fontWeight: FontWeight.w600,
@@ -400,17 +430,28 @@ class _CustomPortalBaseSelectionScreen extends StatelessWidget {
 }
 
 class _PortalBaseSelectionCard extends StatelessWidget {
-  const _PortalBaseSelectionCard({required this.def, required this.onTap});
+  const _PortalBaseSelectionCard({
+    required this.def,
+    required this.onTap,
+    this.displayName,
+    this.onInfo,
+    this.selected = false,
+  });
 
   final PortalWorldDef def;
   final VoidCallback onTap;
+  final String? displayName;
+  final VoidCallback? onInfo;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     return Material(
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+      color: selected
+          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.65)
+          : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -421,7 +462,9 @@ class _PortalBaseSelectionCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
+              color: selected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
             ),
           ),
           child: Row(
@@ -441,7 +484,7 @@ class _PortalBaseSelectionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      portalTypeDisplayName(l10n, def),
+                      displayName ?? portalTypeDisplayName(l10n, def),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -460,11 +503,62 @@ class _PortalBaseSelectionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+              if (onInfo != null)
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  tooltip: l10n?.info ?? 'Info',
+                  icon: const Icon(Icons.info_outline),
+                  onPressed: onInfo,
+                ),
               const Icon(Icons.chevron_right),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class ZombossPortalTypeSelectionScreen extends StatelessWidget {
+  const ZombossPortalTypeSelectionScreen({
+    super.key,
+    required this.currentPortalType,
+  });
+
+  final String currentPortalType;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final definitions = PortalRepository.bossPortalDefinitions;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n?.selectPortalType ?? 'Select portal type'),
+      ),
+      body: definitions.isEmpty
+          ? Center(
+              child: Text(l10n?.noPortalTypesFound ?? 'No portal types found'),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: definitions.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final def = definitions[index];
+                final displayName = zombossPortalTypeDisplayName(context, def);
+                return _PortalBaseSelectionCard(
+                  def: def,
+                  displayName: displayName,
+                  selected: def.typeCode == currentPortalType,
+                  onInfo: () => showPortalTypePreviewDialog(
+                    context,
+                    def,
+                    displayName: displayName,
+                  ),
+                  onTap: () => Navigator.pop(context, def.typeCode),
+                );
+              },
+            ),
     );
   }
 }
@@ -518,6 +612,7 @@ class PortalTypeSingleSelectField extends StatelessWidget {
     this.editable = true,
     this.levelFile,
     this.onLevelChanged,
+    this.catalog = PortalTypeCatalog.regular,
   });
 
   final String label;
@@ -526,22 +621,28 @@ class PortalTypeSingleSelectField extends StatelessWidget {
   final bool editable;
   final PvzLevelFile? levelFile;
   final VoidCallback? onLevelChanged;
+  final PortalTypeCatalog catalog;
 
   Future<void> _pick(BuildContext context) async {
     final selected = await Navigator.push<String>(
       context,
       MaterialPageRoute(
-        builder: (ctx) => PortalTypeSelectionScreen(
-          currentPortalType: value,
-          levelFile: levelFile,
-          onLevelChanged: onLevelChanged,
-        ),
+        builder: (ctx) => catalog == PortalTypeCatalog.zomboss
+            ? ZombossPortalTypeSelectionScreen(currentPortalType: value)
+            : PortalTypeSelectionScreen(
+                currentPortalType: value,
+                levelFile: levelFile,
+                onLevelChanged: onLevelChanged,
+              ),
       ),
     );
     if (selected == null || !context.mounted) return;
     final previous = value.trim();
     onChanged(selected);
-    if (previous != selected && levelFile != null && context.mounted) {
+    if (catalog == PortalTypeCatalog.regular &&
+        previous != selected &&
+        levelFile != null &&
+        context.mounted) {
       final removed = await CustomPortalLevelUtils.maybePromptRemoveUnused(
         context: context,
         levelFile: levelFile!,
@@ -556,9 +657,16 @@ class PortalTypeSingleSelectField extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final normalized = value.trim();
-    final def = portalDefinitionForType(normalized, levelFile);
+    final def = catalog == PortalTypeCatalog.zomboss
+        ? PortalRepository.bossPortalDefinitionForType(normalized)
+        : portalDefinitionForType(normalized, levelFile);
     final hasValue = normalized.isNotEmpty;
     final iconPath = portalTypeIconAssetPath(def);
+    final displayName = def == null
+        ? normalized
+        : catalog == PortalTypeCatalog.zomboss
+        ? zombossPortalTypeDisplayName(context, def)
+        : portalTypeDisplayName(l10n, def);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -626,9 +734,7 @@ class PortalTypeSingleSelectField extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            def == null
-                                ? normalized
-                                : portalTypeDisplayName(l10n, def),
+                            displayName,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -654,7 +760,11 @@ class PortalTypeSingleSelectField extends StatelessWidget {
                         tooltip: l10n?.info ?? 'Info',
                         icon: const Icon(Icons.info_outline),
                         onPressed: () {
-                          showPortalTypePreviewDialog(context, def);
+                          showPortalTypePreviewDialog(
+                            context,
+                            def,
+                            displayName: displayName,
+                          );
                         },
                       ),
                     if (editable) const Icon(Icons.chevron_right),
@@ -669,16 +779,17 @@ class PortalTypeSingleSelectField extends StatelessWidget {
 }
 
 class _PortalTypePreviewDialog extends StatelessWidget {
-  const _PortalTypePreviewDialog({required this.def});
+  const _PortalTypePreviewDialog({required this.def, this.displayName});
 
   final PortalWorldDef def;
+  final String? displayName;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final zombieRepo = ZombieRepository();
-    final portalName = portalTypeDisplayName(l10n, def);
+    final portalName = displayName ?? portalTypeDisplayName(l10n, def);
 
     return AlertDialog(
       title: Text(

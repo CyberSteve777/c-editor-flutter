@@ -2,6 +2,7 @@ import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/separated_option_picker_field.dart';
+import 'package:c_editor/widgets/portal_type_selector.dart';
 import 'package:c_editor/widgets/zomboss_mech_action_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,6 +81,34 @@ void main() {
     expect(data['TossDuration'], 2.5);
   });
 
+  testWidgets('Zomboss portal actions use the boss-only portal catalog', (
+    tester,
+  ) async {
+    final data = <String, dynamic>{'PortalType': 'egypt'};
+    await tester.pumpWidget(
+      _app(
+        ZombossMechActionFieldsEditor(
+          mechId: 'ZombieZombossMech_Egypt',
+          objclass: 'ZombossSpawnPortalActionDefinition',
+          fields: const [
+            ZombossMechFieldSpec(
+              name: 'PortalType',
+              type: 'string',
+              defaultValue: 'egypt',
+            ),
+          ],
+          data: data,
+          onChanged: () {},
+        ),
+      ),
+    );
+
+    final field = tester.widget<PortalTypeSingleSelectField>(
+      find.byType(PortalTypeSingleSelectField),
+    );
+    expect(field.catalog, PortalTypeCatalog.zomboss);
+  });
+
   testWidgets('option picker uses separated rows on narrow screens', (
     tester,
   ) async {
@@ -106,5 +135,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(Divider), findsAtLeastNWidgets(2));
     expect(find.text('Second phase'), findsOneWidget);
+    final title = tester
+        .widgetList<Text>(find.text('Base Action'))
+        .firstWhere((text) => text.textAlign == TextAlign.center);
+    expect(title.style?.fontWeight, FontWeight.bold);
   });
 }

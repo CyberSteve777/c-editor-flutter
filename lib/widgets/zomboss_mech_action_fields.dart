@@ -177,6 +177,9 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
           editable: editable,
           levelFile: levelFile,
           onLevelChanged: onChanged,
+          catalog: objclass == 'ZombossSpawnPortalActionDefinition'
+              ? PortalTypeCatalog.zomboss
+              : PortalTypeCatalog.regular,
           onChanged: (next) {
             data[field.name] = next;
             onChanged();

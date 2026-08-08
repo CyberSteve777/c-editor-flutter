@@ -2953,7 +2953,8 @@
   "invalid_rsg_version": "Неверная версия RSG, должна быть 3 или 4",
   "invalid_rsg_compression_flag": "Неверный флаг сжатия RSG, поддерживаются только от 0 до 3",
   "mismatch_zlib_magic": "Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4",
-  "customPortalAdd": "Пользовательский портал",
+  "customPortalAdd": "Новый пользовательский портал",
+  "customPortalSingleName": "Пользовательский портал",
   "customPortalName": "Пользовательский портал {index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2965,6 +2966,7 @@
   "customPortalBlankTemplateSubtitle": "Стандартная структура портала без зомби.",
   "customPortalBuiltInBases": "Встроенные базовые порталы",
   "customPortalUnusedTitle": "Удалить неиспользуемый портал?",
+  "customPortalUnusedSingleMessage": "Пользовательский портал больше не используется. Удалить связанные с ним объекты данных из уровня?",
   "customPortalUnusedMessage": "Пользовательский портал {index} больше не используется. Удалить связанные с ним объекты данных из уровня?",
   "@customPortalUnusedMessage": {
     "placeholders": { "index": { "type": "int" } }

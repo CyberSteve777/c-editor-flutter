@@ -17,6 +17,7 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
     required this.weights,
     required this.editable,
     required this.onChanged,
+    this.defaultWeight = 100,
   });
 
   final String fieldLabel;
@@ -25,10 +26,11 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
   final List<int> weights;
   final bool editable;
   final void Function(List<String> zombieIds, List<int> weights) onChanged;
+  final int defaultWeight;
 
   int _weightAt(int index) {
     if (index >= 0 && index < weights.length) return weights[index];
-    return 100;
+    return defaultWeight;
   }
 
   Future<void> _pickZombie(BuildContext context) async {
@@ -38,7 +40,7 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
         builder: (ctx) => ZombieSelectionScreen(
           onZombieSelected: (id) {
             Navigator.pop(ctx);
-            onChanged([...zombieIds, id], [...weights, 100]);
+            onChanged([...zombieIds, id], [...weights, defaultWeight]);
           },
           onBack: () => Navigator.pop(ctx),
         ),

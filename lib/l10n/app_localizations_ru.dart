@@ -8552,7 +8552,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Несоответствие магического числа PopCap Zlib, должно начинаться с 0xDEADFED4';
 
   @override
-  String get customPortalAdd => 'Пользовательский портал';
+  String get customPortalAdd => 'Новый пользовательский портал';
+
+  @override
+  String get customPortalSingleName => 'Пользовательский портал';
 
   @override
   String customPortalName(int index) {
@@ -8580,6 +8583,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get customPortalUnusedTitle => 'Удалить неиспользуемый портал?';
+
+  @override
+  String get customPortalUnusedSingleMessage =>
+      'Пользовательский портал больше не используется. Удалить связанные с ним объекты данных из уровня?';
 
   @override
   String customPortalUnusedMessage(int index) {

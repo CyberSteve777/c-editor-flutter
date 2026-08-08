@@ -12,6 +12,7 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 enum _StagePickerTab { builtin, custom }
 
@@ -278,11 +279,16 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.selectStage ?? 'Select lawn'),
+        title: Text(
+          l10n?.selectStage ?? 'Select lawn',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
       body: Column(
         children: [
@@ -392,11 +398,14 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
     return GridView.builder(
       controller: _builtinScrollController,
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.65,
+        mainAxisExtent: responsiveSelectionGridTileExtent(
+          context,
+          baseExtent: 242,
+        ),
       ),
       itemCount: items.length,
       itemBuilder: (_, i) {
@@ -669,7 +678,6 @@ class _PresetCustomStageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final iconPath = 'assets/images/round_icons/${preset.iconName}';
     final effectiveOnTap = disabled || selected ? null : onTap;
@@ -684,67 +692,112 @@ class _PresetCustomStageCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Padding(
             padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                ClipOval(
-                  child: SizedBox(
-                    width: 96,
-                    height: 96,
-                    child: AssetImageWidget(
-                      assetPath: iconPath,
-                      altCandidates: imageAltCandidates(iconPath),
-                      width: 96,
-                      height: 96,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        displayName,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        source,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        preset.alias,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final textScale = MediaQuery.textScalerOf(
+                  context,
+                ).scale(1).clamp(1.0, 2.5);
+                final stackedBreakpoint = 400 + (textScale - 1) * 140;
+                final stacked = constraints.maxWidth < stackedBreakpoint;
+                final action = IconButton(
                   tooltip: selected
                       ? displayName
                       : l10n?.createCustomStage ?? 'Create custom lawn',
                   icon: Icon(selected ? Icons.check : Icons.add_circle_outline),
                   onPressed: effectiveOnTap,
-                ),
-              ],
+                );
+
+                if (stacked) {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 96,
+                        width: double.infinity,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            _buildIcon(iconPath),
+                            Positioned(right: 0, top: 0, child: action),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildDetails(context, stacked: true),
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    _buildIcon(iconPath),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildDetails(context, stacked: false)),
+                    action,
+                  ],
+                );
+              },
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildIcon(String iconPath) {
+    return ClipOval(
+      child: SizedBox(
+        width: 96,
+        height: 96,
+        child: AssetImageWidget(
+          assetPath: iconPath,
+          altCandidates: imageAltCandidates(iconPath),
+          width: 96,
+          height: 96,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetails(BuildContext context, {required bool stacked}) {
+    final theme = Theme.of(context);
+    final alignment = stacked
+        ? CrossAxisAlignment.center
+        : CrossAxisAlignment.start;
+    final textAlign = stacked ? TextAlign.center : TextAlign.start;
+    return Column(
+      crossAxisAlignment: alignment,
+      children: [
+        Text(
+          displayName,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: textAlign,
+          maxLines: stacked ? 4 : 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          source,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          textAlign: textAlign,
+          maxLines: stacked ? 6 : 4,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          preset.alias,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          textAlign: textAlign,
+          maxLines: stacked ? 2 : 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

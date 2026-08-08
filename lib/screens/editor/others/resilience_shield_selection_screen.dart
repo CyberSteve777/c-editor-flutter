@@ -14,6 +14,8 @@ import 'package:c_editor/screens/editor/others/custom_resilience_shield_editor_s
 
 import 'package:c_editor/widgets/animated_extended_fab.dart';
 
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
+
 import 'package:c_editor/widgets/editor_components.dart';
 
 import 'package:c_editor/widgets/resilience_shield_widgets.dart';
@@ -544,10 +546,24 @@ class _ResilienceShieldSelectionScreenState
                               size: 28,
                             ),
 
-                            title: Text(
-                              item.alias,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            title: Row(
+                              children: [
+                                if (item.isCustom) ...[
+                                  CustomResourceBadge(
+                                    color: userCustomResourceBadgeColor(
+                                      context,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                ],
+                                Expanded(
+                                  child: Text(
+                                    item.alias,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
 
                             subtitle: Text(

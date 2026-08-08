@@ -2922,7 +2922,8 @@
   "invalid_rsg_version": "Invalid RSG version, should be 3 or 4",
   "invalid_rsg_compression_flag": "Invalid RSG Compression flag, only 0 to 3 is supported",
   "mismatch_zlib_magic": "Mismatch PopCap Zlib magic, should begins with 0xDEADFED4",
-  "customPortalAdd": "Custom Portal",
+  "customPortalAdd": "New custom portal",
+  "customPortalSingleName": "Custom Portal",
   "customPortalName": "Custom Portal {index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2934,6 +2935,7 @@
   "customPortalBlankTemplateSubtitle": "Start with the standard portal structure and no zombies.",
   "customPortalBuiltInBases": "Built-in Portals",
   "customPortalUnusedTitle": "Remove Unused Custom Portal?",
+  "customPortalUnusedSingleMessage": "The custom portal is no longer used. Remove its associated data objects from this level?",
   "customPortalUnusedMessage": "Custom Portal {index} is no longer used. Remove its associated data objects from this level?",
   "@customPortalUnusedMessage": {
     "placeholders": { "index": { "type": "int" } }

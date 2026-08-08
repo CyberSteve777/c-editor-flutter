@@ -16,6 +16,7 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/stage_resource_group_list_tile.dart';
 import 'package:c_editor/widgets/stage_zombie_type_picker_row.dart';
 
@@ -754,36 +755,39 @@ class _CustomStagePropertiesScreenState
                     child: EditorResponsiveInputField(
                       label: _fieldLabel(context, 'AmbientAudioSuffix'),
                       decoration: customStageInputDecoration(context),
-                      builder: (context, decoration) =>
-                          DropdownButtonFormField<String>(
-                            isExpanded: true,
-                            initialValue:
-                                CustomStageLevelUtils.ambientAudioOptions
-                                    .contains(_objdata['AmbientAudioSuffix'])
-                                ? _objdata['AmbientAudioSuffix'] as String
-                                : CustomStageLevelUtils
-                                      .ambientAudioOptions
-                                      .first,
-                            decoration: decoration,
-                            items: CustomStageLevelUtils.ambientAudioOptions
-                                .map(
-                                  (code) => DropdownMenuItem(
-                                    value: code,
-                                    child: _ellipsisText(
-                                      ResourceNames.lookup(
-                                        context,
-                                        'ambientAudio_$code',
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              if (value == null) return;
-                              _objdata['AmbientAudioSuffix'] = value;
-                              _sync();
-                            },
-                          ),
+                      builder: (context, decoration) {
+                        final label = _fieldLabel(
+                          context,
+                          'AmbientAudioSuffix',
+                        );
+                        final value =
+                            CustomStageLevelUtils.ambientAudioOptions.contains(
+                              _objdata['AmbientAudioSuffix'],
+                            )
+                            ? _objdata['AmbientAudioSuffix'] as String
+                            : CustomStageLevelUtils.ambientAudioOptions.first;
+                        return SeparatedOptionPickerField<String>(
+                          labelText: label,
+                          value: value,
+                          decoration: decoration,
+                          items: [
+                            for (final code
+                                in CustomStageLevelUtils.ambientAudioOptions)
+                              SeparatedOptionPickerItem(
+                                value: code,
+                                label: ResourceNames.lookup(
+                                  context,
+                                  'ambientAudio_$code',
+                                ),
+                                subtitle: code.isEmpty ? null : code,
+                              ),
+                          ],
+                          onChanged: (value) {
+                            _objdata['AmbientAudioSuffix'] = value;
+                            _sync();
+                          },
+                        );
+                      },
                     ),
                   ),
                 ),

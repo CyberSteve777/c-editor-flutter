@@ -8177,7 +8177,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mismatch_zlib_magic => 'PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头';
 
   @override
-  String get customPortalAdd => '自定义裂缝';
+  String get customPortalAdd => '新建自定义裂缝';
+
+  @override
+  String get customPortalSingleName => '自定义裂缝';
 
   @override
   String customPortalName(int index) {
@@ -8204,6 +8207,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get customPortalUnusedTitle => '清除未使用的自定义裂缝？';
+
+  @override
+  String get customPortalUnusedSingleMessage => '自定义裂缝已不再被使用，是否从关卡中清除其关联数据对象？';
 
   @override
   String customPortalUnusedMessage(int index) {

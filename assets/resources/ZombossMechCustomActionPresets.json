@@ -149,7 +149,7 @@
               "TossApexHeight": 150
             }
           ],
-          "Collectables": ["spacetime_plantfood"]
+          "Collectables": ["plantfood"]
         }
       }
     ],

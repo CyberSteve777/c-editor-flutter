@@ -41,8 +41,6 @@ abstract final class CustomPortalLevelUtils {
   static const portalTypeBase = 'memo';
   static const propertiesAliasBase = 'GridItemZombiePortalMemo';
 
-  static final RegExp _memoTypePattern = RegExp(r'^memo(\d+)?$');
-
   static List<CustomPortalInfo> list(PvzLevelFile levelFile) {
     final found = <CustomPortalInfo>[];
     final foundPropertyAliases = <String>{};
@@ -52,49 +50,40 @@ abstract final class CustomPortalLevelUtils {
     for (final properties in levelFile.objects) {
       if (properties.objClass != portalPropertiesClass) continue;
       final alias = properties.aliases?.firstOrNull;
-      if (alias == null || !alias.startsWith(propertiesAliasBase)) continue;
-      final suffix = alias.substring(propertiesAliasBase.length);
-      if (suffix.isNotEmpty && int.tryParse(suffix) == null) continue;
-      final index = suffix.isEmpty ? 1 : int.parse(suffix);
-      final portalType = '$portalTypeBase${index == 1 ? '' : index}';
+      if (alias != propertiesAliasBase) continue;
       final gridItemType = _findObject(
         levelFile,
-        '$gridAliasPrefix$portalType',
+        '$gridAliasPrefix$portalTypeBase',
       );
-      foundPropertyAliases.add(alias);
+      foundPropertyAliases.add(propertiesAliasBase);
       found.add(
         CustomPortalInfo(
-          portalType: portalType,
-          index: index,
+          portalType: portalTypeBase,
+          index: 1,
           gridItemType: gridItemType,
           properties: properties,
         ),
       );
     }
 
-    var legacyIndex = 1000;
     for (final object in levelFile.objects) {
       final data = object.objData;
       if (object.objClass != gridItemTypeClass || data is! Map) continue;
       if (data['GridItemClass'] != portalGridItemClass) continue;
       final alias = object.aliases?.firstOrNull;
-      if (alias == null || !alias.startsWith(gridAliasPrefix)) continue;
+      if (alias != '$gridAliasPrefix$portalTypeBase') continue;
       final propertiesInfo = RtidParser.parse(
         data['Properties']?.toString() ?? '',
       );
       if (propertiesInfo?.source != currentLevel) continue;
+      if (propertiesInfo?.alias != propertiesAliasBase) continue;
       final properties = _findObject(levelFile, propertiesInfo!.alias);
       if (properties?.objClass != portalPropertiesClass) continue;
       if (foundPropertyAliases.contains(propertiesInfo.alias)) continue;
-      final portalType = alias.substring(gridAliasPrefix.length);
-      final match = _memoTypePattern.firstMatch(portalType);
-      final index = match == null
-          ? legacyIndex++
-          : int.tryParse(match.group(1) ?? '') ?? 1;
       found.add(
         CustomPortalInfo(
-          portalType: portalType,
-          index: index,
+          portalType: portalTypeBase,
+          index: 1,
           gridItemType: object,
           properties: properties!,
         ),
@@ -125,34 +114,19 @@ abstract final class CustomPortalLevelUtils {
     required PvzLevelFile levelFile,
     required Map<String, dynamic> propertiesData,
   }) {
-    final index = _nextIndex(levelFile);
-    final suffix = index == 1 ? '' : '$index';
-    final portalType = '$portalTypeBase$suffix';
-    final gridAlias = '$gridAliasPrefix$portalType';
-    final propertiesAlias = '$propertiesAliasBase$suffix';
-
-    if (index > 1) {
-      levelFile.objects.add(
-        PvzObject(
-          aliases: [gridAlias],
-          objClass: gridItemTypeClass,
-          objData: {
-            'TypeName': gridAlias,
-            'GridItemClass': portalGridItemClass,
-            'Properties': RtidParser.build(propertiesAlias, currentLevel),
-            'ResourceGroups': ['ModernPortalGroup'],
-          },
-        ),
-      );
+    final existing = find(levelFile, portalTypeBase);
+    if (existing != null) {
+      updateProperties(existing, propertiesData);
+      return portalTypeBase;
     }
     levelFile.objects.add(
       PvzObject(
-        aliases: [propertiesAlias],
+        aliases: [propertiesAliasBase],
         objClass: portalPropertiesClass,
         objData: PortalRepository.cloneMap(propertiesData),
       ),
     );
-    return portalType;
+    return portalTypeBase;
   }
 
   static void updateProperties(
@@ -196,9 +170,9 @@ abstract final class CustomPortalLevelUtils {
           l10n?.customPortalUnusedTitle ?? 'Remove unused custom portal?',
         ),
         content: Text(
-          l10n?.customPortalUnusedMessage(info.index) ??
-              'Custom Portal ${info.index} is no longer used. Remove its '
-                  'associated data objects from this level?',
+          l10n?.customPortalUnusedSingleMessage ??
+              'The custom portal is no longer used. Remove its associated '
+                  'data objects from this level?',
         ),
         actions: [
           TextButton(
@@ -222,25 +196,6 @@ abstract final class CustomPortalLevelUtils {
     );
     if (remove != true) return false;
     return removeIfUnused(levelFile, portalType);
-  }
-
-  static int _nextIndex(PvzLevelFile levelFile) {
-    final used = list(levelFile).map((item) => item.index).toSet();
-    var index = 1;
-    while (used.contains(index) ||
-        _findObject(
-              levelFile,
-              '$gridAliasPrefix$portalTypeBase${index == 1 ? '' : index}',
-            ) !=
-            null ||
-        _findObject(
-              levelFile,
-              '$propertiesAliasBase${index == 1 ? '' : index}',
-            ) !=
-            null) {
-      index++;
-    }
-    return index;
   }
 
   static PvzObject? _findObject(PvzLevelFile levelFile, String alias) {

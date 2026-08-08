@@ -329,6 +329,7 @@ class _CustomZombiePropertiesScreenState
       value: alias.isNotEmpty && source.isNotEmpty
           ? '$alias@$source'
           : (l10n?.resiliencePresetSelect ?? 'Selected resilience shield'),
+      isCustom: source == ResilienceShieldUtils.customSource,
       onTap: _pickResilienceShield,
     );
   }

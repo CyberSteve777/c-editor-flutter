@@ -24,6 +24,7 @@ class SeparatedOptionPickerField<T> extends StatelessWidget {
     required this.items,
     required this.onChanged,
     this.enabled = true,
+    this.decoration,
   });
 
   final String labelText;
@@ -31,6 +32,7 @@ class SeparatedOptionPickerField<T> extends StatelessWidget {
   final List<SeparatedOptionPickerItem<T>> items;
   final ValueChanged<T> onChanged;
   final bool enabled;
+  final InputDecoration? decoration;
 
   SeparatedOptionPickerItem<T>? get _selectedItem {
     for (final item in items) {
@@ -55,10 +57,15 @@ class SeparatedOptionPickerField<T> extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-                  child: Text(
-                    labelText,
-                    style: Theme.of(sheetContext).textTheme.titleMedium,
+                  padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      labelText,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(sheetContext).textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 const Divider(height: 1),
@@ -117,10 +124,10 @@ class SeparatedOptionPickerField<T> extends StatelessWidget {
         onTap: enabled ? () => _showOptions(context) : null,
         child: InputDecorator(
           isEmpty: selected == null,
-          decoration: editorInputDecoration(
-            context,
-            labelText: labelText,
-          ).copyWith(enabled: enabled),
+          decoration:
+              (decoration ??
+                      editorInputDecoration(context, labelText: labelText))
+                  .copyWith(enabled: enabled),
           child: Row(
             children: [
               Expanded(

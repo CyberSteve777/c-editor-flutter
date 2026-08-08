@@ -1,3 +1,5 @@
+import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/screens/editor/others/resilience_shield_selection_screen.dart';
 import 'package:c_editor/widgets/resilience_shield_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +34,7 @@ void main() {
         child: ResilienceShieldSelectionCard(
           label: label,
           value: value,
+          isCustom: true,
           onTap: () {},
         ),
       ),
@@ -41,6 +44,7 @@ void main() {
     final valueRect = tester.getRect(find.text(value));
 
     expect(valueRect.top, greaterThan(labelRect.bottom));
+    expect(find.text('C'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -62,6 +66,34 @@ void main() {
     final valueRect = tester.getRect(find.text(value));
 
     expect(valueRect.top, greaterThan(labelRect.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('custom shield list items show the yellow C badge', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: ['CustomResilience0'],
+          objClass: 'ZombieResilience',
+          objData: {'Amount': 300.0, 'WeakType': 4, 'RecoverSpeed': 25.0},
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ResilienceShieldSelectionScreen(
+          levelFile: level,
+          currentRtid: 'RTID(CustomResilience0@CurrentLevel)',
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('CustomResilience0'), findsOneWidget);
+    expect(find.text('C'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

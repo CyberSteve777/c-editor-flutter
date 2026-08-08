@@ -5,6 +5,7 @@ import 'package:c_editor/data/repository/portal_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/zomboss_mech_weighted_zombie_list.dart';
 
 class CustomPortalPropertiesScreen extends StatefulWidget {
@@ -180,33 +181,25 @@ class _CustomPortalPropertiesScreenState
                     },
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue:
+                  SeparatedOptionPickerField<String>(
+                    labelText: _portalPropertyLabel(
+                      l10n?.customPortalPopAnimation ?? 'Portal animation',
+                      'PopAnim',
+                    ),
+                    value:
                         PortalRepository.popAnimCodes.contains(_data['PopAnim'])
                         ? _data['PopAnim'].toString()
                         : null,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: _portalPropertyLabel(
-                        l10n?.customPortalPopAnimation ?? 'Portal animation',
-                        'PopAnim',
-                      ),
-                    ),
                     items: [
                       for (final code in PortalRepository.popAnimCodes)
-                        DropdownMenuItem(
+                        SeparatedOptionPickerItem(
                           value: code,
-                          child: Text(
-                            '${_popAnimName(l10n, code)} ($code)',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          label: _popAnimName(l10n, code),
+                          subtitle: code,
+                          fieldLabel: '${_popAnimName(l10n, code)} ($code)',
                         ),
                     ],
-                    onChanged: (value) {
-                      if (value != null) _setPopAnim(value);
-                    },
+                    onChanged: _setPopAnim,
                   ),
                 ],
               ),
@@ -226,32 +219,25 @@ class _CustomPortalPropertiesScreenState
                     ),
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue:
+                  SeparatedOptionPickerField<String>(
+                    labelText: _portalPropertyLabel(
+                      l10n?.customPortalSpawnMethod ?? 'Spawn method',
+                      'ZombieSpawnMethod',
+                    ),
+                    value:
                         PortalRepository.spawnMethodCodes.contains(spawnMethod)
                         ? spawnMethod
                         : null,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: _portalPropertyLabel(
-                        l10n?.customPortalSpawnMethod ?? 'Spawn method',
-                        'ZombieSpawnMethod',
-                      ),
-                    ),
                     items: [
                       for (final code in PortalRepository.spawnMethodCodes)
-                        DropdownMenuItem(
+                        SeparatedOptionPickerItem(
                           value: code,
-                          child: Text(
-                            '${_spawnMethodName(l10n, code)} ($code)',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          label: _spawnMethodName(l10n, code),
+                          subtitle: code,
+                          fieldLabel: '${_spawnMethodName(l10n, code)} ($code)',
                         ),
                     ],
                     onChanged: (value) {
-                      if (value == null) return;
                       setState(() => _data['ZombieSpawnMethod'] = value);
                     },
                   ),
@@ -267,6 +253,7 @@ class _CustomPortalPropertiesScreenState
                     ),
                     zombieIds: _zombieIds,
                     weights: _zombieWeights,
+                    defaultWeight: 1,
                     editable: true,
                     onChanged: _setZombies,
                   ),

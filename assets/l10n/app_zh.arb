@@ -2953,7 +2953,8 @@
   "invalid_rsg_version": "无效的 RSG 版本，应为 3 或 4",
   "invalid_rsg_compression_flag": "无效的 RSG 压缩标志，仅支持 0 到 3",
   "mismatch_zlib_magic": "PopCap Zlib Magic 不匹配，应以 0xDEADFED4 开头",
-  "customPortalAdd": "自定义裂缝",
+  "customPortalAdd": "新建自定义裂缝",
+  "customPortalSingleName": "自定义裂缝",
   "customPortalName": "自定义裂缝{index}",
   "@customPortalName": {
     "placeholders": { "index": { "type": "int" } }
@@ -2965,6 +2966,7 @@
   "customPortalBlankTemplateSubtitle": "使用标准裂缝结构创建，不预先添加僵尸",
   "customPortalBuiltInBases": "默认裂缝",
   "customPortalUnusedTitle": "清除未使用的自定义裂缝？",
+  "customPortalUnusedSingleMessage": "自定义裂缝已不再被使用，是否从关卡中清除其关联数据对象？",
   "customPortalUnusedMessage": "自定义裂缝{index}已不再被使用，是否从关卡中清除其关联数据对象？",
   "@customPortalUnusedMessage": {
     "placeholders": { "index": { "type": "int" } }

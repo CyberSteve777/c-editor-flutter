@@ -11,6 +11,7 @@ class PortalWorldDef {
     required this.typeCode,
     required this.name,
     required this.representativeZombies,
+    this.resourceNameKey,
     this.isCustom = false,
     this.customIndex,
   });
@@ -18,6 +19,7 @@ class PortalWorldDef {
   final String typeCode;
   final String name;
   final List<String> representativeZombies;
+  final String? resourceNameKey;
   final bool isCustom;
   final int? customIndex;
 }
@@ -483,4 +485,114 @@ class PortalRepository {
       representativeZombies: ['plantwars_mirror_queen_phase3'],
     ),
   ];
+
+  /// Portal types accepted by ZombossSpawnPortalActionDefinition.
+  ///
+  /// The action stores only the suffix of `zombieportal_boss_*`. Its zombie
+  /// previews intentionally reuse the corresponding Danger Room portal data.
+  static final List<PortalWorldDef> bossPortalDefinitions = List.unmodifiable([
+    _bossPortalDefinition(
+      'egypt',
+      'Ancient Egypt',
+      'stage_EgyptStage',
+      'dangerroom_egypt',
+    ),
+    _bossPortalDefinition(
+      'pirate',
+      'Pirate Seas',
+      'stage_PirateStage',
+      'dangerroom_pirate',
+    ),
+    _bossPortalDefinition(
+      'west',
+      'Wild West',
+      'stage_WestStage',
+      'dangerroom_west',
+    ),
+    _bossPortalDefinition(
+      'future',
+      'Far Future',
+      'stage_FutureStage',
+      'dangerroom_future',
+    ),
+    _bossPortalDefinition(
+      'dark',
+      'Dark Ages',
+      'stage_DarkStage',
+      'dangerroom_dark',
+    ),
+    _bossPortalDefinition(
+      'beach',
+      'Big Wave Beach',
+      'stage_BeachStage',
+      'dangerroom_beach',
+    ),
+    _bossPortalDefinition(
+      'iceage',
+      'Frostbite Caves',
+      'stage_IceageStage',
+      'dangerroom_iceage',
+    ),
+    _bossPortalDefinition(
+      'eighties',
+      'Neon Mixtape Tour',
+      'stage_EightiesStage',
+      'dangerroom_eighties',
+    ),
+    _bossPortalDefinition(
+      'lostcity',
+      'Lost City',
+      'stage_LostCityStage',
+      'dangerroom_lostcity',
+    ),
+    _bossPortalDefinition(
+      'dino',
+      'Jurassic Marsh',
+      'stage_DinoStage',
+      'dangerroom_dino',
+    ),
+    _bossPortalDefinition(
+      'skycity',
+      'Sky City',
+      'stage_SkycityStage',
+      'dangerroom_skycity',
+    ),
+    _bossPortalDefinition(
+      'Kongfu',
+      'Kongfu World',
+      'stage_KongfuStage',
+      'dangerroom_Kongfu',
+    ),
+    _bossPortalDefinition(
+      'Modern',
+      'Modern Day',
+      'stage_ModernStage',
+      'dangerroom_modern',
+    ),
+  ]);
+
+  static PortalWorldDef? bossPortalDefinitionForType(String? typeCode) {
+    if (typeCode == null || typeCode.isEmpty) return null;
+    return bossPortalDefinitions.firstWhereOrNull(
+      (definition) => definition.typeCode == typeCode,
+    );
+  }
+
+  static PortalWorldDef _bossPortalDefinition(
+    String typeCode,
+    String name,
+    String resourceNameKey,
+    String dangerRoomTypeCode,
+  ) {
+    final dangerRoom = portalDefinitions.firstWhereOrNull(
+      (definition) => definition.typeCode == dangerRoomTypeCode,
+    );
+    return PortalWorldDef(
+      typeCode: typeCode,
+      name: name,
+      resourceNameKey: resourceNameKey,
+      representativeZombies:
+          dangerRoom?.representativeZombies ?? const <String>[],
+    );
+  }
 }

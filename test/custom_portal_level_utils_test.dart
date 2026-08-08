@@ -50,26 +50,50 @@ void main() {
       expect(CustomPortalLevelUtils.find(level, 'memo'), isNotNull);
     });
 
-    test('uses collision-safe memo aliases for additional portals', () {
+    test('reuses the only valid memo slot instead of creating memo2', () {
       final level = PvzLevelFile(objects: []);
       CustomPortalLevelUtils.create(
         levelFile: level,
         propertiesData: PortalRepository.blankPropertiesData(),
       );
+      final replacement = PortalRepository.blankPropertiesData()
+        ..['World'] = 'dark';
       final secondType = CustomPortalLevelUtils.create(
         levelFile: level,
-        propertiesData: PortalRepository.blankPropertiesData(),
+        propertiesData: replacement,
       );
 
-      expect(secondType, 'memo2');
+      expect(secondType, 'memo');
+      expect(level.objects, hasLength(1));
       final second = CustomPortalLevelUtils.find(level, secondType);
       expect(second, isNotNull);
-      expect(second!.properties.aliases, ['GridItemZombiePortalMemo2']);
-      expect(second.gridItemType?.aliases, ['zombieportal_memo2']);
-      expect(
-        (second.gridItemType!.objData as Map)['Properties'],
-        'RTID(GridItemZombiePortalMemo2@CurrentLevel)',
+      expect(second!.properties.aliases, ['GridItemZombiePortalMemo']);
+      expect((second.properties.objData as Map)['World'], 'dark');
+      expect(CustomPortalLevelUtils.find(level, 'memo2'), isNull);
+    });
+
+    test('does not expose legacy numbered memo slots as valid portals', () {
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: ['GridItemZombiePortalMemo2'],
+            objClass: 'GridItemZombiePortalProps',
+            objData: PortalRepository.blankPropertiesData(),
+          ),
+          PvzObject(
+            aliases: ['zombieportal_memo2'],
+            objClass: 'GridItemType',
+            objData: {
+              'TypeName': 'zombieportal_memo2',
+              'GridItemClass': 'GridItemZombiePortal',
+              'Properties': 'RTID(GridItemZombiePortalMemo2@CurrentLevel)',
+            },
+          ),
+        ],
       );
+
+      expect(CustomPortalLevelUtils.list(level), isEmpty);
+      expect(CustomPortalLevelUtils.find(level, 'memo2'), isNull);
     });
 
     test(

@@ -7,6 +7,7 @@ import 'package:c_editor/widgets/animated_extended_fab.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 final Map<String, double> _stageBackgroundSelectionScrollOffsets = {};
 
@@ -166,11 +167,16 @@ class _StageBackgroundSelectionScreenState
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.selectStageBackground ?? 'Select lawn appearance'),
+        title: Text(
+          l10n?.selectStageBackground ?? 'Select lawn appearance',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(64),
           child: Padding(
@@ -196,11 +202,15 @@ class _StageBackgroundSelectionScreenState
               : GridView.builder(
                   controller: _listScrollController,
                   padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200,
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
-                    childAspectRatio: 0.88,
+                    mainAxisExtent: responsiveSelectionGridTileExtent(
+                      context,
+                      baseExtent: 170,
+                      scaledTextAllowance: 40,
+                    ),
                   ),
                   itemCount: items.length,
                   itemBuilder: (_, i) {

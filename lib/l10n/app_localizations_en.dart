@@ -8585,7 +8585,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4';
 
   @override
-  String get customPortalAdd => 'Custom Portal';
+  String get customPortalAdd => 'New custom portal';
+
+  @override
+  String get customPortalSingleName => 'Custom Portal';
 
   @override
   String customPortalName(int index) {
@@ -8613,6 +8616,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customPortalUnusedTitle => 'Remove Unused Custom Portal?';
+
+  @override
+  String get customPortalUnusedSingleMessage =>
+      'The custom portal is no longer used. Remove its associated data objects from this level?';
 
   @override
   String customPortalUnusedMessage(int index) {

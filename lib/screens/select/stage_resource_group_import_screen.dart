@@ -8,6 +8,7 @@ import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 enum StageResourceGroupImportMode { global, fromStage }
 
@@ -385,6 +386,7 @@ class _StageResourceGroupImportScreenState
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
@@ -393,6 +395,8 @@ class _StageResourceGroupImportScreenState
           isFromStage
               ? (l10n?.importResourceGroupFromStage ?? 'Import from stage')
               : (l10n?.importResourceGroupGlobal ?? 'Import resource group'),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       body: Column(
@@ -496,11 +500,14 @@ class _StageResourceGroupImportScreenState
     return GridView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.72,
+        mainAxisExtent: responsiveSelectionGridTileExtent(
+          context,
+          baseExtent: 224,
+        ),
       ),
       itemCount: stages.length,
       itemBuilder: (_, i) {

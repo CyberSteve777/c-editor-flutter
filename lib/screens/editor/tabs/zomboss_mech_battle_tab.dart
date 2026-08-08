@@ -11,6 +11,7 @@ import 'package:c_editor/screens/editor/others/zomboss_mech_base_selection_scree
 import 'package:c_editor/screens/editor/others/zomboss_mech_properties_view_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/reserved_column_preview_grid.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossMechBattleTab extends StatefulWidget {
@@ -464,34 +465,30 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
           ),
         Tooltip(
           message: l10n?.zombossMechVariationHint ?? '',
-          child: DropdownButtonFormField<String>(
-            isExpanded: true,
-            initialValue: _variationDropdownValue(
+          child: SeparatedOptionPickerField<String>(
+            labelText:
+                l10n?.zombossMechVariationLabel ?? 'ZombossMech variation',
+            value: _variationDropdownValue(
               variations,
               variations.contains(_battleData.zombossMechType)
                   ? _battleData.zombossMechType
                   : null,
             ),
-            decoration: editorInputDecoration(
-              context,
-              labelText:
-                  l10n?.zombossMechVariationLabel ?? 'ZombossMech variation',
-            ),
             items: [
               for (final v in variations)
-                DropdownMenuItem(
+                SeparatedOptionPickerItem(
                   value: v,
-                  child: Text(_variationLabel(context, v)),
+                  label: _variationLabel(context, v),
+                  subtitle: v,
                 ),
               if (showCustomOption)
-                DropdownMenuItem(
+                SeparatedOptionPickerItem(
                   value: kZombossMechCustomVariationValue,
-                  child: Text(l10n?.zombossMechCustomVariation ?? 'Custom'),
+                  label: l10n?.zombossMechCustomVariation ?? 'Custom',
                 ),
             ],
-            onChanged: variations.isEmpty && !showCustomOption
-                ? null
-                : _onVariationChanged,
+            enabled: variations.isNotEmpty || showCustomOption,
+            onChanged: _onVariationChanged,
           ),
         ),
         if (_isCustomSelected) ...[

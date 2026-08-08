@@ -1,4 +1,7 @@
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/portal_repository.dart';
+import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/screens/editor/others/custom_portal_properties_screen.dart';
 import 'package:c_editor/screens/select/stage_selection_screen.dart';
 import 'package:c_editor/widgets/portal_type_selector.dart';
 import 'package:c_editor/widgets/zomboss_mech_weighted_zombie_list.dart';
@@ -6,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  setUpAll(ResourceNames.ensureLoaded);
+
   Future<void> setNarrowView(WidgetTester tester) async {
     tester.view.physicalSize = const Size(320, 800);
     tester.view.devicePixelRatio = 1;
@@ -56,6 +61,7 @@ void main() {
 
       final gridRect = tester.getRect(find.byType(PortalTypeChooserGrid));
       expect(gridRect.right, closeTo(304, 0.1));
+      expect(find.text('New custom portal'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -82,6 +88,56 @@ void main() {
     await tester.tap(find.byIcon(Icons.info_outline));
     await tester.pumpAndSettle();
     expect(find.text('This portal spawns:'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('existing memo portal replaces the new portal card', (
+    tester,
+  ) async {
+    await setNarrowView(tester);
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: ['GridItemZombiePortalMemo'],
+          objClass: 'GridItemZombiePortalProps',
+          objData: PortalRepository.blankPropertiesData(),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PortalTypeSelectionScreen(
+          currentPortalType: 'memo',
+          levelFile: level,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('New custom portal'), findsNothing);
+    expect(find.text('Custom Portal'), findsOneWidget);
+    expect(find.text('Custom Portal 1'), findsNothing);
+    expect(find.text('C'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('custom portal zombie additions default to weight one', (
+    tester,
+  ) async {
+    await setNarrowView(tester);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CustomPortalPropertiesScreen(
+          levelFile: PvzLevelFile(objects: []),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final editor = tester.widget<ZombossMechWeightedZombieListEditor>(
+      find.byType(ZombossMechWeightedZombieListEditor),
+    );
+    expect(editor.defaultWeight, 1);
     expect(tester.takeException(), isNull);
   });
 
@@ -115,4 +171,61 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  test(
+    'boss portal catalog uses exact suffixes and Danger Room zombie data',
+    () {
+      const expectedDangerRoomCodes = <String, String>{
+        'egypt': 'dangerroom_egypt',
+        'pirate': 'dangerroom_pirate',
+        'west': 'dangerroom_west',
+        'future': 'dangerroom_future',
+        'dark': 'dangerroom_dark',
+        'beach': 'dangerroom_beach',
+        'iceage': 'dangerroom_iceage',
+        'eighties': 'dangerroom_eighties',
+        'lostcity': 'dangerroom_lostcity',
+        'dino': 'dangerroom_dino',
+        'skycity': 'dangerroom_skycity',
+        'Kongfu': 'dangerroom_Kongfu',
+        'Modern': 'dangerroom_modern',
+      };
+
+      expect(
+        PortalRepository.bossPortalDefinitions.map((item) => item.typeCode),
+        expectedDangerRoomCodes.keys,
+      );
+      for (final entry in expectedDangerRoomCodes.entries) {
+        final boss = PortalRepository.bossPortalDefinitionForType(entry.key)!;
+        final dangerRoom = PortalRepository.portalDefinitions.firstWhere(
+          (item) => item.typeCode == entry.value,
+        );
+        expect(boss.representativeZombies, dangerRoom.representativeZombies);
+      }
+      expect(PortalRepository.bossPortalDefinitionForType('memo'), isNull);
+    },
+  );
+
+  testWidgets('boss portal chooser uses world cards without custom portals', (
+    tester,
+  ) async {
+    await setNarrowView(tester);
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('en'),
+        home: ZombossPortalTypeSelectionScreen(currentPortalType: 'egypt'),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Ancient Egypt'), findsOneWidget);
+    expect(find.text('egypt'), findsOneWidget);
+    expect(find.text('New custom portal'), findsNothing);
+    expect(find.byType(PortalTypeChooserGrid), findsNothing);
+    expect(find.byIcon(Icons.info_outline), findsWidgets);
+    await tester.tap(find.byIcon(Icons.info_outline).first);
+    await tester.pumpAndSettle();
+    expect(find.text('This portal spawns:'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

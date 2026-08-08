@@ -39,7 +39,10 @@ void main() {
   });
 
   test('PluginHostImpl open-level get/apply via ActiveEditorSession', () {
-    final cubit = EditorCubit(fileName: 'demo.json', filePath: '/lib/demo.json');
+    final cubit = EditorCubit(
+      fileName: 'demo.json',
+      filePath: '/lib/demo.json',
+    );
     // Seed in-memory level without repository I/O.
     cubit.applyLevelFile(_sampleLevel(), markDirty: false);
     ActiveEditorSession.instance.bind(cubit);
@@ -59,18 +62,38 @@ void main() {
     expect(json!, contains('LevelDefinition'));
 
     final edited = _sampleLevel(alias: 'LevelDefinition', version: 3);
-    edited.objects.first.objData = <String, dynamic>{'Description': 'from-plugin'};
+    edited.objects.first.objData = <String, dynamic>{
+      'Description': 'from-plugin',
+    };
     host.applyOpenLevelJson(encodeLevelJson(edited));
 
     expect(cubit.state.hasChanges, isTrue);
     expect(cubit.state.levelFile!.version, 3);
-    expect(cubit.state.levelFile!.objects.first.objData['Description'], 'from-plugin');
+    expect(
+      cubit.state.levelFile!.objects.first.objData['Description'],
+      'from-plugin',
+    );
 
     ActiveEditorSession.instance.clearIf(cubit);
     expect(host.hasOpenLevel, isFalse);
     expect(host.getOpenLevelJson(), isNull);
     expect(() => host.applyOpenLevelJson(json), throwsStateError);
 
+    cubit.close();
+  });
+
+  test('JSON viewer save clears the editor dirty state', () {
+    final cubit = EditorCubit(
+      fileName: 'demo.json',
+      filePath: '/lib/demo.json',
+    );
+    cubit.applyLevelFile(_sampleLevel(), markDirty: true);
+    expect(cubit.state.hasChanges, isTrue);
+
+    cubit.onJsonViewerSaved();
+
+    expect(cubit.state.hasChanges, isFalse);
+    expect(cubit.state.parsedData, isNotNull);
     cubit.close();
   });
 

@@ -15245,8 +15245,14 @@ abstract class AppLocalizations {
   /// No description provided for @customPortalAdd.
   ///
   /// In en, this message translates to:
-  /// **'Custom Portal'**
+  /// **'New custom portal'**
   String get customPortalAdd;
+
+  /// No description provided for @customPortalSingleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Portal'**
+  String get customPortalSingleName;
 
   /// No description provided for @customPortalName.
   ///
@@ -15295,6 +15301,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove Unused Custom Portal?'**
   String get customPortalUnusedTitle;
+
+  /// No description provided for @customPortalUnusedSingleMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The custom portal is no longer used. Remove its associated data objects from this level?'**
+  String get customPortalUnusedSingleMessage;
 
   /// No description provided for @customPortalUnusedMessage.
   ///
