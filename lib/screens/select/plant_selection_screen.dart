@@ -608,6 +608,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                               : (l10n?.searchPlant ?? 'Search plant'),
                           query: _searchQuery,
                           fillColor: theme.colorScheme.surface,
+                          focusedBorderColor: themeColor,
                           onChanged: _setSearchQuery,
                           onClear: () => _setSearchQuery(''),
                         ),
