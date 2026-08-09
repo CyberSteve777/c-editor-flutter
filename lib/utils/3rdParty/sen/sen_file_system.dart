@@ -1,81 +1,41 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:c_editor/utils/app_fs/sen_fs.dart';
+
 import 'sen_buffer.dart';
 
+/// Thin, platform-agnostic facade over the app-provided [senIo] backend.
+///
+/// The concrete filesystem backends (native `dart:io`, in-memory for web) live
+/// outside this third-party folder, in `lib/utils/app_fs/`. This file only
+/// bridges the sen tools to whichever backend is currently installed.
 class FileSystem {
-  static SenBuffer openSenBuffer(String path) {
-    final file = File(path);
-    final length = file.lengthSync();
-    final bytes = Uint8List(length);
-    final raFile = file.openSync();
-    int pos = 0;
-    const chunkSize = 1000000000;
-    while (pos < length) {
-      raFile.readIntoSync(bytes, pos, (pos + chunkSize).clamp(0, length));
-      pos += chunkSize;
-    }
-    raFile.closeSync();
-    return SenBuffer.fromBytes(bytes);
-  }
+  static SenBuffer openSenBuffer(String path) =>
+      SenBuffer.fromBytes(senIo.readBuffer(path));
 
-  static void saveSenBuffer(String path, SenBuffer buffer) {
-    final file = File(path.replaceAll('\\', '/'));
-    file.createSync(recursive: true);
-    file.writeAsBytesSync(buffer.toBytes());
-  }
+  static void saveSenBuffer(String path, SenBuffer buffer) =>
+      senIo.writeBuffer(path, buffer.toBytes());
 
-  static String readFile(String path) {
-    var file = File(path);
-    if (file.existsSync()) {
-      return file.readAsStringSync();
-    } else {
-      throw Exception('File not found: $path');
-    }
-  }
+  static String readFile(String path) => senIo.readFile(path);
 
-  static void writeFile(String path, String data) {
-    var file = File(path);
-    file.createSync(recursive: true);
-    file.writeAsStringSync(data);
-  }
+  static void writeFile(String path, String data) => senIo.writeFile(path, data);
 
-  static Uint8List readBuffer(String path) {
-    var file = File(path);
-    if (file.existsSync()) {
-      return file.readAsBytesSync();
-    } else {
-      throw Exception('File not found: $path');
-    }
-  }
+  static Uint8List readBuffer(String path) => senIo.readBuffer(path);
 
-  static void writeBuffer(String path, Uint8List data) {
-    var file = File(path);
-    file.createSync(recursive: true);
-    file.writeAsBytesSync(data);
-  }
+  static void writeBuffer(String path, Uint8List data) =>
+      senIo.writeBuffer(path, data);
 
-  static bool fileExists(String path) => File(path).existsSync();
+  static bool fileExists(String path) => senIo.fileExists(path);
 
-  static void createDirectory(String path) {
-    Directory(path).createSync(recursive: true);
-  }
+  static void createDirectory(String path) => senIo.createDirectory(path);
 
-  static bool directoryExists(String path) => Directory(path).existsSync();
+  static bool directoryExists(String path) => senIo.directoryExists(path);
 
-  static dynamic readJson(String path) {
-    return jsonDecode(readFile(path));
-  }
+  static dynamic readJson(String path) => senIo.readJson(path);
 
-  static void writeJson(String path, dynamic data, [String indent = '\t']) {
-    var encoder = JsonEncoder.withIndent(indent);
-    writeFile(path, encoder.convert(data));
-  }
+  static void writeJson(String path, dynamic data, [String indent = '\t']) =>
+      senIo.writeJson(path, data, indent);
 
-  static List<String> readDirectory(String inDirectory, bool recursive) {
-    final dir = Directory(inDirectory);
-    if (!dir.existsSync()) return [];
-    final list = dir.listSync(recursive: recursive);
-    return list.map((e) => e.path).toList();
-  }
+  static List<String> readDirectory(String inDirectory, bool recursive) =>
+      senIo.listDirectory(inDirectory, recursive: recursive);
 }

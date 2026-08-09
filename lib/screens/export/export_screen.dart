@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,19 +10,27 @@ import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/world_repository.dart';
 import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/widgets/asset_image.dart';
-import 'package:c_editor/screens/export/export_rsb_isolate.dart';
-import 'package:c_editor/plugins/plugin_constants.dart';
+import 'package:c_editor/screens/export/export_engine.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
-import 'package:path/path.dart' as p;
+import 'package:c_editor/theme/app_theme.dart';
 
 enum ExportStep { disclaimer, selectingArchive, selectingLevels, reviewSelection, proposingAssignments, finalCheck, success }
 
 const _exportDisclaimerSkipKey = 'export_disclaimer_skip';
 
-bool _exportPathIsUnderPlugins(String entityPath) {
-  return p
-      .split(p.normalize(entityPath))
-      .any(isReservedLibraryFolderName);
+/// Leaf file name for display, stripping the web `web://` scheme prefix (which
+/// `p.basename` leaves intact) and any directory segments.
+String _exportLeafName(String path) {
+  var s = path;
+  const webPrefix = 'web://';
+  if (s.startsWith(webPrefix)) {
+    s = s.substring(webPrefix.length);
+  }
+  final fwd = s.lastIndexOf('/');
+  if (fwd >= 0) s = s.substring(fwd + 1);
+  final back = s.lastIndexOf('\\');
+  if (back >= 0) s = s.substring(back + 1);
+  return s;
 }
 
 class ExportScreen extends StatefulWidget {
@@ -41,6 +47,10 @@ class _ExportScreenState extends State<ExportScreen> {
   bool _noFilesFound = false;
   ExportStep _currentStep = ExportStep.disclaimer;
   bool _doNotShowDisclaimerAgain = false;
+  /// When true, the disclaimer step is bypassed entirely (the user ticked "Do
+  /// not show again"), so backing out of archive selection must exit the export
+  /// screen rather than returning to a disclaimer that should never show.
+  bool _skipDisclaimer = false;
   /// True until SharedPreferences are read — avoids a one-frame disclaimer flash
   /// when "Do not show again" is already saved.
   bool _initializing = true;
@@ -48,8 +58,10 @@ class _ExportScreenState extends State<ExportScreen> {
   // State for custom file picker
   String? _rootPath;
   final List<({String name, String path})> _pathStack = [];
-  List<FileSystemEntity> _currentPathItems = [];
+  List<ExportEntry> _currentPathItems = [];
   bool _isScanning = false;
+
+  final ExportEngine _engine = createExportEngine();
 
   double _exportProgress = 0;
   String _exportStatus = '';
@@ -66,8 +78,9 @@ class _ExportScreenState extends State<ExportScreen> {
     final skipDisclaimer = prefs.getBool(_exportDisclaimerSkipKey) ?? false;
     if (!mounted) return;
     setState(() {
-      _rootPath = prefs.getString('folder_path');
+      _rootPath = kIsWeb ? 'web://' : prefs.getString('folder_path');
       _doNotShowDisclaimerAgain = skipDisclaimer;
+      _skipDisclaimer = skipDisclaimer;
       if (skipDisclaimer) {
         // Skip the disclaimer entirely — never paint it.
         _currentStep = ExportStep.selectingArchive;
@@ -84,6 +97,7 @@ class _ExportScreenState extends State<ExportScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_exportDisclaimerSkipKey, _doNotShowDisclaimerAgain);
     if (!mounted) return;
+    _skipDisclaimer = _doNotShowDisclaimerAgain;
     await _performGlobalScan();
   }
 
@@ -99,17 +113,7 @@ class _ExportScreenState extends State<ExportScreen> {
     setState(() => _isScanning = true);
 
     try {
-      final rootDir = Directory(_rootPath!);
-      bool hasEligibleFile = false;
-
-      // Recursive check for at least one .rsb.smf file
-      await for (final entity in rootDir.list(recursive: true)) {
-        if (_exportPathIsUnderPlugins(entity.path)) continue;
-        if (entity is File && entity.path.endsWith('.rsb.smf')) {
-          hasEligibleFile = true;
-          break;
-        }
-      }
+      final hasEligibleFile = await _engine.hasEligibleArchive(_rootPath!);
 
       if (mounted) {
         if (hasEligibleFile) {
@@ -172,15 +176,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
     setState(() => _isScanning = true);
     try {
-      final rootDir = Directory(libraryPath);
-      var hasEligibleFile = false;
-      await for (final entity in rootDir.list(recursive: true)) {
-        if (_exportPathIsUnderPlugins(entity.path)) continue;
-        if (entity is File && entity.path.endsWith('.rsb.smf')) {
-          hasEligibleFile = true;
-          break;
-        }
-      }
+      final hasEligibleFile = await _engine.hasEligibleArchive(libraryPath);
       if (!mounted) return;
       if (!hasEligibleFile) return;
 
@@ -203,38 +199,17 @@ class _ExportScreenState extends State<ExportScreen> {
 
   Future<void> _loadDirectory(String path) async {
     try {
-      final dir = Directory(path);
-      final items = await dir.list().toList();
-      
-      // Filter for directories and eligible files
-      final filtered = items.where((item) {
-        if (item is Directory) {
-          return !isReservedLibraryFolderName(p.basename(item.path));
-        }
-        if (item is File) {
-          final fileName = p.basename(item.path).toLowerCase();
-          if (_currentStep == ExportStep.selectingArchive) {
-            return fileName.endsWith('.rsb.smf');
-          } else if (_currentStep == ExportStep.selectingLevels) {
-            return fileName.endsWith('.json') || fileName.endsWith('.rton');
-          }
-        }
-        return false;
-      }).toList();
-
-      // Sort: Directories first, then files
-      filtered.sort((a, b) {
-        if (a is Directory && b is File) return -1;
-        if (a is File && b is Directory) return 1;
-        return p.basename(a.path).toLowerCase().compareTo(p.basename(b.path).toLowerCase());
-      });
+      final filtered = await _engine.listDirectory(
+        path,
+        archiveStep: _currentStep == ExportStep.selectingArchive,
+      );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
           _currentPathItems = filtered;
           if (_pathStack.isEmpty || _pathStack.last.path != path) {
-            final name = path == _rootPath ? p.basename(path) : p.basename(path);
-            _pathStack.add((name: name.isEmpty ? 'Root' : name, path: path));
+            _pathStack.add((name: _dirDisplayName(path, l10n), path: path));
           }
         });
       }
@@ -243,12 +218,26 @@ class _ExportScreenState extends State<ExportScreen> {
     }
   }
 
+  /// Breadcrumb label for a directory. The web library root is the virtual
+  /// `web://` path, which is meaningless to users — show a localized "Root"
+  /// label instead of the raw scheme.
+  String _dirDisplayName(String path, AppLocalizations l10n) {
+    if (path == _rootPath && path.startsWith('web://')) {
+      return l10n.rootFolder;
+    }
+    final base = _exportLeafName(path);
+    return base.isEmpty ? l10n.rootFolder : base;
+  }
+
   void _navigateBack() {
     if (_pathStack.length > 1) {
       setState(() {
         _pathStack.removeLast();
         _loadDirectory(_pathStack.last.path);
       });
+    } else if (_skipDisclaimer) {
+      // Disclaimer is bypassed — leave the export screen instead of exposing it.
+      Navigator.of(context).pop();
     } else {
       setState(() {
         _pathStack.clear();
@@ -312,9 +301,10 @@ class _ExportScreenState extends State<ExportScreen> {
     if (_selectedArchivePath == null) return;
 
     final l10n = AppLocalizations.of(context)!;
-    final file = File(_selectedArchivePath!);
-    final directory = file.parent.path;
-    final fileName = p.basename(_selectedArchivePath!);
+    final directory = _engine.parentDirectory(_selectedArchivePath!);
+    // Never use p.basename on web:// paths — on Flutter web (url path style)
+    // it returns the whole "web://…" string, which then creates a "web:" folder.
+    final fileName = _exportLeafName(_selectedArchivePath!);
 
     String baseName;
     String extension;
@@ -323,8 +313,14 @@ class _ExportScreenState extends State<ExportScreen> {
       baseName = fileName.substring(0, fileName.length - rsbExt.length);
       extension = rsbExt;
     } else {
-      baseName = p.basenameWithoutExtension(fileName);
-      extension = p.extension(fileName);
+      final dot = fileName.lastIndexOf('.');
+      if (dot > 0) {
+        baseName = fileName.substring(0, dot);
+        extension = fileName.substring(dot);
+      } else {
+        baseName = fileName;
+        extension = '';
+      }
     }
 
     final suggestedBase = "$baseName${l10n.backupSuffix}";
@@ -333,8 +329,6 @@ class _ExportScreenState extends State<ExportScreen> {
       suggestedBase,
       extension,
     );
-
-    final backupPath = p.join(directory, backupName);
 
     // Show progress dialog
     if (!mounted) return;
@@ -354,7 +348,14 @@ class _ExportScreenState extends State<ExportScreen> {
     );
 
     try {
-      await file.copy(backupPath);
+      final ok = await LevelRepository.copyLevelToTarget(
+        _selectedArchivePath!,
+        directory,
+        backupName,
+      );
+      if (!ok) {
+        throw Exception('Backup copy failed');
+      }
       if (mounted) {
         Navigator.of(context).pop(); // Close progress dialog
         
@@ -390,7 +391,6 @@ class _ExportScreenState extends State<ExportScreen> {
 
     // Use a ValueNotifier to update the progress dialog
     final progressNotifier = ValueNotifier<double>(0);
-    final statusNotifier = ValueNotifier<String>(l10n.validationProgress(0, total));
 
     // Show progress dialog
     showDialog(
@@ -405,11 +405,6 @@ class _ExportScreenState extends State<ExportScreen> {
               valueListenable: progressNotifier,
               builder: (context, value, child) => LabeledProgressBar(value: value),
             ),
-            const SizedBox(height: 16),
-            ValueListenableBuilder<String>(
-              valueListenable: statusNotifier,
-              builder: (context, status, child) => Text(status),
-            ),
           ],
         ),
       ),
@@ -421,7 +416,6 @@ class _ExportScreenState extends State<ExportScreen> {
       for (final path in _selectedLevelPaths) {
         current++;
         progressNotifier.value = current / total;
-        statusNotifier.value = l10n.validationProgress(current, total);
 
         final lowerPath = path.toLowerCase();
         final isJson = lowerPath.endsWith('.json');
@@ -435,7 +429,7 @@ class _ExportScreenState extends State<ExportScreen> {
           if (levelFile != null && mounted) {
             final issues = LevelValidator.validate(context, levelFile);
             if (issues.isNotEmpty) {
-              allIssues[p.basename(path)] = issues;
+              allIssues[_exportLeafName(path)] = issues;
             }
           }
         } catch (e) {
@@ -686,6 +680,9 @@ class _ExportScreenState extends State<ExportScreen> {
         });
         _loadDirectory(_rootPath!);
         return false;
+      } else if (_skipDisclaimer) {
+        // Disclaimer is bypassed — allow the export screen to close.
+        return true;
       } else {
         // From root of archive selection, go back to disclaimer
         _navigateBack();
@@ -763,12 +760,12 @@ class _ExportScreenState extends State<ExportScreen> {
                     }
                   },
                 ),
-                actions: _currentStep == ExportStep.disclaimer
+                actions: (_currentStep == ExportStep.disclaimer || _isExporting)
                     ? null
                     : [
                         IconButton(
                           icon: const Icon(Icons.close),
-                          onPressed: _isExporting ? null : _handleClose,
+                          onPressed: _handleClose,
                           tooltip: l10n.cancel,
                         ),
                       ],
@@ -835,9 +832,9 @@ class _ExportScreenState extends State<ExportScreen> {
                   onTap: _navigateBack,
                 ),
               ..._currentPathItems.map((item) {
-                final isDir = item is Directory;
+                final isDir = item.isDirectory;
                 final fullPath = item.path;
-                final fileName = p.basename(fullPath);
+                final fileName = item.name;
                 
                 String displayName = fileName;
                 String? extension;
@@ -960,7 +957,8 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Widget _buildExportProgress(AppLocalizations l10n, ThemeData theme) {
-    debugPrint("Export progress: $_exportProgress, status: $_exportStatus");
+    final green =
+        theme.brightness == Brightness.dark ? pvzGreenLight : pvzGreenDark;
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Center(
@@ -975,10 +973,49 @@ class _ExportScreenState extends State<ExportScreen> {
             LabeledProgressBar(value: _exportProgress),
             const SizedBox(height: 16),
             Text(_exportStatus),
+            const SizedBox(height: 32),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: green,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: _handleExportCancel,
+              child: Text(l10n.cancel),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  /// Cancels an in-flight export after confirmation. Works even while the pack
+  /// is running because the heavy pipeline runs off the UI thread (a Web Worker
+  /// on web, `compute` isolates on native).
+  Future<void> _handleExportCancel() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.cancelExportTitle),
+        content: Text(l10n.cancelExportMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.back),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(
+              l10n.confirm,
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      _engine.cancelExport();
+    }
   }
 
   Widget _buildReviewSelection(AppLocalizations l10n, ThemeData theme) {
@@ -1014,7 +1051,7 @@ class _ExportScreenState extends State<ExportScreen> {
                             margin: const EdgeInsets.only(bottom: 8),
                             child: ListTile(
                               leading: const Icon(Icons.description, color: Colors.blue),
-                              title: Text(p.basename(path)),
+                              title: Text(_exportLeafName(path)),
                             ),
                           )),
                     ],
@@ -1073,7 +1110,7 @@ class _ExportScreenState extends State<ExportScreen> {
                       ..._selectedLevelPaths.map((path) {
                         final assignment = _levelAssignments[path];
                         return _WorldDistributionRow(
-                          fileName: p.basename(path),
+                          fileName: _exportLeafName(path),
                           assignment: assignment,
                           onCheckDuplicate: (newAssignment) {
                             return _levelAssignments.values.any((a) => 
@@ -1160,7 +1197,7 @@ class _ExportScreenState extends State<ExportScreen> {
                             ],
                             Expanded(
                               child: Text(
-                                p.basename(path),
+                                _exportLeafName(path),
                                 style: const TextStyle(fontSize: 13),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -1203,12 +1240,27 @@ class _ExportScreenState extends State<ExportScreen> {
     }
   }
 
-  Widget _buildFinalCheck(AppLocalizations l10n, ThemeData theme) {
-    final String archiveName = _selectedArchivePath != null ? p.basename(_selectedArchivePath!) : '';
-    String relativeArchivePath = _selectedArchivePath ?? '';
-    if (_rootPath != null && relativeArchivePath.startsWith(_rootPath!)) {
-      relativeArchivePath = p.relative(relativeArchivePath, from: _rootPath!);
+  /// The archive path shown to the user: relative to the library root and with
+  /// the web `web://` scheme stripped. Falls back to the leaf file name.
+  String _relativeArchiveDisplayPath() {
+    final full = _selectedArchivePath;
+    if (full == null || full.isEmpty) return '';
+    var rel = full;
+    final root = _rootPath;
+    if (root != null && root.isNotEmpty && rel.startsWith(root)) {
+      rel = rel.substring(root.length);
     }
+    const webPrefix = 'web://';
+    if (rel.startsWith(webPrefix)) rel = rel.substring(webPrefix.length);
+    while (rel.startsWith('/') || rel.startsWith('\\')) {
+      rel = rel.substring(1);
+    }
+    return rel.isEmpty ? _exportLeafName(full) : rel;
+  }
+
+  Widget _buildFinalCheck(AppLocalizations l10n, ThemeData theme) {
+    final String archiveName = _selectedArchivePath != null ? _exportLeafName(_selectedArchivePath!) : '';
+    final String relativeArchivePath = _relativeArchiveDisplayPath();
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -1287,7 +1339,7 @@ class _ExportScreenState extends State<ExportScreen> {
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(p.basename(path)),
+                        Text(_exportLeafName(path)),
                         const SizedBox(height: 2),
                         Text(
                           '→ $exportedName',
@@ -1342,7 +1394,7 @@ class _ExportScreenState extends State<ExportScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              l10n.exportSuccessMessage,
+              l10n.exportSuccessMessage(_relativeArchiveDisplayPath()),
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium,
             ),
@@ -1364,6 +1416,25 @@ class _ExportScreenState extends State<ExportScreen> {
     );
   }
 
+  String _phaseStatus(AppLocalizations l10n, ExportPhase phase) {
+    switch (phase) {
+      case ExportPhase.creatingRton:
+        return l10n.exportStatusCreatingRton;
+      case ExportPhase.unpackingRsb:
+        return l10n.exportStatusUnpackingRsb;
+      case ExportPhase.unpackingRsg:
+        return l10n.exportStatusUnpackingRsg;
+      case ExportPhase.injecting:
+        return l10n.exportStatusInjecting;
+      case ExportPhase.repackingRsg:
+        return l10n.exportStatusRepackingRsg;
+      case ExportPhase.repackingRsb:
+        return l10n.exportStatusRepackingRsb;
+      case ExportPhase.finalizing:
+        return l10n.exportStatusFinalizing;
+    }
+  }
+
   Future<void> _performExport() async {
     if (_selectedArchivePath == null) return;
     final l10n = AppLocalizations.of(context)!;
@@ -1374,12 +1445,10 @@ class _ExportScreenState extends State<ExportScreen> {
       _exportStatus = l10n.exportProgressTitle;
     });
 
-    final tempDir = await Directory.systemTemp.createTemp('c_editor_export_');
-    final String tempPath = tempDir.path;
     final String archivePath = _selectedArchivePath!;
 
     try {
-      // 1. Create renamed copies of levels as RTON
+      // 1. Encode the selected levels as encrypted RTON (cross-platform).
       setState(() {
         _exportProgress = 0.1;
         _exportStatus = l10n.exportStatusCreatingRton;
@@ -1400,160 +1469,33 @@ class _ExportScreenState extends State<ExportScreen> {
         rtonLevels[exportedName] = rtonBytes;
       }
 
-      // 3. Rename .rsb.smf to .rsb (temporarily copy to temp)
-      setState(() {
-        _exportProgress = 0.2;
-        _exportStatus = l10n.exportStatusUnpackingRsb;
-      });
-
-      final rsbFile = File(archivePath);
-      final tempRsbPath = p.join(tempPath, "temp.rsb");
-      await rsbFile.copy(tempRsbPath);
-
-      // 4. Unpack RSB (CPU-heavy — keep off the UI isolate)
-      final rsbUnpackDir = p.join(tempPath, "rsb.bundle");
-      await compute(
-        exportIsolateUnpackRsb,
-        (tempRsbPath, rsbUnpackDir),
+      // 2. Run the platform-specific unpack -> inject -> repack pipeline.
+      await _engine.performExport(
+        archivePath: archivePath,
+        rtonLevels: rtonLevels,
+        onProgress: (progress, phase) {
+          if (!mounted) return;
+          setState(() {
+            _exportProgress = progress;
+            _exportStatus = _phaseStatus(l10n, phase);
+          });
+        },
       );
 
-      // 5. Look for Packages.rsg
-      setState(() {
-        _exportProgress = 0.4;
-        _exportStatus = l10n.exportStatusUnpackingRsg;
-      });
-
-      final packetDir = Directory(p.join(rsbUnpackDir, "packet"));
-      if (!await packetDir.exists()) {
-        // Diagnostic: list rsbUnpackDir
-        final rsbFiles = Directory(rsbUnpackDir).listSync(recursive: true)
-          .map((e) => p.relative(e.path, from: rsbUnpackDir)).take(10).join(", ");
-        throw Exception("Packet directory not found in RSB bundle. Contents: $rsbFiles");
-      }
-
-      String? packagesRsgPath;
-      await for (final entity in packetDir.list()) {
-        if (entity is File && p.basename(entity.path).toLowerCase() == "packages.rsg") {
-          packagesRsgPath = entity.path;
-          break;
-        }
-      }
-
-      if (packagesRsgPath == null) {
-        throw Exception("Packages.rsg not found in archive.");
-      }
-
-      // 6. Unpack Packages.rsg
-      final rsgUnpackDir = p.join(tempPath, "Packages.packet");
-      final packagesRsgPathFinal = packagesRsgPath;
-      await compute(
-        exportIsolateUnpackRsg,
-        (packagesRsgPathFinal, rsgUnpackDir),
-      );
-
-      // 7. Match injected levels against the packet's resource list.
-      setState(() {
-        _exportProgress = 0.6;
-        _exportStatus = l10n.exportStatusInjecting;
-      });
-
-      // RsgPack repacks strictly from packet.json["res"], reading each file from
-      // the res/ folder. So injected levels MUST land on the exact path an
-      // existing res entry points to. Matching by basename case-insensitively is
-      // essential: PopCap stores RSG paths in upper case (e.g.
-      // LEVELS/EGYPT1.RTON), and on a case-sensitive filesystem (Android) a
-      // naive "egypt1.rton" write creates a new, unreferenced file that the
-      // repack silently ignores — which is why levels never got replaced.
-      final packetJsonPath = p.join(rsgUnpackDir, "packet.json");
-      final packet =
-          jsonDecode(await File(packetJsonPath).readAsString())
-              as Map<String, dynamic>;
-      final resList = (packet["res"] as List);
-
-      // Index existing LEVELS entries by lower-cased basename, and remember one
-      // sample path so new levels can mirror the archive's folder casing.
-      final Map<String, List> levelEntryByLowerName = {};
-      List? sampleLevelsSegments;
-      for (final res in resList) {
-        final segs = (res["path"] as List);
-        if (segs.isEmpty) continue;
-        final inLevels =
-            segs.any((s) => s.toString().toLowerCase() == "levels");
-        if (!inLevels) continue;
-        sampleLevelsSegments ??= segs;
-        levelEntryByLowerName[segs.last.toString().toLowerCase()] = segs;
-      }
-
-      if (levelEntryByLowerName.isEmpty) {
-        throw Exception(
-          "No LEVELS entries found in Packages.rsg (res count: ${resList.length}).",
-        );
-      }
-
-      // 8. Write each RTON to the exact path its res entry references, adding a
-      // new entry only when the level genuinely doesn't exist yet.
-      var packetChanged = false;
-      for (final entry in rtonLevels.entries) {
-        final fileName = entry.key; // e.g. egypt1.rton
-        final data = entry.value;
-
-        List targetSegments;
-        final match = levelEntryByLowerName[fileName.toLowerCase()];
-        if (match != null) {
-          targetSegments = match; // overwrite existing, preserving its casing
-        } else {
-          final prefix = sampleLevelsSegments!
-              .sublist(0, sampleLevelsSegments.length - 1);
-          targetSegments = [...prefix, fileName];
-          resList.add({"path": targetSegments});
-          packetChanged = true;
-        }
-
-        final relPath = targetSegments.map((e) => e.toString()).join('/');
-        final targetFile = File(p.join(rsgUnpackDir, "res", relPath));
-        await targetFile.create(recursive: true);
-        await targetFile.writeAsBytes(data);
-      }
-
-      if (packetChanged) {
-        await File(packetJsonPath)
-            .writeAsString(const JsonEncoder.withIndent('\t').convert(packet));
-      }
-
-      // 9. Pack Packages.packet back to Packages.rsg
-      setState(() {
-        _exportProgress = 0.7;
-        _exportStatus = l10n.exportStatusRepackingRsg;
-      });
-      await compute(
-        exportIsolatePackRsg,
-        (rsgUnpackDir, packagesRsgPathFinal),
-      );
-
-      // 10. Pack rsb.bundle back to .rsb
-      setState(() {
-        _exportProgress = 0.8;
-        _exportStatus = l10n.exportStatusRepackingRsb;
-      });
-      await compute(
-        exportIsolatePackRsb,
-        (rsbUnpackDir, tempRsbPath),
-      );
-
-      // 11. Rename .rsb to .rsb.smf (overwrite original)
-      setState(() {
-        _exportProgress = 0.9;
-        _exportStatus = l10n.exportStatusFinalizing;
-      });
-      await File(tempRsbPath).copy(archivePath);
-
-      // 12. Cleanup (automatic since we used system temp and will delete it now)
       if (mounted) {
         setState(() {
           _exportProgress = 1.0;
           _isExporting = false;
           _currentStep = ExportStep.success;
         });
+      }
+    } on ExportCancelledException {
+      if (mounted) {
+        setState(() {
+          _isExporting = false;
+          _currentStep = ExportStep.finalCheck;
+        });
+        AppMessage.show(context, l10n.exportCancelled, icon: Icons.info_outline);
       }
     } catch (e) {
       debugPrint("Export failed: $e");
@@ -1562,10 +1504,6 @@ class _ExportScreenState extends State<ExportScreen> {
           _isExporting = false;
         });
         AppMessage.show(context, "${l10n.error}: $e", icon: Icons.error_outline);
-      }
-    } finally {
-      if (await tempDir.exists()) {
-        await tempDir.delete(recursive: true);
       }
     }
   }

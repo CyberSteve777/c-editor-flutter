@@ -901,9 +901,10 @@ class _SenBuffer implements SenBuffer {
     if (length > _buffer.length) {
       _grow(bufferCount);
     }
-    for (var i = 0; i < bufferCount; i++) {
-      _buffer[writeOffset + i] = buffer[i];
-    }
+    // Bulk copy via setRange instead of a per-byte loop: this is the hot path
+    // for RSB/RSG packing and the loop was O(n) with per-element bounds checks
+    // (extremely slow under dart2js on the web).
+    _buffer.setRange(writeOffset, writeOffset + bufferCount, buffer);
     _writeOffsetPostion(bufferCount);
     return;
   }

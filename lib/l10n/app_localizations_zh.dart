@@ -167,7 +167,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get totalPlantFoodTooltip => '本关能量豆总数（包括掉落、事件等）';
 
   @override
-  String get appTitle => '我的关卡库';
+  String get appTitle => '我的工作区';
 
   @override
   String get about => '关于';
@@ -291,7 +291,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pluginsFolderReserved => '“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。';
 
   @override
-  String get pluginNoLibraryForInstall => '请先选择关卡库文件夹，再安装插件。';
+  String get pluginNoLibraryForInstall => '请先选择工作区文件夹，再安装插件。';
 
   @override
   String pluginShowingCount(int count) {
@@ -507,7 +507,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String smartUploadFileMessage(String fileName) {
-    return '此文件已存在于关卡库中：\n\n$fileName\n\n如何处理？';
+    return '此文件已存在于工作区中：\n\n$fileName\n\n如何处理？';
   }
 
   @override
@@ -552,7 +552,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get openFolder => '打开文件夹';
 
   @override
-  String get levelLibraryPath => '关卡库文件夹';
+  String get levelLibraryPath => '工作区文件夹';
 
   @override
   String get levelLibraryPathHint =>
@@ -586,7 +586,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get download => '下载';
 
   @override
-  String get downloadAllLevels => '导出全部关卡';
+  String get downloadAllLevels => '导出工作区';
 
   @override
   String get downloadFolder => '下载此文件夹';
@@ -644,7 +644,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportDisclaimerDoNotShowAgain => '不再显示';
 
   @override
-  String get importProgressTitle => '正在导入关卡…';
+  String get importProgressTitle => '正在导入文件…';
 
   @override
   String get exportProgressTitle => '正在生成导出…';
@@ -722,7 +722,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get uploadLevelConfirm =>
-      '即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将关卡库所在的文件夹中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？';
+      '即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将工作区文件夹中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？';
 
   @override
   String get back => '返回';
@@ -787,7 +787,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportSuccessTitle => '导出成功';
 
   @override
-  String get exportSuccessMessage => '关卡已成功导出到存档中。';
+  String exportSuccessMessage(String file) {
+    return '关卡已成功导出到 $file。';
+  }
+
+  @override
+  String get exportCancelled => '导出已取消。';
 
   @override
   String exportDuplicateAssignment(String world, int level) {

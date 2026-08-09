@@ -426,6 +426,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                               : (l10n?.searchZombie ?? 'Search zombie'),
                           query: _searchQuery,
                           fillColor: theme.colorScheme.surface,
+                          focusedBorderColor: themeColor,
                           onChanged: _setSearchQuery,
                           onClear: () => _setSearchQuery(''),
                         ),

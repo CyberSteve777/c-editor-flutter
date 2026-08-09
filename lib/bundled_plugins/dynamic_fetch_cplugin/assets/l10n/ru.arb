@@ -1,9 +1,9 @@
 {
   "@@locale": "ru",
   "pluginName": "Внешний Dynamic",
-  "pluginDescription": "Если при экспорте RSB в библиотеке нет файлов .rsb.smf, предлагает скачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic",
+  "pluginDescription": "Если при экспорте RSB в рабочем пространстве нет файлов .rsb.smf, предлагает скачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic",
   "dynamicOfferTitle": "Скачать dynamic?",
-  "dynamicOfferBody": "В библиотеке уровней не найдено файлов .rsb.smf.\n\nСкачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic на GitHub?",
+  "dynamicOfferBody": "В рабочем пространстве не найдено файлов .rsb.smf.\n\nСкачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic на GitHub?",
   "dynamicOfferYes": "Выбрать релиз",
   "dynamicOfferNo": "Не сейчас",
   "dynamicSelectTitle": "Выберите релиз dynamic",
@@ -39,7 +39,7 @@
   },
   "dynamicRetry": "Повторить",
   "dynamicExistsTitle": "Файл уже существует",
-  "dynamicExistsBody": "«{name}» уже есть в библиотеке уровней.\n\nПерезаписать его или сохранить под другим именем?",
+  "dynamicExistsBody": "«{name}» уже есть в рабочем пространстве.\n\nПерезаписать его или сохранить под другим именем?",
   "@dynamicExistsBody": {
     "placeholders": {
       "name": { "type": "String" }
@@ -51,5 +51,21 @@
   "dynamicRenameHint": "Имя файла",
   "dynamicRenameConfirm": "Сохранить",
   "dynamicRenameInvalid": "Введите корректное имя файла.",
-  "dynamicRenameExists": "Такой файл уже есть. Выберите другое имя."
+  "dynamicRenameExists": "Такой файл уже есть. Выберите другое имя.",
+  "dynamicWebImportTitle": "Импорт dynamic",
+  "dynamicWebImportBody": "1. Дождитесь, пока браузер скачает {asset}{size}.\n2. Нажмите «Выбрать файл» и укажите скачанный файл, чтобы добавить его в рабочее пространство как {name}.",
+  "@dynamicWebImportBody": {
+    "placeholders": {
+      "asset": { "type": "String" },
+      "size": { "type": "String" },
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicWebOpen": "Открыть загрузку",
+  "dynamicWebOpenAgain": "Открыть ссылку снова",
+  "dynamicWebOpenFailed": "Не удалось открыть ссылку для загрузки. Скопируйте её со страницы релиза или попробуйте снова.",
+  "dynamicWebPick": "Выбрать файл",
+  "dynamicWebPickTitle": "Выберите скачанный dynamic.rsb.smf",
+  "dynamicWebPickEmpty": "Не удалось прочитать выбранный файл. Попробуйте снова.",
+  "dynamicWebImportFailed": "Не удалось сохранить файл в рабочее пространство."
 }

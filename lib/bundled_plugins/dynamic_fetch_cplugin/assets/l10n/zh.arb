@@ -3,7 +3,7 @@
   "pluginName": "外部 Dynamic",
   "pluginDescription": "在 RSB 导出未找到 .rsb.smf 时，可从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf",
   "dynamicOfferTitle": "下载 dynamic？",
-  "dynamicOfferBody": "关卡库中未找到 .rsb.smf 文件。\n\n是否从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf？",
+  "dynamicOfferBody": "工作区中未找到 .rsb.smf 文件。\n\n是否从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf？",
   "dynamicOfferYes": "选择版本",
   "dynamicOfferNo": "暂不",
   "dynamicSelectTitle": "选择 dynamic 版本",
@@ -39,7 +39,7 @@
   },
   "dynamicRetry": "重试",
   "dynamicExistsTitle": "文件已存在",
-  "dynamicExistsBody": "关卡库中已有 “{name}”。\n\n要覆盖它，还是另存为其他名称？",
+  "dynamicExistsBody": "工作区中已有 “{name}”。\n\n要覆盖它，还是另存为其他名称？",
   "@dynamicExistsBody": {
     "placeholders": {
       "name": { "type": "String" }
@@ -51,5 +51,21 @@
   "dynamicRenameHint": "文件名",
   "dynamicRenameConfirm": "保存",
   "dynamicRenameInvalid": "请输入有效的文件名。",
-  "dynamicRenameExists": "该文件已存在，请换一个名称。"
+  "dynamicRenameExists": "该文件已存在，请换一个名称。",
+  "dynamicWebImportTitle": "导入 dynamic",
+  "dynamicWebImportBody": "1. 让浏览器下载完成 {asset}{size}。\n2. 点击“选择文件”并选中刚下载的文件，将其作为 {name} 添加到工作区。",
+  "@dynamicWebImportBody": {
+    "placeholders": {
+      "asset": { "type": "String" },
+      "size": { "type": "String" },
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicWebOpen": "打开下载",
+  "dynamicWebOpenAgain": "重新打开链接",
+  "dynamicWebOpenFailed": "无法打开下载链接。请从发行版页面复制链接，或重试。",
+  "dynamicWebPick": "选择文件",
+  "dynamicWebPickTitle": "选择已下载的 dynamic.rsb.smf",
+  "dynamicWebPickEmpty": "无法读取所选文件。请重试。",
+  "dynamicWebImportFailed": "无法将文件保存到工作区。"
 }

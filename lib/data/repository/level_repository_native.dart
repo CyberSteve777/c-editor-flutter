@@ -10,6 +10,7 @@ import 'package:c_editor/utils/apple_folder_access.dart';
 
 import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'level_repository_base.dart';
 import 'web/web_transfer_progress.dart';
 import 'package:c_editor/plugins/plugin_constants.dart';
@@ -575,6 +576,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     try {
       final bytes = await file.readAsBytes();
       return decodeLevelBytes(fileName, bytes);
+    } on RtonFormatException {
+      rethrow;
     } catch (_) {
       return null;
     }
@@ -588,6 +591,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     try {
       final bytes = await file.readAsBytes();
       return decodeLevelBytes(p.basename(filePath), bytes);
+    } on RtonFormatException {
+      rethrow;
     } catch (_) {
       return null;
     }
@@ -658,7 +663,12 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     }
 
     // existing level format conversion
-    final level = decodeLevelBytes(sourceName, await srcFile.readAsBytes());
+    PvzLevelFile? level;
+    try {
+      level = decodeLevelBytes(sourceName, await srcFile.readAsBytes());
+    } catch (_) {
+      return null;
+    }
     if (level == null) return null;
     final outBytes = encodeLevelBytes(target, level);
     await File(targetPath).writeAsBytes(outBytes, flush: true);

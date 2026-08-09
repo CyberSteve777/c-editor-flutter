@@ -2067,6 +2067,7 @@ class SelectionSearchField extends StatelessWidget {
     this.controller,
     this.fillColor,
     this.foregroundColor,
+    this.focusedBorderColor,
     this.borderRadius = 24,
     this.useOutlineBorder = false,
   });
@@ -2078,6 +2079,11 @@ class SelectionSearchField extends StatelessWidget {
   final TextEditingController? controller;
   final Color? fillColor;
   final Color? foregroundColor;
+
+  /// Accent used for the focus ring. Defaults to the theme primary, but
+  /// screens with a non-primary app-bar accent (e.g. the purple zombie
+  /// selector) should pass their accent so the ring flows with the app bar.
+  final Color? focusedBorderColor;
   final double borderRadius;
   final bool useOutlineBorder;
 
@@ -2141,14 +2147,17 @@ class SelectionSearchField extends StatelessWidget {
             ? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius),
                 borderSide: BorderSide(
-                  color: theme.colorScheme.primary,
+                  color: focusedBorderColor ?? theme.colorScheme.primary,
                   width: 1.5,
                 ),
               )
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius),
                 borderSide: BorderSide(
-                  color: foregroundColor ?? theme.colorScheme.primary,
+                  color:
+                      focusedBorderColor ??
+                      foregroundColor ??
+                      theme.colorScheme.primary,
                   width: 1.5,
                 ),
               ),

@@ -170,7 +170,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Всего подкормки на уровне (включая дроп и события)';
 
   @override
-  String get appTitle => 'Мои уровни';
+  String get appTitle => 'Моё рабочее пространство';
 
   @override
   String get about => 'О программе';
@@ -298,7 +298,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pluginNoLibraryForInstall =>
-      'Сначала выберите папку библиотеки уровней, затем установите плагины.';
+      'Сначала выберите папку рабочего пространства, затем установите плагины.';
 
   @override
   String pluginShowingCount(int count) {
@@ -526,7 +526,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String smartUploadFileMessage(String fileName) {
-    return 'Этот файл уже есть в вашей библиотеке:\n\n$fileName\n\nЧто сделать?';
+    return 'Этот файл уже есть в вашем рабочем пространстве:\n\n$fileName\n\nЧто сделать?';
   }
 
   @override
@@ -571,7 +571,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get openFolder => 'Открыть папку';
 
   @override
-  String get levelLibraryPath => 'Папка библиотеки уровней';
+  String get levelLibraryPath => 'Папка рабочего пространства';
 
   @override
   String get levelLibraryPathHint =>
@@ -605,7 +605,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get download => 'Скачать';
 
   @override
-  String get downloadAllLevels => 'Экспортировать все уровни';
+  String get downloadAllLevels => 'Экспорт рабочей области';
 
   @override
   String get downloadFolder => 'Скачать эту папку';
@@ -667,7 +667,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportDisclaimerDoNotShowAgain => 'Больше не показывать';
 
   @override
-  String get importProgressTitle => 'Импорт уровней…';
+  String get importProgressTitle => 'Импорт файлов…';
 
   @override
   String get exportProgressTitle => 'Подготовка экспорта…';
@@ -813,8 +813,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportSuccessTitle => 'Экспорт завершён';
 
   @override
-  String get exportSuccessMessage =>
-      'Уровни были успешно экспортированы в архив.';
+  String exportSuccessMessage(String file) {
+    return 'Уровни были успешно экспортированы в $file.';
+  }
+
+  @override
+  String get exportCancelled => 'Экспорт отменён.';
 
   @override
   String exportDuplicateAssignment(String world, int level) {

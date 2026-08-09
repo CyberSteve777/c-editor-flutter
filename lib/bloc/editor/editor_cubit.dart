@@ -16,6 +16,7 @@ import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/app_bootstrap.dart';
 import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/bloc/editor/editor_tab_type.dart';
 
 export 'package:c_editor/bloc/editor/editor_tab_type.dart';
@@ -52,12 +53,19 @@ class EditorCubit extends Cubit<EditorState> {
       await FishPropertiesRepository.init();
     }
     if (isClosed) return;
-    var level = await LevelRepository.loadLevel(fileName);
-    if (level == null && filePath.isNotEmpty) {
-      level = await LevelRepository.loadLevelFromPath(filePath);
-      if (level != null) {
-        await LevelRepository.prepareInternalCache(filePath, fileName);
+    PvzLevelFile? level;
+    RtonErrorKind? loadErrorKind;
+    try {
+      level = await LevelRepository.loadLevel(fileName);
+      if (level == null && filePath.isNotEmpty) {
+        level = await LevelRepository.loadLevelFromPath(filePath);
+        if (level != null) {
+          await LevelRepository.prepareInternalCache(filePath, fileName);
+        }
       }
+    } on RtonFormatException catch (e) {
+      level = null;
+      loadErrorKind = e.kind;
     }
     if (isClosed) return;
     if (level != null) {
@@ -76,7 +84,13 @@ class EditorCubit extends Cubit<EditorState> {
       );
     } else {
       if (isClosed) return;
-      emit(const EditorState(isLoading: false, hasChanges: false));
+      emit(
+        EditorState(
+          isLoading: false,
+          hasChanges: false,
+          loadErrorKind: loadErrorKind,
+        ),
+      );
     }
   }
 

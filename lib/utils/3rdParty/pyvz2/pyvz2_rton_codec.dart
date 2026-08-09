@@ -6,6 +6,42 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/utils/3rdParty/sen/sen_buffer.dart';
 import 'package:c_editor/utils/pvz2c_crypto.dart';
 
+/// Categorises RTON (de)serialisation failures so the UI can localise them.
+enum RtonErrorKind {
+  invalidMagic,
+  invalidVersion,
+  invalidEnd,
+  invalidArrayEnd,
+  invalidRtid,
+  invalidValueType,
+}
+
+/// A structural RTON error that maps to a localisable message. UI layers can
+/// switch on [kind] to surface a friendly notification instead of crashing.
+class RtonFormatException extends FormatException {
+  RtonFormatException(this.kind, [String? message])
+      : super(message ?? _defaultMessage(kind));
+
+  final RtonErrorKind kind;
+
+  static String _defaultMessage(RtonErrorKind kind) {
+    switch (kind) {
+      case RtonErrorKind.invalidMagic:
+        return 'Invalid RTON file: magic must be "RTON".';
+      case RtonErrorKind.invalidVersion:
+        return 'Invalid RTON version (expected 1).';
+      case RtonErrorKind.invalidEnd:
+        return 'Invalid RTON file: must end with "DONE".';
+      case RtonErrorKind.invalidArrayEnd:
+        return 'Invalid RTON array delimiter.';
+      case RtonErrorKind.invalidRtid:
+        return 'Invalid RTID value.';
+      case RtonErrorKind.invalidValueType:
+        return 'Invalid value type for RTON.';
+    }
+  }
+}
+
 class Pyvz2RtonCodec {
   const Pyvz2RtonCodec();
 
@@ -55,12 +91,15 @@ class Pyvz2RtonCodec {
     final reader = SenBuffer.fromBytes(raw);
     final magic = reader.readString(4);
     if (magic != 'RTON') {
-      throw const FormatException('Invalid RTON magic. Expected RTON.');
+      throw RtonFormatException(RtonErrorKind.invalidMagic);
     }
 
     final version = reader.readUint32LE();
     if (version != 1) {
-      throw FormatException('Invalid RTON version: $version (expected 1).');
+      throw RtonFormatException(
+        RtonErrorKind.invalidVersion,
+        'Invalid RTON version: $version (expected 1).',
+      );
     }
 
     final cachedStrings = <String>[];
@@ -69,7 +108,7 @@ class Pyvz2RtonCodec {
 
     final done = reader.readString(4);
     if (done != 'DONE') {
-      throw const FormatException('Invalid RTON ending. Expected DONE.');
+      throw RtonFormatException(RtonErrorKind.invalidEnd);
     }
 
     return PvzLevelFile.fromJson(Map<String, dynamic>.from(root));
@@ -153,7 +192,8 @@ class Pyvz2RtonCodec {
   ) {
     final listType = reader.readByte();
     if (listType != 0xFD) {
-      throw FormatException(
+      throw RtonFormatException(
+        RtonErrorKind.invalidArrayEnd,
         'Unsupported list subtype: 0x${listType.toRadixString(16)}',
       );
     }
@@ -211,7 +251,10 @@ class Pyvz2RtonCodec {
         }
         return cachedPrintableStrings[idx];
       default:
-        throw FormatException('Unknown key tag: 0x${tag.toRadixString(16)}');
+        throw RtonFormatException(
+          RtonErrorKind.invalidValueType,
+          'Unknown key tag: 0x${tag.toRadixString(16)}',
+        );
     }
   }
 
@@ -310,7 +353,10 @@ class Pyvz2RtonCodec {
         return cachedPrintableStrings[idx];
 
       default:
-        throw FormatException('Unknown value tag: 0x${tag.toRadixString(16)}');
+        throw RtonFormatException(
+          RtonErrorKind.invalidValueType,
+          'Unknown value tag: 0x${tag.toRadixString(16)}',
+        );
     }
   }
 
@@ -351,7 +397,8 @@ class Pyvz2RtonCodec {
         final name = _readUtf8Text(reader);
         return 'RTID($name@$type)';
       default:
-        throw FormatException(
+        throw RtonFormatException(
+          RtonErrorKind.invalidRtid,
           'Unknown RTID subtype: 0x${subtype.toRadixString(16)}',
         );
     }
@@ -440,7 +487,8 @@ class Pyvz2RtonCodec {
       return Uint8List.fromList([0x84]);
     }
 
-    throw FormatException(
+    throw RtonFormatException(
+      RtonErrorKind.invalidValueType,
       'Unsupported value type for RTON: ${value.runtimeType}',
     );
   }
@@ -509,7 +557,10 @@ class Pyvz2RtonCodec {
     }
 
     if (!_isRtid(value)) {
-      throw const FormatException('Invalid RTID string format.');
+      throw RtonFormatException(
+        RtonErrorKind.invalidRtid,
+        'Invalid RTID string format.',
+      );
     }
 
     final inner = value.substring(5, value.length - 1);
@@ -527,7 +578,10 @@ class Pyvz2RtonCodec {
       final i1 = int.parse(dotted[1]);
       final hex = dotted[2];
       if (hex.length != 8) {
-        throw FormatException('Invalid RTID hex component: $hex');
+        throw RtonFormatException(
+          RtonErrorKind.invalidRtid,
+          'Invalid RTID hex component: $hex',
+        );
       }
       final bytes = Uint8List(4);
       for (var i = 0; i < 4; i++) {

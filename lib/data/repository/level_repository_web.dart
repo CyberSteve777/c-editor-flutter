@@ -10,7 +10,7 @@ import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
 import 'web/web_file_system_access.dart';
-import 'web/web_level_idb_store.dart';
+import 'web/web_level_opfs_store.dart';
 import 'web/web_transfer_progress.dart';
 import 'web/web_zip_builder.dart';
 import 'package:c_editor/plugins/plugin_constants.dart';
@@ -32,7 +32,10 @@ String _normalizeWebDirPath(String path) {
 
 String _webJoin(String dirPath, String name) {
   final dir = _normalizeWebDirPath(dirPath);
-  final cleanName = name.replaceAll('\\', '/').trim();
+  // Names must be relative leaf/subpaths — never trust a scheme-prefixed value
+  // from path.basename on Flutter web.
+  final cleanName = _storageKey(name.replaceAll('\\', '/').trim());
+  if (cleanName.isEmpty) return dir;
   if (dir == _webPathPrefix) {
     return '$_webPathPrefix$cleanName';
   }
@@ -51,6 +54,22 @@ String _relativeFromWebPath(String path) {
   final normalized = _normalizeWebDirPath(path);
   if (normalized == _webPathPrefix) return '';
   return normalized.substring(_webPathPrefix.length);
+}
+
+/// Strips a leading `web://` (or accidental `web:/`) so OPFS keys stay
+/// library-relative. Using `package:path` on `web://…` paths is unsafe on
+/// Flutter web — `basename` can return the whole scheme-prefixed string.
+String _storageKey(String key) {
+  var k = key.replaceAll('\\', '/').trim();
+  if (k.startsWith(_webPathPrefix)) {
+    k = k.substring(_webPathPrefix.length);
+  } else if (k.startsWith('web:/')) {
+    k = k.substring('web:/'.length);
+  }
+  while (k.startsWith('/')) {
+    k = k.substring(1);
+  }
+  return k;
 }
 
 String _leafNameFromWebPath(String path) {
@@ -81,7 +100,7 @@ LevelRepositoryBase createLevelRepository() => LevelRepositoryWebImpl();
 class LevelRepositoryWebImpl extends LevelRepositoryBase {
   static const _prefsFolderKey = 'folder_path';
   static const _prefsLastLevelDirKey = 'last_level_directory';
-  static const _defaultLibraryLabel = 'My levels';
+  static const _defaultLibraryLabel = 'My Workspace';
 
   @override
   Future<List<LibraryItem>> getLibraries() async {
@@ -99,36 +118,44 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     // Web currently only supports the internal virtual storage
   }
 
-  final Map<String, Uint8List> _memoryCache = {};
+  /// Metadata-only index of stored files: relative key -> byte size. File bytes
+  /// live in OPFS and are read lazily, so the whole library is never in RAM.
+  final Map<String, int> _index = {};
   final Set<String> _directories = {_webPathPrefix};
-  final WebLevelIdbStore _idb = WebLevelIdbStore.instance;
+
+  /// Immediate children of each directory (web path → relative file keys).
+  /// Keeps [getDirectoryContents] O(children) instead of O(library).
+  final Map<String, Set<String>> _childFilesByParent = {};
+
+  /// Immediate child directories of each directory (web path → child web paths).
+  final Map<String, Set<String>> _childDirsByParent = {};
+
+  final WebLevelOpfsStore _opfs = WebLevelOpfsStore.instance;
   final WebFileSystemAccess _fsa = WebFileSystemAccess.instance;
 
   Future<void>? _readyFuture;
 
   Future<void> _ensureReady() => _readyFuture ??= _initialize();
 
-  Future<void> _clearLegacyDirectoryHandleMeta() async {
-    // Older builds persisted a File System Access directory handle (often
-    // "levels-web") and prompted for write permission on import. Web storage
-    // is IndexedDB-only now; drop stale meta so cached SW bundles cannot sync.
-    await _idb.putMeta(WebLevelIdbStore.metaDirectoryHandleKey, null);
-    await _idb.putMeta(WebLevelIdbStore.metaDirectoryNameKey, null);
-    await _idb.putMeta(WebLevelIdbStore.metaDirectoryModeKey, null);
-  }
-
   Future<void> _initialize() async {
-    await _clearLegacyDirectoryHandleMeta();
-    final files = await _idb.loadFiles();
-    _memoryCache
-      ..clear()
-      ..addAll(files);
+    await _opfs.ensureReady();
 
-    final directories = await _idb.loadDirectories();
+    final index = await _opfs.indexFilesWithSizes();
+    _index
+      ..clear()
+      ..addAll(index);
+
+    final dirs = await _opfs.listDirectories();
     _directories
       ..clear()
-      ..add(_webPathPrefix)
-      ..addAll(directories);
+      ..add(_webPathPrefix);
+    for (final rel in dirs) {
+      _directories.add(_normalizeWebDirPath('$_webPathPrefix$rel'));
+    }
+    for (final key in _index.keys) {
+      _registerParentDirectories(key);
+    }
+    _rebuildChildrenIndex();
   }
 
   @override
@@ -136,7 +163,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   @override
   bool isSupportedLevelFileName(String name) {
-    if (name.toLowerCase().endsWith('.rsb.smf')) return false;
+    // .rsb.smf archives are now supported on web (used as RSB export sources).
     return super.isSupportedLevelFileName(name);
   }
 
@@ -199,9 +226,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
           await yieldToUi();
         }
       }
-      if (imported > 0) {
-        await _persistDirectories();
-      }
     } finally {
       _fsa.releaseFolderImport();
     }
@@ -210,42 +234,78 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   Future<void> _putFile(String key, Uint8List bytes) async {
     await _ensureReady();
-    _memoryCache[key] = bytes;
-    await _idb.putFile(key, bytes);
-    _registerParentDirectories(key);
+    final storageKey = _storageKey(key);
+    if (storageKey.isEmpty) {
+      throw ArgumentError('Cannot write to empty web storage key.');
+    }
+    await _opfs.write(storageKey, bytes);
+    _indexFile(storageKey, bytes.length);
   }
 
   Future<void> _removeFileKey(String key) async {
     await _ensureReady();
-    _memoryCache.remove(key);
-    await _idb.deleteFile(key);
+    await _opfs.delete(key);
+    _unindexFile(key);
   }
 
   Future<void> _renameFileKey(String oldKey, String newKey) async {
     await _ensureReady();
-    final bytes = _memoryCache.remove(oldKey);
-    if (bytes == null) {
+    final size = _index[oldKey];
+    if (size == null) {
       return;
     }
-    await _idb.deleteFile(oldKey);
-    _memoryCache[newKey] = bytes;
-    await _idb.putFile(newKey, bytes);
-    _registerParentDirectories(newKey);
+    await _opfs.renameFile(oldKey, newKey);
+    _unindexFile(oldKey);
+    _indexFile(newKey, size);
+  }
+
+  /// Indexes [key] at [size] and updates the parent→children maps.
+  void _indexFile(String key, int size) {
+    final had = _index.containsKey(key);
+    _index[key] = size;
+    if (!had) {
+      final parent = _parentWebDir('$_webPathPrefix$key');
+      (_childFilesByParent[parent] ??= <String>{}).add(key);
+    }
+    _registerParentDirectories(key);
+  }
+
+  /// Removes [key] from the size index and parent→children maps.
+  void _unindexFile(String key) {
+    if (_index.remove(key) == null) return;
+    final parent = _parentWebDir('$_webPathPrefix$key');
+    final kids = _childFilesByParent[parent];
+    if (kids == null) return;
+    kids.remove(key);
+    if (kids.isEmpty) {
+      _childFilesByParent.remove(parent);
+    }
+  }
+
+  void _registerDirectory(String dir) {
+    if (!_directories.add(dir) || dir == _webPathPrefix) return;
+    final parent = _parentWebDir(dir);
+    (_childDirsByParent[parent] ??= <String>{}).add(dir);
+    _registerDirectory(parent);
   }
 
   void _registerParentDirectories(String key) {
-    var dir = _parentWebDir('$_webPathPrefix$key');
-    while (true) {
-      _directories.add(dir);
-      if (dir == _webPathPrefix) {
-        break;
-      }
-      dir = _parentWebDir(dir);
-    }
+    _registerDirectory(_parentWebDir('$_webPathPrefix$key'));
   }
 
-  Future<void> _persistDirectories() async {
-    await _idb.saveDirectories(_directories);
+  /// Rebuilds child maps from [_index] / [_directories] after bulk mutations.
+  void _rebuildChildrenIndex() {
+    _childFilesByParent.clear();
+    _childDirsByParent.clear();
+    for (final dir in _directories) {
+      if (dir == _webPathPrefix) continue;
+      final parent = _parentWebDir(dir);
+      (_childDirsByParent[parent] ??= <String>{}).add(dir);
+    }
+    for (final key in _index.keys) {
+      final parent = _parentWebDir('$_webPathPrefix$key');
+      (_childFilesByParent[parent] ??= <String>{}).add(key);
+    }
   }
 
   @override
@@ -283,10 +343,11 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String rootPath, {
     LevelSortMode sortMode = LevelSortMode.name,
   }) async {
+    await _ensureReady();
     final favoritePaths = await readFavoriteLevelPaths();
     final items = <FileItem>[];
 
-    for (final entry in _memoryCache.entries) {
+    for (final entry in _index.entries) {
       final fullPath = entry.key.startsWith(_webPathPrefix)
           ? entry.key
           : '$_webPathPrefix${entry.key}';
@@ -299,7 +360,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
             path: fullPath,
             isDirectory: false,
             lastModified: 0,
-            size: entry.value.length,
+            size: entry.value,
             isFavorite: true,
           ),
         );
@@ -330,9 +391,10 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   @override
   Future<bool> fileExistsInDirectory(String dirPath, String fileName) async {
+    await _ensureReady();
     final filePath = _webJoin(dirPath, fileName);
     final key = _relativeFromWebPath(filePath);
-    return _memoryCache.containsKey(key);
+    return _index.containsKey(key);
   }
 
   @override
@@ -348,40 +410,40 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final favoritePaths = await readFavoriteLevelPaths();
     final items = <FileItem>[];
 
-    final childDirs = _directories
-        .where((d) => d != normalized && _parentWebDir(d) == normalized)
-        .toList();
-    for (final dir in childDirs) {
-      final leaf = _leafNameFromWebPath(dir);
-      if (isReservedLibraryFolderName(leaf)) continue;
-      items.add(
-        FileItem(
-          name: leaf,
-          path: dir,
-          isDirectory: true,
-          lastModified: 0,
-          size: 0,
-        ),
-      );
+    final childDirs = _childDirsByParent[normalized];
+    if (childDirs != null) {
+      for (final dir in childDirs) {
+        final leaf = _leafNameFromWebPath(dir);
+        if (isReservedLibraryFolderName(leaf)) continue;
+        items.add(
+          FileItem(
+            name: leaf,
+            path: dir,
+            isDirectory: true,
+            lastModified: 0,
+            size: 0,
+          ),
+        );
+      }
     }
 
-    for (final entry in _memoryCache.entries) {
-      final fullPath = entry.key.startsWith(_webPathPrefix)
-          ? _normalizeWebDirPath(entry.key)
-          : '$_webPathPrefix${entry.key}';
-      if (_parentWebDir(fullPath) != normalized) continue;
-      final name = _leafNameFromWebPath(fullPath);
-      if (!isSupportedLevelFileName(name)) continue;
-      items.add(
-        FileItem(
-          name: name,
-          path: fullPath,
-          isDirectory: false,
-          lastModified: 0,
-          size: entry.value.length,
-          isFavorite: favoritePaths.contains(fullPath),
-        ),
-      );
+    final childFiles = _childFilesByParent[normalized];
+    if (childFiles != null) {
+      for (final key in childFiles) {
+        final fullPath = '$_webPathPrefix$key';
+        final name = _leafNameFromWebPath(fullPath);
+        if (!isSupportedLevelFileName(name)) continue;
+        items.add(
+          FileItem(
+            name: name,
+            path: fullPath,
+            isDirectory: false,
+            lastModified: 0,
+            size: _index[key] ?? 0,
+            isFavorite: favoritePaths.contains(fullPath),
+          ),
+        );
+      }
     }
 
     items.sort((a, b) {
@@ -421,6 +483,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   @override
   Future<bool> createDirectory(String parentPath, String name) async {
+    await _ensureReady();
     final trimmed = name.trim();
     if (trimmed.isEmpty || trimmed.contains('/') || trimmed.contains('\\')) {
       return false;
@@ -431,9 +494,9 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final newDir = _webJoin(parent, trimmed);
     if (_directories.contains(newDir)) return false;
     final newKey = _relativeFromWebPath(newDir);
-    if (_memoryCache.containsKey(newKey)) return false;
-    _directories.add(newDir);
-    await _persistDirectories();
+    if (_index.containsKey(newKey)) return false;
+    await _opfs.createDirectory(newKey);
+    _registerDirectory(newDir);
     return true;
   }
 
@@ -444,6 +507,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String newName,
     bool isDirectory,
   ) async {
+    await _ensureReady();
     final currentDir = _normalizeWebDirPath(currentDirPath);
     final oldPath = _webJoin(currentDir, oldName);
     final newPath = _webJoin(currentDir, newName);
@@ -462,20 +526,16 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
         return false;
       }
       final newKey = _relativeFromWebPath(newPath);
-      if (_memoryCache.containsKey(newKey)) return false;
+      if (_index.containsKey(newKey)) return false;
+
+      final oldRel = _relativeFromWebPath(oldPath);
+      final newRel = _relativeFromWebPath(newPath);
+      await _opfs.renameDirectory(oldRel, newRel);
 
       final oldPrefix = '$oldPath/';
       final dirsToRename = _directories
           .where((d) => d == oldPath || d.startsWith(oldPrefix))
           .toList();
-      final filesToRename = _memoryCache.entries
-          .where(
-            (e) =>
-                ('$_webPathPrefix${e.key}') == oldPath ||
-                ('$_webPathPrefix${e.key}').startsWith(oldPrefix),
-          )
-          .toList();
-
       for (final d in dirsToRename) {
         _directories.remove(d);
       }
@@ -486,23 +546,27 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
         _directories.add(renamed);
       }
 
-      for (final e in filesToRename) {
-        final full = '$_webPathPrefix${e.key}';
-        final renamedFull = full == oldPath
-            ? newPath
-            : '$newPath/${full.substring(oldPrefix.length)}';
-        final renamedKey = _relativeFromWebPath(renamedFull);
-        await _renameFileKey(e.key, renamedKey);
+      final oldRelPrefix = oldRel.isEmpty ? '' : '$oldRel/';
+      final entriesToRename = _index.entries
+          .where((e) => e.key == oldRel || e.key.startsWith(oldRelPrefix))
+          .toList();
+      for (final e in entriesToRename) {
+        _index.remove(e.key);
+        final renamedKey = e.key == oldRel
+            ? newRel
+            : '$newRel/${e.key.substring(oldRelPrefix.length)}';
+        _index[renamedKey] = e.value;
       }
+      _rebuildChildrenIndex();
+
       await moveFavoriteLevelPathPrefix(oldPath, newPath);
-      await _persistDirectories();
       return true;
     }
 
     final oldKey = _relativeFromWebPath(oldPath);
     final newKey = _relativeFromWebPath(newPath);
-    if (!_memoryCache.containsKey(oldKey)) return false;
-    if (_memoryCache.containsKey(newKey) || _directories.contains(newPath)) {
+    if (!_index.containsKey(oldKey)) return false;
+    if (_index.containsKey(newKey) || _directories.contains(newPath)) {
       return false;
     }
     await _renameFileKey(oldKey, newKey);
@@ -516,22 +580,20 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String fileName,
     bool isDirectory,
   ) async {
+    await _ensureReady();
     final currentDir = _normalizeWebDirPath(currentDirPath);
     final targetPath = _webJoin(currentDir, fileName);
     if (isDirectory) {
       final prefix = '$targetPath/';
-      final keysToRemove = _memoryCache.keys
-          .where((k) {
-            final full = '$_webPathPrefix$k';
-            return full == targetPath || full.startsWith(prefix);
-          })
-          .toList();
-      for (final key in keysToRemove) {
-        await _removeFileKey(key);
-      }
+      final targetRel = _relativeFromWebPath(targetPath);
+      await _opfs.deleteDirectory(targetRel);
+      _index.removeWhere((k, _) {
+        final full = '$_webPathPrefix$k';
+        return full == targetPath || full.startsWith(prefix);
+      });
       _directories.removeWhere((d) => d == targetPath || d.startsWith(prefix));
       _directories.add(_webPathPrefix);
-      await _persistDirectories();
+      _rebuildChildrenIndex();
       await removeFavoriteLevelPathPrefix(targetPath);
       return;
     }
@@ -545,12 +607,14 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String targetDirPath,
     String targetFileName,
   ) async {
+    await _ensureReady();
     final srcName = _fileNameFromPath(srcPath);
     final targetPath = _webJoin(targetDirPath, targetFileName);
     final targetKey = _relativeFromWebPath(targetPath);
-    if (!_memoryCache.containsKey(srcName)) return false;
-    if (_memoryCache.containsKey(targetKey)) return false;
-    await _putFile(targetKey, _memoryCache[srcName]!);
+    if (_index.containsKey(targetKey)) return false;
+    final bytes = await _opfs.read(srcName);
+    if (bytes == null) return false;
+    await _putFile(targetKey, bytes);
     await removeFavoriteLevelPath(targetPath);
     return true;
   }
@@ -561,15 +625,14 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String fileName,
     String destDirPath,
   ) async {
+    await _ensureReady();
     if (srcDirPath == destDirPath) return false;
     final srcKey = _relativeFromWebPath(_webJoin(srcDirPath, fileName));
     final dstKey = _relativeFromWebPath(_webJoin(destDirPath, fileName));
-    if (!_memoryCache.containsKey(srcKey) || _memoryCache.containsKey(dstKey)) {
+    if (!_index.containsKey(srcKey) || _index.containsKey(dstKey)) {
       return false;
     }
-    final bytes = _memoryCache.remove(srcKey)!;
-    await _idb.deleteFile(srcKey);
-    await _putFile(dstKey, bytes);
+    await _renameFileKey(srcKey, dstKey);
     await moveFavoriteLevelPath(
       _webJoin(srcDirPath, fileName),
       _webJoin(destDirPath, fileName),
@@ -583,16 +646,15 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String fileName,
     String destDirPath,
   ) async {
+    await _ensureReady();
     if (srcDirPath == destDirPath) return false;
     final srcPath = _webJoin(srcDirPath, fileName);
     final destPath = _webJoin(destDirPath, fileName);
-    final srcKey = _relativeFromWebPath(_webJoin(srcDirPath, fileName));
-    final dstKey = _relativeFromWebPath(_webJoin(destDirPath, fileName));
-    if (!_memoryCache.containsKey(srcKey)) return false;
+    final srcKey = _relativeFromWebPath(srcPath);
+    final dstKey = _relativeFromWebPath(destPath);
+    if (!_index.containsKey(srcKey)) return false;
     await _removeFileKey(dstKey);
-    final bytes = _memoryCache.remove(srcKey)!;
-    await _idb.deleteFile(srcKey);
-    await _putFile(dstKey, bytes);
+    await _renameFileKey(srcKey, dstKey);
     await moveFavoriteLevelPath(srcPath, destPath, clearDestination: true);
     return true;
   }
@@ -604,16 +666,15 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String destDirPath,
     String newFileName,
   ) async {
+    await _ensureReady();
     if (srcDirPath == destDirPath) return null;
     final srcPath = _webJoin(srcDirPath, fileName);
     final destPath = _webJoin(destDirPath, newFileName);
-    final srcKey = _relativeFromWebPath(_webJoin(srcDirPath, fileName));
-    final dstKey = _relativeFromWebPath(_webJoin(destDirPath, newFileName));
-    if (!_memoryCache.containsKey(srcKey)) return null;
-    if (_memoryCache.containsKey(dstKey)) return null;
-    final bytes = _memoryCache.remove(srcKey)!;
-    await _idb.deleteFile(srcKey);
-    await _putFile(dstKey, bytes);
+    final srcKey = _relativeFromWebPath(srcPath);
+    final dstKey = _relativeFromWebPath(destPath);
+    if (!_index.containsKey(srcKey)) return null;
+    if (_index.containsKey(dstKey)) return null;
+    await _renameFileKey(srcKey, dstKey);
     await moveFavoriteLevelPath(srcPath, destPath);
     return newFileName;
   }
@@ -621,20 +682,23 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   @override
   Future<int> clearAllInternalCache() async {
     await _ensureReady();
-    final count = _memoryCache.length;
-    _memoryCache.clear();
+    final count = _index.length;
+    _index.clear();
     _directories
       ..clear()
       ..add(_webPathPrefix);
-    await _idb.clearAll();
+    _childFilesByParent.clear();
+    _childDirsByParent.clear();
+    await _opfs.clear();
     return count;
   }
 
   @override
   Future<bool> prepareInternalCache(String sourcePath, String fileName) async {
+    await _ensureReady();
     final sourceKey = _fileNameFromPath(sourcePath);
-    if (_memoryCache.containsKey(sourceKey)) return true;
-    if (_memoryCache.containsKey(fileName)) return true;
+    if (_index.containsKey(sourceKey)) return true;
+    if (_index.containsKey(fileName)) return true;
     return false;
   }
 
@@ -644,7 +708,6 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String content,
   ) async {
     await _putFile(fileName, Uint8List.fromList(utf8.encode(content)));
-    await _persistDirectories();
     return true;
   }
 
@@ -653,15 +716,17 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String fileName,
     List<int> bytes,
   ) async {
-    await _putFile(fileName, Uint8List.fromList(bytes));
-    await _persistDirectories();
+    // Avoid an extra full-buffer copy for already-typed data (large .rsb.smf
+    // imports pass a Uint8List straight through).
+    final data = bytes is Uint8List ? bytes : Uint8List.fromList(bytes);
+    await _putFile(fileName, data);
     return true;
   }
 
   @override
   Future<PvzLevelFile?> loadLevel(String fileName) async {
     await _ensureReady();
-    final content = _memoryCache[fileName];
+    final content = await _opfs.read(fileName);
     if (content == null) return null;
     return decodeLevelBytes(fileName, content);
   }
@@ -676,27 +741,31 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData) async {
     final fileName = _fileNameFromPath(filePath);
     await _putFile(fileName, encodeLevelBytes(fileName, levelData));
-    await _persistDirectories();
   }
 
   @override
   Future<void> downloadLevel(String fileName) async {
-    Uint8List? content = _memoryCache[fileName];
-    if (content == null && fileName.startsWith(_webPathPrefix)) {
-      content = _memoryCache[_relativeFromWebPath(fileName)];
+    await _ensureReady();
+    String? key;
+    if (_index.containsKey(fileName)) {
+      key = fileName;
+    } else if (fileName.startsWith(_webPathPrefix)) {
+      final rel = _relativeFromWebPath(fileName);
+      if (_index.containsKey(rel)) key = rel;
     }
-    if (content == null) {
+    if (key == null) {
       final targetLeaf = _leafNameFromWebPath(fileName);
-      final matches = _memoryCache.entries
-          .where((e) => _leafNameFromWebPath(e.key) == targetLeaf)
+      final matches = _index.keys
+          .where((k) => _leafNameFromWebPath(k) == targetLeaf)
           .toList();
       if (matches.length == 1) {
-        content = matches.first.value;
-        fileName = _leafNameFromWebPath(matches.first.key);
+        key = matches.first;
       }
     }
+    if (key == null) return;
+    final content = await _opfs.read(key);
     if (content == null) return;
-    final downloadName = _leafNameFromWebPath(fileName);
+    final downloadName = _leafNameFromWebPath(key);
     final ext = _extensionFromName(downloadName);
     await FilePicker.saveFile(
       dialogTitle: 'Save level',
@@ -731,22 +800,22 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
         await yieldToUi();
       }
     }
-    if (imported > 0) {
-      await _persistDirectories();
-    }
     return imported;
   }
 
   @override
   Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress}) async {
     await _ensureReady();
-    if (_memoryCache.isEmpty) {
+    if (_index.isEmpty) {
       return;
     }
-    final files = _memoryCache.entries
-        .map((entry) => (path: entry.key, bytes: entry.value))
-        .toList()
-      ..sort((a, b) => a.path.compareTo(b.path));
+    final keys = _index.keys.toList()..sort();
+    final files = <({String path, Uint8List bytes})>[];
+    for (final key in keys) {
+      final bytes = await _opfs.read(key);
+      if (bytes == null) continue;
+      files.add((path: key, bytes: bytes));
+    }
     final zipBytes = await buildZipBytes(files, onProgress: onProgress);
     if (zipBytes.isEmpty) {
       return;
@@ -764,9 +833,8 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     final prefix = _relativeFromWebPath(normalized);
     final folderName = _leafNameFromWebPath(normalized);
 
-    final files = <({String path, Uint8List bytes})>[];
-    for (final entry in _memoryCache.entries) {
-      final key = entry.key;
+    final targets = <({String key, String zipPath})>[];
+    for (final key in _index.keys) {
       final String relInFolder;
       if (prefix.isEmpty) {
         relInFolder = key;
@@ -778,13 +846,21 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       if (relInFolder.isEmpty) {
         continue;
       }
-      files.add((path: '$folderName/$relInFolder', bytes: entry.value));
+      targets.add((key: key, zipPath: '$folderName/$relInFolder'));
     }
 
-    if (files.isEmpty) {
+    if (targets.isEmpty) {
       return;
     }
-    files.sort((a, b) => a.path.compareTo(b.path));
+    targets.sort((a, b) => a.zipPath.compareTo(b.zipPath));
+
+    final files = <({String path, Uint8List bytes})>[];
+    for (final target in targets) {
+      final bytes = await _opfs.read(target.key);
+      if (bytes == null) continue;
+      files.add((path: target.zipPath, bytes: bytes));
+    }
+
     final zipBytes = await buildZipBytes(files, onProgress: onProgress);
     if (zipBytes.isEmpty) {
       return;
@@ -808,11 +884,11 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     String newFileName,
     String assetContent,
   ) async {
+    await _ensureReady();
     final filePath = _webJoin(currentDirPath, newFileName);
     final key = _relativeFromWebPath(filePath);
-    if (_memoryCache.containsKey(key)) return false;
+    if (_index.containsKey(key)) return false;
     await _putFile(key, Uint8List.fromList(utf8.encode(assetContent)));
-    await _persistDirectories();
     await removeFavoriteLevelPath(filePath);
     return true;
   }
@@ -824,10 +900,16 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
     required String targetExtension,
     String? targetName,
   }) async {
+    await _ensureReady();
     final srcName = _fileNameFromPath(sourcePath);
-    final bytes = _memoryCache[srcName];
+    final bytes = await _opfs.read(srcName);
     if (bytes == null) return null;
-    final level = decodeLevelBytes(sourceName, bytes);
+    PvzLevelFile? level;
+    try {
+      level = decodeLevelBytes(sourceName, bytes);
+    } catch (_) {
+      return null;
+    }
     if (level == null) return null;
     final sourceDir = _parentWebDir('$_webPathPrefix$srcName');
     final targetNameOnly =
@@ -835,7 +917,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
         '${baseNameWithoutLevelExtension(sourceName)}$targetExtension';
     final targetPath = _webJoin(sourceDir, targetNameOnly);
     final target = _relativeFromWebPath(targetPath);
-    if (_memoryCache.containsKey(target)) return null;
+    if (_index.containsKey(target)) return null;
     await _putFile(target, encodeLevelBytes(target, level));
     await removeFavoriteLevelPath(targetPath);
     return target;
