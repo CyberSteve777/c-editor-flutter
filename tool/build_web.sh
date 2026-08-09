@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # Minimum required Flutter (see pubspec.yaml). Warn only when below the floor.
-MIN_FLUTTER="3.35.3"
+MIN_FLUTTER="3.44.0"
 CURRENT_FLUTTER="$(flutter --version 2>/dev/null | head -n1 | awk '{print $2}')"
 if [[ -n "${CURRENT_FLUTTER}" ]]; then
   LOWEST="$(printf '%s\n%s\n' "${MIN_FLUTTER}" "${CURRENT_FLUTTER}" | sort -V | head -n1)"

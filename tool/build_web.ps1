@@ -12,7 +12,7 @@
 $ErrorActionPreference = "Stop"
 
 # Minimum required Flutter (see pubspec.yaml). Warn only when below the floor.
-$minFlutter = [version]"3.35.3"
+$minFlutter = [version]"3.44.0"
 $flutterVersionLine = (& flutter --version 2>$null | Select-Object -First 1)
 if ($flutterVersionLine -match 'Flutter\s+(\d+\.\d+\.\d+)') {
   $currentFlutter = [version]$Matches[1]

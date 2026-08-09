@@ -32,10 +32,10 @@ on:
         type: string
         default: 'Release'
       flutter_version:
-        description: 'Flutter version to use (minimum 3.35.3).'
+        description: 'Flutter version to use (minimum 3.44.0).'
         required: false
         type: string
-        default: '3.35.3'
+        default: '3.44.0'
 
 jobs:
   build:
@@ -90,7 +90,7 @@ jobs:
         if: steps.detect.outputs.type == 'flutter'
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ inputs.flutter_version || '3.35.3' }}
+          flutter-version: ${{ inputs.flutter_version || '3.44.0' }}
           channel: stable
           cache: true
 

@@ -10,8 +10,8 @@ Source: https://github.com/CyberSteve777/c-editor-flutter
 
 ### SDK requirements
 
-- **Flutter SDK ≥ 3.35.3** (first stable shipping **Dart 3.9.2**, the floor set by `pubspec.yaml`). CI, Vercel, and `.fvmrc` pin **3.35.3** as the minimum; newer stables work too.
-- `pubspec.yaml` enforces `sdk: ^3.9.2` and `flutter: ">=3.35.3"`. When raising the floor, update `.fvmrc`, `vercel-build.sh`, `tool/build_web.*`, and the GitHub workflows together.
+- **Flutter SDK ≥ 3.44.0** (first stable shipping **Dart 3.12**, the floor set by `pubspec.yaml` / `pubspec.lock`). CI, Vercel, and `.fvmrc` pin **3.44.0** as the minimum; newer stables work too.
+- `pubspec.yaml` enforces `sdk: ^3.12.0` and `flutter: ">=3.44.0"`. When raising the floor, update `.fvmrc`, `vercel-build.sh`, `tool/build_web.*`, and the GitHub workflows together.
 - **FVM users:** `fvm use` / `fvm install` will pick up `.fvmrc`.
 - **Cursor Cloud (Linux):** Flutter is installed at `/home/ubuntu/flutter` and added to PATH via `~/.bashrc`.
 - **Windows (local):** Install the [Flutter SDK for Windows](https://docs.flutter.dev/get-started/install/windows), enable **Windows desktop** (`flutter config --enable-windows-desktop`), and install **Visual Studio 2022** (or Build Tools) with the **Desktop development with C++** workload. Run `flutter doctor` until the Windows toolchain shows no blocking issues.

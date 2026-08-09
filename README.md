@@ -18,7 +18,7 @@ C-Editor can also be accessed from web:
 
 ### Initial setup
 
-1. Install the [Flutter SDK](https://docs.flutter.dev/get-started/install) (**≥ 3.35.3**, which ships Dart **≥ 3.9.2** — the floor in `pubspec.yaml`). CI and Vercel build against this minimum; newer stables also work. With [FVM](https://fvm.app/): `fvm install` then `fvm use` (reads `.fvmrc`).
+1. Install the [Flutter SDK](https://docs.flutter.dev/get-started/install) (**≥ 3.44.0**, which ships Dart **≥ 3.12** — the floor in `pubspec.yaml` / `pubspec.lock`). CI and Vercel build against this minimum; newer stables also work. With [FVM](https://fvm.app/): `fvm install` then `fvm use` (reads `.fvmrc`).
 2. Enable the platforms you need:
    - **Windows desktop:** `flutter config --enable-windows-desktop` — requires [Visual Studio 2022](https://visualstudio.microsoft.com/) (or Build Tools) with the **Desktop development with C++** workload.
    - **Web:** `flutter config --enable-web`

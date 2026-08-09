@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Minimum Flutter version (first stable with Dart 3.9.2). Keep in sync with
+# Minimum Flutter version (first stable with Dart 3.12). Keep in sync with
 # pubspec.yaml (`flutter: ">=…"`), .fvmrc, and the GitHub workflows.
-FLUTTER_VERSION="3.35.3"
+FLUTTER_VERSION="3.44.0"
 FLUTTER_DIR="${HOME}/flutter"
 
 if [[ ! -x "${FLUTTER_DIR}/bin/flutter" ]]; then
