@@ -136,6 +136,7 @@ import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/screens/editor/others/custom_stage_properties_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 
 class _EditorEscapeIntent extends Intent {
@@ -3413,7 +3414,21 @@ class _EditorScreenState extends State<EditorScreen> {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final bool useCompactActions = screenWidth < 500;
 
-    return BlocBuilder<EditorCubit, EditorState>(
+    return BlocListener<EditorCubit, EditorState>(
+      listenWhen: (previous, current) =>
+          current.loadErrorKind != null &&
+          previous.loadErrorKind != current.loadErrorKind,
+      listener: (context, state) {
+        final kind = state.loadErrorKind;
+        if (kind == null) return;
+        final l10n = AppLocalizations.of(context);
+        AppMessage.show(
+          context,
+          _rtonErrorMessage(l10n, kind),
+          icon: Icons.error_outline,
+        );
+      },
+      child: BlocBuilder<EditorCubit, EditorState>(
       builder: (context, editorState) {
         final l10n = AppLocalizations.of(context);
         final isDesktop =
@@ -3769,7 +3784,26 @@ class _EditorScreenState extends State<EditorScreen> {
         }
         return body;
       },
+      ),
     );
+  }
+
+  String _rtonErrorMessage(AppLocalizations? l10n, RtonErrorKind kind) {
+    if (l10n == null) return RtonFormatException(kind).message;
+    switch (kind) {
+      case RtonErrorKind.invalidMagic:
+        return l10n.invalidRtonMagic;
+      case RtonErrorKind.invalidVersion:
+        return l10n.invalidRtonVersion;
+      case RtonErrorKind.invalidEnd:
+        return l10n.invalidRtonEnd;
+      case RtonErrorKind.invalidArrayEnd:
+        return l10n.invalidRtonArrayEnd;
+      case RtonErrorKind.invalidRtid:
+        return l10n.invalidRtid;
+      case RtonErrorKind.invalidValueType:
+        return l10n.invalidValueType;
+    }
   }
 }
 

@@ -403,7 +403,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Level Library'**
+  /// **'My Workspace'**
   String get appTitle;
 
   /// No description provided for @about.
@@ -625,7 +625,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginNoLibraryForInstall.
   ///
   /// In en, this message translates to:
-  /// **'Select a level library folder before installing plugins.'**
+  /// **'Select a workspace folder before installing plugins.'**
   String get pluginNoLibraryForInstall;
 
   /// No description provided for @pluginShowingCount.
@@ -1009,7 +1009,7 @@ abstract class AppLocalizations {
   /// No description provided for @smartUploadFileMessage.
   ///
   /// In en, this message translates to:
-  /// **'This file already exists in your library:\n\n{fileName}\n\nWhat should be done?'**
+  /// **'This file already exists in your workspace:\n\n{fileName}\n\nWhat should be done?'**
   String smartUploadFileMessage(String fileName);
 
   /// No description provided for @smartUploadSkip.
@@ -1093,7 +1093,7 @@ abstract class AppLocalizations {
   /// No description provided for @levelLibraryPath.
   ///
   /// In en, this message translates to:
-  /// **'Level library folder'**
+  /// **'Workspace folder'**
   String get levelLibraryPath;
 
   /// No description provided for @levelLibraryPathHint.
@@ -1159,7 +1159,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadAllLevels.
   ///
   /// In en, this message translates to:
-  /// **'Export all levels'**
+  /// **'Export workspace'**
   String get downloadAllLevels;
 
   /// No description provided for @downloadFolder.
@@ -1267,7 +1267,7 @@ abstract class AppLocalizations {
   /// No description provided for @importProgressTitle.
   ///
   /// In en, this message translates to:
-  /// **'Importing levels…'**
+  /// **'Importing files…'**
   String get importProgressTitle;
 
   /// No description provided for @exportProgressTitle.
@@ -1411,7 +1411,7 @@ abstract class AppLocalizations {
   /// No description provided for @uploadLevelConfirm.
   ///
   /// In en, this message translates to:
-  /// **'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the level library folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
+  /// **'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the workspace folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?'**
   String get uploadLevelConfirm;
 
   /// No description provided for @back.
@@ -1537,8 +1537,14 @@ abstract class AppLocalizations {
   /// No description provided for @exportSuccessMessage.
   ///
   /// In en, this message translates to:
-  /// **'The levels have been successfully exported to the archive.'**
-  String get exportSuccessMessage;
+  /// **'The levels have been successfully exported to {file}.'**
+  String exportSuccessMessage(String file);
+
+  /// No description provided for @exportCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Export cancelled.'**
+  String get exportCancelled;
 
   /// No description provided for @exportDuplicateAssignment.
   ///

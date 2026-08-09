@@ -421,9 +421,14 @@ abstract class LevelRepositoryBase {
             rijndael: RijndaelC.defaultValue(),
           );
         } catch (_) {
+          // The encrypted parse failed (e.g. the file is not encrypted). Retry
+          // as a plain RTON; a structural RtonFormatException here is the
+          // meaningful one and is allowed to propagate so the UI can surface it.
           return rtonCodec.decode(bytes);
         }
       }
+    } on RtonFormatException {
+      rethrow;
     } catch (_) {
       return null;
     }

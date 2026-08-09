@@ -32,10 +32,10 @@ on:
         type: string
         default: 'Release'
       flutter_version:
-        description: 'Flutter version to use (e.g., 3.24.0). Empty means latest stable.'
+        description: 'Flutter version to use (minimum 3.35.3).'
         required: false
         type: string
-        default: ''
+        default: '3.35.3'
 
 jobs:
   build:
@@ -90,8 +90,8 @@ jobs:
         if: steps.detect.outputs.type == 'flutter'
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ inputs.flutter_version || '' }}
-          channel: ${{ inputs.flutter_version && 'stable' || 'stable' }}
+          flutter-version: ${{ inputs.flutter_version || '3.35.3' }}
+          channel: stable
           cache: true
 
       - name: Flutter pub get

@@ -57,7 +57,7 @@
   "sunBombFalling": "紫光日光落地爆炸",
   "sunDroppingActive": "空中阳光下落已开启",
   "sunDroppingInactive": "空中阳光下落已禁用",
-  "appTitle": "我的关卡库",
+  "appTitle": "我的工作区",
   "about": "关于",
   "refresh": "刷新",
   "toggleTheme": "切换主题",
@@ -124,7 +124,7 @@
   "pluginBundledBadge": "内置",
   "pluginImportedBadge": "已导入",
   "pluginsFolderReserved": "“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。",
-  "pluginNoLibraryForInstall": "请先选择关卡库文件夹，再安装插件。",
+  "pluginNoLibraryForInstall": "请先选择工作区文件夹，再安装插件。",
   "pluginShowingCount": "{count, plural, =1{显示 1 个插件} other{显示 {count} 个插件}}",
   "@pluginShowingCount": {
     "placeholders": {
@@ -223,7 +223,7 @@
   "importFolderUnsupported": "此浏览器不支持导入文件夹。",
   "uploadLevelPickerTitle": "选择一个或多个要上传的关卡",
   "smartUploadTitle": "重复文件",
-  "smartUploadFileMessage": "此文件已存在于关卡库中：\n\n{fileName}\n\n如何处理？",
+  "smartUploadFileMessage": "此文件已存在于工作区中：\n\n{fileName}\n\n如何处理？",
   "@smartUploadFileMessage": {
     "placeholders": {
       "fileName": { "type": "String" }
@@ -247,7 +247,7 @@
   "localFileKeepAll": "全部保留",
   "localFileDiscardAll": "全部丢弃",
   "openFolder": "打开文件夹",
-  "levelLibraryPath": "关卡库文件夹",
+  "levelLibraryPath": "工作区文件夹",
   "levelLibraryPathHint": "关卡保存在此文件夹。在 iOS 上可选择任意文件夹，访问权限会保存并在重启后仍然有效。",
   "pathCopied": "路径已复制到剪贴板",
   "useDefaultLibraryFolder": "使用默认文件夹",
@@ -258,7 +258,7 @@
   "delete": "删除",
   "copy": "复制",
   "download": "下载",
-  "downloadAllLevels": "导出全部关卡",
+  "downloadAllLevels": "导出工作区",
   "downloadFolder": "下载此文件夹",
   "exportLevels": "导出关卡",
   "exportSelectLevels": "选择要导出的关卡",
@@ -281,7 +281,7 @@
   "exportDisclaimerTitle": "风险提示与免责声明",
   "exportDisclaimerBody": "本工具涉及对《植物大战僵尸 2》游戏数据的直接修改操作。\n\n• 使用本工具修改游戏数据可能违反游戏服务条款\n• 可能导致游戏账号被临时或永久封禁\n• 可能导致游戏存档损坏或数据丢失\n• 所有操作均为用户自行选择，风险自负\n\n免责声明：\n\n开发者在此明确声明：\n1. 本工具仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n2. 用户使用本工具所产生的一切后果，包括但不限于账号封禁、数据丢失、游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n3. 用户在使用本工具前应充分了解相关风险，并自行决定是否承担这些风险。\n4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。",
   "exportDisclaimerDoNotShowAgain": "不再显示",
-  "importProgressTitle": "正在导入关卡…",
+  "importProgressTitle": "正在导入文件…",
   "exportProgressTitle": "正在生成导出…",
   "backupProgressTitle": "正在创建备份…",
   "transferProgressCount": "{completed} / {total}",
@@ -317,7 +317,7 @@
   "renameSuccess": "重命名成功",
   "renameFail": "重命名失败，已有同名文件",
   "uploadLevel": "上传至创意庭院",
-  "uploadLevelConfirm": "即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将关卡库所在的文件夹中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？",
+  "uploadLevelConfirm": "即将离开编辑器并打开官方的高级创作庭院作者中心网站。使用邮箱登录后，您可以将工作区文件夹中的JSON关卡文件上传至游戏内的创意庭院供玩家游玩。是否继续？",
   "back": "返回",
   "proceed": "继续",
   "startExport": "开始",
@@ -341,7 +341,13 @@
   },
   "exportFinish": "完成",
   "exportSuccessTitle": "导出成功",
-  "exportSuccessMessage": "关卡已成功导出到存档中。",
+  "exportSuccessMessage": "关卡已成功导出到 {file}。",
+  "@exportSuccessMessage": {
+    "placeholders": {
+      "file": { "type": "String" }
+    }
+  },
+  "exportCancelled": "导出已取消。",
   "exportDuplicateAssignment": "重复分配：{world} 第 {level} 关",
   "@exportDuplicateAssignment": {
     "placeholders": {

@@ -56,7 +56,7 @@
   "dropShip": "Drop Ship",
   "totalLabel": "Total",
   "totalPlantFoodTooltip": "Total Plant Food (including drops, events, etc.)",
-  "appTitle": "My Level Library",
+  "appTitle": "My Workspace",
   "about": "About",
   "refresh": "Refresh",
   "toggleTheme": "Toggle theme",
@@ -124,7 +124,7 @@
   "pluginBundledBadge": "Built-in",
   "pluginImportedBadge": "Imported",
   "pluginsFolderReserved": "The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.",
-  "pluginNoLibraryForInstall": "Select a level library folder before installing plugins.",
+  "pluginNoLibraryForInstall": "Select a workspace folder before installing plugins.",
   "pluginShowingCount": "{count, plural, =1{Showing 1 plugin} other{Showing {count} plugins}}",
   "@pluginShowingCount": {
     "placeholders": {
@@ -214,7 +214,7 @@
   "importFolderUnsupported": "Folder import is not supported in this browser.",
   "uploadLevelPickerTitle": "Select one or multiple levels to upload",
   "smartUploadTitle": "Duplicate file",
-  "smartUploadFileMessage": "This file already exists in your library:\n\n{fileName}\n\nWhat should be done?",
+  "smartUploadFileMessage": "This file already exists in your workspace:\n\n{fileName}\n\nWhat should be done?",
   "@smartUploadFileMessage": {
     "placeholders": {
       "fileName": { "type": "String" }
@@ -238,7 +238,7 @@
   "localFileKeepAll": "Keep all",
   "localFileDiscardAll": "Discard all",
   "openFolder": "Open folder",
-  "levelLibraryPath": "Level library folder",
+  "levelLibraryPath": "Workspace folder",
   "levelLibraryPathHint": "Levels are stored in this folder. On iOS you can pick any folder; access is saved so it persists after restart.",
   "pathCopied": "Path copied to clipboard",
   "useDefaultLibraryFolder": "Use default folder",
@@ -249,7 +249,7 @@
   "delete": "Delete",
   "copy": "Copy",
   "download": "Download",
-  "downloadAllLevels": "Export all levels",
+  "downloadAllLevels": "Export workspace",
   "downloadFolder": "Download this directory",
   "exportLevels": "Export levels",
   "exportSelectLevels": "Select levels to export",
@@ -272,7 +272,7 @@
   "exportDisclaimerTitle": "Risk Warning & Disclaimer",
   "exportDisclaimerBody": "This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game's terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.",
   "exportDisclaimerDoNotShowAgain": "Do not show again",
-  "importProgressTitle": "Importing levels…",
+  "importProgressTitle": "Importing files…",
   "exportProgressTitle": "Building export…",
   "backupProgressTitle": "Creating backup…",
   "transferProgressCount": "{completed} / {total}",
@@ -308,7 +308,7 @@
   "renameSuccess": "Successfully renamed",
   "renameFail": "Rename failed, file already exists",
   "uploadLevel": "Upload to Creative Courtyard",
-  "uploadLevelConfirm": "You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the level library folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?",
+  "uploadLevelConfirm": "You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the workspace folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?",
   "back": "Back",
   "noLevelsFound": "No levels found",
   "searchLevel": "Search levels...",
@@ -334,7 +334,13 @@
   },
   "exportFinish": "Finish",
   "exportSuccessTitle": "Export Successful",
-  "exportSuccessMessage": "The levels have been successfully exported to the archive.",
+  "exportSuccessMessage": "The levels have been successfully exported to {file}.",
+  "@exportSuccessMessage": {
+    "placeholders": {
+      "file": { "type": "String" }
+    }
+  },
+  "exportCancelled": "Export cancelled.",
   "exportDuplicateAssignment": "Duplicate assignment: {world} {level}",
   "@exportDuplicateAssignment": {
     "placeholders": {

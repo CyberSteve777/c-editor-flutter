@@ -168,7 +168,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Total Plant Food (including drops, events, etc.)';
 
   @override
-  String get appTitle => 'My Level Library';
+  String get appTitle => 'My Workspace';
 
   @override
   String get about => 'About';
@@ -296,7 +296,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pluginNoLibraryForInstall =>
-      'Select a level library folder before installing plugins.';
+      'Select a workspace folder before installing plugins.';
 
   @override
   String pluginShowingCount(int count) {
@@ -519,7 +519,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String smartUploadFileMessage(String fileName) {
-    return 'This file already exists in your library:\n\n$fileName\n\nWhat should be done?';
+    return 'This file already exists in your workspace:\n\n$fileName\n\nWhat should be done?';
   }
 
   @override
@@ -564,7 +564,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openFolder => 'Open folder';
 
   @override
-  String get levelLibraryPath => 'Level library folder';
+  String get levelLibraryPath => 'Workspace folder';
 
   @override
   String get levelLibraryPathHint =>
@@ -598,7 +598,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get download => 'Download';
 
   @override
-  String get downloadAllLevels => 'Export all levels';
+  String get downloadAllLevels => 'Export workspace';
 
   @override
   String get downloadFolder => 'Download this directory';
@@ -657,7 +657,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportDisclaimerDoNotShowAgain => 'Do not show again';
 
   @override
-  String get importProgressTitle => 'Importing levels…';
+  String get importProgressTitle => 'Importing files…';
 
   @override
   String get exportProgressTitle => 'Building export…';
@@ -737,7 +737,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploadLevelConfirm =>
-      'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the level library folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
+      'You are about to leave the editor and open the official Advanced Creative Courtyard Creator Hub website. After signing in with your email account, you can upload JSON level files from the workspace folder to the in-game Creative Courtyard for other players to enjoy. Do you want to continue?';
 
   @override
   String get back => 'Back';
@@ -802,8 +802,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportSuccessTitle => 'Export Successful';
 
   @override
-  String get exportSuccessMessage =>
-      'The levels have been successfully exported to the archive.';
+  String exportSuccessMessage(String file) {
+    return 'The levels have been successfully exported to $file.';
+  }
+
+  @override
+  String get exportCancelled => 'Export cancelled.';
 
   @override
   String exportDuplicateAssignment(String world, int level) {

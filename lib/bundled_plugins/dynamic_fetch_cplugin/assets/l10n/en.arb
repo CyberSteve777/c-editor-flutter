@@ -3,7 +3,7 @@
   "pluginName": "External Dynamic",
   "pluginDescription": "When RSB export finds no .rsb.smf files, offer downloading dynamic.rsb.smf from Archiver2c/pvz2c-dynamic releases",
   "dynamicOfferTitle": "Download dynamic?",
-  "dynamicOfferBody": "No .rsb.smf files were found in your level library.\n\nDo you want to download a dynamic.rsb.smf from the Archiver2c/pvz2c-dynamic GitHub releases?",
+  "dynamicOfferBody": "No .rsb.smf files were found in your workspace.\n\nDo you want to download a dynamic.rsb.smf from the Archiver2c/pvz2c-dynamic GitHub releases?",
   "dynamicOfferYes": "Browse releases",
   "dynamicOfferNo": "Not now",
   "dynamicSelectTitle": "Select dynamic release",
@@ -39,7 +39,7 @@
   },
   "dynamicRetry": "Retry",
   "dynamicExistsTitle": "File already exists",
-  "dynamicExistsBody": "“{name}” is already in your level library.\n\nOverwrite it, or save under a different name?",
+  "dynamicExistsBody": "“{name}” is already in your workspace.\n\nOverwrite it, or save under a different name?",
   "@dynamicExistsBody": {
     "placeholders": {
       "name": { "type": "String" }
@@ -51,5 +51,21 @@
   "dynamicRenameHint": "File name",
   "dynamicRenameConfirm": "Save",
   "dynamicRenameInvalid": "Enter a valid file name.",
-  "dynamicRenameExists": "That file already exists. Choose another name."
+  "dynamicRenameExists": "That file already exists. Choose another name.",
+  "dynamicWebImportTitle": "Import dynamic",
+  "dynamicWebImportBody": "1. Let the browser finish downloading {asset}{size}.\n2. Click “Choose file” and select that download to add it to your workspace as {name}.",
+  "@dynamicWebImportBody": {
+    "placeholders": {
+      "asset": { "type": "String" },
+      "size": { "type": "String" },
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicWebOpen": "Open download",
+  "dynamicWebOpenAgain": "Open link again",
+  "dynamicWebOpenFailed": "Could not open the download link. Copy it from the release page, or try again.",
+  "dynamicWebPick": "Choose file",
+  "dynamicWebPickTitle": "Select downloaded dynamic.rsb.smf",
+  "dynamicWebPickEmpty": "Could not read the selected file. Try again.",
+  "dynamicWebImportFailed": "Failed to store the file in the workspace."
 }

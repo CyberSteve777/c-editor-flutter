@@ -43,14 +43,9 @@ Future<T?> runWebTransferWithProgress<T>(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (progress != null) ...[
-                    LabeledProgressBar(value: progress),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.transferProgressCount(completed, total),
-                      textAlign: TextAlign.center,
-                    ),
-                  ] else
+                  if (progress != null)
+                    LabeledProgressBar(value: progress)
+                  else
                     const LabeledProgressBar(value: null),
                 ],
               ),

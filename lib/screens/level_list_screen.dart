@@ -163,7 +163,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
     if (kIsWeb && cache.webReady) {
       const webPath = 'web://';
-      final libraryLabel = cache.webLibraryDisplayName ?? 'My levels';
+      final libraryLabel = cache.webLibraryDisplayName ?? 'My Workspace';
       _rootFolderPath = webPath;
       _pathStack = [(name: libraryLabel, path: webPath)];
       return;
@@ -236,7 +236,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       await LevelRepository.ensureWebStorageReady();
       const webPath = 'web://';
       final libraryLabel =
-          await LevelRepository.getWebLibraryDisplayName() ?? 'My levels';
+          await LevelRepository.getWebLibraryDisplayName() ?? 'My Workspace';
       if (!mounted) return;
       setState(() {
         _rootFolderPath = webPath;
@@ -350,7 +350,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       allowMultiple: true,
       withData: true,
       type: FileType.custom,
-      allowedExtensions: ['json', 'hujson', 'rton'],
+      allowedExtensions: ['json', 'hujson', 'rton', 'smf'],
       dialogTitle: l10n.importFiles,
     );
     if (result == null || result.files.isEmpty || !mounted) return;
@@ -493,7 +493,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     setState(() {
       _rootFolderPath ??= webPath;
       if (_pathStack.isEmpty) {
-        _pathStack = [(name: 'My levels', path: webPath)];
+        _pathStack = [(name: 'My Workspace', path: webPath)];
       }
     });
     _loadCurrentDirectory();
@@ -546,7 +546,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     setState(() {
       _rootFolderPath ??= webPath;
       if (_pathStack.isEmpty) {
-        _pathStack = [(name: 'My levels', path: webPath)];
+        _pathStack = [(name: 'My Workspace', path: webPath)];
       }
     });
     _loadCurrentDirectory();
@@ -1388,6 +1388,28 @@ class _LevelListScreenState extends State<LevelListScreen> {
       return item.name.toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
 
+    // Precompute fixed row extents so scrollbar jumps stay O(1) even with
+    // thousands of items (matches _FileItemRow's non-compact layout).
+    final textScaler = MediaQuery.textScalerOf(context);
+    final titleStyle = theme.textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.bold,
+    );
+    final subtitleStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final folderItemExtent = _FileItemRow.scrollExtentFor(
+      isDirectory: true,
+      titleStyle: titleStyle,
+      subtitleStyle: subtitleStyle,
+      textScaler: textScaler,
+    );
+    final fileItemExtent = _FileItemRow.scrollExtentFor(
+      isDirectory: false,
+      titleStyle: titleStyle,
+      subtitleStyle: subtitleStyle,
+      textScaler: textScaler,
+    );
+
     final fabBgColor =
         theme.floatingActionButtonTheme.backgroundColor ??
         theme.colorScheme.primaryContainer;
@@ -1526,7 +1548,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              if (!kIsWeb && !Platform.isIOS)
+              if (kIsWeb || !Platform.isIOS)
                 PopupMenuItem(
                   value: 'export',
                   child: ListTile(
@@ -1732,6 +1754,15 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                     controller: _listScrollController,
                                     padding: const EdgeInsets.all(16),
                                     itemCount: filteredItems.length,
+                                    itemExtentBuilder: (index, _) {
+                                      if (index < 0 ||
+                                          index >= filteredItems.length) {
+                                        return null;
+                                      }
+                                      return filteredItems[index].isDirectory
+                                          ? folderItemExtent
+                                          : fileItemExtent;
+                                    },
                                     itemBuilder: (context, index) {
                                       final item = filteredItems[index];
                                       final isMovingMode = _itemToMove != null;
@@ -2807,6 +2838,59 @@ class _FileItemRow extends StatelessWidget {
   final VoidCallback? onConvert;
   final VoidCallback? onToggleFavorite;
   final VoidCallback? onShare;
+
+  /// Must stay in sync with the non-compact layout in [build].
+  static const _marginBottom = 12.0;
+  static const _verticalPadding = 12.0;
+  static const _iconBox = 40.0;
+  static const _titleBodyGap = 2.0;
+
+  /// Scroll-axis extent of a row, including the card's bottom margin.
+  ///
+  /// Used by [ListView.itemExtentBuilder] so large jumps don't lay out every
+  /// intervening child.
+  static double scrollExtentFor({
+    required bool isDirectory,
+    required TextStyle? titleStyle,
+    required TextStyle? subtitleStyle,
+    required TextScaler textScaler,
+  }) {
+    final titleH = _measureLineHeight(
+      titleStyle,
+      textScaler,
+      fallbackSize: 16,
+    );
+    double contentH;
+    if (isDirectory) {
+      contentH = titleH > _iconBox ? titleH : _iconBox;
+    } else {
+      final subtitleH = _measureLineHeight(
+        subtitleStyle,
+        textScaler,
+        fallbackSize: 12,
+      );
+      final textH = titleH + _titleBodyGap + subtitleH;
+      contentH = textH > _iconBox ? textH : _iconBox;
+    }
+    return contentH + (_verticalPadding * 2) + _marginBottom;
+  }
+
+  static double _measureLineHeight(
+    TextStyle? style,
+    TextScaler textScaler, {
+    required double fallbackSize,
+  }) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: 'Ag',
+        style: style ?? TextStyle(fontSize: fallbackSize),
+      ),
+      textDirection: TextDirection.ltr,
+      textScaler: textScaler,
+      maxLines: 1,
+    )..layout();
+    return painter.height;
+  }
 
   static const _iconBtnStyle = ButtonStyle(
     padding: WidgetStatePropertyAll(EdgeInsets.all(6)),

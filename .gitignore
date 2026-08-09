@@ -35,6 +35,8 @@ migrate_working_dir/
 /build/
 /coverage/
 .artifact/
+# FVM local SDK symlink/cache (keep .fvmrc committed)
+.fvm/
 
 # Symbolication related
 app.*.symbols
@@ -46,6 +48,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated RSB export Web Worker build noise. The compiled
+# `web/rsb_worker.dart.js` itself is committed so `flutter build web` works out
+# of the box; recompile it with tool/build_web when the sen pipeline changes.
+web/rsb_worker.dart.js.deps
+web/rsb_worker.dart.js.map
 
 # Other
 /z-editor-original

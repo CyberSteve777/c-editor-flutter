@@ -7,6 +7,7 @@ final class EditorState extends Equatable {
     this.isLoading = true,
     this.hasChanges = false,
     this.availableTabs = const [EditorTabType.settings],
+    this.loadErrorKind,
   });
 
   final PvzLevelFile? levelFile;
@@ -14,6 +15,10 @@ final class EditorState extends Equatable {
   final bool isLoading;
   final bool hasChanges;
   final List<EditorTabType> availableTabs;
+
+  /// Set when the level failed to decode because of a structural RTON error.
+  /// The UI reads this to show a localized notification instead of crashing.
+  final RtonErrorKind? loadErrorKind;
 
   EditorState copyWith({
     PvzLevelFile? levelFile,
@@ -39,5 +44,6 @@ final class EditorState extends Equatable {
     isLoading,
     hasChanges,
     availableTabs,
+    loadErrorKind,
   ];
 }

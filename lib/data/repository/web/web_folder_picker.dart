@@ -10,7 +10,7 @@ class WebFolderPicker {
 
   static final WebFolderPicker instance = WebFolderPicker._();
 
-  static final _levelPattern = RegExp(r'\.(json|hujson|rton|zlib|bin)$', caseSensitive: false);
+  static final _levelPattern = RegExp(r'\.(json|hujson|rton|zlib|bin|smf)$', caseSensitive: false);
 
   WebFolderImportCache? _cache;
 
