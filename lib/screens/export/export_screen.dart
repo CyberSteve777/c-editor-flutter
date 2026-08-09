@@ -13,7 +13,6 @@ import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/screens/export/export_engine.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/theme/app_theme.dart';
-import 'package:path/path.dart' as p;
 
 enum ExportStep { disclaimer, selectingArchive, selectingLevels, reviewSelection, proposingAssignments, finalCheck, success }
 
@@ -226,7 +225,7 @@ class _ExportScreenState extends State<ExportScreen> {
     if (path == _rootPath && path.startsWith('web://')) {
       return l10n.rootFolder;
     }
-    final base = p.basename(path);
+    final base = _exportLeafName(path);
     return base.isEmpty ? l10n.rootFolder : base;
   }
 
@@ -303,7 +302,9 @@ class _ExportScreenState extends State<ExportScreen> {
 
     final l10n = AppLocalizations.of(context)!;
     final directory = _engine.parentDirectory(_selectedArchivePath!);
-    final fileName = p.basename(_selectedArchivePath!);
+    // Never use p.basename on web:// paths — on Flutter web (url path style)
+    // it returns the whole "web://…" string, which then creates a "web:" folder.
+    final fileName = _exportLeafName(_selectedArchivePath!);
 
     String baseName;
     String extension;
@@ -312,8 +313,14 @@ class _ExportScreenState extends State<ExportScreen> {
       baseName = fileName.substring(0, fileName.length - rsbExt.length);
       extension = rsbExt;
     } else {
-      baseName = p.basenameWithoutExtension(fileName);
-      extension = p.extension(fileName);
+      final dot = fileName.lastIndexOf('.');
+      if (dot > 0) {
+        baseName = fileName.substring(0, dot);
+        extension = fileName.substring(dot);
+      } else {
+        baseName = fileName;
+        extension = '';
+      }
     }
 
     final suggestedBase = "$baseName${l10n.backupSuffix}";
@@ -422,7 +429,7 @@ class _ExportScreenState extends State<ExportScreen> {
           if (levelFile != null && mounted) {
             final issues = LevelValidator.validate(context, levelFile);
             if (issues.isNotEmpty) {
-              allIssues[p.basename(path)] = issues;
+              allIssues[_exportLeafName(path)] = issues;
             }
           }
         } catch (e) {

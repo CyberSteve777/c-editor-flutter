@@ -32,7 +32,10 @@ String _normalizeWebDirPath(String path) {
 
 String _webJoin(String dirPath, String name) {
   final dir = _normalizeWebDirPath(dirPath);
-  final cleanName = name.replaceAll('\\', '/').trim();
+  // Names must be relative leaf/subpaths — never trust a scheme-prefixed value
+  // from path.basename on Flutter web.
+  final cleanName = _storageKey(name.replaceAll('\\', '/').trim());
+  if (cleanName.isEmpty) return dir;
   if (dir == _webPathPrefix) {
     return '$_webPathPrefix$cleanName';
   }
@@ -51,6 +54,22 @@ String _relativeFromWebPath(String path) {
   final normalized = _normalizeWebDirPath(path);
   if (normalized == _webPathPrefix) return '';
   return normalized.substring(_webPathPrefix.length);
+}
+
+/// Strips a leading `web://` (or accidental `web:/`) so OPFS keys stay
+/// library-relative. Using `package:path` on `web://…` paths is unsafe on
+/// Flutter web — `basename` can return the whole scheme-prefixed string.
+String _storageKey(String key) {
+  var k = key.replaceAll('\\', '/').trim();
+  if (k.startsWith(_webPathPrefix)) {
+    k = k.substring(_webPathPrefix.length);
+  } else if (k.startsWith('web:/')) {
+    k = k.substring('web:/'.length);
+  }
+  while (k.startsWith('/')) {
+    k = k.substring(1);
+  }
+  return k;
 }
 
 String _leafNameFromWebPath(String path) {
@@ -215,8 +234,12 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
 
   Future<void> _putFile(String key, Uint8List bytes) async {
     await _ensureReady();
-    await _opfs.write(key, bytes);
-    _indexFile(key, bytes.length);
+    final storageKey = _storageKey(key);
+    if (storageKey.isEmpty) {
+      throw ArgumentError('Cannot write to empty web storage key.');
+    }
+    await _opfs.write(storageKey, bytes);
+    _indexFile(storageKey, bytes.length);
   }
 
   Future<void> _removeFileKey(String key) async {

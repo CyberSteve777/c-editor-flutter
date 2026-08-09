@@ -330,17 +330,27 @@ class _LevelListScreenState extends State<LevelListScreen> {
   /// Builds a storage key relative to the virtual web library root.
   String _webStorageKey(String currentDir, String fileName) {
     const webPath = 'web://';
+    var leaf = fileName.replaceAll('\\', '/').trim();
+    if (leaf.startsWith(webPath)) {
+      leaf = leaf.substring(webPath.length);
+    } else if (leaf.startsWith('web:/')) {
+      leaf = leaf.substring('web:/'.length);
+    }
+    while (leaf.startsWith('/')) {
+      leaf = leaf.substring(1);
+    }
+    if (leaf.isEmpty) return leaf;
     if (currentDir == webPath) {
-      return fileName;
+      return leaf;
     }
     if (!currentDir.startsWith(webPath)) {
-      return fileName;
+      return leaf;
     }
     final rel = currentDir.substring(webPath.length);
     if (rel.isEmpty) {
-      return fileName;
+      return leaf;
     }
-    return '$rel/$fileName';
+    return '$rel/$leaf';
   }
 
   /// Web-only: pick one or more level files and add them to the virtual workspace.

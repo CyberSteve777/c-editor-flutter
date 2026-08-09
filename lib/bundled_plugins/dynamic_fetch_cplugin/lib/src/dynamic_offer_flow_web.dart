@@ -270,12 +270,25 @@ Future<({String? fileName, String? error})> _validateAlternateWebFileName({
 
 String _webStorageKey(String libraryPath, String fileName) {
   const prefix = 'web://';
+  // Strip a leaked scheme from [fileName] (path.basename on Flutter web can
+  // return "web://…" for virtual library paths).
+  var leaf = fileName.replaceAll('\\', '/').trim();
+  if (leaf.startsWith(prefix)) {
+    leaf = leaf.substring(prefix.length);
+  } else if (leaf.startsWith('web:/')) {
+    leaf = leaf.substring('web:/'.length);
+  }
+  while (leaf.startsWith('/')) {
+    leaf = leaf.substring(1);
+  }
+  if (leaf.isEmpty) return leaf;
+
   if (libraryPath == prefix || !libraryPath.startsWith(prefix)) {
-    return fileName;
+    return leaf;
   }
   final rel = libraryPath.substring(prefix.length);
-  if (rel.isEmpty) return fileName;
-  return '$rel/$fileName';
+  if (rel.isEmpty) return leaf;
+  return '$rel/$leaf';
 }
 
 class _WebBrowserDownloadDialog extends StatefulWidget {

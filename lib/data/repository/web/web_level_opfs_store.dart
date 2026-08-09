@@ -33,7 +33,15 @@ class WebLevelOpfsStore {
   }
 
   String _normalizeKey(String key) {
-    var k = key.replaceAll('\\', '/');
+    var k = key.replaceAll('\\', '/').trim();
+    // Guard against virtual library scheme leaking into OPFS (creates a "web:"
+    // directory). Callers should pass library-relative keys only.
+    const webPrefix = 'web://';
+    if (k.startsWith(webPrefix)) {
+      k = k.substring(webPrefix.length);
+    } else if (k.startsWith('web:/')) {
+      k = k.substring('web:/'.length);
+    }
     while (k.startsWith('/')) {
       k = k.substring(1);
     }
