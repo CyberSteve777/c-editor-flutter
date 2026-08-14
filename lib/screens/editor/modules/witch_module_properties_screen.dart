@@ -159,6 +159,7 @@ class _WitchModulePropertiesScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.witchModuleHelpTitle ?? 'Witch module',
               themeColor: themeColor,
               sections: [

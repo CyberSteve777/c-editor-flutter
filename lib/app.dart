@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/escape_override.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
@@ -204,8 +202,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
     switch (nav.screen) {
       case AppScreen.levelList:
         return LevelListScreen(
+          returnToLevelPath: nav.lastOpenedLevelPath,
           onLevelClick: (fileName, filePath) {
-            LevelRepository.setLastOpenedLevelDirectory(p.dirname(filePath));
             context.read<AppNavigationCubit>().openLevel(fileName, filePath);
           },
           onAboutClick: () => context.read<AppNavigationCubit>().openAbout(),

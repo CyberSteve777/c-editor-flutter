@@ -132,6 +132,7 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.bombProperties ?? 'Bomb properties',
               sections: [
                 HelpSectionData(

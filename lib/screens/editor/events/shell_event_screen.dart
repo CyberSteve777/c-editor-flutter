@@ -154,6 +154,7 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
             tooltip: l10n?.tooltipAboutEvent ?? 'About this event',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventShellSpawn ?? 'Shell spawn event',
               sections: [
                 HelpSectionData(

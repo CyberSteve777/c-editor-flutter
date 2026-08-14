@@ -339,6 +339,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.stormEvent ?? 'Storm event',
               sections: [
                 HelpSectionData(

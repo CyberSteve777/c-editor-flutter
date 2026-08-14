@@ -154,6 +154,7 @@ class _PumpkinHouseEventScreenState extends State<PumpkinHouseEventScreen> {
             tooltip: l10n?.tooltipAboutEvent ?? 'About this event',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventPumpkinHouseSpawn ?? 'Pumpkin house spawn',
               sections: [
                 HelpSectionData(

@@ -168,6 +168,7 @@ class _SpawnGraveStonesEventScreenState
             tooltip: l10n?.tooltipAboutEvent ?? 'About this event',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventSpawnGravestones ?? 'Spawn gravestones event',
               sections: [
                 HelpSectionData(

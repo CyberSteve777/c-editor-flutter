@@ -162,6 +162,7 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title:
                   l10n?.finalStageTimeLimitedChallengeHelpTitle ??
                   'Final stage time limit challenge',

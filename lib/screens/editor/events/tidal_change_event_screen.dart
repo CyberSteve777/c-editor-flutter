@@ -115,6 +115,7 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title:
                   l10n?.eventTitle_TidalChangeWaveActionProps ??
                   'Tidal change event',

@@ -172,6 +172,7 @@ class _PickupCollectableTutorialScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title:
                   l10n?.pickupCollectableTutorialHelpTitle ?? 'Pickup tutorial',
               themeColor: appBarColor,

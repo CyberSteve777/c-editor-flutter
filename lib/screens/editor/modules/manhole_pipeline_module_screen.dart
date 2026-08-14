@@ -188,7 +188,8 @@ class _ManholePipelineModuleScreenState
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
-              title: l10n.manholePipelines,
+              isEvent: false,
+              title: l10n.manholePipelineHelpTitle,
               sections: [
                 HelpSectionData(
                   title: l10n.overview,

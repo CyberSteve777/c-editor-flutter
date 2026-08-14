@@ -162,6 +162,7 @@ class _ProtectPlantChallengeScreenState
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.protectPlants,
               sections: [
                 HelpSectionData(

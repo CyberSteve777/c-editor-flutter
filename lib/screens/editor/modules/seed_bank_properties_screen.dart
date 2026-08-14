@@ -679,44 +679,49 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
 
   void _showHelp(BuildContext context, bool isZombieMode) {
     final l10n = AppLocalizations.of(context);
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.seedBankHelp ?? 'Seed bank help'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n?.seedBankLetsPlayersChoose ??
-                    'Seed bank lets players choose plants. In courtyard mode you can set global level and all plants.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.whiteListBlackListHint ??
-                    'White list: empty = no limit. Black list overrides white list.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.iZombieModePresetHint ??
-                    'I, Zombie mode: preset zombies for player. Selection locked to preset.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.invalidIdsHint ??
-                    'Invalid IDs leave empty slots. Zombie IDs in plant mode and vice versa. Put zombie slots first.',
-              ),
-            ],
-          ),
+    final theme = Theme.of(context);
+    final helpColor = isZombieMode
+        ? (theme.brightness == Brightness.dark ? pvzPurpleDark : pvzPurpleLight)
+        : theme.colorScheme.primary;
+    showEditorHelpDialog(
+      context,
+      isEvent: false,
+      title: l10n?.seedBankHelp ?? 'Seed Bank',
+      themeColor: helpColor,
+      useNeutralSectionTitles: true,
+      sections: [
+        HelpSectionData(
+          title: l10n?.overview ?? 'Overview',
+          body:
+              l10n?.seedBankLetsPlayersChoose ??
+              'Seed Bank lets players choose from available plants.',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.ok ?? 'OK'),
-          ),
-        ],
-      ),
+        HelpSectionData(
+          title:
+              l10n?.seedBankWhiteAndBlacklistTitle ?? 'Whitelist and blacklist',
+          body:
+              l10n?.whiteListBlackListHint ??
+              'An empty whitelist applies no restriction. The blacklist takes priority.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankIZombieHelpTitle ?? 'I, Zombie mode',
+          body:
+              l10n?.iZombieModePresetHint ??
+              'I, Zombie mode uses a preset list of available zombies.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankSlotOccupancyTitle ?? 'Slot occupancy',
+          body:
+              l10n?.invalidIdsHint ??
+              'Invalid IDs leave empty slots in the Seed Bank.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankAdvancedGameplayTitle ?? 'Advanced gameplay',
+          body:
+              l10n?.seedBankAdvancedGameplayBody ??
+              'The relative order of Seed Bank and Conveyor Belt modules changes sun costs in Preset mode.',
+        ),
+      ],
     );
   }
 }

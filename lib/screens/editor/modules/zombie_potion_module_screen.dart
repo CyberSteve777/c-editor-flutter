@@ -161,6 +161,7 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.zombiePotionHelpTitle,
               sections: [
                 HelpSectionData(

@@ -510,6 +510,12 @@ class PortalRepository {
       'dangerroom_west',
     ),
     _bossPortalDefinition(
+      'Kongfu',
+      'Kongfu World',
+      'stage_KongfuStage',
+      'dangerroom_Kongfu',
+    ),
+    _bossPortalDefinition(
       'future',
       'Far Future',
       'stage_FutureStage',
@@ -534,10 +540,10 @@ class PortalRepository {
       'dangerroom_iceage',
     ),
     _bossPortalDefinition(
-      'eighties',
-      'Neon Mixtape Tour',
-      'stage_EightiesStage',
-      'dangerroom_eighties',
+      'skycity',
+      'Sky City',
+      'stage_SkycityStage',
+      'dangerroom_skycity',
     ),
     _bossPortalDefinition(
       'lostcity',
@@ -546,22 +552,16 @@ class PortalRepository {
       'dangerroom_lostcity',
     ),
     _bossPortalDefinition(
+      'eighties',
+      'Neon Mixtape Tour',
+      'stage_EightiesStage',
+      'dangerroom_eighties',
+    ),
+    _bossPortalDefinition(
       'dino',
       'Jurassic Marsh',
       'stage_DinoStage',
       'dangerroom_dino',
-    ),
-    _bossPortalDefinition(
-      'skycity',
-      'Sky City',
-      'stage_SkycityStage',
-      'dangerroom_skycity',
-    ),
-    _bossPortalDefinition(
-      'Kongfu',
-      'Kongfu World',
-      'stage_KongfuStage',
-      'dangerroom_Kongfu',
     ),
     _bossPortalDefinition(
       'Modern',

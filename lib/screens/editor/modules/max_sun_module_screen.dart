@@ -113,6 +113,7 @@ class _MaxSunModuleScreenState extends State<MaxSunModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.maxSunHelpTitle ?? 'Max Sun Module',
                 themeColor: accentColor,
                 sections: [

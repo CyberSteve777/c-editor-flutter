@@ -387,6 +387,7 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
               if (l10n == null) return;
               showEditorHelpDialog(
                 context,
+                isEvent: true,
                 title: l10n.eventGraveSpawn,
                 sections: [
                   HelpSectionData(

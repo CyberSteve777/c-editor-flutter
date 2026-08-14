@@ -1065,6 +1065,8 @@ void showEditorHelpDialog(
   required String title,
   required List<HelpSectionData> sections,
   Color? themeColor,
+  bool? isEvent,
+  bool useNeutralSectionTitles = false,
 }) {
   showDialog<void>(
     context: context,
@@ -1072,6 +1074,9 @@ void showEditorHelpDialog(
       final l10n = AppLocalizations.of(ctx);
       final confirmLabel =
           l10n?.helpDialogGotIt ?? MaterialLocalizations.of(ctx).okButtonLabel;
+      final displayTitle = isEvent == null
+          ? title
+          : _standardizeEditorHelpTitle(ctx, title, isEvent: isEvent);
       return AlertDialog(
         title: Row(
           children: [
@@ -1082,7 +1087,7 @@ void showEditorHelpDialog(
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                title,
+                displayTitle,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -1109,8 +1114,10 @@ void showEditorHelpDialog(
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color:
-                                themeColor ?? Theme.of(ctx).colorScheme.primary,
+                            color: useNeutralSectionTitles
+                                ? Theme.of(ctx).colorScheme.onSurface
+                                : themeColor ??
+                                      Theme.of(ctx).colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -1146,6 +1153,59 @@ void showEditorHelpDialog(
       );
     },
   );
+}
+
+String _standardizeEditorHelpTitle(
+  BuildContext context,
+  String title, {
+  required bool isEvent,
+}) {
+  final languageCode = Localizations.localeOf(context).languageCode;
+  var base = title.trim();
+
+  switch (languageCode) {
+    case 'zh':
+      base = base
+          .replaceFirst(RegExp(r'^事件类型\s*[：:]\s*'), '')
+          .replaceFirst(RegExp(r'(模块说明|事件说明|模块|事件|说明|帮助)$'), '')
+          .trim();
+      return '$base${isEvent ? '事件说明' : '模块说明'}';
+    case 'ru':
+      base = base
+          .replaceFirst(
+            RegExp(
+              r'^(?:Справка\s+по\s+)?(?:Модуль|Событие)\s*[:：]?\s*',
+              caseSensitive: false,
+            ),
+            '',
+          )
+          .replaceFirst(
+            RegExp(
+              r'\s+(?:module|event|модуль|событие)$',
+              caseSensitive: false,
+            ),
+            '',
+          )
+          .replaceAll(RegExp(r'^[«"]|[»"]$'), '')
+          .trim();
+      return '${isEvent ? 'Событие' : 'Модуль'} «$base»';
+    default:
+      base = base
+          .replaceFirst(RegExp(r'^event\s*[:：]\s*', caseSensitive: false), '')
+          .replaceFirst(
+            RegExp(
+              r'\s+(?:module|event)(?:\s+(?:help|guide|instructions))?$',
+              caseSensitive: false,
+            ),
+            '',
+          )
+          .replaceFirst(
+            RegExp(r'\s+(?:help|guide|instructions)$', caseSensitive: false),
+            '',
+          )
+          .trim();
+      return '$base ${isEvent ? 'event' : 'module'}';
+  }
 }
 
 class HelpSectionData {

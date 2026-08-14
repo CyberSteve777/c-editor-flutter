@@ -145,7 +145,7 @@ abstract class AppLocalizations {
   /// No description provided for @sunBombFalling.
   ///
   /// In en, this message translates to:
-  /// **'Sun Bombs are falling'**
+  /// **'Sun Bombs'**
   String get sunBombFalling;
 
   /// No description provided for @sunDroppingActive.
@@ -157,7 +157,7 @@ abstract class AppLocalizations {
   /// No description provided for @sunDroppingInactive.
   ///
   /// In en, this message translates to:
-  /// **'Sun does not fall from the sky'**
+  /// **'Sun doesn\'t fall from the sky'**
   String get sunDroppingInactive;
 
   /// No description provided for @conveyorChanges.
@@ -205,7 +205,7 @@ abstract class AppLocalizations {
   /// No description provided for @allObjectsInLevel.
   ///
   /// In en, this message translates to:
-  /// **'All objects in the level'**
+  /// **'All grid items in the level'**
   String get allObjectsInLevel;
 
   /// No description provided for @allEventsInLevel.
@@ -259,19 +259,19 @@ abstract class AppLocalizations {
   /// No description provided for @renaissanceStatues.
   ///
   /// In en, this message translates to:
-  /// **'Renaissance Statues'**
+  /// **'Renaissance Statues and Mable Mounds'**
   String get renaissanceStatues;
 
   /// No description provided for @zomboss.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss'**
+  /// **'Zomboss Mech'**
   String get zomboss;
 
   /// No description provided for @boss.
   ///
   /// In en, this message translates to:
-  /// **'Boss'**
+  /// **'Non-mech Zomboss'**
   String get boss;
 
   /// No description provided for @zombossData.
@@ -325,7 +325,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWind.
   ///
   /// In en, this message translates to:
-  /// **'Heian Wind'**
+  /// **'Heian Divine Wind'**
   String get heianWind;
 
   /// No description provided for @all.
@@ -337,7 +337,7 @@ abstract class AppLocalizations {
   /// No description provided for @impLv.
   ///
   /// In en, this message translates to:
-  /// **'Imp Lv.'**
+  /// **'Imp level'**
   String get impLv;
 
   /// No description provided for @sortByLabel.
@@ -367,7 +367,7 @@ abstract class AppLocalizations {
   /// No description provided for @sortBySize.
   ///
   /// In en, this message translates to:
-  /// **'Sort: By Size'**
+  /// **'Sort: By File Size'**
   String get sortBySize;
 
   /// No description provided for @sortByFileType.
@@ -379,7 +379,7 @@ abstract class AppLocalizations {
   /// No description provided for @impsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 imp} other{{count} imps}}'**
+  /// **'{count, plural, =1{1 Imp} other{{count} Imps}}'**
   String impsCount(int count);
 
   /// No description provided for @dropShip.
@@ -397,7 +397,7 @@ abstract class AppLocalizations {
   /// No description provided for @totalPlantFoodTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Total Plant Food (including drops, events, etc.)'**
+  /// **'Total drops (including Plant Food, seed packet, etc.)'**
   String get totalPlantFoodTooltip;
 
   /// No description provided for @appTitle.
@@ -475,7 +475,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginInstallFromFolder.
   ///
   /// In en, this message translates to:
-  /// **'Load folder (debug)'**
+  /// **'Compile plugin folder (debug)'**
   String get pluginInstallFromFolder;
 
   /// No description provided for @pluginFolderHint.
@@ -547,13 +547,13 @@ abstract class AppLocalizations {
   /// No description provided for @pluginTrustWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Trust warning'**
+  /// **'Safety Notice'**
   String get pluginTrustWarningTitle;
 
   /// No description provided for @pluginTrustWarningBody.
   ///
   /// In en, this message translates to:
-  /// **'Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.'**
+  /// **'Plugins can run code within C-Editor to add more fun and useful features. By default, their access to files and the network is restricted by a sandbox, but malicious plugins may still cause harm. Please install plugins from trusted sources only.'**
   String get pluginTrustWarningBody;
 
   /// No description provided for @pluginInstalledSection.
@@ -577,7 +577,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginNoScreens.
   ///
   /// In en, this message translates to:
-  /// **'This plugin does not register any screens.'**
+  /// **'This plugin has no features or screens you can jump to directly.'**
   String get pluginNoScreens;
 
   /// No description provided for @pluginUninstall.
@@ -859,7 +859,7 @@ abstract class AppLocalizations {
   /// No description provided for @levelTypeAdventure.
   ///
   /// In en, this message translates to:
-  /// **'Adventure'**
+  /// **'Regular'**
   String get levelTypeAdventure;
 
   /// No description provided for @levelTypeLastStand.
@@ -1159,7 +1159,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadAllLevels.
   ///
   /// In en, this message translates to:
-  /// **'Export workspace'**
+  /// **'Download all levels'**
   String get downloadAllLevels;
 
   /// No description provided for @downloadFolder.
@@ -1171,19 +1171,19 @@ abstract class AppLocalizations {
   /// No description provided for @exportLevels.
   ///
   /// In en, this message translates to:
-  /// **'Export levels'**
+  /// **'Level testing mod'**
   String get exportLevels;
 
   /// No description provided for @exportSelectLevels.
   ///
   /// In en, this message translates to:
-  /// **'Select levels to export'**
+  /// **'Select levels to test'**
   String get exportSelectLevels;
 
   /// No description provided for @exportSelectFile.
   ///
   /// In en, this message translates to:
-  /// **'Select level archive for export (.rsb.smf)'**
+  /// **'Select a game data package for the testing mod (.rsb.smf)'**
   String get exportSelectFile;
 
   /// No description provided for @exportSelectedFile.
@@ -1201,7 +1201,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupRecommendationBody.
   ///
   /// In en, this message translates to:
-  /// **'It is highly recommended to create a backup of your level archive before exporting. This helps prevent data loss if the operation is interrupted.'**
+  /// **'It is highly recommended to back up your game data package before testing to prevent data loss if the process is interrupted or another unexpected issue occurs.'**
   String get backupRecommendationBody;
 
   /// No description provided for @backupAndProceed.
@@ -1225,25 +1225,25 @@ abstract class AppLocalizations {
   /// No description provided for @exportNoFilesFound.
   ///
   /// In en, this message translates to:
-  /// **'No compatible files found (.rsb.smf).'**
+  /// **'No compatible data packages found (.rsb.smf).'**
   String get exportNoFilesFound;
 
   /// No description provided for @exportDownloadExternalDynamic.
   ///
   /// In en, this message translates to:
-  /// **'Download dynamic…'**
+  /// **'Download data package'**
   String get exportDownloadExternalDynamic;
 
   /// No description provided for @cancelExportTitle.
   ///
   /// In en, this message translates to:
-  /// **'Cancel Export'**
+  /// **'Cancel Build'**
   String get cancelExportTitle;
 
   /// No description provided for @cancelExportMessage.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to cancel the export process?'**
+  /// **'Are you sure you want to cancel building the level testing mod?'**
   String get cancelExportMessage;
 
   /// No description provided for @exportDisclaimerTitle.
@@ -1255,7 +1255,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportDisclaimerBody.
   ///
   /// In en, this message translates to:
-  /// **'This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.'**
+  /// **'This feature generates level testing mods by injecting level files into the game\'s data packages (SMF/RSB container files). This process directly modifies the game data of Plants vs. Zombies 2.\n\n• Using this feature to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nThe developer hereby explicitly states:\n\n1. This feature is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this feature, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this feature and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.'**
   String get exportDisclaimerBody;
 
   /// No description provided for @exportDisclaimerDoNotShowAgain.
@@ -1273,7 +1273,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportProgressTitle.
   ///
   /// In en, this message translates to:
-  /// **'Building export…'**
+  /// **'Building data package…'**
   String get exportProgressTitle;
 
   /// No description provided for @backupProgressTitle.
@@ -1297,7 +1297,7 @@ abstract class AppLocalizations {
   /// No description provided for @webFolderImportNotice.
   ///
   /// In en, this message translates to:
-  /// **'Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.'**
+  /// **'Folder imported into browser storage. On this browser, edits are not written back to disk automatically——please use the \"Export\" feature to save files.'**
   String get webFolderImportNotice;
 
   /// No description provided for @favorite.
@@ -1531,19 +1531,19 @@ abstract class AppLocalizations {
   /// No description provided for @exportSuccessTitle.
   ///
   /// In en, this message translates to:
-  /// **'Export Successful'**
+  /// **'Build Successful'**
   String get exportSuccessTitle;
 
   /// No description provided for @exportSuccessMessage.
   ///
   /// In en, this message translates to:
-  /// **'The levels have been successfully exported to {file}.'**
+  /// **'The level testing mod has been successfully built at {file}.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced. \nNote: If the game crashes immediately on startup after the replacement, the level itself is most likely the cause.'**
   String exportSuccessMessage(String file);
 
   /// No description provided for @exportCancelled.
   ///
   /// In en, this message translates to:
-  /// **'Export cancelled.'**
+  /// **'Build cancelled.'**
   String get exportCancelled;
 
   /// No description provided for @exportDuplicateAssignment.
@@ -1579,19 +1579,19 @@ abstract class AppLocalizations {
   /// No description provided for @exportFinalCheckBody.
   ///
   /// In en, this message translates to:
-  /// **'The following levels will be exported with new names:'**
+  /// **'The following levels will be added to the data package under new names:'**
   String get exportFinalCheckBody;
 
   /// No description provided for @exportTargetArchive.
   ///
   /// In en, this message translates to:
-  /// **'All levels will be exported to {file}'**
+  /// **'The selected levels will be written to {file}'**
   String exportTargetArchive(String file);
 
   /// No description provided for @exportStart.
   ///
   /// In en, this message translates to:
-  /// **'Start Export'**
+  /// **'Build Testing Mod'**
   String get exportStart;
 
   /// No description provided for @exportAssignmentProposalBody.
@@ -1921,13 +1921,13 @@ abstract class AppLocalizations {
   /// No description provided for @hujsonFormatDescription.
   ///
   /// In en, this message translates to:
-  /// **'Hot-update readable format. Wraps level JSON in PopCap CompiledText internally (zlib compression + Rijndael encryption). Rename to .json before importing into the game.'**
+  /// **'Hot-update readable format. Before importing it into the game, please manually change the file extension from .hujson back to .json.'**
   String get hujsonFormatDescription;
 
   /// No description provided for @rtonFormatDescription.
   ///
   /// In en, this message translates to:
-  /// **'PopCap RTON binary serialization format (Rijndael-encrypted). Used as level data inside dynamic.rsb.smf.'**
+  /// **'Used as level data inside the game\'s data package (dynamic.rsb.smf).'**
   String get rtonFormatDescription;
 
   /// No description provided for @conversionRequiredTitle.
@@ -1975,7 +1975,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvzEditorSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'PVZ2 Visual Level Editor'**
+  /// **'PVZ2C Visual Level Editor'**
   String get pvzEditorSubtitle;
 
   /// No description provided for @introSection.
@@ -1987,7 +1987,7 @@ abstract class AppLocalizations {
   /// No description provided for @introText.
   ///
   /// In en, this message translates to:
-  /// **'C-Editor is a visual level editing tool designed for Plants vs. Zombies 2 Chinese Edition. It aims to simplify editing level JSON files with an intuitive interface.'**
+  /// **'C-Editor is a visual level editing tool designed for Plants vs. Zombies 2 (Chinese Version). It aims to simplify editing level JSON files with an intuitive interface.'**
   String get introText;
 
   /// No description provided for @featuresSection.
@@ -2005,13 +2005,13 @@ abstract class AppLocalizations {
   /// No description provided for @feature2.
   ///
   /// In en, this message translates to:
-  /// **'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Mech battle, and more.'**
+  /// **'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Battle, and more.'**
   String get feature2;
 
   /// No description provided for @feature3.
   ///
   /// In en, this message translates to:
-  /// **'Custom zombies: Inject and edit custom zombie properties.'**
+  /// **'Custom injection: Inject and manage custom zombies, custom lawn and custom Zomboss Mech within a level.'**
   String get feature3;
 
   /// No description provided for @feature4.
@@ -2029,19 +2029,19 @@ abstract class AppLocalizations {
   /// No description provided for @usageText.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageText;
 
   /// No description provided for @usageTextDesktop.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageTextDesktop;
 
   /// No description provided for @usageTextMobile.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageTextMobile;
 
   /// No description provided for @usageRecommendedLevelsLabel.
@@ -2233,13 +2233,13 @@ abstract class AppLocalizations {
   /// No description provided for @templateZombossMechExample.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Mech battle level template'**
+  /// **'Zomboss Mech Battle level template'**
   String get templateZombossMechExample;
 
   /// No description provided for @templateZombossBattleExample.
   ///
   /// In en, this message translates to:
-  /// **'Non-mech Zomboss battle level template'**
+  /// **'Non-mech Zomboss Battle level template'**
   String get templateZombossBattleExample;
 
   /// No description provided for @templateCustomZombieExample.
@@ -2893,13 +2893,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMech.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Mech battle'**
+  /// **'Zomboss Mech Battle'**
   String get zombossMech;
 
   /// No description provided for @zombossBattle.
   ///
   /// In en, this message translates to:
-  /// **'Non-mech Zomboss battle'**
+  /// **'Non-mech Zomboss Battle'**
   String get zombossBattle;
 
   /// No description provided for @moveSourceSameAsDest.
@@ -3739,13 +3739,13 @@ abstract class AppLocalizations {
   /// No description provided for @conflictDesc_ZombossDeathDrop.
   ///
   /// In en, this message translates to:
-  /// **'Loot Drop in Zomboss Mech battle mode will prevent proper level completion.'**
+  /// **'Loot Drop in Zomboss Mech Battle mode will prevent proper level completion.'**
   String get conflictDesc_ZombossDeathDrop;
 
   /// No description provided for @conflictDesc_ZombossBattleDeathDrop.
   ///
   /// In en, this message translates to:
-  /// **'Loot Drop in Non-mech Zomboss battle mode will prevent proper level completion.'**
+  /// **'Loot Drop in Non-mech Zomboss Battle mode will prevent proper level completion.'**
   String get conflictDesc_ZombossBattleDeathDrop;
 
   /// No description provided for @conflictDesc_WinConditionExclusive.
@@ -3799,13 +3799,13 @@ abstract class AppLocalizations {
   /// No description provided for @conflictDesc_WaveGeneratorRenai.
   ///
   /// In en, this message translates to:
-  /// **'Wave Generator is incompatible with the Renai module and will crash the level on load.'**
+  /// **'Wave Generator is incompatible with the Renaissance module and will cause the level to crash.'**
   String get conflictDesc_WaveGeneratorRenai;
 
   /// No description provided for @conflictDesc_WaveGeneratorWitch.
   ///
   /// In en, this message translates to:
-  /// **'Wave Generator is incompatible with the Witch module and will crash the level on load.'**
+  /// **'Wave Generator is incompatible with the Fright Witch module and will cause the level to crash.'**
   String get conflictDesc_WaveGeneratorWitch;
 
   /// No description provided for @missingPlantModuleWarningTitle.
@@ -4009,7 +4009,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_WaveGeneratorProperties.
   ///
   /// In en, this message translates to:
-  /// **'Legacy embedded wave definition (campaign-style levels). Mutually exclusive with Wave Manager.'**
+  /// **'Legacy wave configuration that allows spawning Weapon Stands as waves progress'**
   String get moduleDesc_WaveGeneratorProperties;
 
   /// No description provided for @moduleTitle_CustomLevelModuleProperties.
@@ -4135,19 +4135,19 @@ abstract class AppLocalizations {
   /// No description provided for @comingSoonPlantBlockedLabel.
   ///
   /// In en, this message translates to:
-  /// **'A Message from Space'**
+  /// **'To Be Continued'**
   String get comingSoonPlantBlockedLabel;
 
   /// No description provided for @comingSoonPlantBlockedTitle.
   ///
   /// In en, this message translates to:
-  /// **'A Message from Space'**
+  /// **'To Be Continued'**
   String get comingSoonPlantBlockedTitle;
 
   /// No description provided for @comingSoonPlantBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!'**
+  /// **'The plants are still growing strong. Stay tuned for future updates!'**
   String get comingSoonPlantBlockedMessage;
 
   /// No description provided for @stayTunedMoonZombieBlockedLabel.
@@ -4165,13 +4165,13 @@ abstract class AppLocalizations {
   /// No description provided for @stayTunedMoonZombieBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!'**
+  /// **'Moon Base Part 2 is coming soon. Keep a lookout!'**
   String get stayTunedMoonZombieBlockedMessage;
 
   /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
   ///
   /// In en, this message translates to:
-  /// **'ZCorp\'s story is not over'**
+  /// **'Work\'s Not Over Yet'**
   String get stayTunedTaleZCorpZombieBlockedLabel;
 
   /// No description provided for @stayTunedTaleZCorpZombieBlockedTitle.
@@ -4183,7 +4183,7 @@ abstract class AppLocalizations {
   /// No description provided for @stayTunedTaleZCorpZombieBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Part 2 of ZCorp Secret Realm is coming soon. Stay tuned!'**
+  /// **'Part 2 of ZCorp Secret Realm is coming. Stay tuned!'**
   String get stayTunedTaleZCorpZombieBlockedMessage;
 
   /// No description provided for @stayTunedZombieBlockedLabel.
@@ -4201,7 +4201,7 @@ abstract class AppLocalizations {
   /// No description provided for @stayTunedZombieBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'More zombies are approaching. Stay tuned for future updates!'**
+  /// **'More zombies are approaching. keep an eye out on upcoming updates!'**
   String get stayTunedZombieBlockedMessage;
 
   /// No description provided for @missingModuleForPlantsWarning.
@@ -4597,37 +4597,37 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_ZombossBattleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Mech battle'**
+  /// **'Zomboss Mech Battle'**
   String get moduleTitle_ZombossBattleModuleProperties;
 
   /// No description provided for @moduleDesc_ZombossBattleModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configures ZombossMech parameters and types'**
+  /// **'Configures Zomboss Mech types and parameters'**
   String get moduleDesc_ZombossBattleModuleProperties;
 
   /// No description provided for @moduleTitle_ZombossBattleIntroProperties.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech Intro'**
+  /// **'Zomboss Mech Intro'**
   String get moduleTitle_ZombossBattleIntroProperties;
 
   /// No description provided for @moduleDesc_ZombossBattleIntroProperties.
   ///
   /// In en, this message translates to:
-  /// **'Controls ZombossMech cutscenes and health bar display'**
+  /// **'Controls Zomboss Mech Battle cutscenes and health bar display'**
   String get moduleDesc_ZombossBattleIntroProperties;
 
   /// No description provided for @moduleTitle_ZombossLastStandMinigameProperties.
   ///
   /// In en, this message translates to:
-  /// **'Non-mech Zomboss battle'**
+  /// **'Non-mech Zomboss Battle'**
   String get moduleTitle_ZombossLastStandMinigameProperties;
 
   /// No description provided for @moduleDesc_ZombossLastStandMinigameProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configures non-mech Zomboss last-stand battles (Kongfu, Qin, etc.)'**
+  /// **'Configures non-mech Zomboss Battles such as Qigong Master'**
   String get moduleDesc_ZombossLastStandMinigameProperties;
 
   /// No description provided for @moduleTitle_SeedRainProperties.
@@ -5041,13 +5041,13 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_SmokePollutionModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Smoke Pollution'**
+  /// **'Steam Manhole'**
   String get moduleTitle_SmokePollutionModuleProperties;
 
   /// No description provided for @moduleDesc_SmokePollutionModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configures steam poison fog manholes on the lawn'**
+  /// **'Configures Steam Ages steam sewers'**
   String get moduleDesc_SmokePollutionModuleProperties;
 
   /// No description provided for @moduleTitle_RoofProperties.
@@ -5107,7 +5107,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_ArmrackProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configures weapon stand display on the lawn (wave 1 only)'**
+  /// **'Configures the spawning of Kongfu World weapon stands'**
   String get moduleDesc_ArmrackProperties;
 
   /// No description provided for @moduleTitle_EnergyGridProperties.
@@ -5119,7 +5119,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_EnergyGridProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configures Taiji Tile display on the lawn (wave 1 only)'**
+  /// **'Configures the spawning of Kongfu World Taiji tiles'**
   String get moduleDesc_EnergyGridProperties;
 
   /// No description provided for @bronzeModuleTitle.
@@ -5395,7 +5395,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_SpawnModernPortalsWaveActionProps.
   ///
   /// In en, this message translates to:
-  /// **'Summons spacetime portals at specific locations'**
+  /// **'Summons spacetime portals at set locations'**
   String get eventDesc_SpawnModernPortalsWaveActionProps;
 
   /// No description provided for @eventTitle_StormZombieSpawnerProps.
@@ -6421,7 +6421,7 @@ abstract class AppLocalizations {
   /// No description provided for @customZombieHelpManualBody.
   ///
   /// In en, this message translates to:
-  /// **'Custom injection auto-fills all properties from game files. You can further edit the JSON file manually if needed.'**
+  /// **'When injecting a custom zombie, the editor automatically fills in the original zombie\'s relevant properties from the corresponding game files. You can further edit the JSON file manually if needed.'**
   String get customZombieHelpManualBody;
 
   /// No description provided for @editAlias.
@@ -6670,6 +6670,12 @@ abstract class AppLocalizations {
   /// **'{name} - Zombie preview'**
   String zombiePreview(String name);
 
+  /// No description provided for @zombiePreviewTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie preview'**
+  String get zombiePreviewTooltip;
+
   /// No description provided for @weatherSettings.
   ///
   /// In en, this message translates to:
@@ -6703,8 +6709,14 @@ abstract class AppLocalizations {
   /// No description provided for @bowlingFoulLine.
   ///
   /// In en, this message translates to:
-  /// **'No-planting line'**
+  /// **'No-planting line (BowlingFoulLine)'**
   String get bowlingFoulLine;
+
+  /// No description provided for @bowlingFoulLinePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'No-planting line preview'**
+  String get bowlingFoulLinePreview;
 
   /// No description provided for @bowlingMinigameParams.
   ///
@@ -6715,13 +6727,13 @@ abstract class AppLocalizations {
   /// No description provided for @bowlingMinigameHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'Sets the column index of the no-planting line for bulb bowling levels. Plants cannot be placed at or beyond this column.'**
+  /// **'A legacy configuration module for Bulb Bowling that sets the no-planting line and disables the shovel. It can also be used in regular levels. Plants cannot be placed on or to the right of the no-planting line.'**
   String get bowlingMinigameHelpOverview;
 
   /// No description provided for @bowlingMinigameHelpFoulLine.
   ///
   /// In en, this message translates to:
-  /// **'BowlingFoulLine is a 0-based column index from the left edge of the lawn. Zombies and bowling bulbs interact with plants to the right of this line.'**
+  /// **'Sets the column boundary for the no-planting area. Its value is counted from the left edge of the lawn starting at 0. For example, the left boundary of the first tile from the left is 0, while its right boundary is 1. Lower boundary values leave less usable space on the left.\nOn Underwater World lawns, the game automatically adds 1 to this value. For example, a value of 0 leaves column 1 plantable and blocks planting from column 2 onward; the minimum value available in the editor is therefore -1.'**
   String get bowlingMinigameHelpFoulLine;
 
   /// No description provided for @stopColumn.
@@ -6799,13 +6811,13 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpDinoRow.
   ///
   /// In en, this message translates to:
-  /// **'Row where the dinosaur appears, counted from the top (0-based). On deep-sea lawns, row 5 is also available.'**
+  /// **'The row where the dinosaur appears, counted from 0. On Underwater World lawns, this can be set to 5 for the sixth row.'**
   String get eventHelpDinoRow;
 
   /// No description provided for @eventHelpDinoWaveDuration.
   ///
   /// In en, this message translates to:
-  /// **'How many waves the dinosaur stays on the lawn before leaving.'**
+  /// **'The number of waves a dinosaur remains on the lawn. The dinosaur will leave after staying for the specified number of waves or after interacting with a certain number of zombies. When set to 0, there is no wave limit, and the dinosaur will leave after completing its interactions by default.'**
   String get eventHelpDinoWaveDuration;
 
   /// No description provided for @unknownModuleTitle.
@@ -7219,7 +7231,7 @@ abstract class AppLocalizations {
   /// No description provided for @customFishHelpPropsBody.
   ///
   /// In en, this message translates to:
-  /// **'HitRect, AttackRect, ScareRect define collision areas. Speed and ScareSpeed control movement. ArtCenter defines center of the sprite.'**
+  /// **'HitRect, AttackRect and ScareRect define collision areas. Speed and ScareSpeed control movement. ArtCenter defines center of the sprite.'**
   String get customFishHelpPropsBody;
 
   /// No description provided for @noEditableFishProps.
@@ -8092,6 +8104,12 @@ abstract class AppLocalizations {
   /// **'Direction'**
   String get direction;
 
+  /// No description provided for @windDirectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Direction'**
+  String get windDirectionLabel;
+
   /// No description provided for @velocityScale.
   ///
   /// In en, this message translates to:
@@ -8230,6 +8248,12 @@ abstract class AppLocalizations {
   /// **'Manhole pipelines'**
   String get manholePipelines;
 
+  /// No description provided for @manholePipelineHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manhole Pipeline'**
+  String get manholePipelineHelpTitle;
+
   /// No description provided for @manholePipelineHelpOverview.
   ///
   /// In en, this message translates to:
@@ -8245,13 +8269,13 @@ abstract class AppLocalizations {
   /// No description provided for @smokePollutionModuleTitle.
   ///
   /// In en, this message translates to:
-  /// **'Smoke pollution module'**
+  /// **'Steam Manhole module'**
   String get smokePollutionModuleTitle;
 
   /// No description provided for @smokePollutionModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Smoke pollution module'**
+  /// **'Steam Manhole module'**
   String get smokePollutionModuleHelpTitle;
 
   /// No description provided for @smokePollutionModuleHelpOverview.
@@ -8263,25 +8287,25 @@ abstract class AppLocalizations {
   /// No description provided for @smokePollutionModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Places smoke manholes on the lawn that erupt after a delay, releasing poison fog. Commonly used in Steam Ages levels.'**
+  /// **'Pre-place covered sewer manholes on the lawn, commonly used in Steam Ages levels. After the specified time, toxic steam blasts the covers off and spreads across a 3×3 area centered on each manhole. Plants caught in the steam take 30 damage per second.'**
   String get smokePollutionModuleHelpOverviewBody;
 
   /// No description provided for @smokePollutionModuleHelpManholes.
   ///
   /// In en, this message translates to:
-  /// **'Manholes'**
+  /// **'Usage'**
   String get smokePollutionModuleHelpManholes;
 
   /// No description provided for @smokePollutionModuleHelpManholesBody.
   ///
   /// In en, this message translates to:
-  /// **'Select a tile on the grid, then add manholes at that position. Each manhole has a Start Time — seconds from level start until it erupts and releases poison fog.'**
+  /// **'Select a tile, then tap \"+\" to place a sewer manhole. Each manhole can have its eruption time (StartTime) configured independently, determining how long after the level begins its cover is blasted off and toxic steam is released.'**
   String get smokePollutionModuleHelpManholesBody;
 
   /// No description provided for @smokePollutionModuleStartTimeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Start time (s)'**
+  /// **'Eruption time (unit: seconds)'**
   String get smokePollutionModuleStartTimeLabel;
 
   /// No description provided for @manholePipelineStartEndFormat.
@@ -9391,13 +9415,13 @@ abstract class AppLocalizations {
   /// No description provided for @missingZombossMechModule.
   ///
   /// In en, this message translates to:
-  /// **'Missing Zomboss Mech battle module (ZombossBattleModuleProperties)'**
+  /// **'Missing Zomboss Mech Battle module (ZombossBattleModuleProperties)'**
   String get missingZombossMechModule;
 
   /// No description provided for @missingZombossBattleModule.
   ///
   /// In en, this message translates to:
-  /// **'Missing Non-mech Zomboss battle module (ZombossLastStandMinigameProperties)'**
+  /// **'Missing Non-mech Zomboss Battle module (ZombossLastStandMinigameProperties)'**
   String get missingZombossBattleModule;
 
   /// No description provided for @challengeNoConfig.
@@ -10907,7 +10931,7 @@ abstract class AppLocalizations {
   /// No description provided for @seedBankLetsPlayersChoose.
   ///
   /// In en, this message translates to:
-  /// **'Seed Bank lets players choose from available plants. In Creative Courtyard, it supports setting a global tier and enables access to all plants. When selection mode is set to Preset, placing the Seed Bank before the Conveyor Belt makes conveyor plants cost sun, while placing it after allows preset plants to be planted without sun cost.'**
+  /// **'Seed Bank lets players choose from available plants. In Creative Courtyard, it supports setting a global tier and enables access to all plants.'**
   String get seedBankLetsPlayersChoose;
 
   /// No description provided for @iZombieModePresetHint.
@@ -10921,6 +10945,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid IDs will appear as empty slots in the Seed Bank. In I, Zombie Mode, plant IDs are invalid, and vice versa. This can be used to create two Seed Banks in one level and combine both modes. Make sure the Zombie Seed Bank is placed first.'**
   String get invalidIdsHint;
+
+  /// No description provided for @seedBankWhiteAndBlacklistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Whitelist and blacklist'**
+  String get seedBankWhiteAndBlacklistTitle;
+
+  /// No description provided for @seedBankIZombieHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'I, Zombie mode'**
+  String get seedBankIZombieHelpTitle;
+
+  /// No description provided for @seedBankSlotOccupancyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot occupancy'**
+  String get seedBankSlotOccupancyTitle;
+
+  /// No description provided for @seedBankAdvancedGameplayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced gameplay'**
+  String get seedBankAdvancedGameplayTitle;
+
+  /// No description provided for @seedBankAdvancedGameplayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When selection mode is Preset, placing the Seed Bank before the Conveyor Belt makes conveyor plants cost sun, while placing it after allows preset plants to be planted without sun cost.'**
+  String get seedBankAdvancedGameplayBody;
 
   /// No description provided for @seedBankIZombie.
   ///

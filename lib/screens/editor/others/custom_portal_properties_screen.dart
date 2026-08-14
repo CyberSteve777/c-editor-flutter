@@ -29,6 +29,8 @@ class _CustomPortalPropertiesScreenState
     extends State<CustomPortalPropertiesScreen> {
   late Map<String, dynamic> _data;
   CustomPortalInfo? _existing;
+  bool _canPop = false;
+  bool _exitDialogOpen = false;
 
   bool get _isNew => _existing == null;
 
@@ -103,7 +105,7 @@ class _CustomPortalPropertiesScreenState
     });
   }
 
-  void _save() {
+  String _savePortal() {
     final existing = _existing;
     final portalType = existing == null
         ? CustomPortalLevelUtils.create(
@@ -114,7 +116,64 @@ class _CustomPortalPropertiesScreenState
     if (existing != null) {
       CustomPortalLevelUtils.updateProperties(existing, _data);
     }
-    Navigator.pop(context, portalType);
+    return portalType;
+  }
+
+  void _exitWithResult(String? result) {
+    if (!mounted) return;
+    setState(() => _canPop = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.pop(context, result);
+    });
+  }
+
+  void _saveAndExit() {
+    _exitWithResult(_savePortal());
+  }
+
+  Future<void> _confirmExit() async {
+    if (_exitDialogOpen || !mounted) return;
+    _exitDialogOpen = true;
+    final l10n = AppLocalizations.of(context);
+    final choice = await showDialog<_CustomPortalExitChoice>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n?.unsavedChanges ?? 'Unsaved changes'),
+        content: Text(l10n?.saveBeforeLeaving ?? 'Save before leaving?'),
+        actions: [
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+              foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+            ),
+            onPressed: () =>
+                Navigator.pop(dialogContext, _CustomPortalExitChoice.discard),
+            child: Text(l10n?.discard ?? 'Discard'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n?.stayInEditor ?? 'Stay'),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(dialogContext, _CustomPortalExitChoice.save),
+            child: Text(l10n?.save ?? 'Save'),
+          ),
+        ],
+      ),
+    );
+    _exitDialogOpen = false;
+    if (!mounted) return;
+    switch (choice) {
+      case _CustomPortalExitChoice.discard:
+        _exitWithResult(null);
+        return;
+      case _CustomPortalExitChoice.save:
+        _saveAndExit();
+        return;
+      case null:
+        return;
+    }
   }
 
   @override
@@ -126,184 +185,206 @@ class _CustomPortalPropertiesScreenState
         PortalRepository.spawnMethodCodes.first;
     final hasInterval = _data['TimeBetweenSpawns'] is Map;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _isNew
-              ? (l10n?.customPortalCreateTitle ?? 'Create custom portal')
-              : (l10n?.customPortalEditTitle ?? 'Edit custom portal'),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        actions: [
-          TextButton(onPressed: _save, child: Text(l10n?.save ?? 'Save')),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n?.customPortalAppearanceSection ?? 'Portal appearance',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue:
-                        PortalRepository.worldCodes.contains(_data['World'])
-                        ? _data['World'].toString()
-                        : null,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: _portalPropertyLabel(
-                        l10n?.customPortalWorld ?? 'World',
-                        'World',
-                      ),
-                    ),
-                    items: [
-                      for (final code in PortalRepository.worldCodes)
-                        DropdownMenuItem(
-                          value: code,
-                          child: Text('${_worldName(context, code)} ($code)'),
-                        ),
-                    ],
-                    onChanged: (value) {
-                      if (value == null) return;
-                      setState(() => _data['World'] = value);
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  SeparatedOptionPickerField<String>(
-                    labelText: _portalPropertyLabel(
-                      l10n?.customPortalPopAnimation ?? 'Portal animation',
-                      'PopAnim',
-                    ),
-                    value:
-                        PortalRepository.popAnimCodes.contains(_data['PopAnim'])
-                        ? _data['PopAnim'].toString()
-                        : null,
-                    items: [
-                      for (final code in PortalRepository.popAnimCodes)
-                        SeparatedOptionPickerItem(
-                          value: code,
-                          label: _popAnimName(l10n, code),
-                          subtitle: code,
-                          fieldLabel: '${_popAnimName(l10n, code)} ($code)',
-                        ),
-                    ],
-                    onChanged: _setPopAnim,
-                  ),
-                ],
-              ),
-            ),
+    return PopScope(
+      canPop: _canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _confirmExit();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _confirmExit,
           ),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n?.customPortalSpawnSection ?? 'Zombie spawning',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SeparatedOptionPickerField<String>(
-                    labelText: _portalPropertyLabel(
-                      l10n?.customPortalSpawnMethod ?? 'Spawn method',
-                      'ZombieSpawnMethod',
-                    ),
-                    value:
-                        PortalRepository.spawnMethodCodes.contains(spawnMethod)
-                        ? spawnMethod
-                        : null,
-                    items: [
-                      for (final code in PortalRepository.spawnMethodCodes)
-                        SeparatedOptionPickerItem(
-                          value: code,
-                          label: _spawnMethodName(l10n, code),
-                          subtitle: code,
-                          fieldLabel: '${_spawnMethodName(l10n, code)} ($code)',
-                        ),
-                    ],
-                    onChanged: (value) {
-                      setState(() => _data['ZombieSpawnMethod'] = value);
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  ZombossMechWeightedZombieListEditor(
-                    fieldLabel: _portalPropertyLabel(
-                      l10n?.customPortalZombieTypes ?? 'Zombie types',
-                      'ZombieTypesToSpawn',
-                    ),
-                    weightLabel: _portalPropertyLabel(
-                      l10n?.zombieWeight ?? 'Zombie weight',
-                      'Weight',
-                    ),
-                    zombieIds: _zombieIds,
-                    weights: _zombieWeights,
-                    defaultWeight: 1,
-                    editable: true,
-                    onChanged: _setZombies,
-                  ),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      _portalPropertyLabel(
-                        l10n?.customPortalSpawnInterval ?? 'Spawn interval',
-                        'TimeBetweenSpawns',
+          title: Text(
+            _isNew
+                ? (l10n?.customPortalCreateTitle ?? 'Create custom portal')
+                : (l10n?.customPortalEditTitle ?? 'Edit custom portal'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          actions: [
+            TextButton(
+              onPressed: _saveAndExit,
+              child: Text(l10n?.save ?? 'Save'),
+            ),
+          ],
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n?.customPortalAppearanceSection ??
+                          'Portal appearance',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    subtitle: Text(
-                      l10n?.customPortalSpawnIntervalSubtitle ??
-                          'Optionally limit the time between zombie spawns.',
-                    ),
-                    value: hasInterval,
-                    onChanged: (enabled) {
-                      setState(() {
-                        if (enabled) {
-                          _data['TimeBetweenSpawns'] = {'Min': 1.0, 'Max': 1.0};
-                        } else {
-                          _data.remove('TimeBetweenSpawns');
-                        }
-                      });
-                    },
-                  ),
-                  if (hasInterval) ...[
-                    const SizedBox(height: 8),
-                    _intervalField(
-                      context,
-                      field: 'Min',
-                      label:
-                          l10n?.minimumIntervalSeconds ??
-                          'Minimum interval (seconds)',
                     ),
                     const SizedBox(height: 12),
-                    _intervalField(
-                      context,
-                      field: 'Max',
-                      label:
-                          l10n?.maximumIntervalSeconds ??
-                          'Maximum interval (seconds)',
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      initialValue:
+                          PortalRepository.worldCodes.contains(_data['World'])
+                          ? _data['World'].toString()
+                          : null,
+                      decoration: editorInputDecoration(
+                        context,
+                        labelText: _portalPropertyLabel(
+                          l10n?.customPortalWorld ?? 'World',
+                          'World',
+                        ),
+                      ),
+                      items: [
+                        for (final code in PortalRepository.worldCodes)
+                          DropdownMenuItem(
+                            value: code,
+                            child: Text('${_worldName(context, code)} ($code)'),
+                          ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _data['World'] = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    SeparatedOptionPickerField<String>(
+                      labelText: _portalPropertyLabel(
+                        l10n?.customPortalPopAnimation ?? 'Portal animation',
+                        'PopAnim',
+                      ),
+                      value:
+                          PortalRepository.popAnimCodes.contains(
+                            _data['PopAnim'],
+                          )
+                          ? _data['PopAnim'].toString()
+                          : null,
+                      items: [
+                        for (final code in PortalRepository.popAnimCodes)
+                          SeparatedOptionPickerItem(
+                            value: code,
+                            label: _popAnimName(l10n, code),
+                            subtitle: code,
+                            fieldLabel: '${_popAnimName(l10n, code)} ($code)',
+                          ),
+                      ],
+                      onChanged: _setPopAnim,
                     ),
                   ],
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n?.customPortalSpawnSection ?? 'Zombie spawning',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SeparatedOptionPickerField<String>(
+                      labelText: _portalPropertyLabel(
+                        l10n?.customPortalSpawnMethod ?? 'Spawn method',
+                        'ZombieSpawnMethod',
+                      ),
+                      value:
+                          PortalRepository.spawnMethodCodes.contains(
+                            spawnMethod,
+                          )
+                          ? spawnMethod
+                          : null,
+                      items: [
+                        for (final code in PortalRepository.spawnMethodCodes)
+                          SeparatedOptionPickerItem(
+                            value: code,
+                            label: _spawnMethodName(l10n, code),
+                            subtitle: code,
+                            fieldLabel:
+                                '${_spawnMethodName(l10n, code)} ($code)',
+                          ),
+                      ],
+                      onChanged: (value) {
+                        setState(() => _data['ZombieSpawnMethod'] = value);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    ZombossMechWeightedZombieListEditor(
+                      fieldLabel: _portalPropertyLabel(
+                        l10n?.customPortalZombieTypes ?? 'Zombie types',
+                        'ZombieTypesToSpawn',
+                      ),
+                      weightLabel: _portalPropertyLabel(
+                        l10n?.zombieWeight ?? 'Zombie weight',
+                        'Weight',
+                      ),
+                      zombieIds: _zombieIds,
+                      weights: _zombieWeights,
+                      defaultWeight: 1,
+                      editable: true,
+                      onChanged: _setZombies,
+                    ),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        _portalPropertyLabel(
+                          l10n?.customPortalSpawnInterval ?? 'Spawn interval',
+                          'TimeBetweenSpawns',
+                        ),
+                      ),
+                      subtitle: Text(
+                        l10n?.customPortalSpawnIntervalSubtitle ??
+                            'Optionally limit the time between zombie spawns.',
+                      ),
+                      value: hasInterval,
+                      onChanged: (enabled) {
+                        setState(() {
+                          if (enabled) {
+                            _data['TimeBetweenSpawns'] = {
+                              'Min': 1.0,
+                              'Max': 1.0,
+                            };
+                          } else {
+                            _data.remove('TimeBetweenSpawns');
+                          }
+                        });
+                      },
+                    ),
+                    if (hasInterval) ...[
+                      const SizedBox(height: 8),
+                      _intervalField(
+                        context,
+                        field: 'Min',
+                        label:
+                            l10n?.minimumIntervalSeconds ??
+                            'Minimum interval (seconds)',
+                      ),
+                      const SizedBox(height: 12),
+                      _intervalField(
+                        context,
+                        field: 'Max',
+                        label:
+                            l10n?.maximumIntervalSeconds ??
+                            'Maximum interval (seconds)',
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -397,3 +478,5 @@ class _CustomPortalPropertiesScreenState
     return int.tryParse(value?.toString() ?? '') ?? fallback;
   }
 }
+
+enum _CustomPortalExitChoice { discard, save }

@@ -436,6 +436,7 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.fishPropertiesGrid ?? 'Fish placement',
               sections: [
                 HelpSectionData(

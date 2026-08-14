@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,10 @@ class _CustomZombossMechActionEditorScreenState
   late String _baseActionAlias;
   late TextEditingController _aliasCtrl;
   late bool _aliasManuallyEdited;
+  late final PvzLevelFile _initialLevelSnapshot;
+  late final Map<String, dynamic>? _initialPropsSnapshot;
+  bool _canPop = false;
+  bool _exitDialogOpen = false;
 
   List<ZombossMechCatalogAction> get _baseActions {
     if (widget.retreatOnly) return widget.catalog.retreatCatalogActions;
@@ -153,7 +158,20 @@ class _CustomZombossMechActionEditorScreenState
     _aliasManuallyEdited =
         widget.existingRtid != null &&
         !_looksLikeGeneratedAlias(_alias, _baseActionAlias);
+    _initialLevelSnapshot = _cloneLevel(widget.levelFile);
+    _initialPropsSnapshot = widget.propsData == null
+        ? null
+        : _cloneMap(widget.propsData!);
   }
+
+  PvzLevelFile _cloneLevel(PvzLevelFile levelFile) => PvzLevelFile.fromJson(
+    jsonDecode(jsonEncode(levelFile.toJson())) as Map<String, dynamic>,
+  );
+
+  Map<String, dynamic> _cloneMap(Map<String, dynamic> value) =>
+      Map<String, dynamic>.from(
+        jsonDecode(jsonEncode(value)) as Map<String, dynamic>,
+      );
 
   bool _looksLikeGeneratedAlias(String alias, String baseAlias) {
     if (alias == baseAlias) return true;
@@ -488,28 +506,97 @@ class _CustomZombossMechActionEditorScreenState
     });
   }
 
-  Future<void> _saveAndPop() async {
+  Future<String?> _saveAction() async {
     if (widget.existingRtid == null && _obj == null) {
       final trimmed = _aliasCtrl.text.trim();
-      if (trimmed.isEmpty) return;
+      if (trimmed.isEmpty) return null;
       if (!ZombossMechActionUtils.isAliasAvailable(widget.levelFile, trimmed)) {
         await showAliasAlreadyTakenDialog(context);
-        return;
+        return null;
       }
       _alias = trimmed;
     } else {
       final aliasOk = await _tryApplyAlias(_aliasCtrl.text);
-      if (!aliasOk || !mounted) return;
+      if (!aliasOk || !mounted) return null;
     }
     if (_obj == null && !_hasValidAwardDrop()) {
       _restoreDefaultAwardDrop();
     }
     _syncObject();
+    return RtidParser.build(_alias, ZombossMechActionUtils.customSource);
+  }
+
+  void _exitWithResult(String? result) {
     if (!mounted) return;
-    Navigator.pop(
-      context,
-      RtidParser.build(_alias, ZombossMechActionUtils.customSource),
+    setState(() => _canPop = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.pop(context, result);
+    });
+  }
+
+  Future<void> _saveAndExit() async {
+    final result = await _saveAction();
+    if (result != null && mounted) _exitWithResult(result);
+  }
+
+  void _restoreInitialState() {
+    final restored = _cloneLevel(_initialLevelSnapshot);
+    widget.levelFile
+      ..objects.clear()
+      ..objects.addAll(restored.objects)
+      ..version = restored.version;
+    if (widget.propsData != null && _initialPropsSnapshot != null) {
+      widget.propsData!
+        ..clear()
+        ..addAll(_cloneMap(_initialPropsSnapshot));
+    }
+    widget.onPropsSync?.call();
+  }
+
+  Future<void> _confirmExit() async {
+    if (_exitDialogOpen || !mounted) return;
+    _exitDialogOpen = true;
+    final l10n = AppLocalizations.of(context);
+    final choice = await showDialog<_CustomActionExitChoice>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n?.unsavedChanges ?? 'Unsaved changes'),
+        content: Text(l10n?.saveBeforeLeaving ?? 'Save before leaving?'),
+        actions: [
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+              foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+            ),
+            onPressed: () =>
+                Navigator.pop(dialogContext, _CustomActionExitChoice.discard),
+            child: Text(l10n?.discard ?? 'Discard'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n?.stayInEditor ?? 'Stay'),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(dialogContext, _CustomActionExitChoice.save),
+            child: Text(l10n?.save ?? 'Save'),
+          ),
+        ],
+      ),
     );
+    _exitDialogOpen = false;
+    if (!mounted) return;
+    switch (choice) {
+      case _CustomActionExitChoice.discard:
+        _restoreInitialState();
+        _exitWithResult(null);
+        return;
+      case _CustomActionExitChoice.save:
+        await _saveAndExit();
+        return;
+      case null:
+        return;
+    }
   }
 
   @override
@@ -518,95 +605,113 @@ class _CustomZombossMechActionEditorScreenState
     final group = _group;
     final isNew = widget.existingRtid == null;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          isNew
-              ? (l10n?.zombossMechCreateCustomAction ?? 'New custom action')
-              : (l10n?.zombossMechEditCustomAction ?? 'Edit custom action'),
-        ),
-        actions: [
-          TextButton(onPressed: _saveAndPop, child: Text(l10n?.save ?? 'Save')),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          TextFormField(
-            controller: _aliasCtrl,
-            decoration: editorInputDecoration(
-              context,
-              labelText: l10n?.aliasLabel ?? 'Alias',
-              hintText:
-                  l10n?.zombossMechActionAliasHint ??
-                  'Codename used in RTID(alias@CurrentLevel).',
-            ),
-            onChanged: (_) => _aliasManuallyEdited = true,
-            onFieldSubmitted: _applyAlias,
+    return PopScope(
+      canPop: _canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _confirmExit();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _confirmExit,
           ),
-          const SizedBox(height: 12),
-          if (_usesBaseActionPicker)
-            SeparatedOptionPickerField<String>(
-              labelText: l10n?.zombossMechActionBaseAction ?? 'Base Action',
-              value:
-                  _baseActions.any((action) => action.alias == _baseActionAlias)
-                  ? _baseActionAlias
-                  : _baseActions.firstOrNull?.alias,
-              items: [
-                for (final action in _baseActions)
-                  SeparatedOptionPickerItem(
-                    value: action.alias,
-                    label: ZombossMechL10n.implementationLabel(
-                      context,
-                      widget.catalog.id,
-                      action.alias,
-                    ),
-                    subtitle: action.alias,
-                    fieldLabel: _baseActionLabel(context, action),
-                  ),
-              ],
-              onChanged: _onBaseActionChanged,
-            )
-          else
-            SeparatedOptionPickerField<String>(
-              labelText: l10n?.zombossMechActionBaseObjclass ?? 'Base objclass',
-              value: _groups.any((g) => g.objclass == _objclass)
-                  ? _objclass
-                  : _groups.firstOrNull?.objclass,
-              items: [
-                for (final g in _groups)
-                  SeparatedOptionPickerItem(
-                    value: g.objclass,
-                    label: _actionTypeName(context, g),
-                    subtitle: g.objclass,
-                    fieldLabel: _actionTypeLabel(context, g),
-                  ),
-              ],
-              enabled: widget.existingRtid == null,
-              onChanged: (value) => _onObjclassChanged(value),
+          title: Text(
+            isNew
+                ? (l10n?.zombossMechCreateCustomAction ?? 'New custom action')
+                : (l10n?.zombossMechEditCustomAction ?? 'Edit custom action'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: _saveAndExit,
+              child: Text(l10n?.save ?? 'Save'),
             ),
-          const SizedBox(height: 16),
-          if (group != null)
-            ZombossMechActionFieldsEditor(
-              mechId: widget.catalog.id,
-              fields: group.fields,
-              data: _data,
-              objclass: _objclass,
-              levelFile: widget.levelFile,
-              hiddenFieldNames: _awardDropDependencySpec == null
-                  ? const {}
-                  : const {'AwardDrop'},
-              onChanged: () {
-                _syncObject();
-                setState(() {});
-              },
-            ),
-          if (_awardDropDependencySpec != null) ...[
-            const SizedBox(height: 16),
-            _buildAwardDropEditor(context),
           ],
-        ],
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            TextFormField(
+              controller: _aliasCtrl,
+              decoration: editorInputDecoration(
+                context,
+                labelText: l10n?.aliasLabel ?? 'Alias',
+                hintText:
+                    l10n?.zombossMechActionAliasHint ??
+                    'Codename used in RTID(alias@CurrentLevel).',
+              ),
+              onChanged: (_) => _aliasManuallyEdited = true,
+              onFieldSubmitted: _applyAlias,
+            ),
+            const SizedBox(height: 12),
+            if (_usesBaseActionPicker)
+              SeparatedOptionPickerField<String>(
+                labelText: l10n?.zombossMechActionBaseAction ?? 'Base Action',
+                value:
+                    _baseActions.any(
+                      (action) => action.alias == _baseActionAlias,
+                    )
+                    ? _baseActionAlias
+                    : _baseActions.firstOrNull?.alias,
+                items: [
+                  for (final action in _baseActions)
+                    SeparatedOptionPickerItem(
+                      value: action.alias,
+                      label: ZombossMechL10n.implementationLabel(
+                        context,
+                        widget.catalog.id,
+                        action.alias,
+                      ),
+                      subtitle: action.alias,
+                      fieldLabel: _baseActionLabel(context, action),
+                    ),
+                ],
+                onChanged: _onBaseActionChanged,
+              )
+            else
+              SeparatedOptionPickerField<String>(
+                labelText:
+                    l10n?.zombossMechActionBaseObjclass ?? 'Base objclass',
+                value: _groups.any((g) => g.objclass == _objclass)
+                    ? _objclass
+                    : _groups.firstOrNull?.objclass,
+                items: [
+                  for (final g in _groups)
+                    SeparatedOptionPickerItem(
+                      value: g.objclass,
+                      label: _actionTypeName(context, g),
+                      subtitle: g.objclass,
+                      fieldLabel: _actionTypeLabel(context, g),
+                    ),
+                ],
+                enabled: widget.existingRtid == null,
+                onChanged: (value) => _onObjclassChanged(value),
+              ),
+            const SizedBox(height: 16),
+            if (group != null)
+              ZombossMechActionFieldsEditor(
+                mechId: widget.catalog.id,
+                fields: group.fields,
+                data: _data,
+                objclass: _objclass,
+                levelFile: widget.levelFile,
+                hiddenFieldNames: _awardDropDependencySpec == null
+                    ? const {}
+                    : const {'AwardDrop'},
+                onChanged: () {
+                  _syncObject();
+                  setState(() {});
+                },
+              ),
+            if (_awardDropDependencySpec != null) ...[
+              const SizedBox(height: 16),
+              _buildAwardDropEditor(context),
+            ],
+          ],
+        ),
       ),
     );
   }
 }
+
+enum _CustomActionExitChoice { discard, save }

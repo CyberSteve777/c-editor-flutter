@@ -675,6 +675,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'Help',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.waveGeneratorWaveScreenHelpTitle ?? 'Wave editor',
               sections: [
                 HelpSectionData(

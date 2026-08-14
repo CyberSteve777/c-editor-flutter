@@ -169,6 +169,7 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.zombieSunDropHelpTitle ?? 'Zombie sun drop',
               themeColor: appBarColor,
               sections: [

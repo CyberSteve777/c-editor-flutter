@@ -142,6 +142,7 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.riftThemeHelpTitle ?? 'Rift theme module',
               themeColor: accentColor,
               sections: [

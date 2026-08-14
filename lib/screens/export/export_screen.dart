@@ -34,7 +34,10 @@ String _exportLeafName(String path) {
 }
 
 class ExportScreen extends StatefulWidget {
-  const ExportScreen({super.key});
+  const ExportScreen({super.key, this.engine});
+
+  @visibleForTesting
+  final ExportEngine? engine;
 
   @override
   State<ExportScreen> createState() => _ExportScreenState();
@@ -61,7 +64,7 @@ class _ExportScreenState extends State<ExportScreen> {
   List<ExportEntry> _currentPathItems = [];
   bool _isScanning = false;
 
-  final ExportEngine _engine = createExportEngine();
+  late final ExportEngine _engine;
 
   double _exportProgress = 0;
   String _exportStatus = '';
@@ -70,6 +73,7 @@ class _ExportScreenState extends State<ExportScreen> {
   @override
   void initState() {
     super.initState();
+    _engine = widget.engine ?? createExportEngine();
     _initRootPath();
   }
 
@@ -94,10 +98,14 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Future<void> _onDisclaimerProceed() async {
+    final skipDisclaimer = _doNotShowDisclaimerAgain;
+    setState(() {
+      _skipDisclaimer = skipDisclaimer;
+      _isScanning = true;
+    });
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_exportDisclaimerSkipKey, _doNotShowDisclaimerAgain);
+    await prefs.setBool(_exportDisclaimerSkipKey, skipDisclaimer);
     if (!mounted) return;
-    _skipDisclaimer = _doNotShowDisclaimerAgain;
     await _performGlobalScan();
   }
 

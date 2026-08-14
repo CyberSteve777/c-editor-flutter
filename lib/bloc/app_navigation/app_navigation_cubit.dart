@@ -12,6 +12,7 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
         screen: AppScreen.editor,
         editorFileName: fileName,
         editorFilePath: filePath,
+        lastOpenedLevelPath: filePath,
       ),
     );
   }

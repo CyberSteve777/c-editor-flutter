@@ -158,6 +158,7 @@ class _ZombiePotionEventScreenState extends State<ZombiePotionEventScreen> {
             tooltip: l10n?.tooltipAboutEvent ?? 'About this event',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventPotionDrop ?? 'Potion drop event',
               sections: [
                 HelpSectionData(

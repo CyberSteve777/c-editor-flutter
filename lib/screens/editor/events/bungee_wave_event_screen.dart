@@ -170,6 +170,7 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.bungeeWaveEventHelpTitle ?? 'Bungee drop event',
               themeColor: appBarColor,
               sections: [

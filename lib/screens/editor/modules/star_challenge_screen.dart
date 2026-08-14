@@ -296,6 +296,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.starChallengeHelpTitle ?? 'Star Challenge Module',
                 themeColor: themeColor,
                 sections: [

@@ -192,6 +192,7 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventMagicMirror ?? 'Magic mirror event',
               sections: [
                 HelpSectionData(

@@ -148,6 +148,7 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventDinoTread ?? 'Dino tread event',
               sections: [
                 HelpSectionData(

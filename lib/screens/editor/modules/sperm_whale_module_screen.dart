@@ -134,6 +134,7 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(

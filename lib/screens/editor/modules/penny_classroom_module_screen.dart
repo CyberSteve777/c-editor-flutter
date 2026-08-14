@@ -147,6 +147,7 @@ class _PennyClassroomModuleScreenState
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.globalPlantLevels,
               sections: [
                 HelpSectionData(

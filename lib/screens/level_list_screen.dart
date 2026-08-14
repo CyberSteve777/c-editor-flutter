@@ -1,7 +1,8 @@
 import 'dart:io' show Platform, Directory;
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb, Uint8List;
+import 'package:flutter/foundation.dart'
+    show kDebugMode, kIsWeb, Uint8List, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,15 +37,112 @@ enum _SmartUploadChoice {
   copyAll,
 }
 
+String _normalizedWebPath(String value) {
+  var normalized = value.replaceAll('\\', '/');
+  while (normalized.length > 'web://'.length && normalized.endsWith('/')) {
+    normalized = normalized.substring(0, normalized.length - 1);
+  }
+  return normalized;
+}
+
+bool _sameLevelListPath(String left, String right) {
+  if (left.startsWith('web:') || right.startsWith('web:')) {
+    return _normalizedWebPath(left) == _normalizedWebPath(right);
+  }
+  return p.equals(p.normalize(left), p.normalize(right));
+}
+
+String _levelListParentPath(String levelPath) {
+  if (!levelPath.startsWith('web:')) return p.dirname(levelPath);
+  final normalized = _normalizedWebPath(levelPath);
+  final slash = normalized.lastIndexOf('/');
+  return slash < 'web://'.length ? 'web://' : normalized.substring(0, slash);
+}
+
+/// Builds the folder breadcrumb for an in-session level return target.
+///
+/// A target outside [rootPath] is ignored, so stale navigation state can never
+/// escape the currently selected library.
+@visibleForTesting
+List<({String name, String path})> levelListPathStackFor({
+  required String rootPath,
+  required String rootName,
+  String? levelPath,
+}) {
+  final root = (name: rootName, path: rootPath);
+  if (levelPath == null || levelPath.trim().isEmpty) return [root];
+
+  if (rootPath.startsWith('web:')) {
+    final normalizedRoot = _normalizedWebPath(rootPath);
+    final parent = _levelListParentPath(levelPath.trim());
+    final rootPrefix = normalizedRoot.endsWith('/')
+        ? normalizedRoot
+        : '$normalizedRoot/';
+    if (parent != normalizedRoot && !parent.startsWith(rootPrefix)) {
+      return [root];
+    }
+    final relative = parent.substring(normalizedRoot.length);
+    final segments = relative.split('/').where((part) => part.isNotEmpty);
+    final stack = <({String name, String path})>[root];
+    var current = normalizedRoot;
+    for (final segment in segments) {
+      current = current == 'web://' ? '$current$segment' : '$current/$segment';
+      stack.add((name: segment, path: current));
+    }
+    return stack;
+  }
+
+  final normalizedRoot = p.normalize(rootPath);
+  final parent = p.normalize(_levelListParentPath(levelPath.trim()));
+  if (!p.equals(parent, normalizedRoot) &&
+      !p.isWithin(normalizedRoot, parent)) {
+    return [root];
+  }
+  final relative = p.relative(parent, from: normalizedRoot);
+  if (relative.isEmpty || relative == '.') return [root];
+
+  final stack = <({String name, String path})>[root];
+  var current = normalizedRoot;
+  for (final segment in p.split(relative)) {
+    if (segment.isEmpty) continue;
+    current = p.join(current, segment);
+    stack.add((name: segment, path: current));
+  }
+  return stack;
+}
+
+/// Returns the list offset that puts [index] at the top of the viewport.
+@visibleForTesting
+double levelListOffsetForIndex(
+  List<FileItem> items,
+  int index, {
+  required double folderExtent,
+  required double fileExtent,
+  double leadingPadding = 16,
+}) {
+  var offset = leadingPadding;
+  final end = index.clamp(0, items.length);
+  for (var i = 0; i < end; i++) {
+    offset += items[i].isDirectory ? folderExtent : fileExtent;
+  }
+  return offset;
+}
+
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
     super.key,
+    this.returnToLevelPath = '',
     required this.onLevelClick,
     required this.onAboutClick,
     required this.onPluginsClick,
     required this.onLanguageTap,
   });
 
+  /// The level most recently opened during this app session.
+  ///
+  /// It intentionally lives in navigation state rather than preferences so a
+  /// fresh app launch always starts at the library root.
+  final String returnToLevelPath;
   final void Function(String fileName, String filePath) onLevelClick;
   final VoidCallback onAboutClick;
   final VoidCallback onPluginsClick;
@@ -78,6 +176,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
   LevelSortMode _sortMode = LevelSortMode.name;
   final ScrollController _listScrollController = ScrollController();
   bool _listScrollAtTop = true;
+  String? _pendingReturnLevelPath;
 
   bool get _canGoBack => _pathStack.length > 1;
 
@@ -152,6 +251,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
   @override
   void initState() {
     super.initState();
+    final returnPath = widget.returnToLevelPath.trim();
+    _pendingReturnLevelPath = returnPath.isEmpty ? null : returnPath;
     _listScrollController.addListener(_onListScroll);
     _seedRootFromStartupCache();
     _loadSavedPathAndList();
@@ -165,7 +266,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
       const webPath = 'web://';
       final libraryLabel = cache.webLibraryDisplayName ?? 'My Workspace';
       _rootFolderPath = webPath;
-      _pathStack = [(name: libraryLabel, path: webPath)];
+      _pathStack = levelListPathStackFor(
+        rootPath: webPath,
+        rootName: libraryLabel,
+        levelPath: _pendingReturnLevelPath,
+      );
       return;
     }
 
@@ -174,25 +279,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
     _rootFolderPath = path;
     final rootName = path.split(RegExp(r'[/\\]')).last;
-    final stack = <({String name, String path})>[
-      (name: rootName.isEmpty ? 'Root' : rootName, path: path),
-    ];
-    final lastLevelDir = cache.lastOpenedLevelDirectory;
-    if (lastLevelDir != null && lastLevelDir != path) {
-      try {
-        final rel = p.relative(lastLevelDir, from: path);
-        if (!rel.startsWith('..') && rel.isNotEmpty && rel != '.') {
-          var current = path;
-          for (final segment in p.split(rel)) {
-            if (segment.isEmpty) continue;
-            current = p.join(current, segment);
-            stack.add((name: segment, path: current));
-          }
-        }
-      } catch (_) {
-      }
-    }
-    _pathStack = stack;
+    _pathStack = levelListPathStackFor(
+      rootPath: path,
+      rootName: rootName.isEmpty ? 'Root' : rootName,
+      levelPath: _pendingReturnLevelPath,
+    );
   }
 
   @override
@@ -240,40 +331,27 @@ class _LevelListScreenState extends State<LevelListScreen> {
       if (!mounted) return;
       setState(() {
         _rootFolderPath = webPath;
-        _pathStack = [(name: libraryLabel, path: webPath)];
+        _pathStack = levelListPathStackFor(
+          rootPath: webPath,
+          rootName: libraryLabel,
+          levelPath: _pendingReturnLevelPath,
+        );
       });
       _loadCurrentDirectory();
       return;
     }
     final path = await LevelRepository.getSavedFolderPath();
-    final lastLevelDir = await LevelRepository.getLastOpenedLevelDirectory();
     var resolvedPath = path;
     if (resolvedPath != null && mounted) {
       final libraryPath = resolvedPath;
       setState(() {
         _rootFolderPath = libraryPath;
-        if (_pathStack.isEmpty) {
-          List<({String name, String path})> stack = [];
-          final rootName = libraryPath.split(RegExp(r'[/\\]')).last;
-          stack.add((name: rootName.isEmpty ? 'Root' : rootName, path: libraryPath));
-          if (lastLevelDir != null && lastLevelDir != libraryPath) {
-            try {
-              final rel = p.relative(lastLevelDir, from: libraryPath);
-              if (rel.startsWith('..')) throw ArgumentError('not under root');
-              if (rel.isNotEmpty && rel != '.') {
-                var current = libraryPath;
-                for (final segment in p.split(rel)) {
-                  if (segment.isEmpty) continue;
-                  current = p.join(current, segment);
-                  stack.add((name: segment, path: current));
-                }
-              }
-            } catch (_) {
-              /* lastLevelDir not under root, use root only */
-            }
-          }
-          _pathStack = stack;
-        }
+        final rootName = libraryPath.split(RegExp(r'[/\\]')).last;
+        _pathStack = levelListPathStackFor(
+          rootPath: libraryPath,
+          rootName: rootName.isEmpty ? 'Root' : rootName,
+          levelPath: _pendingReturnLevelPath,
+        );
       });
       _loadCurrentDirectory();
     }
@@ -857,6 +935,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
           _fileItems = items;
           _isLoading = false;
         });
+        _restorePendingLevelPosition(items, activePath);
       }
     } catch (_) {
       if (mounted) {
@@ -870,6 +949,56 @@ class _LevelListScreenState extends State<LevelListScreen> {
         });
       }
     }
+  }
+
+  void _restorePendingLevelPosition(List<FileItem> items, String activePath) {
+    final targetPath = _pendingReturnLevelPath;
+    if (targetPath == null ||
+        !_sameLevelListPath(_levelListParentPath(targetPath), activePath)) {
+      return;
+    }
+
+    final targetIndex = items.indexWhere(
+      (item) => _sameLevelListPath(item.path, targetPath),
+    );
+    _pendingReturnLevelPath = null;
+    if (targetIndex < 0) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_listScrollController.hasClients) return;
+      final theme = Theme.of(context);
+      final textScaler = MediaQuery.textScalerOf(context);
+      final titleStyle = theme.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      );
+      final subtitleStyle = theme.textTheme.bodySmall?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      );
+      final folderExtent = _FileItemRow.scrollExtentFor(
+        isDirectory: true,
+        titleStyle: titleStyle,
+        subtitleStyle: subtitleStyle,
+        textScaler: textScaler,
+      );
+      final fileExtent = _FileItemRow.scrollExtentFor(
+        isDirectory: false,
+        titleStyle: titleStyle,
+        subtitleStyle: subtitleStyle,
+        textScaler: textScaler,
+      );
+      final requestedOffset = levelListOffsetForIndex(
+        items,
+        targetIndex,
+        folderExtent: folderExtent,
+        fileExtent: fileExtent,
+      );
+      final position = _listScrollController.position;
+      final targetOffset = requestedOffset.clamp(
+        position.minScrollExtent,
+        position.maxScrollExtent,
+      );
+      _listScrollController.jumpTo(targetOffset);
+    });
   }
 
   void _navigateToFolder(FileItem folder) {

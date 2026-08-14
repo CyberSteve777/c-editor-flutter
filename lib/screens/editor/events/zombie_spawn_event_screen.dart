@@ -701,6 +701,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: widget.isGroundSpawner
                   ? (l10n?.eventGroundSpawnTitle ?? 'Ground spawn event')
                   : (l10n?.eventStandardSpawnTitle ?? 'Standard spawn event'),

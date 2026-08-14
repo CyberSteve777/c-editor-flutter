@@ -115,6 +115,7 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.moduleTitle_TideProperties ?? 'Tide',
               sections: [
                 HelpSectionData(

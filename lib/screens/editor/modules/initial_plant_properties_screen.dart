@@ -159,6 +159,7 @@ class _InitialPlantPropertiesScreenState
   void _showHelp(AppLocalizations l10n) {
     showEditorHelpDialog(
       context,
+      isEvent: false,
       title: l10n.frozenPlantPlacementHelpTitle,
       themeColor: Theme.of(context).brightness == Brightness.dark
           ? pvzGreenDark

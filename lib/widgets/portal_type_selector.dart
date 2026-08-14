@@ -317,7 +317,7 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
                   iconSize: 18,
                   tooltip: def.isCustom
                       ? (l10n?.edit ?? 'Edit')
-                      : (l10n?.info ?? 'Info'),
+                      : (l10n?.zombiePreviewTooltip ?? 'Zombie preview'),
                   onPressed: () {
                     if (def.isCustom) {
                       _editCustomPortal(def);
@@ -337,26 +337,31 @@ class _PortalTypeChooserGridState extends State<PortalTypeChooserGrid> {
   Widget _buildCreateCard(BuildContext context, {required double width}) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final background =
-        theme.floatingActionButtonTheme.backgroundColor ??
-        theme.colorScheme.primaryContainer;
-    final foreground =
-        theme.floatingActionButtonTheme.foregroundColor ??
-        theme.colorScheme.onPrimaryContainer;
+    final background = theme.colorScheme.surface;
+    final foreground = theme.colorScheme.primary;
     return SizedBox(
       width: width,
       height: 72,
       child: Card(
         margin: EdgeInsets.zero,
         color: background,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: theme.colorScheme.primary.withValues(alpha: 0.72),
+            width: 1.5,
+          ),
+        ),
         child: InkWell(
+          borderRadius: BorderRadius.circular(12),
           onTap: _createCustomPortal,
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add, color: foreground, size: 18),
+                Icon(Icons.add_circle_outline, color: foreground, size: 20),
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text(
@@ -506,7 +511,7 @@ class _PortalBaseSelectionCard extends StatelessWidget {
               if (onInfo != null)
                 IconButton(
                   visualDensity: VisualDensity.compact,
-                  tooltip: l10n?.info ?? 'Info',
+                  tooltip: l10n?.zombiePreviewTooltip ?? 'Zombie preview',
                   icon: const Icon(Icons.info_outline),
                   onPressed: onInfo,
                 ),
@@ -757,7 +762,7 @@ class PortalTypeSingleSelectField extends StatelessWidget {
                     if (def != null)
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        tooltip: l10n?.info ?? 'Info',
+                        tooltip: l10n?.zombiePreviewTooltip ?? 'Zombie preview',
                         icon: const Icon(Icons.info_outline),
                         onPressed: () {
                           showPortalTypePreviewDialog(

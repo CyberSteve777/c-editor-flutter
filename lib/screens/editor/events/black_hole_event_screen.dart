@@ -101,6 +101,7 @@ class _BlackHoleEventScreenState extends State<BlackHoleEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventBlackHole ?? 'Black hole event',
               sections: [
                 HelpSectionData(

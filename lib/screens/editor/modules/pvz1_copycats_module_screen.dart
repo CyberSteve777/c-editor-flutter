@@ -206,6 +206,7 @@ class _PVZ1CopycatsModuleScreenState extends State<PVZ1CopycatsModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.pvz1CopycatsModuleTitle ?? 'Guess who I am',
                 themeColor: accentColor,
                 sections: [

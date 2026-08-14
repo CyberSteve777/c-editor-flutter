@@ -170,15 +170,12 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
-              title: l10n?.eventDino ?? 'Dino event',
+              isEvent: true,
+              title: eventTitle,
               sections: [
                 HelpSectionData(
                   title: l10n?.overview ?? 'Overview',
                   body: l10n?.eventHelpDinoBody ?? '',
-                ),
-                HelpSectionData(
-                  title: l10n?.dinoType ?? 'Dinosaur type',
-                  body: l10n?.eventHelpDinoType ?? '',
                 ),
                 HelpSectionData(
                   title: l10n?.dinoRowTitle ?? 'Row',
@@ -337,8 +334,7 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
                               initialValue: selectedId,
                               position: PopupMenuPosition.under,
                               padding: EdgeInsets.zero,
-                              tooltip:
-                                  l10n?.dinoType ?? 'Dinosaur type',
+                              tooltip: l10n?.dinoType ?? 'Dinosaur type',
                               constraints: BoxConstraints(
                                 minWidth: constraints.maxWidth,
                                 maxWidth: constraints.maxWidth,
@@ -370,14 +366,9 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
                                     8,
                                     12,
                                   ),
-                                  suffixIcon: const Icon(
-                                    Icons.arrow_drop_down,
-                                  ),
+                                  suffixIcon: const Icon(Icons.arrow_drop_down),
                                 ),
-                                child: _dinoDropdownLabel(
-                                  selectedId,
-                                  iconSize,
-                                ),
+                                child: _dinoDropdownLabel(selectedId, iconSize),
                               ),
                             ),
                           ),

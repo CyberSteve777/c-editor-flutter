@@ -172,6 +172,7 @@ class _ProtectGridItemChallengeScreenState
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title:
                   l10n?.protectGridItemChallengeHelpTitle ??
                   'Protect Item Challenge Guide',

@@ -102,6 +102,7 @@ class _FairyTaleWindEventScreenState extends State<FairyTaleWindEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventFairyWind ?? 'Fairy wind event',
               sections: [
                 HelpSectionData(

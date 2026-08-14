@@ -40,6 +40,7 @@ class JsonViewerScreen extends StatefulWidget {
     required this.levelFile,
     required this.onBack,
     this.onSaved,
+    this.saveLevel,
   });
 
   final String fileName;
@@ -47,6 +48,8 @@ class JsonViewerScreen extends StatefulWidget {
   final PvzLevelFile levelFile;
   final VoidCallback onBack;
   final VoidCallback? onSaved;
+  final Future<void> Function(String filePath, PvzLevelFile levelFile)?
+  saveLevel;
 
   @override
   State<JsonViewerScreen> createState() => _JsonViewerScreenState();
@@ -183,6 +186,13 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   String _rawPrettyText() => _jsonEncoder.convert(widget.levelFile.toJson());
+
+  void _invalidateRenderedJson() {
+    _cachedRows = null;
+    _lastWidth = 0;
+    _lastFontSize = 0;
+    _jsonStringCache.clear();
+  }
 
   Future<void> _copyTextToClipboard(
     String text, {
@@ -433,12 +443,16 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       widget.levelFile.objects.clear();
       widget.levelFile.objects.addAll(newLevel.objects);
       widget.levelFile.version = newLevel.version;
-      await LevelRepository.saveAndExport(widget.filePath, widget.levelFile);
+      await (widget.saveLevel ?? LevelRepository.saveAndExport)(
+        widget.filePath,
+        widget.levelFile,
+      );
       if (mounted) {
         _popEscapeHandler();
         setState(() {
           _isEditing = false;
           _syntaxError = null;
+          _invalidateRenderedJson();
         });
         widget.onSaved?.call();
         final l10n = AppLocalizations.of(context);

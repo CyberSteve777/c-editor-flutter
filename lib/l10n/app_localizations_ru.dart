@@ -1099,15 +1099,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Плагины: плагины запускают дополнительный код и добавляют новые функции и интерфейсы, расширяя возможности редактора. Помимо встроенных плагинов, новые можно получить, установив локальный файл .cplugin или введя URL. Функции плагинов можно включать и отключать независимо.\n7. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n9. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageTextDesktop =>
-      '1. Папка: щёлкните по иконке папки для выбора каталога уровней.\n2. Открыть/Создать: щёлкните по уровню для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: щёлкните «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: щёлкните по иконке папки для выбора каталога уровней.\n2. Открыть/Создать: щёлкните по уровню для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: щёлкните «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Плагины: плагины запускают дополнительный код и добавляют новые функции и интерфейсы, расширяя возможности редактора. Помимо встроенных плагинов, новые можно получить, установив локальный файл .cplugin или введя URL. Функции плагинов можно включать и отключать независимо.\n7. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n9. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageTextMobile =>
-      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n8. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
+      '1. Папка: нажмите на иконку папки, чтобы выбрать каталог с уровнями.\n2. Открыть/Создать: нажмите на уровень для редактирования или «+» для создания из шаблона.\n3. Модули: добавляйте модули в редакторе.\n4. Сохранить: нажмите «Сохранить» для записи в JSON.\n5. Преобразование файлов уровней: JSON можно конвертировать в HUJSON для хот-апдейта (перед импортом вручную смените расширение с .hujson на .json) или в зашифрованный RTON для использования в dynamic.rsb.smf.\n6. Плагины: плагины запускают дополнительный код и добавляют новые функции и интерфейсы, расширяя возможности редактора. Помимо встроенных плагинов, новые можно получить, установив локальный файл .cplugin или введя URL. Функции плагинов можно включать и отключать независимо.\n7. Загружайте JSON-уровни на официальном портале авторов «Продвинутого творческого двора» Plants vs. Zombies 2 (требуется вход).\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports the creators but also helps improve your own level design skills.\n9. Если у вас есть вопросы или нужна помощь с продвинутым созданием уровней, присоединяйтесь к Discord-серверу Plants vs. Zombies и пишите в ветке канала PvZ2C-Modding.';
 
   @override
   String get usageRecommendedLevelsLabel =>
@@ -2267,14 +2267,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Скрытые растения нельзя выбирать в режиме выбора карт. Используйте предустановленный режим, конвейер, выпадение карт или другие способы.\nКроме того, за исключением некоторых растений, таких как Жрец-пухомор и Сборщик растеброни - Огненная звезда, большинство скрытых растений отображаются в игровых слотах карт значком подсолнуха, что может повлиять на общий вид уровня. Используйте их осторожно.';
 
   @override
-  String get comingSoonPlantBlockedLabel => 'Послание из космоса';
+  String get comingSoonPlantBlockedLabel => 'Продолжение следует';
 
   @override
-  String get comingSoonPlantBlockedTitle => 'Послание из космоса';
+  String get comingSoonPlantBlockedTitle => 'Продолжение следует';
 
   @override
   String get comingSoonPlantBlockedMessage =>
-      'Совершенно новый мир «Лунная база» появится в недалеком будущем. Следите за новостями!';
+      'Растения продолжают расти и крепнуть. Следите за будущими обновлениями!';
 
   @override
   String get stayTunedMoonZombieBlockedLabel => 'Послание из космоса';
@@ -2284,7 +2284,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stayTunedMoonZombieBlockedMessage =>
-      'Совершенно новый мир «Лунная база» появится в недалеком будущем. Следите за новостями!';
+      'Вторая часть «Лунной базы» скоро выйдет. Следите за новостями!';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedLabel =>
@@ -3688,6 +3688,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get zombiePreviewTooltip => 'Предпросмотр зомби';
+
+  @override
   String get weatherSettings => 'Настройки погоды';
 
   @override
@@ -3706,6 +3709,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bowlingFoulLine => 'Линия запрета посадки';
 
   @override
+  String get bowlingFoulLinePreview => 'Предпросмотр линии запрета посадки';
+
+  @override
   String get bowlingMinigameParams => 'Параметры';
 
   @override
@@ -3714,7 +3720,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get bowlingMinigameHelpFoulLine =>
-      'BowlingFoulLine — индекс столбца слева (с 0). Растения нельзя ставить на этой линии и правее неё.';
+      'BowlingFoulLine — индекс столбца слева (с 0). Растения нельзя ставить на этой линии и правее неё.\nНа газонах Подводного мира игра автоматически прибавляет к этому значению 1. Например, при значении 0 в первом столбце сажать можно, а со второго — нельзя; поэтому минимальное значение в редакторе равно -1.';
 
   @override
   String get stopColumn => 'Стоп-колонка';
@@ -4490,6 +4496,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get direction => 'Направление';
 
   @override
+  String get windDirectionLabel => 'Направление ветра';
+
+  @override
   String get velocityScale => 'Масштаб скорости';
 
   @override
@@ -4560,6 +4569,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get manholePipelines => 'Люковые трубы';
+
+  @override
+  String get manholePipelineHelpTitle => 'Люковый трубопровод';
 
   @override
   String get manholePipelineHelpOverview =>
@@ -6089,6 +6101,22 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get invalidIdsHint =>
       'Неверные ID оставляют пустые слоты. ID зомби в режиме растений и наоборот. Сначала разместите слоты зомби.';
+
+  @override
+  String get seedBankWhiteAndBlacklistTitle => 'Белый и чёрный списки';
+
+  @override
+  String get seedBankIZombieHelpTitle => 'Режим «Я, зомби»';
+
+  @override
+  String get seedBankSlotOccupancyTitle => 'Заполнение слотов';
+
+  @override
+  String get seedBankAdvancedGameplayTitle => 'Продвинутая игра';
+
+  @override
+  String get seedBankAdvancedGameplayBody =>
+      'В режиме предустановленного выбора Банк семян перед Конвейером заставляет растения с конвейера расходовать солнце, а Банк семян после Конвейера позволяет высаживать предустановленные растения бесплатно.';
 
   @override
   String get seedBankIZombie => 'Банк семян (Я, зомби)';

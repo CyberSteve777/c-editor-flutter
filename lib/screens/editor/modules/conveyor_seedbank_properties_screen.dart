@@ -362,44 +362,36 @@ class _ConveyorSeedBankPropertiesScreenState
   }
 
   void _showHelp(AppLocalizations? l10n) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.conveyorBeltHelp ?? 'Conveyor belt help'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n?.conveyorBeltHelpIntro ??
-                    'Conveyor mode randomly generates cards by weight. Configure plant pool and refresh delay.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.conveyorBeltHelpPool ??
-                    'Plant pool & weight: Probability = weight / total weight. Use thresholds to adjust dynamically.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.conveyorBeltHelpDropDelay ??
-                    'Drop delay: Controls card spawn interval. More plants = slower.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.conveyorBeltHelpSpeed ??
-                    'Speed: Physical belt speed. Standard = 100.',
-              ),
-            ],
-          ),
+    showEditorHelpDialog(
+      context,
+      isEvent: false,
+      title: l10n?.conveyorBeltHelp ?? 'Conveyor Belt',
+      sections: [
+        HelpSectionData(
+          title: l10n?.overview ?? 'Overview',
+          body:
+              l10n?.conveyorBeltHelpIntro ??
+              'Conveyor mode randomly generates cards by weight. Configure plant pool and refresh delay.',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.ok ?? 'OK'),
-          ),
-        ],
-      ),
+        HelpSectionData(
+          title: l10n?.conveyorCardPool ?? 'Conveyor Pool',
+          body:
+              l10n?.conveyorBeltHelpPool ??
+              'Plant pool & weight: Probability = weight / total weight. Use thresholds to adjust dynamically.',
+        ),
+        HelpSectionData(
+          title: l10n?.dropDelayConditions ?? 'Seed packet delay',
+          body:
+              l10n?.conveyorBeltHelpDropDelay ??
+              'Drop delay controls the card spawn interval.',
+        ),
+        HelpSectionData(
+          title: l10n?.speedConditions ?? 'Conveyor speed',
+          body:
+              l10n?.conveyorBeltHelpSpeed ??
+              'Speed controls the physical belt speed.',
+        ),
+      ],
     );
   }
 }

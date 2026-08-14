@@ -199,6 +199,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title:
                   l10n?.eventTitle_SchoolBusWaveActionProps ??
                   'Ice cream truck spawn',

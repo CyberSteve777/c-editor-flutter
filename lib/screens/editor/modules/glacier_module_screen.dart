@@ -175,6 +175,7 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.glacierModuleHelpTitle ?? title,
               sections: [
                 HelpSectionData(

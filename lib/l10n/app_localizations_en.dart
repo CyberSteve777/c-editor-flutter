@@ -30,13 +30,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previewTabGridItems => 'Grid Items';
 
   @override
-  String get sunBombFalling => 'Sun Bombs are falling';
+  String get sunBombFalling => 'Sun Bombs';
 
   @override
   String get sunDroppingActive => 'Sun falls from the sky';
 
   @override
-  String get sunDroppingInactive => 'Sun does not fall from the sky';
+  String get sunDroppingInactive => 'Sun doesn\'t fall from the sky';
 
   @override
   String get conveyorChanges => 'Changes in the conveyor';
@@ -60,7 +60,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allZombiesInLevel => 'All zombies in the level';
 
   @override
-  String get allObjectsInLevel => 'All objects in the level';
+  String get allObjectsInLevel => 'All grid items in the level';
 
   @override
   String get allEventsInLevel => 'All events in the level';
@@ -87,13 +87,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lawnMowerTypeLabel => 'Lawn mower type';
 
   @override
-  String get renaissanceStatues => 'Renaissance Statues';
+  String get renaissanceStatues => 'Renaissance Statues and Mable Mounds';
 
   @override
-  String get zomboss => 'Zomboss';
+  String get zomboss => 'Zomboss Mech';
 
   @override
-  String get boss => 'Boss';
+  String get boss => 'Non-mech Zomboss';
 
   @override
   String get zombossData => 'Zomboss Data';
@@ -120,13 +120,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rainContent => 'Rain content';
 
   @override
-  String get heianWind => 'Heian Wind';
+  String get heianWind => 'Heian Divine Wind';
 
   @override
   String get all => 'All';
 
   @override
-  String get impLv => 'Imp Lv.';
+  String get impLv => 'Imp level';
 
   @override
   String get sortByLabel => 'Sort';
@@ -141,7 +141,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortByModificationDate => 'Sort: By Modification Date';
 
   @override
-  String get sortBySize => 'Sort: By Size';
+  String get sortBySize => 'Sort: By File Size';
 
   @override
   String get sortByFileType => 'Sort: By File Type';
@@ -151,8 +151,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count imps',
-      one: '1 imp',
+      other: '$count Imps',
+      one: '1 Imp',
     );
     return '$_temp0';
   }
@@ -165,7 +165,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalPlantFoodTooltip =>
-      'Total Plant Food (including drops, events, etc.)';
+      'Total drops (including Plant Food, seed packet, etc.)';
 
   @override
   String get appTitle => 'My Workspace';
@@ -204,7 +204,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginInstallFromUrl => 'Install from URL';
 
   @override
-  String get pluginInstallFromFolder => 'Load folder (debug)';
+  String get pluginInstallFromFolder => 'Compile plugin folder (debug)';
 
   @override
   String get pluginFolderHint =>
@@ -251,11 +251,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginReadFailed => 'Could not read the selected file';
 
   @override
-  String get pluginTrustWarningTitle => 'Trust warning';
+  String get pluginTrustWarningTitle => 'Safety Notice';
 
   @override
   String get pluginTrustWarningBody =>
-      'Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.';
+      'Plugins can run code within C-Editor to add more fun and useful features. By default, their access to files and the network is restricted by a sandbox, but malicious plugins may still cause harm. Please install plugins from trusted sources only.';
 
   @override
   String get pluginInstalledSection => 'Installed plugins';
@@ -268,7 +268,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'No plugins installed yet. Install a .cplugin file from your device or a download link.';
 
   @override
-  String get pluginNoScreens => 'This plugin does not register any screens.';
+  String get pluginNoScreens =>
+      'This plugin has no features or screens you can jump to directly.';
 
   @override
   String get pluginUninstall => 'Uninstall';
@@ -429,7 +430,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manualSelectLevelType => 'Manual selection';
 
   @override
-  String get levelTypeAdventure => 'Adventure';
+  String get levelTypeAdventure => 'Regular';
 
   @override
   String get levelTypeLastStand => 'Last Stand';
@@ -598,19 +599,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get download => 'Download';
 
   @override
-  String get downloadAllLevels => 'Export workspace';
+  String get downloadAllLevels => 'Download all levels';
 
   @override
   String get downloadFolder => 'Download this directory';
 
   @override
-  String get exportLevels => 'Export levels';
+  String get exportLevels => 'Level testing mod';
 
   @override
-  String get exportSelectLevels => 'Select levels to export';
+  String get exportSelectLevels => 'Select levels to test';
 
   @override
-  String get exportSelectFile => 'Select level archive for export (.rsb.smf)';
+  String get exportSelectFile =>
+      'Select a game data package for the testing mod (.rsb.smf)';
 
   @override
   String exportSelectedFile(String path) {
@@ -622,7 +624,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupRecommendationBody =>
-      'It is highly recommended to create a backup of your level archive before exporting. This helps prevent data loss if the operation is interrupted.';
+      'It is highly recommended to back up your game data package before testing to prevent data loss if the process is interrupted or another unexpected issue occurs.';
 
   @override
   String get backupAndProceed => 'Backup and Proceed';
@@ -634,24 +636,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupSuffix => '_copy';
 
   @override
-  String get exportNoFilesFound => 'No compatible files found (.rsb.smf).';
+  String get exportNoFilesFound =>
+      'No compatible data packages found (.rsb.smf).';
 
   @override
-  String get exportDownloadExternalDynamic => 'Download dynamic…';
+  String get exportDownloadExternalDynamic => 'Download data package';
 
   @override
-  String get cancelExportTitle => 'Cancel Export';
+  String get cancelExportTitle => 'Cancel Build';
 
   @override
   String get cancelExportMessage =>
-      'Are you sure you want to cancel the export process?';
+      'Are you sure you want to cancel building the level testing mod?';
 
   @override
   String get exportDisclaimerTitle => 'Risk Warning & Disclaimer';
 
   @override
   String get exportDisclaimerBody =>
-      'This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
+      'This feature generates level testing mods by injecting level files into the game\'s data packages (SMF/RSB container files). This process directly modifies the game data of Plants vs. Zombies 2.\n\n• Using this feature to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nThe developer hereby explicitly states:\n\n1. This feature is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this feature, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this feature and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
 
   @override
   String get exportDisclaimerDoNotShowAgain => 'Do not show again';
@@ -660,7 +663,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importProgressTitle => 'Importing files…';
 
   @override
-  String get exportProgressTitle => 'Building export…';
+  String get exportProgressTitle => 'Building data package…';
 
   @override
   String get backupProgressTitle => 'Creating backup…';
@@ -676,7 +679,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webFolderImportNotice =>
-      'Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.';
+      'Folder imported into browser storage. On this browser, edits are not written back to disk automatically——please use the \"Export\" feature to save files.';
 
   @override
   String get favorite => 'Favorite';
@@ -799,15 +802,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFinish => 'Finish';
 
   @override
-  String get exportSuccessTitle => 'Export Successful';
+  String get exportSuccessTitle => 'Build Successful';
 
   @override
   String exportSuccessMessage(String file) {
-    return 'The levels have been successfully exported to $file.';
+    return 'The level testing mod has been successfully built at $file.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced. \nNote: If the game crashes immediately on startup after the replacement, the level itself is most likely the cause.';
   }
 
   @override
-  String get exportCancelled => 'Export cancelled.';
+  String get exportCancelled => 'Build cancelled.';
 
   @override
   String exportDuplicateAssignment(String world, int level) {
@@ -829,15 +832,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportFinalCheckBody =>
-      'The following levels will be exported with new names:';
+      'The following levels will be added to the data package under new names:';
 
   @override
   String exportTargetArchive(String file) {
-    return 'All levels will be exported to $file';
+    return 'The selected levels will be written to $file';
   }
 
   @override
-  String get exportStart => 'Start Export';
+  String get exportStart => 'Build Testing Mod';
 
   @override
   String get exportAssignmentProposalBody =>
@@ -1021,11 +1024,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hujsonFormatDescription =>
-      'Hot-update readable format. Wraps level JSON in PopCap CompiledText internally (zlib compression + Rijndael encryption). Rename to .json before importing into the game.';
+      'Hot-update readable format. Before importing it into the game, please manually change the file extension from .hujson back to .json.';
 
   @override
   String get rtonFormatDescription =>
-      'PopCap RTON binary serialization format (Rijndael-encrypted). Used as level data inside dynamic.rsb.smf.';
+      'Used as level data inside the game\'s data package (dynamic.rsb.smf).';
 
   @override
   String get conversionRequiredTitle => 'Conversion required';
@@ -1052,14 +1055,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cEditor => 'C-Editor';
 
   @override
-  String get pvzEditorSubtitle => 'PVZ2 Visual Level Editor';
+  String get pvzEditorSubtitle => 'PVZ2C Visual Level Editor';
 
   @override
   String get introSection => 'Introduction';
 
   @override
   String get introText =>
-      'C-Editor is a visual level editing tool designed for Plants vs. Zombies 2 Chinese Edition. It aims to simplify editing level JSON files with an intuitive interface.';
+      'C-Editor is a visual level editing tool designed for Plants vs. Zombies 2 (Chinese Version). It aims to simplify editing level JSON files with an intuitive interface.';
 
   @override
   String get featuresSection => 'Core features';
@@ -1069,11 +1072,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feature2 =>
-      'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Mech battle, and more.';
+      'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Battle, and more.';
 
   @override
   String get feature3 =>
-      'Custom zombies: Inject and edit custom zombie properties.';
+      'Custom injection: Inject and manage custom zombies, custom lawn and custom Zomboss Mech within a level.';
 
   @override
   String get feature4 =>
@@ -1084,15 +1087,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextDesktop =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextMobile =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageRecommendedLevelsLabel =>
@@ -1197,11 +1200,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateVaseBreakerExample => 'Vasebreaker level template';
 
   @override
-  String get templateZombossMechExample => 'Zomboss Mech battle level template';
+  String get templateZombossMechExample => 'Zomboss Mech Battle level template';
 
   @override
   String get templateZombossBattleExample =>
-      'Non-mech Zomboss battle level template';
+      'Non-mech Zomboss Battle level template';
 
   @override
   String get templateCustomZombieExample => 'Custom zombie level template';
@@ -1530,10 +1533,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaseBreaker => 'Vasebreaker';
 
   @override
-  String get zombossMech => 'Zomboss Mech battle';
+  String get zombossMech => 'Zomboss Mech Battle';
 
   @override
-  String get zombossBattle => 'Non-mech Zomboss battle';
+  String get zombossBattle => 'Non-mech Zomboss Battle';
 
   @override
   String get moveSourceSameAsDest => 'Source and target folder are the same';
@@ -2018,11 +2021,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get conflictDesc_ZombossDeathDrop =>
-      'Loot Drop in Zomboss Mech battle mode will prevent proper level completion.';
+      'Loot Drop in Zomboss Mech Battle mode will prevent proper level completion.';
 
   @override
   String get conflictDesc_ZombossBattleDeathDrop =>
-      'Loot Drop in Non-mech Zomboss battle mode will prevent proper level completion.';
+      'Loot Drop in Non-mech Zomboss Battle mode will prevent proper level completion.';
 
   @override
   String get conflictDesc_WinConditionExclusive =>
@@ -2058,11 +2061,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get conflictDesc_WaveGeneratorRenai =>
-      'Wave Generator is incompatible with the Renai module and will crash the level on load.';
+      'Wave Generator is incompatible with the Renaissance module and will cause the level to crash.';
 
   @override
   String get conflictDesc_WaveGeneratorWitch =>
-      'Wave Generator is incompatible with the Witch module and will crash the level on load.';
+      'Wave Generator is incompatible with the Fright Witch module and will cause the level to crash.';
 
   @override
   String get missingPlantModuleWarningTitle =>
@@ -2174,7 +2177,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_WaveGeneratorProperties =>
-      'Legacy embedded wave definition (campaign-style levels). Mutually exclusive with Wave Manager.';
+      'Legacy wave configuration that allows spawning Weapon Stands as waves progress';
 
   @override
   String get moduleTitle_CustomLevelModuleProperties =>
@@ -2253,14 +2256,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.';
 
   @override
-  String get comingSoonPlantBlockedLabel => 'A Message from Space';
+  String get comingSoonPlantBlockedLabel => 'To Be Continued';
 
   @override
-  String get comingSoonPlantBlockedTitle => 'A Message from Space';
+  String get comingSoonPlantBlockedTitle => 'To Be Continued';
 
   @override
   String get comingSoonPlantBlockedMessage =>
-      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+      'The plants are still growing strong. Stay tuned for future updates!';
 
   @override
   String get stayTunedMoonZombieBlockedLabel => 'A Message from Space';
@@ -2270,18 +2273,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stayTunedMoonZombieBlockedMessage =>
-      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+      'Moon Base Part 2 is coming soon. Keep a lookout!';
 
   @override
-  String get stayTunedTaleZCorpZombieBlockedLabel =>
-      'ZCorp\'s story is not over';
+  String get stayTunedTaleZCorpZombieBlockedLabel => 'Work\'s Not Over Yet';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedTitle => 'Under Construction';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedMessage =>
-      'Part 2 of ZCorp Secret Realm is coming soon. Stay tuned!';
+      'Part 2 of ZCorp Secret Realm is coming. Stay tuned!';
 
   @override
   String get stayTunedZombieBlockedLabel => 'Stay tuned';
@@ -2291,7 +2293,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stayTunedZombieBlockedMessage =>
-      'More zombies are approaching. Stay tuned for future updates!';
+      'More zombies are approaching. keep an eye out on upcoming updates!';
 
   @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
@@ -2530,26 +2532,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable I, Zombie mode (requires zombie bank and preset plants)';
 
   @override
-  String get moduleTitle_ZombossBattleModuleProperties => 'Zomboss Mech battle';
+  String get moduleTitle_ZombossBattleModuleProperties => 'Zomboss Mech Battle';
 
   @override
   String get moduleDesc_ZombossBattleModuleProperties =>
-      'Configures ZombossMech parameters and types';
+      'Configures Zomboss Mech types and parameters';
 
   @override
-  String get moduleTitle_ZombossBattleIntroProperties => 'ZombossMech Intro';
+  String get moduleTitle_ZombossBattleIntroProperties => 'Zomboss Mech Intro';
 
   @override
   String get moduleDesc_ZombossBattleIntroProperties =>
-      'Controls ZombossMech cutscenes and health bar display';
+      'Controls Zomboss Mech Battle cutscenes and health bar display';
 
   @override
   String get moduleTitle_ZombossLastStandMinigameProperties =>
-      'Non-mech Zomboss battle';
+      'Non-mech Zomboss Battle';
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
-      'Configures non-mech Zomboss last-stand battles (Kongfu, Qin, etc.)';
+      'Configures non-mech Zomboss Battles such as Qigong Master';
 
   @override
   String get moduleTitle_SeedRainProperties => 'It\'s Raining Seeds';
@@ -2791,11 +2793,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configures Steam Ages transportation sewers';
 
   @override
-  String get moduleTitle_SmokePollutionModuleProperties => 'Smoke Pollution';
+  String get moduleTitle_SmokePollutionModuleProperties => 'Steam Manhole';
 
   @override
   String get moduleDesc_SmokePollutionModuleProperties =>
-      'Configures steam poison fog manholes on the lawn';
+      'Configures Steam Ages steam sewers';
 
   @override
   String get moduleTitle_RoofProperties => 'Roof Pots';
@@ -2830,14 +2832,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_ArmrackProperties =>
-      'Configures weapon stand display on the lawn (wave 1 only)';
+      'Configures the spawning of Kongfu World weapon stands';
 
   @override
   String get moduleTitle_EnergyGridProperties => 'Taiji Tiles';
 
   @override
   String get moduleDesc_EnergyGridProperties =>
-      'Configures Taiji Tile display on the lawn (wave 1 only)';
+      'Configures the spawning of Kongfu World Taiji tiles';
 
   @override
   String get bronzeModuleTitle => 'Bronze Matrix Statues';
@@ -2991,7 +2993,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventDesc_SpawnModernPortalsWaveActionProps =>
-      'Summons spacetime portals at specific locations';
+      'Summons spacetime portals at set locations';
 
   @override
   String get eventTitle_StormZombieSpawnerProps => 'Storm Raid';
@@ -3562,7 +3564,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customZombieHelpManualBody =>
-      'Custom injection auto-fills all properties from game files. You can further edit the JSON file manually if needed.';
+      'When injecting a custom zombie, the editor automatically fills in the original zombie\'s relevant properties from the corresponding game files. You can further edit the JSON file manually if needed.';
 
   @override
   String editAlias(String alias) {
@@ -3706,6 +3708,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get zombiePreviewTooltip => 'Zombie preview';
+
+  @override
   String get weatherSettings => 'Weather Settings';
 
   @override
@@ -3722,18 +3727,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startingPlantFood => 'Starting Plant Food';
 
   @override
-  String get bowlingFoulLine => 'No-planting line';
+  String get bowlingFoulLine => 'No-planting line (BowlingFoulLine)';
+
+  @override
+  String get bowlingFoulLinePreview => 'No-planting line preview';
 
   @override
   String get bowlingMinigameParams => 'Parameters';
 
   @override
   String get bowlingMinigameHelpOverview =>
-      'Sets the column index of the no-planting line for bulb bowling levels. Plants cannot be placed at or beyond this column.';
+      'A legacy configuration module for Bulb Bowling that sets the no-planting line and disables the shovel. It can also be used in regular levels. Plants cannot be placed on or to the right of the no-planting line.';
 
   @override
   String get bowlingMinigameHelpFoulLine =>
-      'BowlingFoulLine is a 0-based column index from the left edge of the lawn. Zombies and bowling bulbs interact with plants to the right of this line.';
+      'Sets the column boundary for the no-planting area. Its value is counted from the left edge of the lawn starting at 0. For example, the left boundary of the first tile from the left is 0, while its right boundary is 1. Lower boundary values leave less usable space on the left.\nOn Underwater World lawns, the game automatically adds 1 to this value. For example, a value of 0 leaves column 1 plantable and blocks planting from column 2 onward; the minimum value available in the editor is therefore -1.';
 
   @override
   String get stopColumn => 'Stop Column';
@@ -3778,11 +3786,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpDinoRow =>
-      'Row where the dinosaur appears, counted from the top (0-based). On deep-sea lawns, row 5 is also available.';
+      'The row where the dinosaur appears, counted from 0. On Underwater World lawns, this can be set to 5 for the sixth row.';
 
   @override
   String get eventHelpDinoWaveDuration =>
-      'How many waves the dinosaur stays on the lawn before leaving.';
+      'The number of waves a dinosaur remains on the lawn. The dinosaur will leave after staying for the specified number of waves or after interacting with a certain number of zombies. When set to 0, there is no wave limit, and the dinosaur will leave after completing its interactions by default.';
 
   @override
   String get unknownModuleTitle => 'Module editor in development';
@@ -4019,7 +4027,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customFishHelpPropsBody =>
-      'HitRect, AttackRect, ScareRect define collision areas. Speed and ScareSpeed control movement. ArtCenter defines center of the sprite.';
+      'HitRect, AttackRect and ScareRect define collision areas. Speed and ScareSpeed control movement. ArtCenter defines center of the sprite.';
 
   @override
   String get noEditableFishProps => 'No editable properties found.';
@@ -4526,6 +4534,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get direction => 'Direction';
 
   @override
+  String get windDirectionLabel => 'Direction';
+
+  @override
   String get velocityScale => 'Speed multiplier (VelocityScale)';
 
   @override
@@ -4597,6 +4608,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manholePipelines => 'Manhole pipelines';
 
   @override
+  String get manholePipelineHelpTitle => 'Manhole Pipeline';
+
+  @override
   String get manholePipelineHelpOverview =>
       'Defines an underground pipe system. Commonly used in Steam Ages levels. Pipes connect two sewers, allowing zombies to travel between them.';
 
@@ -4605,27 +4619,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select a pipe group from the list above. The grid below shows the layout. Use \"Set Start\" or \"Set End\", then tap a tile to place it.';
 
   @override
-  String get smokePollutionModuleTitle => 'Smoke pollution module';
+  String get smokePollutionModuleTitle => 'Steam Manhole module';
 
   @override
-  String get smokePollutionModuleHelpTitle => 'Smoke pollution module';
+  String get smokePollutionModuleHelpTitle => 'Steam Manhole module';
 
   @override
   String get smokePollutionModuleHelpOverview => 'Overview';
 
   @override
   String get smokePollutionModuleHelpOverviewBody =>
-      'Places smoke manholes on the lawn that erupt after a delay, releasing poison fog. Commonly used in Steam Ages levels.';
+      'Pre-place covered sewer manholes on the lawn, commonly used in Steam Ages levels. After the specified time, toxic steam blasts the covers off and spreads across a 3×3 area centered on each manhole. Plants caught in the steam take 30 damage per second.';
 
   @override
-  String get smokePollutionModuleHelpManholes => 'Manholes';
+  String get smokePollutionModuleHelpManholes => 'Usage';
 
   @override
   String get smokePollutionModuleHelpManholesBody =>
-      'Select a tile on the grid, then add manholes at that position. Each manhole has a Start Time — seconds from level start until it erupts and releases poison fog.';
+      'Select a tile, then tap \"+\" to place a sewer manhole. Each manhole can have its eruption time (StartTime) configured independently, determining how long after the level begins its cover is blasted off and toxic steam is released.';
 
   @override
-  String get smokePollutionModuleStartTimeLabel => 'Start time (s)';
+  String get smokePollutionModuleStartTimeLabel =>
+      'Eruption time (unit: seconds)';
 
   @override
   String manholePipelineStartEndFormat(int sx, int sy, int ex, int ey) {
@@ -5233,11 +5248,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get missingZombossMechModule =>
-      'Missing Zomboss Mech battle module (ZombossBattleModuleProperties)';
+      'Missing Zomboss Mech Battle module (ZombossBattleModuleProperties)';
 
   @override
   String get missingZombossBattleModule =>
-      'Missing Non-mech Zomboss battle module (ZombossLastStandMinigameProperties)';
+      'Missing Non-mech Zomboss Battle module (ZombossLastStandMinigameProperties)';
 
   @override
   String get challengeNoConfig =>
@@ -6124,7 +6139,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seedBankLetsPlayersChoose =>
-      'Seed Bank lets players choose from available plants. In Creative Courtyard, it supports setting a global tier and enables access to all plants. When selection mode is set to Preset, placing the Seed Bank before the Conveyor Belt makes conveyor plants cost sun, while placing it after allows preset plants to be planted without sun cost.';
+      'Seed Bank lets players choose from available plants. In Creative Courtyard, it supports setting a global tier and enables access to all plants.';
 
   @override
   String get iZombieModePresetHint =>
@@ -6133,6 +6148,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invalidIdsHint =>
       'Invalid IDs will appear as empty slots in the Seed Bank. In I, Zombie Mode, plant IDs are invalid, and vice versa. This can be used to create two Seed Banks in one level and combine both modes. Make sure the Zombie Seed Bank is placed first.';
+
+  @override
+  String get seedBankWhiteAndBlacklistTitle => 'Whitelist and blacklist';
+
+  @override
+  String get seedBankIZombieHelpTitle => 'I, Zombie mode';
+
+  @override
+  String get seedBankSlotOccupancyTitle => 'Slot occupancy';
+
+  @override
+  String get seedBankAdvancedGameplayTitle => 'Advanced gameplay';
+
+  @override
+  String get seedBankAdvancedGameplayBody =>
+      'When selection mode is Preset, placing the Seed Bank before the Conveyor Belt makes conveyor plants cost sun, while placing it after allows preset plants to be planted without sun cost.';
 
   @override
   String get seedBankIZombie => 'Seed Bank (I, Zombie Mode)';

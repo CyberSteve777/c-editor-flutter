@@ -356,6 +356,7 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.waveGeneratorModuleHelpTitle ?? 'Wave Generator',
               themeColor: sectionTitleColor,
               sections: [

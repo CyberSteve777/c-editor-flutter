@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
@@ -30,7 +31,6 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
   late String _alias;
   late PvzObject _moduleObj;
   late BowlingMinigamePropertiesData _data;
-  late TextEditingController _foulLineCtrl;
 
   @override
   void initState() {
@@ -61,19 +61,12 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
     } catch (_) {
       _data = BowlingMinigamePropertiesData();
     }
-    _foulLineCtrl = TextEditingController(text: '${_data.bowlingFoulLine}');
   }
 
   void _sync() {
     _moduleObj.objData = _data.toJson();
     widget.onChanged();
     setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _foulLineCtrl.dispose();
-    super.dispose();
   }
 
   void _showHelp(
@@ -83,6 +76,7 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
   ) {
     showEditorHelpDialog(
       context,
+      isEvent: false,
       title: l10n?.bowlingMinigame ?? 'Bulb Bowling module',
       themeColor: accentColor,
       sections: [
@@ -102,7 +96,6 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -119,6 +112,16 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final accentColor = isDark ? pvzGreenDark : pvzGreenLight;
+    final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(
+      widget.levelFile,
+    );
+    final isDeepSeaLawn = LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
+    final minFoulLine = isDeepSeaLawn ? -1 : 0;
+    final maxFoulLine = isDeepSeaLawn ? gridCols - 1 : gridCols;
+    final foulLine = _data.bowlingFoulLine
+        .clamp(minFoulLine, maxFoulLine)
+        .toInt();
+    final previewBoundary = foulLine + (isDeepSeaLawn ? 1 : 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -145,13 +148,10 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-ModuleAliasInputField(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -160,30 +160,163 @@ ModuleAliasInputField(
               accentColor: accentColor,
             ),
             const SizedBox(height: 16),
-                Text(
-                  l10n?.bowlingMinigameParams ?? 'Parameters',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n?.bowlingMinigameParams ?? 'Parameters',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      key: const ValueKey('bowlingFoulLineStepper'),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${l10n?.bowlingFoulLine ?? 'No-planting line'}: $foulLine',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.remove),
+                            onPressed: foulLine > minFoulLine
+                                ? () {
+                                    _data.bowlingFoulLine = foulLine - 1;
+                                    _sync();
+                                  }
+                                : null,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.add),
+                            onPressed: foulLine < maxFoulLine
+                                ? () {
+                                    _data.bowlingFoulLine = foulLine + 1;
+                                    _sync();
+                                  }
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _foulLineCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: l10n?.bowlingFoulLine ?? 'No-planting line',
-                    border: const OutlineInputBorder(),
-                  ),
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.bowlingFoulLine = n;
-                      _sync();
-                    }
-                  },
-                ),
-              ],
+              ),
             ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n?.bowlingFoulLinePreview ??
+                          'No-planting line preview',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _BowlingFoulLinePreview(
+                      rows: gridRows,
+                      columns: gridCols,
+                      foulLine: previewBoundary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BowlingFoulLinePreview extends StatelessWidget {
+  const _BowlingFoulLinePreview({
+    required this.rows,
+    required this.columns,
+    required this.foulLine,
+  });
+
+  final int rows;
+  final int columns;
+  final int foulLine;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderColor = theme.colorScheme.outline.withValues(alpha: 0.55);
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: AspectRatio(
+          aspectRatio: columns / rows,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              const lineWidth = 4.0;
+              final boundaryX = constraints.maxWidth * foulLine / columns;
+              final lineLeft = (boundaryX - lineWidth / 2)
+                  .clamp(0.0, constraints.maxWidth - lineWidth)
+                  .toDouble();
+              return Stack(
+                key: const ValueKey('bowlingFoulLinePreviewGrid'),
+                children: [
+                  Positioned.fill(
+                    child: Column(
+                      children: List.generate(
+                        rows,
+                        (_) => Expanded(
+                          child: Row(
+                            children: List.generate(
+                              columns,
+                              (_) => Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primaryContainer
+                                        .withValues(alpha: 0.22),
+                                    border: Border.all(
+                                      color: borderColor,
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: lineLeft,
+                    top: 0,
+                    bottom: 0,
+                    width: lineWidth,
+                    child: const ColoredBox(
+                      key: ValueKey('bowlingFoulLinePreviewLine'),
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

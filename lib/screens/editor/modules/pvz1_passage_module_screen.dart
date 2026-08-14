@@ -240,6 +240,7 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.pvz1PassageModuleTitle ?? 'Portal combat',
                 themeColor: accentColor,
                 sections: [
