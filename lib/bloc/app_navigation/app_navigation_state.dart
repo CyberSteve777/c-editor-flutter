@@ -8,24 +8,29 @@ final class AppNavigationState extends Equatable {
     this.editorFileName = '',
     this.editorFilePath = '',
     this.lastOpenedLevelPath = '',
+    this.showUploadAfterLevelReturn = false,
   });
 
   final AppScreen screen;
   final String editorFileName;
   final String editorFilePath;
   final String lastOpenedLevelPath;
+  final bool showUploadAfterLevelReturn;
 
   AppNavigationState copyWith({
     AppScreen? screen,
     String? editorFileName,
     String? editorFilePath,
     String? lastOpenedLevelPath,
+    bool? showUploadAfterLevelReturn,
   }) {
     return AppNavigationState(
       screen: screen ?? this.screen,
       editorFileName: editorFileName ?? this.editorFileName,
       editorFilePath: editorFilePath ?? this.editorFilePath,
       lastOpenedLevelPath: lastOpenedLevelPath ?? this.lastOpenedLevelPath,
+      showUploadAfterLevelReturn:
+          showUploadAfterLevelReturn ?? this.showUploadAfterLevelReturn,
     );
   }
 
@@ -35,5 +40,6 @@ final class AppNavigationState extends Equatable {
     editorFileName,
     editorFilePath,
     lastOpenedLevelPath,
+    showUploadAfterLevelReturn,
   ];
 }

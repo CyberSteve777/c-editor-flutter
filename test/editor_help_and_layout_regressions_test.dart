@@ -3,7 +3,10 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/json_viewer_screen.dart';
 import 'package:c_editor/screens/editor/events/dino_event_screen.dart';
 import 'package:c_editor/screens/editor/events/frost_wind_event_screen.dart';
+import 'package:c_editor/screens/editor/events/spawn_grave_stones_event_screen.dart';
+import 'package:c_editor/screens/editor/events/storm_event_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/increased_cost_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/tunnel_defend_module_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
@@ -20,6 +23,19 @@ Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) {
 }
 
 void main() {
+  test('storm zombies serialize level 0 by default', () {
+    expect(StormZombieData(type: 'RTID(zombie@ZombieTypes)').toJson(), {
+      'Type': 'RTID(zombie@ZombieTypes)',
+      'Level': 0,
+    });
+    expect(
+      StormZombieData.fromJson({
+        'Type': 'RTID(zombie@ZombieTypes)',
+      }).level,
+      0,
+    );
+  });
+
   for (final testCase
       in <({Locale locale, String title, bool isEvent, String expected})>[
         (
@@ -113,6 +129,60 @@ void main() {
       expect(find.descendant(of: dialog, matching: find.text(title)), findsOne);
     }
     expect(find.text('Seed Bank module'), findsOneWidget);
+    final overviewTitle = tester.widget<Text>(find.text('• Overview'));
+    expect(
+      overviewTitle.style?.color,
+      Theme.of(tester.element(dialog)).colorScheme.primary,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Seed Bank reorder hint sits above the drag handle', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: ['SeedBank'],
+          objClass: 'SeedBankProperties',
+          objData: SeedBankData(presetPlantList: ['peashooter']).toJson(),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      _localizedApp(
+        SeedBankPropertiesScreen(
+          rtid: 'RTID(SeedBank@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+          onRequestPlantSelection:
+              (
+                _, {
+                excludeIds,
+                initialSelectedIds,
+                blockRealmExclusiveInChooser = false,
+                blockHiddenPlantsInChooser = false,
+                allowDuplicateSelection = false,
+              }) {},
+          onRequestZombieSelection: (_) {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final hint = find.byKey(const ValueKey('presetPlantListReorderHint'));
+    final handle = find.byIcon(Icons.drag_indicator);
+    expect(hint, findsOneWidget);
+    expect((tester.widget<Text>(hint).data ?? '').endsWith('.'), isFalse);
+    expect(
+      tester.getBottomLeft(hint).dy,
+      lessThan(tester.getTopLeft(handle).dy),
+    );
+    expect(
+      find.textContaining('Plants available at start Long press'),
+      findsNothing,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -171,6 +241,115 @@ void main() {
     await tester.pump();
 
     expect((level.objects.single.objData as Map)['BowlingFoulLine'], 3);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Chinese Bowling help uses the beach bowling title', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _localizedApp(
+        BowlingMinigameScreen(
+          rtid: 'RTID(BowlingMinigame@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: []),
+          onChanged: () {},
+          onBack: () {},
+        ),
+        locale: const Locale('zh'),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.help_outline));
+    await tester.pumpAndSettle();
+    expect(find.text('沙滩保龄球模块说明'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Inflation module separates parameters and limitation notice', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        IncreasedCostModuleScreen(
+          rtid: 'RTID(IncreasedCostModule@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: []),
+          onChanged: () {},
+          onBack: () {},
+        ),
+        locale: const Locale('zh'),
+      ),
+    );
+    await tester.pump();
+
+    final parameters = find.byKey(
+      const ValueKey('inflationParametersCard'),
+    );
+    final limitation = find.byKey(
+      const ValueKey('inflationLimitationCard'),
+    );
+    expect(parameters, findsOneWidget);
+    expect(limitation, findsOneWidget);
+    expect(
+      find.descendant(of: parameters, matching: find.text('膨胀参数')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: parameters,
+        matching: find.text('最大增长次数 (MaxIncreasedCount)'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: parameters,
+        matching: find.textContaining('目前游戏只能读取默认值10次'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: limitation,
+        matching: find.text(
+          '由于模块本身的问题，目前更改最大增长次数设置暂时无效，游戏只能读取默认值10次。',
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Inflation help contains overview and parameter description', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _localizedApp(
+        IncreasedCostModuleScreen(
+          rtid: 'RTID(IncreasedCostModule@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: []),
+          onChanged: () {},
+          onBack: () {},
+        ),
+        locale: const Locale('zh'),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.help_outline));
+    await tester.pumpAndSettle();
+    expect(find.text('通货膨胀模块说明'), findsOneWidget);
+    expect(find.text('• 简要介绍'), findsOneWidget);
+    expect(find.text('• 参数说明'), findsOneWidget);
+    expect(
+      find.textContaining('每次种植植物后，该植物的阳光消耗会增加'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -258,6 +437,86 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('Storm title describes carried zombies and aligns with section', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: ['Storm'],
+          objClass: 'StormZombieSpawnerProps',
+          objData: StormZombieSpawnerPropsData(
+            zombies: [
+              StormZombieData(
+                type: 'RTID(zombie@ZombieTypes)',
+                level: 0,
+              ),
+            ],
+          ).toJson(),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _localizedApp(
+        StormEventScreen(
+          rtid: 'RTID(Storm@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+          onRequestZombieSelection: (_) {},
+        ),
+        locale: const Locale('zh'),
+      ),
+    );
+    await tester.pump();
+
+    final sectionTitle = find.text('生成参数');
+    final zombieTitle = find.text('携带的僵尸（共1个）');
+    expect(sectionTitle, findsOneWidget);
+    expect(zombieTitle, findsOneWidget);
+    expect(
+      tester.getTopLeft(zombieTitle).dx,
+      closeTo(tester.getTopLeft(sectionTitle).dx, 0.1),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('gravestone position preview uses compact mobile grid sizing', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        SpawnGraveStonesEventScreen(
+          rtid: 'RTID(Gravestones@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: []),
+          onChanged: () {},
+          onBack: () {},
+          onRequestGridItemSelection: (_) {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final grid = find.byKey(
+      const ValueKey('spawnGravestonesPositionPreviewGrid'),
+    );
+    expect(grid, findsOneWidget);
+    final size = tester.getSize(grid);
+    expect(size.width, lessThanOrEqualTo(252.1));
+    expect(size.width / size.height, closeTo(9 / 5, 0.01));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Frost wind rows and direction controls stay grouped', (
     tester,
   ) async {
@@ -308,6 +567,30 @@ void main() {
         .descendant(of: center, matching: find.byType(AspectRatio))
         .first;
     expect(tester.getCenter(preview).dx, closeTo(500, 0.5));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('tunnel settings fields do not use gray fills', (tester) async {
+    await tester.pumpWidget(
+      _localizedApp(
+        TunnelDefendModuleScreen(
+          rtid: 'RTID(TunnelDefend@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: []),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final preset = tester.widget<InputDecorator>(
+      find.byKey(const ValueKey('tunnelTileStylePresetField')),
+    );
+    final interval = tester.widget<TextField>(
+      find.byKey(const ValueKey('tunnelSequenceIntervalField')),
+    );
+    expect(preset.decoration.filled, isFalse);
+    expect(interval.decoration?.filled, isFalse);
     expect(tester.takeException(), isNull);
   });
 

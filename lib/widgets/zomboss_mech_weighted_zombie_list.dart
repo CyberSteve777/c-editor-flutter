@@ -306,20 +306,24 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
   }
 
   Widget _buildWeightField(BuildContext context) {
-    return TextFormField(
-      controller: _controller,
-      focusNode: _focusNode,
-      readOnly: !widget.editable,
-      decoration: editorInputDecoration(context, labelText: widget.weightLabel),
-      keyboardType: TextInputType.number,
-      onChanged: widget.editable
-          ? (value) {
-              final parsed = int.tryParse(value);
-              if (parsed != null) {
-                widget.onWeightChanged?.call(parsed);
+    return EditorResponsiveInputField(
+      label: widget.weightLabel,
+      decoration: editorInputDecoration(context),
+      builder: (context, decoration) => TextFormField(
+        controller: _controller,
+        focusNode: _focusNode,
+        readOnly: !widget.editable,
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: widget.editable
+            ? (value) {
+                final parsed = int.tryParse(value);
+                if (parsed != null) {
+                  widget.onWeightChanged?.call(parsed);
+                }
               }
-            }
-          : null,
+            : null,
+      ),
     );
   }
 }

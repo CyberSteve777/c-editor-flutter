@@ -4,6 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/portal_type_selector.dart';
 import 'package:c_editor/widgets/zomboss_mech_action_fields.dart';
+import 'package:c_editor/widgets/zomboss_mech_weighted_zombie_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -139,5 +140,28 @@ void main() {
         .widgetList<Text>(find.text('Base Action'))
         .firstWhere((text) => text.textAlign == TextAlign.center);
     expect(title.style?.fontWeight, FontWeight.bold);
+  });
+
+  testWidgets('long zombie weight labels move above the input', (tester) async {
+    const weightLabel =
+        'Zombie weights (ZombieWeightsWithAnEspeciallyLongLocalizedName)';
+    await tester.pumpWidget(
+      _app(
+        ZombossMechWeightedZombieListEditor(
+          fieldLabel: 'Zombie types (ZombieNames)',
+          weightLabel: weightLabel,
+          zombieIds: const ['bobsled_punk'],
+          weights: const [100],
+          editable: true,
+          onChanged: (_, _) {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.decoration?.labelText, isNull);
+    expect(find.text(weightLabel), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

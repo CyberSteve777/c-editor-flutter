@@ -69,7 +69,6 @@
   { "typeName": "tangyuan", "category": "trap", "icon": "tangyuan.webp" },
   { "typeName": "sportzball", "category": "trap", "icon": "sportzball.webp" },
   { "typeName": "atlantis_shell", "category": "spawnableObjects", "icon": "atlantis_shell.webp" },
-  { "typeName": "SmokeManhole", "category": "trap", "icon": "SmokeManhole.webp" },
   { "typeName": "lilypad", "category": "spawnableObjects", "icon": "lilypad.webp" },
   { "typeName": "flowerpot", "category": "spawnableObjects", "icon": "flowerpot.webp" },
   { "typeName": "FrozenIcebloom", "category": "spawnableObjects", "icon": "FrozenIcebloom.webp", "tag": "special" },

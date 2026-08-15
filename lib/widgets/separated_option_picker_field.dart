@@ -117,32 +117,39 @@ class SeparatedOptionPickerField<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = _selectedItem;
-    return Semantics(
-      button: enabled,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: enabled ? () => _showOptions(context) : null,
-        child: InputDecorator(
-          isEmpty: selected == null,
-          decoration:
-              (decoration ??
-                      editorInputDecoration(context, labelText: labelText))
-                  .copyWith(enabled: enabled),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  selected?.fieldLabel ?? selected?.label ?? '',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+    Widget buildPicker(InputDecoration effectiveDecoration) {
+      return Semantics(
+        button: enabled,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: enabled ? () => _showOptions(context) : null,
+          child: InputDecorator(
+            isEmpty: selected == null,
+            decoration: effectiveDecoration.copyWith(enabled: enabled),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    selected?.fieldLabel ?? selected?.label ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.arrow_drop_down),
-            ],
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_drop_down),
+              ],
+            ),
           ),
         ),
-      ),
+      );
+    }
+
+    if (decoration != null) return buildPicker(decoration!);
+    return EditorResponsiveInputField(
+      label: labelText,
+      decoration: editorInputDecoration(context),
+      builder: (context, effectiveDecoration) =>
+          buildPicker(effectiveDecoration),
     );
   }
 }

@@ -247,7 +247,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.airDropShipGroupLabel ?? "Group"} ${idx + 1}',
+                                l10n?.groupN(idx + 1) ?? 'Group ${idx + 1}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -295,7 +295,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedIndex + 1} - ${l10n?.airDropShipModuleDropArea ?? "Drop area"}',
+                            '${l10n?.groupN(_selectedIndex + 1) ?? "Group ${_selectedIndex + 1}"} - ${l10n?.airDropShipModuleDropArea ?? "Drop area"}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -597,7 +597,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
         l10n?.removeItemConfirm(
-              '${l10n.airDropShipGroupLabel} ${_data.appearWaves.indexOf(item) + 1}',
+              l10n.groupN(_data.appearWaves.indexOf(item) + 1),
             ) ??
             'Remove group ${_data.appearWaves.indexOf(item) + 1}?',
       ),

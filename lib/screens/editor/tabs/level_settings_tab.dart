@@ -50,6 +50,7 @@ class ModuleUIInfo {
   final String? assetIconPath;
   final bool isCore;
   final bool isExpeditionTiles;
+  final bool canEdit;
 
   const ModuleUIInfo({
     required this.rtid,
@@ -61,6 +62,7 @@ class ModuleUIInfo {
     this.assetIconPath,
     required this.isCore,
     this.isExpeditionTiles = false,
+    required this.canEdit,
   });
 }
 
@@ -72,6 +74,7 @@ class LevelSettingsTab extends StatefulWidget {
     required this.missingModules,
     this.missingModuleWarnings,
     this.showGlacierModuleCompatibilityWarning = false,
+    this.showGlacierModuleUnderwaterWarning = false,
     required this.onEditBasicInfo,
     required this.onEditModule,
     required this.onRemoveModule,
@@ -86,6 +89,7 @@ class LevelSettingsTab extends StatefulWidget {
   /// Module objClass -> list of plant IDs that need this module but it's missing (parallel plants warning).
   final Map<String, List<String>>? missingModuleWarnings;
   final bool showGlacierModuleCompatibilityWarning;
+  final bool showGlacierModuleUnderwaterWarning;
   final VoidCallback onEditBasicInfo;
   final ValueChanged<String> onEditModule;
   final ValueChanged<String> onRemoveModule;
@@ -102,7 +106,22 @@ class LevelSettingsTab extends StatefulWidget {
 }
 
 class _LevelSettingsTabState extends State<LevelSettingsTab> {
+  static const _tabEditorModuleClasses = {
+    'VaseBreakerPresetProperties',
+    'VaseBreakerArcadeModuleProperties',
+    'VaseBreakerFlowModuleProperties',
+    'ZombossBattleModuleProperties',
+    'ZombossBattleIntroProperties',
+    'ZombossLastStandMinigameProperties',
+  };
+
   String? pendingDeleteRtid;
+
+  static bool _hasEditor(ModuleMetadata metadata, String objClass) {
+    return (metadata.routeId != 'Unknown' &&
+            metadata.routeId != 'UnknownDetail') ||
+        _tabEditorModuleClasses.contains(objClass);
+  }
 
   /// Returns localized plant name for display; falls back to a readable form of id if no translation.
   static String _plantDisplayName(
@@ -192,6 +211,7 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
         assetIconPath: metadata.assetIconPath,
         isCore: metadata.isCore,
         isExpeditionTiles: isExpeditionTiles,
+        canEdit: _hasEditor(metadata, objClass),
       );
     }).toList();
 
@@ -207,11 +227,12 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     );
     final hasTunnelDefendModule = currentModulesList.any(
       (m) =>
-          m.objClass == 'TunnelDefendModuleProperties' &&
-          !m.isExpeditionTiles,
+          m.objClass == 'TunnelDefendModuleProperties' && !m.isExpeditionTiles,
     );
-    final showTunnelDefendRecommendation =
-        _shouldRecommendTunnelDefendModule(levelDef, hasTunnelDefendModule);
+    final showTunnelDefendRecommendation = _shouldRecommendTunnelDefendModule(
+      levelDef,
+      hasTunnelDefendModule,
+    );
     final hasExpeditionTilesModule = currentModulesList.any(
       (m) => m.isExpeditionTiles,
     );
@@ -459,14 +480,26 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
             if (widget.showGlacierModuleCompatibilityWarning) ...[
               const SizedBox(height: 12),
               EditorWarningBanner(
-                title: ModuleRegistry.getMetadata(
-                  'GlacierModuleProperties',
-                ).getTitle(context),
+                title:
+                    l10n?.glacierModuleCompatibilityWarningTitle ??
+                    'Ice Chunk Module requirements',
                 message:
                     l10n?.glacierModuleCompatibilityWarning ??
                     'This module only works with the Zomboss Battle module '
                         'and an Ice Age Zomboss Mech (zombossmech_iceage). '
                         'Add or fix those settings so glacier blocks can spawn zombies.',
+              ),
+            ],
+
+            if (widget.showGlacierModuleUnderwaterWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                title:
+                    l10n?.glacierModuleUnderwaterWarningTitle ??
+                    'Underwater World appearance incompatibility',
+                message:
+                    l10n?.glacierModuleUnderwaterWarning ??
+                    'Avoid using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn. This combination can harm the level appearance and may cause crashes.',
               ),
             ],
 
@@ -550,7 +583,8 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     BuildContext context,
     AppLocalizations? l10n,
   ) {
-    final desktop = Theme.of(context).platform == TargetPlatform.windows ||
+    final desktop =
+        Theme.of(context).platform == TargetPlatform.windows ||
         Theme.of(context).platform == TargetPlatform.macOS ||
         Theme.of(context).platform == TargetPlatform.linux;
     return desktop
@@ -652,7 +686,7 @@ class _ReorderableModuleList extends StatelessWidget {
               isCore: isCore,
               reorderIndex: index,
               removeTooltip: removeTooltip,
-              onClick: () => onEditModule(item.rtid),
+              onClick: item.canEdit ? () => onEditModule(item.rtid) : null,
               onDelete: () => onDelete(item.rtid),
             );
           },
@@ -669,7 +703,7 @@ class _ReorderableModuleTile extends StatelessWidget {
     required this.isCore,
     required this.reorderIndex,
     required this.removeTooltip,
-    required this.onClick,
+    this.onClick,
     required this.onDelete,
   });
 
@@ -677,7 +711,7 @@ class _ReorderableModuleTile extends StatelessWidget {
   final bool isCore;
   final int reorderIndex;
   final String removeTooltip;
-  final VoidCallback onClick;
+  final VoidCallback? onClick;
   final VoidCallback onDelete;
 
   @override
@@ -746,7 +780,11 @@ class _ReorderableModuleTile extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.close, size: isCore ? 24 : 16, color: iconColor),
+                icon: Icon(
+                  Icons.close,
+                  size: isCore ? 24 : 16,
+                  color: iconColor,
+                ),
                 tooltip: removeTooltip,
                 onPressed: onDelete,
               ),

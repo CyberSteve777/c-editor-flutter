@@ -278,7 +278,7 @@ ModuleAliasInputField(
                       setState(() => _overrideToDelete = _data.overrides[idx]),
                   onAdd: _addOverride,
                   groupLabel: (idx) =>
-                      '${l10n?.airDropShipGroupLabel ?? "Group"} ${idx + 1}',
+                      l10n?.groupN(idx + 1) ?? 'Group ${idx + 1}',
                 ),
                 if (selected != null) ...[
                   const SizedBox(height: 24),
@@ -291,7 +291,8 @@ ModuleAliasInputField(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedIndex + 1}',
+                            l10n?.groupN(_selectedIndex + 1) ??
+                                'Group ${_selectedIndex + 1}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -401,7 +402,7 @@ ModuleAliasInputField(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
         l10n?.removeItemConfirm(
-              '${l10n.airDropShipGroupLabel} ${index + 1}',
+              l10n.groupN(index + 1),
             ) ??
             'Remove group ${index + 1}?',
       ),

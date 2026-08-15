@@ -1,6 +1,7 @@
 import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:c_editor/data/repository/level_repository_base.dart';
 import 'package:c_editor/screens/level_list_screen.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -13,10 +14,16 @@ void main() {
 
     expect(navigation.state.lastOpenedLevelPath, r'C:\levels\world\level.json');
     expect(navigation.state.screen, AppScreen.levelList);
+    expect(navigation.state.showUploadAfterLevelReturn, isTrue);
+
+    navigation.openAbout();
+    navigation.backToLevelList();
+    expect(navigation.state.showUploadAfterLevelReturn, isFalse);
 
     final restartedNavigation = AppNavigationCubit();
     addTearDown(restartedNavigation.close);
     expect(restartedNavigation.state.lastOpenedLevelPath, isEmpty);
+    expect(restartedNavigation.state.showUploadAfterLevelReturn, isFalse);
   });
 
   test('builds native breadcrumbs to the returned level directory', () {
@@ -83,6 +90,42 @@ void main() {
         fileExtent: 64,
       ),
       160,
+    );
+  });
+
+  test('returned-level upload action follows top and user-scroll rules', () {
+    expect(
+      shouldShowLevelListUploadFab(
+        isAtTop: false,
+        showAfterLevelReturn: true,
+      ),
+      isTrue,
+    );
+    expect(
+      shouldDismissLevelListReturnUploadFab(ScrollDirection.idle),
+      isFalse,
+    );
+    expect(
+      shouldDismissLevelListReturnUploadFab(ScrollDirection.forward),
+      isTrue,
+    );
+    expect(
+      shouldDismissLevelListReturnUploadFab(ScrollDirection.reverse),
+      isTrue,
+    );
+    expect(
+      shouldShowLevelListUploadFab(
+        isAtTop: false,
+        showAfterLevelReturn: false,
+      ),
+      isFalse,
+    );
+    expect(
+      shouldShowLevelListUploadFab(
+        isAtTop: true,
+        showAfterLevelReturn: false,
+      ),
+      isTrue,
     );
   });
 }

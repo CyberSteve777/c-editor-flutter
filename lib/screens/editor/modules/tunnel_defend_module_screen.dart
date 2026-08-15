@@ -841,11 +841,12 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
             ] else ...[
               _buildSettingsWidth(
                 InputDecorator(
+                  key: const ValueKey('tunnelTileStylePresetField'),
                   decoration: InputDecoration(
                     labelText:
                         l10n?.tunnelDefendTileStylePreset ??
                         'Tile style preset',
-                    filled: true,
+                    filled: false,
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
@@ -884,10 +885,11 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                       l10n?.tunnelDefendSequenceInterval ??
                       'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
                   decoration: const InputDecoration(
-                    filled: true,
+                    filled: false,
                     border: OutlineInputBorder(),
                   ),
                   builder: (context, decoration) => TextField(
+                    key: const ValueKey('tunnelSequenceIntervalField'),
                     controller: _sequenceIntervalCtrl,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,

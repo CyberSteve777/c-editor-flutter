@@ -525,11 +525,9 @@ class _ScalarFieldState extends State<_ScalarField> {
     final field = widget.field;
     final label = widget.label;
     if (ZombossMechActionUtils.usesDecimalInput(field)) {
-      return TextFormField(
-        controller: _controller,
-        focusNode: _focusNode,
-        readOnly: !widget.editable,
-        decoration: editorInputDecoration(context, labelText: label),
+      return _buildResponsiveTextField(
+        context,
+        label: label,
         keyboardType: const TextInputType.numberWithOptions(
           decimal: true,
           signed: true,
@@ -553,11 +551,9 @@ class _ScalarFieldState extends State<_ScalarField> {
         );
       case 'int':
         if (ZombossMechActionUtils.usesLabeledIntInput(field)) {
-          return TextFormField(
-            controller: _controller,
-            focusNode: _focusNode,
-            readOnly: !widget.editable,
-            decoration: editorInputDecoration(context, labelText: label),
+          return _buildResponsiveTextField(
+            context,
+            label: label,
             keyboardType: TextInputType.number,
             onChanged: widget.editable
                 ? (v) {
@@ -625,14 +621,32 @@ class _ScalarFieldState extends State<_ScalarField> {
           },
         );
       default:
-        return TextFormField(
-          controller: _controller,
-          focusNode: _focusNode,
-          readOnly: !widget.editable,
-          decoration: editorInputDecoration(context, labelText: label),
+        return _buildResponsiveTextField(
+          context,
+          label: label,
           onChanged: widget.editable ? (v) => widget.onChanged(v) : null,
         );
     }
+  }
+
+  Widget _buildResponsiveTextField(
+    BuildContext context, {
+    required String label,
+    TextInputType? keyboardType,
+    ValueChanged<String>? onChanged,
+  }) {
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: editorInputDecoration(context),
+      builder: (context, decoration) => TextFormField(
+        controller: _controller,
+        focusNode: _focusNode,
+        readOnly: !widget.editable,
+        decoration: decoration,
+        keyboardType: keyboardType,
+        onChanged: onChanged,
+      ),
+    );
   }
 
   int _asInt(dynamic value, ZombossMechFieldSpec field) {

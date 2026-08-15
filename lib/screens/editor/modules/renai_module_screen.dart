@@ -321,14 +321,16 @@ ModuleAliasInputField(
                             ),
                           ),
                           const SizedBox(height: 8),
-                          SizedBox(
-                            width: 120,
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 280),
                             child: TextField(
+                              key: const ValueKey('renaiNightStartWaveField'),
                               controller: _nightStartCtrl,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: l10n?.waveLabel ?? 'Wave',
                                 helperText: l10n?.moduleWaveIndexZeroBasedHint,
+                                helperMaxLines: 5,
                                 border: const OutlineInputBorder(),
                               ),
                               onChanged: (v) {
@@ -751,7 +753,12 @@ class _StatueCardState extends State<_StatueCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(name, style: theme.textTheme.labelMedium, maxLines: 3),
+                  Text(
+                    name,
+                    key: const ValueKey('renaiStatueItemName'),
+                    style: theme.textTheme.labelMedium,
+                    maxLines: 3,
+                  ),
                   if (widget.showCoordinates)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
@@ -778,8 +785,9 @@ class _StatueCardState extends State<_StatueCard> {
                         ],
                       ),
                     ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
                   TextField(
+                    key: const ValueKey('renaiStatueWaveField'),
                     controller: _waveCtrl,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
@@ -789,6 +797,7 @@ class _StatueCardState extends State<_StatueCard> {
                       helperText: AppLocalizations.of(
                         context,
                       )?.moduleWaveIndexZeroBasedHint,
+                      helperMaxLines: 5,
                       border: const OutlineInputBorder(),
                     ),
                     onChanged: (v) {

@@ -664,7 +664,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Данный инструмент предназначен для прямого изменения данных игры «Plants vs. Zombies 2».\n\n• Использование этого инструмента для изменения игровых данных может нарушать условия обслуживания игры.\n• Это может привести к временной или постоянной блокировке вашей игровой учетной записи.\n• Это может привести к повреждению игровых сохранений или потере данных.\n• Все действия совершаются пользователем добрововольно, на свой страх и риск.\n\nОтказ от ответственности:\n\nРазработчик настоящим заявляет:\n1. Данный инструмент предназначен только для ознакомления и исследований; любые формы читерства в игре не поощряются.\n2. Все последствия использования данного инструмента, включая, помимо прочего, блокировку аккаунта, потерю данных и ухудшение игрового процесса, ложатся исключительно на пользователя. Разработчик не несет никакой прямой или косвенной ответственности.\n3. Пользователи должны полностью осознавать связанные с этим риски перед использованием данного инструмента и самостоятельно принимать решение о принятии этих рисков.\n4. Дальнейшее использование означает, что вы прочитали, поняли и согласны со всеми условиями данного отказа от ответственности.';
 
   @override
-  String get exportDisclaimerDoNotShowAgain => 'Больше не показывать';
+  String get exportDisclaimerDoNotShowAgain =>
+      'Больше не показывать по умолчанию';
 
   @override
   String get importProgressTitle => 'Импорт файлов…';
@@ -2403,7 +2404,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get spermWhaleModuleNotDeepSeaWarning =>
-      'Модуль рассчитан на глубоководную сцену (Deep Sea / Deep Sea Land). Сетка ниже соответствует текущему уровню; на обычном газоне это не Атлантида.';
+      'Рекомендуется использовать этот модуль на лужайках Подводного мира. На лужайках, отличных от «20 000 лье под водой»/Атлантиды, возможны проблемы совместимости.';
 
   @override
   String get spermWhaleModuleLawnPreview => 'Сетка газона (ориентир)';
@@ -4399,7 +4400,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Колонка 0 — слева, 9 — справа. Начало < конец.';
 
   @override
-  String get eventHelpStormLevels => 'Зомби бури поддерживают уровни 1–10.';
+  String get eventHelpStormLevels =>
+      'Уровень и ряд зомби внутри бури нельзя задавать независимо. Ручное изменение уровня зомби не действует: уровень по умолчанию определяется последовательностью уровней газона.';
 
   @override
   String get eventHelpGroundSpawnBody => 'Настройка зомби этой волны.';
@@ -5271,6 +5273,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String stormCarriedZombiesCount(int count) {
+    return 'Переносимые зомби (всего: $count)';
+  }
+
+  @override
   String get eventGraveSpawnSubtitle => 'Событие: спавн из препятствий';
 
   @override
@@ -5294,7 +5301,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpStormZombieLevels =>
-      'Буревые зомби: уровни 1–10. Элитные — уровень по умолчанию.';
+      'Уровень и ряд зомби внутри бури нельзя задавать независимо. Ручное изменение уровня зомби не действует: уровень по умолчанию определяется последовательностью уровней газона.';
 
   @override
   String get spawnParameters => 'Параметры спавна';
@@ -5828,7 +5835,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombieLevelsBody =>
-      'Штормовые зомби: уровни 1–10. Элитные используют уровень по умолчанию.';
+      'Уровень и ряд зомби внутри бури нельзя задавать независимо. Ручное изменение уровня зомби не действует: уровень по умолчанию определяется последовательностью уровней газона.';
 
   @override
   String get batchLevel => 'Пакетный уровень';
@@ -6016,6 +6023,24 @@ class AppLocalizationsRu extends AppLocalizations {
       'Макс. кол-во увеличений (MaxIncreasedCount)';
 
   @override
+  String get inflationMaxIncreaseCountWarning =>
+      'Из-за проблемы самого модуля изменение максимального количества увеличений пока не действует. Игра считывает только значение по умолчанию — 10.';
+
+  @override
+  String get inflationHelpTitle => 'Инфляция';
+
+  @override
+  String get inflationHelpOverview =>
+      'После каждой посадки растения его стоимость в солнцах увеличивается — подобно механике улучшающих растений в бесконечном режиме первой Plants vs. Zombies.';
+
+  @override
+  String get inflationHelpParametersTitle => 'Описание параметров';
+
+  @override
+  String get inflationHelpParametersBody =>
+      'Можно настроить прибавку стоимости в солнцах после каждой посадки и максимальное количество повышений цены.';
+
+  @override
   String get selectGroup => 'Выбрать группу';
 
   @override
@@ -6135,11 +6160,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get presetPlantListReorderHint =>
-      'Удерживайте ручку ⋮⋮ и перетаскивайте для изменения порядка.';
+      'Удерживайте ручку ⋮⋮ и перетаскивайте для изменения порядка';
 
   @override
   String get presetPlantListReorderHintDesktop =>
-      'Перетащите ручку ⋮⋮ для изменения порядка.';
+      'Перетащите ручку ⋮⋮ для изменения порядка';
 
   @override
   String get whiteListDescription =>
@@ -6178,8 +6203,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String seedBankGridItemCount(int count) {
-    return 'В списке пресетов: $count';
+    return 'В списке пресетов уже есть: $count';
   }
+
+  @override
+  String get seedBankGridItemsPresetOnlySwitchWarning =>
+      'Функция добавления объектов работает только в режиме предустановки. При переходе в режим выбора она будет отключена. Продолжить переключение?';
 
   @override
   String get starChallengeSelectConditions => 'Выбор состояний';
@@ -7098,7 +7127,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get glacierModuleHelpColumnsBody =>
-      'ZombieSpawnData всегда содержит ровно шесть элементов — по одному на столбец слева направо. В каждом столбце список записей: TypeName (тип зомби), Weight (вес) и Level (уровень 0–10).';
+      'ZombieSpawnData всегда содержит ровно шесть элементов — по одному на столбец слева направо. В каждом столбце список записей: TypeName (тип зомби), Weight (вес) и Level (уровень 0–4).';
 
   @override
   String get glacierModuleHelpRequirementsTitle => 'Требования';
@@ -7108,8 +7137,20 @@ class AppLocalizationsRu extends AppLocalizations {
       'Работает только вместе с модулем битвы с боссом, если выбран мех Ледникового периода (zombossmech_iceage и его варианты).';
 
   @override
+  String get glacierModuleCompatibilityWarningTitle =>
+      'Требования модуля ледяных глыб';
+
+  @override
   String get glacierModuleCompatibilityWarning =>
       'Модуль работает только с модулем битвы с боссом и мехом Ледникового периода (zombossmech_iceage). Добавьте или исправьте эти настройки, чтобы ледяные блоки призывали зомби.';
+
+  @override
+  String get glacierModuleUnderwaterWarningTitle =>
+      'Несовместимость с оформлением Подводного мира';
+
+  @override
+  String get glacierModuleUnderwaterWarning =>
+      'Не рекомендуется использовать босса Ледникового периода и модуль ледяных глыб на лужайке Подводного мира. Это может испортить внешний вид уровня и вызвать сбой игры.';
 
   @override
   String glacierModuleColumn(int columnIndex) {
@@ -7154,10 +7195,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Относительный вес появления этого зомби в столбце.';
 
   @override
-  String get glacierModuleLevel => 'Уровень (0–10)';
+  String get glacierModuleLevel => 'Уровень зомби';
 
   @override
-  String get glacierModuleLevelTooltip => 'Уровень зомби от 0 до 10.';
+  String get glacierModuleLevelTooltip => 'Уровень зомби от 0 до 4.';
 
   @override
   String get moduleTitle_HeianWindModuleProperties => 'Ветер Хэйан';
@@ -7395,7 +7436,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombieSunDropHelpValuesBody =>
-      'Десять целых чисел соответствуют уровням 1–10. При уровне выше 10 используется значение 1-го уровня.';
+      'Шесть целых чисел соответствуют уровням 1–6. При уровне выше 6 используется значение 1-го уровня.';
 
   @override
   String get zombieSunDropEmpty => 'Нет записей. Нажмите +, чтобы добавить.';
@@ -7411,10 +7452,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombieSunDropEditHint =>
-      'Солнце за уровень (1–10). Уровни выше 10 используют значение 1-го уровня.';
+      'Настройте солнце для уровней 1–6. При уровне выше 6 используется значение 1-го уровня.';
 
   @override
   String get zombieSunDropTier => 'Уровень';
+
+  @override
+  String zombieSunDropTierLabel(int tier) {
+    return 'Уровень $tier';
+  }
 
   @override
   String get moduleTitle_PickupCollectableTutorialProperties => 'Урок подбора';
@@ -7779,6 +7825,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String armrackModuleRequiredMessage(String moduleName) {
     return 'Чтобы оружейные стойки отображались правильно и без текстур солнца, нужно добавить модуль «$moduleName».';
+  }
+
+  @override
+  String renaiGridItemModuleRequiredMessage(String moduleName) {
+    return 'Для корректной работы колеса Витрувия требуется модуль «$moduleName». Добавить его?';
   }
 
   @override

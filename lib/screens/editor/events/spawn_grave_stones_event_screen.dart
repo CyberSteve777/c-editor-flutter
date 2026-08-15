@@ -263,8 +263,8 @@ class _SpawnGraveStonesEventScreenState
             const SizedBox(height: 16),
             scaleTableForDesktop(
               context: context,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
+              child: Builder(
+                builder: (context) {
                   final parsed = LevelParser.parseLevel(widget.levelFile);
                   final isDeepSea = LevelParser.isDeepSeaLawn(
                     parsed.levelDef,
@@ -272,50 +272,68 @@ class _SpawnGraveStonesEventScreenState
                   );
                   final cols = isDeepSea ? 10 : 9;
                   final rows = isDeepSea ? 6 : 5;
-                  final cellSize = (constraints.maxWidth / cols)
-                      .floorToDouble();
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: gridColor,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: borderColor),
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth:
+                          EditorItemCardLayout.gridPreviewMaxWidth(context) *
+                          0.7,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(rows, (row) {
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: List.generate(cols, (col) {
-                            final isSelected = _data.spawnPositionsPool.any(
-                              (p) => p.x == col && p.y == row,
-                            );
-                            return GestureDetector(
-                              onTap: () => _togglePosition(col, row),
-                              child: Container(
-                                width: cellSize,
-                                height: cellSize,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? const Color(0xFF2E7D32)
-                                      : Colors.transparent,
-                                  border: Border.all(
-                                    color: borderColor.withValues(alpha: 0.5),
-                                    width: 0.5,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: isSelected
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: (cellSize * 0.85).clamp(28, 56),
-                                      )
-                                    : null,
+                    child: AspectRatio(
+                      aspectRatio: cols / rows,
+                      child: Container(
+                        key: const ValueKey(
+                          'spawnGravestonesPositionPreviewGrid',
+                        ),
+                        decoration: BoxDecoration(
+                          color: gridColor,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Column(
+                          children: List.generate(rows, (row) {
+                            return Expanded(
+                              child: Row(
+                                children: List.generate(cols, (col) {
+                                  final isSelected = _data.spawnPositionsPool
+                                      .any((p) => p.x == col && p.y == row);
+                                  return Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => _togglePosition(col, row),
+                                      child: LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          final cellSize = constraints.maxWidth;
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              color: isSelected
+                                                  ? const Color(0xFF2E7D32)
+                                                  : Colors.transparent,
+                                              border: Border.all(
+                                                color: borderColor.withValues(
+                                                  alpha: 0.5,
+                                                ),
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: isSelected
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.white,
+                                                    size: (cellSize * 0.85)
+                                                        .clamp(16, 56),
+                                                  )
+                                                : null,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                }),
                               ),
                             );
                           }),
-                        );
-                      }),
+                        ),
+                      ),
                     ),
                   );
                 },

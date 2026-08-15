@@ -36,7 +36,7 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
   static const _objClass = 'GlacierModuleProperties';
   late String _alias;
   static const _levelMin = 0;
-  static const _levelMax = 10;
+  static const _levelMax = 4;
 
   late PvzObject _moduleObj;
   late GlacierModulePropertiesData _data;
@@ -357,171 +357,199 @@ class _EntryRow extends StatelessWidget {
     final switchLabel =
         l10n?.switchZombie ?? l10n?.switchCustomZombie ?? 'Switch zombie';
     final weightLabel = l10n?.glacierModuleWeight ?? 'Weight';
-    final levelLabel = l10n?.glacierModuleLevel ?? 'Level (0–10)';
+    final levelLabel = l10n?.glacierModuleLevel ?? 'Zombie level';
+
+    Widget buildIcon() => SizedBox(
+      width: _iconSize,
+      height: _iconSize,
+      child: iconPath != null
+          ? AssetImageWidget(
+              assetPath: iconPath,
+              altCandidates: imageAltCandidates(iconPath),
+              width: _iconSize,
+              height: _iconSize,
+            )
+          : Icon(
+              Icons.pest_control_outlined,
+              size: _iconSize * 0.65,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+    );
+
+    Widget buildNameBlock() => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          displayName,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (typeName.isNotEmpty)
+          Text(
+            typeName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+      ],
+    );
+
+    Widget buildSwitchButton() => TextButton.icon(
+      onPressed: onPickZombie,
+      icon: const Icon(Icons.swap_horiz, size: 20),
+      label: Text(switchLabel, overflow: TextOverflow.ellipsis),
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        visualDensity: VisualDensity.compact,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+    );
+
+    Widget buildWeightField() => Tooltip(
+      message:
+          l10n?.glacierModuleWeightTooltip ??
+          'Spawn weight for this zombie in this column.',
+      child: TextFormField(
+        key: ValueKey('w_${entry.typeName}_${entry.weight}'),
+        initialValue: '${entry.weight}',
+        style: theme.textTheme.bodyLarge,
+        decoration: _fieldDecoration(weightLabel),
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        onChanged: (v) {
+          final w = int.tryParse(v);
+          if (w != null && w > 0) {
+            onUpdate(
+              GlacierSpawnEntryData(
+                typeName: entry.typeName,
+                weight: w,
+                level: entry.level,
+              ),
+            );
+          }
+        },
+      ),
+    );
+
+    Widget buildLevelField() => Tooltip(
+      message:
+          l10n?.glacierModuleLevelTooltip ??
+          'Zombie level from 0 to 4.',
+      child: DropdownButtonFormField<int>(
+        key: ValueKey('lv_${entry.typeName}_${entry.level}'),
+        initialValue: entry.level.clamp(
+          _GlacierModuleScreenState._levelMin,
+          _GlacierModuleScreenState._levelMax,
+        ),
+        isExpanded: true,
+        isDense: true,
+        padding: EdgeInsets.zero,
+        style: theme.textTheme.bodyLarge,
+        iconSize: 22,
+        items: List.generate(
+          _GlacierModuleScreenState._levelMax -
+              _GlacierModuleScreenState._levelMin +
+              1,
+          (i) {
+            final lv = i + _GlacierModuleScreenState._levelMin;
+            return DropdownMenuItem(value: lv, child: Text('$lv'));
+          },
+        ),
+        onChanged: (lv) {
+          if (lv != null) {
+            onUpdate(
+              GlacierSpawnEntryData(
+                typeName: entry.typeName,
+                weight: entry.weight,
+                level: lv,
+              ),
+            );
+          }
+        },
+        decoration: _fieldDecoration(levelLabel),
+      ),
+    );
+
+    Widget buildDeleteButton() => IconButton(
+      icon: const Icon(Icons.delete_outline),
+      tooltip: l10n?.delete ?? 'Delete',
+      visualDensity: VisualDensity.compact,
+      padding: const EdgeInsets.all(8),
+      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+      onPressed: onRemove,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final row = Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: _iconSize,
-              height: _iconSize,
-              child: iconPath != null
-                  ? AssetImageWidget(
-                      assetPath: iconPath,
-                      altCandidates: imageAltCandidates(iconPath),
-                      width: _iconSize,
-                      height: _iconSize,
-                    )
-                  : Icon(
-                      Icons.pest_control_outlined,
-                      size: _iconSize * 0.65,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-            ),
-            const SizedBox(width: 6),
-            Expanded(
-              flex: 5,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          displayName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (typeName.isNotEmpty)
-                          Text(
-                            typeName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: onPickZombie,
-                    icon: const Icon(Icons.swap_horiz, size: 20),
-                    label: Text(switchLabel, overflow: TextOverflow.ellipsis),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 4,
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Tooltip(
-                  message:
-                      l10n?.glacierModuleWeightTooltip ??
-                      'Spawn weight for this zombie in this column.',
-                  child: TextFormField(
-                    key: ValueKey('w_${entry.typeName}_${entry.weight}'),
-                    initialValue: '${entry.weight}',
-                    style: theme.textTheme.bodyLarge,
-                    decoration: _fieldDecoration(weightLabel),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (v) {
-                      final w = int.tryParse(v);
-                      if (w != null && w > 0) {
-                        onUpdate(
-                          GlacierSpawnEntryData(
-                            typeName: entry.typeName,
-                            weight: w,
-                            level: entry.level,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Tooltip(
-                  message:
-                      l10n?.glacierModuleLevelTooltip ?? 'Zombie level (0–10).',
-                  child: DropdownButtonFormField<int>(
-                    key: ValueKey('lv_${entry.typeName}_${entry.level}'),
-                    initialValue: entry.level.clamp(
-                      _GlacierModuleScreenState._levelMin,
-                      _GlacierModuleScreenState._levelMax,
-                    ),
-                    isExpanded: true,
-                    isDense: true,
-                    padding: EdgeInsets.zero,
-                    style: theme.textTheme.bodyLarge,
-                    iconSize: 22,
-                    items: List.generate(
-                      _GlacierModuleScreenState._levelMax -
-                          _GlacierModuleScreenState._levelMin +
-                          1,
-                      (i) {
-                        final lv = i + _GlacierModuleScreenState._levelMin;
-                        return DropdownMenuItem(value: lv, child: Text('$lv'));
-                      },
-                    ),
-                    onChanged: (lv) {
-                      if (lv != null) {
-                        onUpdate(
-                          GlacierSpawnEntryData(
-                            typeName: entry.typeName,
-                            weight: entry.weight,
-                            level: lv,
-                          ),
-                        );
-                      }
-                    },
-                    decoration: _fieldDecoration(levelLabel),
-                  ),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              tooltip: l10n?.delete ?? 'Delete',
-              visualDensity: VisualDensity.compact,
-              padding: const EdgeInsets.all(8),
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-              onPressed: onRemove,
-            ),
-            ],
-          );
           if (constraints.maxWidth < 720) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(width: 720, child: row),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildIcon(),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [buildNameBlock(), buildSwitchButton()],
+                      ),
+                    ),
+                    buildDeleteButton(),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(child: buildWeightField()),
+                    const SizedBox(width: 8),
+                    Expanded(child: buildLevelField()),
+                  ],
+                ),
+              ],
             );
           }
-          return row;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              buildIcon(),
+              const SizedBox(width: 6),
+              Expanded(
+                flex: 5,
+                child: Row(
+                  children: [
+                    Flexible(fit: FlexFit.loose, child: buildNameBlock()),
+                    buildSwitchButton(),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: buildWeightField(),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: buildLevelField(),
+                ),
+              ),
+              buildDeleteButton(),
+            ],
+          );
         },
       ),
     );

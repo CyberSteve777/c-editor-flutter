@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart'
     show kDebugMode, kIsWeb, Uint8List, visibleForTesting;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
@@ -128,10 +129,21 @@ double levelListOffsetForIndex(
   return offset;
 }
 
+@visibleForTesting
+bool shouldShowLevelListUploadFab({
+  required bool isAtTop,
+  required bool showAfterLevelReturn,
+}) => isAtTop || showAfterLevelReturn;
+
+@visibleForTesting
+bool shouldDismissLevelListReturnUploadFab(ScrollDirection direction) =>
+    direction != ScrollDirection.idle;
+
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
     super.key,
     this.returnToLevelPath = '',
+    this.showUploadAfterLevelReturn = false,
     required this.onLevelClick,
     required this.onAboutClick,
     required this.onPluginsClick,
@@ -143,6 +155,7 @@ class LevelListScreen extends StatefulWidget {
   /// It intentionally lives in navigation state rather than preferences so a
   /// fresh app launch always starts at the library root.
   final String returnToLevelPath;
+  final bool showUploadAfterLevelReturn;
   final void Function(String fileName, String filePath) onLevelClick;
   final VoidCallback onAboutClick;
   final VoidCallback onPluginsClick;
@@ -176,6 +189,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
   LevelSortMode _sortMode = LevelSortMode.name;
   final ScrollController _listScrollController = ScrollController();
   bool _listScrollAtTop = true;
+  bool _showUploadFabAfterLevelReturn = false;
   String? _pendingReturnLevelPath;
 
   bool get _canGoBack => _pathStack.length > 1;
@@ -253,6 +267,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     super.initState();
     final returnPath = widget.returnToLevelPath.trim();
     _pendingReturnLevelPath = returnPath.isEmpty ? null : returnPath;
+    _showUploadFabAfterLevelReturn =
+        widget.showUploadAfterLevelReturn && _pendingReturnLevelPath != null;
     _listScrollController.addListener(_onListScroll);
     _seedRootFromStartupCache();
     _loadSavedPathAndList();
@@ -300,6 +316,16 @@ class _LevelListScreenState extends State<LevelListScreen> {
     if (atTop != _listScrollAtTop && mounted) {
       setState(() => _listScrollAtTop = atTop);
     }
+  }
+
+  bool _onListUserScroll(UserScrollNotification notification) {
+    if (!shouldDismissLevelListReturnUploadFab(notification.direction) ||
+        !_showUploadFabAfterLevelReturn ||
+        !mounted) {
+      return false;
+    }
+    setState(() => _showUploadFabAfterLevelReturn = false);
+    return false;
   }
 
   void _resetListScrollToTop() {
@@ -1889,7 +1915,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                       ),
                                     ),
                                   )
-                                : ListView.builder(
+                                : NotificationListener<UserScrollNotification>(
+                                    onNotification: _onListUserScroll,
+                                    child: ListView.builder(
                                     controller: _listScrollController,
                                     padding: const EdgeInsets.all(16),
                                     itemCount: filteredItems.length,
@@ -2105,6 +2133,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                         ),
                                       );
                                     },
+                                    ),
                                   ),
                       ),
                     ],
@@ -2144,7 +2173,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   ],
                 )
               : _AnimatedUploadFab(
-                  visible: _listScrollAtTop,
+                  visible: shouldShowLevelListUploadFab(
+                    isAtTop: _listScrollAtTop,
+                    showAfterLevelReturn: _showUploadFabAfterLevelReturn,
+                  ),
                   onPressed: _uploadLevel,
                   label: l10n.uploadLevel,
                 )

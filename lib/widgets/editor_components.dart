@@ -374,7 +374,7 @@ class EditorResponsiveInputField extends StatelessWidget {
               label,
               style:
                   externalLabelStyle ??
-                  theme.textTheme.bodyMedium?.copyWith(
+                  theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
             ),
@@ -1978,12 +1978,16 @@ InputDecoration editorInputDecoration(
   final baseDecoration = InputDecoration(
     labelText: labelText,
     hintText: hintText,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
     border: const OutlineInputBorder(),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: unfocusedColor.withValues(alpha: 0.6)),
     ),
-    labelStyle: TextStyle(color: unfocusedColor),
-    hintStyle: TextStyle(color: unfocusedColor.withValues(alpha: 0.7)),
+    labelStyle: TextStyle(color: unfocusedColor, height: 1.2),
+    hintStyle: TextStyle(
+      color: unfocusedColor.withValues(alpha: 0.7),
+      height: 1.2,
+    ),
     filled: filled,
     fillColor: fillColor,
   );
@@ -1994,6 +1998,7 @@ InputDecoration editorInputDecoration(
     ),
     floatingLabelStyle: TextStyle(
       color: isFocused ? focusColor : unfocusedColor,
+      height: 1.2,
     ),
     focusColor: focusColor,
   );

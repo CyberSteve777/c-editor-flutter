@@ -245,6 +245,47 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
     setState(() => _alias = newAlias);
   }
 
+  Future<void> _switchToChooserMode() async {
+    if (_data.selectionMethod == 'chooser') return;
+
+    if (_data.gridItemMode == true) {
+      final l10n = AppLocalizations.of(context)!;
+      final shouldSwitch = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          content: Text(l10n.seedBankGridItemsPresetOnlySwitchWarning),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(
+                l10n.cancel,
+                style: TextStyle(
+                  color: Theme.of(dialogContext).colorScheme.error,
+                ),
+              ),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.continueAnyway),
+            ),
+          ],
+        ),
+      );
+      if (shouldSwitch != true || !mounted) return;
+    }
+
+    _data.selectionMethod = 'chooser';
+    _data.gridItemMode = false;
+    _removeGridItemsFromPreset();
+    _stripChooserOnlyBlockedPlantsFromPreset();
+    _sync();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -350,8 +391,10 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
                   onAdd: _addToBlackList,
                   onRemove: (i) => _removeFromList(_data.plantBlackList, i),
                 ),
-                const SizedBox(height: 16),
-                _buildGridItemsCard(context, l10n),
+                if (_data.selectionMethod == 'preset') ...[
+                  const SizedBox(height: 16),
+                  _buildGridItemsCard(context, l10n),
+                ],
               ],
               if (isZombieMode)
                 Card(
@@ -444,13 +487,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
                   selected: _data.selectionMethod == 'chooser' && !isZombieMode,
                   onSelected: isZombieMode
                       ? null
-                      : (v) {
-                          setState(() {
-                            _data.selectionMethod = 'chooser';
-                            _stripChooserOnlyBlockedPlantsFromPreset();
-                            _sync();
-                          });
-                        },
+                      : (_) => _switchToChooserMode(),
                 ),
                 FilterChip(
                   label: Text(AppLocalizations.of(context)?.preset ?? 'Preset'),
@@ -688,7 +725,6 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       isEvent: false,
       title: l10n?.seedBankHelp ?? 'Seed Bank',
       themeColor: helpColor,
-      useNeutralSectionTitles: true,
       sections: [
         HelpSectionData(
           title: l10n?.overview ?? 'Overview',
@@ -970,9 +1006,7 @@ class _ResourceListEditor extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        onReorder != null
-                            ? '$description $reorderHint'
-                            : description,
+                        description,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -988,6 +1022,16 @@ class _ResourceListEditor extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            if (items.isNotEmpty && onReorder != null) ...[
+              Text(
+                reorderHint,
+                key: const ValueKey('presetPlantListReorderHint'),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
             if (items.isEmpty)
               Container(
                 width: double.infinity,

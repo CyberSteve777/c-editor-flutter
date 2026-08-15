@@ -203,6 +203,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
       case AppScreen.levelList:
         return LevelListScreen(
           returnToLevelPath: nav.lastOpenedLevelPath,
+          showUploadAfterLevelReturn: nav.showUploadAfterLevelReturn,
           onLevelClick: (fileName, filePath) {
             context.read<AppNavigationCubit>().openLevel(fileName, filePath);
           },

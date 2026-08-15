@@ -13,24 +13,37 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
         editorFileName: fileName,
         editorFilePath: filePath,
         lastOpenedLevelPath: filePath,
+        showUploadAfterLevelReturn: false,
       ),
     );
   }
 
   void openAbout() {
-    emit(state.copyWith(screen: AppScreen.about));
+    emit(
+      state.copyWith(
+        screen: AppScreen.about,
+        showUploadAfterLevelReturn: false,
+      ),
+    );
   }
 
   void openPlugins() {
-    emit(state.copyWith(screen: AppScreen.plugins));
+    emit(
+      state.copyWith(
+        screen: AppScreen.plugins,
+        showUploadAfterLevelReturn: false,
+      ),
+    );
   }
 
   void backToLevelList() {
+    final returningFromEditor = state.screen == AppScreen.editor;
     emit(
       state.copyWith(
         screen: AppScreen.levelList,
         editorFileName: '',
         editorFilePath: '',
+        showUploadAfterLevelReturn: returningFromEditor,
       ),
     );
   }

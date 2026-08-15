@@ -609,7 +609,7 @@ class ModuleRegistry {
     'ZombossBattleModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_ZombossBattleModuleProperties',
       descriptionKey: 'moduleDesc_ZombossBattleModuleProperties',
-      icon: Icons.dangerous,
+      icon: Icons.smart_toy_outlined,
       isCore: false,
       category: ModuleCategory.mode,
       defaultAlias: 'ZombossBattle',

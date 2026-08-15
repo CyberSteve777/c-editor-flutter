@@ -80,8 +80,12 @@ void main() {
       await tester.tap(find.text('Open export'));
       await pumpAsyncFrames(tester);
       expect(find.text('Risk Warning & Disclaimer'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('exportDisclaimerInfoButton')),
+        findsNothing,
+      );
 
-      await tester.tap(find.text('Do not show again'));
+      await tester.tap(find.text('Do not show by default'));
       await tester.pump();
       expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
       await tester.tap(find.text('Proceed'));
@@ -93,6 +97,19 @@ void main() {
       expect(prefsAfterProceed.getBool('export_disclaimer_skip'), isTrue);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.text('Risk Warning & Disclaimer'), findsNothing);
+
+      await tester.tap(
+        find.byKey(const ValueKey('exportDisclaimerInfoButton')),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('exportDisclaimerDialog')),
+        findsOneWidget,
+      );
+      expect(find.text('Risk Warning & Disclaimer'), findsOneWidget);
+      expect(find.textContaining('at their own risk'), findsOneWidget);
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.arrow_back));
       await pumpAsyncFrames(tester);

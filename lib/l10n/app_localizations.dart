@@ -1201,7 +1201,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupRecommendationBody.
   ///
   /// In en, this message translates to:
-  /// **'It is highly recommended to back up your game data package before testing to prevent data loss if the process is interrupted or another unexpected issue occurs.'**
+  /// **'It is recommended to back up your game data package before testing. This can help prevent data loss if the process is interrupted or an error occurs.'**
   String get backupRecommendationBody;
 
   /// No description provided for @backupAndProceed.
@@ -1261,7 +1261,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportDisclaimerDoNotShowAgain.
   ///
   /// In en, this message translates to:
-  /// **'Do not show again'**
+  /// **'Do not show by default'**
   String get exportDisclaimerDoNotShowAgain;
 
   /// No description provided for @importProgressTitle.
@@ -4363,7 +4363,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleNotDeepSeaWarning.
   ///
   /// In en, this message translates to:
-  /// **'This module is recommended for use in Underwater World lawns. The grid belows only reflects the current lawn configuration; using this module on non-20,000 Leagues Under the Sea/Atlantis lawns may cause compatibility issues.'**
+  /// **'This module is recommended for Underwater World lawns. Using it on lawns other than 20,000 Leagues Under the Sea/Atlantis may cause compatibility issues.'**
   String get spermWhaleModuleNotDeepSeaWarning;
 
   /// No description provided for @spermWhaleModuleLawnPreview.
@@ -7933,7 +7933,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpStormLevels.
   ///
   /// In en, this message translates to:
-  /// **'Zombie level and row cannot be set independently within storms. Level settings in the editor should be ignored; zombie levels follow the lawn’s level sequence by default.'**
+  /// **'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.'**
   String get eventHelpStormLevels;
 
   /// No description provided for @eventHelpGroundSpawnBody.
@@ -8137,7 +8137,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventColumnRangeExampleHint.
   ///
   /// In en, this message translates to:
-  /// **'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.'**
+  /// **'To spawn from columns X through Y, enter X - 1 for the start column and Y for the end column.'**
   String get eventColumnRangeExampleHint;
 
   /// No description provided for @zombieLevels.
@@ -8209,7 +8209,7 @@ abstract class AppLocalizations {
   /// No description provided for @outsideLawnItems.
   ///
   /// In en, this message translates to:
-  /// **'Objects outside the lawn'**
+  /// **'Item(s) outside the lawn'**
   String get outsideLawnItems;
 
   /// No description provided for @zombieFromLeft.
@@ -9520,6 +9520,12 @@ abstract class AppLocalizations {
   /// **'Zombies ({count})'**
   String zombiesCount(int count);
 
+  /// No description provided for @stormCarriedZombiesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Carried zombies ({count} total)'**
+  String stormCarriedZombiesCount(int count);
+
   /// No description provided for @eventGraveSpawnSubtitle.
   ///
   /// In en, this message translates to:
@@ -9559,7 +9565,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpStormZombieLevels.
   ///
   /// In en, this message translates to:
-  /// **'Zombie level and row cannot be set independently within storms. Level settings in the editor should be ignored; zombie levels follow the lawn’s level sequence by default.'**
+  /// **'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.'**
   String get eventHelpStormZombieLevels;
 
   /// No description provided for @spawnParameters.
@@ -9947,7 +9953,7 @@ abstract class AppLocalizations {
   /// No description provided for @reverseZombieFactionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, placed zombies belong to the plant faction and can be used in Plant Wars (ZvZ).'**
+  /// **'When enabled, placed zombies belong to the plant faction and can be used in \"Zombie Wars\" (ZvZ) gameplay.'**
   String get reverseZombieFactionSubtitle;
 
   /// No description provided for @initialWeight.
@@ -9971,49 +9977,49 @@ abstract class AppLocalizations {
   /// No description provided for @missingIntroModuleHint.
   ///
   /// In en, this message translates to:
-  /// **'Level is missing ZombossMech intro module (ZombossBattleIntroProperties). The level may not function correctly. Please add the module and reselect the ZombossMech.'**
+  /// **'Level is missing Zomboss Mech Intro module (ZombossBattleIntroProperties). The level may not function correctly. Please add the module and reselect the ZombossMech.'**
   String get missingIntroModuleHint;
 
   /// No description provided for @zombossMechType.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech type'**
+  /// **'Zomboss Mech type'**
   String get zombossMechType;
 
   /// No description provided for @unknownZombossMech.
   ///
   /// In en, this message translates to:
-  /// **'Unknown ZombossMech'**
+  /// **'Unknown Zomboss Mech'**
   String get unknownZombossMech;
 
   /// No description provided for @zombossMechSelection.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech selection'**
+  /// **'Zomboss Mech selection'**
   String get zombossMechSelection;
 
   /// No description provided for @zombossMechBaseLabel.
   ///
   /// In en, this message translates to:
-  /// **'Base ZombossMech'**
+  /// **'Base Zomboss Mech'**
   String get zombossMechBaseLabel;
 
   /// No description provided for @zombossMechBaseHint.
   ///
   /// In en, this message translates to:
-  /// **'Mech boss family (Egypt, Future, Memory Lane robot, etc.). Changing this updates the available variations below.'**
+  /// **'Zombots built and piloted by Dr. Zomboss himself, commonly encountered as the ultimate challenge of a world or game mode. Changing the base mech will also change the available variations below.'**
   String get zombossMechBaseHint;
 
   /// No description provided for @zombossMechSelectBaseTitle.
   ///
   /// In en, this message translates to:
-  /// **'Select base ZombossMech'**
+  /// **'Select base Zomboss Mech'**
   String get zombossMechSelectBaseTitle;
 
   /// No description provided for @zombossMechChangeBase.
   ///
   /// In en, this message translates to:
-  /// **'Change base ZombossMech'**
+  /// **'Change base Zomboss Mech'**
   String get zombossMechChangeBase;
 
   /// No description provided for @zombossMechUsedProperties.
@@ -10031,7 +10037,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechVariationHint.
   ///
   /// In en, this message translates to:
-  /// **'Specific mech type used in-game (ZombossMechType). Options depend on the base ZombossMech selected above. Phase count and spawn position sync automatically.'**
+  /// **'The specific mech type used in the level (ZombossMechType). Available options depend on the base mech selected above; changing the type will also update the mech\'s number of phases and spawn position accordingly.'**
   String get zombossMechVariationHint;
 
   /// No description provided for @zombossBattleSelection.
@@ -10055,13 +10061,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombossBattleBaseLabel.
   ///
   /// In en, this message translates to:
-  /// **'Base zomboss'**
+  /// **'Base Zomboss'**
   String get zombossBattleBaseLabel;
 
   /// No description provided for @zombossBattleBaseHint.
   ///
   /// In en, this message translates to:
-  /// **'Boss family (Kongfu blade, Qin Shi Huang, etc.). Changing this updates bundled resource groups automatically.'**
+  /// **'Zombie bosses who hold sway in a world or realm that Dr. Zomboss has yet to visit, with phase and spawn mechanics similar to those of Zomboss mechs. Changing the base Zomboss will also change its corresponding resource group.'**
   String get zombossBattleBaseHint;
 
   /// No description provided for @zombossBattleVariationLabel.
@@ -10073,79 +10079,79 @@ abstract class AppLocalizations {
   /// No description provided for @zombossBattleVariationHint.
   ///
   /// In en, this message translates to:
-  /// **'Specific Zomboss type used in-game (ZombossTypeName). Options depend on the base zomboss selected above.'**
+  /// **'The specific Zomboss type used in the level (ZombossTypeName). Available options depend on the base Zomboss selected above.'**
   String get zombossBattleVariationHint;
 
   /// No description provided for @zombossBattleStartingSunLabel.
   ///
   /// In en, this message translates to:
-  /// **'Starting sun (StartingSun)'**
+  /// **'Starting Sun (StartingSun)'**
   String get zombossBattleStartingSunLabel;
 
   /// No description provided for @zombossBattleStartingSunHint.
   ///
   /// In en, this message translates to:
-  /// **'Sun available when the battle begins.'**
+  /// **'The amount of sun available when entering the level.'**
   String get zombossBattleStartingSunHint;
 
   /// No description provided for @zombossBattleStartingPlantfoodLabel.
   ///
   /// In en, this message translates to:
-  /// **'Starting plant food (StartingPlantfood)'**
+  /// **'Starting Plant Food (StartingPlantfood)'**
   String get zombossBattleStartingPlantfoodLabel;
 
   /// No description provided for @zombossBattleStartingPlantfoodHint.
   ///
   /// In en, this message translates to:
-  /// **'Plant Food available when the battle begins.'**
+  /// **'The amount of Plant Food available when entering the level.'**
   String get zombossBattleStartingPlantfoodHint;
 
   /// No description provided for @zombossBattleInitialGridColLabel.
   ///
   /// In en, this message translates to:
-  /// **'Spawn column (ZombossInitialGridCol)'**
+  /// **'Starting Column (ZombossInitialGridCol)'**
   String get zombossBattleInitialGridColLabel;
 
   /// No description provided for @zombossBattleInitialGridColHint.
   ///
   /// In en, this message translates to:
-  /// **'Grid column where the Zomboss appears.'**
+  /// **'Sets which column the Zomboss initially appears in.'**
   String get zombossBattleInitialGridColHint;
 
   /// No description provided for @zombossBattleInitialGridRowLabel.
   ///
   /// In en, this message translates to:
-  /// **'Spawn row (ZombossInitialGridRow)'**
+  /// **'Starting Row (ZombossInitialGridRow)'**
   String get zombossBattleInitialGridRowLabel;
 
   /// No description provided for @zombossBattleInitialGridRowHint.
   ///
   /// In en, this message translates to:
-  /// **'Grid row where the Zomboss appears.'**
+  /// **'Sets which row the Zomboss initially appears in.'**
   String get zombossBattleInitialGridRowHint;
 
   /// No description provided for @zombossBattleStartStageIndexLabel.
   ///
   /// In en, this message translates to:
-  /// **'Start stage (ZombossStartStageIndex)'**
+  /// **'Starting Stage (ZombossStartStageIndex)'**
   String get zombossBattleStartStageIndexLabel;
 
   /// No description provided for @zombossBattleStartStageIndexHint.
   ///
   /// In en, this message translates to:
-  /// **'Which boss phase index the fight begins at (0 = first phase).'**
+  /// **'Sets which stage of the Zomboss mech the battle starts from. 0 represents the first stage.'**
   String get zombossBattleStartStageIndexHint;
 
   /// No description provided for @zombossBattleSkipPlantingLabel.
   ///
   /// In en, this message translates to:
-  /// **'Skip planting phase (SkipPlanting)'**
+  /// **'Skip Setup Phase (SkipPlanting)'**
   String get zombossBattleSkipPlantingLabel;
 
   /// No description provided for @zombossBattleSkipPlantingHint.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, the level skips the setup/planting phase before the boss fight.'**
+  /// **'When enabled, the preparation phase used in Last Stand will not appear before the Zomboss battle.'**
   String get zombossBattleSkipPlantingHint;
 
   /// No description provided for @parameters.
@@ -10469,7 +10475,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieLevelsBody.
   ///
   /// In en, this message translates to:
-  /// **'Zombie level and row cannot be set independently within storms. Level settings in the editor should be ignored; zombie levels follow the lawn’s level sequence by default.'**
+  /// **'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.'**
   String get zombieLevelsBody;
 
   /// No description provided for @batchLevel.
@@ -10505,7 +10511,7 @@ abstract class AppLocalizations {
   /// No description provided for @appliesToAllNonElite.
   ///
   /// In en, this message translates to:
-  /// **'Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level)'**
+  /// **'Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level).'**
   String get appliesToAllNonElite;
 
   /// No description provided for @dropConfigPlants.
@@ -10787,8 +10793,38 @@ abstract class AppLocalizations {
   /// No description provided for @maxIncreaseCountLabel.
   ///
   /// In en, this message translates to:
-  /// **'Max Increase Count (MaxIncreasedCount) — Capped at 10 in-game, value changes have no effect'**
+  /// **'Max Increase Count (MaxIncreasedCount)'**
   String get maxIncreaseCountLabel;
+
+  /// No description provided for @inflationMaxIncreaseCountWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Due to an issue with the module itself, changing the maximum increase count currently has no effect. The game only reads the default value of 10.'**
+  String get inflationMaxIncreaseCountWarning;
+
+  /// No description provided for @inflationHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inflation module'**
+  String get inflationHelpTitle;
+
+  /// No description provided for @inflationHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Each time a plant is planted, its sun cost increases, similar to how upgrade plants work in Survival: Endless in the original game.'**
+  String get inflationHelpOverview;
+
+  /// No description provided for @inflationHelpParametersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameter description'**
+  String get inflationHelpParametersTitle;
+
+  /// No description provided for @inflationHelpParametersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure the amount of sun cost added after each planting and the maximum number of price increases.'**
+  String get inflationHelpParametersBody;
 
   /// No description provided for @selectGroup.
   ///
@@ -11009,13 +11045,13 @@ abstract class AppLocalizations {
   /// No description provided for @presetPlantListReorderHint.
   ///
   /// In en, this message translates to:
-  /// **'Long press the ⋮⋮ handle and drag to reorder.'**
+  /// **'Long press the ⋮⋮ handle and drag to reorder'**
   String get presetPlantListReorderHint;
 
   /// No description provided for @presetPlantListReorderHintDesktop.
   ///
   /// In en, this message translates to:
-  /// **'Drag the ⋮⋮ handle to reorder.'**
+  /// **'Drag the ⋮⋮ handle to reorder'**
   String get presetPlantListReorderHintDesktop;
 
   /// No description provided for @whiteListDescription.
@@ -11045,7 +11081,7 @@ abstract class AppLocalizations {
   /// No description provided for @seedBankPresetModeHint.
   ///
   /// In en, this message translates to:
-  /// **'Preset mode enters game immediately regardless of card count.'**
+  /// **'When Preset mode is enabled, the level starts immediately regardless of how many plants are pre-selected.'**
   String get seedBankPresetModeHint;
 
   /// No description provided for @seedBankPlantLevelLabel.
@@ -11063,7 +11099,7 @@ abstract class AppLocalizations {
   /// No description provided for @seedBankCourtyardSlotsHint.
   ///
   /// In en, this message translates to:
-  /// **'Courtyard mode ignores slot count. Chooser locks 8 slots.'**
+  /// **'In Creative Courtyard, changes to the number of seed slots have no effect. Chooser mode is fixed at 8 slots.'**
   String get seedBankCourtyardSlotsHint;
 
   /// No description provided for @seedBankAddGridItemsTitle.
@@ -11075,14 +11111,20 @@ abstract class AppLocalizations {
   /// No description provided for @seedBankAddGridItemsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Append grid items to PresetPlantList. Duplicates are allowed.'**
+  /// **'Add plantable grid items to the preset plant list. Duplicates are allowed.'**
   String get seedBankAddGridItemsSubtitle;
 
   /// No description provided for @seedBankGridItemCount.
   ///
   /// In en, this message translates to:
-  /// **'In preset list: {count}'**
+  /// **'The preset list already contains {count}'**
   String seedBankGridItemCount(int count);
+
+  /// No description provided for @seedBankGridItemsPresetOnlySwitchWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The \"Add grid items\" feature only works in Preset mode. Switching to Chooser mode will turn it off. Continue switching?'**
+  String get seedBankGridItemsPresetOnlySwitchWarning;
 
   /// No description provided for @starChallengeSelectConditions.
   ///
@@ -11249,13 +11291,13 @@ abstract class AppLocalizations {
   /// No description provided for @noZombossMechFound.
   ///
   /// In en, this message translates to:
-  /// **'No ZombossMech found'**
+  /// **'No Zomboss Mech found'**
   String get noZombossMechFound;
 
   /// No description provided for @noZombossBattleFound.
   ///
   /// In en, this message translates to:
-  /// **'No zomboss definitions found'**
+  /// **'No Zomboss definitions found'**
   String get noZombossBattleFound;
 
   /// No description provided for @searchChallengeNameOrCode.
@@ -11549,19 +11591,19 @@ abstract class AppLocalizations {
   /// No description provided for @tunnelDefendSequenceInterval.
   ///
   /// In en, this message translates to:
-  /// **'Tunnel sequence interval (TunnelSequenceInterval, seconds)'**
+  /// **'Pathway Generation Interval (TunnelSequenceInterval, unit: seconds)'**
   String get tunnelDefendSequenceInterval;
 
   /// No description provided for @tunnelDefendHelpSequenceInterval.
   ///
   /// In en, this message translates to:
-  /// **'Sequence interval'**
+  /// **'Pathway Generation Interval'**
   String get tunnelDefendHelpSequenceInterval;
 
   /// No description provided for @tunnelDefendHelpSequenceIntervalBody.
   ///
   /// In en, this message translates to:
-  /// **'Delay between tunnel sequence steps. Lower values make pathways appear faster.'**
+  /// **'The interval between the appearance of each pathway components when Lord of the Underground Palace generates a pathway. Lower values make pathway components appear more quickly.'**
   String get tunnelDefendHelpSequenceIntervalBody;
 
   /// No description provided for @tunnelDefendHelpSodPromptBody.
@@ -11723,7 +11765,7 @@ abstract class AppLocalizations {
   /// No description provided for @tunnelExpeditionCompatibilityWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Module Compatibility Warning'**
+  /// **'Module compatibility warning'**
   String get tunnelExpeditionCompatibilityWarningTitle;
 
   /// No description provided for @tunnelExpeditionCompatibilityWarningBody.
@@ -11735,49 +11777,49 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties.
   ///
   /// In en, this message translates to:
-  /// **'Final stage time limit'**
+  /// **'Finisher Countdown'**
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties;
 
   /// No description provided for @moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties.
   ///
   /// In en, this message translates to:
-  /// **'Enables the final zomboss desperation timer. Add or remove only — the timer value comes from the zomboss property sheet (e.g. ZombossFinalStageTimeLimited on Qin Shi Huang props), not from module parameters.'**
+  /// **'Required module for the Lord of the Underground Palace Zomboss battle'**
   String get moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties;
 
   /// No description provided for @finalStageTimeLimitedChallengeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Final stage time limit'**
+  /// **'Finisher Countdown'**
   String get finalStageTimeLimitedChallengeTitle;
 
   /// No description provided for @finalStageTimeLimitedChallengeHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Final stage time limit challenge module'**
+  /// **'Finisher Countdown module'**
   String get finalStageTimeLimitedChallengeHelpTitle;
 
   /// No description provided for @finalStageTimeLimitedChallengeHelpIntro.
   ///
   /// In en, this message translates to:
-  /// **'Adds a timed kill challenge during the final zomboss stage (commonly used in Qin Shi Huang boss fights). The actual timer is read from the zomboss property sheet (ZombossFinalStageTimeLimited), not from this module\'s ZombossTimeLimit field.'**
+  /// **'Adds a timed defeat challenge to the final stage of the Lord of the Underground Palace Zomboss battle. If its remaining health is not depleted within the time limit, Lord of the Underground Palace will swing its sword.'**
   String get finalStageTimeLimitedChallengeHelpIntro;
 
   /// No description provided for @finalStageTimeLimitedChallengeHelpParams.
   ///
   /// In en, this message translates to:
-  /// **'Parameter configuration'**
+  /// **'Parameters'**
   String get finalStageTimeLimitedChallengeHelpParams;
 
   /// No description provided for @finalStageTimeLimitedChallengeHelpParamsBody.
   ///
   /// In en, this message translates to:
-  /// **'This editor screen is currently unwired. Levels should reference RTID(FinalStageTimeLimitedChallenge@LevelModules) only. Custom @CurrentLevel overrides are not supported until the game reads them correctly.'**
+  /// **'For now, this module only needs to be referenced directly in LevelModules. The actual countdown duration is determined by ZombossFinalStageTimeLimited in the Zomboss properties rather than the ZombossTimeLimit field in this module, so customizing this module has no practical effect.'**
   String get finalStageTimeLimitedChallengeHelpParamsBody;
 
   /// No description provided for @finalStageTimeLimitedChallengeTimeLimit.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss time limit (ZombossTimeLimit, seconds)'**
+  /// **'Sword Swing Countdown (ZombossTimeLimit, unit: seconds)'**
   String get finalStageTimeLimitedChallengeTimeLimit;
 
   /// No description provided for @moduleTitle_LawnMowerProperties.
@@ -11789,7 +11831,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_LawnMowerProperties.
   ///
   /// In en, this message translates to:
-  /// **'Sets mower styles (may not work in custom lawns)'**
+  /// **'Sets mower styles (doesn\'t work in Creative Courtyard)'**
   String get moduleDesc_LawnMowerProperties;
 
   /// No description provided for @moduleTitle_TunnelDefendModuleProperties.
@@ -12629,103 +12671,121 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_GlacierModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Glacier Spawn'**
+  /// **'Ice Chunk Module'**
   String get moduleTitle_GlacierModuleProperties;
 
   /// No description provided for @moduleDesc_GlacierModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Zombie spawn weights for Ice Age Zomboss glacier blocks (6 columns from the left)'**
+  /// **'Configure the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss'**
   String get moduleDesc_GlacierModuleProperties;
 
   /// No description provided for @glacierModuleTitle.
   ///
   /// In en, this message translates to:
-  /// **'Glacier module'**
+  /// **'Ice Chunk module'**
   String get glacierModuleTitle;
 
   /// No description provided for @glacierModuleHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Glacier module'**
+  /// **'Ice Chunk module'**
   String get glacierModuleHelpTitle;
 
   /// No description provided for @glacierModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Configures which zombies can emerge from glacier blocks when the Ice Age Zomboss destroys them. Place this module at the start of the level Modules list. Without it, glacier blocks will not spawn zombies.'**
+  /// **'The Frostbite Caves Zomboss summons zombies differently from other Zomboss mechs: it spits out blasts of ice from bottom to top to create Ice Chunks, which release the zombies hidden inside when they break. This module is used to configure which zombies may appear inside the Ice Chunks.'**
   String get glacierModuleHelpOverviewBody;
 
   /// No description provided for @glacierModuleHelpColumnsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Columns and entries'**
+  /// **'Parameters'**
   String get glacierModuleHelpColumnsTitle;
 
   /// No description provided for @glacierModuleHelpColumnsBody.
   ///
   /// In en, this message translates to:
-  /// **'ZombieSpawnData always has exactly six elements, one per column counting from the left edge of the lawn. Each column holds a weighted list of zombie types (TypeName), spawn weight (Weight), and level (Level, 0–10).'**
+  /// **'This module consists of 6 groups of zombie data, with each set corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. Each data set can independently configure the level of each zombie type (up to Level 4) and its spawn weight.'**
   String get glacierModuleHelpColumnsBody;
 
   /// No description provided for @glacierModuleHelpRequirementsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Requirements'**
+  /// **'Notes'**
   String get glacierModuleHelpRequirementsTitle;
 
   /// No description provided for @glacierModuleHelpRequirementsBody.
   ///
   /// In en, this message translates to:
-  /// **'Only takes effect together with the Zomboss Mech Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).'**
+  /// **'This module must be used together with the Zomboss Mech Battle module, and the selected base Zomboss mech must be \"Frostbite Caves Zomboss (Zombot Tuskmaster 10,000 BC)\"; otherwise, it will have no effect.\nIn addition, using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn is not recommended, as it may negatively affect the overall appearance of the level and may also cause crashes.'**
   String get glacierModuleHelpRequirementsBody;
+
+  /// No description provided for @glacierModuleCompatibilityWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ice Chunk Module requirements'**
+  String get glacierModuleCompatibilityWarningTitle;
 
   /// No description provided for @glacierModuleCompatibilityWarning.
   ///
   /// In en, this message translates to:
-  /// **'This module only works with the Zomboss Mech Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.'**
+  /// **'Ice Chunk Module must be used together with the Zomboss Mech Battle module, and the selected base Zomboss mech must be \"Frostbite Caves Zomboss (Zombot Tuskmaster 10,000 BC)\"; otherwise, it will have no effect. If you do not intend to use the Frostbite Caves Zomboss in this level, it is recommended to remove this module.'**
   String get glacierModuleCompatibilityWarning;
+
+  /// No description provided for @glacierModuleUnderwaterWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Underwater World appearance incompatibility'**
+  String get glacierModuleUnderwaterWarningTitle;
+
+  /// No description provided for @glacierModuleUnderwaterWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn. This combination can harm the level appearance and may cause crashes.'**
+  String get glacierModuleUnderwaterWarning;
 
   /// No description provided for @glacierModuleColumn.
   ///
   /// In en, this message translates to:
-  /// **'Column {columnIndex} (from left)'**
+  /// **'{columnIndex}th Column from the Left'**
   String glacierModuleColumn(int columnIndex);
 
   /// No description provided for @glacierModuleEntryCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, one{1 entry} other{{count} entries}}'**
+  /// **'{count, plural, =1{1 zombie type configured} other{{count} zombie types configured}}'**
   String glacierModuleEntryCount(int count);
 
   /// No description provided for @glacierModuleEntryLabel.
   ///
   /// In en, this message translates to:
-  /// **'Entry {index}'**
+  /// **'Group {index}'**
   String glacierModuleEntryLabel(int index);
 
   /// No description provided for @glacierModuleNoEntries.
   ///
   /// In en, this message translates to:
-  /// **'No zombie entries for this column.'**
+  /// **'No zombies have been configured in this group yet.'**
   String get glacierModuleNoEntries;
 
   /// No description provided for @glacierModuleAddEntry.
   ///
   /// In en, this message translates to:
-  /// **'Add zombie entry'**
+  /// **'Add Zombie'**
   String get glacierModuleAddEntry;
 
   /// No description provided for @glacierModuleSelectZombie.
   ///
   /// In en, this message translates to:
-  /// **'Select zombie'**
+  /// **'Select Zombie'**
   String get glacierModuleSelectZombie;
 
   /// No description provided for @glacierModuleEmptyType.
   ///
   /// In en, this message translates to:
-  /// **'No zombie selected'**
+  /// **'No Zombie Selected'**
   String get glacierModuleEmptyType;
 
   /// No description provided for @glacierModuleWeight.
@@ -12737,19 +12797,19 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleWeightTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Relative spawn weight for this zombie in this column.'**
+  /// **'Sets the weight of this zombie appearing in Ice Chunks in this column.'**
   String get glacierModuleWeightTooltip;
 
   /// No description provided for @glacierModuleLevel.
   ///
   /// In en, this message translates to:
-  /// **'Level (0–10)'**
+  /// **'Zombie level'**
   String get glacierModuleLevel;
 
   /// No description provided for @glacierModuleLevelTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Zombie level from 0 to 10.'**
+  /// **'Sets the zombie\'s level, from 0 to 4. Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard.'**
   String get glacierModuleLevelTooltip;
 
   /// No description provided for @moduleTitle_HeianWindModuleProperties.
@@ -13199,7 +13259,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieSunDropHelpValuesBody.
   ///
   /// In en, this message translates to:
-  /// **'10 integer values correspond to sun dropped at levels 1–10. For levels above 6, the value for level 1 will be used.'**
+  /// **'Six integer values correspond to sun dropped at levels 1–6. For levels above 6, the value for level 1 will be used.'**
   String get zombieSunDropHelpValuesBody;
 
   /// No description provided for @zombieSunDropEmpty.
@@ -13229,7 +13289,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieSunDropEditHint.
   ///
   /// In en, this message translates to:
-  /// **'Configure the amount of sun dropped by this zombie at different levels; for levels above 6, the level 1 value will be used'**
+  /// **'Configure this zombie\'s sun drops for levels 1–6; for levels above 6, the level 1 value will be used'**
   String get zombieSunDropEditHint;
 
   /// No description provided for @zombieSunDropTier.
@@ -13237,6 +13297,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Level'**
   String get zombieSunDropTier;
+
+  /// No description provided for @zombieSunDropTierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {tier}'**
+  String zombieSunDropTierLabel(int tier);
 
   /// No description provided for @moduleTitle_PickupCollectableTutorialProperties.
   ///
@@ -13892,6 +13958,12 @@ abstract class AppLocalizations {
   /// **'For weapon stands to display properly without showing sun textures, {moduleName} needs to be added.'**
   String armrackModuleRequiredMessage(String moduleName);
 
+  /// No description provided for @renaiGridItemModuleRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The Vitruvian Wheel requires the \"{moduleName}\" to work correctly. Add it?'**
+  String renaiGridItemModuleRequiredMessage(String moduleName);
+
   /// No description provided for @energyGridModuleTitle.
   ///
   /// In en, this message translates to:
@@ -14423,7 +14495,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorTabLabel.
   ///
   /// In en, this message translates to:
-  /// **'Waves'**
+  /// **'Generator Timeline'**
   String get waveGeneratorTabLabel;
 
   /// No description provided for @waveGeneratorModuleTitle.
