@@ -8,6 +8,7 @@ final class AppNavigationState extends Equatable {
     this.editorFileName = '',
     this.editorFilePath = '',
     this.lastOpenedLevelPath = '',
+    this.levelListScrollOffset = 0,
     this.showUploadAfterLevelReturn = false,
   });
 
@@ -15,6 +16,7 @@ final class AppNavigationState extends Equatable {
   final String editorFileName;
   final String editorFilePath;
   final String lastOpenedLevelPath;
+  final double levelListScrollOffset;
   final bool showUploadAfterLevelReturn;
 
   AppNavigationState copyWith({
@@ -22,6 +24,7 @@ final class AppNavigationState extends Equatable {
     String? editorFileName,
     String? editorFilePath,
     String? lastOpenedLevelPath,
+    double? levelListScrollOffset,
     bool? showUploadAfterLevelReturn,
   }) {
     return AppNavigationState(
@@ -29,6 +32,8 @@ final class AppNavigationState extends Equatable {
       editorFileName: editorFileName ?? this.editorFileName,
       editorFilePath: editorFilePath ?? this.editorFilePath,
       lastOpenedLevelPath: lastOpenedLevelPath ?? this.lastOpenedLevelPath,
+      levelListScrollOffset:
+          levelListScrollOffset ?? this.levelListScrollOffset,
       showUploadAfterLevelReturn:
           showUploadAfterLevelReturn ?? this.showUploadAfterLevelReturn,
     );
@@ -40,6 +45,7 @@ final class AppNavigationState extends Equatable {
     editorFileName,
     editorFilePath,
     lastOpenedLevelPath,
+    levelListScrollOffset,
     showUploadAfterLevelReturn,
   ];
 }

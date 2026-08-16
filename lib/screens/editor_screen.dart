@@ -997,6 +997,7 @@ class _EditorScreenState extends State<EditorScreen> {
         var suggestedAlias = PvzAliasUtils.uniqueAlias(
           _ec.state.levelFile!,
           meta.effectiveAlias,
+          numberSeparator: meta.duplicateAliasNumberSeparator,
         );
         chosenAlias = await showPvzAliasInputDialog(
           context,
@@ -1025,7 +1026,8 @@ class _EditorScreenState extends State<EditorScreen> {
           (o) => o.aliases?.contains(alias) == true,
         )) {
           count++;
-          alias = '${meta.effectiveAlias}_$count';
+          alias =
+              '${meta.effectiveAlias}${meta.duplicateAliasNumberSeparator}$count';
         }
       }
 

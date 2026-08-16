@@ -16,13 +16,21 @@ class _FakeExportEngine implements ExportEngine {
   Future<List<ExportEntry>> listDirectory(
     String path, {
     required bool archiveStep,
-  }) async => [
-    const ExportEntry(
-      name: 'dynamic.rsb.smf',
-      path: 'library/dynamic.rsb.smf',
-      isDirectory: false,
-    ),
-  ];
+  }) async => archiveStep
+      ? [
+          const ExportEntry(
+            name: 'dynamic.rsb.smf',
+            path: 'library/dynamic.rsb.smf',
+            isDirectory: false,
+          ),
+        ]
+      : [
+          const ExportEntry(
+            name: 'example.txt',
+            path: 'library/example.txt',
+            isDirectory: false,
+          ),
+        ];
 
   @override
   String parentDirectory(String path) => 'library';
@@ -108,6 +116,10 @@ void main() {
       );
       expect(find.text('Risk Warning & Disclaimer'), findsOneWidget);
       expect(find.textContaining('at their own risk'), findsOneWidget);
+      final disclaimerTitle = tester.widget<Text>(
+        find.byKey(const ValueKey('exportDisclaimerDialogTitle')),
+      );
+      expect(disclaimerTitle.style?.fontWeight, FontWeight.bold);
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
@@ -119,4 +131,56 @@ void main() {
       expect(prefs.getBool('export_disclaimer_skip'), isTrue);
     },
   );
+
+  testWidgets('level distribution stacks controls on narrow screens', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'folder_path': 'library',
+      'export_disclaimer_skip': true,
+    });
+    await tester.binding.setSurfaceSize(const Size(360, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: ExportScreen(engine: _FakeExportEngine()),
+      ),
+    );
+    await pumpAsyncFrames(tester);
+
+    await tester.tap(find.text('dynamic'));
+    await tester.pump();
+    await tester.tap(find.text('Proceed'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Proceed Without Backup'));
+    await pumpAsyncFrames(tester);
+
+    await tester.tap(find.text('example.txt'));
+    await tester.pump();
+    await tester.tap(find.text('Proceed'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Begin'));
+    await tester.pumpAndSettle();
+
+    final worldField = find.byKey(const ValueKey('exportWorldField'));
+    final levelField = find.byKey(const ValueKey('exportLevelNumberField'));
+    expect(worldField, findsOneWidget);
+    expect(levelField, findsOneWidget);
+    expect(
+      tester.getBottomLeft(worldField).dy,
+      lessThan(tester.getTopLeft(levelField).dy),
+    );
+    expect(tester.getTopRight(worldField).dx, lessThanOrEqualTo(360));
+    expect(tester.getTopRight(levelField).dx, lessThanOrEqualTo(360));
+    expect(tester.takeException(), isNull);
+  });
 }

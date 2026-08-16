@@ -752,7 +752,15 @@ class _ExportScreenState extends State<ExportScreen> {
               color: Theme.of(dialogContext).colorScheme.primary,
             ),
             const SizedBox(width: 8),
-            Expanded(child: Text(l10n.exportDisclaimerTitle)),
+            Expanded(
+              child: Text(
+                l10n.exportDisclaimerTitle,
+                key: const ValueKey('exportDisclaimerDialogTitle'),
+                style: Theme.of(
+                  dialogContext,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
           ],
         ),
         content: ConstrainedBox(
@@ -1835,6 +1843,154 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
         .where((w) => w.codename == widget.assignment?.world)
         .firstOrNull;
 
+    final worldIcon = ClipOval(
+      child: Container(
+        width: 48,
+        height: 48,
+        color: theme.colorScheme.surfaceContainerHighest,
+        child: currentWorld != null
+            ? AssetImageWidget(
+                assetPath: currentWorld.getIconPath(),
+                width: 48,
+                height: 48,
+              )
+            : const Icon(Icons.help_outline),
+      ),
+    );
+    final worldField = DropdownButtonFormField<String>(
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: l10n.exportWorld,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        border: const OutlineInputBorder(),
+      ),
+      initialValue: widget.assignment?.world,
+      items: worlds.map((w) {
+        return DropdownMenuItem(
+          value: w.codename,
+          child: Text(w.nameGetter(l10n), overflow: TextOverflow.ellipsis),
+        );
+      }).toList(),
+      onChanged: (val) {
+        if (val != null) {
+          final newAssignment = (
+            world: val,
+            level: widget.assignment?.level ?? 1,
+          );
+          if (widget.onCheckDuplicate(newAssignment)) {
+            AppMessage.show(
+              context,
+              l10n.exportDuplicateAssignment(
+                WorldRepository.findByCodename(val)?.nameGetter(l10n) ?? val,
+                newAssignment.level,
+              ),
+            );
+          } else {
+            widget.onChanged(newAssignment);
+          }
+        }
+      },
+    );
+    final levelField = EditorResponsiveInputField(
+      label: l10n.exportLevelNumber,
+      decoration: editorInputDecoration(context).copyWith(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 14,
+        ),
+      ),
+      builder: (context, decoration) => TextFormField(
+        controller: _levelController,
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (val) {
+          final num = int.tryParse(val) ?? 1;
+          if (currentWorld != null) {
+            final clamped = num.clamp(1, currentWorld.levelCount);
+            final newAssignment = (
+              world: widget.assignment?.world ?? worlds.first.codename,
+              level: clamped,
+            );
+
+            if (widget.onCheckDuplicate(newAssignment)) {
+              AppMessage.show(
+                context,
+                l10n.exportDuplicateAssignment(
+                  currentWorld.nameGetter(l10n),
+                  clamped,
+                ),
+              );
+              _levelController.text =
+                  widget.assignment?.level.toString() ?? '1';
+            } else {
+              widget.onChanged(newAssignment);
+            }
+          }
+        },
+      ),
+    );
+    final levelStepper = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_drop_up),
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
+          onPressed: () {
+            if (currentWorld != null) {
+              final currentLevel = widget.assignment?.level ?? 1;
+              if (currentLevel < currentWorld.levelCount) {
+                final newAssignment = (
+                  world: widget.assignment!.world,
+                  level: currentLevel + 1,
+                );
+                if (widget.onCheckDuplicate(newAssignment)) {
+                  AppMessage.show(
+                    context,
+                    l10n.exportDuplicateAssignment(
+                      currentWorld.nameGetter(l10n),
+                      newAssignment.level,
+                    ),
+                  );
+                } else {
+                  widget.onChanged(newAssignment);
+                }
+              }
+            }
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.arrow_drop_down),
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
+          onPressed: () {
+            if (currentWorld != null) {
+              final currentLevel = widget.assignment?.level ?? 1;
+              if (currentLevel > 1) {
+                final newAssignment = (
+                  world: widget.assignment!.world,
+                  level: currentLevel - 1,
+                );
+                if (widget.onCheckDuplicate(newAssignment)) {
+                  AppMessage.show(
+                    context,
+                    l10n.exportDuplicateAssignment(
+                      currentWorld.nameGetter(l10n),
+                      newAssignment.level,
+                    ),
+                  );
+                } else {
+                  widget.onChanged(newAssignment);
+                }
+              }
+            }
+          },
+        ),
+      ],
+    );
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -1851,183 +2007,62 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                ClipOval(
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    child: currentWorld != null
-                        ? AssetImageWidget(
-                            assetPath: currentWorld.getIconPath(),
-                            width: 48,
-                            height: 48,
-                          )
-                        : const Icon(Icons.help_outline),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: l10n.exportWorld,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                    initialValue: widget.assignment?.world,
-                    items: worlds.map((w) {
-                      return DropdownMenuItem(
-                        value: w.codename,
-                        child: Text(
-                          w.nameGetter(l10n),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (val) {
-                      if (val != null) {
-                        final newAssignment = (
-                          world: val,
-                          level: widget.assignment?.level ?? 1,
-                        );
-                        if (widget.onCheckDuplicate(newAssignment)) {
-                          AppMessage.show(
-                            context,
-                            l10n.exportDuplicateAssignment(
-                              WorldRepository.findByCodename(
-                                    val,
-                                  )?.nameGetter(l10n) ??
-                                  val,
-                              newAssignment.level,
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth < 520) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          worldIcon,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: KeyedSubtree(
+                              key: const ValueKey('exportWorldField'),
+                              child: worldField,
                             ),
-                          );
-                        } else {
-                          widget.onChanged(newAssignment);
-                        }
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  key: const ValueKey('exportLevelNumberField'),
-                  width: 160,
-                  child: EditorResponsiveInputField(
-                    label: l10n.exportLevelNumber,
-                    decoration: editorInputDecoration(context).copyWith(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 14,
+                          ),
+                        ],
                       ),
-                    ),
-                    builder: (context, decoration) => TextFormField(
-                      controller: _levelController,
-                      decoration: decoration,
-                      keyboardType: TextInputType.number,
-                      onChanged: (val) {
-                        final num = int.tryParse(val) ?? 1;
-                        if (currentWorld != null) {
-                          final clamped = num.clamp(1, currentWorld.levelCount);
-                          final newAssignment = (
-                            world:
-                                widget.assignment?.world ??
-                                worlds.first.codename,
-                            level: clamped,
-                          );
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const SizedBox(width: 60),
+                          Expanded(
+                            child: KeyedSubtree(
+                              key: const ValueKey('exportLevelNumberField'),
+                              child: levelField,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          levelStepper,
+                        ],
+                      ),
+                    ],
+                  );
+                }
 
-                          if (widget.onCheckDuplicate(newAssignment)) {
-                            AppMessage.show(
-                              context,
-                              l10n.exportDuplicateAssignment(
-                                currentWorld.nameGetter(l10n),
-                                clamped,
-                              ),
-                            );
-                            // Reset controller to previous value
-                            _levelController.text =
-                                widget.assignment?.level.toString() ?? '1';
-                          } else {
-                            widget.onChanged(newAssignment);
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
+                return Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_drop_up),
-                      padding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 24,
+                    worldIcon,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: KeyedSubtree(
+                        key: const ValueKey('exportWorldField'),
+                        child: worldField,
                       ),
-                      onPressed: () {
-                        if (currentWorld != null) {
-                          final currentLevel = widget.assignment?.level ?? 1;
-                          if (currentLevel < currentWorld.levelCount) {
-                            final newAssignment = (
-                              world: widget.assignment!.world,
-                              level: currentLevel + 1,
-                            );
-                            if (widget.onCheckDuplicate(newAssignment)) {
-                              AppMessage.show(
-                                context,
-                                l10n.exportDuplicateAssignment(
-                                  currentWorld.nameGetter(l10n),
-                                  newAssignment.level,
-                                ),
-                              );
-                            } else {
-                              widget.onChanged(newAssignment);
-                            }
-                          }
-                        }
-                      },
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_drop_down),
-                      padding: EdgeInsets.zero,
-                      visualDensity: VisualDensity.compact,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 24,
-                      ),
-                      onPressed: () {
-                        if (currentWorld != null) {
-                          final currentLevel = widget.assignment?.level ?? 1;
-                          if (currentLevel > 1) {
-                            final newAssignment = (
-                              world: widget.assignment!.world,
-                              level: currentLevel - 1,
-                            );
-                            if (widget.onCheckDuplicate(newAssignment)) {
-                              AppMessage.show(
-                                context,
-                                l10n.exportDuplicateAssignment(
-                                  currentWorld.nameGetter(l10n),
-                                  newAssignment.level,
-                                ),
-                              );
-                            } else {
-                              widget.onChanged(newAssignment);
-                            }
-                          }
-                        }
-                      },
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      key: const ValueKey('exportLevelNumberField'),
+                      width: 160,
+                      child: levelField,
                     ),
+                    const SizedBox(width: 4),
+                    levelStepper,
                   ],
-                ),
-              ],
+                );
+              },
             ),
           ],
         ),

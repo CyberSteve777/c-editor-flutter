@@ -143,6 +143,7 @@ class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
     super.key,
     this.returnToLevelPath = '',
+    this.returnToScrollOffset = 0,
     this.showUploadAfterLevelReturn = false,
     required this.onLevelClick,
     required this.onAboutClick,
@@ -155,8 +156,10 @@ class LevelListScreen extends StatefulWidget {
   /// It intentionally lives in navigation state rather than preferences so a
   /// fresh app launch always starts at the library root.
   final String returnToLevelPath;
+  final double returnToScrollOffset;
   final bool showUploadAfterLevelReturn;
-  final void Function(String fileName, String filePath) onLevelClick;
+  final void Function(String fileName, String filePath, double scrollOffset)
+  onLevelClick;
   final VoidCallback onAboutClick;
   final VoidCallback onPluginsClick;
   final ValueChanged<BuildContext> onLanguageTap;
@@ -169,7 +172,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   List<FileItem> _fileItems = [];
-  bool _isLoading = false;
+  bool _isLoading = true;
   LevelViewMode _viewMode = LevelViewMode.all;
   List<({String name, String path})> _pathStack = [];
   String? _rootFolderPath;
@@ -187,8 +190,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
   String _newLevelNameInput = '';
   bool _showUiScaleDialog = false;
   LevelSortMode _sortMode = LevelSortMode.name;
-  final ScrollController _listScrollController = ScrollController();
-  bool _listScrollAtTop = true;
+  late final ScrollController _listScrollController;
+  late bool _listScrollAtTop;
   bool _showUploadFabAfterLevelReturn = false;
   String? _pendingReturnLevelPath;
 
@@ -266,6 +269,14 @@ class _LevelListScreenState extends State<LevelListScreen> {
   void initState() {
     super.initState();
     final returnPath = widget.returnToLevelPath.trim();
+    final returnOffset = returnPath.isEmpty
+        ? 0.0
+        : widget.returnToScrollOffset.clamp(0.0, double.infinity).toDouble();
+    _listScrollController = ScrollController(
+      initialScrollOffset: returnOffset,
+      keepScrollOffset: false,
+    );
+    _listScrollAtTop = returnOffset <= 0;
     _pendingReturnLevelPath = returnPath.isEmpty ? null : returnPath;
     _showUploadFabAfterLevelReturn =
         widget.showUploadAfterLevelReturn && _pendingReturnLevelPath != null;
@@ -416,9 +427,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       final ok = await LevelRepository.ensureFolderAccess();
       if (!ok) {
         if (!mounted) return;
-        _showWarningMessage(
-          AppLocalizations.of(context)!.selectFolderPrompt,
-        );
+        _showWarningMessage(AppLocalizations.of(context)!.selectFolderPrompt);
         return;
       }
     }
@@ -710,10 +719,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await runWebTransferWithProgress<void>(
       context,
       title: l10n.exportProgressTitle,
-      task: (report, controller) => LevelRepository.downloadFolderAsZip(
-        folder.path,
-        onProgress: report,
-      ),
+      task: (report, controller) =>
+          LevelRepository.downloadFolderAsZip(folder.path, onProgress: report),
     );
   }
 
@@ -846,22 +853,26 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
     var copyBase = '${baseName}_copy';
     var candidateLeaf = '$copyBase$ext';
-    var candidateKey =
-        parentKey.isEmpty ? candidateLeaf : '$parentKey/$candidateLeaf';
+    var candidateKey = parentKey.isEmpty
+        ? candidateLeaf
+        : '$parentKey/$candidateLeaf';
     if (!await isTaken(candidateKey)) return candidateKey;
 
     var n = 1;
     while (true) {
       copyBase = '${baseName}_copy$n';
       candidateLeaf = '$copyBase$ext';
-      candidateKey =
-          parentKey.isEmpty ? candidateLeaf : '$parentKey/$candidateLeaf';
+      candidateKey = parentKey.isEmpty
+          ? candidateLeaf
+          : '$parentKey/$candidateLeaf';
       if (!await isTaken(candidateKey)) return candidateKey;
       n++;
     }
   }
 
-  Future<_SmartUploadChoice?> _showSmartUploadFileDialog(String fileName) async {
+  Future<_SmartUploadChoice?> _showSmartUploadFileDialog(
+    String fileName,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     return showDialog<_SmartUploadChoice>(
       context: context,
@@ -890,8 +901,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ),
               const Divider(height: 1),
               TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _SmartUploadChoice.skipAll),
+                onPressed: () => Navigator.pop(ctx, _SmartUploadChoice.skipAll),
                 child: Text(l10n.smartUploadSkipAll),
               ),
               TextButton(
@@ -900,8 +910,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 child: Text(l10n.smartUploadOverwriteAll),
               ),
               FilledButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _SmartUploadChoice.copyAll),
+                onPressed: () => Navigator.pop(ctx, _SmartUploadChoice.copyAll),
                 child: Text(l10n.smartUploadCopyAll),
               ),
             ],
@@ -961,7 +970,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
           _fileItems = items;
           _isLoading = false;
         });
-        _restorePendingLevelPosition(items, activePath);
+        _restorePendingLevelPosition(activePath);
       }
     } catch (_) {
       if (mounted) {
@@ -977,54 +986,18 @@ class _LevelListScreenState extends State<LevelListScreen> {
     }
   }
 
-  void _restorePendingLevelPosition(List<FileItem> items, String activePath) {
+  void _restorePendingLevelPosition(String activePath) {
     final targetPath = _pendingReturnLevelPath;
     if (targetPath == null ||
         !_sameLevelListPath(_levelListParentPath(targetPath), activePath)) {
       return;
     }
 
-    final targetIndex = items.indexWhere(
-      (item) => _sameLevelListPath(item.path, targetPath),
-    );
     _pendingReturnLevelPath = null;
-    if (targetIndex < 0) return;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_listScrollController.hasClients) return;
-      final theme = Theme.of(context);
-      final textScaler = MediaQuery.textScalerOf(context);
-      final titleStyle = theme.textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-      );
-      final subtitleStyle = theme.textTheme.bodySmall?.copyWith(
-        color: theme.colorScheme.onSurfaceVariant,
-      );
-      final folderExtent = _FileItemRow.scrollExtentFor(
-        isDirectory: true,
-        titleStyle: titleStyle,
-        subtitleStyle: subtitleStyle,
-        textScaler: textScaler,
-      );
-      final fileExtent = _FileItemRow.scrollExtentFor(
-        isDirectory: false,
-        titleStyle: titleStyle,
-        subtitleStyle: subtitleStyle,
-        textScaler: textScaler,
-      );
-      final requestedOffset = levelListOffsetForIndex(
-        items,
-        targetIndex,
-        folderExtent: folderExtent,
-        fileExtent: fileExtent,
-      );
-      final position = _listScrollController.position;
-      final targetOffset = requestedOffset.clamp(
-        position.minScrollExtent,
-        position.maxScrollExtent,
-      );
-      _listScrollController.jumpTo(targetOffset);
-    });
+    // The controller is created with the exact pre-entry offset, so the first
+    // populated list frame is already at the correct position. Do not jump to
+    // the returned item here: that made the item become the first visible row
+    // and caused a noticeable one-frame list/FAB flicker.
   }
 
   void _navigateToFolder(FileItem folder) {
@@ -1185,9 +1158,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context);
     List<String> list = [];
     try {
-      final assetManifest = await AssetManifest.loadFromAssetBundle(
-        rootBundle,
-      );
+      final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
       list = LevelTemplateUtils.fromBundledAssetPaths(
         assetManifest.listAssets(),
       );
@@ -1347,9 +1318,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     await runWebTransferWithProgress<void>(
       context,
       title: l10n.exportProgressTitle,
-      task: (report, controller) => LevelRepository.downloadAllLevelsAsZip(
-        onProgress: report,
-      ),
+      task: (report, controller) =>
+          LevelRepository.downloadAllLevelsAsZip(onProgress: report),
     );
   }
 
@@ -1378,10 +1348,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
           onBreadcrumbClick: _breadcrumbTap,
         ),
       Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: LayoutBuilder(
           builder: (context, constraints) {
             final compact = constraints.maxWidth < 240;
@@ -1397,19 +1364,13 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 segments: [
                   ButtonSegment(
                     value: LevelViewMode.all,
-                    icon: const Icon(
-                      Icons.folder_outlined,
-                      size: 20,
-                    ),
+                    icon: const Icon(Icons.folder_outlined, size: 20),
                     label: compact ? null : Text(l10n.allLevelsCategory),
                     tooltip: l10n.allLevelsCategory,
                   ),
                   ButtonSegment(
                     value: LevelViewMode.favorites,
-                    icon: const Icon(
-                      Icons.favorite_outline,
-                      size: 20,
-                    ),
+                    icon: const Icon(Icons.favorite_outline, size: 20),
                     label: compact ? null : Text(l10n.favoritesCategory),
                     tooltip: l10n.favoritesCategory,
                   ),
@@ -1448,9 +1409,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                     },
                   )
                 : null,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             contentPadding: const EdgeInsets.symmetric(vertical: 0),
           ),
         ),
@@ -1466,10 +1425,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
             onTap: _goToParentDirectory,
             borderRadius: BorderRadius.circular(12),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   Container(
@@ -1499,10 +1455,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       if (_itemToMove != null)
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           color: theme.colorScheme.secondaryContainer,
           child: Row(
             children: [
@@ -1529,8 +1482,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                       l10n.movePrompt,
                       style: TextStyle(
                         fontSize: 12,
-                        color: theme.colorScheme.onSecondaryContainer
-                            .withAlpha(204),
+                        color: theme.colorScheme.onSecondaryContainer.withAlpha(
+                          204,
+                        ),
                       ),
                     ),
                   ],
@@ -1773,11 +1727,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   widget.onLanguageTap(context);
                 });
               } else if (value == 'export') {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const ExportScreen(),
-                  ),
-                );
+                await Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const ExportScreen()));
                 if (mounted) {
                   _loadCurrentDirectory();
                 }
@@ -1810,10 +1762,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        l10n.initSetup,
-                        style: theme.textTheme.titleLarge,
-                      ),
+                      Text(l10n.initSetup, style: theme.textTheme.titleLarge),
                       const SizedBox(height: 8),
                       Text(
                         l10n.selectFolderPrompt,
@@ -1836,9 +1785,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                         const SizedBox(height: 8),
                         TextButton.icon(
                           onPressed: _pickAndImportFolder,
-                          icon: const Icon(
-                            Icons.drive_folder_upload_outlined,
-                          ),
+                          icon: const Icon(Icons.drive_folder_upload_outlined),
                           label: Text(l10n.importFolder),
                         ),
                       ],
@@ -1885,256 +1832,265 @@ class _LevelListScreenState extends State<LevelListScreen> {
                         child: _isLoading
                             ? const Center(child: CircularProgressIndicator())
                             : filteredItems.isEmpty
-                                ? Center(
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            _searchQuery.isEmpty
-                                                ? Icons.folder_open
-                                                : Icons.search_off,
-                                            size: 64,
-                                            color: theme.colorScheme
-                                                .surfaceContainerHighest,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            _searchQuery.isEmpty
-                                                ? (_viewMode ==
-                                                        LevelViewMode.favorites
-                                                    ? l10n.emptyFavorites
-                                                    : l10n.emptyFolder)
-                                                : l10n.noLevelsFound,
-                                            style: TextStyle(
-                                              color: theme
-                                                  .colorScheme.onSurfaceVariant,
-                                            ),
-                                          ),
-                                        ],
+                            ? Center(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        _searchQuery.isEmpty
+                                            ? Icons.folder_open
+                                            : Icons.search_off,
+                                        size: 64,
+                                        color: theme
+                                            .colorScheme
+                                            .surfaceContainerHighest,
                                       ),
-                                    ),
-                                  )
-                                : NotificationListener<UserScrollNotification>(
-                                    onNotification: _onListUserScroll,
-                                    child: ListView.builder(
-                                    controller: _listScrollController,
-                                    padding: const EdgeInsets.all(16),
-                                    itemCount: filteredItems.length,
-                                    itemExtentBuilder: (index, _) {
-                                      if (index < 0 ||
-                                          index >= filteredItems.length) {
-                                        return null;
-                                      }
-                                      return filteredItems[index].isDirectory
-                                          ? folderItemExtent
-                                          : fileItemExtent;
-                                    },
-                                    itemBuilder: (context, index) {
-                                      final item = filteredItems[index];
-                                      final isMovingMode = _itemToMove != null;
-                                      final isSelfMoving =
-                                          isMovingMode && _itemToMove == item;
-                                      final actionsDisabled = isMovingMode;
-                                      return Opacity(
-                                        opacity: (isMovingMode &&
-                                                    !item.isDirectory) ||
-                                                isSelfMoving
-                                            ? 0.5
-                                            : 1,
-                                        child: _FileItemRow(
-                                          item: item,
-                                          l10n: l10n,
-                                          rootFolderPath: _rootFolderPath,
-                                          onTap: () async {
-                                            if (isMovingMode) {
-                                              if (item.isDirectory) {
-                                                _navigateToFolder(item);
-                                              }
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        _searchQuery.isEmpty
+                                            ? (_viewMode ==
+                                                      LevelViewMode.favorites
+                                                  ? l10n.emptyFavorites
+                                                  : l10n.emptyFolder)
+                                            : l10n.noLevelsFound,
+                                        style: TextStyle(
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : NotificationListener<UserScrollNotification>(
+                                onNotification: _onListUserScroll,
+                                child: ListView.builder(
+                                  controller: _listScrollController,
+                                  padding: const EdgeInsets.all(16),
+                                  itemCount: filteredItems.length,
+                                  itemExtentBuilder: (index, _) {
+                                    if (index < 0 ||
+                                        index >= filteredItems.length) {
+                                      return null;
+                                    }
+                                    return filteredItems[index].isDirectory
+                                        ? folderItemExtent
+                                        : fileItemExtent;
+                                  },
+                                  itemBuilder: (context, index) {
+                                    final item = filteredItems[index];
+                                    final isMovingMode = _itemToMove != null;
+                                    final isSelfMoving =
+                                        isMovingMode && _itemToMove == item;
+                                    final actionsDisabled = isMovingMode;
+                                    return Opacity(
+                                      opacity:
+                                          (isMovingMode && !item.isDirectory) ||
+                                              isSelfMoving
+                                          ? 0.5
+                                          : 1,
+                                      child: _FileItemRow(
+                                        item: item,
+                                        l10n: l10n,
+                                        rootFolderPath: _rootFolderPath,
+                                        onTap: () async {
+                                          if (isMovingMode) {
+                                            if (item.isDirectory) {
+                                              _navigateToFolder(item);
+                                            }
+                                          } else {
+                                            if (item.isDirectory) {
+                                              _navigateToFolder(item);
                                             } else {
-                                              if (item.isDirectory) {
-                                                _navigateToFolder(item);
+                                              final returnScrollOffset =
+                                                  _listScrollController
+                                                      .hasClients
+                                                  ? _listScrollController.offset
+                                                  : 0.0;
+                                              final lowerName = item.name
+                                                  .toLowerCase();
+                                              if (lowerName.endsWith(
+                                                    '.hujson',
+                                                  ) ||
+                                                  lowerName.endsWith('.rton')) {
+                                                final convertedPath =
+                                                    await _showConversionRequiredDialog(
+                                                      item,
+                                                    );
+                                                if (!mounted ||
+                                                    convertedPath == null) {
+                                                  return;
+                                                }
+                                                final convertedName = p
+                                                    .basename(convertedPath);
+                                                final ok =
+                                                    await LevelRepository.prepareInternalCache(
+                                                      convertedPath,
+                                                      convertedName,
+                                                    );
+                                                if (mounted && ok) {
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback((
+                                                        _,
+                                                      ) {
+                                                        if (!mounted) return;
+                                                        widget.onLevelClick(
+                                                          convertedName,
+                                                          convertedPath,
+                                                          returnScrollOffset,
+                                                        );
+                                                      });
+                                                }
                                               } else {
-                                                final lowerName =
-                                                    item.name.toLowerCase();
-                                                if (lowerName
-                                                        .endsWith('.hujson') ||
-                                                    lowerName
-                                                        .endsWith('.rton')) {
-                                                  final convertedPath =
-                                                      await _showConversionRequiredDialog(
-                                                    item,
-                                                  );
-                                                  if (!mounted ||
-                                                      convertedPath == null) {
-                                                    return;
-                                                  }
-                                                  final convertedName =
-                                                      p.basename(
-                                                    convertedPath,
-                                                  );
-                                                  final ok =
-                                                      await LevelRepository
-                                                          .prepareInternalCache(
-                                                    convertedPath,
-                                                    convertedName,
-                                                  );
-                                                  if (mounted && ok) {
-                                                    WidgetsBinding.instance
-                                                        .addPostFrameCallback(
-                                                            (_) {
-                                                      if (!mounted) return;
-                                                      widget.onLevelClick(
-                                                        convertedName,
-                                                        convertedPath,
-                                                      );
-                                                    });
-                                                  }
-                                                } else {
-                                                  final ok =
-                                                      await LevelRepository
-                                                          .prepareInternalCache(
-                                                    item.path,
-                                                    item.name,
-                                                  );
-                                                  if (mounted && ok) {
-                                                    WidgetsBinding.instance
-                                                        .addPostFrameCallback(
-                                                            (_) {
-                                                      if (!mounted) return;
-                                                      widget.onLevelClick(
-                                                        item.name,
-                                                        item.path,
-                                                      );
-                                                    });
-                                                  }
+                                                final ok =
+                                                    await LevelRepository.prepareInternalCache(
+                                                      item.path,
+                                                      item.name,
+                                                    );
+                                                if (mounted && ok) {
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback((
+                                                        _,
+                                                      ) {
+                                                        if (!mounted) return;
+                                                        widget.onLevelClick(
+                                                          item.name,
+                                                          item.path,
+                                                          returnScrollOffset,
+                                                        );
+                                                      });
                                                 }
                                               }
                                             }
-                                          },
-                                          onRename: actionsDisabled
-                                              ? () {}
-                                              : () {
-                                                  setState(() {
-                                                    final lower = item.name
-                                                        .toLowerCase();
-                                                    if (lower.endsWith(
-                                                        '.rsb.smf')) {
-                                                      _renameInput = item.name
-                                                          .substring(
-                                                              0,
-                                                              item.name.length -
-                                                                  '.rsb.smf'
-                                                                      .length);
-                                                    } else if (lower
-                                                        .endsWith('.smf')) {
-                                                      _renameInput = item.name
-                                                          .substring(
-                                                              0,
-                                                              item.name.length -
-                                                                  '.smf'
-                                                                      .length);
-                                                    } else {
-                                                      _renameInput = item
-                                                              .isDirectory
-                                                          ? item.name
-                                                          : LevelRepository
-                                                              .baseNameWithoutLevelExtension(
-                                                              item.name,
-                                                            );
-                                                    }
-                                                    _itemToRename = item;
-                                                  });
-                                                  WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                    (_) => _showRenameDialog(),
-                                                  );
-                                                },
-                                          onDelete: actionsDisabled
-                                              ? () {}
-                                              : () {
-                                                  setState(() =>
-                                                      _itemToDelete = item);
-                                                  WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                    (_) => _showDeleteDialog(),
-                                                  );
-                                                },
-                                          onDownload: kIsWeb &&
-                                                  !item.isDirectory
-                                              ? () => LevelRepository
-                                                  .downloadLevel(
-                                                  item.name,
-                                                )
-                                              : null,
-                                          onDownloadFolder: kIsWeb &&
-                                                  item.isDirectory
-                                              ? () => _downloadFolderZip(item)
-                                              : null,
-                                          onCopy: actionsDisabled
-                                              ? () {}
-                                              : () async {
-                                                  if (!item.isDirectory &&
-                                                      _pathStack.isNotEmpty) {
-                                                    final baseName =
-                                                        LevelRepository
-                                                            .baseNameWithoutLevelExtension(
-                                                      item.name,
+                                          }
+                                        },
+                                        onRename: actionsDisabled
+                                            ? () {}
+                                            : () {
+                                                setState(() {
+                                                  final lower = item.name
+                                                      .toLowerCase();
+                                                  if (lower.endsWith(
+                                                    '.rsb.smf',
+                                                  )) {
+                                                    _renameInput = item.name
+                                                        .substring(
+                                                          0,
+                                                          item.name.length -
+                                                              '.rsb.smf'.length,
+                                                        );
+                                                  } else if (lower.endsWith(
+                                                    '.smf',
+                                                  )) {
+                                                    _renameInput = item.name
+                                                        .substring(
+                                                          0,
+                                                          item.name.length -
+                                                              '.smf'.length,
+                                                        );
+                                                  } else {
+                                                    _renameInput =
+                                                        item.isDirectory
+                                                        ? item.name
+                                                        : LevelRepository.baseNameWithoutLevelExtension(
+                                                            item.name,
+                                                          );
+                                                  }
+                                                  _itemToRename = item;
+                                                });
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback(
+                                                      (_) =>
+                                                          _showRenameDialog(),
                                                     );
-                                                    final nextName =
-                                                        await LevelRepository
-                                                            .getNextAvailableCopyName(
-                                                      _pathStack.last.path,
-                                                      baseName,
+                                              },
+                                        onDelete: actionsDisabled
+                                            ? () {}
+                                            : () {
+                                                setState(
+                                                  () => _itemToDelete = item,
+                                                );
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback(
+                                                      (_) =>
+                                                          _showDeleteDialog(),
                                                     );
-                                                    if (mounted) {
-                                                      setState(() {
-                                                        _copyInput = nextName;
-                                                        _itemToCopy = item;
-                                                      });
-                                                      WidgetsBinding.instance
-                                                          .addPostFrameCallback(
-                                                        (_) =>
-                                                            _showCopyDialog(),
+                                              },
+                                        onDownload: kIsWeb && !item.isDirectory
+                                            ? () =>
+                                                  LevelRepository.downloadLevel(
+                                                    item.name,
+                                                  )
+                                            : null,
+                                        onDownloadFolder:
+                                            kIsWeb && item.isDirectory
+                                            ? () => _downloadFolderZip(item)
+                                            : null,
+                                        onCopy: actionsDisabled
+                                            ? () {}
+                                            : () async {
+                                                if (!item.isDirectory &&
+                                                    _pathStack.isNotEmpty) {
+                                                  final baseName =
+                                                      LevelRepository.baseNameWithoutLevelExtension(
+                                                        item.name,
                                                       );
-                                                    }
-                                                  }
-                                                },
-                                          onMove: actionsDisabled
-                                              ? () {}
-                                              : () {
-                                                  if (!item.isDirectory &&
-                                                      _pathStack.isNotEmpty) {
+                                                  final nextName =
+                                                      await LevelRepository.getNextAvailableCopyName(
+                                                        _pathStack.last.path,
+                                                        baseName,
+                                                      );
+                                                  if (mounted) {
                                                     setState(() {
-                                                      _itemToMove = item;
-                                                      _moveSourcePath =
-                                                          _pathStack.last.path;
+                                                      _copyInput = nextName;
+                                                      _itemToCopy = item;
                                                     });
+                                                    WidgetsBinding.instance
+                                                        .addPostFrameCallback(
+                                                          (_) =>
+                                                              _showCopyDialog(),
+                                                        );
                                                   }
-                                                },
-                                          onConvert: actionsDisabled ||
-                                                  item.isDirectory ||
-                                                  item.name
-                                                      .toLowerCase()
-                                                      .endsWith('.smf')
-                                              ? null
-                                              : () => _showConvertMenuFor(item),
-                                          onToggleFavorite: actionsDisabled ||
-                                                  item.isDirectory
-                                              ? null
-                                              : () => _toggleFavorite(item),
-                                          onShare: actionsDisabled ||
-                                                  item.isDirectory ||
-                                                  !isLevelFileShareSupported
-                                              ? null
-                                              : () => _handleShare(item),
-                                          showMove:
-                                              !item.isDirectory && !kIsWeb,
-                                        ),
-                                      );
-                                    },
-                                    ),
-                                  ),
+                                                }
+                                              },
+                                        onMove: actionsDisabled
+                                            ? () {}
+                                            : () {
+                                                if (!item.isDirectory &&
+                                                    _pathStack.isNotEmpty) {
+                                                  setState(() {
+                                                    _itemToMove = item;
+                                                    _moveSourcePath =
+                                                        _pathStack.last.path;
+                                                  });
+                                                }
+                                              },
+                                        onConvert:
+                                            actionsDisabled ||
+                                                item.isDirectory ||
+                                                item.name
+                                                    .toLowerCase()
+                                                    .endsWith('.smf')
+                                            ? null
+                                            : () => _showConvertMenuFor(item),
+                                        onToggleFavorite:
+                                            actionsDisabled || item.isDirectory
+                                            ? null
+                                            : () => _toggleFavorite(item),
+                                        onShare:
+                                            actionsDisabled ||
+                                                item.isDirectory ||
+                                                !isLevelFileShareSupported
+                                            ? null
+                                            : () => _handleShare(item),
+                                        showMove: !item.isDirectory && !kIsWeb,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                       ),
                     ],
                   );
@@ -2146,40 +2102,40 @@ class _LevelListScreenState extends State<LevelListScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: _rootFolderPath != null
           ? _itemToMove != null
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    FloatingActionButton.extended(
-                      heroTag: 'moveCancel',
-                      onPressed: () {
-                        setState(() {
-                          _itemToMove = null;
-                          _moveSourcePath = null;
-                        });
-                      },
-                      backgroundColor: theme.colorScheme.error,
-                      foregroundColor: theme.colorScheme.onError,
-                      icon: const Icon(Icons.close),
-                      label: Text(l10n.cancel),
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      FloatingActionButton.extended(
+                        heroTag: 'moveCancel',
+                        onPressed: () {
+                          setState(() {
+                            _itemToMove = null;
+                            _moveSourcePath = null;
+                          });
+                        },
+                        backgroundColor: theme.colorScheme.error,
+                        foregroundColor: theme.colorScheme.onError,
+                        icon: const Icon(Icons.close),
+                        label: Text(l10n.cancel),
+                      ),
+                      const SizedBox(height: 12),
+                      FloatingActionButton.extended(
+                        heroTag: 'movePaste',
+                        onPressed: _handleMoveConfirm,
+                        icon: const Icon(Icons.content_paste),
+                        label: Text(l10n.paste),
+                      ),
+                    ],
+                  )
+                : _AnimatedUploadFab(
+                    visible: shouldShowLevelListUploadFab(
+                      isAtTop: _listScrollAtTop,
+                      showAfterLevelReturn: _showUploadFabAfterLevelReturn,
                     ),
-                    const SizedBox(height: 12),
-                    FloatingActionButton.extended(
-                      heroTag: 'movePaste',
-                      onPressed: _handleMoveConfirm,
-                      icon: const Icon(Icons.content_paste),
-                      label: Text(l10n.paste),
-                    ),
-                  ],
-                )
-              : _AnimatedUploadFab(
-                  visible: shouldShowLevelListUploadFab(
-                    isAtTop: _listScrollAtTop,
-                    showAfterLevelReturn: _showUploadFabAfterLevelReturn,
-                  ),
-                  onPressed: _uploadLevel,
-                  label: l10n.uploadLevel,
-                )
+                    onPressed: _uploadLevel,
+                    label: l10n.uploadLevel,
+                  )
           : null,
       bottomNavigationBar: _rootFolderPath == null || _itemToMove != null
           ? null
@@ -2267,7 +2223,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
         content: TextField(
           controller: ctrl,
           decoration: InputDecoration(
-              labelText: l10n.folderName, helperText: l10n.newFolderNameHint),
+            labelText: l10n.folderName,
+            helperText: l10n.newFolderNameHint,
+          ),
           onChanged: (v) => _newFolderNameInput = v,
         ),
         actions: [
@@ -2430,8 +2388,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final formatDescription = lower.endsWith('.hujson')
         ? l10n.hujsonFormatDescription
         : lower.endsWith('.rton')
-            ? l10n.rtonFormatDescription
-            : null;
+        ? l10n.rtonFormatDescription
+        : null;
     final shouldConvert = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -2446,8 +2404,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
               Text(
                 formatDescription,
                 style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ],
@@ -3026,11 +2984,7 @@ class _FileItemRow extends StatelessWidget {
     required TextStyle? subtitleStyle,
     required TextScaler textScaler,
   }) {
-    final titleH = _measureLineHeight(
-      titleStyle,
-      textScaler,
-      fallbackSize: 16,
-    );
+    final titleH = _measureLineHeight(titleStyle, textScaler, fallbackSize: 16);
     double contentH;
     if (isDirectory) {
       contentH = titleH > _iconBox ? titleH : _iconBox;
@@ -3151,10 +3105,7 @@ class _FileItemRow extends StatelessWidget {
         if (onShare != null)
           PopupMenuItem(
             value: 'share',
-            child: _popupMenuTile(
-              icon: Icons.share,
-              label: l10n.share,
-            ),
+            child: _popupMenuTile(icon: Icons.share, label: l10n.share),
           ),
         if (showMove)
           PopupMenuItem(
@@ -3269,8 +3220,10 @@ class _FileItemRow extends StatelessWidget {
       children: [
         if (onDownloadFolder != null)
           IconButton(
-            icon:
-                Icon(Icons.download, color: theme.colorScheme.onSurfaceVariant),
+            icon: Icon(
+              Icons.download,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             tooltip: l10n.downloadFolder,
             onPressed: onDownloadFolder,
             iconSize: 22,
@@ -3305,10 +3258,12 @@ class _FileItemRow extends StatelessWidget {
     final displayName = item.isDirectory
         ? item.name
         : (isRsbSmf
-            ? item.name.substring(0, item.name.length - '.rsb.smf'.length)
-            : (isSmfFile
-                ? item.name.substring(0, item.name.length - '.smf'.length)
-                : LevelRepository.baseNameWithoutLevelExtension(item.name)));
+              ? item.name.substring(0, item.name.length - '.rsb.smf'.length)
+              : (isSmfFile
+                    ? item.name.substring(0, item.name.length - '.smf'.length)
+                    : LevelRepository.baseNameWithoutLevelExtension(
+                        item.name,
+                      )));
 
     final isResourceFile = isSmfFile;
 
@@ -3329,8 +3284,8 @@ class _FileItemRow extends StatelessWidget {
             final gap = compact ? 8.0 : 12.0;
             final actions = item.isDirectory
                 ? (compact
-                    ? _buildFolderMenu(theme)
-                    : _buildFolderActions(theme))
+                      ? _buildFolderMenu(theme)
+                      : _buildFolderActions(theme))
                 : _buildLevelFileActions(context, theme);
 
             return Padding(
@@ -3344,14 +3299,14 @@ class _FileItemRow extends StatelessWidget {
                       item.isDirectory
                           ? Icons.folder
                           : (isResourceFile
-                              ? Icons.inventory_2_outlined
-                              : Icons.description),
+                                ? Icons.inventory_2_outlined
+                                : Icons.description),
                       size: iconSize,
                       color: item.isDirectory
                           ? const Color(0xFFFFC107)
                           : (isResourceFile
-                              ? Colors.blueGrey
-                              : theme.colorScheme.primary),
+                                ? Colors.blueGrey
+                                : theme.colorScheme.primary),
                     ),
                   ),
                   SizedBox(width: gap),
@@ -3374,11 +3329,11 @@ class _FileItemRow extends StatelessWidget {
                             isRsbSmf
                                 ? '.rsb.smf'
                                 : (isSmfFile
-                                    ? '.smf'
-                                    : p
-                                        .extension(item.name)
-                                        .replaceFirst('.', '')
-                                        .toUpperCase()),
+                                      ? '.smf'
+                                      : p
+                                            .extension(item.name)
+                                            .replaceFirst('.', '')
+                                            .toUpperCase()),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -3497,10 +3452,7 @@ class _AnimatedUploadFabState extends State<_AnimatedUploadFab>
       opacity: _reveal,
       child: SlideTransition(
         position: _slide,
-        child: IgnorePointer(
-          ignoring: !widget.visible,
-          child: fab,
-        ),
+        child: IgnorePointer(ignoring: !widget.visible, child: fab),
       ),
     );
   }

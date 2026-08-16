@@ -11,6 +11,8 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show HelpSectionData, showEditorHelpDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Seed rain properties editor. Ported from Z-Editor-master SeedRainPropertiesEP.kt
@@ -337,7 +339,6 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -365,13 +366,45 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
           isEvent: false,
           objClass: _objClass,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title: l10n?.moduleTitle_SeedRainProperties ?? 'Seed Rain',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpSeedRainBody ??
+                      'At fixed intervals, this module causes item cards to fall from the sky.',
+                ),
+                HelpSectionData(
+                  title:
+                      l10n?.moduleHelpSeedRainParameters ??
+                      'Parameter settings',
+                  body:
+                      l10n?.moduleHelpSeedRainParametersBody ??
+                      'Weight determines an item\'s chance of dropping, while Max count limits how many copies may be present at once. Most zombies do not have matching zombie card icons.',
+                ),
+                HelpSectionData(
+                  title: l10n?.moduleHelpSeedRainPlantLevels ?? 'Plant tiers',
+                  body:
+                      l10n?.plantLevelsFollowGlobal ??
+                      'Plant cards dropped by this module use the tiers from the player\'s account. The Tier Definition module can override them uniformly.',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,

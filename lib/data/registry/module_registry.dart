@@ -14,6 +14,7 @@ class ModuleMetadata {
   final String defaultAlias;
   final String defaultSource;
   final bool allowMultiple;
+  final String duplicateAliasNumberSeparator;
   final dynamic Function()? initialDataFactory;
   final String? uniqueKey;
   // In Flutter, we might use a route name or a widget builder
@@ -31,6 +32,7 @@ class ModuleMetadata {
     required this.defaultAlias,
     this.defaultSource = 'CurrentLevel',
     this.allowMultiple = false,
+    this.duplicateAliasNumberSeparator = '_',
     this.initialDataFactory,
     this.uniqueKey,
     required this.routeId,
@@ -880,9 +882,10 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_ProtectTheGridItemChallengeProperties',
       icon: Icons.security,
       isCore: true,
-      allowMultiple: false,
+      allowMultiple: true,
       category: ModuleCategory.scene,
       defaultAlias: 'ProtectTheGridItem',
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ProtectTheGridItemChallengePropertiesData(),
       routeId: 'ProtectTheGridItem',
     ),
@@ -925,6 +928,7 @@ class ModuleRegistry {
       allowMultiple: true,
       category: ModuleCategory.scene,
       defaultAlias: 'MechanismPlank',
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => {
         'MechanismGearsRect': {'mHeight': 5, 'mWidth': 4, 'mX': 0, 'mY': 0},
         'MechanismPlankRows': ['0', '4'],
@@ -1194,6 +1198,7 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
     String? defaultAlias,
     String? defaultSource,
     bool? allowMultiple,
+    String? duplicateAliasNumberSeparator,
     dynamic Function()? initialDataFactory,
     String? uniqueKey,
     String? routeId,
@@ -1209,6 +1214,8 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
       defaultAlias: defaultAlias ?? this.defaultAlias,
       defaultSource: defaultSource ?? this.defaultSource,
       allowMultiple: allowMultiple ?? this.allowMultiple,
+      duplicateAliasNumberSeparator:
+          duplicateAliasNumberSeparator ?? this.duplicateAliasNumberSeparator,
       initialDataFactory: initialDataFactory ?? this.initialDataFactory,
       uniqueKey: uniqueKey ?? this.uniqueKey,
       routeId: routeId ?? this.routeId,

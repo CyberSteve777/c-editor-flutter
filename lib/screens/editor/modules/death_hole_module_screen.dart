@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart'
-    show EditorResponsiveInputField, editorInputDecoration;
+    show
+        EditorResponsiveInputField,
+        HelpSectionData,
+        editorInputDecoration,
+        showEditorHelpDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Death hole module editor. Ported from Z-Editor-master DeathHoleModuleEP.kt
@@ -106,6 +110,26 @@ class _DeathHoleModuleScreenState extends State<DeathHoleModuleScreen> {
           isEvent: false,
           objClass: _objClass,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title:
+                  l10n?.moduleTitle_DeathHoleModuleProperties ??
+                  'Death Craters',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpDeathHoleBody ??
+                      'When a plant is shoveled or disappears after being eaten, it leaves an unplantable crater in its original tile for a period of time.',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

@@ -622,9 +622,13 @@ class _CustomZombossMechActionEditorScreenState
                 : (l10n?.zombossMechEditCustomAction ?? 'Edit custom action'),
           ),
           actions: [
-            TextButton(
+            IconButton(
               onPressed: _saveAndExit,
-              child: Text(l10n?.save ?? 'Save'),
+              tooltip: l10n?.save ?? 'Save',
+              icon: Icon(
+                Icons.save,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ],
         ),

@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:c_editor/data/pvz_models/GlacierColumnSpawnData.dart';
-import 'package:c_editor/data/pvz_models/GlacierSpawnEntryData.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/pvz_models/PvzModel.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
@@ -22,10 +21,6 @@ class GlacierModulePropertiesData extends PvzModel {
       ),
     );
   }
-
-  static List<GlacierSpawnEntryData> entriesWithoutEmptyType(
-    List<GlacierSpawnEntryData> entries,
-  ) => entries.where((e) => e.typeName.trim().isNotEmpty).toList();
 
   /// True when the level uses this module but lacks a compatible zomboss battle setup.
   static bool shouldShowCompatibilityWarning({
@@ -79,26 +74,13 @@ class GlacierModulePropertiesData extends PvzModel {
         }
       }
     }
-    final data = GlacierModulePropertiesData(zombieSpawnData: list);
-    return GlacierModulePropertiesData(
-      zombieSpawnData: data.zombieSpawnData
-          .map(
-            (c) => GlacierColumnSpawnData(
-              entries: entriesWithoutEmptyType(c.entries),
-            ),
-          )
-          .toList(),
-    );
+    return GlacierModulePropertiesData(zombieSpawnData: list);
   }
 
   @override
   Map<String, dynamic> toJson() => {
     'ZombieSpawnData': zombieSpawnData
-        .map(
-          (c) => GlacierColumnSpawnData(
-            entries: entriesWithoutEmptyType(c.entries),
-          ).toJson(),
-        )
+        .map((column) => column.toJson())
         .toList(),
   };
 }

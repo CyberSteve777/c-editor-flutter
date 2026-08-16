@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/glacier_module_presets.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
@@ -230,18 +231,78 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
         } else {
           _applyVariation(variation, persist: false);
         }
+        if (baseId == GlacierModulePresets.iceAgeBaseId) {
+          GlacierModulePresets.applyToLevel(
+            widget.levelFile,
+            GlacierModulePresets.defaultPreset,
+          );
+        }
       },
     );
   }
 
-  void _onVariationChanged(String? value) {
+  Future<bool> _confirmGlacierPreset(GlacierModulePreset preset) async {
+    final l10n = AppLocalizations.of(context);
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(
+              l10n?.glacierModuleVariationPresetPromptTitle ??
+                  'Enable matching Ice Chunk preset?',
+            ),
+            content: Text(
+              preset.isBlank
+                  ? (l10n?.glacierModuleCustomVariationPresetPrompt ??
+                        'The custom Frostbite Caves Zomboss uses a blank Ice Chunk preset by default. Apply that blank preset now?')
+                  : (l10n?.glacierModuleVariationPresetPrompt ??
+                        'The Frostbite Caves Zomboss summons zombies through Ice Chunks, whose contents are configured by the Ice Chunk Module. You are switching to another Frostbite Caves Zomboss variation. Also enable the Ice Chunk Module preset used by that variation in the original game?'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(
+                  l10n?.zombossMechSwitchVariationOnly ??
+                      'Switch variation only',
+                ),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(l10n?.glacierModuleEnablePreset ?? 'Enable preset'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<void> _onVariationChanged(String? value) async {
     if (value == null) return;
-    if (value == kZombossMechCustomVariationValue) {
-      _applyCustomVariation();
-      return;
-    }
-    if (value == _battleData.zombossMechType) return;
-    _applyVariation(value);
+    final isCustom = value == kZombossMechCustomVariationValue;
+    final targetVariation = isCustom
+        ? _currentCatalog?.editableInstance
+        : value;
+    if (targetVariation == null || targetVariation.isEmpty) return;
+    if (targetVariation == _battleData.zombossMechType) return;
+
+    final preset = GlacierModulePresets.forVariation(targetVariation);
+    final applyPreset = preset == null
+        ? false
+        : await _confirmGlacierPreset(preset);
+    if (!mounted) return;
+
+    _sync(
+      extra: () {
+        if (isCustom) {
+          _applyCustomVariation(persist: false);
+        } else {
+          _applyVariation(targetVariation, persist: false);
+        }
+        if (applyPreset) {
+          GlacierModulePresets.applyToLevel(widget.levelFile, preset);
+        }
+      },
+    );
   }
 
   Future<void> _openBaseSelection() async {
@@ -392,6 +453,9 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
     final catalog = _currentCatalog;
     final variations = currentBase?.variations ?? <String>[];
     final showCustomOption = catalog?.hasCustomInstance ?? false;
+    final isPlantPuzzleVariation = GlacierModulePresets.isPlantPuzzleVariation(
+      _battleData.zombossMechType,
+    );
     final propertiesLabel = ZombossMechRepository.propertiesDisplayLabel(
       _battleData.zombossMechType,
       catalog: catalog,
@@ -485,12 +549,25 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
                 SeparatedOptionPickerItem(
                   value: kZombossMechCustomVariationValue,
                   label: l10n?.zombossMechCustomVariation ?? 'Custom',
+                  subtitle: catalog?.editableInstance,
                 ),
             ],
             enabled: variations.isNotEmpty || showCustomOption,
             onChanged: _onVariationChanged,
           ),
         ),
+        if (isPlantPuzzleVariation) ...[
+          const SizedBox(height: 12),
+          EditorWarningBanner(
+            key: const ValueKey('iceAgePlantPuzzleWarning'),
+            title:
+                l10n?.iceAgePlantPuzzleVariationWarningTitle ??
+                'Beplanted does not need Ice Chunks',
+            message:
+                l10n?.iceAgePlantPuzzleVariationWarning ??
+                'The Beplanted variation was designed specifically for the Frostbite Caves Beplanted minigame. Its abilities do not require the Ice Chunk Module.',
+          ),
+        ],
         if (_isCustomSelected) ...[
           const SizedBox(height: 12),
           Tooltip(
@@ -567,8 +644,9 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
           ),
         ),
         if (ZombossMechRepository.isIceAgeMechVariation(
-          _battleData.zombossMechType,
-        )) ...[
+              _battleData.zombossMechType,
+            ) &&
+            !isPlantPuzzleVariation) ...[
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,

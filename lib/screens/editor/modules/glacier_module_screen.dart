@@ -2,7 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/glacier_module_presets.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
+import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
@@ -40,6 +42,7 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
 
   late PvzObject _moduleObj;
   late GlacierModulePropertiesData _data;
+  String? _selectedPresetId;
 
   @override
   void initState() {
@@ -70,6 +73,18 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     } catch (_) {
       _data = GlacierModulePropertiesData.createDefault();
     }
+    final battle = widget.levelFile.objects.firstWhereOrNull(
+      (object) => object.objClass == 'ZombossBattleModuleProperties',
+    );
+    final variation = battle?.objData is Map
+        ? (battle!.objData as Map)['ZombossMechType'] as String?
+        : null;
+    final variationPreset = GlacierModulePresets.forVariation(variation);
+    _selectedPresetId =
+        variationPreset != null &&
+            GlacierModulePresets.matches(_data, variationPreset)
+        ? variationPreset.id
+        : GlacierModulePresets.matchingPreset(_data)?.id;
   }
 
   void _sync() {
@@ -87,6 +102,7 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     final cols = List<GlacierColumnSpawnData>.from(_data.zombieSpawnData);
     cols[columnIndex] = column;
     _data = GlacierModulePropertiesData(zombieSpawnData: cols);
+    _selectedPresetId = null;
     _sync();
   }
 
@@ -140,6 +156,129 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     });
   }
 
+  String _presetTitle(
+    BuildContext context,
+    AppLocalizations? l10n,
+    GlacierModulePreset preset,
+  ) {
+    if (preset.isBlank) {
+      return l10n?.glacierModulePresetBlankCustom ?? 'Blank custom preset';
+    }
+    return ZombossMechL10n.variationLabel(
+      context,
+      GlacierModulePresets.iceAgeBaseId,
+      preset.variation,
+      fallback: preset.variation,
+    );
+  }
+
+  GlacierModulePreset? _currentPreset() {
+    final selected = GlacierModulePresets.byId(_selectedPresetId);
+    if (selected != null && GlacierModulePresets.matches(_data, selected)) {
+      return selected;
+    }
+    return GlacierModulePresets.matchingPreset(_data);
+  }
+
+  Future<void> _applyPreset(GlacierModulePreset preset) async {
+    final current = _currentPreset();
+    if (current?.id == preset.id) return;
+    final l10n = AppLocalizations.of(context);
+    final from = current == null
+        ? (l10n?.glacierModulePresetCustomConfiguration ??
+              'Custom configuration')
+        : _presetTitle(context, l10n, current);
+    final to = _presetTitle(context, l10n, preset);
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(
+              l10n?.glacierModuleSwitchPresetTitle ?? 'Switch preset',
+            ),
+            content: Text(
+              l10n?.glacierModuleSwitchPresetMessage(from, to) ??
+                  'Switch from "$from" to "$to"? The current Ice Chunk configuration will be replaced.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n?.cancel ?? 'Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(l10n?.switchAction ?? 'Switch'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!confirmed || !mounted) return;
+    _data = preset.createData();
+    _selectedPresetId = preset.id;
+    _sync();
+  }
+
+  Widget _buildPresetSelector(AppLocalizations? l10n) {
+    final theme = Theme.of(context);
+    final current = _currentPreset();
+    final currentTitle = current == null
+        ? (l10n?.glacierModulePresetCustomConfiguration ??
+              'Custom configuration')
+        : _presetTitle(context, l10n, current);
+
+    return Card(
+      child: ExpansionTile(
+        key: const ValueKey('glacierPresetSelector'),
+        initiallyExpanded: false,
+        leading: const Icon(Icons.tune),
+        title: Text(
+          l10n?.glacierModulePresetSectionTitle ?? 'Preset configurations',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        subtitle: Text(currentTitle),
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 720
+                    ? 3
+                    : constraints.maxWidth >= 460
+                    ? 2
+                    : 1;
+                final chipWidth =
+                    (constraints.maxWidth - 8 * (columns - 1)) / columns;
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final preset in GlacierModulePresets.all)
+                      SizedBox(
+                        width: chipWidth,
+                        child: ChoiceChip(
+                          showCheckmark: false,
+                          label: Text(
+                            _presetTitle(context, l10n, preset),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          selected: current?.id == preset.id,
+                          onSelected: (_) => _applyPreset(preset),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -192,6 +331,12 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
                       'Requirements',
                   body: l10n?.glacierModuleHelpRequirementsBody ?? '',
                 ),
+                HelpSectionData(
+                  title:
+                      l10n?.glacierModuleHelpPresetsTitle ??
+                      'Preset configurations',
+                  body: l10n?.glacierModuleHelpPresetsBody ?? '',
+                ),
               ],
             ),
           ),
@@ -200,14 +345,16 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-          alias: _alias,
-          levelFile: widget.levelFile,
-          onAliasChanged: _handleAliasChanged,
-          onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+          ModuleAliasInputField(
+            rtid: widget.rtid,
+            alias: _alias,
+            levelFile: widget.levelFile,
+            onAliasChanged: _handleAliasChanged,
+            onChanged: widget.onChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildPresetSelector(l10n),
+          const SizedBox(height: 16),
           ...List.generate(GlacierModulePropertiesData.columnCount, (col) {
             return _ColumnCard(
               columnIndex: col,
@@ -421,11 +568,13 @@ class _EntryRow extends StatelessWidget {
         initialValue: '${entry.weight}',
         style: theme.textTheme.bodyLarge,
         decoration: _fieldDecoration(weightLabel),
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+        ],
         onChanged: (v) {
-          final w = int.tryParse(v);
-          if (w != null && w > 0) {
+          final w = num.tryParse(v);
+          if (w != null && w >= 0) {
             onUpdate(
               GlacierSpawnEntryData(
                 typeName: entry.typeName,
@@ -439,9 +588,7 @@ class _EntryRow extends StatelessWidget {
     );
 
     Widget buildLevelField() => Tooltip(
-      message:
-          l10n?.glacierModuleLevelTooltip ??
-          'Zombie level from 0 to 4.',
+      message: l10n?.glacierModuleLevelTooltip ?? 'Zombie level from 0 to 4.',
       child: DropdownButtonFormField<int>(
         key: ValueKey('lv_${entry.typeName}_${entry.level}'),
         initialValue: entry.level.clamp(

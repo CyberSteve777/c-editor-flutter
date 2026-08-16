@@ -1044,31 +1044,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String get featuresSection => '核心功能';
 
   @override
-  String get feature1 => '模块化编辑：对关卡模块和事件进行模块化管理。';
+  String get feature1 => '模块化编辑：对关卡模块和事件进行模块化管理，实现快速配置。';
 
   @override
-  String get feature2 => '多模式支持：我是僵尸、砸罐子、坚不可摧、僵王战等。';
+  String get feature2 => '多模式支持：支持编辑我是僵尸、砸罐子、坚不可摧、僵王战等多种模式。';
 
   @override
-  String get feature3 => '自定义注入：在关卡内注入并管理自定义僵尸、自定义地图和自定义僵王机甲。';
+  String get feature3 => '自定义注入：实现在关卡内注入并管理自定义僵尸、自定义地图和自定义僵王机甲，并编辑其基础属性。';
 
   @override
-  String get feature4 => '智能校验：检测模块依赖缺失、引用失效等问题。';
+  String get feature4 => '智能校验：自动检测模块依赖缺失、引用失效等问题，有效预防关卡闪退。';
+
+  @override
+  String get feature5 => '资源预览：内置植物、僵尸和障碍物图标，优化编辑体验，所见即所得。';
 
   @override
   String get usageSection => '使用说明';
 
   @override
   String get usageText =>
-      '1. 目录设置：首次进入请选择存放 JSON 关卡文件的目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageTextDesktop =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageTextMobile =>
-      '1. 目录设置：点击文件夹图标选择 JSON 关卡目录。\n2. 导入/新建：点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n3. 模块管理：在编辑器中可添加新模块。\n4. 保存关卡：编辑完成后点击保存，文件将回写到原 JSON。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageRecommendedLevelsLabel => '创意庭院·推荐关卡展示：';
@@ -4220,6 +4223,37 @@ class AppLocalizationsZh extends AppLocalizations {
       '从设定的区间范围直接从地下生成僵尸。参数配置和自然出怪基本一致。0阶表示随地图阶级，庭院模式下即为1阶。\n掉落物默认情况下配置的是携带能量豆的僵尸个数，启用掉落植物功能后会随机从配置的植物库里掉落植物卡片。 ';
 
   @override
+  String get moduleHelpDeathHoleBody => '植物被铲除或被啃食消失后，会在原位置留下一个不可种植的坑洞，持续一段时间。';
+
+  @override
+  String get moduleHelpZombieMoveFastBody =>
+      '使僵尸在进入场地时快速移动，直到到达指定列数后恢复正常速度。该模块出现于「僵尸清除计划」中。';
+
+  @override
+  String get moduleHelpSeedRainBody => '种子雨模块会让物品卡片按照一定时间间隔从天空中掉落。';
+
+  @override
+  String get moduleHelpSeedRainParameters => '参数设置';
+
+  @override
+  String get moduleHelpSeedRainParametersBody =>
+      '权重决定掉落概率，最大数量决定场上最多同时存在的数量。注意大部分僵尸没有适配的僵尸卡片图标。';
+
+  @override
+  String get moduleHelpSeedRainPlantLevels => '植物阶级';
+
+  @override
+  String get moduleHelpRailcartBody =>
+      '在此可以放置矿车与轨道的位置，并设定矿车的款式。点击一次格点进行放置，再次点击进行删除。';
+
+  @override
+  String get moduleHelpRailcartRailsBody =>
+      '在轨道铺设模式下点击网格铺设轨道。编辑器会自动将同一列连续的格子合并为一段轨道数据。';
+
+  @override
+  String get moduleHelpRailcartCartsBody => '点击网格放置或移除矿车。注意在同一段轨道上的矿车容易被堆叠起来。';
+
+  @override
   String get moduleHelpTideBody =>
       '本模块用于开启关卡中的潮水系统，以便后续使用潮水更改事件。注意该模块需要最后添加，否则可能导致闪退。';
 
@@ -4823,6 +4857,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get land => '无潮水';
 
   @override
+  String get tidePositionOrderHint =>
+      '场地最右边坐标为0，最左边为9。注意潮水系统模块需要最后添加，否则可能导致闪退。';
+
+  @override
   String groupConfigN(int n) {
     return '第$n组配置';
   }
@@ -5349,7 +5387,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechBaseHint =>
-      '由僵尸博士亲手打造并驾驶的僵尸机器人，常见于各个世界或模式的最终挑战。更改基础机甲后，下方的可选变体也会随之变化。';
+      '由僵尸博士亲手打造并驾驶的僵尸机甲，常见于各个世界或模式的终极挑战。更改基础机甲后，下方的可选变体也会随之变化。';
 
   @override
   String get zombossMechSelectBaseTitle => '选择基础机甲';
@@ -6830,6 +6868,54 @@ class AppLocalizationsZh extends AppLocalizations {
       '本模块必须与机甲僵王战模块同时使用，且所选基础僵王机甲必须为“冰河世界僵王 (獠牙征服者)”，否则不会生效。\n此外，不建议在海底世界外观的地图中使用冰河世界僵王与冰堆模块，否则不仅会影响关卡的整体观感，还可能造成闪退。';
 
   @override
+  String get glacierModuleHelpPresetsTitle => '预设配置';
+
+  @override
+  String get glacierModuleHelpPresetsBody =>
+      '编辑器内置了冰河世界僵王各变体在游戏原有关卡中使用的冰堆配置。应用预设会替换当前6组冰堆数据，且无法撤销；应用后仍可继续手动调整。植物迷阵变体的技能不需要冰堆模块，因此没有对应预设；自定义变体默认使用空白预设。';
+
+  @override
+  String get glacierModulePresetSectionTitle => '冰堆预设配置';
+
+  @override
+  String get glacierModulePresetBlankCustom => '自定义变体（空白预设）';
+
+  @override
+  String get glacierModulePresetCustomConfiguration => '自定义配置';
+
+  @override
+  String get glacierModuleSwitchPresetTitle => '切换冰堆预设';
+
+  @override
+  String glacierModuleSwitchPresetMessage(String from, String to) {
+    return '是否从“$from”切换至“$to”？当前6组冰堆配置将被替换，且无法撤销。';
+  }
+
+  @override
+  String get glacierModuleVariationPresetPromptTitle => '启用对应的冰堆预设';
+
+  @override
+  String get glacierModuleVariationPresetPrompt =>
+      '冰河世界僵王通过灌注冰堆召唤僵尸，冰堆中出现的僵尸由专门的「冰堆模块」进行配置。您即将切换至冰河世界僵王的另一变体，是否要同时启用该变体在游戏原有关卡中使用的「冰堆模块」预设配置？';
+
+  @override
+  String get glacierModuleCustomVariationPresetPrompt =>
+      '自定义变体默认采用空白冰堆预设。是否同时将「冰堆模块」切换为空白预设？';
+
+  @override
+  String get zombossMechSwitchVariationOnly => '仅切换变体';
+
+  @override
+  String get glacierModuleEnablePreset => '同时启用预设';
+
+  @override
+  String get iceAgePlantPuzzleVariationWarningTitle => '植物迷阵变体无需冰堆模块';
+
+  @override
+  String get iceAgePlantPuzzleVariationWarning =>
+      '獠牙征服者的植物迷阵变体是为冰河世界迷你游戏「植物迷阵」量身打造的，其技能不需要「冰堆模块」。';
+
+  @override
   String get glacierModuleCompatibilityWarningTitle => '模块使用条件提示';
 
   @override
@@ -6887,7 +6973,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get glacierModuleLevelTooltip =>
-      '设置该僵尸的阶级，范围为0至4。0阶表示随地图阶级，庭院模式下即为1阶。';
+      '设置该僵尸的阶级，范围为0-4。0阶表示随地图阶级，庭院模式下即为1阶。';
 
   @override
   String get moduleTitle_HeianWindModuleProperties => '平安神风';
@@ -6998,7 +7084,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get jsonViewerMatchCase => '区分大小写';
 
   @override
-  String get jsonViewerWholeWords => '全字匹配';
+  String get jsonViewerWholeWords => '全词匹配';
 
   @override
   String get jsonViewerRegex => '正则表达式';
@@ -7042,19 +7128,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tooltipClearUnused => '清除未使用对象';
 
   @override
-  String get tooltipCopyJson => '复制关卡 JSON';
+  String get tooltipCopyJson => '复制关卡JSON';
 
   @override
-  String get tooltipCopyObject => '复制对象 JSON';
+  String get tooltipCopyObject => '复制对象JSON';
 
   @override
   String get tooltipMore => '更多';
 
   @override
-  String get jsonViewerCopied => 'JSON 已复制到剪贴板';
+  String get jsonViewerCopied => 'JSON已复制到剪贴板';
 
   @override
-  String get tooltipJsonViewer => '查看/编辑 JSON文件';
+  String get tooltipJsonViewer => '查看/编辑JSON文件';
 
   @override
   String get tooltipAdd => '添加';
@@ -7200,7 +7286,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get invalidRtonMagic => 'RTON 文件无效，文件开头应为「RTON」。';
 
   @override
-  String get invalidRtonVersion => 'RTON 版本无效（应为 1）。';
+  String get invalidRtonVersion => 'RTON 版本无效（应为1）。';
 
   @override
   String get invalidRtonEnd => 'RTON 文件无效，应以「DONE」结尾。';
@@ -7239,16 +7325,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editCustomZombossMech => '编辑';
 
   @override
-  String get customZombossMechProperties => '自定义 ZombossMech 属性';
+  String get customZombossMechProperties => '自定义僵王机甲属性';
 
   @override
-  String get customZombossMechScalars => '常规';
+  String get customZombossMechScalars => '活动范围';
 
   @override
-  String get customZombossMechStages => '战斗阶段';
+  String get customZombossMechStages => '机甲阶段';
 
   @override
-  String get customZombossMechEditHint => '编辑关卡内 memo（自定义）机甲变体的属性表。';
+  String get customZombossMechEditHint =>
+      '编辑关卡内使用的自定义机甲变体（memo）的属性。此类自定义僵王机甲常见于回忆之旅关卡。';
 
   @override
   String get zombossMechMinColumn => '最小列';
@@ -7273,7 +7360,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String zombossMechDeletePhaseTitle(int number) {
-    return '删除第$number阶段？';
+    return '确定要删除第$number阶段吗？';
   }
 
   @override
@@ -7284,12 +7371,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String zombossMechOrphanActionDeleteMessage(String alias) {
-    return '“$alias” 已不在本关卡中使用。是否从关卡文件中移除其动作对象？';
+    return '“$alias”已不在本关卡中使用。是否从关卡文件中移除其动作对象？';
   }
 
   @override
   String get zombossMechPhasesHelp =>
-      '每个阶段包含生命值、按顺序执行的动作列表（自上而下），以及可选的撤退动作（若机甲支持）。';
+      '每个阶段可单独配置机甲的生命值、可使用的动作，以及阶段切换时执行的撤退动作等参数。动作列表中的技能会根据各自动作属性中的权重和重复次数执行，而非按列表顺序依次执行。';
+
+  @override
+  String get zombossMechPhasesHelpTitle => '阶段内容';
 
   @override
   String get zombossMechAddAction => '添加动作';
@@ -7348,7 +7438,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechActionAliasHint =>
-      '用于 RTID(僵王机甲@CurrentLevel) 的代号，可稍后修改；本属性表中的引用会自动更新。';
+      '自定义动作在关卡内的引用名称，用于组成 RTID(名称@CurrentLevel) 并供机甲属性表中的相关内容引用。该名称可以随时修改，修改后属性表中已有的相关 RTID 引用也会自动更新。';
 
   @override
   String get zombossMechActionBaseObjclass => '动作类型 (objclass)';
@@ -7380,7 +7470,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechActionFields => '动作字段';
 
   @override
-  String get zombossMechPropertiesViewTitle => 'ZombossMech 属性';
+  String get zombossMechPropertiesViewTitle => '僵王机甲属性';
 
   @override
   String get viewZombossMechProperties => '查看属性';
@@ -7401,11 +7491,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechSpawnBallSettings => '掉落物配置 (ZombieDropProps)';
 
   @override
-  String get zombossMechAwardDropInvalidTitle => 'SpawnBall 引用失效';
+  String get zombossMechAwardDropInvalidTitle => 'SpawnBall引用失效';
 
   @override
   String zombossMechAwardDropInvalidBody(String rtid) {
-    return 'AwardDrop 当前指向“$rtid”，但该引用不是关卡内结构有效的 ZombieDropProps 对象，游戏可能无法正常读取此动作。';
+    return 'AwardDrop当前指向“$rtid”，但该引用不是关卡内结构有效的 ZombieDropProps 对象，游戏可能无法正常读取此动作。';
   }
 
   @override
@@ -7418,7 +7508,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechRetreatDisabled => '已禁用';
 
   @override
-  String get zombossMechOpenGlacierModule => '打开冰川模块设置';
+  String get zombossMechOpenGlacierModule => '配置冰堆模块';
 
   @override
   String get zombossMechRobotSpawnRow => '行';
@@ -7433,7 +7523,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechRobotSpawnWeight => '权重';
 
   @override
-  String get zombossMechRobotSpawnPlantfood => '植物食物';
+  String get zombossMechRobotSpawnPlantfood => '携带能量豆';
 
   @override
   String get zombossMechRetreatAction => '撤退动作';

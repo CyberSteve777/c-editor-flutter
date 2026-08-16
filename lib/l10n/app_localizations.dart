@@ -1999,26 +1999,32 @@ abstract class AppLocalizations {
   /// No description provided for @feature1.
   ///
   /// In en, this message translates to:
-  /// **'Modular editing: Manage level modules and events.'**
+  /// **'Modular editing: Organize level modules and events in a modular interface for quick configuration.'**
   String get feature1;
 
   /// No description provided for @feature2.
   ///
   /// In en, this message translates to:
-  /// **'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Battle, and more.'**
+  /// **'Multi-mode support: Edit I, Zombie, Vasebreaker, Last Stand, Zomboss Battle, and many other level modes.'**
   String get feature2;
 
   /// No description provided for @feature3.
   ///
   /// In en, this message translates to:
-  /// **'Custom injection: Inject and manage custom zombies, custom lawn and custom Zomboss Mech within a level.'**
+  /// **'Custom injection: Inject and manage custom zombies, custom lawns, and custom Zomboss Mechs within a level, including their core properties.'**
   String get feature3;
 
   /// No description provided for @feature4.
   ///
   /// In en, this message translates to:
-  /// **'Validation: Detect missing modules, broken references, and other issues.'**
+  /// **'Smart validation: Automatically detect missing module dependencies, broken references, and other issues to help prevent level crashes.'**
   String get feature4;
+
+  /// No description provided for @feature5.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource previews: Built-in icons for plants, zombies, and grid items provide a clearer, what-you-see-is-what-you-get editing experience.'**
+  String get feature5;
 
   /// No description provided for @usageSection.
   ///
@@ -2029,19 +2035,19 @@ abstract class AppLocalizations {
   /// No description provided for @usageText.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: On first launch, tap the folder icon in the upper-right corner and choose the folder that stores your level JSON files.\n2. Open/Create: Tap a level in the list to edit it, or use the button below to create a new level from a template.\n3. Modules: In the editor, use \"Add New Module\" to extend the level with additional features.\n4. Save: When editing is complete, tap the save button in the upper-right corner to write the changes back to the original JSON file automatically.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageText;
 
   /// No description provided for @usageTextDesktop.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: On first launch, click the folder icon in the upper-right corner and choose the folder that stores your level JSON files.\n2. Open/Create: Click a level in the list to edit it, or use the button below to create a new level from a template.\n3. Modules: In the editor, use \"Add New Module\" to extend the level with additional features.\n4. Save: When editing is complete, click the save button in the upper-right corner to write the changes back to the original JSON file automatically.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Click the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageTextDesktop;
 
   /// No description provided for @usageTextMobile.
   ///
   /// In en, this message translates to:
-  /// **'1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
+  /// **'1. Directory Setup: On first launch, tap the folder icon in the upper-right corner and choose the folder that stores your level JSON files.\n2. Open/Create: Tap a level in the list to edit it, or use the button below to create a new level from a template.\n3. Modules: In the editor, use \"Add New Module\" to extend the level with additional features.\n4. Save: When editing is complete, tap the save button in the upper-right corner to write the changes back to the original JSON file automatically.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
   String get usageTextMobile;
 
   /// No description provided for @usageRecommendedLevelsLabel.
@@ -7942,6 +7948,60 @@ abstract class AppLocalizations {
   /// **'Spawns zombies directly from the ground within the specified range. Configuration is similar to natural spawning. Level 0 follows the lawn’s default level (which is Level 1 in Creative Courtyard).\n By default, the Drop config specifies the number of zombies that carry Plant Food. After adding a plant, it will randomly assign a zombie to drop a seed packet of the selected plant.'**
   String get eventHelpGroundSpawnBody;
 
+  /// No description provided for @moduleHelpDeathHoleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When a plant is shoveled, eaten, or otherwise removed, it leaves an unplantable crater on the tile it occupied for a period of time.'**
+  String get moduleHelpDeathHoleBody;
+
+  /// No description provided for @moduleHelpZombieMoveFastBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Makes zombies move quickly as they enter the lawn, returning to normal speed after they reach the specified column. Commonly used in the Zombie Elimination Initiative levels.'**
+  String get moduleHelpZombieMoveFastBody;
+
+  /// No description provided for @moduleHelpSeedRainBody.
+  ///
+  /// In en, this message translates to:
+  /// **'At fixed intervals, this module causes item cards to fall from the sky.'**
+  String get moduleHelpSeedRainBody;
+
+  /// No description provided for @moduleHelpSeedRainParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameter settings'**
+  String get moduleHelpSeedRainParameters;
+
+  /// No description provided for @moduleHelpSeedRainParametersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight determines an item\'s chance of dropping, while Max count limits how many copies may be present on the lawn at once. Note that most zombies do not have matching zombie card icons.'**
+  String get moduleHelpSeedRainParametersBody;
+
+  /// No description provided for @moduleHelpSeedRainPlantLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant tiers'**
+  String get moduleHelpSeedRainPlantLevels;
+
+  /// No description provided for @moduleHelpRailcartBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure the positions of minecarts and rails and select the minecart style. Tap a tile once to place an item, and tap it again to remove it.'**
+  String get moduleHelpRailcartBody;
+
+  /// No description provided for @moduleHelpRailcartRailsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'In Lay rails mode, tap tiles to lay rails. The editor automatically combines consecutive tiles in the same column into a single rail segment.'**
+  String get moduleHelpRailcartRailsBody;
+
+  /// No description provided for @moduleHelpRailcartCartsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap tiles to place or remove minecarts. Note that minecarts on the same rail segment can easily stack.'**
+  String get moduleHelpRailcartCartsBody;
+
   /// No description provided for @moduleHelpTideBody.
   ///
   /// In en, this message translates to:
@@ -9087,6 +9147,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Land'**
   String get land;
+
+  /// No description provided for @tidePositionOrderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The rightmost lawn coordinate is 0 and the leftmost is 9. The Tide System module must be added last, or the level may crash.'**
+  String get tidePositionOrderHint;
 
   /// No description provided for @groupConfigN.
   ///
@@ -11105,7 +11171,7 @@ abstract class AppLocalizations {
   /// No description provided for @seedBankAddGridItemsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Add grid items'**
+  /// **'Add Grid Items'**
   String get seedBankAddGridItemsTitle;
 
   /// No description provided for @seedBankAddGridItemsSubtitle.
@@ -11123,7 +11189,7 @@ abstract class AppLocalizations {
   /// No description provided for @seedBankGridItemsPresetOnlySwitchWarning.
   ///
   /// In en, this message translates to:
-  /// **'The \"Add grid items\" feature only works in Preset mode. Switching to Chooser mode will turn it off. Continue switching?'**
+  /// **'The \"Add Grid Items\" feature only works in Preset mode. Switching to Chooser mode will turn it off. Continue switching?'**
   String get seedBankGridItemsPresetOnlySwitchWarning;
 
   /// No description provided for @starChallengeSelectConditions.
@@ -12707,7 +12773,7 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleHelpColumnsBody.
   ///
   /// In en, this message translates to:
-  /// **'This module consists of 6 groups of zombie data, with each set corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. Each data set can independently configure the level of each zombie type (up to Level 4) and its spawn weight.'**
+  /// **'This module consists of 6 groups of zombie data, with each group corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. Each data group can independently configure the level of each zombie type (up to Level 4) and its spawn weight.'**
   String get glacierModuleHelpColumnsBody;
 
   /// No description provided for @glacierModuleHelpRequirementsTitle.
@@ -12721,6 +12787,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This module must be used together with the Zomboss Mech Battle module, and the selected base Zomboss mech must be \"Frostbite Caves Zomboss (Zombot Tuskmaster 10,000 BC)\"; otherwise, it will have no effect.\nIn addition, using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn is not recommended, as it may negatively affect the overall appearance of the level and may also cause crashes.'**
   String get glacierModuleHelpRequirementsBody;
+
+  /// No description provided for @glacierModuleHelpPresetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset configurations'**
+  String get glacierModuleHelpPresetsTitle;
+
+  /// No description provided for @glacierModuleHelpPresetsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The editor includes the Ice Chunk configurations used by each Frostbite Caves Zomboss variation in the original game. Applying a preset replaces all six Ice Chunk groups and cannot be undone; you can still adjust the entries manually afterward. The Beplanted variation does not need the Ice Chunk Module and therefore has no preset. The custom variation uses a blank preset by default.'**
+  String get glacierModuleHelpPresetsBody;
+
+  /// No description provided for @glacierModulePresetSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ice Chunk presets'**
+  String get glacierModulePresetSectionTitle;
+
+  /// No description provided for @glacierModulePresetBlankCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom variation (blank preset)'**
+  String get glacierModulePresetBlankCustom;
+
+  /// No description provided for @glacierModulePresetCustomConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom configuration'**
+  String get glacierModulePresetCustomConfiguration;
+
+  /// No description provided for @glacierModuleSwitchPresetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Ice Chunk preset'**
+  String get glacierModuleSwitchPresetTitle;
+
+  /// No description provided for @glacierModuleSwitchPresetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch from \"{from}\" to \"{to}\"? All six current Ice Chunk groups will be replaced and this cannot be undone.'**
+  String glacierModuleSwitchPresetMessage(String from, String to);
+
+  /// No description provided for @glacierModuleVariationPresetPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable the matching Ice Chunk preset'**
+  String get glacierModuleVariationPresetPromptTitle;
+
+  /// No description provided for @glacierModuleVariationPresetPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'The Frostbite Caves Zomboss summons zombies by filling Ice Chunks. The zombies released from those chunks are configured by the dedicated Ice Chunk Module. You are about to switch to another Frostbite Caves Zomboss variation. Also enable the Ice Chunk Module preset used by that variation in the original game?'**
+  String get glacierModuleVariationPresetPrompt;
+
+  /// No description provided for @glacierModuleCustomVariationPresetPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'The custom variation uses a blank Ice Chunk preset by default. Also switch the Ice Chunk Module to the blank preset?'**
+  String get glacierModuleCustomVariationPresetPrompt;
+
+  /// No description provided for @zombossMechSwitchVariationOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch variation only'**
+  String get zombossMechSwitchVariationOnly;
+
+  /// No description provided for @glacierModuleEnablePreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable preset too'**
+  String get glacierModuleEnablePreset;
+
+  /// No description provided for @iceAgePlantPuzzleVariationWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Beplanted does not need Ice Chunks'**
+  String get iceAgePlantPuzzleVariationWarningTitle;
+
+  /// No description provided for @iceAgePlantPuzzleVariationWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The Beplanted variant of Zombot Tuskmaster 10,000 BC was designed specifically for the Beplanted minigame in Frostbite Caves. Its abilities do not require the Ice Chunk Module.'**
+  String get iceAgePlantPuzzleVariationWarning;
 
   /// No description provided for @glacierModuleCompatibilityWarningTitle.
   ///
@@ -12749,7 +12899,7 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleColumn.
   ///
   /// In en, this message translates to:
-  /// **'{columnIndex}th Column from the Left'**
+  /// **'Column {columnIndex} from the Left'**
   String glacierModuleColumn(int columnIndex);
 
   /// No description provided for @glacierModuleEntryCount.
@@ -13487,25 +13637,25 @@ abstract class AppLocalizations {
   /// No description provided for @customZombossMechProperties.
   ///
   /// In en, this message translates to:
-  /// **'Custom ZombossMech properties'**
+  /// **'Custom Zomboss Mech properties'**
   String get customZombossMechProperties;
 
   /// No description provided for @customZombossMechScalars.
   ///
   /// In en, this message translates to:
-  /// **'General'**
+  /// **'Movement Range'**
   String get customZombossMechScalars;
 
   /// No description provided for @customZombossMechStages.
   ///
   /// In en, this message translates to:
-  /// **'Battle phases'**
+  /// **'Mech phases'**
   String get customZombossMechStages;
 
   /// No description provided for @customZombossMechEditHint.
   ///
   /// In en, this message translates to:
-  /// **'Edit level-local property sheet for the memo (custom) mech variation.'**
+  /// **'Edit the properties of the custom mech variation (memo) used in the level. Custom Zomboss mechs are commonly found in Memory Lane levels.'**
   String get customZombossMechEditHint;
 
   /// No description provided for @zombossMechMinColumn.
@@ -13577,8 +13727,14 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechPhasesHelp.
   ///
   /// In en, this message translates to:
-  /// **'Each phase has hit points, an ordered action list (executed top to bottom), and optionally a retreat action when the mech supports it.'**
+  /// **'Each phase can be configured independently with parameters such as the mech\'s health, available actions, and the retreat action performed when transitioning between phases. Actions in the list are executed based on the weights and repeat counts defined in their individual action properties; they are not executed sequentially in list order.'**
   String get zombossMechPhasesHelp;
+
+  /// No description provided for @zombossMechPhasesHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Phase contents'**
+  String get zombossMechPhasesHelpTitle;
 
   /// No description provided for @zombossMechAddAction.
   ///
@@ -13685,7 +13841,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechActionAliasHint.
   ///
   /// In en, this message translates to:
-  /// **'Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.'**
+  /// **'The reference name used for a custom action within the level. It is used to form RTID(Name@CurrentLevel) references for related entries in the mech properties. This name can be changed at any time, and any existing related RTID references in the properties will be updated automatically.'**
   String get zombossMechActionAliasHint;
 
   /// No description provided for @zombossMechActionBaseObjclass.
@@ -13745,7 +13901,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechPropertiesViewTitle.
   ///
   /// In en, this message translates to:
-  /// **'ZombossMech Properties'**
+  /// **'Zomboss Mech Properties'**
   String get zombossMechPropertiesViewTitle;
 
   /// No description provided for @viewZombossMechProperties.
@@ -13817,7 +13973,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechOpenGlacierModule.
   ///
   /// In en, this message translates to:
-  /// **'Open glacier module settings'**
+  /// **'Go to Ice Chunk Module settings'**
   String get zombossMechOpenGlacierModule;
 
   /// No description provided for @zombossMechRobotSpawnRow.
@@ -13847,7 +14003,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechRobotSpawnPlantfood.
   ///
   /// In en, this message translates to:
-  /// **'Plant food'**
+  /// **'Carries Plant Food'**
   String get zombossMechRobotSpawnPlantfood;
 
   /// No description provided for @zombossMechRetreatAction.
@@ -13877,7 +14033,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechHitPoints.
   ///
   /// In en, this message translates to:
-  /// **'Hit points'**
+  /// **'Health (HitPoints)'**
   String get zombossMechHitPoints;
 
   /// No description provided for @continueAnyway.

@@ -441,6 +441,7 @@ class _PortalBaseSelectionCard extends StatelessWidget {
     this.displayName,
     this.onInfo,
     this.selected = false,
+    this.showTrailingArrow = true,
   });
 
   final PortalWorldDef def;
@@ -448,6 +449,7 @@ class _PortalBaseSelectionCard extends StatelessWidget {
   final String? displayName;
   final VoidCallback? onInfo;
   final bool selected;
+  final bool showTrailingArrow;
 
   @override
   Widget build(BuildContext context) {
@@ -515,7 +517,7 @@ class _PortalBaseSelectionCard extends StatelessWidget {
                   icon: const Icon(Icons.info_outline),
                   onPressed: onInfo,
                 ),
-              const Icon(Icons.chevron_right),
+              if (showTrailingArrow) const Icon(Icons.chevron_right),
             ],
           ),
         ),
@@ -555,6 +557,7 @@ class ZombossPortalTypeSelectionScreen extends StatelessWidget {
                   def: def,
                   displayName: displayName,
                   selected: def.typeCode == currentPortalType,
+                  showTrailingArrow: false,
                   onInfo: () => showPortalTypePreviewDialog(
                     context,
                     def,

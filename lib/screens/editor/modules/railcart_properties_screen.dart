@@ -204,7 +204,6 @@ class _RailcartPropertiesScreenState extends State<RailcartPropertiesScreen> {
     _sync();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -238,13 +237,44 @@ class _RailcartPropertiesScreenState extends State<RailcartPropertiesScreen> {
           isEvent: false,
           objClass: _objClass,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title:
+                  l10n?.moduleTitle_RailcartProperties ?? 'Minecart and Rail',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpRailcartBody ??
+                      'Configure the positions of minecarts and rails and select the minecart style. Tap a tile once to place an item, and tap it again to remove it.',
+                ),
+                HelpSectionData(
+                  title: l10n?.layRails ?? 'Lay rails',
+                  body:
+                      l10n?.moduleHelpRailcartRailsBody ??
+                      'In Lay rails mode, tap tiles to lay rails. The editor automatically combines consecutive tiles in the same column into a single rail segment.',
+                ),
+                HelpSectionData(
+                  title: l10n?.placeCarts ?? 'Place minecarts',
+                  body:
+                      l10n?.moduleHelpRailcartCartsBody ??
+                      'Tap tiles to place or remove minecarts. Minecarts on the same rail segment can easily stack.',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,

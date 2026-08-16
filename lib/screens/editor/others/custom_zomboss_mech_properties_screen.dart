@@ -448,7 +448,8 @@ class _CustomZombossMechPropertiesScreenState
                           'Edit level-local property sheet for the memo (custom) mech variation.',
                     ),
                     HelpSectionData(
-                      title: l10n?.customZombossMechStages ?? 'Battle phases',
+                      title:
+                          l10n?.zombossMechPhasesHelpTitle ?? 'Phase contents',
                       body:
                           l10n?.zombossMechPhasesHelp ??
                           'Each phase has hit points, an ordered action list, and optionally a retreat action.',

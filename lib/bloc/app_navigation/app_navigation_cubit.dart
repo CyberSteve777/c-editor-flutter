@@ -6,13 +6,18 @@ part 'app_navigation_state.dart';
 class AppNavigationCubit extends Cubit<AppNavigationState> {
   AppNavigationCubit() : super(const AppNavigationState());
 
-  void openLevel(String fileName, String filePath) {
+  void openLevel(
+    String fileName,
+    String filePath, {
+    double levelListScrollOffset = 0,
+  }) {
     emit(
       state.copyWith(
         screen: AppScreen.editor,
         editorFileName: fileName,
         editorFilePath: filePath,
         lastOpenedLevelPath: filePath,
+        levelListScrollOffset: levelListScrollOffset,
         showUploadAfterLevelReturn: false,
       ),
     );

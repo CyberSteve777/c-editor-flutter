@@ -203,9 +203,14 @@ class _ZEditorAppState extends State<ZEditorApp> {
       case AppScreen.levelList:
         return LevelListScreen(
           returnToLevelPath: nav.lastOpenedLevelPath,
+          returnToScrollOffset: nav.levelListScrollOffset,
           showUploadAfterLevelReturn: nav.showUploadAfterLevelReturn,
-          onLevelClick: (fileName, filePath) {
-            context.read<AppNavigationCubit>().openLevel(fileName, filePath);
+          onLevelClick: (fileName, filePath, scrollOffset) {
+            context.read<AppNavigationCubit>().openLevel(
+              fileName,
+              filePath,
+              levelListScrollOffset: scrollOffset,
+            );
           },
           onAboutClick: () => context.read<AppNavigationCubit>().openAbout(),
           onPluginsClick: () =>
@@ -298,10 +303,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
 
 /// Binds [EditorCubit] to [ActiveEditorSession] for the plugin host API.
 class _BindActiveEditorSession extends StatefulWidget {
-  const _BindActiveEditorSession({
-    required this.cubit,
-    required this.child,
-  });
+  const _BindActiveEditorSession({required this.cubit, required this.child});
 
   final EditorCubit cubit;
   final Widget child;

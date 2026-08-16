@@ -9,11 +9,16 @@ void main() {
     final navigation = AppNavigationCubit();
     addTearDown(navigation.close);
 
-    navigation.openLevel('level.json', r'C:\levels\world\level.json');
+    navigation.openLevel(
+      'level.json',
+      r'C:\levels\world\level.json',
+      levelListScrollOffset: 347.5,
+    );
     navigation.backToLevelList();
 
     expect(navigation.state.lastOpenedLevelPath, r'C:\levels\world\level.json');
     expect(navigation.state.screen, AppScreen.levelList);
+    expect(navigation.state.levelListScrollOffset, 347.5);
     expect(navigation.state.showUploadAfterLevelReturn, isTrue);
 
     navigation.openAbout();
@@ -23,6 +28,7 @@ void main() {
     final restartedNavigation = AppNavigationCubit();
     addTearDown(restartedNavigation.close);
     expect(restartedNavigation.state.lastOpenedLevelPath, isEmpty);
+    expect(restartedNavigation.state.levelListScrollOffset, 0);
     expect(restartedNavigation.state.showUploadAfterLevelReturn, isFalse);
   });
 
@@ -83,22 +89,14 @@ void main() {
     ];
 
     expect(
-      levelListOffsetForIndex(
-        items,
-        2,
-        folderExtent: 80,
-        fileExtent: 64,
-      ),
+      levelListOffsetForIndex(items, 2, folderExtent: 80, fileExtent: 64),
       160,
     );
   });
 
   test('returned-level upload action follows top and user-scroll rules', () {
     expect(
-      shouldShowLevelListUploadFab(
-        isAtTop: false,
-        showAfterLevelReturn: true,
-      ),
+      shouldShowLevelListUploadFab(isAtTop: false, showAfterLevelReturn: true),
       isTrue,
     );
     expect(
@@ -114,17 +112,11 @@ void main() {
       isTrue,
     );
     expect(
-      shouldShowLevelListUploadFab(
-        isAtTop: false,
-        showAfterLevelReturn: false,
-      ),
+      shouldShowLevelListUploadFab(isAtTop: false, showAfterLevelReturn: false),
       isFalse,
     );
     expect(
-      shouldShowLevelListUploadFab(
-        isAtTop: true,
-        showAfterLevelReturn: false,
-      ),
+      shouldShowLevelListUploadFab(isAtTop: true, showAfterLevelReturn: false),
       isTrue,
     );
   });

@@ -2,6 +2,7 @@ import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/others/custom_portal_properties_screen.dart';
+import 'package:c_editor/screens/editor/others/custom_resilience_shield_editor_screen.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,6 +55,12 @@ void main() {
 
     await tester.tap(find.text('Open editor'));
     await tester.pumpAndSettle();
+    final actionSaveIcon = tester.widget<Icon>(find.byIcon(Icons.save));
+    expect(
+      actionSaveIcon.color,
+      Theme.of(tester.element(find.byIcon(Icons.save))).colorScheme.primary,
+    );
+    expect(find.byTooltip('Save'), findsOneWidget);
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
 
@@ -101,6 +108,12 @@ void main() {
 
     await tester.tap(find.text('Open portal editor'));
     await tester.pumpAndSettle();
+    final portalSaveIcon = tester.widget<Icon>(find.byIcon(Icons.save));
+    expect(
+      portalSaveIcon.color,
+      Theme.of(tester.element(find.byIcon(Icons.save))).colorScheme.primary,
+    );
+    expect(find.byTooltip('Save'), findsOneWidget);
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
 
@@ -117,6 +130,56 @@ void main() {
       ),
       hasLength(1),
     );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('custom shield exit asks whether to save changes', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(objects: []);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    CustomResilienceShieldEditorScreen(levelFile: level),
+              ),
+            ),
+            child: const Text('Open shield editor'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open shield editor'));
+    await tester.pumpAndSettle();
+
+    final saveFinder = find.byIcon(Icons.save);
+    final saveIcon = tester.widget<Icon>(saveFinder);
+    expect(
+      saveIcon.color,
+      Theme.of(tester.element(saveFinder)).colorScheme.primary,
+    );
+    expect(find.byTooltip('Save'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Unsaved changes'), findsOneWidget);
+    expect(find.text('Save before leaving?'), findsOneWidget);
+    final dialog = find.byType(AlertDialog);
+    await tester.tap(
+      find.descendant(of: dialog, matching: find.text('Discard')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Open shield editor'), findsOneWidget);
+    expect(level.objects, isEmpty);
     expect(tester.takeException(), isNull);
   });
 }

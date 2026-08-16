@@ -108,6 +108,26 @@ class _ZombieMoveFastModuleScreenState
           isEvent: false,
           objClass: _objClass,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title:
+                  l10n?.moduleTitle_ZombieMoveFastModuleProperties ??
+                  'Fast Entry',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpZombieMoveFastBody ??
+                      'Makes zombies move quickly as they enter the lawn, returning to normal speed after they reach the specified column. This module appears in the Zombie Elimination Initiative.',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

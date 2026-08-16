@@ -173,7 +173,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('冰堆模块使用条件'), findsOneWidget);
+    expect(find.text('模块使用条件提示'), findsOneWidget);
     expect(find.text('海底世界外观不兼容'), findsOneWidget);
     expect(find.textContaining('不建议在海底世界外观的地图中使用冰河世界僵王'), findsOneWidget);
     expect(tester.takeException(), isNull);

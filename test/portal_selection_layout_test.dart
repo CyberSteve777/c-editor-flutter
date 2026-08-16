@@ -81,9 +81,7 @@ void main() {
     await tester.pump();
 
     final selectedCard = tester.widget<Card>(
-      find
-          .ancestor(of: find.text('Egypt'), matching: find.byType(Card))
-          .first,
+      find.ancestor(of: find.text('Egypt'), matching: find.byType(Card)).first,
     );
     final createCard = tester.widget<Card>(
       find.ancestor(
@@ -289,6 +287,7 @@ void main() {
     expect(find.text('New custom portal'), findsNothing);
     expect(find.byType(PortalTypeChooserGrid), findsNothing);
     expect(find.byIcon(Icons.info_outline), findsWidgets);
+    expect(find.byIcon(Icons.chevron_right), findsNothing);
     await tester.tap(find.byIcon(Icons.info_outline).first);
     await tester.pumpAndSettle();
     expect(find.text('This portal spawns:'), findsOneWidget);

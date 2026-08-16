@@ -103,9 +103,7 @@ class _PickupCollectableTutorialScreenState
     }
     if (_data.dropperZombieType.isEmpty) {
       _data = PickupCollectableTutorialData(
-        dropperZombieType: ZombieRepository().buildZombieAliases(
-          'zombie_tutorial',
-        ),
+        dropperZombieType: ZombieRepository().buildZombieAliases('mummy'),
         lootType: _data.lootType,
         pickupAdvice: _data.pickupAdvice,
         postPickupAdvice: _data.postPickupAdvice,
