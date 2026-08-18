@@ -2762,7 +2762,7 @@
   "energyGridModuleTapToPlace": "Click an empty tile to place a Taiji Tile.",
   "energyGridModuleExpectationLabel": "Taiji Tiles",
   "energyGridModuleIgnoredWaveOverridesWarning": "The level contains Taiji Tile configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because Wave Manager only reads the first group's configuration.",
-  "energyGridModuleWarningMessage": "Due to a game-side issue, generated Taiji Tiles may appear as purple X markers, but this does not affect their actual functionality."
+  "energyGridModuleWarningMessage": "Due to a game-side issue, generated Taiji Tiles may appear as purple X markers, but this does not affect their actual functionality.",
   "gridOverrideModuleAppearances": "Wave groups",
   "gridOverrideModuleWaveFieldOneBased": "Wave index",
   "gridOverrideModuleTimelineNote": "Only the first group's configuration is shown on the Wave Manager timeline."
