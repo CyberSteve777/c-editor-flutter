@@ -106,7 +106,49 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     _sync();
   }
 
-  void _addEntry(int columnIndex) {
+  Future<void> _addEntry(int columnIndex) async {
+    final l10n = AppLocalizations.of(context);
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.glacierModuleAddContentTitle ?? 'Add Ice Chunk content',
+      titleIcon: Icons.ac_unit,
+      options: [
+        EditorChoiceDialogOption(
+          value: 'zombie',
+          icon: Icons.pest_control_outlined,
+          title: l10n?.glacierModuleAddZombieContent ?? 'Add zombie',
+          subtitle:
+              l10n?.glacierModuleAddZombieDescription ??
+              'Select a zombie that may appear when the Ice Chunk breaks.',
+        ),
+        EditorChoiceDialogOption(
+          value: 'empty',
+          icon: Icons.block,
+          title:
+              l10n?.glacierModuleEmptyType ??
+              'No zombie appears when the Ice Chunk breaks',
+          subtitle:
+              l10n?.glacierModuleAddEmptyDescription ??
+              'Add a weighted outcome in which the Ice Chunk releases no zombie.',
+        ),
+      ],
+    );
+    if (!mounted || choice == null) return;
+
+    if (choice == 'empty') {
+      final column = _data.zombieSpawnData[columnIndex];
+      _updateColumn(
+        columnIndex,
+        GlacierColumnSpawnData(
+          entries: [
+            ...column.entries,
+            GlacierSpawnEntryData(typeName: ''),
+          ],
+        ),
+      );
+      return;
+    }
+
     widget.onRequestZombieSelection((id) {
       if (!mounted) return;
       final column = _data.zombieSpawnData[columnIndex];
@@ -496,6 +538,7 @@ class _EntryRow extends StatelessWidget {
     final theme = Theme.of(context);
     final repo = ZombieRepository();
     final typeName = entry.typeName;
+    final isEmptyOutcome = typeName.isEmpty;
     final zombie = typeName.isNotEmpty ? repo.getZombieById(typeName) : null;
     final displayName = typeName.isEmpty
         ? (l10n?.glacierModuleEmptyType ?? 'No zombie selected')
@@ -517,7 +560,7 @@ class _EntryRow extends StatelessWidget {
               height: _iconSize,
             )
           : Icon(
-              Icons.pest_control_outlined,
+              Icons.ac_unit,
               size: _iconSize * 0.65,
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -560,9 +603,11 @@ class _EntryRow extends StatelessWidget {
     );
 
     Widget buildWeightField() => Tooltip(
-      message:
-          l10n?.glacierModuleWeightTooltip ??
-          'Spawn weight for this zombie in this column.',
+      message: isEmptyOutcome
+          ? (l10n?.glacierModuleEmptyWeightTooltip ??
+                'Weight for the outcome in which the Ice Chunk releases no zombie.')
+          : (l10n?.glacierModuleWeightTooltip ??
+                'Spawn weight for this zombie in this column.'),
       child: TextFormField(
         key: ValueKey('w_${entry.typeName}_${entry.weight}'),
         initialValue: '${entry.weight}',
@@ -649,20 +694,26 @@ class _EntryRow extends StatelessWidget {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [buildNameBlock(), buildSwitchButton()],
+                        children: [
+                          buildNameBlock(),
+                          if (!isEmptyOutcome) buildSwitchButton(),
+                        ],
                       ),
                     ),
                     buildDeleteButton(),
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(child: buildWeightField()),
-                    const SizedBox(width: 8),
-                    Expanded(child: buildLevelField()),
-                  ],
-                ),
+                if (isEmptyOutcome)
+                  buildWeightField()
+                else
+                  Row(
+                    children: [
+                      Expanded(child: buildWeightField()),
+                      const SizedBox(width: 8),
+                      Expanded(child: buildLevelField()),
+                    ],
+                  ),
               ],
             );
           }
@@ -676,24 +727,25 @@ class _EntryRow extends StatelessWidget {
                 child: Row(
                   children: [
                     Flexible(fit: FlexFit.loose, child: buildNameBlock()),
-                    buildSwitchButton(),
+                    if (!isEmptyOutcome) buildSwitchButton(),
                   ],
                 ),
               ),
               Expanded(
-                flex: 3,
+                flex: isEmptyOutcome ? 6 : 3,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: buildWeightField(),
                 ),
               ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: buildLevelField(),
+              if (!isEmptyOutcome)
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: buildLevelField(),
+                  ),
                 ),
-              ),
               buildDeleteButton(),
             ],
           );

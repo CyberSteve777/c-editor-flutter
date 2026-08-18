@@ -18,15 +18,32 @@ Widget _localizedApp(Widget home) {
 
 void main() {
   test('regular grid item assets omit the steam smoke manhole', () {
-    final raw = jsonDecode(
-      File('assets/resources/GridItems.json').readAsStringSync(),
-    ) as List<dynamic>;
+    final raw =
+        jsonDecode(File('assets/resources/GridItems.json').readAsStringSync())
+            as List<dynamic>;
     final typeNames = raw
         .map((item) => (item as Map<String, dynamic>)['typeName'])
         .toSet();
 
     expect(typeNames, isNot(contains('SmokeManhole')));
     expect(typeNames, isNot(contains('SteamManhole')));
+  });
+
+  test('Zomboss speaker follows the weapon stand in regular grid items', () {
+    final raw =
+        jsonDecode(File('assets/resources/GridItems.json').readAsStringSync())
+            as List<dynamic>;
+    final items = raw.cast<Map<String, dynamic>>();
+    final armrackIndex = items.indexWhere(
+      (item) => item['typeName'] == 'armrack',
+    );
+    final speakerIndex = items.indexWhere(
+      (item) => item['typeName'] == 'speaker_zomboss',
+    );
+
+    expect(speakerIndex, armrackIndex + 1);
+    expect(items[speakerIndex]['category'], 'scene');
+    expect(items[speakerIndex]['icon'], 'speaker_zomboss.webp');
   });
 
   for (final typeName in const [
@@ -61,10 +78,7 @@ void main() {
 
       await tester.tap(find.text('选择'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('复兴圆环需要搭配「复兴时代模块」才能正常生效。是否添加？'),
-        findsOneWidget,
-      );
+      expect(find.text('复兴圆环需要搭配「复兴时代模块」才能正常生效。是否添加？'), findsOneWidget);
 
       await tester.tap(find.text('添加'));
       await tester.pumpAndSettle();

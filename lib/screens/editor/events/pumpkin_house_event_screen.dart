@@ -7,7 +7,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
-const _pumpkinHouseAsset = 'assets/images/griditems/pumpkin_house.png';
+const _pumpkinHouseAsset = 'assets/images/griditems/pumpkin_house.webp';
 const _pumpkinHouseType = 'pumpkin_house';
 
 /// Pumpkin house wave event editor (`PumpkinHouseActionProps`).

@@ -282,33 +282,33 @@ void main() {
     expect(GlacierModulePresets.matches(_glacierData(level), rift), isTrue);
   });
 
-  testWidgets('Beplanted shows its warning and hides Ice Chunk shortcut', (
-    tester,
-  ) async {
-    final level = PvzLevelFile(
-      objects: [
-        _levelDefinition(),
-        _battle(GlacierModulePresets.plantPuzzleVariation),
-        _intro(),
-      ],
-    );
+  testWidgets(
+    'Beplanted hides Ice Chunk shortcut and leaves warning to settings',
+    (tester) async {
+      final level = PvzLevelFile(
+        objects: [
+          _levelDefinition(),
+          _battle(GlacierModulePresets.plantPuzzleVariation),
+          _intro(),
+        ],
+      );
 
-    await tester.pumpWidget(
-      _localizedApp(
-        ZombossMechBattleTab(
-          levelFile: level,
-          onChanged: () {},
-          onOpenGlacierModule: () {},
+      await tester.pumpWidget(
+        _localizedApp(
+          ZombossMechBattleTab(
+            levelFile: level,
+            onChanged: () {},
+            onOpenGlacierModule: () {},
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const ValueKey('iceAgePlantPuzzleWarning')),
-      findsOneWidget,
-    );
-    expect(find.textContaining('其技能不需要「冰堆模块」'), findsOneWidget);
-    expect(find.text('前往设置冰堆模块'), findsNothing);
-  });
+      expect(
+        find.byKey(const ValueKey('iceAgePlantPuzzleWarning')),
+        findsNothing,
+      );
+      expect(find.text('前往设置冰堆模块'), findsNothing);
+    },
+  );
 }

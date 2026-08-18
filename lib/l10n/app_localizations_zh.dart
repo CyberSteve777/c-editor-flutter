@@ -3012,6 +3012,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieVaseOption => '僵尸罐子 (紫罐)';
 
   @override
+  String get plantVaseOptionDescription => '选择一种植物，将其卡片放入绿色罐子中。';
+
+  @override
+  String get zombieVaseOptionDescription => '选择一种僵尸，将其放入紫色罐子中。';
+
+  @override
+  String get collectableVaseOptionDescription => '选择一种道具，将其放入罐子中。';
+
+  @override
   String get searchZombie => '搜索僵尸';
 
   @override
@@ -4243,6 +4252,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleHelpSeedRainPlantLevels => '植物阶级';
 
   @override
+  String get seedRainAddContentTitle => '添加种子雨内容';
+
+  @override
+  String get seedRainAddPlantDescription => '选择一种或多种植物卡片，使其从天空中掉落。';
+
+  @override
+  String get seedRainAddZombieDescription => '选择一种或多种僵尸卡片，使其从天空中掉落。';
+
+  @override
+  String get seedRainAddPlantFoodDescription => '将能量豆作为一种可能掉落的物品添加。';
+
+  @override
   String get moduleHelpRailcartBody =>
       '在此可以放置矿车与轨道的位置，并设定矿车的款式。点击一次格点进行放置，再次点击进行删除。';
 
@@ -4510,10 +4531,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get roofFlowerPot => '屋顶花盆模块';
 
   @override
-  String get roofFlowerPotColumns => '花盆列数（0–8）';
+  String get roofFlowerPotColumns => '花盆范围设置';
+
+  @override
+  String get roofFlowerPotStartColumn => '起始列 (StartColumn)';
+
+  @override
+  String get roofFlowerPotEndColumn => '终止列 (EndColumn)';
 
   @override
   String get roofFlowerPotPreview => '花盆预览';
+
+  @override
+  String get roofFlowerPotLawnMismatchWarning =>
+      '当前地图类型并非屋顶地图，此模块在游戏中可能无法生效，甚至导致闪退。';
 
   @override
   String get eventConveyorModify => '事件类型：传送带更改';
@@ -5017,7 +5048,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get conveyorBeltHelpPool =>
-      '某种植物出现的概率为这种植物的权重占所有植物权重的比例。可以通过设置两个阈值动态调整植物的权重';
+      '某种植物出现的概率为这种植物的权重占所有植物权重的比例。可以通过设置两个阈值动态调整植物的权重。';
 
   @override
   String get conveyorBeltHelpDropDelay =>
@@ -6858,14 +6889,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get glacierModuleHelpColumnsBody =>
-      '本模块由6组僵尸数据构成，每组数据分别对应一列冰堆，并从离僵王最远的一列开始计数，也就是常规地图最左侧的第1列。每组数据均可单独配置每种僵尸的阶级（最高为4阶）和出现权重。';
+      '本模块由6组内容数据构成，每组数据分别对应一列冰堆，并从离僵王最远的一列开始计数，也就是常规地图最左侧的第1列。点击“添加内容”后，可以选择添加僵尸，或添加“冰堆破碎后不出现僵尸”的空结果。每项内容均可配置出现权重，但只有僵尸内容可以切换僵尸并单独配置阶级（最高为4阶），空结果仅配置权重。';
 
   @override
   String get glacierModuleHelpRequirementsTitle => '温馨提示';
 
   @override
   String get glacierModuleHelpRequirementsBody =>
-      '本模块必须与机甲僵王战模块同时使用，且所选基础僵王机甲必须为“冰河世界僵王 (獠牙征服者)”，否则不会生效。\n此外，不建议在海底世界外观的地图中使用冰河世界僵王与冰堆模块，否则不仅会影响关卡的整体观感，还可能造成闪退。';
+      '本模块必须与机甲僵王战模块同时使用，且所选基础僵王机甲必须为“冰河世界僵王 (獠牙征服者)”，否则不会生效。\n此外，不建议在海底世界外观的地图中使用冰河世界僵王与冰堆模块，否则会影响关卡的整体观感。';
 
   @override
   String get glacierModuleHelpPresetsTitle => '预设配置';
@@ -6878,7 +6909,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get glacierModulePresetSectionTitle => '冰堆预设配置';
 
   @override
-  String get glacierModulePresetBlankCustom => '自定义变体（空白预设）';
+  String get glacierModulePresetBlankCustom => '自定义变体 (空白预设)';
 
   @override
   String get glacierModulePresetCustomConfiguration => '自定义配置';
@@ -6927,7 +6958,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get glacierModuleUnderwaterWarning =>
-      '不建议在海底世界外观的地图中使用冰河世界僵王与「冰堆模块」，否则可能影响关卡整体观感，甚至造成闪退。';
+      '不建议在海底世界外观的地图中使用冰河世界僵王与「冰堆模块」，否则会影响关卡整体观感。';
 
   @override
   String glacierModuleColumn(int columnIndex) {
@@ -6939,8 +6970,8 @@ class AppLocalizationsZh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '已配置$count种僵尸',
-      one: '已配置1种僵尸',
+      other: '已配置$count项内容',
+      one: '已配置1项内容',
     );
     return '$_temp0';
   }
@@ -6951,22 +6982,37 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get glacierModuleNoEntries => '本组数据中暂未配置僵尸。';
+  String get glacierModuleNoEntries => '本组数据中暂未配置内容。';
 
   @override
-  String get glacierModuleAddEntry => '添加僵尸';
+  String get glacierModuleAddEntry => '添加内容';
+
+  @override
+  String get glacierModuleAddContentTitle => '添加冰堆内容';
+
+  @override
+  String get glacierModuleAddZombieContent => '添加僵尸';
+
+  @override
+  String get glacierModuleAddZombieDescription => '选择冰堆破碎后可能出现的僵尸。';
+
+  @override
+  String get glacierModuleAddEmptyDescription => '添加一个具有独立权重的结果，使冰堆有一定概率不释放僵尸。';
 
   @override
   String get glacierModuleSelectZombie => '选择僵尸';
 
   @override
-  String get glacierModuleEmptyType => '尚未选择僵尸';
+  String get glacierModuleEmptyType => '冰堆破碎后不出现僵尸';
 
   @override
   String get glacierModuleWeight => '权重';
 
   @override
   String get glacierModuleWeightTooltip => '设置该僵尸在本列冰堆中出现的权重。';
+
+  @override
+  String get glacierModuleEmptyWeightTooltip => '设置“冰堆破碎后不出现僵尸”这一结果的权重。';
 
   @override
   String get glacierModuleLevel => '僵尸等级';
@@ -7509,6 +7555,35 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechOpenGlacierModule => '配置冰堆模块';
+
+  @override
+  String get zombossMechConfigureInitialGridItems => '配置初始障碍物';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPromptTitle => '需要预置音响吗？';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPrompt =>
+      '摇滚年代僵王的第一阶段通常需要场上的专属音响配合其技能，因此官方关卡会在地图指定位置预置音响。\n您即将切换至摇滚年代僵王，是否要按照官方关卡的位置一并预置这些音响？';
+
+  @override
+  String get zombossMechSwitchBaseOnly => '仅切换机甲';
+
+  @override
+  String get zombossMechPreplaceSpeakers => '预置音响';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePromptTitle => '需要删除音响吗？';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePrompt =>
+      '您即将从摇滚年代僵王切换至其他基础机甲，是否删除此前按官方位置预置的专属音响？\n仅会删除这些位置上仍为僵王音响的对象，不会影响后来替换成的其他内容。';
+
+  @override
+  String get zombossMechKeepSpeakers => '保留音响';
+
+  @override
+  String get zombossMechRemoveSpeakers => '删除音响';
 
   @override
   String get zombossMechRobotSpawnRow => '行';

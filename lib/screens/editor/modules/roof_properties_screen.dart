@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/asset_image.dart';
@@ -37,8 +38,9 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
   late String _alias;
   late PvzObject _moduleObj;
   late RoofPropertiesData _data;
-  late TextEditingController _startColController;
-  late TextEditingController _endColController;
+
+  bool get _isRoofLawn =>
+      LevelParser.isRoofLawn(widget.levelDef, widget.levelFile);
 
   @override
   void initState() {
@@ -69,12 +71,6 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
     } catch (_) {
       _data = RoofPropertiesData();
     }
-    _startColController = TextEditingController(
-      text: '${_data.flowerPotStartColumn}',
-    );
-    _endColController = TextEditingController(
-      text: '${_data.flowerPotEndColumn}',
-    );
   }
 
   void _sync() {
@@ -89,13 +85,6 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
     final lo = start < end ? start : end;
     final hi = start > end ? start : end;
     return col >= lo && col <= hi;
-  }
-
-  @override
-  void dispose() {
-    _startColController.dispose();
-    _endColController.dispose();
-    super.dispose();
   }
 
   void _handleAliasChanged(String newAlias) {
@@ -118,11 +107,12 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
       context: context,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(context) * 0.7,
+          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(context),
         ),
         child: AspectRatio(
           aspectRatio: _gridCols / _gridRows,
           child: Container(
+            key: const ValueKey('roofFlowerPotPreviewGrid'),
             decoration: BoxDecoration(
               color: lawnColor,
               borderRadius: BorderRadius.circular(6),
@@ -149,10 +139,10 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
                                     final inset = 5.0;
                                     final side =
                                         (constraints.maxWidth <
-                                                    constraints.maxHeight
-                                                ? constraints.maxWidth
-                                                : constraints.maxHeight) -
-                                            inset * 2;
+                                                constraints.maxHeight
+                                            ? constraints.maxWidth
+                                            : constraints.maxHeight) -
+                                        inset * 2;
                                     return Center(
                                       child: AssetImageWidget(
                                         assetPath: _flowerPotAsset,
@@ -175,6 +165,18 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
         ),
       ),
     );
+  }
+
+  void _setStartColumn(int value) {
+    if (value < 0 || value > _maxColumn) return;
+    _data.flowerPotStartColumn = value;
+    _sync();
+  }
+
+  void _setEndColumn(int value) {
+    if (value < 0 || value > _maxColumn) return;
+    _data.flowerPotEndColumn = value;
+    _sync();
   }
 
   @override
@@ -207,6 +209,48 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
               onChanged: widget.onChanged,
             ),
             const SizedBox(height: 16),
+            if (!_isRoofLawn) ...[
+              Card(
+                key: const ValueKey('roofLawnMismatchWarning'),
+                color: theme.colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        editorErrorIcon,
+                        color: theme.colorScheme.onErrorContainer,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n?.stageMismatch ?? 'Lawn Type Mismatch',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n?.roofFlowerPotLawnMismatchWarning ??
+                                  'The current lawn is not a Roof lawn. This module may not work and could cause the level to crash.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -214,46 +258,32 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n?.roofFlowerPotColumns ??
-                          'Flower pot columns (0–8)',
+                      l10n?.roofFlowerPotColumns ?? 'Flower Pot Range',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    EditorResponsiveFieldRow(
-                      children: [
-                        TextField(
-                          controller: _startColController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: l10n?.startColumn ?? 'Start column',
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (v) {
-                            final n = int.tryParse(v);
-                            if (n != null && n >= 0 && n <= _maxColumn) {
-                              _data.flowerPotStartColumn = n;
-                              _sync();
-                            }
-                          },
-                        ),
-                        TextField(
-                          controller: _endColController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: l10n?.endColumn ?? 'End column',
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (v) {
-                            final n = int.tryParse(v);
-                            if (n != null && n >= 0 && n <= _maxColumn) {
-                              _data.flowerPotEndColumn = n;
-                              _sync();
-                            }
-                          },
-                        ),
-                      ],
+                    _RoofColumnStepper(
+                      key: const ValueKey('roofFlowerPotStartColumnStepper'),
+                      label:
+                          l10n?.roofFlowerPotStartColumn ??
+                          'Start column (StartColumn)',
+                      value: _data.flowerPotStartColumn,
+                      min: 0,
+                      max: _maxColumn,
+                      onChanged: _setStartColumn,
+                    ),
+                    const SizedBox(height: 12),
+                    _RoofColumnStepper(
+                      key: const ValueKey('roofFlowerPotEndColumnStepper'),
+                      label:
+                          l10n?.roofFlowerPotEndColumn ??
+                          'End column (EndColumn)',
+                      value: _data.flowerPotEndColumn,
+                      min: 0,
+                      max: _maxColumn,
+                      onChanged: _setEndColumn,
                     ),
                   ],
                 ),
@@ -281,6 +311,67 @@ class _RoofPropertiesScreenState extends State<RoofPropertiesScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RoofColumnStepper extends StatelessWidget {
+  const _RoofColumnStepper({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.onChanged,
+  });
+
+  final String label;
+  final int value;
+  final int min;
+  final int max;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyLarge,
+            ),
+          ),
+          IconButton(
+            key: const ValueKey('decrease'),
+            icon: const Icon(Icons.remove),
+            onPressed: value > min ? () => onChanged(value - 1) : null,
+          ),
+          SizedBox(
+            width: 32,
+            child: Text(
+              '$value',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          IconButton(
+            key: const ValueKey('increase'),
+            icon: const Icon(Icons.add),
+            onPressed: value < max ? () => onChanged(value + 1) : null,
+          ),
+        ],
       ),
     );
   }

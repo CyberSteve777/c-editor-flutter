@@ -108,7 +108,7 @@ class GridItemRepository {
       return 'assets/images/tunnels/GULLIVERTUNNEL_ORIENTATION_BIG_ON_LEFT.webp';
     }
     if (aliases == 'pumpkin_house') {
-      return 'assets/images/griditems/pumpkin_house.png';
+      return 'assets/images/griditems/pumpkin_house.webp';
     }
     final typeName = aliases == 'gravestone' ? 'gravestone_egypt' : aliases;
     try {

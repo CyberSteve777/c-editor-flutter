@@ -90,22 +90,19 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
           children: [
             Container(
               color: themeColor,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              child: HorizontalTagScroller(
+                onAccentBar: true,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
                 ),
-                child: Row(
-                  children: GridItemCategory.values.map((cat) {
-                    return AccentBarChoiceChip(
-                      label: _categoryLabel(cat, l10n),
-                      selected: _selectedCategory == cat,
-                      onSelected: (_) =>
-                          setState(() => _selectedCategory = cat),
-                    );
-                  }).toList(),
-                ),
+                children: GridItemCategory.values.map((cat) {
+                  return AccentBarChoiceChip(
+                    label: _categoryLabel(cat, l10n),
+                    selected: _selectedCategory == cat,
+                    onSelected: (_) => setState(() => _selectedCategory = cat),
+                  );
+                }).toList(),
               ),
             ),
             Expanded(

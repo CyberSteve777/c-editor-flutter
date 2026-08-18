@@ -518,40 +518,51 @@ class _VaseBreakerTabState extends State<VaseBreakerTab> {
     return parts.isEmpty ? '${vase.count} vase(s)' : parts.join(', ');
   }
 
-  void _showAddVaseDialog() {
+  Future<void> _showAddVaseDialog() async {
     final l10n = AppLocalizations.of(context);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.addVaseTitle ?? 'Add Vase'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(l10n?.plantVaseOption ?? 'Plant Vase'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showPlantPicker();
-              },
-            ),
-            ListTile(
-              title: Text(l10n?.zombieVaseOption ?? 'Zombie Vase'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showZombiePicker();
-              },
-            ),
-            ListTile(
-              title: Text(l10n?.itemLabel ?? 'Item'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showCollectablePicker();
-              },
-            ),
-          ],
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.addVaseTitle ?? 'Add Vase',
+      titleIcon: Icons.inventory_2_outlined,
+      options: [
+        EditorChoiceDialogOption(
+          value: 'plant',
+          icon: Icons.eco_outlined,
+          title: l10n?.plantVaseOption ?? 'Plant Vase',
+          subtitle:
+              l10n?.plantVaseOptionDescription ??
+              'Choose a plant seed packet to place inside a green vase.',
         ),
-      ),
+        EditorChoiceDialogOption(
+          value: 'zombie',
+          icon: Icons.pest_control_outlined,
+          title: l10n?.zombieVaseOption ?? 'Zombie Vase',
+          subtitle:
+              l10n?.zombieVaseOptionDescription ??
+              'Choose a zombie to place inside a purple vase.',
+        ),
+        EditorChoiceDialogOption(
+          value: 'collectable',
+          icon: Icons.card_giftcard_outlined,
+          title: l10n?.itemLabel ?? 'Item',
+          subtitle:
+              l10n?.collectableVaseOptionDescription ??
+              'Choose a collectible item to place inside a vase.',
+        ),
+      ],
     );
+    if (!mounted || choice == null) return;
+    switch (choice) {
+      case 'plant':
+        _showPlantPicker();
+        break;
+      case 'zombie':
+        _showZombiePicker();
+        break;
+      case 'collectable':
+        _showCollectablePicker();
+        break;
+    }
   }
 
   void _showPlantPicker() {

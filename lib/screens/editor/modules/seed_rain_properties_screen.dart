@@ -12,7 +12,11 @@ import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_components.dart'
-    show HelpSectionData, showEditorHelpDialog;
+    show
+        EditorChoiceDialogOption,
+        HelpSectionData,
+        showEditorChoiceDialog,
+        showEditorHelpDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Seed rain properties editor. Ported from Z-Editor-master SeedRainPropertiesEP.kt
@@ -149,28 +153,36 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
   }
 
   Future<void> _showAddDialog(AppLocalizations? l10n) async {
-    final choice = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.addItem ?? 'Add item'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(l10n?.plant ?? 'Plant'),
-              onTap: () => Navigator.pop(ctx, 'plant'),
-            ),
-            ListTile(
-              title: Text(l10n?.zombie ?? 'Zombie'),
-              onTap: () => Navigator.pop(ctx, 'zombie'),
-            ),
-            ListTile(
-              title: Text(l10n?.collectable ?? 'Collectable (Plant Food)'),
-              onTap: () => Navigator.pop(ctx, 'collectable'),
-            ),
-          ],
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.seedRainAddContentTitle ?? 'Add seed-rain content',
+      titleIcon: Icons.cloud_download_outlined,
+      options: [
+        EditorChoiceDialogOption(
+          value: 'plant',
+          icon: Icons.eco_outlined,
+          title: l10n?.plant ?? 'Plant',
+          subtitle:
+              l10n?.seedRainAddPlantDescription ??
+              'Select one or more plant seed packets to fall from the sky.',
         ),
-      ),
+        EditorChoiceDialogOption(
+          value: 'zombie',
+          icon: Icons.pest_control_outlined,
+          title: l10n?.zombie ?? 'Zombie',
+          subtitle:
+              l10n?.seedRainAddZombieDescription ??
+              'Select one or more zombie cards to fall from the sky.',
+        ),
+        EditorChoiceDialogOption(
+          value: 'collectable',
+          icon: Icons.local_florist_outlined,
+          title: l10n?.collectable ?? 'Collectible (Plant Food)',
+          subtitle:
+              l10n?.seedRainAddPlantFoodDescription ??
+              'Add Plant Food as a possible falling item.',
+        ),
+      ],
     );
     if (choice == null || !mounted) return;
     if (choice == 'plant') {

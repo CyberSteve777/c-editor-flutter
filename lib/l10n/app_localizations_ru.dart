@@ -3184,6 +3184,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombieVaseOption => 'Ваза с зомби';
 
   @override
+  String get plantVaseOptionDescription =>
+      'Выберите карточку растения для зелёной вазы.';
+
+  @override
+  String get zombieVaseOptionDescription =>
+      'Выберите зомби для фиолетовой вазы.';
+
+  @override
+  String get collectableVaseOptionDescription =>
+      'Выберите предмет, который будет находиться внутри вазы.';
+
+  @override
   String get searchZombie => 'Поиск зомби';
 
   @override
@@ -4433,6 +4445,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleHelpSeedRainPlantLevels => 'Уровни растений';
 
   @override
+  String get seedRainAddContentTitle => 'Добавить содержимое дождя из семян';
+
+  @override
+  String get seedRainAddPlantDescription =>
+      'Выберите одну или несколько карточек растений, которые будут падать с неба.';
+
+  @override
+  String get seedRainAddZombieDescription =>
+      'Выберите одну или несколько карточек зомби, которые будут падать с неба.';
+
+  @override
+  String get seedRainAddPlantFoodDescription =>
+      'Добавьте подкормку как возможный выпадающий предмет.';
+
+  @override
   String get moduleHelpRailcartBody =>
       'Здесь можно размещать вагонетки и рельсы и выбирать вид вагонетки. Нажмите клетку один раз для размещения и ещё раз для удаления.';
 
@@ -4704,10 +4731,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get roofFlowerPot => 'Цветочный горшок на крыше';
 
   @override
-  String get roofFlowerPotColumns => 'Колонки горшков (0–8)';
+  String get roofFlowerPotColumns => 'Диапазон цветочных горшков';
+
+  @override
+  String get roofFlowerPotStartColumn => 'Начальная колонка (StartColumn)';
+
+  @override
+  String get roofFlowerPotEndColumn => 'Конечная колонка (EndColumn)';
 
   @override
   String get roofFlowerPotPreview => 'Предпросмотр горшков';
+
+  @override
+  String get roofFlowerPotLawnMismatchWarning =>
+      'Текущий газон не является крышей. Модуль может не сработать в игре и даже вызвать сбой уровня.';
 
   @override
   String get eventConveyorModify => 'Событие изменения конвейера';
@@ -7169,7 +7206,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get glacierModuleHelpColumnsBody =>
-      'ZombieSpawnData всегда содержит ровно шесть элементов — по одному на столбец слева направо. В каждом столбце список записей: TypeName (тип зомби), Weight (вес) и Level (уровень 0–4).';
+      'Модуль содержит шесть групп содержимого — по одной для каждого столбца ледяных глыб слева направо. После выбора «Добавить содержимое» можно добавить зомби или пустой результат, при котором после разрушения глыбы зомби не появляется. У каждого элемента есть отдельный вес; только для зомби можно менять тип и задавать уровень от 0 до 4, а у пустого результата настраивается только вес.';
 
   @override
   String get glacierModuleHelpRequirementsTitle => 'Требования';
@@ -7244,7 +7281,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get glacierModuleUnderwaterWarning =>
-      'Не рекомендуется использовать босса Ледникового периода и модуль ледяных глыб на лужайке Подводного мира. Это может испортить внешний вид уровня и вызвать сбой игры.';
+      'Не рекомендуется использовать босса Ледникового периода и модуль ледяных глыб на лужайке Подводного мира. Это может испортить внешний вид уровня.';
 
   @override
   String glacierModuleColumn(int columnIndex) {
@@ -7270,16 +7307,33 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get glacierModuleNoEntries => 'Нет записей зомби для этого столбца.';
+  String get glacierModuleNoEntries =>
+      'Для этого столбца пока не настроено содержимое.';
 
   @override
-  String get glacierModuleAddEntry => 'Добавить зомби';
+  String get glacierModuleAddEntry => 'Добавить содержимое';
+
+  @override
+  String get glacierModuleAddContentTitle =>
+      'Добавить содержимое ледяной глыбы';
+
+  @override
+  String get glacierModuleAddZombieContent => 'Добавить зомби';
+
+  @override
+  String get glacierModuleAddZombieDescription =>
+      'Выберите зомби, который может появиться после разрушения ледяной глыбы.';
+
+  @override
+  String get glacierModuleAddEmptyDescription =>
+      'Добавьте отдельно взвешенный результат, при котором ледяная глыба не выпускает зомби.';
 
   @override
   String get glacierModuleSelectZombie => 'Выбрать зомби';
 
   @override
-  String get glacierModuleEmptyType => 'Зомби не выбран';
+  String get glacierModuleEmptyType =>
+      'После разрушения глыбы зомби не появляется';
 
   @override
   String get glacierModuleWeight => 'Вес';
@@ -7287,6 +7341,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get glacierModuleWeightTooltip =>
       'Относительный вес появления этого зомби в столбце.';
+
+  @override
+  String get glacierModuleEmptyWeightTooltip =>
+      'Вес результата, при котором ледяная глыба не выпускает зомби.';
 
   @override
   String get glacierModuleLevel => 'Уровень зомби';
@@ -7846,6 +7904,37 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get zombossMechOpenGlacierModule =>
       'Перейти к настройкам модуля ледяных глыб';
+
+  @override
+  String get zombossMechConfigureInitialGridItems =>
+      'Настроить начальные объекты сетки';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPromptTitle =>
+      'Разместить динамики заранее?';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPrompt =>
+      'На первой фазе Зомбот Микстейпа обычно использует специальные динамики на поле для применения своих способностей, поэтому на официальных уровнях их заранее размещают в определённых позициях.\nВы собираетесь переключиться на Зомбота Микстейпа. Разместить эти динамики на тех же позициях, что и на официальных уровнях?';
+
+  @override
+  String get zombossMechSwitchBaseOnly => 'Только сменить мех';
+
+  @override
+  String get zombossMechPreplaceSpeakers => 'Разместить динамики';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePromptTitle => 'Удалить динамики?';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePrompt =>
+      'Вы собираетесь переключиться с Зомбота Микстейпа на другой базовый мех. Удалить специальные динамики, ранее размещённые на тех же позициях, что и на официальных уровнях?\nБудут удалены только те объекты в этих позициях, которые всё ещё являются динамиками Зомбосса; всё, чем вы заменили их позднее, останется без изменений.';
+
+  @override
+  String get zombossMechKeepSpeakers => 'Оставить динамики';
+
+  @override
+  String get zombossMechRemoveSpeakers => 'Удалить динамики';
 
   @override
   String get zombossMechRobotSpawnRow => 'Ряд';

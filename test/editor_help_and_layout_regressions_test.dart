@@ -1,4 +1,5 @@
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/json_viewer_screen.dart';
 import 'package:c_editor/screens/editor/events/dino_event_screen.dart';
@@ -7,6 +8,7 @@ import 'package:c_editor/screens/editor/events/spawn_grave_stones_event_screen.d
 import 'package:c_editor/screens/editor/events/storm_event_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/increased_cost_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/roof_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/tunnel_defend_module_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
@@ -23,15 +25,40 @@ Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) {
 }
 
 void main() {
+  test('roof lawn detection recognizes only RoofStageProperties', () {
+    final levelDef = LevelDefinitionData(
+      stageModule: 'RTID(TestStage@CurrentLevel)',
+    );
+    final roofLevel = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['TestStage'],
+          objClass: 'RoofStageProperties',
+          objData: const {},
+        ),
+      ],
+    );
+    final ordinaryLevel = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['TestStage'],
+          objClass: 'StageModuleProperties',
+          objData: const {},
+        ),
+      ],
+    );
+
+    expect(LevelParser.isRoofLawn(levelDef, roofLevel), isTrue);
+    expect(LevelParser.isRoofLawn(levelDef, ordinaryLevel), isFalse);
+  });
+
   test('storm zombies serialize level 0 by default', () {
     expect(StormZombieData(type: 'RTID(zombie@ZombieTypes)').toJson(), {
       'Type': 'RTID(zombie@ZombieTypes)',
       'Level': 0,
     });
     expect(
-      StormZombieData.fromJson({
-        'Type': 'RTID(zombie@ZombieTypes)',
-      }).level,
+      StormZombieData.fromJson({'Type': 'RTID(zombie@ZombieTypes)'}).level,
       0,
     );
   });
@@ -287,12 +314,8 @@ void main() {
     );
     await tester.pump();
 
-    final parameters = find.byKey(
-      const ValueKey('inflationParametersCard'),
-    );
-    final limitation = find.byKey(
-      const ValueKey('inflationLimitationCard'),
-    );
+    final parameters = find.byKey(const ValueKey('inflationParametersCard'));
+    final limitation = find.byKey(const ValueKey('inflationLimitationCard'));
     expect(parameters, findsOneWidget);
     expect(limitation, findsOneWidget);
     expect(
@@ -316,9 +339,7 @@ void main() {
     expect(
       find.descendant(
         of: limitation,
-        matching: find.text(
-          '由于模块本身的问题，目前更改最大增长次数设置暂时无效，游戏只能读取默认值10次。',
-        ),
+        matching: find.text('由于模块本身的问题，目前更改最大增长次数设置暂时无效，游戏只能读取默认值10次。'),
       ),
       findsOneWidget,
     );
@@ -346,10 +367,7 @@ void main() {
     expect(find.text('通货膨胀模块说明'), findsOneWidget);
     expect(find.text('• 简要介绍'), findsOneWidget);
     expect(find.text('• 参数说明'), findsOneWidget);
-    expect(
-      find.textContaining('每次种植植物后，该植物的阳光消耗会增加'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('每次种植植物后，该植物的阳光消耗会增加'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -451,10 +469,7 @@ void main() {
           objClass: 'StormZombieSpawnerProps',
           objData: StormZombieSpawnerPropsData(
             zombies: [
-              StormZombieData(
-                type: 'RTID(zombie@ZombieTypes)',
-                level: 0,
-              ),
+              StormZombieData(type: 'RTID(zombie@ZombieTypes)', level: 0),
             ],
           ).toJson(),
         ),
@@ -569,6 +584,114 @@ void main() {
     expect(tester.getCenter(preview).dx, closeTo(500, 0.5));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'roof pots use steppers, warn on non-roof lawns, and fill narrow previews',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final levelDef = LevelDefinitionData(
+        stageModule: 'RTID(TestStage@CurrentLevel)',
+      );
+      final roofModule = PvzObject(
+        aliases: const ['RoofProps'],
+        objClass: 'RoofProperties',
+        objData: RoofPropertiesData().toJson(),
+      );
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: const ['TestStage'],
+            objClass: 'StageModuleProperties',
+            objData: const {},
+          ),
+          roofModule,
+        ],
+      );
+
+      await tester.pumpWidget(
+        _localizedApp(
+          Theme(
+            data: ThemeData(platform: TargetPlatform.windows),
+            child: RoofPropertiesScreen(
+              rtid: 'RTID(RoofProps@CurrentLevel)',
+              levelFile: level,
+              levelDef: levelDef,
+              onChanged: () {},
+              onBack: () {},
+            ),
+          ),
+          locale: const Locale('zh'),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('roofLawnMismatchWarning')),
+        findsOneWidget,
+      );
+      expect(find.textContaining('当前地图类型并非屋顶地图'), findsOneWidget);
+      final startStepper = find.byKey(
+        const ValueKey('roofFlowerPotStartColumnStepper'),
+      );
+      expect(startStepper, findsOneWidget);
+      expect(
+        find.descendant(of: startStepper, matching: find.byType(TextField)),
+        findsNothing,
+      );
+      await tester.tap(
+        find.descendant(
+          of: startStepper,
+          matching: find.byKey(const ValueKey('increase')),
+        ),
+      );
+      await tester.pump();
+      expect(
+        RoofPropertiesData.fromJson(
+          Map<String, dynamic>.from(roofModule.objData as Map),
+        ).flowerPotStartColumn,
+        1,
+      );
+
+      final preview = find.byKey(const ValueKey('roofFlowerPotPreviewGrid'));
+      expect(tester.getSize(preview).width, greaterThanOrEqualTo(280));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final alias in ['TunnelDefend', 'SouDaCheTunnelDefendDefault']) {
+    testWidgets('$alias preview fills narrow desktop width', (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        _localizedApp(
+          Theme(
+            data: ThemeData(platform: TargetPlatform.windows),
+            child: TunnelDefendModuleScreen(
+              rtid: 'RTID($alias@CurrentLevel)',
+              levelFile: PvzLevelFile(objects: []),
+              onChanged: () {},
+              onBack: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final center = find.byKey(const ValueKey('tunnelLayoutPreviewCenter'));
+      final preview = find
+          .descendant(of: center, matching: find.byType(AspectRatio))
+          .first;
+      expect(tester.getSize(preview).width, greaterThanOrEqualTo(320));
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('tunnel settings fields do not use gray fills', (tester) async {
     await tester.pumpWidget(

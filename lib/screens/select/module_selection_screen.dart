@@ -63,29 +63,26 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
                   onClear: () => setState(() => _searchQuery = ''),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              HorizontalTagScroller(
+                onAccentBar: true,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  children: [
-                    AccentBarChoiceChip(
-                      label: l10n?.stageTypeAll ?? 'All',
-                      selected: _selectedCategory == null,
+                children: [
+                  AccentBarChoiceChip(
+                    label: l10n?.stageTypeAll ?? 'All',
+                    selected: _selectedCategory == null,
+                    onSelected: (_) => setState(() => _selectedCategory = null),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  ),
+                  ...ModuleCategory.values.map((cat) {
+                    return AccentBarChoiceChip(
+                      label: _categoryLabel(cat, l10n),
+                      selected: _selectedCategory == cat,
                       onSelected: (_) =>
-                          setState(() => _selectedCategory = null),
+                          setState(() => _selectedCategory = cat),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                    ),
-                    ...ModuleCategory.values.map((cat) {
-                      return AccentBarChoiceChip(
-                        label: _categoryLabel(cat, l10n),
-                        selected: _selectedCategory == cat,
-                        onSelected: (_) =>
-                            setState(() => _selectedCategory = cat),
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                      );
-                    }),
-                  ],
-                ),
+                    );
+                  }),
+                ],
               ),
             ],
           ),

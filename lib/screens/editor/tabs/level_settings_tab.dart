@@ -75,6 +75,7 @@ class LevelSettingsTab extends StatefulWidget {
     this.missingModuleWarnings,
     this.showGlacierModuleCompatibilityWarning = false,
     this.showGlacierModuleUnderwaterWarning = false,
+    this.showIceAgePlantPuzzleWarning = false,
     required this.onEditBasicInfo,
     required this.onEditModule,
     required this.onRemoveModule,
@@ -90,6 +91,7 @@ class LevelSettingsTab extends StatefulWidget {
   final Map<String, List<String>>? missingModuleWarnings;
   final bool showGlacierModuleCompatibilityWarning;
   final bool showGlacierModuleUnderwaterWarning;
+  final bool showIceAgePlantPuzzleWarning;
   final VoidCallback onEditBasicInfo;
   final ValueChanged<String> onEditModule;
   final ValueChanged<String> onRemoveModule;
@@ -500,6 +502,19 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                 message:
                     l10n?.glacierModuleUnderwaterWarning ??
                     'Avoid using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn. This combination can harm the level appearance and may cause crashes.',
+              ),
+            ],
+
+            if (widget.showIceAgePlantPuzzleWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                key: const ValueKey('iceAgePlantPuzzleWarning'),
+                title:
+                    l10n?.iceAgePlantPuzzleVariationWarningTitle ??
+                    'Beplanted does not need Ice Chunks',
+                message:
+                    l10n?.iceAgePlantPuzzleVariationWarning ??
+                    'The Beplanted variation was designed specifically for the Frostbite Caves Beplanted minigame. Its abilities do not require the Ice Chunk Module.',
               ),
             ],
 

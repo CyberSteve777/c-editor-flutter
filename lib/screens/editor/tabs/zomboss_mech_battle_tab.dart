@@ -4,6 +4,7 @@ import 'package:c_editor/data/glacier_module_presets.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
+import 'package:c_editor/data/zomboss_eighties_speaker_presets.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/resource_names.dart';
@@ -21,11 +22,13 @@ class ZombossMechBattleTab extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     this.onOpenGlacierModule,
+    this.onOpenInitialGridItems,
   });
 
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback? onOpenGlacierModule;
+  final VoidCallback? onOpenInitialGridItems;
 
   @override
   State<ZombossMechBattleTab> createState() => _ZombossMechBattleTabState();
@@ -197,10 +200,94 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
     }
   }
 
-  void _onBaseChanged(String baseId) {
+  Future<bool> _confirmEightiesSpeakerPreset() async {
+    final l10n = AppLocalizations.of(context);
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(
+              l10n?.zombossMechEightiesSpeakerPresetPromptTitle ??
+                  'Pre-place Zomboss speakers?',
+            ),
+            content: Text(
+              l10n?.zombossMechEightiesSpeakerPresetPrompt ??
+                  'The first phase of the Eighties Zomboss normally needs its dedicated speakers on the lawn. Pre-place them at the official level positions?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(
+                  l10n?.zombossMechSwitchBaseOnly ?? 'Switch mech only',
+                ),
+              ),
+              FilledButton(
+                key: const ValueKey('applyEightiesSpeakerPreset'),
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(
+                  l10n?.zombossMechPreplaceSpeakers ?? 'Pre-place speakers',
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<bool> _confirmRemoveEightiesSpeakerPreset() async {
+    final l10n = AppLocalizations.of(context);
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(
+              l10n?.zombossMechEightiesSpeakerRemovePromptTitle ??
+                  'Remove pre-placed speakers?',
+            ),
+            content: Text(
+              l10n?.zombossMechEightiesSpeakerRemovePrompt ??
+                  'You are switching away from the Eighties Zomboss. Remove its previously pre-placed speakers?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n?.zombossMechKeepSpeakers ?? 'Keep speakers'),
+              ),
+              FilledButton(
+                key: const ValueKey('removeEightiesSpeakerPreset'),
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(
+                  l10n?.zombossMechRemoveSpeakers ?? 'Remove speakers',
+                ),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<void> _onBaseChanged(String baseId) async {
     if (baseId == _selectedBaseId) return;
     final base = ZombossMechRepository.getBase(baseId);
     if (base == null || base.variations.isEmpty) return;
+
+    final previousBaseId = _selectedBaseId;
+    final enteringEighties =
+        previousBaseId != ZombossEightiesSpeakerPresets.baseId &&
+        baseId == ZombossEightiesSpeakerPresets.baseId;
+    final leavingEighties =
+        previousBaseId == ZombossEightiesSpeakerPresets.baseId &&
+        baseId != ZombossEightiesSpeakerPresets.baseId;
+    final applyEightiesSpeakers = enteringEighties
+        ? await _confirmEightiesSpeakerPreset()
+        : false;
+    if (!mounted) return;
+    final removeEightiesSpeakers =
+        leavingEighties &&
+            ZombossEightiesSpeakerPresets.hasPresetSpeakers(widget.levelFile)
+        ? await _confirmRemoveEightiesSpeakerPreset()
+        : false;
+    if (!mounted) return;
 
     final catalog = ZombossMechRepository.getCatalog(baseId);
     final keepCustom =
@@ -236,6 +323,11 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
             widget.levelFile,
             GlacierModulePresets.defaultPreset,
           );
+        }
+        if (applyEightiesSpeakers) {
+          ZombossEightiesSpeakerPresets.applyToLevel(widget.levelFile);
+        } else if (removeEightiesSpeakers) {
+          ZombossEightiesSpeakerPresets.removeFromLevel(widget.levelFile);
         }
       },
     );
@@ -314,7 +406,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
       ),
     );
     if (baseId != null && mounted) {
-      _onBaseChanged(baseId);
+      await _onBaseChanged(baseId);
     }
   }
 
@@ -556,18 +648,6 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
             onChanged: _onVariationChanged,
           ),
         ),
-        if (isPlantPuzzleVariation) ...[
-          const SizedBox(height: 12),
-          EditorWarningBanner(
-            key: const ValueKey('iceAgePlantPuzzleWarning'),
-            title:
-                l10n?.iceAgePlantPuzzleVariationWarningTitle ??
-                'Beplanted does not need Ice Chunks',
-            message:
-                l10n?.iceAgePlantPuzzleVariationWarning ??
-                'The Beplanted variation was designed specifically for the Frostbite Caves Beplanted minigame. Its abilities do not require the Ice Chunk Module.',
-          ),
-        ],
         if (_isCustomSelected) ...[
           const SizedBox(height: 12),
           Tooltip(
@@ -655,6 +735,21 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
               icon: const Icon(Icons.ac_unit),
               label: Text(
                 l10n?.zombossMechOpenGlacierModule ?? 'Open glacier module',
+              ),
+            ),
+          ),
+        ],
+        if (_selectedBaseId == ZombossEightiesSpeakerPresets.baseId) ...[
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              key: const ValueKey('openInitialGridItemsFromEighties'),
+              onPressed: widget.onOpenInitialGridItems,
+              icon: const Icon(Icons.grid_view_outlined),
+              label: Text(
+                l10n?.zombossMechConfigureInitialGridItems ??
+                    'Configure preset grid items',
               ),
             ),
           ),

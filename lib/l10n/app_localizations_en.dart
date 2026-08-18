@@ -654,7 +654,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportDisclaimerBody =>
-      'This feature generates level testing mods by injecting level files into the game\'s data packages (SMF/RSB container files). This process directly modifies the game data of Plants vs. Zombies 2.\n\n• Using this feature to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nThe developer hereby explicitly states:\n\n1. This feature is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this feature, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this feature and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
+      'This feature generates level testing mods by injecting level files into the game\'s data packages (SMF/RSB container files). This process directly modifies the game data of Plants vs. Zombies 2.\n\n• Using this feature to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nThe developes hereby explicitly state:\n\n1. This feature is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this feature, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developers assume no direct or indirect liability.\n3. Users should fully understand the associated risks before using this feature and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
 
   @override
   String get exportDisclaimerDoNotShowAgain => 'Do not show by default';
@@ -3196,6 +3196,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieVaseOption => 'Zombie Vase (Purple)';
 
   @override
+  String get plantVaseOptionDescription =>
+      'Choose a plant seed packet to place inside a green vase.';
+
+  @override
+  String get zombieVaseOptionDescription =>
+      'Choose a zombie to place inside a purple vase.';
+
+  @override
+  String get collectableVaseOptionDescription =>
+      'Choose a collectible item to place inside a vase.';
+
+  @override
   String get searchZombie => 'Search zombie';
 
   @override
@@ -4467,6 +4479,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moduleHelpSeedRainPlantLevels => 'Plant tiers';
 
   @override
+  String get seedRainAddContentTitle => 'Add rain content';
+
+  @override
+  String get seedRainAddPlantDescription =>
+      'Select one or more plant seed packets to fall from the sky.';
+
+  @override
+  String get seedRainAddZombieDescription =>
+      'Select one or more zombie cards to fall from the sky.';
+
+  @override
+  String get seedRainAddPlantFoodDescription =>
+      'Add Plant Food as a possible falling item.';
+
+  @override
   String get moduleHelpRailcartBody =>
       'Configure the positions of minecarts and rails and select the minecart style. Tap a tile once to place an item, and tap it again to remove it.';
 
@@ -4741,10 +4768,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roofFlowerPot => 'Roof Pots module';
 
   @override
-  String get roofFlowerPotColumns => 'Flower pot columns (0–8)';
+  String get roofFlowerPotColumns => 'Flower Pot Range';
+
+  @override
+  String get roofFlowerPotStartColumn => 'Start column (StartColumn)';
+
+  @override
+  String get roofFlowerPotEndColumn => 'End column (EndColumn)';
 
   @override
   String get roofFlowerPotPreview => 'Flower pot preview';
+
+  @override
+  String get roofFlowerPotLawnMismatchWarning =>
+      'The current lawn is not a Roof lawn. This module may not work in-game and could cause the level to crash.';
 
   @override
   String get eventConveyorModify => 'Event: Conveyor Change';
@@ -5647,10 +5684,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Zombots built and piloted by Dr. Zomboss himself, commonly encountered as the ultimate challenge of a world or game mode. Changing the base mech will also change the available variations below.';
 
   @override
-  String get zombossMechSelectBaseTitle => 'Select base Zomboss Mech';
+  String get zombossMechSelectBaseTitle => 'Select base Zomboss mech';
 
   @override
-  String get zombossMechChangeBase => 'Change base Zomboss Mech';
+  String get zombossMechChangeBase => 'Change base Zomboss mech';
 
   @override
   String get zombossMechUsedProperties => 'Used properties';
@@ -6759,7 +6796,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get witchModuleHelpParamsBody =>
-      'By default, this module uses the values defined in the game files. Alternatively, you may enable custom local parameters and modify the interval between witch appearances';
+      'By default, this module uses the values defined in the game files. Alternatively, you may enable custom local parameters and modify the interval between witch appearances.';
 
   @override
   String get witchModuleSpawnInterval =>
@@ -7216,14 +7253,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glacierModuleHelpColumnsBody =>
-      'This module consists of 6 groups of zombie data, with each group corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. Each data group can independently configure the level of each zombie type (up to Level 4) and its spawn weight.';
+      'This module consists of 6 content groups, with each group corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. After selecting Add content, you can add either a zombie or the empty outcome \"No zombie appears when the Ice Chunk breaks.\" Every item has its own appearance weight; only zombie items can switch zombie type and set a level of up to Level 4, while the empty outcome only has a weight.';
 
   @override
   String get glacierModuleHelpRequirementsTitle => 'Notes';
 
   @override
   String get glacierModuleHelpRequirementsBody =>
-      'This module must be used together with the Zomboss Mech Battle module, and the selected base Zomboss mech must be \"Frostbite Caves Zomboss (Zombot Tuskmaster 10,000 BC)\"; otherwise, it will have no effect.\nIn addition, using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn is not recommended, as it may negatively affect the overall appearance of the level and may also cause crashes.';
+      'This module must be used together with the Zomboss Mech Battle module, and the selected base Zomboss mech must be \"Frostbite Caves Zomboss (Zombot Tuskmaster 10,000 BC)\"; otherwise, it will have no effect.\nIn addition, using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn is not recommended, as it negatively affects the overall appearance of the level.';
 
   @override
   String get glacierModuleHelpPresetsTitle => 'Preset configurations';
@@ -7290,7 +7327,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glacierModuleUnderwaterWarning =>
-      'Avoid using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn. This combination can harm the level appearance and may cause crashes.';
+      'Avoid using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn. This combination can harm the level appearance.';
 
   @override
   String glacierModuleColumn(int columnIndex) {
@@ -7302,8 +7339,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count zombie types configured',
-      one: '1 zombie type configured',
+      other: '$count content items configured',
+      one: '1 content item configured',
     );
     return '$_temp0';
   }
@@ -7315,16 +7352,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glacierModuleNoEntries =>
-      'No zombies have been configured in this group yet.';
+      'No content has been configured in this group yet.';
 
   @override
-  String get glacierModuleAddEntry => 'Add Zombie';
+  String get glacierModuleAddEntry => 'Add content';
+
+  @override
+  String get glacierModuleAddContentTitle => 'Add Ice Chunk content';
+
+  @override
+  String get glacierModuleAddZombieContent => 'Add zombie';
+
+  @override
+  String get glacierModuleAddZombieDescription =>
+      'Choose a zombie that may appear when the Ice Chunk breaks.';
+
+  @override
+  String get glacierModuleAddEmptyDescription =>
+      'Add a separately weighted outcome in which the Ice Chunk releases no zombie.';
 
   @override
   String get glacierModuleSelectZombie => 'Select Zombie';
 
   @override
-  String get glacierModuleEmptyType => 'No Zombie Selected';
+  String get glacierModuleEmptyType =>
+      'No zombie appears when the Ice Chunk breaks';
 
   @override
   String get glacierModuleWeight => 'Weight';
@@ -7332,6 +7384,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get glacierModuleWeightTooltip =>
       'Sets the weight of this zombie appearing in Ice Chunks in this column.';
+
+  @override
+  String get glacierModuleEmptyWeightTooltip =>
+      'Sets the weight of the outcome in which the Ice Chunk releases no zombie.';
 
   @override
   String get glacierModuleLevel => 'Zombie level';
@@ -7891,6 +7947,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechOpenGlacierModule => 'Go to Ice Chunk Module settings';
+
+  @override
+  String get zombossMechConfigureInitialGridItems =>
+      'Configure preset grid items';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPromptTitle =>
+      'Pre-place the Zomboss\' speakers?';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPrompt =>
+      'The first phase of the Neon Mixtape Tour Zomboss usually relies on dedicated speakers on the lawn to support its abilities, so official levels pre-place speakers at specific positions on the lawn.\nYou are about to switch to the Neon Mixtape Tour Zomboss. Would you like to place these speakers at the same positions used in the official levels?';
+
+  @override
+  String get zombossMechSwitchBaseOnly => 'Switch mech only';
+
+  @override
+  String get zombossMechPreplaceSpeakers => 'Pre-place speakers';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePromptTitle =>
+      'Remove the Zomboss\' speakers?';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePrompt =>
+      'You are about to switch from the Neon Mixtape Tour Zomboss to another base mech. Would you like to remove the dedicated speakers that were previously placed at the official positions? \nOnly speakers that are still Zomboss speakers at those positions will be removed; anything you later replaced them with will be left unchanged.';
+
+  @override
+  String get zombossMechKeepSpeakers => 'Keep speakers';
+
+  @override
+  String get zombossMechRemoveSpeakers => 'Remove speakers';
 
   @override
   String get zombossMechRobotSpawnRow => 'Row';

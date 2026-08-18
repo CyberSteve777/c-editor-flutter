@@ -178,19 +178,17 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
                   onClear: () => _setSearchQuery(''),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              HorizontalTagScroller(
+                onAccentBar: true,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  children: _typeTabs.map((type) {
-                    return AccentBarChoiceChip(
-                      label: _typeLabel(type, l10n),
-                      selected: _selectedType == type,
-                      onSelected: (_) => _setType(type),
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                    );
-                  }).toList(),
-                ),
+                children: _typeTabs.map((type) {
+                  return AccentBarChoiceChip(
+                    label: _typeLabel(type, l10n),
+                    selected: _selectedType == type,
+                    onSelected: (_) => _setType(type),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  );
+                }).toList(),
               ),
             ],
           ),

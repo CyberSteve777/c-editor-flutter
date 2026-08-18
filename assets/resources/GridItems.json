@@ -20,6 +20,7 @@
       }
     }
   },
+  { "typeName": "speaker_zomboss", "category": "scene", "icon": "speaker_zomboss.webp" },
   { "typeName": "heian_box_sun", "category": "scene", "icon": "heian_box_sun.webp" },
   { "typeName": "heian_box_plantfood", "category": "scene", "icon": "heian_box_plantfood.webp" },
   { "typeName": "heian_box_levelup", "category": "scene", "icon": "heian_box_levelup.webp" },

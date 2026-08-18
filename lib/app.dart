@@ -204,12 +204,16 @@ class _ZEditorAppState extends State<ZEditorApp> {
         return LevelListScreen(
           returnToLevelPath: nav.lastOpenedLevelPath,
           returnToScrollOffset: nav.levelListScrollOffset,
+          returnToViewMode: nav.levelListFavoritesView
+              ? LevelViewMode.favorites
+              : LevelViewMode.all,
           showUploadAfterLevelReturn: nav.showUploadAfterLevelReturn,
-          onLevelClick: (fileName, filePath, scrollOffset) {
+          onLevelClick: (fileName, filePath, scrollOffset, viewMode) {
             context.read<AppNavigationCubit>().openLevel(
               fileName,
               filePath,
               levelListScrollOffset: scrollOffset,
+              levelListFavoritesView: viewMode == LevelViewMode.favorites,
             );
           },
           onAboutClick: () => context.read<AppNavigationCubit>().openAbout(),

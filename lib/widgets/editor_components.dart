@@ -684,6 +684,126 @@ abstract class AccentBarTabBarStyle {
   }
 }
 
+/// Horizontally scrollable tag/filter row with an overflow affordance.
+///
+/// On narrow layouts the scrollbar thumb remains visible whenever the tags do
+/// not fit, so touch users can discover the remaining options. The caller's
+/// bottom padding is used as the scrollbar lane, keeping the thumb clear of
+/// chip contents.
+class HorizontalTagScroller extends StatefulWidget {
+  const HorizontalTagScroller({
+    super.key,
+    required this.children,
+    this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    this.onAccentBar = false,
+    this.narrowWidth = 720,
+  });
+
+  final List<Widget> children;
+  final EdgeInsetsGeometry padding;
+  final bool onAccentBar;
+  final double narrowWidth;
+
+  @override
+  State<HorizontalTagScroller> createState() => _HorizontalTagScrollerState();
+}
+
+class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
+  late final ScrollController _scrollController;
+  bool _hasOverflow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void didUpdateWidget(covariant HorizontalTagScroller oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scheduleOverflowCheck();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scheduleOverflowCheck() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final hasOverflow =
+          _scrollController.position.maxScrollExtent >
+          _scrollController.position.minScrollExtent;
+      if (hasOverflow != _hasOverflow) {
+        setState(() => _hasOverflow = hasOverflow);
+      }
+    });
+  }
+
+  void _onPointerScroll(PointerScrollEvent event) {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    final delta = event.scrollDelta.dx != 0
+        ? event.scrollDelta.dx
+        : event.scrollDelta.dy;
+    final target = (_scrollController.offset + delta).clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    if (target != _scrollController.offset) {
+      _scrollController.jumpTo(target);
+    }
+  }
+
+  ScrollbarThemeData _scrollbarTheme(BuildContext context) {
+    final color = widget.onAccentBar
+        ? Colors.white.withValues(alpha: 0.78)
+        : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7);
+    return ScrollbarThemeData(
+      thumbColor: WidgetStateProperty.all(color),
+      trackColor: WidgetStateProperty.all(Colors.transparent),
+      trackBorderColor: WidgetStateProperty.all(Colors.transparent),
+      thickness: WidgetStateProperty.all(4),
+      radius: const Radius.circular(4),
+      crossAxisMargin: 2,
+      mainAxisMargin: 8,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _scheduleOverflowCheck();
+    final keepThumbVisible =
+        _hasOverflow && MediaQuery.sizeOf(context).width < widget.narrowWidth;
+
+    return ScrollbarTheme(
+      data: _scrollbarTheme(context),
+      child: Scrollbar(
+        key: const ValueKey('horizontalTagScrollerScrollbar'),
+        controller: _scrollController,
+        thumbVisibility: keepThumbVisible,
+        interactive: true,
+        scrollbarOrientation: ScrollbarOrientation.bottom,
+        child: Listener(
+          onPointerSignal: (event) {
+            if (event is PointerScrollEvent) _onPointerScroll(event);
+          },
+          child: ScrollableWithMouseDrag(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              padding: widget.padding,
+              child: Row(children: widget.children),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Scrollable filter tab row for saturated accent headers.
 /// Matches accent [TabBar] underline selection. On desktop, shows a horizontal
 /// scrollbar below. Vertical wheel / trackpad scroll moves the row horizontally.
@@ -708,7 +828,9 @@ class AccentBarFilterTabRow extends StatefulWidget {
 }
 
 class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
-  static const double _scrollbarUnderlineGap = 6;
+  // The scrollbar is 6 px high. Four additional pixels keep it visually
+  // separate from the selected tab's 3 px underline.
+  static const double _scrollbarUnderlineGap = 10;
 
   late final ScrollController _scrollController;
 
@@ -780,6 +902,9 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
                     ),
                   ),
                   Container(
+                    key: selected
+                        ? const ValueKey('accentBarFilterSelectedIndicator')
+                        : null,
                     height: 3,
                     color: selected ? tabColors.indicator : Colors.transparent,
                   ),
@@ -868,6 +993,7 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
       child: ScrollbarTheme(
         data: _desktopScrollbarTheme(),
         child: Scrollbar(
+          key: const ValueKey('accentBarFilterScrollbar'),
           controller: _scrollController,
           thumbVisibility: true,
           interactive: true,
@@ -1057,6 +1183,139 @@ class EventChipWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A rich, reusable choice shown in editor add-content dialogs.
+class EditorChoiceDialogOption<T> {
+  const EditorChoiceDialogOption({
+    required this.value,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final T value;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+}
+
+/// Shows add-content choices as descriptive cards instead of plain text rows.
+Future<T?> showEditorChoiceDialog<T>(
+  BuildContext context, {
+  required String title,
+  required List<EditorChoiceDialogOption<T>> options,
+  IconData titleIcon = Icons.add_circle_outline,
+}) {
+  return showDialog<T>(
+    context: context,
+    builder: (ctx) {
+      final theme = Theme.of(ctx);
+      final colors = theme.colorScheme;
+      final l10n = AppLocalizations.of(ctx);
+      return AlertDialog(
+        title: Row(
+          children: [
+            Icon(titleIcon, color: colors.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 440),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final option in options)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Material(
+                      key: ValueKey('editorChoiceOption_${option.value}'),
+                      color: colors.surfaceContainerHighest.withValues(
+                        alpha: 0.65,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(
+                          color: colors.outlineVariant.withValues(alpha: 0.7),
+                        ),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () => Navigator.pop(ctx, option.value),
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: colors.primaryContainer,
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Icon(
+                                  option.icon,
+                                  color: colors.onPrimaryContainer,
+                                  size: 27,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      option.title,
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      option.subtitle,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: colors.onSurfaceVariant,
+                                            height: 1.3,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.chevron_right,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 /// Help dialog for editor screens.
@@ -1955,8 +2214,20 @@ Widget scaleTableForDesktop({
   double desktopScale = 0.6,
 }) {
   if (!isDesktopPlatform(context)) return child;
-  return Center(
-    child: FractionallySizedBox(widthFactor: desktopScale, child: child),
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final viewportWidth = MediaQuery.sizeOf(context).width;
+      final availableWidth = constraints.maxWidth;
+      final useFullWidth =
+          viewportWidth < 720 ||
+          (availableWidth.isFinite && availableWidth < 720);
+      return Center(
+        child: FractionallySizedBox(
+          widthFactor: useFullWidth ? 1 : desktopScale,
+          child: child,
+        ),
+      );
+    },
   );
 }
 

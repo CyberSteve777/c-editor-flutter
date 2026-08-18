@@ -413,19 +413,16 @@ class _StageResourceGroupImportScreenState
             ),
           ),
           if (isFromStage)
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Row(
-                children: _typeTabs.map((type) {
-                  return AccentBarChoiceChip(
-                    label: _typeLabel(type, l10n),
-                    selected: _selectedType == type,
-                    onSelected: (_) => _setType(type),
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                  );
-                }).toList(),
-              ),
+            HorizontalTagScroller(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              children: _typeTabs.map((type) {
+                return AccentBarChoiceChip(
+                  label: _typeLabel(type, l10n),
+                  selected: _selectedType == type,
+                  onSelected: (_) => _setType(type),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                );
+              }).toList(),
             ),
           Expanded(
             child: isFromStage

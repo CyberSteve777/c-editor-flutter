@@ -13,12 +13,14 @@ void main() {
       'level.json',
       r'C:\levels\world\level.json',
       levelListScrollOffset: 347.5,
+      levelListFavoritesView: true,
     );
     navigation.backToLevelList();
 
     expect(navigation.state.lastOpenedLevelPath, r'C:\levels\world\level.json');
     expect(navigation.state.screen, AppScreen.levelList);
     expect(navigation.state.levelListScrollOffset, 347.5);
+    expect(navigation.state.levelListFavoritesView, isTrue);
     expect(navigation.state.showUploadAfterLevelReturn, isTrue);
 
     navigation.openAbout();
@@ -29,6 +31,7 @@ void main() {
     addTearDown(restartedNavigation.close);
     expect(restartedNavigation.state.lastOpenedLevelPath, isEmpty);
     expect(restartedNavigation.state.levelListScrollOffset, 0);
+    expect(restartedNavigation.state.levelListFavoritesView, isFalse);
     expect(restartedNavigation.state.showUploadAfterLevelReturn, isFalse);
   });
 

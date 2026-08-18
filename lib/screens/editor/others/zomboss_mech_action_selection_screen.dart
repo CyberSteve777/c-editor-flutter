@@ -395,25 +395,22 @@ class _ZombossMechActionSelectionScreenState
           Column(
             children: [
               if (!widget.retreatOnly)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+                HorizontalTagScroller(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
                   ),
-                  child: Row(
-                    children: [
-                      for (final cat in _categories)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            label: Text(_categoryLabel(context, cat)),
-                            selected: _category == cat,
-                            onSelected: (_) => _setCategory(cat),
-                          ),
+                  children: [
+                    for (final cat in _categories)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: Text(_categoryLabel(context, cat)),
+                          selected: _category == cat,
+                          onSelected: (_) => _setCategory(cat),
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),

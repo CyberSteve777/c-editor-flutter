@@ -144,6 +144,7 @@ class LevelListScreen extends StatefulWidget {
     super.key,
     this.returnToLevelPath = '',
     this.returnToScrollOffset = 0,
+    this.returnToViewMode = LevelViewMode.all,
     this.showUploadAfterLevelReturn = false,
     required this.onLevelClick,
     required this.onAboutClick,
@@ -157,8 +158,14 @@ class LevelListScreen extends StatefulWidget {
   /// fresh app launch always starts at the library root.
   final String returnToLevelPath;
   final double returnToScrollOffset;
+  final LevelViewMode returnToViewMode;
   final bool showUploadAfterLevelReturn;
-  final void Function(String fileName, String filePath, double scrollOffset)
+  final void Function(
+    String fileName,
+    String filePath,
+    double scrollOffset,
+    LevelViewMode viewMode,
+  )
   onLevelClick;
   final VoidCallback onAboutClick;
   final VoidCallback onPluginsClick;
@@ -268,6 +275,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
   @override
   void initState() {
     super.initState();
+    _viewMode = widget.returnToViewMode;
     final returnPath = widget.returnToLevelPath.trim();
     final returnOffset = returnPath.isEmpty
         ? 0.0
@@ -296,7 +304,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       _pathStack = levelListPathStackFor(
         rootPath: webPath,
         rootName: libraryLabel,
-        levelPath: _pendingReturnLevelPath,
+        levelPath: _returnLevelPathForDirectory,
       );
       return;
     }
@@ -309,9 +317,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
     _pathStack = levelListPathStackFor(
       rootPath: path,
       rootName: rootName.isEmpty ? 'Root' : rootName,
-      levelPath: _pendingReturnLevelPath,
+      levelPath: _returnLevelPathForDirectory,
     );
   }
+
+  String? get _returnLevelPathForDirectory =>
+      _viewMode == LevelViewMode.favorites ? null : _pendingReturnLevelPath;
 
   @override
   void dispose() {
@@ -371,7 +382,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         _pathStack = levelListPathStackFor(
           rootPath: webPath,
           rootName: libraryLabel,
-          levelPath: _pendingReturnLevelPath,
+          levelPath: _returnLevelPathForDirectory,
         );
       });
       _loadCurrentDirectory();
@@ -387,7 +398,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         _pathStack = levelListPathStackFor(
           rootPath: libraryPath,
           rootName: rootName.isEmpty ? 'Root' : rootName,
-          levelPath: _pendingReturnLevelPath,
+          levelPath: _returnLevelPathForDirectory,
         );
       });
       _loadCurrentDirectory();
@@ -988,8 +999,12 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   void _restorePendingLevelPosition(String activePath) {
     final targetPath = _pendingReturnLevelPath;
-    if (targetPath == null ||
-        !_sameLevelListPath(_levelListParentPath(targetPath), activePath)) {
+    if (targetPath == null) return;
+    if (_viewMode == LevelViewMode.favorites) {
+      _pendingReturnLevelPath = null;
+      return;
+    }
+    if (!_sameLevelListPath(_levelListParentPath(targetPath), activePath)) {
       return;
     }
 
@@ -1940,6 +1955,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                           convertedName,
                                                           convertedPath,
                                                           returnScrollOffset,
+                                                          _viewMode,
                                                         );
                                                       });
                                                 }
@@ -1959,6 +1975,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                           item.name,
                                                           item.path,
                                                           returnScrollOffset,
+                                                          _viewMode,
                                                         );
                                                       });
                                                 }

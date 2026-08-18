@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
+import 'package:c_editor/data/glacier_module_presets.dart';
+import 'package:c_editor/data/zomboss_eighties_speaker_presets.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/mold_colony_module_utils.dart';
@@ -439,6 +441,26 @@ class _EditorScreenState extends State<EditorScreen> {
     return hasGlacierModule && LevelParser.isDeepSeaLawnFromFile(file);
   }
 
+  bool _showIceAgePlantPuzzleWarning() {
+    final file = _ec.state.levelFile;
+    if (file == null) return false;
+    final hasGlacierModule =
+        _levelModuleObjClasses().contains('GlacierModuleProperties') ||
+        file.objects.any((o) => o.objClass == 'GlacierModuleProperties');
+    if (!hasGlacierModule) return false;
+
+    final battle =
+        file.objects.firstWhereOrNull(
+          (o) => o.objClass == 'ZombossBattleModuleProperties',
+        ) ??
+        _ec.state.parsedData?.objectMap.values.firstWhereOrNull(
+          (o) => o.objClass == 'ZombossBattleModuleProperties',
+        );
+    if (battle?.objData is! Map) return false;
+    final variation = (battle!.objData as Map)['ZombossMechType'] as String?;
+    return GlacierModulePresets.isPlantPuzzleVariation(variation);
+  }
+
   void _openGlacierModuleSettings() {
     final levelFile = _ec.state.levelFile;
     final parsed = _ec.state.parsedData;
@@ -496,6 +518,34 @@ class _EditorScreenState extends State<EditorScreen> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  void _openInitialGridItemSettings() {
+    final levelFile = _ec.state.levelFile;
+    if (levelFile == null) return;
+
+    final existing = ZombossEightiesSpeakerPresets.findModule(levelFile);
+    final module = ZombossEightiesSpeakerPresets.ensureModule(levelFile);
+    if (existing == null) {
+      _markDirty();
+      _ec.recalculateTabs();
+    }
+    if (!mounted) return;
+    final rtid = ZombossEightiesSpeakerPresets.moduleRtid(module);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InitialGridItemEntryScreen(
+          rtid: rtid,
+          levelFile: levelFile,
+          onChanged: _markDirty,
+          onBack: () => Navigator.pop(context),
+          onAddModule: (objClass) =>
+              _addModule(ModuleRegistry.getMetadata(objClass)),
         ),
       ),
     );
@@ -3704,6 +3754,8 @@ class _EditorScreenState extends State<EditorScreen> {
                                                 _showGlacierModuleCompatibilityWarning(),
                                             showGlacierModuleUnderwaterWarning:
                                                 _showGlacierModuleUnderwaterWarning(),
+                                            showIceAgePlantPuzzleWarning:
+                                                _showIceAgePlantPuzzleWarning(),
                                             onEditBasicInfo:
                                                 _handleEditBasicInfo,
                                             onEditModule: _handleEditModule,
@@ -3769,6 +3821,8 @@ class _EditorScreenState extends State<EditorScreen> {
                                             onChanged: _markDirty,
                                             onOpenGlacierModule:
                                                 _openGlacierModuleSettings,
+                                            onOpenInitialGridItems:
+                                                _openInitialGridItemSettings,
                                           );
                                         case EditorTabType.zombossBattle:
                                           return ZombossBattleTab(
