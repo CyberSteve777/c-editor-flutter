@@ -996,59 +996,67 @@ class _ExportScreenState extends State<ExportScreen> {
           const SizedBox(height: 16),
           const Center(child: CircularProgressIndicator()),
         ],
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_currentStep == ExportStep.selectingArchive &&
-                    _externalDynamicDownloadAvailable)
-                  TextButton.icon(
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  if (_currentStep == ExportStep.selectingArchive &&
+                      _externalDynamicDownloadAvailable)
+                    TextButton.icon(
+                      key: const ValueKey('exportDownloadPackageButton'),
+                      onPressed: _isScanning
+                          ? null
+                          : () => _runExternalDynamicDownload(
+                              skipInitialPrompt: true,
+                            ),
+                      icon: const Icon(Icons.cloud_download_outlined),
+                      label: Text(l10n.exportDownloadExternalDynamic),
+                    ),
+                  TextButton(
+                    key: const ValueKey('exportProceedButton'),
                     onPressed: _isScanning
                         ? null
-                        : () => _runExternalDynamicDownload(
-                            skipInitialPrompt: true,
-                          ),
-                    icon: const Icon(Icons.cloud_download_outlined),
-                    label: Text(l10n.exportDownloadExternalDynamic),
-                  ),
-                TextButton(
-                  onPressed: _isScanning
-                      ? null
-                      : () {
-                          if (_noFilesFound) {
-                            Navigator.of(context).pop();
-                          } else {
-                            if (_currentStep == ExportStep.selectingArchive &&
-                                _selectedArchivePath != null) {
-                              _showBackupRecommendation();
-                            } else if (_currentStep ==
-                                    ExportStep.selectingLevels &&
-                                _selectedLevelPaths.isNotEmpty) {
-                              _validateAndFinishExport();
+                        : () {
+                            if (_noFilesFound) {
+                              Navigator.of(context).pop();
+                            } else {
+                              if (_currentStep == ExportStep.selectingArchive &&
+                                  _selectedArchivePath != null) {
+                                _showBackupRecommendation();
+                              } else if (_currentStep ==
+                                      ExportStep.selectingLevels &&
+                                  _selectedLevelPaths.isNotEmpty) {
+                                _validateAndFinishExport();
+                              }
                             }
-                          }
-                        },
-                  child: Text(
-                    _noFilesFound ? l10n.close : l10n.proceed,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: _isScanning
-                          ? null
-                          : ((_currentStep == ExportStep.selectingArchive &&
-                                        _selectedArchivePath != null) ||
-                                    (_currentStep ==
-                                            ExportStep.selectingLevels &&
-                                        _selectedLevelPaths.isNotEmpty)
-                                ? Colors.green
-                                : theme.colorScheme.onSurfaceVariant),
+                          },
+                    child: Text(
+                      _noFilesFound ? l10n.close : l10n.proceed,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: _isScanning
+                            ? null
+                            : ((_currentStep == ExportStep.selectingArchive &&
+                                          _selectedArchivePath != null) ||
+                                      (_currentStep ==
+                                              ExportStep.selectingLevels &&
+                                          _selectedLevelPaths.isNotEmpty)
+                                  ? Colors.green
+                                  : theme.colorScheme.onSurfaceVariant),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -1296,36 +1304,84 @@ class _ExportScreenState extends State<ExportScreen> {
                       final worldInfo = WorldRepository.findByCodename(
                         assignment.world,
                       );
+                      final destination =
+                          '→ ${worldInfo?.nameGetter(l10n) ?? assignment.world} ${l10n.exportLevelShort(assignment.level)}';
+                      Widget buildWorldIcon() => ClipOval(
+                        child: AssetImageWidget(
+                          assetPath: worldInfo!.getIconPath(),
+                          width: 24,
+                          height: 24,
+                        ),
+                      );
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            if (worldInfo != null) ...[
-                              ClipOval(
-                                child: AssetImageWidget(
-                                  assetPath: worldInfo.getIconPath(),
-                                  width: 24,
-                                  height: 24,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth < 420) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      if (worldInfo != null) ...[
+                                        buildWorldIcon(),
+                                        const SizedBox(width: 8),
+                                      ],
+                                      Expanded(
+                                        child: Text(
+                                          _exportLeafName(path),
+                                          style: const TextStyle(fontSize: 13),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: worldInfo == null ? 0 : 32,
+                                    ),
+                                    child: Text(
+                                      destination,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+
+                            return Row(
+                              children: [
+                                if (worldInfo != null) ...[
+                                  buildWorldIcon(),
+                                  const SizedBox(width: 8),
+                                ],
+                                Expanded(
+                                  child: Text(
+                                    _exportLeafName(path),
+                                    style: const TextStyle(fontSize: 13),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                            ],
-                            Expanded(
-                              child: Text(
-                                _exportLeafName(path),
-                                style: const TextStyle(fontSize: 13),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '→ ${worldInfo?.nameGetter(l10n) ?? assignment.world} ${l10n.exportLevelShort(assignment.level)}',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    destination,
+                                    textAlign: TextAlign.end,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       );
                     }).toList(),
@@ -1379,72 +1435,78 @@ class _ExportScreenState extends State<ExportScreen> {
         : '';
     final String relativeArchivePath = _relativeArchiveDisplayPath();
 
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        children: [
-          Text(
-            l10n.exportFinalCheckTitle,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(l10n.exportFinalCheckBody, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 16),
-          if (_selectedArchivePath != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(12),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 600;
+        return Padding(
+          padding: EdgeInsets.all(compact ? 16 : 24),
+          child: Column(
+            children: [
+              Text(
+                l10n.exportFinalCheckTitle,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.inventory_2_outlined, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.exportTargetArchive(archiveName),
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          relativeArchivePath,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.7),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.exportFinalCheckBody,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              if (_selectedArchivePath != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                ],
-              ),
-            ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _selectedLevelPaths.length,
-              itemBuilder: (context, index) {
-                final path = _selectedLevelPaths.elementAt(index);
-                final assignment = _levelAssignments[path]!;
-                final worldInfo = WorldRepository.findByCodename(
-                  assignment.world,
-                );
-                final exportedName =
-                    '${assignment.world}${assignment.level}.json';
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.inventory_2_outlined, color: Colors.white),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.exportTargetArchive(archiveName),
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              relativeArchivePath,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.7),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _selectedLevelPaths.length,
+                  itemBuilder: (context, index) {
+                    final path = _selectedLevelPaths.elementAt(index);
+                    final assignment = _levelAssignments[path]!;
+                    final worldInfo = WorldRepository.findByCodename(
+                      assignment.world,
+                    );
+                    final exportedName =
+                        '${assignment.world}${assignment.level}.json';
 
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    leading: worldInfo != null
+                    final worldIcon = worldInfo != null
                         ? ClipOval(
                             child: AssetImageWidget(
                               assetPath: worldInfo.getIconPath(),
@@ -1452,50 +1514,93 @@ class _ExportScreenState extends State<ExportScreen> {
                               height: 40,
                             ),
                           )
-                        : const Icon(Icons.help_outline),
-                    title: Column(
+                        : const Icon(Icons.help_outline);
+                    final sourceAndTarget = Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_exportLeafName(path)),
+                        Text(
+                          _exportLeafName(path),
+                          maxLines: compact ? 2 : 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 2),
                         Text(
                           '→ $exportedName',
+                          maxLines: compact ? 2 : 1,
+                          overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
-                    ),
-                    trailing: Text(
+                    );
+                    final assignmentLabel = Text(
                       '${worldInfo?.nameGetter(l10n) ?? assignment.world} ${l10n.exportLevelShort(assignment.level)}',
                       style: theme.textTheme.bodySmall,
-                    ),
+                      softWrap: true,
+                    );
+
+                    return Card(
+                      key: ValueKey('exportFinalCheckLevelCard-$index'),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: compact
+                          ? Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      worldIcon,
+                                      const SizedBox(width: 12),
+                                      Expanded(child: sourceAndTarget),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 52),
+                                    child: assignmentLabel,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListTile(
+                              leading: worldIcon,
+                              title: sourceAndTarget,
+                              trailing: assignmentLabel,
+                            ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: SizedBox(
+                  width: compact ? double.infinity : null,
+                  child: FilledButton.icon(
+                    onPressed: _isExporting ? null : _performExport,
+                    icon: _isExporting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.file_upload),
+                    label: Text(l10n.exportStart),
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: FilledButton.icon(
-              onPressed: _isExporting ? null : _performExport,
-              icon: _isExporting
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.file_upload),
-              label: Text(l10n.exportStart),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -1693,8 +1798,11 @@ class _ExportScreenState extends State<ExportScreen> {
     );
 
     final proceedButton = _noFilesFound && _externalDynamicDownloadAvailable
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
+        ? Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
             children: [
               TextButton.icon(
                 onPressed: _isScanning
@@ -1704,7 +1812,6 @@ class _ExportScreenState extends State<ExportScreen> {
                 icon: const Icon(Icons.cloud_download_outlined),
                 label: Text(l10n.exportDownloadExternalDynamic),
               ),
-              const SizedBox(width: 8),
               TextButton(
                 onPressed: _isScanning
                     ? null
@@ -1891,104 +1998,110 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
         }
       },
     );
+    void handleLevelChanged(String val) {
+      final num = int.tryParse(val) ?? 1;
+      if (currentWorld == null) return;
+
+      final clamped = num.clamp(1, currentWorld.levelCount);
+      final newAssignment = (
+        world: widget.assignment?.world ?? worlds.first.codename,
+        level: clamped,
+      );
+
+      if (widget.onCheckDuplicate(newAssignment)) {
+        AppMessage.show(
+          context,
+          l10n.exportDuplicateAssignment(
+            currentWorld.nameGetter(l10n),
+            clamped,
+          ),
+        );
+        _levelController.text = widget.assignment?.level.toString() ?? '1';
+      } else {
+        widget.onChanged(newAssignment);
+      }
+    }
+
+    Widget buildLevelTextField(InputDecoration decoration) => TextFormField(
+      controller: _levelController,
+      decoration: decoration,
+      keyboardType: TextInputType.number,
+      onChanged: handleLevelChanged,
+    );
+
+    final levelDecoration = editorInputDecoration(context).copyWith(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+    );
     final levelField = EditorResponsiveInputField(
       label: l10n.exportLevelNumber,
-      decoration: editorInputDecoration(context).copyWith(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 14,
-        ),
-      ),
-      builder: (context, decoration) => TextFormField(
-        controller: _levelController,
-        decoration: decoration,
-        keyboardType: TextInputType.number,
-        onChanged: (val) {
-          final num = int.tryParse(val) ?? 1;
-          if (currentWorld != null) {
-            final clamped = num.clamp(1, currentWorld.levelCount);
-            final newAssignment = (
-              world: widget.assignment?.world ?? worlds.first.codename,
-              level: clamped,
-            );
-
-            if (widget.onCheckDuplicate(newAssignment)) {
-              AppMessage.show(
-                context,
-                l10n.exportDuplicateAssignment(
-                  currentWorld.nameGetter(l10n),
-                  clamped,
-                ),
-              );
-              _levelController.text =
-                  widget.assignment?.level.toString() ?? '1';
-            } else {
-              widget.onChanged(newAssignment);
-            }
-          }
-        },
-      ),
+      decoration: levelDecoration,
+      builder: (context, decoration) => buildLevelTextField(decoration),
     );
-    final levelStepper = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_drop_up),
-          padding: EdgeInsets.zero,
-          visualDensity: VisualDensity.compact,
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
-          onPressed: () {
-            if (currentWorld != null) {
-              final currentLevel = widget.assignment?.level ?? 1;
-              if (currentLevel < currentWorld.levelCount) {
-                final newAssignment = (
-                  world: widget.assignment!.world,
-                  level: currentLevel + 1,
-                );
-                if (widget.onCheckDuplicate(newAssignment)) {
-                  AppMessage.show(
-                    context,
-                    l10n.exportDuplicateAssignment(
-                      currentWorld.nameGetter(l10n),
-                      newAssignment.level,
-                    ),
+    final levelStepper = Theme(
+      data: theme.copyWith(
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_drop_up),
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
+            onPressed: () {
+              if (currentWorld != null) {
+                final currentLevel = widget.assignment?.level ?? 1;
+                if (currentLevel < currentWorld.levelCount) {
+                  final newAssignment = (
+                    world: widget.assignment!.world,
+                    level: currentLevel + 1,
                   );
-                } else {
-                  widget.onChanged(newAssignment);
+                  if (widget.onCheckDuplicate(newAssignment)) {
+                    AppMessage.show(
+                      context,
+                      l10n.exportDuplicateAssignment(
+                        currentWorld.nameGetter(l10n),
+                        newAssignment.level,
+                      ),
+                    );
+                  } else {
+                    widget.onChanged(newAssignment);
+                  }
                 }
               }
-            }
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.arrow_drop_down),
-          padding: EdgeInsets.zero,
-          visualDensity: VisualDensity.compact,
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
-          onPressed: () {
-            if (currentWorld != null) {
-              final currentLevel = widget.assignment?.level ?? 1;
-              if (currentLevel > 1) {
-                final newAssignment = (
-                  world: widget.assignment!.world,
-                  level: currentLevel - 1,
-                );
-                if (widget.onCheckDuplicate(newAssignment)) {
-                  AppMessage.show(
-                    context,
-                    l10n.exportDuplicateAssignment(
-                      currentWorld.nameGetter(l10n),
-                      newAssignment.level,
-                    ),
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_drop_down),
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 24),
+            onPressed: () {
+              if (currentWorld != null) {
+                final currentLevel = widget.assignment?.level ?? 1;
+                if (currentLevel > 1) {
+                  final newAssignment = (
+                    world: widget.assignment!.world,
+                    level: currentLevel - 1,
                   );
-                } else {
-                  widget.onChanged(newAssignment);
+                  if (widget.onCheckDuplicate(newAssignment)) {
+                    AppMessage.show(
+                      context,
+                      l10n.exportDuplicateAssignment(
+                        currentWorld.nameGetter(l10n),
+                        newAssignment.level,
+                      ),
+                    );
+                  } else {
+                    widget.onChanged(newAssignment);
+                  }
                 }
               }
-            }
-          },
-        ),
-      ],
+            },
+          ),
+        ],
+      ),
     );
 
     return Card(
@@ -2025,18 +2138,40 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          const SizedBox(width: 60),
-                          Expanded(
-                            child: KeyedSubtree(
-                              key: const ValueKey('exportLevelNumberField'),
-                              child: levelField,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 60),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              l10n.exportLevelNumber,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          levelStepper,
-                        ],
+                            const SizedBox(height: 8),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: SizedBox(
+                                    key: const ValueKey(
+                                      'exportLevelNumberField',
+                                    ),
+                                    height: 56,
+                                    child: buildLevelTextField(levelDecoration),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                SizedBox(
+                                  key: const ValueKey('exportLevelStepper'),
+                                  height: 56,
+                                  child: levelStepper,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   );

@@ -1,7 +1,8 @@
 {
   "@@locale": "zh",
   "pluginName": "数据包下载",
-  "pluginDescription": "在 RSB 导出未找到 .rsb.smf 时，可从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf",
+  "pluginDescription": "制作关卡测试包时若未找到 .rsb.smf 文件，可从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf。",
+  "levelTestingMod": "关卡测试包",
   "dynamicOfferTitle": "下载 dynamic？",
   "dynamicOfferBody": "工作区中未找到 .rsb.smf 文件。\n\n是否从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf？",
   "dynamicOfferYes": "选择版本",

@@ -157,6 +157,18 @@ void main() {
     );
     await pumpAsyncFrames(tester);
 
+    final initialProceedButton = find.byKey(
+      const ValueKey('exportProceedButton'),
+    );
+    expect(initialProceedButton, findsOneWidget);
+    expect(
+      tester.getTopRight(initialProceedButton).dx,
+      lessThanOrEqualTo(
+        tester.view.physicalSize.width / tester.view.devicePixelRatio,
+      ),
+    );
+    expect(tester.takeException(), isNull);
+
     await tester.tap(find.text('dynamic'));
     await tester.pump();
     await tester.tap(find.text('Proceed'));
@@ -173,14 +185,43 @@ void main() {
 
     final worldField = find.byKey(const ValueKey('exportWorldField'));
     final levelField = find.byKey(const ValueKey('exportLevelNumberField'));
+    final levelStepper = find.byKey(const ValueKey('exportLevelStepper'));
     expect(worldField, findsOneWidget);
     expect(levelField, findsOneWidget);
+    expect(levelStepper, findsOneWidget);
     expect(
       tester.getBottomLeft(worldField).dy,
       lessThan(tester.getTopLeft(levelField).dy),
     );
     expect(tester.getTopRight(worldField).dx, lessThanOrEqualTo(360));
     expect(tester.getTopRight(levelField).dx, lessThanOrEqualTo(360));
+    expect(
+      tester.getTopLeft(levelStepper).dy,
+      tester.getTopLeft(levelField).dy,
+    );
+    expect(
+      tester.getBottomLeft(levelStepper).dy,
+      tester.getBottomLeft(levelField).dy,
+    );
+    expect(tester.takeException(), isNull);
+
+    await tester.tap(find.text('Finish'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Proceed').last);
+    await tester.pumpAndSettle();
+
+    final finalCheckCard = find.byKey(
+      const ValueKey('exportFinalCheckLevelCard-0'),
+    );
+    expect(finalCheckCard, findsOneWidget);
+    final sourceName = find.descendant(
+      of: finalCheckCard,
+      matching: find.text('example.txt'),
+    );
+    expect(sourceName, findsOneWidget);
+    expect(tester.widget<Text>(sourceName).maxLines, 2);
+    expect(tester.getSize(finalCheckCard).width, greaterThan(100));
+    expect(tester.getTopRight(finalCheckCard).dx, lessThanOrEqualTo(360));
     expect(tester.takeException(), isNull);
   });
 }

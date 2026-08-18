@@ -1,7 +1,8 @@
 {
   "@@locale": "ru",
   "pluginName": "Загрузка пакета данных",
-  "pluginDescription": "Если при экспорте RSB в рабочем пространстве нет файлов .rsb.smf, предлагает скачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic",
+  "pluginDescription": "Если при создании пакета для тестирования уровней файл .rsb.smf не найден, dynamic.rsb.smf можно скачать из раздела GitHub Releases репозитория Archiver2c/pvz2c-dynamic.",
+  "levelTestingMod": "Экспорт уровней",
   "dynamicOfferTitle": "Скачать dynamic?",
   "dynamicOfferBody": "В рабочем пространстве не найдено файлов .rsb.smf.\n\nСкачать dynamic.rsb.smf из релизов Archiver2c/pvz2c-dynamic на GitHub?",
   "dynamicOfferYes": "Выбрать релиз",

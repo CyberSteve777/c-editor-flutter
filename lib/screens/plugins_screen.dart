@@ -876,7 +876,7 @@ class _PluginDetailPane extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
                 leading: const Icon(Icons.extension),
-                title: Text(screen.title),
+                title: Text(screen.resolvedTitle(context)),
                 trailing: TextButton(
                   onPressed: () => onOpenScreen(screen),
                   child: Text(l10n.pluginOpenScreen),

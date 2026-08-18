@@ -6681,7 +6681,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpEditingBody =>
-      'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles and blank tiles are both plantable areas; the whirlpool tiles here only recreate the initial lawn layout used by this module.';
+      'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Swirly tiles and blank tiles are both plantable areas; the Swirly tiles here only recreate the initial lawn layout used by this module.';
 
   @override
   String get expeditionTilesHelpPresets => 'Preset Layouts';
@@ -8545,22 +8545,114 @@ class AppLocalizationsEn extends AppLocalizations {
       'This wave does not extend the zombie pool.';
 
   @override
-  String get waveGeneratorWaveScreenSubtitle =>
-      'Fixed spawns, random spawns, and wave parameters';
+  String get waveGeneratorWaveScreenSubtitle => 'Wave Generator module';
 
   @override
-  String get waveGeneratorWaveScreenHelpTitle => 'Wave Generator Wave Help';
+  String get waveGeneratorWaveScreenHelpTitle => 'Wave Generator module';
 
   @override
   String get waveGeneratorWaveScreenHelpBody =>
       'During random spawning, the game selects by weight from zombies affordable with the remaining points, deducts the selected cost, and filters the candidates again until no zombies are eligible. Unused points do not carry over to the next wave. Fixed spawns are added directly to this wave and consume no random-spawn points.';
 
   @override
+  String get waveGeneratorRandomSpawnsSectionTitle => 'Random spawns';
+
+  @override
+  String get waveGeneratorZombiePoolSectionTitle => 'Zombie pool';
+
+  @override
+  String get waveGeneratorWaveSettingsTitle => 'Wave settings';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpTitle => 'Fixed spawns';
+
+  @override
+  String get waveGeneratorRandomSpawnsHelpTitle => 'Random spawns';
+
+  @override
+  String get waveGeneratorZombiePoolHelpTitle => 'Zombie pool';
+
+  @override
+  String get waveGeneratorWaveSettingsHelpTitle => 'Wave settings';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpBody =>
+      'Fixed spawns are added directly to the current wave, consume no random-spawn points, and can be used together with random spawns.';
+
+  @override
+  String get waveGeneratorPointTrajectoryHelpBody =>
+      'The point trajectory preview shows the effective random-spawn points calculated by the editor for each wave. It does not represent the number of fixed spawns.';
+
+  @override
+  String get waveGeneratorWavePoolAddHelpBody =>
+      'Zombies added on this wave enter the effective pool immediately and continue to affect later waves. The additions still take effect when random spawning is disabled for this wave.';
+
+  @override
+  String get waveGeneratorPoolCompatibilityTitle => 'Type restrictions';
+
+  @override
+  String get waveGeneratorPoolCompatibilityHelpBody =>
+      'Wave Generator zombie pools support only standard in-game zombie types, not custom zombies defined in the level.';
+
+  @override
+  String get waveGeneratorWaitUntilAllDieHelpBody =>
+      'Controls whether this wave waits for every zombie from the previous wave to be defeated before it begins spawning.';
+
+  @override
+  String get waveGeneratorSpawnPlantFoodHelpBody =>
+      'Sets the number of zombies in this wave that carry and drop Plant Food.';
+
+  @override
+  String waveGeneratorFixedSummary(int count, int rows) {
+    return '$count fixed spawns · $rows rows';
+  }
+
+  @override
+  String get waveGeneratorFixedSummaryEmpty => 'No fixed spawns';
+
+  @override
+  String waveGeneratorRandomSummary(int points) {
+    return 'Enabled · $points points';
+  }
+
+  @override
+  String waveGeneratorRandomLocalSummary(int points) {
+    return 'Enabled · $points points · Current-wave points';
+  }
+
+  @override
+  String get waveGeneratorRandomSummaryDisabled =>
+      'No random spawns on this wave';
+
+  @override
+  String waveGeneratorPoolSummary(int current, int added) {
+    return '$current current types · $added added on this wave';
+  }
+
+  @override
+  String waveGeneratorPoolSummaryNoAdditions(int current) {
+    return '$current current types · No additions on this wave';
+  }
+
+  @override
+  String get waveGeneratorWaveSettingsDefaultSummary => 'Default settings';
+
+  @override
+  String waveGeneratorWaveSettingsPlantFoodSummary(int count) {
+    return 'Plant Food ×$count';
+  }
+
+  @override
+  String waveGeneratorWaveSettingsBlackHoleSummary(int cols) {
+    return 'Spacetime black hole · $cols columns';
+  }
+
+  @override
   String get waveGeneratorExpectationTapHint =>
       'View the random-spawn statistical preview';
 
   @override
-  String get waveGeneratorStatisticalPreview => 'Statistical preview';
+  String get waveGeneratorStatisticalPreview => 'Point-based spawning';
 
   @override
   String get waveGeneratorExpectationEmpty =>

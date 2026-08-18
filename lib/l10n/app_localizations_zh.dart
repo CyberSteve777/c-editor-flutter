@@ -7963,7 +7963,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpPointTrajectoryBody =>
-      '第1波使用「初始随机出怪点数 (WaveSpendingPoints)」，之后点数默认按「每波点数增量 (WaveSpendingPointIncrement)」持续增加，即使某一波禁用了随机出怪也不会暂停。\n「局部随机出怪点数 (WavePointStart)」可单独更改当前波的点数，「局部点数增量 (WavePointIncrement)」可更改后续波次使用的增量，「重置点数轨迹 (WavePointOverride)」则决定下一波是恢复原本应有的点数，还是以当前波的局部点数为新起点继续计算。';
+      '第1波使用「初始随机出怪点数 (WaveSpendingPoints)」，之后点数默认按「每波点数增量 (WaveSpendingPointIncrement)」持续增加，即使某一波禁用了随机出怪也不会暂停。\n「当前波随机出怪点数 (WavePointStart)」可单独更改当前波的点数，「新点数增量 (WavePointIncrement)」可更改后续波次使用的增量，「重置点数轨迹 (WavePointOverride)」则决定下一波是恢复原本应有的点数，还是以当前波次点数为新起点继续计算。';
 
   @override
   String get waveGeneratorModuleHelpPool => '僵尸池';
@@ -8063,7 +8063,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveGeneratorWaitUntilAllDie =>
-      '等待上一波僵尸全部死亡后再生成本波 (WaitUntilAllZombiesDie)';
+      '等待上一波僵尸全部死亡后再生成本波僵尸 (WaitUntilAllZombiesDie)';
 
   @override
   String get waveGeneratorNoScriptedZombies => '本波没有固定出怪。';
@@ -8072,40 +8072,40 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorSpawnPlantFood => '携带能量豆的僵尸数量 (SpawnPlantFoodCount)';
 
   @override
-  String get waveGeneratorWavePointStart => '局部随机出怪点数 (WavePointStart)';
+  String get waveGeneratorWavePointStart => '当前波随机出怪点数 (WavePointStart)';
 
   @override
   String get waveGeneratorWavePointStartHint =>
       '单独设置当前波使用的随机出怪点数；留空则继续使用默认计算出的点数。';
 
   @override
-  String get waveGeneratorWavePointIncrement => '局部点数增量 (WavePointIncrement)';
+  String get waveGeneratorWavePointIncrement => '新点数增量 (WavePointIncrement)';
 
   @override
   String get waveGeneratorWavePointIncrementHint =>
-      '更改后续波次使用的点数增量，仅在已设置「局部随机出怪点数 (WavePointStart)」时生效。';
+      '更改后续波次使用的点数增量，仅在已设置「当前波随机出怪点数 (WavePointStart)」时生效。';
 
   @override
   String get waveGeneratorWavePointIncrementInactiveHint =>
-      '未设置「局部随机出怪点数 (WavePointStart)」时，此项不会生效，但已有数据仍会保留。';
+      '未设置「当前波随机出怪点数 (WavePointStart)」时，此项不会生效，但已有数据仍会保留。';
 
   @override
   String get waveGeneratorWavePointOverride => '重置点数轨迹 (WavePointOverride)';
 
   @override
   String get waveGeneratorWavePointOverrideHint =>
-      '关闭时，「局部随机出怪点数 (WavePointStart)」只影响当前波，下一波会恢复为按原有波次进度计算出的点数；开启时，则以当前波的局部点数为新起点，重新计算后续波次的点数。两种情况下，后续波次都会按当前生效的点数增量继续增加。';
+      '关闭时，「当前波随机出怪点数 (WavePointStart)」只影响当前波，下一波会恢复为按原有波次进度计算出的点数；开启时，则以当前波次点数为新起点，重新计算后续波次的点数。两种情况下，后续波次都会按当前生效的点数增量继续增加。';
 
   @override
   String get waveGeneratorPointTrajectory => '点数轨迹预览';
 
   @override
   String get waveGeneratorPointTrajectoryTemporary =>
-      '局部随机出怪点数只影响当前波，下一波会恢复为按原有波次进度计算出的点数，并按当前生效的增量继续增加。';
+      '当前波随机出怪点数只影响本波，下一波会恢复为按原有波次进度计算出的点数，并按当前生效的增量继续增加。';
 
   @override
   String get waveGeneratorPointTrajectoryReset =>
-      '以当前波的局部随机出怪点数为新起点，重新计算后续波次的点数，并按当前生效的增量继续增加。';
+      '以当前波随机出怪点数为新起点，重新计算后续波次的点数，并按当前生效的增量继续增加。';
 
   @override
   String waveGeneratorPointTrajectoryWaveValue(int wave, int points) {
@@ -8134,20 +8134,111 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorWavePoolNoChanges => '本波没有扩展僵尸池。';
 
   @override
-  String get waveGeneratorWaveScreenSubtitle => '固定出怪、随机出怪与波次参数';
+  String get waveGeneratorWaveScreenSubtitle => '波次生成器模块';
 
   @override
-  String get waveGeneratorWaveScreenHelpTitle => '波次生成器波次说明';
+  String get waveGeneratorWaveScreenHelpTitle => '波次生成器模块说明';
 
   @override
   String get waveGeneratorWaveScreenHelpBody =>
       '进行随机出怪时，游戏会从当前剩余点数足以生成的僵尸中按权重选择一种，生成后扣除对应点数并重新筛选，直到没有可生成的僵尸为止。未使用的点数不会保留到下一波。固定出怪则会直接加入当前波，不消耗随机出怪点数。';
 
   @override
-  String get waveGeneratorExpectationTapHint => '查看随机出怪统计预览';
+  String get waveGeneratorRandomSpawnsSectionTitle => '随机出怪';
 
   @override
-  String get waveGeneratorStatisticalPreview => '统计预览';
+  String get waveGeneratorZombiePoolSectionTitle => '僵尸池';
+
+  @override
+  String get waveGeneratorWaveSettingsTitle => '波次设置';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpTitle => '固定出怪说明';
+
+  @override
+  String get waveGeneratorRandomSpawnsHelpTitle => '随机出怪说明';
+
+  @override
+  String get waveGeneratorZombiePoolHelpTitle => '僵尸池说明';
+
+  @override
+  String get waveGeneratorWaveSettingsHelpTitle => '波次设置说明';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpBody =>
+      '固定出怪会直接加入当前波，不消耗随机出怪点数，也可以与随机出怪同时使用。';
+
+  @override
+  String get waveGeneratorPointTrajectoryHelpBody =>
+      '点数轨迹预览展示编辑器根据当前配置计算出的各波有效随机出怪点数，不代表固定出怪的数量。';
+
+  @override
+  String get waveGeneratorWavePoolAddHelpBody =>
+      '本波扩展的僵尸从当前波起进入有效僵尸池，并继续影响后续波次；即使本波禁用了随机出怪，扩展内容仍会生效。';
+
+  @override
+  String get waveGeneratorPoolCompatibilityTitle => '类型限制';
+
+  @override
+  String get waveGeneratorPoolCompatibilityHelpBody =>
+      '波次生成器的僵尸池仅支持游戏内的默认僵尸类型，不支持关卡中定义的自定义僵尸。';
+
+  @override
+  String get waveGeneratorWaitUntilAllDieHelpBody =>
+      '决定本波是否等待上一波的僵尸全部死亡后再开始生成。';
+
+  @override
+  String get waveGeneratorSpawnPlantFoodHelpBody => '固定设置本波中携带并掉落能量豆的僵尸数量。';
+
+  @override
+  String waveGeneratorFixedSummary(int count, int rows) {
+    return '$count个固定出怪 · 分布在$rows行';
+  }
+
+  @override
+  String get waveGeneratorFixedSummaryEmpty => '无固定出怪';
+
+  @override
+  String waveGeneratorRandomSummary(int points) {
+    return '已启用 · $points点';
+  }
+
+  @override
+  String waveGeneratorRandomLocalSummary(int points) {
+    return '已启用 · $points点 · 使用当前波次点数';
+  }
+
+  @override
+  String get waveGeneratorRandomSummaryDisabled => '本波不随机出怪';
+
+  @override
+  String waveGeneratorPoolSummary(int current, int added) {
+    return '当前$current种 · 本波新增$added种';
+  }
+
+  @override
+  String waveGeneratorPoolSummaryNoAdditions(int current) {
+    return '当前$current种 · 本波无扩展';
+  }
+
+  @override
+  String get waveGeneratorWaveSettingsDefaultSummary => '默认设置';
+
+  @override
+  String waveGeneratorWaveSettingsPlantFoodSummary(int count) {
+    return '能量豆 ×$count';
+  }
+
+  @override
+  String waveGeneratorWaveSettingsBlackHoleSummary(int cols) {
+    return '时空黑洞 · 吸动$cols列';
+  }
+
+  @override
+  String get waveGeneratorExpectationTapHint => '查看随机出怪预览';
+
+  @override
+  String get waveGeneratorStatisticalPreview => '随机出怪';
 
   @override
   String get waveGeneratorExpectationEmpty => '本波的僵尸池中没有可用于随机出怪的僵尸。';

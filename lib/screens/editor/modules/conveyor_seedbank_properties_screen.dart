@@ -731,7 +731,8 @@ class _PlantDetailDialogState extends State<_PlantDetailDialog> {
               ),
               const SizedBox(height: 8),
               Text(
-                '0 = follow account level',
+                l10n?.followAccountLevel ??
+                    'Level 0 plants use their corresponding tier from the player\'s account.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

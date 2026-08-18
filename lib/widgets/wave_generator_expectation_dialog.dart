@@ -17,15 +17,6 @@ double _expectationDialogIconSize(BuildContext context) {
   return compact ? 36 : 40;
 }
 
-Size _expectationDialogListSize(BuildContext context) {
-  final isDesktop = isDesktopPlatform(context);
-  final screenWidth = MediaQuery.sizeOf(context).width;
-  if (isDesktop) {
-    return Size(420, screenWidth < 500 ? 300 : 360);
-  }
-  return Size((screenWidth - 96).clamp(280, 360), 280);
-}
-
 void showWaveGeneratorExpectationDialog(
   BuildContext context, {
   required WaveGeneratorPropertiesData data,
@@ -40,198 +31,278 @@ void showWaveGeneratorExpectationDialog(
   showDialog<void>(
     context: context,
     builder: (ctx) {
-      final scrollController = ScrollController();
+      final theme = Theme.of(ctx);
+      final mediaSize = MediaQuery.sizeOf(ctx);
       final iconSize = _expectationDialogIconSize(ctx);
-      final listSize = _expectationDialogListSize(ctx);
-      return AlertDialog(
-        title: Text(
-          l10n?.waveGeneratorExpectationTitle(waveIndex) ??
-              '${l10n?.waveLabel ?? 'Wave'} $waveIndex — Random spawn preview',
+      final summaryStyle = theme.textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.bold,
+      );
+      final body = <Widget>[
+        Text(
+          l10n?.waveGeneratorEffectiveRandomPoints(preview.points) ??
+              'Effective random-spawn points: ${preview.points}',
+          style: summaryStyle,
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n?.waveGeneratorEffectiveRandomPoints(preview.points) ??
-                  'Effective random-spawn points: ${preview.points}',
-              style: Theme.of(
-                ctx,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+      ];
+
+      if (preview.missingDataTypes.isNotEmpty) {
+        body.addAll([
+          const SizedBox(height: 12),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.errorContainer,
+              borderRadius: BorderRadius.circular(10),
             ),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                l10n?.waveGeneratorExpectationMissingData(
+                      preview.missingDataTypes.join(', '),
+                    ) ??
+                    'Preview unavailable because some zombies are missing WavePointCost or Weight data: ${preview.missingDataTypes.join(', ')}',
+                style: TextStyle(color: theme.colorScheme.onErrorContainer),
+              ),
+            ),
+          ),
+        ]);
+      } else if (!preview.randomSpawnsEnabled) {
+        body.addAll([
+          const SizedBox(height: 12),
+          Text(
+            l10n?.waveGeneratorExpectationDisabled ??
+                'Random spawning is disabled on this wave.',
+          ),
+        ]);
+      } else if (preview.poolIsEmpty || preview.points <= 0) {
+        body.addAll([
+          const SizedBox(height: 12),
+          Text(
+            l10n?.waveGeneratorExpectationEmpty ??
+                'No eligible pool zombies for random spawns on this wave.',
+            style: theme.textTheme.bodySmall,
+          ),
+        ]);
+      } else {
+        body.addAll([
+          const SizedBox(height: 8),
+          Text(
+            l10n?.waveGeneratorExpectationEstimatedTotal(
+                  preview.averageTotal.toStringAsFixed(1),
+                ) ??
+                'Estimated random spawns: about ${preview.averageTotal.toStringAsFixed(1)}',
+            style: summaryStyle,
+          ),
+          if (preview.commonMinimum != preview.commonMaximum) ...[
             const SizedBox(height: 4),
             Text(
-              l10n?.waveGeneratorFixedSpawnCount(preview.fixedSpawnCount) ??
-                  'Fixed spawns: ${preview.fixedSpawnCount}',
+              l10n?.waveGeneratorExpectationCommonRange(
+                    preview.commonMinimum,
+                    preview.commonMaximum,
+                  ) ??
+                  'Common range: ${preview.commonMinimum}–${preview.commonMaximum}',
+              style: summaryStyle,
             ),
-            if (preview.missingDataTypes.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).colorScheme.errorContainer,
-                  borderRadius: BorderRadius.circular(10),
+          ],
+          const SizedBox(height: 8),
+          Text(
+            l10n?.waveGeneratorExpectationPoolNote ??
+                'This is a stable statistical preview of repeated weighted purchases from the current effective pool, not a prediction of the game RNG.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          for (final entry in items)
+            Builder(
+              builder: (context) {
+                final typeName = entry.id;
+                final info = ZombieRepository().getZombieById(typeName);
+                final nameKey =
+                    info?.name ?? ZombieRepository().getName(typeName);
+                final displayName = ResourceNames.lookup(ctx, nameKey);
+                final iconPath = info?.iconAssetPath ?? _kUnknownIconPath;
+                return _ExpectationZombieEntryTile(
+                  iconSize: iconSize,
+                  iconPath: iconPath,
+                  displayName: displayName.isNotEmpty ? displayName : typeName,
+                  typeName: typeName,
+                  costWeightLabel:
+                      l10n?.waveGeneratorExpectationCostWeight(
+                        entry.cost,
+                        entry.weight.toStringAsFixed(0),
+                      ) ??
+                      'Cost ${entry.cost} · Weight ${entry.weight.toStringAsFixed(0)}',
+                  averageLabel:
+                      l10n?.waveGeneratorExpectationAverageCount(
+                        entry.averageCount.toStringAsFixed(2),
+                      ) ??
+                      'Avg. ${entry.averageCount.toStringAsFixed(2)}',
+                );
+              },
+            ),
+        ]);
+      }
+
+      return Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: 560,
+            maxHeight: mediaSize.height - 40,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 8, 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n?.waveGeneratorExpectationTitle(waveIndex) ??
+                            '${l10n?.waveLabel ?? 'Wave'} $waveIndex — Random spawn preview',
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      tooltip: l10n?.close ?? 'Close',
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    l10n?.waveGeneratorExpectationMissingData(
-                          preview.missingDataTypes.join(', '),
-                        ) ??
-                        'Preview unavailable because some zombies are missing WavePointCost or Weight data: ${preview.missingDataTypes.join(', ')}',
-                    style: TextStyle(
-                      color: Theme.of(ctx).colorScheme.onErrorContainer,
+              ),
+              Divider(height: 1, color: theme.colorScheme.outlineVariant),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                  children: body,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+class _ExpectationZombieEntryTile extends StatelessWidget {
+  const _ExpectationZombieEntryTile({
+    required this.iconSize,
+    required this.iconPath,
+    required this.displayName,
+    required this.typeName,
+    required this.costWeightLabel,
+    required this.averageLabel,
+  });
+
+  final double iconSize;
+  final String iconPath;
+  final String displayName;
+  final String typeName;
+  final String costWeightLabel;
+  final String averageLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final secondaryStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 420;
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: ColoredBox(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: SizedBox(
+                    width: iconSize,
+                    height: iconSize,
+                    child: AssetImageWidget(
+                      assetPath: iconPath,
+                      altCandidates: imageAltCandidates(iconPath),
+                      width: iconSize,
+                      height: iconSize,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
               ),
-            ] else if (!preview.randomSpawnsEnabled) ...[
-              const SizedBox(height: 12),
-              Text(
-                l10n?.waveGeneratorExpectationDisabled ??
-                    'Random spawning is disabled on this wave.',
-              ),
-            ] else if (preview.poolIsEmpty || preview.points <= 0) ...[
-              const SizedBox(height: 12),
-              Text(
-                l10n?.waveGeneratorExpectationEmpty ??
-                    'No eligible pool zombies for random spawns on this wave.',
-                style: Theme.of(ctx).textTheme.bodySmall,
-              ),
-            ] else ...[
-              const SizedBox(height: 8),
-              Text(
-                l10n?.waveGeneratorExpectationEstimatedTotal(
-                      preview.averageTotal.toStringAsFixed(1),
-                    ) ??
-                    'Estimated random spawns: about ${preview.averageTotal.toStringAsFixed(1)}',
-                style: Theme.of(
-                  ctx,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                l10n?.waveGeneratorExpectationCommonRange(
-                      preview.commonMinimum,
-                      preview.commonMaximum,
-                    ) ??
-                    'Common range: ${preview.commonMinimum}–${preview.commonMaximum}',
-              ),
-              const SizedBox(height: 6),
-              Text(
-                l10n?.waveGeneratorExpectationPoolNote ??
-                    'This is a stable statistical preview of repeated weighted purchases from the current effective pool, not a prediction of the game RNG.',
-                style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayName,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      typeName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: secondaryStyle,
+                    ),
+                    Text(
+                      costWeightLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: secondaryStyle,
+                    ),
+                    if (compact) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        averageLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: listSize.width,
-                height: listSize.height,
-                child: Scrollbar(
-                  controller: scrollController,
-                  thumbVisibility: true,
-                  child: ListView.builder(
-                    controller: scrollController,
-                    padding: const EdgeInsets.only(right: 14),
-                    itemCount: items.length,
-                    itemBuilder: (_, i) {
-                      final e = items[i];
-                      final typeName = e.id;
-                      final info = ZombieRepository().getZombieById(typeName);
-                      final nameKey =
-                          info?.name ?? ZombieRepository().getName(typeName);
-                      final displayName = ResourceNames.lookup(ctx, nameKey);
-                      final iconPath = info?.iconAssetPath ?? _kUnknownIconPath;
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: isDesktopPlatform(ctx) ? 5 : 4,
-                        ),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: ColoredBox(
-                                color: Theme.of(
-                                  ctx,
-                                ).colorScheme.surfaceContainerHighest,
-                                child: SizedBox(
-                                  width: iconSize,
-                                  height: iconSize,
-                                  child: AssetImageWidget(
-                                    assetPath: iconPath,
-                                    altCandidates: imageAltCandidates(iconPath),
-                                    width: iconSize,
-                                    height: iconSize,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    displayName.isNotEmpty
-                                        ? displayName
-                                        : typeName,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(ctx).textTheme.bodyMedium
-                                        ?.copyWith(fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    typeName,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(ctx).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            ctx,
-                                          ).colorScheme.onSurfaceVariant,
-                                        ),
-                                  ),
-                                  Text(
-                                    l10n?.waveGeneratorExpectationCostWeight(
-                                          e.cost,
-                                          e.weight.toStringAsFixed(0),
-                                        ) ??
-                                        'Cost ${e.cost} · Weight ${e.weight.toStringAsFixed(0)}',
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(ctx).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            ctx,
-                                          ).colorScheme.onSurfaceVariant,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n?.waveGeneratorExpectationAverageCount(
-                                    e.averageCount.toStringAsFixed(2),
-                                  ) ??
-                                  'Avg. ${e.averageCount.toStringAsFixed(2)}',
-                              style: Theme.of(ctx).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+              if (!compact) ...[
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    averageLabel,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.close ?? 'Close'),
           ),
-        ],
-      );
-    },
-  );
+        );
+      },
+    );
+  }
 }

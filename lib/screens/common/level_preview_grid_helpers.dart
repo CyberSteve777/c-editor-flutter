@@ -387,7 +387,7 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
           final wave = dropData.appearWaves[i].wave + 1;
           categories.add(GridPreviewCategoryOption(
             kind: GridPreviewModuleKind.dropShip,
-            label: '${l10n.waveLabel} $wave',
+            label: l10n.customZombieWaveItem(wave),
             index: i,
           ));
         }
@@ -555,7 +555,7 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
 }
 
 String _waveCategoryLabel(AppLocalizations l10n, String moduleTitle, int wave, int waveCount) {
-  return '${l10n.waveLabel} $wave';
+  return l10n.customZombieWaveItem(wave);
 }
 
 PvzObject? findModuleObject(PvzLevelFile levelFile, String objClass) {

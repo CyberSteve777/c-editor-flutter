@@ -8320,7 +8320,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpPointTrajectoryBody =>
-      'Первая волна использует «Начальные очки случайного спавна (WaveSpendingPoints)». Затем количество очков по умолчанию увеличивается на «Прирост очков за волну (WaveSpendingPointIncrement)» с каждой волной; отключение случайного спавна на отдельной волне не останавливает этот рост.\n«Локальные очки случайного спавна (WavePointStart)» изменяют очки текущей волны, «Локальный прирост очков (WavePointIncrement)» изменяет прирост для последующих волн, а «Сброс траектории очков (WavePointOverride)» определяет, вернётся ли следующая волна к значению, рассчитанному по исходному номеру волны, или продолжит расчёт от локальных очков текущей волны как от новой начальной точки.';
+      'Первая волна использует «Начальные очки случайного спавна (WaveSpendingPoints)». Затем количество очков по умолчанию увеличивается на «Прирост очков за волну (WaveSpendingPointIncrement)» с каждой волной; отключение случайного спавна на отдельной волне не останавливает этот рост.\n«Очки случайного спавна текущей волны (WavePointStart)» изменяют очки текущей волны, «Новый прирост очков (WavePointIncrement)» изменяет прирост для последующих волн, а «Сброс траектории очков (WavePointOverride)» определяет, вернётся ли следующая волна к значению, рассчитанному по исходному номеру волны, или продолжит расчёт от очков текущей волны как от новой начальной точки.';
 
   @override
   String get waveGeneratorModuleHelpPool => 'Пул зомби';
@@ -8440,7 +8440,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorWavePointStart =>
-      'Локальные очки случайного спавна (WavePointStart)';
+      'Очки случайного спавна текущей волны (WavePointStart)';
 
   @override
   String get waveGeneratorWavePointStartHint =>
@@ -8448,15 +8448,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorWavePointIncrement =>
-      'Локальный прирост очков (WavePointIncrement)';
+      'Новый прирост очков (WavePointIncrement)';
 
   @override
   String get waveGeneratorWavePointIncrementHint =>
-      'Изменяет прирост очков для последующих волн и действует только при заданных локальных очках случайного спавна (WavePointStart).';
+      'Изменяет прирост очков для последующих волн и действует только при заданных очках случайного спавна текущей волны (WavePointStart).';
 
   @override
   String get waveGeneratorWavePointIncrementInactiveHint =>
-      'Без локальных очков случайного спавна (WavePointStart) этот параметр не действует, но сохранённое значение не удаляется.';
+      'Без очков случайного спавна текущей волны (WavePointStart) этот параметр не действует, но сохранённое значение не удаляется.';
 
   @override
   String get waveGeneratorWavePointOverride =>
@@ -8464,18 +8464,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorWavePointOverrideHint =>
-      'Когда параметр отключён, локальные очки случайного спавна (WavePointStart) влияют только на текущую волну, а следующая получает значение, рассчитанное по её исходному номеру. Когда параметр включён, локальные очки текущей волны становятся новой начальной точкой для последующих волн. В обоих случаях используется текущий прирост очков.';
+      'Когда параметр отключён, очки случайного спавна текущей волны (WavePointStart) влияют только на эту волну, а следующая получает значение, рассчитанное по её исходному номеру. Когда параметр включён, очки текущей волны становятся новой начальной точкой для последующих волн. В обоих случаях используется текущий прирост очков.';
 
   @override
   String get waveGeneratorPointTrajectory => 'Предпросмотр траектории очков';
 
   @override
   String get waveGeneratorPointTrajectoryTemporary =>
-      'Локальные очки случайного спавна влияют только на текущую волну. Следующая волна получает значение, рассчитанное по её исходному номеру, и продолжает увеличиваться с действующим приростом.';
+      'Очки случайного спавна текущей волны влияют только на эту волну. Следующая волна получает значение, рассчитанное по её исходному номеру, и продолжает увеличиваться с действующим приростом.';
 
   @override
   String get waveGeneratorPointTrajectoryReset =>
-      'Локальные очки текущей волны становятся новой начальной точкой для последующих волн, которые продолжают увеличиваться с действующим приростом.';
+      'Очки текущей волны становятся новой начальной точкой для последующих волн, которые продолжают увеличиваться с действующим приростом.';
 
   @override
   String waveGeneratorPointTrajectoryWaveValue(int wave, int points) {
@@ -8507,16 +8507,109 @@ class AppLocalizationsRu extends AppLocalizations {
       'На этой волне пул зомби не расширяется.';
 
   @override
-  String get waveGeneratorWaveScreenSubtitle =>
-      'Фиксированный спавн, случайный спавн и параметры волны';
+  String get waveGeneratorWaveScreenSubtitle => 'Модуль генератора волн';
 
   @override
   String get waveGeneratorWaveScreenHelpTitle =>
-      'Справка по волне генератора волн';
+      'Справка по модулю генератора волн';
 
   @override
   String get waveGeneratorWaveScreenHelpBody =>
       'Во время случайного спавна игра выбирает по весу одного из зомби, доступных за оставшиеся очки, вычитает его стоимость и снова фильтрует кандидатов, пока доступных зомби не останется. Неиспользованные очки не переносятся на следующую волну. Фиксированный спавн добавляется непосредственно в текущую волну и не расходует очки случайного спавна.';
+
+  @override
+  String get waveGeneratorRandomSpawnsSectionTitle => 'Случайный спавн';
+
+  @override
+  String get waveGeneratorZombiePoolSectionTitle => 'Пул зомби';
+
+  @override
+  String get waveGeneratorWaveSettingsTitle => 'Настройки волны';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpTitle => 'Фиксированный спавн';
+
+  @override
+  String get waveGeneratorRandomSpawnsHelpTitle => 'Случайный спавн';
+
+  @override
+  String get waveGeneratorZombiePoolHelpTitle => 'Пул зомби';
+
+  @override
+  String get waveGeneratorWaveSettingsHelpTitle => 'Настройки волны';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpBody =>
+      'Фиксированный спавн добавляется непосредственно в текущую волну, не расходует очки случайного спавна и может использоваться одновременно с ним.';
+
+  @override
+  String get waveGeneratorPointTrajectoryHelpBody =>
+      'Предпросмотр траектории показывает эффективные очки случайного спавна, рассчитанные редактором для каждой волны. Он не отражает количество объектов фиксированного спавна.';
+
+  @override
+  String get waveGeneratorWavePoolAddHelpBody =>
+      'Зомби, добавленные на этой волне, сразу входят в эффективный пул и продолжают влиять на последующие волны. Добавление действует, даже если случайный спавн на этой волне отключён.';
+
+  @override
+  String get waveGeneratorPoolCompatibilityTitle => 'Ограничения типов';
+
+  @override
+  String get waveGeneratorPoolCompatibilityHelpBody =>
+      'Пул генератора волн поддерживает только стандартные игровые типы зомби, но не пользовательских зомби, определённых в уровне.';
+
+  @override
+  String get waveGeneratorWaitUntilAllDieHelpBody =>
+      'Определяет, должна ли эта волна дождаться уничтожения всех зомби предыдущей волны перед началом спавна.';
+
+  @override
+  String get waveGeneratorSpawnPlantFoodHelpBody =>
+      'Задаёт количество зомби на этой волне, которые несут и оставляют подкормку.';
+
+  @override
+  String waveGeneratorFixedSummary(int count, int rows) {
+    return 'Фиксированный спавн: $count · Рядов: $rows';
+  }
+
+  @override
+  String get waveGeneratorFixedSummaryEmpty => 'Нет фиксированного спавна';
+
+  @override
+  String waveGeneratorRandomSummary(int points) {
+    return 'Включён · $points очков';
+  }
+
+  @override
+  String waveGeneratorRandomLocalSummary(int points) {
+    return 'Включён · $points очков · Очки текущей волны';
+  }
+
+  @override
+  String get waveGeneratorRandomSummaryDisabled =>
+      'На этой волне нет случайного спавна';
+
+  @override
+  String waveGeneratorPoolSummary(int current, int added) {
+    return 'Текущих типов: $current · Добавлено: $added';
+  }
+
+  @override
+  String waveGeneratorPoolSummaryNoAdditions(int current) {
+    return 'Текущих типов: $current · Без расширения на этой волне';
+  }
+
+  @override
+  String get waveGeneratorWaveSettingsDefaultSummary =>
+      'Настройки по умолчанию';
+
+  @override
+  String waveGeneratorWaveSettingsPlantFoodSummary(int count) {
+    return 'Подкормка ×$count';
+  }
+
+  @override
+  String waveGeneratorWaveSettingsBlackHoleSummary(int cols) {
+    return 'Пространственно-временная дыра · $cols столбцов';
+  }
 
   @override
   String get waveGeneratorExpectationTapHint =>

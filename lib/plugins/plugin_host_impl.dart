@@ -74,19 +74,17 @@ class PluginHostImpl implements CPluginHost {
   CPluginAssets get assets => _assets;
 
   @override
-  void registerScreen(
-    String id,
-    String title,
-    CPluginScreenBuilder builder,
-  ) {
+  void registerScreen(String id, String title, CPluginScreenBuilder builder) {
     if (id.isEmpty) {
       throw ArgumentError('Screen id must not be empty');
     }
+    final key = title.isEmpty ? id : title;
     registry.register(
       PluginRegisteredScreen(
         pluginId: pluginId,
         screenId: id,
-        title: title.isEmpty ? id : title,
+        title: key,
+        titleBuilder: (context) => localize(context, key, key),
         builder: builder,
       ),
     );
@@ -162,7 +160,8 @@ class PluginHostImpl implements CPluginHost {
       BuildContext context,
       String fileName,
       String filePath,
-    ) onActivate, [
+    )
+    onActivate, [
     int? iconCodePoint,
     String? fileExtensions,
   ]) {
@@ -208,12 +207,7 @@ class PluginHostImpl implements CPluginHost {
         '(PluginHostHooks.openLevelPreview is unset).',
       );
     }
-    await opener(
-      context,
-      host: this,
-      filePath: filePath,
-      fileName: fileName,
-    );
+    await opener(context, host: this, filePath: filePath, fileName: fileName);
   }
 
   @override
@@ -286,13 +280,10 @@ class PluginHostImpl implements CPluginHost {
     final assets = _assets;
     PluginArbEntry? entry;
     if (assets is MemoryCPluginAssets) {
-      entry = lookupPluginArbEntry(
-        assets.tryReadString,
-        locale,
-        key,
-      );
+      entry = lookupPluginArbEntry(assets.tryReadString, locale, key);
     }
-    final raw = entry?.pattern ?? lookupHostL10n(context, key) ?? fallback ?? key;
+    final raw =
+        entry?.pattern ?? lookupHostL10n(context, key) ?? fallback ?? key;
     final placeholders = entry?.placeholders ?? const {};
     if (args == null || args.isEmpty) {
       // Still run MessageFormat so ICU strings without named slots are OK,

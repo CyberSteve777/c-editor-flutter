@@ -649,19 +649,6 @@ class _WaveRowCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.waveGeneratorEffectiveRandomPoints(waveState.randomSpawnPoints) ?? 'Random-spawn points: ${waveState.randomSpawnPoints}'} · '
-                            '${waveState.randomSpawnsEnabled ? (l10n?.waveGeneratorRandomSpawnsEnabled ?? 'Random spawns enabled') : (l10n?.waveGeneratorRandomSpawnsDisabled ?? 'No random spawns')}',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: waveState.randomSpawnsEnabled
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
                             [
                               l10n?.waveGeneratorFixedSpawnCount(
                                     waveState.fixedSpawnCount,
@@ -695,10 +682,8 @@ class _WaveRowCard extends StatelessWidget {
                               ),
                             )
                           else
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: [
+                            _CollapsibleWaveZombieList(
+                              entries: [
                                 for (final z in wave.zombies)
                                   WaveGeneratorZombieIconChip(
                                     localizedName: zombieDisplayName(z.type),
@@ -721,10 +706,8 @@ class _WaveRowCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: [
+                            _CollapsibleWaveZombieList(
+                              entries: [
                                 for (final entry in globalPool)
                                   WaveGeneratorZombieIconChip(
                                     sourceBadge: 'Z',
@@ -818,6 +801,84 @@ class _WaveRowCard extends StatelessWidget {
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+class _CollapsibleWaveZombieList extends StatefulWidget {
+  const _CollapsibleWaveZombieList({required this.entries});
+
+  final List<Widget> entries;
+
+  @override
+  State<_CollapsibleWaveZombieList> createState() =>
+      _CollapsibleWaveZombieListState();
+}
+
+class _CollapsibleWaveZombieListState
+    extends State<_CollapsibleWaveZombieList> {
+  static const _spacing = 6.0;
+  static const _expandButtonExtent = 40.0;
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final entryExtent = isDesktopPlatform(context) ? 36.0 : 32.0;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        final entriesPerFullRow =
+            ((availableWidth + _spacing) / (entryExtent + _spacing))
+                .floor()
+                .clamp(1, widget.entries.length.clamp(1, 1000000));
+        final twoRowCapacity = entriesPerFullRow * 2;
+        final canExpand = widget.entries.length > twoRowCapacity;
+
+        // When collapsed, reserve the final position on row two for the
+        // expand control. It is slightly wider than a zombie icon, so its
+        // capacity is calculated separately to prevent a third row.
+        final secondRowEntries =
+            ((availableWidth - _expandButtonExtent) / (entryExtent + _spacing))
+                .floor()
+                .clamp(0, entriesPerFullRow);
+        final collapsedEntryCount = entriesPerFullRow + secondRowEntries;
+        final visibleEntries = canExpand && !_expanded
+            ? widget.entries.take(collapsedEntryCount)
+            : widget.entries;
+
+        return Wrap(
+          spacing: _spacing,
+          runSpacing: _spacing,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            ...visibleEntries,
+            if (canExpand)
+              IconButton(
+                onPressed: () => setState(() => _expanded = !_expanded),
+                icon: Icon(
+                  _expanded ? Icons.expand_less : Icons.expand_more,
+                  color: theme.colorScheme.primary,
+                ),
+                constraints: const BoxConstraints.tightFor(
+                  width: _expandButtonExtent,
+                  height: _expandButtonExtent,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.05,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size.square(_expandButtonExtent),
+                ),
+              ),
+          ],
         );
       },
     );

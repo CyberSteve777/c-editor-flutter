@@ -247,6 +247,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final theme = Theme.of(context);
     final levelDef = widget.parsed.levelDef;
     final isDesktop = isDesktopPlatform(context);
+    final isNarrow = MediaQuery.sizeOf(context).width < 600;
 
     if (_isLoadingRepos) {
       return const AlertDialog(
@@ -277,28 +278,36 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          padding: EdgeInsets.fromLTRB(
+            isNarrow ? 12 : 20,
+            16,
+            isNarrow ? 12 : 20,
+            16,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children:
                 [
-              Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
+              Stack(
                 children: [
-                  Text(
-                        '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 48),
+                    child: Text(
+                      '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: widget.onBack,
-                    tooltip: l10n.back,
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: widget.onBack,
+                      tooltip: l10n.back,
+                      visualDensity: VisualDensity.compact,
+                    ),
                   ),
                 ],
               ),
@@ -1357,6 +1366,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     AppLocalizations l10n,
   ) {
     final (rows, cols) = getGridDimensions(widget.levelFile);
+    final isNarrow = MediaQuery.sizeOf(context).width < 600;
     
     final allGridCategories = _cachedGridCategories;
     final activeTabIndex = _prePlacedTabIndex;
@@ -1433,7 +1443,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(isNarrow ? 12 : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -2058,7 +2068,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               children: optionsForKind.map((option) {
                 final isSelected = activeKey == option.key;
                 String label = option.wave != null
-                    ? '${l10n.waveLabel} ${option.wave}'
+                    ? l10n.customZombieWaveItem(option.wave!)
                     : option.label;
                 return InkWell(
                   onTap: () => setState(() {
@@ -3348,7 +3358,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     const Icon(Icons.air, size: 16, color: Colors.blueGrey),
                     const SizedBox(width: 8),
                     Text(
-                      '${l10n.waveLabel} $wave: ${l10n.row} $rows',
+                      '${l10n.customZombieWaveItem(wave)}: ${l10n.row} $rows',
                       style: TextStyle(
                         fontSize: 14,
                         color: theme.colorScheme.onSurface.withValues(
