@@ -2765,7 +2765,7 @@
   "energyGridModuleWarningMessage": "Due to a game-side issue, generated Taiji Tiles may appear as purple X markers, but this does not affect their actual functionality.",
   "gridOverrideModuleAppearances": "Wave groups",
   "gridOverrideModuleWaveFieldOneBased": "Wave index",
-  "gridOverrideModuleTimelineNote": "Only the first group's configuration is shown on the Wave Manager timeline."
+  "gridOverrideModuleTimelineNote": "Only the first group's configuration is shown on the Wave Manager timeline.",
   "gridOverrideModuleInitialWaveNote": "This group is used for preset grid items. Added grid items will appear on the lawn before the level starts.",
   "gridOverrideModuleWaveSpawnNote": "Grid items in this group will spawn when Wave Generator wave {waveGeneratorWave} begins.",
   "@gridOverrideModuleWaveSpawnNote": {

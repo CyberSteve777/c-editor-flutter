@@ -8026,31 +8026,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get armrackModuleHelpOverviewBody =>
-      'Places weapon stands on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.';
+      'Places weapon stands from Kongfu World at specified positions on the lawn. Kongfu Zombies and Monk Zombies that pass by a Weapon Stand will pick up the weapon on it, transform into the corresponding special zombie, and fully restore their health. The weapon stand will break and disappear either when its own health is depleted or when the weapon on it is picked up.\nThis module also ensures that Weapon Stands display correctly in both the editor and the game, preventing them from incorrectly appearing with a sun texture.';
 
   @override
   String get armrackModuleHelpPlacement => 'Placement';
 
   @override
   String get armrackModuleHelpPlacementBody =>
-      'Choose a stand type, then tap a tile to place it (one per tile). Right-click or long-press a tile to remove its stand.';
+      'Select a weapon stand type, then click an empty tile to place the selected Weapon Stand. Only one can be placed on each tile. Right-click on desktop or long-press on mobile to remove the weapon stand from that tile.';
 
   @override
-  String get armrackModuleHelpWaveLimit => 'Wave limit';
+  String get armrackModuleHelpWaveLimit => 'Wave Limitations';
 
   @override
   String get armrackModuleHelpWaveLimitBody =>
-      'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.';
+      'In levels that use the Wave Manager, only the first group\'s configuration takes effect in-game, and only the first group is shown on the editor\'s Wave Timeline. When using the Wave Generator, weapon stands can be added to other wave groups normally and will spawn with their corresponding waves in the level.';
 
   @override
-  String get armrackModuleTypePalette => 'Stand type';
+  String get armrackModuleTypePalette => 'Weapon Stand Type';
 
   @override
-  String get armrackModuleExpectationLabel => 'Weapon stands';
+  String get armrackModuleExpectationLabel => 'Weapon Stands';
 
   @override
   String get armrackModuleIgnoredWaveOverridesWarning =>
-      'This level contains weapon stand overrides for waves other than wave 1. They are saved but not shown in the wave timeline because the game only applies wave 1.';
+      'The level contains weapon stand configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because the Wave Manager only reads the first group\'s configuration.';
 
   @override
   String armrackModuleRequiredMessage(String moduleName) {
@@ -8073,36 +8073,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      'Places Taiji Tiles on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.';
+      'Generates Taiji Tiles at specified positions on the lawn, commonly used in Kongfu World. When a plant is placed on a Taiji Tile, the Taiji emblem begins to flash and generates one Plant Food after 1000 ÷ the plant\'s sun cost seconds, then disappears. If the plant\'s sun cost is 0, no Plant Food will be generated.';
 
   @override
   String get energyGridModuleHelpPlacement => 'Placement';
 
   @override
   String get energyGridModuleHelpPlacementBody =>
-      'Tap an empty tile to place a Taiji Tile (one per tile). Right-click or long-press a tile to remove it.';
+      'Click an empty tile to place a Taiji Tile. Only one can be placed on each tile. Right-click on desktop or long-press on mobile to remove the Taiji Tile from that tile.';
 
   @override
-  String get energyGridModuleHelpWaveLimit => 'Wave limit';
+  String get energyGridModuleHelpWaveLimit => 'Wave Limitations';
 
   @override
   String get energyGridModuleHelpWaveLimitBody =>
-      'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.';
+      'In levels that use the Wave Manager, only the first group\'s configuration takes effect in-game, and only the first group is shown on the editor\'s Wave Timeline. When using the Wave Generator, Taiji Tiles can be added to other wave groups normally and will spawn with their corresponding waves in the level.';
 
   @override
   String get energyGridModuleTapToPlace =>
-      'Tap an empty tile to place a Taiji Tile.';
+      'Click an empty tile to place a Taiji Tile.';
 
   @override
-  String get energyGridModuleExpectationLabel => 'Taiji tiles';
+  String get energyGridModuleExpectationLabel => 'Taiji Tiles';
 
   @override
   String get energyGridModuleIgnoredWaveOverridesWarning =>
-      'This level contains Taiji Tile overrides for waves other than wave 1. They are saved but not shown in the wave timeline because the game only applies wave 1.';
+      'The level contains Taiji Tile configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because Wave Manager only reads the first group\'s configuration.';
 
   @override
   String get energyGridModuleWarningMessage =>
-      'Due to a game-side issue, generated Taiji Tiles may appear as purple X markers. This does not affect their actual functionality. If you want them to display properly, restarting the game is recommended.';
+      'Due to a game-side issue, generated Taiji Tiles may appear as purple X markers, but this does not affect their actual functionality.';
 
   @override
   String get gridOverrideModuleAppearances => 'Wave groups';
@@ -8112,15 +8112,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gridOverrideModuleTimelineNote =>
-      'Only wave 1 entries appear in the wave timeline tab.';
+      'Only the first group\'s configuration is shown on the Wave Manager timeline.';
 
   @override
   String get gridOverrideModuleInitialWaveNote =>
-      'This wave is used for preset grid items. Added grid items will appear on the lawn before the level starts.';
+      'This group is used for preset grid items. Added grid items will appear on the lawn before the level starts.';
 
   @override
   String gridOverrideModuleWaveSpawnNote(int waveGeneratorWave) {
-    return 'Grid items in this wave will spawn when Wave Generator wave $waveGeneratorWave begins.';
+    return 'Grid items in this group will spawn when Wave Generator wave $waveGeneratorWave begins.';
   }
 
   @override

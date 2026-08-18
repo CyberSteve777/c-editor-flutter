@@ -2698,10 +2698,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_ArmrackProperties => '配置功夫世界兵器架的生成情况';
 
   @override
-  String get moduleTitle_EnergyGridProperties => '太极瓷砖';
+  String get moduleTitle_EnergyGridProperties => '太极地砖';
 
   @override
-  String get moduleDesc_EnergyGridProperties => '配置功夫世界太极瓷砖的生成情况';
+  String get moduleDesc_EnergyGridProperties => '配置功夫世界太极地砖的生成情况';
 
   @override
   String get bronzeModuleTitle => '铜人像';
@@ -7631,21 +7631,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get armrackModuleHelpOverviewBody =>
-      '在第一波于场上放置兵器架。此模块用于让兵器架在编辑器和游戏中正常显示，避免出现错误的阳光贴图。';
+      '在场上指定位置放置功夫世界的兵器架。经过兵器架的功夫僵尸和武僧僵尸会拾取架上的兵器，变为对应的特殊僵尸并恢复全部生命值。兵器架自身生命值耗尽，或架上的兵器被拾取后，都会破碎并消失。\n此模块还可以确保兵器架在编辑器和游戏中正常显示，避免被错误显示为阳光贴图。';
 
   @override
   String get armrackModuleHelpPlacement => '放置方式';
 
   @override
   String get armrackModuleHelpPlacementBody =>
-      '选择兵器架类型后点击格子放置（每格仅一个）。桌面端右键或移动端长按可删除该格兵器架。';
+      '选择兵器架类型后，点击空白格子即可放置选中的兵器架，每格最多放置一个。桌面端右键或移动端长按可删除该格的兵器架。';
 
   @override
   String get armrackModuleHelpWaveLimit => '波次限制';
 
   @override
   String get armrackModuleHelpWaveLimitBody =>
-      '由于游戏限制，仅第一波配置在游戏中生效。仍可在此编辑其他波次组并保存到关卡文件，但只有第一波会显示在波次时间轴。';
+      '在使用波次管理器的关卡中，仅第1组的配置会在游戏中生效，也只有第1组配置会显示在编辑器的波次时间轴中。若使用波次生成器，兵器架可以正常添加至其他波次组，并在关卡中随对应的波次生成。';
 
   @override
   String get armrackModuleTypePalette => '兵器架类型';
@@ -7655,7 +7655,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get armrackModuleIgnoredWaveOverridesWarning =>
-      '此关卡包含第一波以外的兵器架配置。这些配置会保留，但不会显示在波次时间轴中，因为游戏仅应用第一波。';
+      '关卡中包含第1组以外的兵器架配置。这些配置会保留在关卡文件中，但不会显示在波次时间轴上，因为波次管理器只会读取第1组的配置。';
 
   @override
   String armrackModuleRequiredMessage(String moduleName) {
@@ -7668,45 +7668,45 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get energyGridModuleTitle => '太极瓷砖';
+  String get energyGridModuleTitle => '太极地砖';
 
   @override
-  String get energyGridModuleHelpTitle => '太极瓷砖模块说明';
+  String get energyGridModuleHelpTitle => '太极地砖模块说明';
 
   @override
   String get energyGridModuleHelpOverview => '简要介绍';
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      '在第一波于场上放置太极瓷砖。使用此模块配置关卡文件中的瓷砖位置。';
+      '在场上指定位置生成太极地砖，常见于功夫世界。植物种在太极地砖上后，太极图腾会开始闪烁，并在经过「1000 ÷ 该植物阳光消耗」秒后生成一颗能量豆，随后消失。若该植物的阳光消耗为0，则不会生成能量豆。';
 
   @override
   String get energyGridModuleHelpPlacement => '放置方式';
 
   @override
   String get energyGridModuleHelpPlacementBody =>
-      '点击空格放置太极瓷砖（每格仅一个）。桌面端右键或移动端长按可删除。';
+      '点击空白格子即可放置太极地砖，每格最多放置一个。桌面端右键或移动端长按可删除该格的太极地砖。';
 
   @override
   String get energyGridModuleHelpWaveLimit => '波次限制';
 
   @override
   String get energyGridModuleHelpWaveLimitBody =>
-      '由于游戏限制，仅第一波配置在游戏中生效。仍可在此编辑其他波次组并保存到关卡文件，但只有第一波会显示在波次时间轴。';
+      '在使用波次管理器的关卡中，仅第1组的配置会在游戏中生效，也只有第1组配置会显示在编辑器的波次时间轴中。若使用波次生成器，太极地砖可以正常添加至其他波次组，并在关卡中随对应的波次生成。';
 
   @override
-  String get energyGridModuleTapToPlace => '点击空格放置太极瓷砖。';
+  String get energyGridModuleTapToPlace => '点击空格放置太极地砖。';
 
   @override
-  String get energyGridModuleExpectationLabel => '太极瓷砖';
+  String get energyGridModuleExpectationLabel => '太极地砖';
 
   @override
   String get energyGridModuleIgnoredWaveOverridesWarning =>
-      '此关卡包含第一波以外的太极瓷砖配置。这些配置会保留，但不会显示在波次时间轴中，因为游戏仅应用第一波。';
+      '关卡中包含第1组以外的太极地砖配置。这些配置会保留在关卡文件中，但不会显示在波次时间轴上，因为波次管理器只会读取第1组的配置。';
 
   @override
   String get energyGridModuleWarningMessage =>
-      '由于游戏端问题，生成的太极瓷砖可能显示为紫色 X 标记，这不影响实际功能。';
+      '由于游戏本身的问题，生成的太极地砖可能显示为紫色叉号，但不会影响实际功能。';
 
   @override
   String get gridOverrideModuleAppearances => '生成组';
@@ -7715,7 +7715,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gridOverrideModuleWaveFieldOneBased => '波次编号';
 
   @override
-  String get gridOverrideModuleTimelineNote => '仅第一波条目会显示在波次时间轴中。';
+  String get gridOverrideModuleTimelineNote => '只有第1组配置会显示在波次管理器的时间线中。';
 
   @override
   String get gridOverrideModuleInitialWaveNote =>
@@ -8059,7 +8059,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorNoScriptedZombies => '该波没有脚本僵尸。';
 
   @override
-  String get waveGeneratorSpawnPlantFood => '植物食物掉落 (SpawnPlantFoodCount)';
+  String get waveGeneratorSpawnPlantFood => '能量豆掉落 (SpawnPlantFoodCount)';
 
   @override
   String get waveGeneratorWavePointStart => '波次点数起始 (WavePointStart)';
