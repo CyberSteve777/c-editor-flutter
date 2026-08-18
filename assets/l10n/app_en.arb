@@ -2734,7 +2734,7 @@
   "armrackModuleHelpWaveLimitBody": "In levels that use the Wave Manager, only the first group's configuration takes effect in-game, and only the first group is shown on the editor's Wave Timeline. When using the Wave Generator, weapon stands can be added to other wave groups normally and will spawn with their corresponding waves in the level.",
   "armrackModuleTypePalette": "Weapon Stand Type",
   "armrackModuleExpectationLabel": "Weapon Stands",
-  "armrackModuleIgnoredWaveOverridesWarning": "The level contains Weapon Stand configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because the Wave Manager only reads the first group's configuration."
+  "armrackModuleIgnoredWaveOverridesWarning": "The level contains weapon stand configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because the Wave Manager only reads the first group's configuration.",
   "armrackModuleRequiredMessage": "For weapon stands to display properly without showing sun textures, {moduleName} needs to be added.",
   "@armrackModuleRequiredMessage": {
     "placeholders": {
