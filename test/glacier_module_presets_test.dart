@@ -10,9 +10,9 @@ import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Widget _localizedApp(Widget home) {
+Widget _localizedApp(Widget home, {Locale locale = const Locale('zh')}) {
   return MaterialApp(
-    locale: const Locale('zh'),
+    locale: locale,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(body: home),
@@ -193,6 +193,55 @@ void main() {
       );
     },
   );
+
+  testWidgets('narrow preset labels ellipsize and English count is concise', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final module = PvzObject(
+      aliases: const ['GlacierModule'],
+      objClass: 'GlacierModuleProperties',
+      objData: GlacierModulePresets.defaultPreset.createData().toJson(),
+    );
+    final level = PvzLevelFile(objects: [module]);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        GlacierModuleScreen(
+          rtid: 'RTID(GlacierModule@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+          onRequestZombieSelection: (_) {},
+        ),
+        locale: const Locale('en'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('1 item configured'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('glacierPresetSelector')));
+    await tester.pumpAndSettle();
+
+    final blankChip = tester.widget<ChoiceChip>(
+      find.byKey(
+        const ValueKey(
+          'glacierPresetChip_${GlacierModulePresets.customBlankId}',
+        ),
+      ),
+    );
+    final labelBox = blankChip.label as SizedBox;
+    final labelText = labelBox.child! as Text;
+    expect(labelBox.width, greaterThan(0));
+    expect(labelText.maxLines, 2);
+    expect(labelText.overflow, TextOverflow.ellipsis);
+    expect(labelText.textAlign, TextAlign.center);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('selecting the Ice Age base creates the Day 25 preset', (
     tester,

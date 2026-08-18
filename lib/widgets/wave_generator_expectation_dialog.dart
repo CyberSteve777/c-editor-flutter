@@ -30,22 +30,12 @@ void showWaveGeneratorExpectationDialog(
   BuildContext context, {
   required WaveGeneratorPropertiesData data,
   required int waveIndex,
-  required bool isFlagWave,
 }) {
   final l10n = AppLocalizations.of(context);
-  final points = WaveGeneratorPointAnalysis.pointsAtWave(
-    data,
-    waveIndex,
-    isFlagWave: isFlagWave,
-  );
-  final expectation = WaveGeneratorPointAnalysis.calculateExpectation(
-    data,
-    waveIndex,
-    isFlagWave: isFlagWave,
-  );
-  final sorted = expectation.entries.toList()
-    ..sort((a, b) => b.value.compareTo(a.value));
-  final items = sorted.where((e) => e.value > 0).toList();
+  final preview = WaveGeneratorPointAnalysis.calculatePreview(data, waveIndex);
+  final items = preview.entries
+      .where((entry) => entry.averageCount > 0)
+      .toList();
 
   showDialog<void>(
     context: context,
@@ -55,14 +45,52 @@ void showWaveGeneratorExpectationDialog(
       final listSize = _expectationDialogListSize(ctx);
       return AlertDialog(
         title: Text(
-          '${l10n?.waveLabel ?? 'Wave'} $waveIndex ${l10n?.expectation ?? 'Expectation'}',
+          l10n?.waveGeneratorExpectationTitle(waveIndex) ??
+              '${l10n?.waveLabel ?? 'Wave'} $waveIndex — Random spawn preview',
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${l10n?.pointsLabel ?? 'Points'}: $points'),
-            if (items.isEmpty) ...[
+            Text(
+              l10n?.waveGeneratorEffectiveRandomPoints(preview.points) ??
+                  'Effective random-spawn points: ${preview.points}',
+              style: Theme.of(
+                ctx,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n?.waveGeneratorFixedSpawnCount(preview.fixedSpawnCount) ??
+                  'Fixed spawns: ${preview.fixedSpawnCount}',
+            ),
+            if (preview.missingDataTypes.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(ctx).colorScheme.errorContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    l10n?.waveGeneratorExpectationMissingData(
+                          preview.missingDataTypes.join(', '),
+                        ) ??
+                        'Preview unavailable because some zombies are missing WavePointCost or Weight data: ${preview.missingDataTypes.join(', ')}',
+                    style: TextStyle(
+                      color: Theme.of(ctx).colorScheme.onErrorContainer,
+                    ),
+                  ),
+                ),
+              ),
+            ] else if (!preview.randomSpawnsEnabled) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n?.waveGeneratorExpectationDisabled ??
+                    'Random spawning is disabled on this wave.',
+              ),
+            ] else if (preview.poolIsEmpty || preview.points <= 0) ...[
               const SizedBox(height: 12),
               Text(
                 l10n?.waveGeneratorExpectationEmpty ??
@@ -72,8 +100,25 @@ void showWaveGeneratorExpectationDialog(
             ] else ...[
               const SizedBox(height: 8),
               Text(
+                l10n?.waveGeneratorExpectationEstimatedTotal(
+                      preview.averageTotal.toStringAsFixed(1),
+                    ) ??
+                    'Estimated random spawns: about ${preview.averageTotal.toStringAsFixed(1)}',
+                style: Theme.of(
+                  ctx,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                l10n?.waveGeneratorExpectationCommonRange(
+                      preview.commonMinimum,
+                      preview.commonMaximum,
+                    ) ??
+                    'Common range: ${preview.commonMinimum}–${preview.commonMaximum}',
+              ),
+              const SizedBox(height: 6),
+              Text(
                 l10n?.waveGeneratorExpectationPoolNote ??
-                    'Expectations are based on the cumulative AddToZombiePool. Other zombies may still appear if points are high enough.',
+                    'This is a stable statistical preview of repeated weighted purchases from the current effective pool, not a prediction of the game RNG.',
                 style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
                   color: Theme.of(ctx).colorScheme.onSurfaceVariant,
                 ),
@@ -91,7 +136,7 @@ void showWaveGeneratorExpectationDialog(
                     itemCount: items.length,
                     itemBuilder: (_, i) {
                       final e = items[i];
-                      final typeName = e.key;
+                      final typeName = e.id;
                       final info = ZombieRepository().getZombieById(typeName);
                       final nameKey =
                           info?.name ?? ZombieRepository().getName(typeName);
@@ -145,12 +190,29 @@ void showWaveGeneratorExpectationDialog(
                                           ).colorScheme.onSurfaceVariant,
                                         ),
                                   ),
+                                  Text(
+                                    l10n?.waveGeneratorExpectationCostWeight(
+                                          e.cost,
+                                          e.weight.toStringAsFixed(0),
+                                        ) ??
+                                        'Cost ${e.cost} · Weight ${e.weight.toStringAsFixed(0)}',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(ctx).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            ctx,
+                                          ).colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
                                 ],
                               ),
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              e.value.toStringAsFixed(2),
+                              l10n?.waveGeneratorExpectationAverageCount(
+                                    e.averageCount.toStringAsFixed(2),
+                                  ) ??
+                                  'Avg. ${e.averageCount.toStringAsFixed(2)}',
                               style: Theme.of(ctx).textTheme.bodyMedium,
                             ),
                           ],

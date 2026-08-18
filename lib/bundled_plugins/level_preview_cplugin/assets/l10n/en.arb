@@ -1,14 +1,14 @@
 {
   "@@locale": "en",
-  "pluginName": "Level Preview",
+  "pluginName": "Level Overview",
   "@pluginName": {
     "description": "Plugin display name"
   },
-  "pluginDescription": "Preview plants, zombies, and layout for the open or selected level",
+  "pluginDescription": "View an overview of the plants, zombies, and layout in the open or selected level",
   "@pluginDescription": {
     "description": "Plugin display description"
   },
-  "levelPreview": "Level Preview",
+  "levelPreview": "Level Overview",
   "@levelPreview": {
     "description": "Preview action title"
   },
@@ -19,5 +19,6 @@
   "previewLevelContent": "Level Content",
   "previewSeedBank": "Seed Bank",
   "previewFeatures": "Level Features",
+  "previewActiveModules": "Active Modules",
   "previewInitial": "Initial"
 }

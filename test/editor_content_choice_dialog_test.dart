@@ -67,9 +67,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Seed Rain uses descriptive content choice cards', (
-    tester,
-  ) async {
+  testWidgets('Seed Rain keeps content choice cards compact', (tester) async {
     final module = PvzObject(
       aliases: const ['SeedRain'],
       objClass: 'SeedRainProperties',
@@ -105,19 +103,98 @@ void main() {
       find.byKey(const ValueKey('editorChoiceOption_collectable')),
       findsOneWidget,
     );
-    expect(find.textContaining('植物卡片'), findsOneWidget);
-    expect(find.textContaining('僵尸卡片'), findsOneWidget);
-    expect(find.textContaining('能量豆'), findsAtLeastNWidgets(2));
+    expect(find.textContaining('植物卡片'), findsNothing);
+    expect(find.textContaining('僵尸卡片'), findsNothing);
+    expect(find.textContaining('能量豆'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Vasebreaker uses the same descriptive add-content cards', (
+  testWidgets(
+    'Vasebreaker keeps add-content cards compact and title icon-free',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final module = PvzObject(
+        aliases: const ['VaseBreakerPreset'],
+        objClass: 'VaseBreakerPresetProperties',
+        objData: VaseBreakerPresetData().toJson(),
+      );
+
+      await tester.pumpWidget(
+        _localizedApp(
+          Scaffold(
+            body: VaseBreakerTab(
+              levelFile: PvzLevelFile(objects: [module]),
+              onChanged: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.text('罐子列表'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final titleRow = find.ancestor(
+        of: find.text('罐子列表'),
+        matching: find.byType(Row),
+      );
+      await tester.tap(
+        find.descendant(of: titleRow, matching: find.byIcon(Icons.add)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('添加罐子'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('editorChoiceOption_plant')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('editorChoiceOption_zombie')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('editorChoiceOption_collectable')),
+        findsOneWidget,
+      );
+      expect(find.textContaining('选择一种植物'), findsNothing);
+      expect(find.textContaining('选择一种僵尸'), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byIcon(Icons.inventory_2_outlined),
+        ),
+        findsNothing,
+      );
+      expect(
+        tester
+            .getSize(find.byKey(const ValueKey('editorChoiceOption_plant')))
+            .width,
+        greaterThan(240),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('Vasebreaker stacks item actions below text on narrow screens', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final module = PvzObject(
       aliases: const ['VaseBreakerPreset'],
       objClass: 'VaseBreakerPresetProperties',
-      objData: VaseBreakerPresetData().toJson(),
+      objData: VaseBreakerPresetData(
+        vases: [VaseDefinition(zombieTypeName: 'tutorial', count: 5)],
+      ).toJson(),
     );
 
     await tester.pumpWidget(
@@ -132,35 +209,20 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final title = find.byKey(const ValueKey('vaseListItemTitle_0'));
     await tester.scrollUntilVisible(
-      find.text('罐子列表'),
+      title,
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    final titleRow = find.ancestor(
-      of: find.text('罐子列表'),
-      matching: find.byType(Row),
-    );
-    await tester.tap(
-      find.descendant(of: titleRow, matching: find.byIcon(Icons.add)),
-    );
     await tester.pumpAndSettle();
 
-    expect(find.text('添加罐子'), findsOneWidget);
+    final actions = find.byKey(const ValueKey('vaseListItemActions_0'));
+    expect(tester.getSize(title).width, greaterThan(100));
     expect(
-      find.byKey(const ValueKey('editorChoiceOption_plant')),
-      findsOneWidget,
+      tester.getTopLeft(actions).dy,
+      greaterThan(tester.getTopLeft(title).dy),
     );
-    expect(
-      find.byKey(const ValueKey('editorChoiceOption_zombie')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('editorChoiceOption_collectable')),
-      findsOneWidget,
-    );
-    expect(find.textContaining('绿色罐子'), findsOneWidget);
-    expect(find.textContaining('紫色罐子'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

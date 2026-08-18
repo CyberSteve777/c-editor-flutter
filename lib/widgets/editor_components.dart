@@ -208,11 +208,54 @@ abstract final class EditorItemCardLayout {
   static double gridPreviewMaxWidth(BuildContext context) =>
       compact(context) ? 360 : 480;
 
+  /// Matches the wider lawn editors used by Tunnel Defend and Expedition
+  /// Tiles while still filling the available width on narrow screens.
+  static const double placementGridMaxWidth = 560;
+
   /// Scales +N count badges from rendered lawn cell width (cells are square).
   static double gridCellBadgeScaleForCell(double cellWidth) {
     if (cellWidth <= 0 || !cellWidth.isFinite) return 1.0;
     const referenceCell = 52.0;
     return (cellWidth / referenceCell).clamp(0.4, 1.0);
+  }
+}
+
+/// A placement-grid card that lets the lawn use the card's full width on
+/// narrow screens. The heading keeps the usual inset so only the grid grows.
+class EditorPlacementGridCard extends StatelessWidget {
+  const EditorPlacementGridCard({
+    super.key,
+    required this.header,
+    required this.grid,
+  });
+
+  final Widget header;
+  final Widget grid;
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = EditorItemCardLayout.compact(context);
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          compact ? 0 : 16,
+          16,
+          compact ? 0 : 16,
+          16,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: compact ? 16 : 0),
+              child: header,
+            ),
+            const SizedBox(height: 16),
+            grid,
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -1191,13 +1234,13 @@ class EditorChoiceDialogOption<T> {
     required this.value,
     required this.icon,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
   });
 
   final T value;
   final IconData icon;
   final String title;
-  final String subtitle;
+  final String? subtitle;
 }
 
 /// Shows add-content choices as descriptive cards instead of plain text rows.
@@ -1205,7 +1248,6 @@ Future<T?> showEditorChoiceDialog<T>(
   BuildContext context, {
   required String title,
   required List<EditorChoiceDialogOption<T>> options,
-  IconData titleIcon = Icons.add_circle_outline,
 }) {
   return showDialog<T>(
     context: context,
@@ -1213,19 +1255,25 @@ Future<T?> showEditorChoiceDialog<T>(
       final theme = Theme.of(ctx);
       final colors = theme.colorScheme;
       final l10n = AppLocalizations.of(ctx);
+      final compact = MediaQuery.sizeOf(ctx).width < 400;
       return AlertDialog(
-        title: Row(
-          children: [
-            Icon(titleIcon, color: colors.primary),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: compact ? 16 : 40,
+          vertical: 24,
         ),
+        titlePadding: EdgeInsets.fromLTRB(
+          compact ? 16 : 24,
+          compact ? 20 : 24,
+          compact ? 16 : 24,
+          12,
+        ),
+        contentPadding: EdgeInsets.fromLTRB(
+          compact ? 12 : 24,
+          0,
+          compact ? 12 : 24,
+          0,
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 440),
           child: SingleChildScrollView(
@@ -1250,13 +1298,13 @@ Future<T?> showEditorChoiceDialog<T>(
                       child: InkWell(
                         onTap: () => Navigator.pop(ctx, option.value),
                         child: Padding(
-                          padding: const EdgeInsets.all(14),
+                          padding: EdgeInsets.all(compact ? 12 : 14),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Container(
-                                width: 48,
-                                height: 48,
+                                width: compact ? 44 : 48,
+                                height: compact ? 44 : 48,
                                 decoration: BoxDecoration(
                                   color: colors.primaryContainer,
                                   borderRadius: BorderRadius.circular(14),
@@ -1267,7 +1315,7 @@ Future<T?> showEditorChoiceDialog<T>(
                                   size: 27,
                                 ),
                               ),
-                              const SizedBox(width: 14),
+                              SizedBox(width: compact ? 12 : 14),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1280,19 +1328,22 @@ Future<T?> showEditorChoiceDialog<T>(
                                             fontWeight: FontWeight.bold,
                                           ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      option.subtitle,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: colors.onSurfaceVariant,
-                                            height: 1.3,
-                                          ),
-                                    ),
+                                    if (option.subtitle?.trim().isNotEmpty ==
+                                        true) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        option.subtitle!,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: colors.onSurfaceVariant,
+                                              height: 1.3,
+                                            ),
+                                      ),
+                                    ],
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: compact ? 4 : 8),
                               Icon(
                                 Icons.chevron_right,
                                 color: colors.onSurfaceVariant,

@@ -161,41 +161,32 @@ class _InitialGridItemEntryScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                EditorPlacementGridCard(
+                  header: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                Text(
-                                  l10n?.selectedPosition ?? 'Selected position',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                                ],
+                            Text(
+                              l10n?.selectedPosition ?? 'Selected position',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'R${_selectedY + 1} : C${_selectedX + 1}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildGrid(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  grid: _buildGrid(),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -265,8 +256,8 @@ class _InitialGridItemEntryScreenState
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: BoxConstraints(
-          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(context),
+        constraints: const BoxConstraints(
+          maxWidth: EditorItemCardLayout.placementGridMaxWidth,
         ),
         child: AspectRatio(
           aspectRatio: _gridCols / _gridRows,

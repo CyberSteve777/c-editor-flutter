@@ -1034,8 +1034,10 @@ class _EditorScreenState extends State<EditorScreen> {
     final meta = await Navigator.push<ModuleMetadata>(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ModuleSelectionScreen(existingObjClasses: existingObjClasses),
+        builder: (context) => ModuleSelectionScreen(
+          existingObjClasses: existingObjClasses,
+          stateBucketId: '$_selectionStateBucketId:module-selection',
+        ),
       ),
     );
 

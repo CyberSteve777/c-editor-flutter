@@ -156,31 +156,21 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
     final choice = await showEditorChoiceDialog<String>(
       context,
       title: l10n?.seedRainAddContentTitle ?? 'Add seed-rain content',
-      titleIcon: Icons.cloud_download_outlined,
       options: [
         EditorChoiceDialogOption(
           value: 'plant',
           icon: Icons.eco_outlined,
           title: l10n?.plant ?? 'Plant',
-          subtitle:
-              l10n?.seedRainAddPlantDescription ??
-              'Select one or more plant seed packets to fall from the sky.',
         ),
         EditorChoiceDialogOption(
           value: 'zombie',
           icon: Icons.pest_control_outlined,
           title: l10n?.zombie ?? 'Zombie',
-          subtitle:
-              l10n?.seedRainAddZombieDescription ??
-              'Select one or more zombie cards to fall from the sky.',
         ),
         EditorChoiceDialogOption(
           value: 'collectable',
           icon: Icons.local_florist_outlined,
           title: l10n?.collectable ?? 'Collectible (Plant Food)',
-          subtitle:
-              l10n?.seedRainAddPlantFoodDescription ??
-              'Add Plant Food as a possible falling item.',
         ),
       ],
     );

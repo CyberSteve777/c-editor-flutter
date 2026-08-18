@@ -169,35 +169,6 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
     );
   }
 
-  Future<void> _confirmAddPoolZombie() async {
-    final l10n = AppLocalizations.of(context);
-    final shouldContinue = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          l10n?.waveGeneratorInitialPoolWarningTitle ??
-              'Add to initial zombie pool?',
-        ),
-        content: Text(
-          l10n?.waveGeneratorInitialPoolWarningContent ??
-              'Zombies added here are not included in the editor random spawn expectation preview and will not take effect in-game. Continue?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n?.addType ?? 'Add'),
-          ),
-        ],
-      ),
-    );
-    if (!mounted || shouldContinue != true) return;
-    _addPoolZombie();
-  }
-
   void _addPoolZombie() {
     final l10n = AppLocalizations.of(context);
     widget.onRequestZombieSelection((selectedId) {
@@ -315,7 +286,6 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -375,6 +345,14 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
                       'WaveSpendingPoints must be less than or equal to WaveSpendingPointIncrement or the level crashes on load.',
                 ),
                 HelpSectionData(
+                  title:
+                      l10n?.waveGeneratorModuleHelpPointTrajectory ??
+                      'Point trajectory',
+                  body:
+                      l10n?.waveGeneratorModuleHelpPointTrajectoryBody ??
+                      'The random-spawn budget advances every wave, including waves where random spawning is disabled. Per-wave point settings can temporarily replace or reset this trajectory.',
+                ),
+                HelpSectionData(
                   title: l10n?.waveGeneratorModuleHelpPool ?? 'Zombie pool',
                   body:
                       l10n?.waveGeneratorModuleHelpPoolBody ??
@@ -398,7 +376,7 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -463,6 +441,37 @@ ModuleAliasInputField(
                         }
                       },
                     ),
+                    if (!_data.spendingPointsValid) ...[
+                      const SizedBox(height: 12),
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.warning_amber_rounded,
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  l10n?.waveGeneratorSpendingCompatibilityWarning ??
+                                      'The initial points exceed the per-wave increment. Existing compatibility checks mark this as a level-load crash risk.',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.onErrorContainer,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 8),
                     Text(
                       l10n?.waveGeneratorWaveCountSummary(_data.waves.length) ??
@@ -494,9 +503,7 @@ ModuleAliasInputField(
                         IconButton(
                           icon: const Icon(Icons.add),
                           tooltip: l10n?.addType ?? 'Add',
-                          onPressed: () {
-                            _confirmAddPoolZombie();
-                          },
+                          onPressed: _addPoolZombie,
                         ),
                       ],
                     ),

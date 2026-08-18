@@ -53,14 +53,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return rows;
   }
 
-  bool get _isFlagWave {
-    final interval = _generatorData.flagWaveInterval <= 0
-        ? 10
-        : _generatorData.flagWaveInterval;
-    return widget.waveIndex % interval == 0 ||
-        widget.waveIndex == _generatorData.waves.length;
-  }
-
   int? _readJsonInt(dynamic value) {
     if (value is int) return value;
     if (value is num) return value.round();
@@ -124,15 +116,11 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return result;
   }
 
-  void _handleZombieDragDropMove(
-      int fromIndex,
-      int toRow,
-      int rowInsertIndex,
-      ) {
+  void _handleZombieDragDropMove(int fromIndex, int toRow, int rowInsertIndex) {
     final zombies = List<WaveGeneratorZombieEntryData>.from(_wave.zombies);
     final parallelLevels = List<int?>.generate(
       zombies.length,
-          (i) => _zombieLevels[i],
+      (i) => _zombieLevels[i],
     );
     moveWaveGeneratorZombieInListByRowSlot(
       zombies: zombies,
@@ -172,7 +160,12 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     if (RtidParser.parse(rtid)?.source == 'CurrentLevel') {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n?.waveGeneratorCustomZombieBlocked ?? 'Custom zombies not supported')),
+          SnackBar(
+            content: Text(
+              l10n?.waveGeneratorCustomZombieBlocked ??
+                  'Custom zombies not supported',
+            ),
+          ),
         );
       }
       return;
@@ -261,41 +254,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return result;
   }
 
-  WaveGeneratorPropertiesData _expectationData() {
-    final scriptedTypes = <String>{};
-    for (final wave in _generatorData.waves) {
-      for (final zombie in wave.zombies) {
-        scriptedTypes.add(zombie.type);
-      }
-    }
-
-    final expectationWaves = _generatorData.waves.map((wave) {
-      return WaveGeneratorWaveData(
-        disableRandomSpawns: wave.disableRandomSpawns,
-        zombies: wave.zombies,
-        spawnPlantFoodCount: wave.spawnPlantFoodCount,
-        addToZombiePool: wave.addToZombiePool
-            .where((entry) => !scriptedTypes.contains(entry.type))
-            .toList(),
-        wavePointStart: wave.wavePointStart,
-        wavePointIncrement: wave.wavePointIncrement,
-        colNumPlantIsDragged: wave.colNumPlantIsDragged,
-        waitUntilAllZombiesDie: wave.waitUntilAllZombiesDie,
-      );
-    }).toList();
-
-    return WaveGeneratorPropertiesData(
-      addToZombiePool: scriptedTypes
-          .map((type) => WaveGeneratorPoolEntryData(type: type))
-          .toList(),
-      flagWaveInterval: _generatorData.flagWaveInterval,
-      waveCount: _generatorData.waveCount,
-      waveSpendingPoints: _generatorData.waveSpendingPoints,
-      waveSpendingPointIncrement: _generatorData.waveSpendingPointIncrement,
-      waves: expectationWaves,
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -343,6 +301,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     required String label,
     String? helperText,
     int? helperMaxLines,
+    bool enabled = true,
     required ValueChanged<String> onChanged,
   }) {
     final theme = Theme.of(context);
@@ -359,6 +318,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
+          enabled: enabled,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             helperText: helperText,
@@ -442,6 +402,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     List<WaveGeneratorPoolEntryData>? addToZombiePool,
     int? wavePointStart,
     int? wavePointIncrement,
+    bool? wavePointOverride,
     int? colNumPlantIsDragged,
     bool? waitUntilAllZombiesDie,
     bool clearSpawnPlantFood = false,
@@ -462,6 +423,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       wavePointIncrement: clearWavePointIncrement
           ? null
           : (wavePointIncrement ?? _wave.wavePointIncrement),
+      wavePointOverride: wavePointOverride ?? _wave.wavePointOverride,
       colNumPlantIsDragged: clearColNumPlantIsDragged
           ? null
           : (colNumPlantIsDragged ?? _wave.colNumPlantIsDragged),
@@ -561,13 +523,10 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       final rowStr = rowValue == 0 ? '?' : '$rowValue';
       final newIndex = _wave.zombies.length;
       _setZombieLevelInMemory(newIndex, rtid, null);
-      _assignWaveZombies(
-        [
-          ..._wave.zombies,
-          WaveGeneratorZombieEntryData(type: rtid, row: rowStr),
-        ],
-        sortRows: true,
-      );
+      _assignWaveZombies([
+        ..._wave.zombies,
+        WaveGeneratorZombieEntryData(type: rtid, row: rowStr),
+      ], sortRows: true);
     });
   }
 
@@ -579,7 +538,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   }
 
   void _addPoolEntry() {
-    if (_wave.disableRandomSpawns) return;
     final l10n = AppLocalizations.of(context);
     widget.onRequestZombieSelection((selectedId) {
       if (_isYetiZombie(selectedId)) {
@@ -625,9 +583,80 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   void _showExpectation() {
     showWaveGeneratorExpectationDialog(
       context,
-      data: _expectationData(),
+      data: _generatorData,
       waveIndex: widget.waveIndex,
-      isFlagWave: _isFlagWave,
+    );
+  }
+
+  Widget _buildPointTrajectoryPreview(AppLocalizations? l10n) {
+    final theme = Theme.of(context);
+    final firstWave = widget.waveIndex > 1 ? widget.waveIndex - 1 : 1;
+    final lastWave = (_generatorData.waves.length < widget.waveIndex + 2)
+        ? _generatorData.waves.length
+        : widget.waveIndex + 2;
+    final statusText = _wave.wavePointStart == null
+        ? null
+        : (_wave.wavePointOverride ?? false)
+        ? (l10n?.waveGeneratorPointTrajectoryReset ??
+              'The point trajectory is reset from this wave.')
+        : (l10n?.waveGeneratorPointTrajectoryTemporary ??
+              'Only this wave uses the local point value.');
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n?.waveGeneratorPointTrajectory ?? 'Point trajectory',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (var wave = firstWave; wave <= lastWave; wave++)
+                  Chip(
+                    avatar: wave == widget.waveIndex
+                        ? Icon(
+                            Icons.my_location,
+                            size: 16,
+                            color: theme.colorScheme.primary,
+                          )
+                        : null,
+                    label: Text(
+                      l10n?.waveGeneratorPointTrajectoryWaveValue(
+                            wave,
+                            WaveGeneratorPointAnalysis.pointsAtWave(
+                              _generatorData,
+                              wave,
+                            ),
+                          ) ??
+                          'W$wave · ${WaveGeneratorPointAnalysis.pointsAtWave(_generatorData, wave)}',
+                    ),
+                  ),
+              ],
+            ),
+            if (statusText != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                statusText,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
@@ -635,14 +664,16 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final expectationData = _expectationData();
     final points = WaveGeneratorPointAnalysis.pointsAtWave(
-      expectationData,
+      _generatorData,
       widget.waveIndex,
-      isFlagWave: _isFlagWave,
     );
     final showExpectation = WaveGeneratorPointAnalysis.showExpectationForWave(
-      expectationData,
+      _generatorData,
+      widget.waveIndex,
+    );
+    final effectivePool = WaveGeneratorPointAnalysis.poolAtWave(
+      _generatorData,
       widget.waveIndex,
     );
 
@@ -682,7 +713,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                   title: l10n?.waveGeneratorModuleHelpOverview ?? 'Overview',
                   body:
                       l10n?.waveGeneratorWaveScreenHelpBody ??
-                      'Edit scripted spawns and wave-specific options. Random spawns use the cumulative zombie pool and spending points.',
+                      'Fixed spawns are added directly and do not consume random-spawn points. Random spawns use the cumulative zombie pool.',
                 ),
                 HelpSectionData(
                   title: l10n?.expectation ?? 'Expectation',
@@ -790,7 +821,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n?.zombieList ?? 'Zombie list',
+                        l10n?.waveGeneratorFixedSpawns ?? 'Fixed spawns',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -832,6 +863,8 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                         label:
                             l10n?.waveGeneratorWavePointStart ??
                             'Wave point start (WavePointStart)',
+                        helperText: l10n?.waveGeneratorWavePointStartHint,
+                        helperMaxLines: 4,
                         onChanged: (v) {
                           final trimmed = v.trim();
                           if (trimmed.isEmpty) {
@@ -851,6 +884,11 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                         label:
                             l10n?.waveGeneratorWavePointIncrement ??
                             'Wave point increment (WavePointIncrement)',
+                        enabled: _wave.wavePointStart != null,
+                        helperText: _wave.wavePointStart == null
+                            ? l10n?.waveGeneratorWavePointIncrementInactiveHint
+                            : l10n?.waveGeneratorWavePointIncrementHint,
+                        helperMaxLines: 4,
                         onChanged: (v) {
                           final trimmed = v.trim();
                           if (trimmed.isEmpty) {
@@ -864,6 +902,27 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                           _sync();
                         },
                       ),
+                      const SizedBox(height: 4),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          l10n?.waveGeneratorWavePointOverride ??
+                              'Reset point trajectory (WavePointOverride)',
+                        ),
+                        subtitle: Text(
+                          l10n?.waveGeneratorWavePointOverrideHint ??
+                              'When enabled, later waves continue from the local start and increment.',
+                        ),
+                        value: _wave.wavePointOverride ?? false,
+                        onChanged: _wave.wavePointStart == null
+                            ? null
+                            : (value) {
+                                _wave = _copyWave(wavePointOverride: value);
+                                _sync();
+                              },
+                      ),
+                      const SizedBox(height: 8),
+                      _buildPointTrajectoryPreview(l10n),
                       const SizedBox(height: 12),
                       _buildLabeledNumberField(
                         controller: _blackHoleCtrl,
@@ -890,67 +949,103 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              if (!_wave.disableRandomSpawns)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n?.waveGeneratorCurrentPool ??
+                            'Current effective zombie pool',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      if (_wave.disableRandomSpawns)
+                        Text(
+                          l10n?.waveGeneratorWavePoolDisabled ??
+                              'This wave does not use random spawns. Pool changes still affect later waves.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      if (effectivePool.isEmpty)
+                        Text(
+                          l10n?.waveGeneratorCurrentPoolEmpty ??
+                              'The effective zombie pool is empty.',
+                          style: theme.textTheme.bodySmall,
+                        )
+                      else
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
                           children: [
-                            Expanded(
-                              child: Text(
-                                l10n?.waveGeneratorWavePoolAdd ??
-                                    'Add to pool this wave (AddToZombiePool)',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            for (final type in effectivePool)
+                              WaveGeneratorZombieTile(
+                                style: WaveGeneratorZombieTileStyle.poolCompact,
+                                localizedName: _zombieDisplayName(type),
+                                codename: _zombieCodename(type),
+                                iconPath: _zombieIcon(type),
                               ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              tooltip: l10n?.addType ?? 'Add',
-                              onPressed: _addPoolEntry,
-                            ),
                           ],
                         ),
-                        if (_wave.addToZombiePool.isEmpty)
-                          Text(
-                            l10n?.waveGeneratorEmptyPool ??
-                                'No zombies in the initial pool.',
-                            style: theme.textTheme.bodySmall,
-                          )
-                        else
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              for (
-                                var i = 0;
-                                i < _wave.addToZombiePool.length;
-                                i++
-                              )
-                                WaveGeneratorZombieTile(
-                                  style:
-                                      WaveGeneratorZombieTileStyle.poolCompact,
-                                  localizedName: _zombieDisplayName(
-                                    _wave.addToZombiePool[i].type,
-                                  ),
-                                  codename: _zombieCodename(
-                                    _wave.addToZombiePool[i].type,
-                                  ),
-                                  iconPath: _zombieIcon(
-                                    _wave.addToZombiePool[i].type,
-                                  ),
-                                  onDelete: () => _removePoolEntry(i),
-                                ),
-                            ],
+                      const Divider(height: 28),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              l10n?.waveGeneratorWavePoolAdd ??
+                                  'Added to the pool on this wave',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                      ],
-                    ),
+                          IconButton(
+                            icon: const Icon(Icons.add),
+                            tooltip: l10n?.addType ?? 'Add',
+                            onPressed: _addPoolEntry,
+                          ),
+                        ],
+                      ),
+                      if (_wave.addToZombiePool.isEmpty)
+                        Text(
+                          l10n?.waveGeneratorWavePoolNoChanges ??
+                              'This wave does not add zombies to the pool.',
+                          style: theme.textTheme.bodySmall,
+                        )
+                      else
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (
+                              var i = 0;
+                              i < _wave.addToZombiePool.length;
+                              i++
+                            )
+                              WaveGeneratorZombieTile(
+                                style: WaveGeneratorZombieTileStyle.poolCompact,
+                                localizedName: _zombieDisplayName(
+                                  _wave.addToZombiePool[i].type,
+                                ),
+                                codename: _zombieCodename(
+                                  _wave.addToZombiePool[i].type,
+                                ),
+                                iconPath: _zombieIcon(
+                                  _wave.addToZombiePool[i].type,
+                                ),
+                                onDelete: () => _removePoolEntry(i),
+                              ),
+                          ],
+                        ),
+                    ],
                   ),
                 ),
+              ),
             ],
           ),
         ),

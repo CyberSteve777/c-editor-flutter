@@ -10,6 +10,7 @@ class WaveGeneratorWaveData extends PvzModel {
     this.addToZombiePool = const [],
     this.wavePointStart,
     this.wavePointIncrement,
+    this.wavePointOverride,
     this.colNumPlantIsDragged,
     this.waitUntilAllZombiesDie,
   });
@@ -20,6 +21,7 @@ class WaveGeneratorWaveData extends PvzModel {
   List<WaveGeneratorPoolEntryData> addToZombiePool;
   int? wavePointStart;
   int? wavePointIncrement;
+  bool? wavePointOverride;
 
   /// Built-in black hole event column count for this wave.
   int? colNumPlantIsDragged;
@@ -49,6 +51,7 @@ class WaveGeneratorWaveData extends PvzModel {
           [],
       wavePointStart: json['WavePointStart'] as int?,
       wavePointIncrement: json['WavePointIncrement'] as int?,
+      wavePointOverride: json['WavePointOverride'] as bool?,
       colNumPlantIsDragged: json['ColNumPlantIsDragged'] as int?,
       waitUntilAllZombiesDie: json['WaitUntilAllZombiesDie'] as bool?,
     );
@@ -69,6 +72,9 @@ class WaveGeneratorWaveData extends PvzModel {
     if (wavePointStart != null) data['WavePointStart'] = wavePointStart;
     if (wavePointIncrement != null) {
       data['WavePointIncrement'] = wavePointIncrement;
+    }
+    if (wavePointOverride != null) {
+      data['WavePointOverride'] = wavePointOverride;
     }
     if (colNumPlantIsDragged != null) {
       data['ColNumPlantIsDragged'] = colNumPlantIsDragged;

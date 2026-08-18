@@ -88,70 +88,16 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
     _sync();
   }
 
-  Set<String> _scriptedZombieTypes(WaveGeneratorPropertiesData data) {
-    final result = <String>{};
-    for (final wave in data.waves) {
-      for (final zombie in wave.zombies) {
-        result.add(zombie.type);
-      }
-    }
-    return result;
-  }
-
-  List<WaveGeneratorPoolEntryData> _scriptedPoolEntries(
-    WaveGeneratorPropertiesData data,
-  ) {
-    return _scriptedZombieTypes(
-      data,
-    ).map((type) => WaveGeneratorPoolEntryData(type: type)).toList();
-  }
-
-  List<WaveGeneratorPoolEntryData> _visibleWavePoolEntriesForWave(
+  List<WaveGeneratorPoolEntryData> _cumulativeWavePoolEntriesForWave(
     WaveGeneratorPropertiesData data,
     int waveIndex,
   ) {
-    final scriptedTypes = _scriptedZombieTypes(data);
     final result = <WaveGeneratorPoolEntryData>[];
     final upper = waveIndex.clamp(0, data.waves.length).toInt();
     for (var i = 0; i < upper; i++) {
-      for (final entry in data.waves[i].addToZombiePool) {
-        if (!scriptedTypes.contains(entry.type)) {
-          result.add(entry);
-        }
-      }
+      result.addAll(data.waves[i].addToZombiePool);
     }
     return result;
-  }
-
-  WaveGeneratorPropertiesData _expectationData(
-    WaveGeneratorPropertiesData data,
-  ) {
-    final scriptedTypes = _scriptedZombieTypes(data);
-    final filteredWaves = [
-      for (final wave in data.waves)
-        WaveGeneratorWaveData(
-          disableRandomSpawns: wave.disableRandomSpawns,
-          zombies: wave.zombies,
-          spawnPlantFoodCount: wave.spawnPlantFoodCount,
-          addToZombiePool: [
-            for (final entry in wave.addToZombiePool)
-              if (!scriptedTypes.contains(entry.type)) entry,
-          ],
-          wavePointStart: wave.wavePointStart,
-          wavePointIncrement: wave.wavePointIncrement,
-          colNumPlantIsDragged: wave.colNumPlantIsDragged,
-          waitUntilAllZombiesDie: wave.waitUntilAllZombiesDie,
-        ),
-    ];
-
-    return WaveGeneratorPropertiesData(
-      addToZombiePool: _scriptedPoolEntries(data),
-      flagWaveInterval: data.flagWaveInterval,
-      waveCount: data.waveCount,
-      waveSpendingPoints: data.waveSpendingPoints,
-      waveSpendingPointIncrement: data.waveSpendingPointIncrement,
-      waves: filteredWaves,
-    );
   }
 
   String? _getModuleRtid(String objClass) {
@@ -272,8 +218,8 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n?.deleteWaveConfirm(zombieCount) ??
-                    'This will remove this wave and its $zombieCount scripted zombies.',
+                l10n?.waveGeneratorDeleteWaveConfirm(zombieCount) ??
+                    'This will remove the wave and its $zombieCount fixed spawns.',
               ),
               const SizedBox(height: 16),
               CheckboxListTile(
@@ -314,13 +260,12 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
     widget.onEditWave(index + 1);
   }
 
-  void _showExpectationDialog(int waveIndex, bool isFlagWave) {
+  void _showExpectationDialog(int waveIndex) {
     if (_data == null) return;
     showWaveGeneratorExpectationDialog(
       context,
-      data: _expectationData(_data!),
+      data: _data!,
       waveIndex: waveIndex,
-      isFlagWave: isFlagWave,
     );
   }
 
@@ -487,8 +432,7 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
       );
     }
 
-    final interval = data.flagWaveInterval <= 0 ? 10 : data.flagWaveInterval;
-    final expectationData = _expectationData(data);
+    final waveStates = WaveGeneratorPointAnalysis.calculateStates(data);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -516,21 +460,18 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
             ...List.generate(data.waves.length, (index) {
               final waveIndex = index + 1;
               final wave = data.waves[index];
-              final isFlagWave =
-                  waveIndex % interval == 0 || waveIndex == data.waves.length;
+              final waveState = waveStates[index];
+              final isFlagWave = waveState.isFlagWave;
               final actionButtons = <({String label, VoidCallback onTap})>[];
               if (WaveGeneratorPointAnalysis.showExpectationForWave(
-                expectationData,
+                data,
                 waveIndex,
               )) {
-                final points = WaveGeneratorPointAnalysis.pointsAtWave(
-                  expectationData,
-                  waveIndex,
-                  isFlagWave: isFlagWave,
-                );
                 actionButtons.add((
-                  label: l10n?.wavePointsShort(points) ?? '$points pts.',
-                  onTap: () => _showExpectationDialog(waveIndex, isFlagWave),
+                  label:
+                      l10n?.waveGeneratorStatisticalPreview ??
+                      'Statistical preview',
+                  onTap: () => _showExpectationDialog(waveIndex),
                 ));
               }
               if (waveIndex != data.waves.length &&
@@ -577,8 +518,9 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
                   waveIndex: waveIndex,
                   isFlagWave: isFlagWave,
                   wave: wave,
-                  globalPool: _scriptedPoolEntries(data),
-                  wavePoolEntries: _visibleWavePoolEntriesForWave(
+                  waveState: waveState,
+                  globalPool: data.addToZombiePool,
+                  wavePoolEntries: _cumulativeWavePoolEntriesForWave(
                     data,
                     waveIndex,
                   ),
@@ -611,6 +553,7 @@ class _WaveRowCard extends StatelessWidget {
     required this.waveIndex,
     required this.isFlagWave,
     required this.wave,
+    required this.waveState,
     required this.globalPool,
     required this.wavePoolEntries,
     required this.actionButtons,
@@ -625,6 +568,7 @@ class _WaveRowCard extends StatelessWidget {
   final int waveIndex;
   final bool isFlagWave;
   final WaveGeneratorWaveData wave;
+  final WaveGeneratorWaveState waveState;
   final List<WaveGeneratorPoolEntryData> globalPool;
   final List<WaveGeneratorPoolEntryData> wavePoolEntries;
   final List<({String label, VoidCallback onTap})> actionButtons;
@@ -704,12 +648,47 @@ class _WaveRowCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            '${l10n?.waveGeneratorEffectiveRandomPoints(waveState.randomSpawnPoints) ?? 'Random-spawn points: ${waveState.randomSpawnPoints}'} · '
+                            '${waveState.randomSpawnsEnabled ? (l10n?.waveGeneratorRandomSpawnsEnabled ?? 'Random spawns enabled') : (l10n?.waveGeneratorRandomSpawnsDisabled ?? 'No random spawns')}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: waveState.randomSpawnsEnabled
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            [
+                              l10n?.waveGeneratorFixedSpawnCount(
+                                    waveState.fixedSpawnCount,
+                                  ) ??
+                                  'Fixed spawns: ${waveState.fixedSpawnCount}',
+                              if (waveState.addedToPool.isNotEmpty)
+                                l10n?.waveGeneratorPoolAddedCount(
+                                      waveState.addedToPool.length,
+                                    ) ??
+                                    'Pool additions: ${waveState.addedToPool.length}',
+                              if (wave.waitUntilAllZombiesDie == true)
+                                l10n?.waveGeneratorWaitStatus ??
+                                    'Waits for previous wave',
+                            ].join(' · '),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           if (wave.zombies.isEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Text(
                                 l10n?.waveGeneratorEmptyWaveRow ??
-                                    'No scripted zombies (tap to edit)',
+                                    'No fixed spawns',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),

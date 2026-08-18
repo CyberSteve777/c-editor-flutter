@@ -460,6 +460,12 @@ abstract class AppLocalizations {
   /// **'Plugins'**
   String get pluginsTitle;
 
+  /// No description provided for @pluginInstallNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Install New Plugin'**
+  String get pluginInstallNew;
+
   /// No description provided for @pluginInstallFromDevice.
   ///
   /// In en, this message translates to:
@@ -477,12 +483,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Compile plugin folder (debug)'**
   String get pluginInstallFromFolder;
-
-  /// No description provided for @pluginFolderHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Compiles a plugin package folder into C-Editor for testing.'**
-  String get pluginFolderHint;
 
   /// No description provided for @pluginUrlHint.
   ///
@@ -631,7 +631,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginShowingCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{Showing 1 plugin} other{Showing {count} plugins}}'**
+  /// **'{count, plural, =1{1 installed plugin} other{{count} installed plugins}}'**
   String pluginShowingCount(int count);
 
   /// No description provided for @pluginSearchHint.
@@ -741,12 +741,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Features & screens'**
   String get pluginFeaturesSection;
-
-  /// No description provided for @pluginDropHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Install a .cplugin from your device or a download URL.'**
-  String get pluginDropHint;
 
   /// No description provided for @pluginNoDescription.
   ///
@@ -1975,7 +1969,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvzEditorSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'PVZ2C Visual Level Editor'**
+  /// **'PvZ2C Visual Level Editor'**
   String get pvzEditorSubtitle;
 
   /// No description provided for @introSection.
@@ -4015,7 +4009,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_WaveGeneratorProperties.
   ///
   /// In en, this message translates to:
-  /// **'Legacy wave configuration that allows spawning Weapon Stands as waves progress'**
+  /// **'Legacy embedded wave configuration with fixed and point-based random spawns'**
   String get moduleDesc_WaveGeneratorProperties;
 
   /// No description provided for @moduleTitle_CustomLevelModuleProperties.
@@ -12833,7 +12827,7 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleHelpColumnsBody.
   ///
   /// In en, this message translates to:
-  /// **'This module consists of 6 content groups, with each group corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. After selecting Add content, you can add either a zombie or the empty outcome \"No zombie appears when the Ice Chunk breaks.\" Every item has its own appearance weight; only zombie items can switch zombie type and set a level of up to Level 4, while the empty outcome only has a weight.'**
+  /// **'This module consists of 6 content groups, with each group corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. After selecting Add content, you can add either a zombie or the empty outcome \"No zombie appears.\" Every item has its own appearance weight; only zombie items can switch zombie type and set a level of up to Level 4, while the empty outcome only has a weight.'**
   String get glacierModuleHelpColumnsBody;
 
   /// No description provided for @glacierModuleHelpRequirementsTitle.
@@ -12965,7 +12959,7 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleEntryCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 content item configured} other{{count} content items configured}}'**
+  /// **'{count, plural, =1{1 item configured} other{{count} items configured}}'**
   String glacierModuleEntryCount(int count);
 
   /// No description provided for @glacierModuleEntryLabel.
@@ -13019,7 +13013,7 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleEmptyType.
   ///
   /// In en, this message translates to:
-  /// **'No zombie appears when the Ice Chunk breaks'**
+  /// **'No zombie appears'**
   String get glacierModuleEmptyType;
 
   /// No description provided for @glacierModuleWeight.
@@ -14399,7 +14393,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorInitialGridOverridesTitle.
   ///
   /// In en, this message translates to:
-  /// **'Initial Kongfu World Grid Items Management'**
+  /// **'Manage Initial Kongfu World Grid Items'**
   String get waveGeneratorInitialGridOverridesTitle;
 
   /// No description provided for @waveGeneratorPreviewInitialArmrack.
@@ -14419,18 +14413,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wave {wave} - {label}'**
   String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label);
-
-  /// No description provided for @waveGeneratorInitialPoolWarningTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Add to initial zombie pool?'**
-  String get waveGeneratorInitialPoolWarningTitle;
-
-  /// No description provided for @waveGeneratorInitialPoolWarningContent.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombies added here are not included in the editor random spawn expectation preview and will not take effect in-game. Continue?'**
-  String get waveGeneratorInitialPoolWarningContent;
 
   /// No description provided for @mechanismPlankSettings.
   ///
@@ -14819,20 +14801,32 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Legacy embedded wave system used in campaign-style levels such as Kongfu. Waves are stored inside this module — there are no separate wave events. Edit individual waves on the Waves tab.'**
+  /// **'Wave Generator is an early wave system used by Kongfu World, Daily Challenge, and other older levels. Each wave is stored directly in the module instead of using separate wave events.\nGroups in the Weapon Stands and Taiji Tiles modules can correspond one-to-one with Wave Generator waves to produce effects similar to wave events. The Wave Timeline shows where these Kongfu World grid items appear.'**
   String get waveGeneratorModuleHelpOverviewBody;
 
   /// No description provided for @waveGeneratorModuleHelpSpending.
   ///
   /// In en, this message translates to:
-  /// **'Spending points'**
+  /// **'Point-based spawning'**
   String get waveGeneratorModuleHelpSpending;
 
   /// No description provided for @waveGeneratorModuleHelpSpendingBody.
   ///
   /// In en, this message translates to:
-  /// **'WaveSpendingPoints must be less than or equal to WaveSpendingPointIncrement. If WaveSpendingPoints is higher, the level crashes on load.'**
+  /// **'Random spawns use the points available to the current wave. The game selects by weight from zombies affordable with the remaining points, deducts the selected cost, and filters the candidates again until none are eligible. Unused points do not carry over to the next wave, and fixed spawns consume none of these points.'**
   String get waveGeneratorModuleHelpSpendingBody;
+
+  /// No description provided for @waveGeneratorModuleHelpPointTrajectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameters'**
+  String get waveGeneratorModuleHelpPointTrajectory;
+
+  /// No description provided for @waveGeneratorModuleHelpPointTrajectoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave 1 uses Initial random-spawn points (WaveSpendingPoints). Points then increase by Points added per wave (WaveSpendingPointIncrement) by default, even across waves where random spawning is disabled.\nThe current-wave random spawn points (WavePointStart) setting changes the points for the current wave, current-wave point increment (WavePointIncrement) changes the increment used by later waves, and Reset point trajectory (WavePointOverride) determines whether the next wave returns to the points calculated from its original position or continues from the current wave\'s current-wave points as a new starting point.'**
+  String get waveGeneratorModuleHelpPointTrajectoryBody;
 
   /// No description provided for @waveGeneratorModuleHelpPool.
   ///
@@ -14843,31 +14837,31 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorModuleHelpPoolBody.
   ///
   /// In en, this message translates to:
-  /// **'AddToZombiePool extends the random-spawn zombie pool from the given wave onward. Only built-in zombie types (ZombieTypes RTIDs) are supported — custom zombies crash the game.'**
+  /// **'The random-spawn zombie pool expands as waves progress. The initial pool is used when the level starts, and zombies added on each wave remain available to that wave and every later wave. Zombies added on a wave still enter the pool even if random spawning is disabled for that wave.'**
   String get waveGeneratorModuleHelpPoolBody;
 
   /// No description provided for @waveGeneratorModuleHelpIncompat.
   ///
   /// In en, this message translates to:
-  /// **'Incompatibilities'**
+  /// **'Module compatibility'**
   String get waveGeneratorModuleHelpIncompat;
 
   /// No description provided for @waveGeneratorModuleHelpIncompatBody.
   ///
   /// In en, this message translates to:
-  /// **'Cannot coexist with Wave Manager modules, Renai module, or Witch module.'**
+  /// **'Wave Generator cannot coexist with the Wave Manager, Renaissance, or Fright Witch modules; doing so will cause the level to crash.'**
   String get waveGeneratorModuleHelpIncompatBody;
 
   /// No description provided for @waveGeneratorModuleHelpRow.
   ///
   /// In en, this message translates to:
-  /// **'Row'**
+  /// **'Row numbers'**
   String get waveGeneratorModuleHelpRow;
 
   /// No description provided for @waveGeneratorModuleHelpRowBody.
   ///
   /// In en, this message translates to:
-  /// **'Row values are 1-based strings in JSON (\"?\" = random).'**
+  /// **'Fixed-spawn rows are numbered from 1: enter \"1\" for Row 1, \"2\" for Row 2, and so on. Enter \"?\" to let the game choose a row at random.'**
   String get waveGeneratorModuleHelpRowBody;
 
   /// No description provided for @waveGeneratorModuleGlobalParams.
@@ -14879,13 +14873,13 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorGlobalParams.
   ///
   /// In en, this message translates to:
-  /// **'Wave Generator Parameters'**
+  /// **'Wave Generator parameters'**
   String get waveGeneratorGlobalParams;
 
   /// No description provided for @waveGeneratorFlagIntervalHint.
   ///
   /// In en, this message translates to:
-  /// **'Final wave is always a flag wave.'**
+  /// **'Marks every Nth wave as a flag wave. This does not change its random-spawn points.'**
   String get waveGeneratorFlagIntervalHint;
 
   /// No description provided for @flagWaveInterval.
@@ -14897,19 +14891,25 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorSpendingPoints.
   ///
   /// In en, this message translates to:
-  /// **'Spending points (WaveSpendingPoints)'**
+  /// **'Initial random-spawn points (WaveSpendingPoints)'**
   String get waveGeneratorSpendingPoints;
 
   /// No description provided for @waveGeneratorSpendingPointIncrement.
   ///
   /// In en, this message translates to:
-  /// **'Point increment (WaveSpendingPointIncrement)'**
+  /// **'Points added per wave (WaveSpendingPointIncrement)'**
   String get waveGeneratorSpendingPointIncrement;
+
+  /// No description provided for @waveGeneratorSpendingCompatibilityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The initial random-spawn points exceed the current-wave increment and may cause the level to crash while loading.'**
+  String get waveGeneratorSpendingCompatibilityWarning;
 
   /// No description provided for @waveGeneratorWaveCountSummary.
   ///
   /// In en, this message translates to:
-  /// **'Waves: {count} (edit on Waves tab)'**
+  /// **'Total waves: {count}'**
   String waveGeneratorWaveCountSummary(int count);
 
   /// No description provided for @waveGeneratorInitialPool.
@@ -14921,37 +14921,43 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorEmptyPool.
   ///
   /// In en, this message translates to:
-  /// **'No zombies in the initial pool.'**
+  /// **'The initial zombie pool is empty.'**
   String get waveGeneratorEmptyPool;
 
   /// No description provided for @waveGeneratorCustomZombieBlocked.
   ///
   /// In en, this message translates to:
-  /// **'Custom zombies are not supported in wave generator levels.'**
+  /// **'Custom zombies cannot be added here'**
   String get waveGeneratorCustomZombieBlocked;
 
   /// No description provided for @waveGeneratorTabMissingModule.
   ///
   /// In en, this message translates to:
-  /// **'Add Wave Generator module to edit waves.'**
+  /// **'Add a Wave Generator module to configure additional groups here.'**
   String get waveGeneratorTabMissingModule;
 
   /// No description provided for @waveGeneratorTabSummary.
   ///
   /// In en, this message translates to:
-  /// **'Flag interval: {interval}, Spending: {points} + {increment}/wave'**
+  /// **'Flag every {interval} waves · Initial points {points} · Increase by {increment} per wave'**
   String waveGeneratorTabSummary(int interval, int points, int increment);
 
   /// No description provided for @waveGeneratorNoWaves.
   ///
   /// In en, this message translates to:
-  /// **'No waves defined.'**
+  /// **'No waves have been configured.'**
   String get waveGeneratorNoWaves;
+
+  /// No description provided for @waveGeneratorDeleteWaveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove the wave and its {count} fixed spawns.'**
+  String waveGeneratorDeleteWaveConfirm(int count);
 
   /// No description provided for @waveGeneratorEmptyWaveRow.
   ///
   /// In en, this message translates to:
-  /// **'No scripted zombies (tap to edit)'**
+  /// **'No fixed spawns'**
   String get waveGeneratorEmptyWaveRow;
 
   /// No description provided for @waveGeneratorRandomSpawnsEnabled.
@@ -14960,16 +14966,22 @@ abstract class AppLocalizations {
   /// **'Random spawns enabled'**
   String get waveGeneratorRandomSpawnsEnabled;
 
+  /// No description provided for @waveGeneratorRandomSpawnsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Random spawns disabled for this wave'**
+  String get waveGeneratorRandomSpawnsDisabled;
+
   /// No description provided for @waveGeneratorRandomZombiesLabel.
   ///
   /// In en, this message translates to:
-  /// **'Random zombies:'**
+  /// **'Current random-spawn pool'**
   String get waveGeneratorRandomZombiesLabel;
 
   /// No description provided for @waveGeneratorWavePoolDisabled.
   ///
   /// In en, this message translates to:
-  /// **'Random spawns are disabled — you cannot add zombies to the pool on this wave.'**
+  /// **'This wave does not perform random spawns, but zombie-pool changes still take effect from this wave.'**
   String get waveGeneratorWavePoolDisabled;
 
   /// No description provided for @waveGeneratorDisableRandomSpawns.
@@ -14981,92 +14993,242 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorDisableRandomSpawnsHint.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, only scripted zombies spawn on this wave.'**
+  /// **'Skips point-based random spawning on this wave only. Points still increase with wave progress, and zombie-pool changes are preserved for later waves.'**
   String get waveGeneratorDisableRandomSpawnsHint;
 
   /// No description provided for @waveGeneratorWaitUntilAllDie.
   ///
   /// In en, this message translates to:
-  /// **'Spawn this wave only after all zombies from the previous wave have been defeated (WaitUntilAllZombiesDie)'**
+  /// **'Wait until all zombies from the previous wave are defeated before spawning this wave (WaitUntilAllZombiesDie)'**
   String get waveGeneratorWaitUntilAllDie;
 
   /// No description provided for @waveGeneratorNoScriptedZombies.
   ///
   /// In en, this message translates to:
-  /// **'No scripted zombies on this wave.'**
+  /// **'This wave has no fixed spawns.'**
   String get waveGeneratorNoScriptedZombies;
 
   /// No description provided for @waveGeneratorSpawnPlantFood.
   ///
   /// In en, this message translates to:
-  /// **'Plant food drops (SpawnPlantFoodCount)'**
+  /// **'Number of zombies carrying Plant Food (SpawnPlantFoodCount)'**
   String get waveGeneratorSpawnPlantFood;
 
   /// No description provided for @waveGeneratorWavePointStart.
   ///
   /// In en, this message translates to:
-  /// **'Wave point start (WavePointStart)'**
+  /// **'Current-wave random spawn points (WavePointStart)'**
   String get waveGeneratorWavePointStart;
+
+  /// No description provided for @waveGeneratorWavePointStartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets the random-spawn points used by this wave only. Leave empty to use the points calculated by default.'**
+  String get waveGeneratorWavePointStartHint;
 
   /// No description provided for @waveGeneratorWavePointIncrement.
   ///
   /// In en, this message translates to:
-  /// **'Wave point increment (WavePointIncrement)'**
+  /// **'New point increment (WavePointIncrement)'**
   String get waveGeneratorWavePointIncrement;
+
+  /// No description provided for @waveGeneratorWavePointIncrementHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes the point increment used by later waves. It only takes effect when current-wave random spawn points (WavePointStart) is set.'**
+  String get waveGeneratorWavePointIncrementHint;
+
+  /// No description provided for @waveGeneratorWavePointIncrementInactiveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This setting has no effect without current-wave random spawn points (WavePointStart), but its existing value is preserved.'**
+  String get waveGeneratorWavePointIncrementInactiveHint;
+
+  /// No description provided for @waveGeneratorWavePointOverride.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset point trajectory (WavePointOverride)'**
+  String get waveGeneratorWavePointOverride;
+
+  /// No description provided for @waveGeneratorWavePointOverrideHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When disabled, current-wave random spawn points (WavePointStart) affects only the current wave, and the next wave returns to the points calculated from its original wave position. When enabled, the current wave\'s spawn points become the new starting point for later waves. In both cases, later waves continue with the effective point increment.'**
+  String get waveGeneratorWavePointOverrideHint;
+
+  /// No description provided for @waveGeneratorPointTrajectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Point trajectory preview'**
+  String get waveGeneratorPointTrajectory;
+
+  /// No description provided for @waveGeneratorPointTrajectoryTemporary.
+  ///
+  /// In en, this message translates to:
+  /// **'Current-wave random spawn points affect only this wave. The next wave returns to the points calculated from its original position and continues with the effective increment.'**
+  String get waveGeneratorPointTrajectoryTemporary;
+
+  /// No description provided for @waveGeneratorPointTrajectoryReset.
+  ///
+  /// In en, this message translates to:
+  /// **'The current wave\'s random spawn points become the new starting point for later waves, which continue with the effective increment.'**
+  String get waveGeneratorPointTrajectoryReset;
+
+  /// No description provided for @waveGeneratorPointTrajectoryWaveValue.
+  ///
+  /// In en, this message translates to:
+  /// **'W{wave} · {points} pts.'**
+  String waveGeneratorPointTrajectoryWaveValue(int wave, int points);
 
   /// No description provided for @waveGeneratorBlackHoleFieldHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter the number of columns to summon a black hole at the end of this wave, pulling all plants to the right.\nNote: Black hole can only be summoned if this wave is not the final wave of the level and \"Spawn this wave only after all zombies from the previous wave have been defeated\" is enabled.'**
+  /// **'Enter a column count to summon a spacetime black hole at the end of this wave and pull all plants to the right.\nThe black hole appears only when this is not the level\'s final wave and Wait until all zombies from the previous wave are defeated before spawning this wave (WaitUntilAllZombiesDie) is enabled.'**
   String get waveGeneratorBlackHoleFieldHint;
 
   /// No description provided for @waveGeneratorBlackHoleWaveHint.
   ///
   /// In en, this message translates to:
-  /// **'A black hole appears at the end of this wave and pulls plants {cols} columns to the right'**
+  /// **'A spacetime black hole appears at the end of this wave and pulls plants {cols} columns to the right'**
   String waveGeneratorBlackHoleWaveHint(int cols);
+
+  /// No description provided for @waveGeneratorCurrentPool.
+  ///
+  /// In en, this message translates to:
+  /// **'Current effective zombie pool'**
+  String get waveGeneratorCurrentPool;
+
+  /// No description provided for @waveGeneratorCurrentPoolEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'The effective zombie pool is empty.'**
+  String get waveGeneratorCurrentPoolEmpty;
 
   /// No description provided for @waveGeneratorWavePoolAdd.
   ///
   /// In en, this message translates to:
-  /// **'Add to pool this wave (AddToZombiePool)'**
+  /// **'Added to the pool on this wave (AddToZombiePool)'**
   String get waveGeneratorWavePoolAdd;
+
+  /// No description provided for @waveGeneratorWavePoolNoChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'This wave does not extend the zombie pool.'**
+  String get waveGeneratorWavePoolNoChanges;
 
   /// No description provided for @waveGeneratorWaveScreenSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave generator wave'**
+  /// **'Fixed spawns, random spawns, and wave parameters'**
   String get waveGeneratorWaveScreenSubtitle;
 
   /// No description provided for @waveGeneratorWaveScreenHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave Editor'**
+  /// **'Wave Generator Wave Help'**
   String get waveGeneratorWaveScreenHelpTitle;
 
   /// No description provided for @waveGeneratorWaveScreenHelpBody.
   ///
   /// In en, this message translates to:
-  /// **'Edit scripted spawns and wave-specific options. Random spawns use the cumulative zombie pool and spending points.'**
+  /// **'During random spawning, the game selects by weight from zombies affordable with the remaining points, deducts the selected cost, and filters the candidates again until no zombies are eligible. Unused points do not carry over to the next wave. Fixed spawns are added directly to this wave and consume no random-spawn points.'**
   String get waveGeneratorWaveScreenHelpBody;
 
   /// No description provided for @waveGeneratorExpectationTapHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap to view random spawn expectation'**
+  /// **'View the random-spawn statistical preview'**
   String get waveGeneratorExpectationTapHint;
+
+  /// No description provided for @waveGeneratorStatisticalPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistical preview'**
+  String get waveGeneratorStatisticalPreview;
 
   /// No description provided for @waveGeneratorExpectationEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No eligible pool zombies for random spawns on this wave.'**
+  /// **'This wave\'s zombie pool has no zombies eligible for random spawning.'**
   String get waveGeneratorExpectationEmpty;
 
   /// No description provided for @waveGeneratorExpectationPoolNote.
   ///
   /// In en, this message translates to:
-  /// **'Expectations are based on the cumulative AddToZombiePool. Other zombies may still appear if points are high enough.'**
+  /// **'The preview estimates spawn counts by repeatedly simulating weighted selections. Results can vary with selection order even when the point budget is unchanged, so it cannot precisely predict the game\'s actual spawns.'**
   String get waveGeneratorExpectationPoolNote;
+
+  /// No description provided for @waveGeneratorExpectationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave {wave} random-spawn preview'**
+  String waveGeneratorExpectationTitle(int wave);
+
+  /// No description provided for @waveGeneratorEffectiveRandomPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Random-spawn points: {points}'**
+  String waveGeneratorEffectiveRandomPoints(int points);
+
+  /// No description provided for @waveGeneratorFixedSpawnCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed spawns: {count}'**
+  String waveGeneratorFixedSpawnCount(int count);
+
+  /// No description provided for @waveGeneratorFixedSpawns.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed spawns'**
+  String get waveGeneratorFixedSpawns;
+
+  /// No description provided for @waveGeneratorPoolAddedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Pool additions this wave: {count}'**
+  String waveGeneratorPoolAddedCount(int count);
+
+  /// No description provided for @waveGeneratorWaitStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Waits for the previous wave'**
+  String get waveGeneratorWaitStatus;
+
+  /// No description provided for @waveGeneratorExpectationDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Random spawning is disabled on this wave.'**
+  String get waveGeneratorExpectationDisabled;
+
+  /// No description provided for @waveGeneratorExpectationMissingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Random-spawn preview unavailable because these zombies are missing reliable WavePointCost or Weight data: {types}'**
+  String waveGeneratorExpectationMissingData(String types);
+
+  /// No description provided for @waveGeneratorExpectationEstimatedTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Average random spawns: about {count}'**
+  String waveGeneratorExpectationEstimatedTotal(String count);
+
+  /// No description provided for @waveGeneratorExpectationCommonRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated count range: {minimum}–{maximum}'**
+  String waveGeneratorExpectationCommonRange(int minimum, int maximum);
+
+  /// No description provided for @waveGeneratorExpectationCostWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost {cost} · Weight {weight}'**
+  String waveGeneratorExpectationCostWeight(int cost, String weight);
+
+  /// No description provided for @waveGeneratorExpectationAverageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Average {count}'**
+  String waveGeneratorExpectationAverageCount(String count);
 
   /// No description provided for @protectItems.
   ///
@@ -15491,7 +15653,7 @@ abstract class AppLocalizations {
   /// No description provided for @startupLoadingFish.
   ///
   /// In en, this message translates to:
-  /// **'Fish'**
+  /// **'Sea Creatures'**
   String get startupLoadingFish;
 
   /// No description provided for @startupLoadingImages.

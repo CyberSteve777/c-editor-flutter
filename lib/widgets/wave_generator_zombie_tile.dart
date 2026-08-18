@@ -16,7 +16,7 @@ enum WaveGeneratorZombieTileStyle {
   /// Smaller icon, no row badge — for AddToZombiePool lists.
   poolCompact,
 
-  /// Icon on top, centered names, optional row badge — waves tab scripted list.
+  /// Icon on top, centered names, optional row badge — waves tab fixed list.
   centered,
 
   /// Compact card with G/W pool source badge — waves tab random pool.

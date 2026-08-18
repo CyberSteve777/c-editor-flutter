@@ -200,6 +200,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pluginsTitle => 'Плагины';
 
   @override
+  String get pluginInstallNew => 'Установить новый плагин';
+
+  @override
   String get pluginInstallFromDevice => 'Установить с устройства';
 
   @override
@@ -207,10 +210,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pluginInstallFromFolder => 'Загрузить папку (отладка)';
-
-  @override
-  String get pluginFolderHint =>
-      'Компилирует папку пакета плагина в C-Editor для тестирования.';
 
   @override
   String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
@@ -371,10 +370,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pluginFeaturesSection => 'Функции и экраны';
-
-  @override
-  String get pluginDropHint =>
-      'Установите .cplugin с устройства или по ссылке.';
 
   @override
   String get pluginNoDescription => 'Описание не указано.';
@@ -2074,19 +2069,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get conflictDesc_WaveGeneratorWaveManagerModule =>
-      'Генератор волн и модуль менеджера волн несовместимы — это две разные системы волн.';
+      'Генератор волн и модуль менеджера волн нельзя использовать одновременно: это две разные системы волн.';
 
   @override
   String get conflictDesc_WaveGeneratorWaveManager =>
-      'Генератор волн хранит волны внутри себя и не может использоваться с отдельным контейнером менеджера волн.';
+      'Генератор волн хранит данные волн внутри модуля и не может использоваться вместе с отдельным контейнером менеджера волн.';
 
   @override
   String get conflictDesc_WaveGeneratorRenai =>
-      'Генератор волн несовместим с модулем Renai и вызовет краш при загрузке уровня.';
+      'Генератор волн несовместим с модулем «Ренессанс» и приводит к сбою уровня.';
 
   @override
   String get conflictDesc_WaveGeneratorWitch =>
-      'Генератор волн несовместим с модулем Witch и вызовет краш при загрузке уровня.';
+      'Генератор волн несовместим с модулем «Тыквенная ведьма» и приводит к сбою уровня.';
 
   @override
   String get missingPlantModuleWarningTitle =>
@@ -2197,7 +2192,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_WaveGeneratorProperties =>
-      'Устаревшее встроенное определение волн (кампания). Несовместимо с менеджером волн.';
+      'Устаревшая система волн с фиксированным и случайным спавном за очки, данные которой хранятся внутри модуля';
 
   @override
   String get moduleTitle_CustomLevelModuleProperties => 'Модуль лужайки';
@@ -8100,28 +8095,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorInitialGridOverridesTitle =>
-      'Начальные объекты сетки из Кунг-Фу Мира';
+      'Управление начальными препятствиями мира Кунг-фу';
 
   @override
-  String get waveGeneratorPreviewInitialArmrack =>
-      'Предпросмотр начального размещения оружейных стоек';
+  String get waveGeneratorPreviewInitialArmrack => 'Начальные оружейные стойки';
 
   @override
   String get waveGeneratorPreviewInitialEnergyGrid =>
-      'Предпросмотр начального размещения плиток с подкормкой';
+      'Начальные плитки с подкормкой';
 
   @override
   String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label) {
     return 'Волна $wave — $label';
   }
-
-  @override
-  String get waveGeneratorInitialPoolWarningTitle =>
-      'Add to initial zombie pool?';
-
-  @override
-  String get waveGeneratorInitialPoolWarningContent =>
-      'Zombies added here are not included in the editor random spawn expectation preview and will not take effect in-game. Continue?';
 
   @override
   String get mechanismPlankSettings => 'Настройки объединённых вагонеток';
@@ -8306,48 +8292,56 @@ class AppLocalizationsRu extends AppLocalizations {
   String get portalTypeEliteMirrorQueen => 'Elite Mirror Queen';
 
   @override
-  String get waveGeneratorTabLabel => 'Волны';
+  String get waveGeneratorTabLabel => 'Линия генерации волн';
 
   @override
   String get waveGeneratorModuleTitle => 'Генератор волн';
 
   @override
-  String get waveGeneratorModuleHelpTitle => 'Модуль генератора волн';
+  String get waveGeneratorModuleHelpTitle =>
+      'Справка по модулю генератора волн';
 
   @override
-  String get waveGeneratorModuleHelpOverview => 'Обзор';
+  String get waveGeneratorModuleHelpOverview => 'Краткое описание';
 
   @override
   String get waveGeneratorModuleHelpOverviewBody =>
-      'Устаревшая встроенная система волн (например, Kongfu). Волны хранятся внутри модуля — отдельные события не используются. Редактируйте волны на вкладке «Волны».';
+      'Генератор волн — ранняя система волн, используемая в мире Кунг-фу, испытаниях с фрагментами и других старых уровнях. Данные всех волн хранятся непосредственно в модуле, без отдельных событий волн.\nГруппы в модулях оружейных стоек и плиток с подкормкой можно сопоставить с волнами генератора один к одному, чтобы получить эффект, аналогичный событиям волн. На экране «Линия генерации волн» отображаются позиции появления этих препятствий мира Кунг-фу.';
 
   @override
-  String get waveGeneratorModuleHelpSpending => 'Очки траты';
+  String get waveGeneratorModuleHelpSpending => 'Спавн за очки';
 
   @override
   String get waveGeneratorModuleHelpSpendingBody =>
-      'WaveSpendingPoints должно быть ≤ WaveSpendingPointIncrement. Иначе уровень крашится при загрузке.';
+      'Случайный спавн расходует очки, доступные на текущей волне. Игра выбирает по весу одного из зомби, доступных за оставшиеся очки, вычитает его стоимость и снова фильтрует кандидатов, пока подходящих зомби не останется. Неиспользованные очки не переносятся на следующую волну, а фиксированный спавн их не расходует.';
+
+  @override
+  String get waveGeneratorModuleHelpPointTrajectory => 'Параметры';
+
+  @override
+  String get waveGeneratorModuleHelpPointTrajectoryBody =>
+      'Первая волна использует «Начальные очки случайного спавна (WaveSpendingPoints)». Затем количество очков по умолчанию увеличивается на «Прирост очков за волну (WaveSpendingPointIncrement)» с каждой волной; отключение случайного спавна на отдельной волне не останавливает этот рост.\n«Локальные очки случайного спавна (WavePointStart)» изменяют очки текущей волны, «Локальный прирост очков (WavePointIncrement)» изменяет прирост для последующих волн, а «Сброс траектории очков (WavePointOverride)» определяет, вернётся ли следующая волна к значению, рассчитанному по исходному номеру волны, или продолжит расчёт от локальных очков текущей волны как от новой начальной точки.';
 
   @override
   String get waveGeneratorModuleHelpPool => 'Пул зомби';
 
   @override
   String get waveGeneratorModuleHelpPoolBody =>
-      'AddToZombiePool расширяет пул случайных спавнов с указанной волны. Только встроенные типы зомби — кастомные вызывают краш.';
+      'Пул зомби для случайного спавна постепенно расширяется по мере прохождения волн. Сначала используется начальный пул, затем зомби, добавленные на каждой волне, сохраняются для этой и всех последующих волн. Даже если случайный спавн на текущей волне отключён, добавленные на ней зомби всё равно попадут в пул.';
 
   @override
-  String get waveGeneratorModuleHelpIncompat => 'Несовместимости';
+  String get waveGeneratorModuleHelpIncompat => 'Совместимость модулей';
 
   @override
   String get waveGeneratorModuleHelpIncompatBody =>
-      'Нельзя использовать вместе с менеджером волн, Renai или Witch.';
+      'Генератор волн нельзя использовать одновременно с менеджером волн, модулем «Ренессанс» или модулем «Тыквенная ведьма»: это приведёт к сбою уровня.';
 
   @override
-  String get waveGeneratorModuleHelpRow => 'Ряд';
+  String get waveGeneratorModuleHelpRow => 'Номера рядов';
 
   @override
   String get waveGeneratorModuleHelpRowBody =>
-      'Ряд в JSON — строка с 1 (\"?\" = случайный).';
+      'Нумерация рядов для фиксированного спавна начинается с 1: для первого ряда укажите «1», для второго — «2». Значение «?» позволяет игре выбрать ряд случайно.';
 
   @override
   String get waveGeneratorModuleGlobalParams => 'Глобальные параметры';
@@ -8357,21 +8351,26 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorFlagIntervalHint =>
-      'Последняя волна всегда флаговая.';
+      'Через указанное число волн создаётся флаговая волна. Это не изменяет её очки случайного спавна.';
 
   @override
   String get flagWaveInterval => 'Интервал флаговых волн (FlagWaveInterval)';
 
   @override
-  String get waveGeneratorSpendingPoints => 'Очки траты (WaveSpendingPoints)';
+  String get waveGeneratorSpendingPoints =>
+      'Начальные очки случайного спавна (WaveSpendingPoints)';
 
   @override
   String get waveGeneratorSpendingPointIncrement =>
-      'Прирост очков (WaveSpendingPointIncrement)';
+      'Прирост очков за волну (WaveSpendingPointIncrement)';
+
+  @override
+  String get waveGeneratorSpendingCompatibilityWarning =>
+      'Начальные очки случайного спавна превышают прирост очков за волну; это может привести к сбою при загрузке уровня.';
 
   @override
   String waveGeneratorWaveCountSummary(int count) {
-    return 'Волн: $count (редактировать на вкладке «Волны»)';
+    return 'Всего волн: $count';
   }
 
   @override
@@ -8379,100 +8378,215 @@ class AppLocalizationsRu extends AppLocalizations {
       'Начальный пул зомби (AddToZombiePool)';
 
   @override
-  String get waveGeneratorEmptyPool => 'В начальном пуле нет зомби.';
+  String get waveGeneratorEmptyPool => 'Начальный пул зомби пуст.';
 
   @override
   String get waveGeneratorCustomZombieBlocked =>
-      'Кастомные зомби не поддерживаются в генераторе волн.';
+      'Здесь нельзя добавлять пользовательских зомби';
 
   @override
   String get waveGeneratorTabMissingModule =>
-      'Добавьте модуль генератора волн для редактирования.';
+      'Добавьте модуль генератора волн, чтобы настроить здесь дополнительные группы.';
 
   @override
   String waveGeneratorTabSummary(int interval, int points, int increment) {
-    return 'Интервал флага: $interval, трата: $points + $increment/волна';
+    return 'Флаговая волна каждые $interval волн · Начальные очки $points · Прирост $increment за волну';
   }
 
   @override
-  String get waveGeneratorNoWaves => 'Волны не заданы.';
+  String get waveGeneratorNoWaves => 'Волны ещё не настроены.';
 
   @override
-  String get waveGeneratorEmptyWaveRow =>
-      'Нет скриптовых зомби (нажмите для редактирования)';
+  String waveGeneratorDeleteWaveConfirm(int count) {
+    return 'Будут удалены эта волна и настроенные в ней объекты фиксированного спавна ($count).';
+  }
 
   @override
-  String get waveGeneratorRandomSpawnsEnabled => 'Случайные спавны включены';
+  String get waveGeneratorEmptyWaveRow => 'Нет фиксированного спавна';
 
   @override
-  String get waveGeneratorRandomZombiesLabel => 'Случайные зомби:';
+  String get waveGeneratorRandomSpawnsEnabled => 'Случайный спавн включён';
+
+  @override
+  String get waveGeneratorRandomSpawnsDisabled =>
+      'Случайный спавн на этой волне отключён';
+
+  @override
+  String get waveGeneratorRandomZombiesLabel => 'Текущий пул случайного спавна';
 
   @override
   String get waveGeneratorWavePoolDisabled =>
-      'Случайные спавны отключены — нельзя добавлять зомби в пул на этой волне.';
+      'На этой волне случайный спавн не выполняется, но изменения пула зомби вступают в силу с этой волны.';
 
   @override
   String get waveGeneratorDisableRandomSpawns =>
-      'Отключить случайные спавны (DisableRandomSpawns)';
+      'Отключить случайный спавн (DisableRandomSpawns)';
 
   @override
   String get waveGeneratorDisableRandomSpawnsHint =>
-      'Если включено, на этой волне спавнятся только скриптовые зомби.';
+      'Пропускает только спавн за очки на этой волне. Количество очков продолжает расти с номером волны, а изменения пула сохраняются и влияют на последующие волны.';
 
   @override
   String get waveGeneratorWaitUntilAllDie =>
-      'Ждать смерти всех зомби (WaitUntilAllZombiesDie)';
+      'Создать эту волну после уничтожения всех зомби предыдущей волны (WaitUntilAllZombiesDie)';
 
   @override
   String get waveGeneratorNoScriptedZombies =>
-      'На этой волне нет скриптовых зомби.';
+      'На этой волне нет фиксированного спавна.';
 
   @override
   String get waveGeneratorSpawnPlantFood =>
-      'Дроп plant food (SpawnPlantFoodCount)';
+      'Количество зомби с подкормкой (SpawnPlantFoodCount)';
 
   @override
   String get waveGeneratorWavePointStart =>
-      'Старт очков волны (WavePointStart)';
+      'Локальные очки случайного спавна (WavePointStart)';
+
+  @override
+  String get waveGeneratorWavePointStartHint =>
+      'Задаёт очки случайного спавна только для текущей волны. Оставьте поле пустым, чтобы использовать значение, рассчитанное по умолчанию.';
 
   @override
   String get waveGeneratorWavePointIncrement =>
-      'Прирост очков волны (WavePointIncrement)';
+      'Локальный прирост очков (WavePointIncrement)';
 
   @override
-  String get waveGeneratorBlackHoleFieldHint =>
-      'Встроенная чёрная дыра на этой волне. Оставьте пустым для отключения.';
+  String get waveGeneratorWavePointIncrementHint =>
+      'Изменяет прирост очков для последующих волн и действует только при заданных локальных очках случайного спавна (WavePointStart).';
 
   @override
-  String waveGeneratorBlackHoleWaveHint(int cols) {
-    return 'Встроенная чёрная дыра — растения перетаскиваются на $cols кол. (ColNumPlantIsDragged).';
+  String get waveGeneratorWavePointIncrementInactiveHint =>
+      'Без локальных очков случайного спавна (WavePointStart) этот параметр не действует, но сохранённое значение не удаляется.';
+
+  @override
+  String get waveGeneratorWavePointOverride =>
+      'Сброс траектории очков (WavePointOverride)';
+
+  @override
+  String get waveGeneratorWavePointOverrideHint =>
+      'Когда параметр отключён, локальные очки случайного спавна (WavePointStart) влияют только на текущую волну, а следующая получает значение, рассчитанное по её исходному номеру. Когда параметр включён, локальные очки текущей волны становятся новой начальной точкой для последующих волн. В обоих случаях используется текущий прирост очков.';
+
+  @override
+  String get waveGeneratorPointTrajectory => 'Предпросмотр траектории очков';
+
+  @override
+  String get waveGeneratorPointTrajectoryTemporary =>
+      'Локальные очки случайного спавна влияют только на текущую волну. Следующая волна получает значение, рассчитанное по её исходному номеру, и продолжает увеличиваться с действующим приростом.';
+
+  @override
+  String get waveGeneratorPointTrajectoryReset =>
+      'Локальные очки текущей волны становятся новой начальной точкой для последующих волн, которые продолжают увеличиваться с действующим приростом.';
+
+  @override
+  String waveGeneratorPointTrajectoryWaveValue(int wave, int points) {
+    return 'Волна $wave · очки: $points';
   }
 
   @override
+  String get waveGeneratorBlackHoleFieldHint =>
+      'Укажите число столбцов, чтобы в конце этой волны появилась пространственно-временная чёрная дыра и сдвинула все растения вправо.\nЧёрная дыра появляется только в том случае, если эта волна не является последней и включён параметр «Создать эту волну после уничтожения всех зомби предыдущей волны (WaitUntilAllZombiesDie)».';
+
+  @override
+  String waveGeneratorBlackHoleWaveHint(int cols) {
+    return 'В конце этой волны появляется пространственно-временная чёрная дыра и сдвигает растения на $cols столбцов вправо';
+  }
+
+  @override
+  String get waveGeneratorCurrentPool => 'Текущий эффективный пул зомби';
+
+  @override
+  String get waveGeneratorCurrentPoolEmpty =>
+      'Текущий эффективный пул зомби пуст.';
+
+  @override
   String get waveGeneratorWavePoolAdd =>
-      'Добавить в пул на этой волне (AddToZombiePool)';
+      'Расширение пула на этой волне (AddToZombiePool)';
 
   @override
-  String get waveGeneratorWaveScreenSubtitle => 'Волна генератора волн';
+  String get waveGeneratorWavePoolNoChanges =>
+      'На этой волне пул зомби не расширяется.';
 
   @override
-  String get waveGeneratorWaveScreenHelpTitle => 'Редактор волны';
+  String get waveGeneratorWaveScreenSubtitle =>
+      'Фиксированный спавн, случайный спавн и параметры волны';
+
+  @override
+  String get waveGeneratorWaveScreenHelpTitle =>
+      'Справка по волне генератора волн';
 
   @override
   String get waveGeneratorWaveScreenHelpBody =>
-      'Редактирование скриптовых спавнов и параметров волны. Случайные спавны используют накопленный пул зомби и очки траты.';
+      'Во время случайного спавна игра выбирает по весу одного из зомби, доступных за оставшиеся очки, вычитает его стоимость и снова фильтрует кандидатов, пока доступных зомби не останется. Неиспользованные очки не переносятся на следующую волну. Фиксированный спавн добавляется непосредственно в текущую волну и не расходует очки случайного спавна.';
 
   @override
   String get waveGeneratorExpectationTapHint =>
-      'Нажмите для просмотра ожидания случайных спавнов';
+      'Открыть статистический предпросмотр случайного спавна';
+
+  @override
+  String get waveGeneratorStatisticalPreview => 'Статистический предпросмотр';
 
   @override
   String get waveGeneratorExpectationEmpty =>
-      'Нет подходящих зомби в пуле для случайных спавнов на этой волне.';
+      'В пуле этой волны нет зомби, доступных для случайного спавна.';
 
   @override
   String get waveGeneratorExpectationPoolNote =>
-      'Ожидание основано на накопленном AddToZombiePool. Другие зомби могут появиться при достаточном количестве очков.';
+      'Предпросмотр оценивает количество зомби с помощью повторных симуляций взвешенного выбора. Даже при одинаковом числе очков результат может меняться из-за порядка выбора, поэтому точно предсказать фактический спавн в игре невозможно.';
+
+  @override
+  String waveGeneratorExpectationTitle(int wave) {
+    return 'Предпросмотр случайного спавна: волна $wave';
+  }
+
+  @override
+  String waveGeneratorEffectiveRandomPoints(int points) {
+    return 'Очки случайного спавна: $points';
+  }
+
+  @override
+  String waveGeneratorFixedSpawnCount(int count) {
+    return 'Фиксированный спавн: $count';
+  }
+
+  @override
+  String get waveGeneratorFixedSpawns => 'Фиксированный спавн';
+
+  @override
+  String waveGeneratorPoolAddedCount(int count) {
+    return 'Добавлено в пул на этой волне: $count';
+  }
+
+  @override
+  String get waveGeneratorWaitStatus => 'Ожидание завершения предыдущей волны';
+
+  @override
+  String get waveGeneratorExpectationDisabled =>
+      'Случайный спавн на этой волне отключён.';
+
+  @override
+  String waveGeneratorExpectationMissingData(String types) {
+    return 'Невозможно рассчитать предпросмотр случайного спавна: у следующих зомби отсутствуют надёжные данные WavePointCost или Weight: $types';
+  }
+
+  @override
+  String waveGeneratorExpectationEstimatedTotal(String count) {
+    return 'Среднее количество зомби при случайном спавне: около $count';
+  }
+
+  @override
+  String waveGeneratorExpectationCommonRange(int minimum, int maximum) {
+    return 'Ожидаемый диапазон количества: $minimum–$maximum';
+  }
+
+  @override
+  String waveGeneratorExpectationCostWeight(int cost, String weight) {
+    return 'Стоимость $cost · Вес $weight';
+  }
+
+  @override
+  String waveGeneratorExpectationAverageCount(String count) {
+    return 'В среднем $count';
+  }
 
   @override
   String get protectItems => 'Save Our Items';

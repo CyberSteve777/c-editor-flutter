@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/glacier_module_presets.dart';
+import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
@@ -37,6 +38,7 @@ class ZombossMechBattleTab extends StatefulWidget {
 class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
   PvzObject? _battleObj;
   PvzObject? _introObj;
+  bool _hasIntroModule = false;
   late ZombossMechBattleModuleData _battleData;
   ZombossMechBattleIntroData? _introData;
   String _selectedBaseId = '';
@@ -72,6 +74,10 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
     _introObj = widget.levelFile.objects
         .where((o) => o.objClass == 'ZombossBattleIntroProperties')
         .firstOrNull;
+    _hasIntroModule = levelHasModule(
+      widget.levelFile,
+      'ZombossBattleIntroProperties',
+    );
 
     if (_battleObj != null && _battleObj!.objData is Map) {
       _battleData = ZombossMechBattleModuleData.fromJson(
@@ -559,7 +565,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        if (_introObj == null)
+        if (!_hasIntroModule)
           Card(
             color: theme.colorScheme.errorContainer,
             margin: const EdgeInsets.only(bottom: 16),

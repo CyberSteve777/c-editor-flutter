@@ -1,4 +1,4 @@
-# Level Preview (bundled plugin)
+# Level Overview (bundled plugin)
 
 First-party C-Editor plugin that provides level preview from the editor AppBar
 and the level-list file menu.

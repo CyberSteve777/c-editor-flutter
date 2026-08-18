@@ -117,6 +117,13 @@ LevelPreviewGridStyle resolveGridStyle(
       cellAspectRatio = 128 / 152;
       break;
 
+    case GridPreviewModuleKind.expeditionTiles:
+      gridBg = isDark ? const Color(0xFF102B33) : const Color(0xFFE0F7FA);
+      borderColor = const Color(0xFF9E9E9E);
+      cellBorderColor = const Color(0xFF9E9E9E).withValues(alpha: 0.5);
+      cellAspectRatio = 128 / 152;
+      break;
+
     case GridPreviewModuleKind.railcart:
     case GridPreviewModuleKind.mechanismPlank:
       gridBg = isDark ? const Color(0xFF503C34) : const Color(0xFFD7CCC8);
@@ -219,6 +226,7 @@ enum GridPreviewModuleKind {
   renaissance,
   roofProperties,
   tunnelDefend,
+  expeditionTiles,
   gulliverTunnel,
   vases,
   explosiveBarrels,
@@ -463,8 +471,14 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
   if (levelHasModule(levelFile, 'RoofProperties')) {
     addModule(GridPreviewModuleKind.roofProperties, l10n.moduleTitle_RoofProperties);
   }
-  if (levelHasModule(levelFile, 'TunnelDefendModuleProperties')) {
+  if (levelHasStandardTunnelDefendModule(levelFile)) {
     addModule(GridPreviewModuleKind.tunnelDefend, l10n.moduleTitle_TunnelDefendModuleProperties);
+  }
+  if (levelHasExpeditionTilesModule(levelFile)) {
+    addModule(
+      GridPreviewModuleKind.expeditionTiles,
+      l10n.moduleTitle_SouDaCheTunnelDefendDefault,
+    );
   }
   if (levelHasModule(levelFile, 'InitialGridItemGulliverTunnelProperties')) {
     addModule(GridPreviewModuleKind.gulliverTunnel, l10n.moduleTitle_InitialGridItemGulliverTunnelProperties);
@@ -583,9 +597,78 @@ RoofPropertiesData? readRoofPropertiesData(PvzLevelFile levelFile) {
   return obj != null ? RoofPropertiesData.fromJson(Map<String, dynamic>.from(obj.objData as Map)) : null;
 }
 
+const String expeditionTilesDefaultAlias = 'SouDaCheTunnelDefendDefault';
+
+bool isExpeditionTilesModuleObject(PvzObject obj) {
+  if (obj.objClass != 'TunnelDefendModuleProperties') return false;
+  final aliases = obj.aliases ?? const <String>[];
+  if (aliases.any(
+    (alias) =>
+        alias == expeditionTilesDefaultAlias ||
+        alias.startsWith('SoudacheTunnelDefendStage'),
+  )) {
+    return true;
+  }
+  final data = obj.objData;
+  return data is Map && (data['BrickMapIndex'] as num?)?.toInt() == 3;
+}
+
+bool levelHasExpeditionTilesModule(PvzLevelFile levelFile) {
+  if (levelFile.objects.any(isExpeditionTilesModuleObject)) return true;
+  final parsed = LevelParser.parseLevel(levelFile);
+  for (final rtid in parsed.levelDef?.modules ?? const <String>[]) {
+    final info = RtidParser.parse(rtid);
+    final alias = info?.alias;
+    if (alias == expeditionTilesDefaultAlias ||
+        (alias?.startsWith('SoudacheTunnelDefendStage') ?? false)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool levelHasStandardTunnelDefendModule(PvzLevelFile levelFile) {
+  if (levelFile.objects.any(
+    (obj) =>
+        obj.objClass == 'TunnelDefendModuleProperties' &&
+        !isExpeditionTilesModuleObject(obj),
+  )) {
+    return true;
+  }
+  final parsed = LevelParser.parseLevel(levelFile);
+  for (final rtid in parsed.levelDef?.modules ?? const <String>[]) {
+    final info = RtidParser.parse(rtid);
+    if (info == null) continue;
+    if (info.alias == 'TunnelDefend') return true;
+    if (info.source == 'CurrentLevel') {
+      final obj = parsed.objectMap[info.alias];
+      if (obj != null &&
+          obj.objClass == 'TunnelDefendModuleProperties' &&
+          !isExpeditionTilesModuleObject(obj)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 TunnelDefendModuleData? readTunnelDefendData(PvzLevelFile levelFile) {
-  final obj = findModuleObject(levelFile, 'TunnelDefendModuleProperties');
+  final obj = levelFile.objects.firstWhereOrNull(
+    (item) =>
+        item.objClass == 'TunnelDefendModuleProperties' &&
+        !isExpeditionTilesModuleObject(item),
+  );
   return obj != null ? TunnelDefendModuleData.fromJson(Map<String, dynamic>.from(obj.objData as Map)) : null;
+}
+
+TunnelDefendModuleData? readExpeditionTilesData(PvzLevelFile levelFile) {
+  final obj = levelFile.objects.firstWhereOrNull(isExpeditionTilesModuleObject);
+  return obj != null
+      ? TunnelDefendModuleData.fromJson(
+          Map<String, dynamic>.from(obj.objData as Map),
+          defaultReportError: false,
+        )
+      : null;
 }
 
 InitialGridItemGulliverTunnelPropertiesData? readGulliverTunnelData(PvzLevelFile levelFile) {

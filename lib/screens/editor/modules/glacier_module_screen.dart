@@ -111,15 +111,11 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     final choice = await showEditorChoiceDialog<String>(
       context,
       title: l10n?.glacierModuleAddContentTitle ?? 'Add Ice Chunk content',
-      titleIcon: Icons.ac_unit,
       options: [
         EditorChoiceDialogOption(
           value: 'zombie',
           icon: Icons.pest_control_outlined,
           title: l10n?.glacierModuleAddZombieContent ?? 'Add zombie',
-          subtitle:
-              l10n?.glacierModuleAddZombieDescription ??
-              'Select a zombie that may appear when the Ice Chunk breaks.',
         ),
         EditorChoiceDialogOption(
           value: 'empty',
@@ -127,9 +123,6 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
           title:
               l10n?.glacierModuleEmptyType ??
               'No zombie appears when the Ice Chunk breaks',
-          subtitle:
-              l10n?.glacierModuleAddEmptyDescription ??
-              'Add a weighted outcome in which the Ice Chunk releases no zombie.',
         ),
       ],
     );
@@ -294,6 +287,9 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
                     : 1;
                 final chipWidth =
                     (constraints.maxWidth - 8 * (columns - 1)) / columns;
+                final chipLabelWidth = (chipWidth - 32)
+                    .clamp(0.0, chipWidth)
+                    .toDouble();
                 return Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -302,11 +298,16 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
                       SizedBox(
                         width: chipWidth,
                         child: ChoiceChip(
+                          key: ValueKey('glacierPresetChip_${preset.id}'),
                           showCheckmark: false,
-                          label: Text(
-                            _presetTitle(context, l10n, preset),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          label: SizedBox(
+                            width: chipLabelWidth,
+                            child: Text(
+                              _presetTitle(context, l10n, preset),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           selected: current?.id == preset.id,
                           onSelected: (_) => _applyPreset(preset),

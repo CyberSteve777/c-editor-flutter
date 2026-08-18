@@ -1,7 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
+import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/registration.dart'
+    show kDynamicFetchPluginId;
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/level_preview_cplugin.dart';
 import 'package:c_editor/plugins/c_plugin_manifest.dart';
 import 'package:c_editor/plugins/plugin_constants.dart';
@@ -18,10 +21,7 @@ void main() {
   });
 
   test('level preview is registered as a bundled plugin', () {
-    expect(
-      bundledPlugins.map((p) => p.id),
-      contains(kLevelPreviewPluginId),
-    );
+    expect(bundledPlugins.map((p) => p.id), contains(kLevelPreviewPluginId));
 
     final spec = bundledPlugins.firstWhere(
       (p) => p.id == kLevelPreviewPluginId,
@@ -34,7 +34,7 @@ void main() {
         format: CPluginManifest.expectedFormat,
         formatVersion: CPluginManifest.supportedFormatVersion,
         id: kLevelPreviewPluginId,
-        name: 'Level Preview',
+        name: 'Level Overview',
         version: '1.0.0',
         entryLibrary:
             'package:c_editor/bundled_plugins/level_preview_cplugin/lib/main.dart',
@@ -46,5 +46,14 @@ void main() {
     expect(record.kind, PluginKind.bundled);
     expect(record.canUninstall, isFalse);
     expect(record.isBundled, isTrue);
+  });
+
+  test('bundled plugin icons match their editor actions', () {
+    expect(bundledPluginIcon(kLevelPreviewPluginId), Icons.remove_red_eye);
+    expect(
+      bundledPluginIcon(kDynamicFetchPluginId),
+      Icons.cloud_download_outlined,
+    );
+    expect(bundledPluginIcon('example.imported'), isNull);
   });
 }

@@ -17,8 +17,8 @@ but cannot uninstall them.
 
 | Plugin | Id | Path |
 |--------|----|------|
-| Level Preview | `team.international2c.level_preview` | [level_preview_cplugin/](level_preview_cplugin/) |
-| External Dynamic | `team.international2c.dynamic_fetch` | [dynamic_fetch_cplugin/](dynamic_fetch_cplugin/) |
+| Level Overview | `team.international2c.level_preview` | [level_preview_cplugin/](level_preview_cplugin/) |
+| Data Package Download | `team.international2c.dynamic_fetch` | [dynamic_fetch_cplugin/](dynamic_fetch_cplugin/) |
 
 Pack an eval-safe external build (where supported):
 
