@@ -63,7 +63,7 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
-    expect(find.textContaining('使用当前波点数'), findsOneWidget);
+    expect(find.textContaining('使用当前波次点数'), findsOneWidget);
 
     await tester.tap(find.text('波次设置'));
     await tester.pumpAndSettle();

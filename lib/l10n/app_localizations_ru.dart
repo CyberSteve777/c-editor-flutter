@@ -8527,16 +8527,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get waveGeneratorWaveSettingsTitle => 'Настройки волны';
 
   @override
-  String get waveGeneratorFixedSpawnsHelpTitle => 'Фиксированный спавн';
+  String get waveGeneratorFixedSpawnsHelpTitle =>
+      'Раздел «Фиксированный спавн»';
 
   @override
-  String get waveGeneratorRandomSpawnsHelpTitle => 'Случайный спавн';
+  String get waveGeneratorRandomSpawnsHelpTitle => 'Раздел «Случайный спавн»';
 
   @override
-  String get waveGeneratorZombiePoolHelpTitle => 'Пул зомби';
+  String get waveGeneratorZombiePoolHelpTitle => 'Раздел «Пул зомби»';
 
   @override
-  String get waveGeneratorWaveSettingsHelpTitle => 'Настройки волны';
+  String get waveGeneratorWaveSettingsHelpTitle => 'Раздел «Настройки волны»';
 
   @override
   String get waveGeneratorFixedSpawnsHelpBody =>

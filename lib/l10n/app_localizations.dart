@@ -3157,7 +3157,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveContainerAliasHint.
   ///
   /// In en, this message translates to:
-  /// **'Alias for the WaveManagerProperties object that stores wave data.'**
+  /// **'The alias used in the level file for the WaveManagerProperties object that stores wave data. It generally does not need to be changed manually.'**
   String get waveContainerAliasHint;
 
   /// No description provided for @waveManagerGlobalSummary.
@@ -9757,7 +9757,7 @@ abstract class AppLocalizations {
   /// No description provided for @levelAccount.
   ///
   /// In en, this message translates to:
-  /// **'Level: account'**
+  /// **'Level: follows account'**
   String get levelAccount;
 
   /// No description provided for @levelDisplay.
@@ -15155,25 +15155,25 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorFixedSpawnsHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Fixed spawns'**
+  /// **'Fixed spawns section'**
   String get waveGeneratorFixedSpawnsHelpTitle;
 
   /// No description provided for @waveGeneratorRandomSpawnsHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Random spawns'**
+  /// **'Random spawns section'**
   String get waveGeneratorRandomSpawnsHelpTitle;
 
   /// No description provided for @waveGeneratorZombiePoolHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Zombie pool'**
+  /// **'Zombie pool section'**
   String get waveGeneratorZombiePoolHelpTitle;
 
   /// No description provided for @waveGeneratorWaveSettingsHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave settings'**
+  /// **'Wave settings section'**
   String get waveGeneratorWaveSettingsHelpTitle;
 
   /// No description provided for @waveGeneratorFixedSpawnsHelpBody.

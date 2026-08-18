@@ -607,197 +607,191 @@ class _WaveRowCard extends StatelessWidget {
             onTap: onTap,
             child: Padding(
               padding: EdgeInsets.all(cardPadding),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
-                      width: waveNumberWidth,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '$waveIndex',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: isDesktop ? 18 : 16,
-                                  color: theme.colorScheme.primary,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: waveNumberWidth,
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '$waveIndex',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isDesktop ? 18 : 16,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            if (isFlagWave)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 2),
+                                child: Icon(
+                                  Icons.flag,
+                                  size: isDesktop ? 14 : 12,
+                                  color: theme.colorScheme.error,
                                 ),
                               ),
-                              if (isFlagWave)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 2),
-                                  child: Icon(
-                                    Icons.flag,
-                                    size: isDesktop ? 14 : 12,
-                                    color: theme.colorScheme.error,
-                                  ),
-                                ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            [
-                              l10n?.waveGeneratorFixedSpawnCount(
-                                    waveState.fixedSpawnCount,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          [
+                            l10n?.waveGeneratorFixedSpawnCount(
+                                  waveState.fixedSpawnCount,
+                                ) ??
+                                'Fixed spawns: ${waveState.fixedSpawnCount}',
+                            if (waveState.addedToPool.isNotEmpty)
+                              l10n?.waveGeneratorPoolAddedCount(
+                                    waveState.addedToPool.length,
                                   ) ??
-                                  'Fixed spawns: ${waveState.fixedSpawnCount}',
-                              if (waveState.addedToPool.isNotEmpty)
-                                l10n?.waveGeneratorPoolAddedCount(
-                                      waveState.addedToPool.length,
-                                    ) ??
-                                    'Pool additions: ${waveState.addedToPool.length}',
-                              if (wave.waitUntilAllZombiesDie == true)
-                                l10n?.waveGeneratorWaitStatus ??
-                                    'Waits for previous wave',
-                            ].join(' · '),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
+                                  'Pool additions: ${waveState.addedToPool.length}',
+                            if (wave.waitUntilAllZombiesDie == true)
+                              l10n?.waveGeneratorWaitStatus ??
+                                  'Waits for previous wave',
+                          ].join(' · '),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
-                          const SizedBox(height: 8),
-                          if (wave.zombies.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Text(
-                                l10n?.waveGeneratorEmptyWaveRow ??
-                                    'No fixed spawns',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            )
-                          else
-                            _CollapsibleWaveZombieList(
-                              entries: [
-                                for (final z in wave.zombies)
-                                  WaveGeneratorZombieIconChip(
-                                    localizedName: zombieDisplayName(z.type),
-                                    codename: zombieCodename(z.type),
-                                    iconPath: zombieIcon(z.type),
-                                    rowLabel: waveGeneratorRowDisplay(z.row),
-                                  ),
-                              ],
-                            ),
-                          if (hasRandomPool) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              l10n?.waveGeneratorRandomZombiesLabel ??
-                                  'Random zombies:',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.secondary,
+                        ),
+                        const SizedBox(height: 8),
+                        if (wave.zombies.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              l10n?.waveGeneratorEmptyWaveRow ??
+                                  'No fixed spawns',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            _CollapsibleWaveZombieList(
-                              entries: [
-                                for (final entry in globalPool)
-                                  WaveGeneratorZombieIconChip(
-                                    sourceBadge: 'Z',
-                                    localizedName: zombieDisplayName(
-                                      entry.type,
-                                    ),
-                                    codename: zombieCodename(entry.type),
-                                    iconPath: zombieIcon(entry.type),
-                                  ),
-                                for (final entry in wavePoolEntries)
-                                  WaveGeneratorZombieIconChip(
-                                    sourceBadge: 'W',
-                                    localizedName: zombieDisplayName(
-                                      entry.type,
-                                    ),
-                                    codename: zombieCodename(entry.type),
-                                    iconPath: zombieIcon(entry.type),
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    SizedBox(
-                      width: actionColumnWidth,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              for (final b in actionButtons)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: ActionChip(
-                                      label: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxWidth: actionColumnWidth - 28,
-                                        ),
-                                        child: Text(
-                                          b.label,
-                                          textAlign: TextAlign.center,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: chipFontSize,
-                                          ),
-                                        ),
-                                      ),
-                                      onPressed: b.onTap,
-                                      visualDensity: VisualDensity.compact,
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                  ),
+                          )
+                        else
+                          _CollapsibleWaveZombieList(
+                            entries: [
+                              for (final z in wave.zombies)
+                                WaveGeneratorZombieIconChip(
+                                  localizedName: zombieDisplayName(z.type),
+                                  codename: zombieCodename(z.type),
+                                  iconPath: zombieIcon(z.type),
+                                  rowLabel: waveGeneratorRowDisplay(z.row),
                                 ),
                             ],
                           ),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerRight,
-                            child: TextButton.icon(
-                              style: TextButton.styleFrom(
-                                foregroundColor: theme.colorScheme.error,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 4,
-                                ),
-                                visualDensity: VisualDensity.compact,
-                              ),
-                              onPressed: onDelete,
-                              icon: const Icon(Icons.delete_outline, size: 18),
-                              label: Text(
-                                l10n?.deleteWave ?? 'Delete wave',
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 12),
-                              ),
+                        if (hasRandomPool) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n?.waveGeneratorRandomZombiesLabel ??
+                                'Random zombies:',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.secondary,
                             ),
                           ),
+                          const SizedBox(height: 4),
+                          _CollapsibleWaveZombieList(
+                            entries: [
+                              for (final entry in globalPool)
+                                WaveGeneratorZombieIconChip(
+                                  sourceBadge: 'Z',
+                                  localizedName: zombieDisplayName(entry.type),
+                                  codename: zombieCodename(entry.type),
+                                  iconPath: zombieIcon(entry.type),
+                                ),
+                              for (final entry in wavePoolEntries)
+                                WaveGeneratorZombieIconChip(
+                                  sourceBadge: 'W',
+                                  localizedName: zombieDisplayName(entry.type),
+                                  codename: zombieCodename(entry.type),
+                                  iconPath: zombieIcon(entry.type),
+                                ),
+                            ],
+                          ),
                         ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 6),
+                  SizedBox(
+                    width: actionColumnWidth,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            for (final b in actionButtons)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ActionChip(
+                                    label: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: actionColumnWidth - 28,
+                                      ),
+                                      child: Text(
+                                        b.label,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: chipFontSize,
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: b.onTap,
+                                    visualDensity: VisualDensity.compact,
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            style: TextButton.styleFrom(
+                              foregroundColor: theme.colorScheme.error,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                            onPressed: onDelete,
+                            icon: const Icon(Icons.delete_outline, size: 18),
+                            label: Text(
+                              l10n?.deleteWave ?? 'Delete wave',
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

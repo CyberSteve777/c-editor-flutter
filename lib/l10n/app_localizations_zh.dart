@@ -1642,10 +1642,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveManagerGlobalParams => '波次管理器全局参数';
 
   @override
-  String get waveContainerAliasSection => '波次容器别名';
+  String get waveContainerAliasSection => '波次容器代号';
 
   @override
-  String get waveContainerAliasHint => '存储波次数据的 WaveManagerProperties 对象别名。';
+  String get waveContainerAliasHint =>
+      '存储波次数据的 WaveManagerProperties 对象在关卡文件中使用的别名，一般不需要手动修改。';
 
   @override
   String waveManagerGlobalSummary(
@@ -5205,7 +5206,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get levelAccount => '等级：账户';
+  String get levelAccount => '等级：随账户';
 
   @override
   String levelDisplay(String value) {
@@ -7963,7 +7964,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpPointTrajectoryBody =>
-      '第1波使用「初始随机出怪点数 (WaveSpendingPoints)」，之后点数默认按「每波点数增量 (WaveSpendingPointIncrement)」持续增加，即使某一波禁用了随机出怪也不会暂停。\n「当前波随机出怪点数 (WavePointStart)」可单独更改当前波的点数，「新点数增量 (WavePointIncrement)」可更改后续波次使用的增量，「重置点数轨迹 (WavePointOverride)」则决定下一波是恢复原本应有的点数，还是以当前波次点数为新起点继续计算。';
+      '第1波使用「初始随机出怪点数 (WaveSpendingPoints)」，之后点数默认按「每波点数增量 (WaveSpendingPointIncrement)」持续增加，即使某一波禁用了随机出怪也不会暂停。\n「当前波次随机出怪点数 (WavePointStart)」可单独更改当前波的点数，「新点数增量 (WavePointIncrement)」可更改后续波次使用的增量，「重置点数轨迹 (WavePointOverride)」则决定下一波是恢复原本应有的点数，还是以当前波次点数为新起点继续计算。';
 
   @override
   String get waveGeneratorModuleHelpPool => '僵尸池';
@@ -8072,7 +8073,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorSpawnPlantFood => '携带能量豆的僵尸数量 (SpawnPlantFoodCount)';
 
   @override
-  String get waveGeneratorWavePointStart => '当前波随机出怪点数 (WavePointStart)';
+  String get waveGeneratorWavePointStart => '当前波次随机出怪点数 (WavePointStart)';
 
   @override
   String get waveGeneratorWavePointStartHint =>
@@ -8083,29 +8084,29 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveGeneratorWavePointIncrementHint =>
-      '更改后续波次使用的点数增量，仅在已设置「当前波随机出怪点数 (WavePointStart)」时生效。';
+      '更改后续波次使用的点数增量，仅在已设置「当前波次随机出怪点数 (WavePointStart)」时生效。';
 
   @override
   String get waveGeneratorWavePointIncrementInactiveHint =>
-      '未设置「当前波随机出怪点数 (WavePointStart)」时，此项不会生效，但已有数据仍会保留。';
+      '未设置「当前波次随机出怪点数 (WavePointStart)」时，此项不会生效，但已有数据仍会保留。';
 
   @override
   String get waveGeneratorWavePointOverride => '重置点数轨迹 (WavePointOverride)';
 
   @override
   String get waveGeneratorWavePointOverrideHint =>
-      '关闭时，「当前波随机出怪点数 (WavePointStart)」只影响当前波，下一波会恢复为按原有波次进度计算出的点数；开启时，则以当前波次点数为新起点，重新计算后续波次的点数。两种情况下，后续波次都会按当前生效的点数增量继续增加。';
+      '关闭时，「当前波次随机出怪点数 (WavePointStart)」只影响当前波，下一波会恢复为按原有波次进度计算出的点数；开启时，则以当前波次点数为新起点，重新计算后续波次的点数。两种情况下，后续波次都会按当前生效的点数增量继续增加。';
 
   @override
   String get waveGeneratorPointTrajectory => '点数轨迹预览';
 
   @override
   String get waveGeneratorPointTrajectoryTemporary =>
-      '当前波随机出怪点数只影响本波，下一波会恢复为按原有波次进度计算出的点数，并按当前生效的增量继续增加。';
+      '当前波次随机出怪点数只影响本波，下一波会恢复为按原有波次进度计算出的点数，并按当前生效的增量继续增加。';
 
   @override
   String get waveGeneratorPointTrajectoryReset =>
-      '以当前波随机出怪点数为新起点，重新计算后续波次的点数，并按当前生效的增量继续增加。';
+      '以当前波次随机出怪点数为新起点，重新计算后续波次的点数，并按当前生效的增量继续增加。';
 
   @override
   String waveGeneratorPointTrajectoryWaveValue(int wave, int points) {
@@ -8153,16 +8154,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorWaveSettingsTitle => '波次设置';
 
   @override
-  String get waveGeneratorFixedSpawnsHelpTitle => '固定出怪说明';
+  String get waveGeneratorFixedSpawnsHelpTitle => '固定出怪分区说明';
 
   @override
-  String get waveGeneratorRandomSpawnsHelpTitle => '随机出怪说明';
+  String get waveGeneratorRandomSpawnsHelpTitle => '随机出怪分区说明';
 
   @override
-  String get waveGeneratorZombiePoolHelpTitle => '僵尸池说明';
+  String get waveGeneratorZombiePoolHelpTitle => '僵尸池分区说明';
 
   @override
-  String get waveGeneratorWaveSettingsHelpTitle => '波次设置说明';
+  String get waveGeneratorWaveSettingsHelpTitle => '波次设置分区说明';
 
   @override
   String get waveGeneratorFixedSpawnsHelpBody =>

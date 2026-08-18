@@ -618,108 +618,131 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
   }) {
     final l10n = AppLocalizations.of(context);
     final color = Theme.of(context).colorScheme.onSurfaceVariant;
-    final rowContent = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final waveNumber = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(
-          width: 52,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '$waveIndex',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                if (isFlagWave)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 2),
-                    child: Icon(
-                      Icons.flag,
-                      size: 12,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-              ],
-            ),
+        Text(
+          '$waveIndex',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        Expanded(
-          child: InkWell(
-            onTap: onRowTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (rtidList.isEmpty)
-                    Text(
-                      _waveEmptyRowHintForPlatform(context, l10n),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    )
-                  else
-                    ...rtidList.map(
-                      (rtid) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: EventChipWidget(
-                          rtid: rtid,
-                          objectMap: objectMap,
-                          onTap: () => _showEventActionSheet(
-                            context: context,
-                            waveIndex: waveIndex,
-                            rtid: rtid,
+        if (isFlagWave)
+          Padding(
+            padding: const EdgeInsets.only(left: 2),
+            child: Icon(
+              Icons.flag,
+              size: 12,
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+      ],
+    );
+    final rowContent = Stack(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(width: 52),
+            Expanded(
+              child: InkWell(
+                onTap: onRowTap,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (rtidList.isEmpty)
+                        Text(
+                          _waveEmptyRowHintForPlatform(context, l10n),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                        )
+                      else
+                        ...rtidList.map(
+                          (rtid) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: EventChipWidget(
+                              rtid: rtid,
+                              objectMap: objectMap,
+                              onTap: () => _showEventActionSheet(
+                                context: context,
+                                waveIndex: waveIndex,
+                                rtid: rtid,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            for (var i = 0; i < actionButtons.length; i++) ...[
-              if (i > 0) const SizedBox(height: 6),
-              InkWell(
-                onTap: actionButtons[i].onTap,
-                borderRadius: BorderRadius.circular(6),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          actionButtons[i].label,
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: color,
-                              ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.info_outline, size: 18, color: color),
                     ],
                   ),
                 ),
               ),
-            ],
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (var i = 0; i < actionButtons.length; i++) ...[
+                  if (i > 0) const SizedBox(height: 6),
+                  InkWell(
+                    onTap: actionButtons[i].onTap,
+                    borderRadius: BorderRadius.circular(6),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              actionButtons[i].label,
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: color,
+                                  ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(Icons.info_outline, size: 18, color: color),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ],
+        ),
+        Positioned(
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 52,
+          child: Semantics(
+            button: onRowTap != null,
+            label: l10n?.waveEventsTitle(waveIndex) ?? 'Wave $waveIndex events',
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                key: ValueKey('waveTimelineWaveNumberTap-$waveIndex'),
+                onTap: onRowTap,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: waveNumber,
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );

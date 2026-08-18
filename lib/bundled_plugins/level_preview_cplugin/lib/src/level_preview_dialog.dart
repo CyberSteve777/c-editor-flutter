@@ -208,6 +208,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         return l10n.moduleTitle_BombProperties;
       case GridPreviewModuleKind.portalFight:
         return l10n.moduleTitle_PVZ1PassageModuleProperties;
+      case GridPreviewModuleKind.bowlingFoulLine:
+        return l10n.moduleTitle_BowlingMinigameProperties;
+      case GridPreviewModuleKind.moldColony:
+        return l10n.moduleTitle_MoldColonyChallengeProps;
       case GridPreviewModuleKind.dropShip:
         return l10n.moduleTitle_DropShipProperties;
       case GridPreviewModuleKind.protectPlants:
@@ -288,51 +292,51 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children:
                 [
-              Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 48),
-                    child: Text(
-                      '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                  Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 48),
+                        child: Text(
+                          '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: widget.onBack,
+                          tooltip: l10n.back,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: widget.onBack,
-                      tooltip: l10n.back,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _buildSummaryCard(context, levelDef, theme, l10n),
-              _buildSeedBankCard(context, theme, l10n),
-              _buildConveyorCard(context, theme, l10n),
-              _buildCopycatCard(context, theme, l10n),
-              _buildSeedRainCard(context, theme, l10n),
-              _buildHeianWindCard(context, theme, l10n),
-              _buildPrePlacedCard(context, theme, l10n),
-              _buildEncounterCard(context, theme, l10n),
-              _buildModulesCard(context, theme, l10n),
-            ].fold<List<Widget>>([], (list, card) {
+                  const SizedBox(height: 12),
+                  _buildSummaryCard(context, levelDef, theme, l10n),
+                  _buildSeedBankCard(context, theme, l10n),
+                  _buildConveyorCard(context, theme, l10n),
+                  _buildCopycatCard(context, theme, l10n),
+                  _buildSeedRainCard(context, theme, l10n),
+                  _buildHeianWindCard(context, theme, l10n),
+                  _buildPrePlacedCard(context, theme, l10n),
+                  _buildEncounterCard(context, theme, l10n),
+                  _buildModulesCard(context, theme, l10n),
+                ].fold<List<Widget>>([], (list, card) {
                   if (card is SizedBox &&
                       (card.height ?? 0) == 0 &&
                       card.child == null) {
-                return list;
-              }
-              if (list.isNotEmpty) {
-                list.add(const SizedBox(height: 12));
-              }
-              list.add(card);
-              return list;
-            }),
+                    return list;
+                  }
+                  if (list.isNotEmpty) {
+                    list.add(const SizedBox(height: 12));
+                  }
+                  list.add(card);
+                  return list;
+                }),
           ),
         ),
       ),
@@ -385,8 +389,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         worldName = ResourceNames.lookup(
           context,
           CustomStageLevelUtils.displayStageBaseNameKey(
-          objclass: stageObj.objClass,
-          objdata: objDataMap,
+            objclass: stageObj.objClass,
+            objdata: objDataMap,
           ),
         );
         stageIconFile = CustomStageLevelUtils.displayIconFileName(
@@ -418,8 +422,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     bool skySunEnabled =
         widget.levelFile.objects.any(
           (o) =>
-    o.objClass == 'SunDropperProperties' ||
-        o.objClass == 'SunDroppingModuleProperties' ||
+              o.objClass == 'SunDropperProperties' ||
+              o.objClass == 'SunDroppingModuleProperties' ||
               o.objClass == 'SunDropperModuleProperties',
         ) ||
         def.modules.any((m) => m.contains('SunDropper'));
@@ -525,12 +529,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         color: Colors.blueGrey,
       ));
     if (hasFastEntry)
-    summaryLegends.add((
+      summaryLegends.add((
         title: l10n.fastEntryLabel,
         icon: Icons.fast_forward,
-      iconId: null,
+        iconId: null,
         color: Colors.limeAccent,
-    ));
+      ));
     if (hasWeather) {
       final weather = getLevelWeatherType(widget.levelFile);
       if (weather != null) {
@@ -598,114 +602,114 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             ),
             LayoutBuilder(
               builder: (context, constraints) {
-              final content = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${l10n.name}: ${def.name.isEmpty ? widget.fileName : def.name}',
+                final content = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${l10n.name}: ${def.name.isEmpty ? widget.fileName : def.name}',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
                       ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (def.description.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '${l10n.description}: ${def.description}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (def.description.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '${l10n.description}: ${def.description}',
                         style: TextStyle(
                           color: theme.colorScheme.onSurface.withValues(
                             alpha: 0.8,
                           ),
                           fontSize: 14,
                         ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                  const SizedBox(height: 6),
-                  Text(
-                    '${l10n.stageModule}: $worldName$customSuffix',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    const SizedBox(height: 6),
+                    Text(
+                      '${l10n.stageModule}: $worldName$customSuffix',
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.8,
                         ),
                         fontSize: 14,
                       ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      _buildSummaryAssetChip(
-                        iconId: 'sun',
-                        label: '$startingSun',
-                        color: Colors.orange,
-                        tooltip: l10n.startingSun,
-                      ),
-                      _buildSummaryAssetChip(
-                        iconId: 'plantfood',
-                        label: '$pfCount',
-                        color: Colors.greenAccent,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        _buildSummaryAssetChip(
+                          iconId: 'sun',
+                          label: '$startingSun',
+                          color: Colors.orange,
+                          tooltip: l10n.startingSun,
+                        ),
+                        _buildSummaryAssetChip(
+                          iconId: 'plantfood',
+                          label: '$pfCount',
+                          color: Colors.greenAccent,
                           tooltip: _p(
                             'previewStartingPlantFood',
                             'Starting Plant Food',
                           ),
-                      ),
-                    ],
-                  ),
-                ],
-              );
-
-              if (constraints.maxWidth > 500) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: content),
-                    if (stageIconPath != null) ...[
-                      const SizedBox(width: 16),
-                      CircleAvatar(
-                        radius: 48,
-                          backgroundColor: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.05),
-                        child: AssetImageWidget(
-                          assetPath: stageIconPath,
-                          width: 84,
-                          height: 84,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ],
                 );
-              }
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (stageIconPath != null) ...[
-                    Center(
-                      child: CircleAvatar(
-                        radius: 48,
+                if (constraints.maxWidth > 500) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: content),
+                      if (stageIconPath != null) ...[
+                        const SizedBox(width: 16),
+                        CircleAvatar(
+                          radius: 48,
                           backgroundColor: theme.colorScheme.onSurface
                               .withValues(alpha: 0.05),
-                        child: AssetImageWidget(
-                          assetPath: stageIconPath,
-                          width: 84,
-                          height: 84,
+                          child: AssetImageWidget(
+                            assetPath: stageIconPath,
+                            width: 84,
+                            height: 84,
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (stageIconPath != null) ...[
+                      Center(
+                        child: CircleAvatar(
+                          radius: 48,
+                          backgroundColor: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.05),
+                          child: AssetImageWidget(
+                            assetPath: stageIconPath,
+                            width: 84,
+                            height: 84,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                    ],
+                    content,
                   ],
-                  content,
-                ],
-              );
+                );
               },
             ),
             const SizedBox(height: 18),
@@ -750,19 +754,19 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 if (hasWeather)
                   Builder(
                     builder: (context) {
-                    final weather = getLevelWeatherType(widget.levelFile);
-                    if (weather == null) return const SizedBox.shrink();
-                    final icon = switch (weather) {
-                      LevelWeatherType.snow => Icons.ac_unit,
-                      LevelWeatherType.lightning => Icons.thunderstorm,
-                      LevelWeatherType.rain => Icons.cloud,
-                    };
-                    return ResourceChip(
-                      icon: icon,
-                      label: '',
-                      color: Colors.blueAccent,
-                      tooltip: getWeatherLabel(weather, l10n),
-                    );
+                      final weather = getLevelWeatherType(widget.levelFile);
+                      if (weather == null) return const SizedBox.shrink();
+                      final icon = switch (weather) {
+                        LevelWeatherType.snow => Icons.ac_unit,
+                        LevelWeatherType.lightning => Icons.thunderstorm,
+                        LevelWeatherType.rain => Icons.cloud,
+                      };
+                      return ResourceChip(
+                        icon: icon,
+                        label: '',
+                        color: Colors.blueAccent,
+                        tooltip: getWeatherLabel(weather, l10n),
+                      );
                     },
                   ),
                 if (hasSpermWhale)
@@ -798,9 +802,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 children: summaryLegends
                     .map(
                       (leg) => Wrap(
-                  spacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
+                        spacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
                           if (leg.icon != null)
                             Icon(
                               leg.icon,
@@ -809,16 +813,16 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                             )
                           else if (leg.iconId != null)
                             UniversalIcon(id: leg.iconId!, size: 12),
-                    Text(
-                      leg.title,
+                          Text(
+                            leg.title,
                             style: TextStyle(
                               fontSize: 10,
                               color: theme.colorScheme.onSurface.withValues(
                                 alpha: 0.8,
                               ),
                             ),
-                    ),
-                  ],
+                          ),
+                        ],
                       ),
                     )
                     .toList(),
@@ -826,28 +830,28 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             ],
             if (mowerName != null) ...[
               const SizedBox(height: 16),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.start,
-              children: [
-                Icon(Icons.grass, size: 16, color: theme.colorScheme.primary),
-                const SizedBox(width: 8),
-                Text(
-                  '${l10n.lawnMowerTypeLabel}: ',
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.start,
+                children: [
+                  Icon(Icons.grass, size: 16, color: theme.colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${l10n.lawnMowerTypeLabel}: ',
                     style: TextStyle(
                       fontSize: 14,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
-                ),
-                Text(
-                  mowerName,
+                  ),
+                  Text(
+                    mowerName,
                     style: TextStyle(
                       fontSize: 14,
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
             ],
           ],
         ),
@@ -1367,7 +1371,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   ) {
     final (rows, cols) = getGridDimensions(widget.levelFile);
     final isNarrow = MediaQuery.sizeOf(context).width < 600;
-    
+
     final allGridCategories = _cachedGridCategories;
     final activeTabIndex = _prePlacedTabIndex;
 
@@ -1384,13 +1388,13 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       gridCategories = allGridCategories
           .where(
             (c) =>
-        c.kind != GridPreviewModuleKind.zombies &&
-        c.kind != GridPreviewModuleKind.dropShip &&
-        c.kind != GridPreviewModuleKind.plants &&
-        c.kind != GridPreviewModuleKind.zombossMech &&
-        c.kind != GridPreviewModuleKind.zomboss &&
-        c.kind != GridPreviewModuleKind.protectPlants &&
-        c.kind != GridPreviewModuleKind.protectItems &&
+                c.kind != GridPreviewModuleKind.zombies &&
+                c.kind != GridPreviewModuleKind.dropShip &&
+                c.kind != GridPreviewModuleKind.plants &&
+                c.kind != GridPreviewModuleKind.zombossMech &&
+                c.kind != GridPreviewModuleKind.zomboss &&
+                c.kind != GridPreviewModuleKind.protectPlants &&
+                c.kind != GridPreviewModuleKind.protectItems &&
                 c.kind != GridPreviewModuleKind.flowers,
           )
           .toList();
@@ -1449,14 +1453,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children: [
             LayoutBuilder(
               builder: (context, constraints) {
-              final switcher = allGridCategories.isNotEmpty
-                  ? _buildPrePlacedTabSwitcher(l10n, allGridCategories)
-                  : const SizedBox.shrink();
+                final switcher = allGridCategories.isNotEmpty
+                    ? _buildPrePlacedTabSwitcher(l10n, allGridCategories)
+                    : const SizedBox.shrink();
 
-              final titlePart = Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 8,
-                children: [
+                final titlePart = Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  children: [
                     Icon(
                       Icons.grid_view,
                       size: 20,
@@ -1467,24 +1471,24 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                       theme,
                       color: tabColor,
                     ),
-                ],
-              );
-
-              if (constraints.maxWidth > 550) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(child: titlePart),
-                    const SizedBox(width: 8),
-                    Flexible(child: switcher),
                   ],
                 );
-              }
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                if (constraints.maxWidth > 550) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: titlePart),
+                      const SizedBox(width: 8),
+                      Flexible(child: switcher),
+                    ],
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [titlePart, const SizedBox(height: 8), switcher],
-              );
+                );
               },
             ),
 
@@ -1495,7 +1499,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             else if (activeTabIndex == 4)
               _buildDedicatedBossGrid(rows, cols, l10n, theme)
             else if (allGridCategories.isEmpty)
-               _buildLawnGrid([], '', activeTabIndex, isEmptyGrid: true)
+              _buildLawnGrid([], '', activeTabIndex, isEmptyGrid: true)
             else if (activeTabIndex == 1 ||
                 activeTabIndex == 2 ||
                 activeTabIndex == 5)
@@ -1505,20 +1509,20 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                       .map((c) => c.kind)
                       .toSet()
                       .toList();
-                final showSidebar = kinds.length > 1 || activeTabIndex == 5;
-                final useVerticalLayout = constraints.maxWidth < 450;
+                  final showSidebar = kinds.length > 1 || activeTabIndex == 5;
+                  final useVerticalLayout = constraints.maxWidth < 450;
 
-                if (!showSidebar) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                  if (!showSidebar) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         _buildSubCategoryHeader(
                           gridCategories,
                           activeGridKey,
                           l10n,
                           theme,
                         ),
-                      const SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildLawnGrid(
                           gridCategories,
                           activeGridKey,
@@ -1534,32 +1538,32 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                             theme,
                             l10n,
                           ),
-                      _buildCellContentFooter(theme, l10n),
-                    ],
-                  );
-                }
+                        _buildCellContentFooter(theme, l10n),
+                      ],
+                    );
+                  }
 
-                if (useVerticalLayout) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 120,
+                  if (useVerticalLayout) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 120,
                           child: _buildModuleSidebar(
                             gridCategories,
                             activeGridKey,
                             l10n,
                             theme,
                           ),
-                      ),
-                      const SizedBox(height: 20),
+                        ),
+                        const SizedBox(height: 20),
                         _buildSubCategoryHeader(
                           gridCategories,
                           activeGridKey,
                           l10n,
                           theme,
                         ),
-                      const SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildLawnGrid(
                           gridCategories,
                           activeGridKey,
@@ -1575,36 +1579,36 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                             theme,
                             l10n,
                           ),
-                      _buildCellContentFooter(theme, l10n),
-                    ],
-                  );
-                }
+                        _buildCellContentFooter(theme, l10n),
+                      ],
+                    );
+                  }
 
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 160,
-                      height: 380,
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 160,
+                        height: 380,
                         child: _buildModuleSidebar(
                           gridCategories,
                           activeGridKey,
                           l10n,
                           theme,
                         ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             _buildSubCategoryHeader(
                               gridCategories,
                               activeGridKey,
                               l10n,
                               theme,
                             ),
-                          const SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             _buildLawnGrid(
                               gridCategories,
                               activeGridKey,
@@ -1621,12 +1625,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                                 theme,
                                 l10n,
                               ),
-                          _buildCellContentFooter(theme, l10n),
-                        ],
+                            _buildCellContentFooter(theme, l10n),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                );
+                    ],
+                  );
                 },
               )
             else ...[
@@ -2143,9 +2147,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   }
 
   GridPreviewCategoryOption? _selectedGridCategory(
-      List<GridPreviewCategoryOption> categories,
-      String key,
-      ) {
+    List<GridPreviewCategoryOption> categories,
+    String key,
+  ) {
     return categories.firstWhereOrNull((c) => c.key == key);
   }
 
@@ -2336,18 +2340,18 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 fit: StackFit.expand,
                 children: [
                   for (final m in markers)
-                      Opacity(
+                    Opacity(
                       opacity:
                           (selectedIndex == null || selectedIndex == m.index)
                           ? 1.0
                           : 0.4,
-                        child: AssetImageWidget(
+                      child: AssetImageWidget(
                         assetPath: m.isStart
                             ? 'assets/images/griditems/steam_down.webp'
                             : 'assets/images/griditems/steam_up.webp',
-                          fit: BoxFit.contain,
-                        ),
+                        fit: BoxFit.contain,
                       ),
+                    ),
                 ],
               ),
             );
@@ -2465,8 +2469,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       (1, 4),
     ];
     const roadAsset = 'assets/images/tunnels/SouDaCheTunnelRoad.webp';
-    const blockedAsset =
-        'assets/images/tunnels/SouDaCheTunnelRoadBlocked.webp';
+    const blockedAsset = 'assets/images/tunnels/SouDaCheTunnelRoadBlocked.webp';
     final blockedTiles = readExpeditionTilesData(widget.levelFile)?.roads ?? [];
 
     return _buildCompositeLawnGrid(
@@ -2624,10 +2627,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       activeKind = category.kind;
     } else {
       activeKind = activeTabIndex == 0
-              ? GridPreviewModuleKind.plants
-              : (activeTabIndex == 1
-                  ? GridPreviewModuleKind.zombies
-                  : GridPreviewModuleKind.common);
+          ? GridPreviewModuleKind.plants
+          : (activeTabIndex == 1
+                ? GridPreviewModuleKind.zombies
+                : GridPreviewModuleKind.common);
     }
 
     final (rows, cols) = activeKind == GridPreviewModuleKind.expeditionTiles
@@ -2709,13 +2712,13 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   }
 
   Widget _buildGridItemCategoryGrid(
-      int rows,
-      int cols,
-      LevelPreviewGridStyle style,
-      GridPreviewCategoryOption? category,
-      int activeTabIndex, {
-        GridPreviewModuleKind? forcedKind,
-      }) {
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+    GridPreviewCategoryOption? category,
+    int activeTabIndex, {
+    GridPreviewModuleKind? forcedKind,
+  }) {
     final kind = forcedKind ?? category?.kind ?? GridPreviewModuleKind.common;
     switch (kind) {
       case GridPreviewModuleKind.plants:
@@ -2799,6 +2802,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         return _buildExplosiveBarrelsGrid(rows, cols, style);
       case GridPreviewModuleKind.portalFight:
         return _buildPassageGrid(rows, cols, style);
+      case GridPreviewModuleKind.bowlingFoulLine:
+        return _buildBowlingFoulLineGrid(rows, cols, style);
+      case GridPreviewModuleKind.moldColony:
+        return _buildMoldColonyGrid(rows, cols, style);
       case GridPreviewModuleKind.dropShip:
         return _buildDropShipGrid(rows, cols, style, category!);
       case GridPreviewModuleKind.zombossMech:
@@ -2849,12 +2856,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               (loc) => loc.x == col && loc.y == row,
             );
             if (isBlacklisted) {
-               return Container(
-                 color: Colors.red.withValues(alpha: 0.45),
+              return Container(
+                color: Colors.red.withValues(alpha: 0.45),
                 child: const Center(
                   child: Icon(Icons.block, color: Colors.white, size: 16),
                 ),
-               );
+              );
             }
             if (col >= data.minColumnIndex && col <= data.maxColumnIndex) {
               return Container(color: Colors.green.withValues(alpha: 0.35));
@@ -2874,24 +2881,24 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           const SizedBox(height: 8),
           Builder(
             builder: (context) {
-            final Map<String, int> counts = {};
-            for (var v in data.vases) {
+              final Map<String, int> counts = {};
+              for (var v in data.vases) {
                 final id =
                     v.plantTypeName ??
                     v.zombieTypeName ??
                     v.collectableTypeName;
-              if (id != null) counts[id] = (counts[id] ?? 0) + v.count;
-            }
-            return Wrap(
-              spacing: 12,
-              runSpacing: 8,
+                if (id != null) counts[id] = (counts[id] ?? 0) + v.count;
+              }
+              return Wrap(
+                spacing: 12,
+                runSpacing: 8,
                 children: counts.entries
                     .map(
                       (e) => Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 4,
-                children: [
-                  UniversalIcon(id: e.key, size: 36),
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 4,
+                        children: [
+                          UniversalIcon(id: e.key, size: 36),
                           Text(
                             'x${e.value}',
                             style: TextStyle(
@@ -2902,11 +2909,11 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                               ),
                             ),
                           ),
-                ],
+                        ],
                       ),
                     )
                     .toList(),
-            );
+              );
             },
           ),
           if (!isDesktop) ...[
@@ -3021,6 +3028,72 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
+  Widget _buildBowlingFoulLineGrid(
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+  ) {
+    final data = readBowlingMinigameData(widget.levelFile);
+    final isDeepSeaLawn = LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
+    final minFoulLine = isDeepSeaLawn ? -1 : 0;
+    final maxFoulLine = isDeepSeaLawn ? cols - 1 : cols;
+    final foulLine = (data?.bowlingFoulLine ?? 2)
+        .clamp(minFoulLine, maxFoulLine)
+        .toInt();
+    final previewBoundary = foulLine + (isDeepSeaLawn ? 1 : 0);
+
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      cellBuilder: (col, row) => null,
+      foreground: LayoutBuilder(
+        builder: (context, constraints) {
+          const lineWidth = 4.0;
+          final boundaryX = constraints.maxWidth * previewBoundary / cols;
+          final lineLeft = (boundaryX - lineWidth / 2)
+              .clamp(0.0, constraints.maxWidth - lineWidth)
+              .toDouble();
+          return Stack(
+            children: [
+              Positioned(
+                left: lineLeft,
+                top: 0,
+                bottom: 0,
+                width: lineWidth,
+                child: const ColoredBox(color: Colors.red),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMoldColonyGrid(int rows, int cols, LevelPreviewGridStyle style) {
+    final layout = readMoldColonyLayoutData(
+      widget.levelFile,
+    )?.normalized(rows: rows, columns: cols);
+    final data = <String, List<String>>{};
+    if (layout != null) {
+      for (var row = 0; row < rows; row++) {
+        for (var col = 0; col < cols; col++) {
+          if (layout.values[row][col] != 0) {
+            data['$col,$row'] = const ['fake_mold'];
+          }
+        }
+      }
+    }
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      moduleData: data,
+      activeTabIndex: 2,
+      cellBuilder: (col, row) => null,
+    );
+  }
+
   Widget _buildEncounterCard(
     BuildContext context,
     ThemeData theme,
@@ -3033,8 +3106,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
     bool hasWaveModule = widget.levelFile.objects.any(
       (o) =>
-        o.objClass == 'WaveManagerModuleProperties' ||
-        o.objClass == 'WaveManagerProperties' ||
+          o.objClass == 'WaveManagerModuleProperties' ||
+          o.objClass == 'WaveManagerProperties' ||
           o.objClass == 'WaveGeneratorProperties',
     );
 
@@ -3061,10 +3134,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               padding: const EdgeInsets.only(bottom: 16),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                final titlePart = Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8,
-                  children: [
+                  final titlePart = Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    children: [
                       Icon(
                         Icons.layers_outlined,
                         size: 20,
@@ -3074,33 +3147,33 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                         _p('previewLevelContent', 'Level Content'),
                         theme,
                       ),
-                  ],
-                );
-
-                if (constraints.maxWidth > 500) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: titlePart),
-                      if (totalPfCount > 0)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16),
-                          child: _buildPlantFoodChip(context, totalPfCount),
-                        ),
                     ],
                   );
-                }
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    titlePart,
-                    if (totalPfCount > 0) ...[
-                      const SizedBox(height: 8),
-                      _buildPlantFoodChip(context, totalPfCount),
+                  if (constraints.maxWidth > 500) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: titlePart),
+                        if (totalPfCount > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: _buildPlantFoodChip(context, totalPfCount),
+                          ),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      titlePart,
+                      if (totalPfCount > 0) ...[
+                        const SizedBox(height: 8),
+                        _buildPlantFoodChip(context, totalPfCount),
+                      ],
                     ],
-                  ],
-                );
+                  );
                 },
               ),
             ),
@@ -3255,8 +3328,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             return _cleanId(e.plantTypeName!);
           if (e.zombieTypeName != null && e.zombieTypeName!.isNotEmpty)
             return _cleanId(e.zombieTypeName!);
-      if (e.seedRainType == 2) return 'tool_plantfood';
-      return '';
+          if (e.seedRainType == 2) return 'tool_plantfood';
+          return '';
         })
         .where((id) => id.isNotEmpty)
         .toList();
@@ -3447,8 +3520,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children: [
             ...eventTitles.map(
               (title) => Chip(
-                  label: Text(title, style: const TextStyle(fontSize: 10)),
-                  visualDensity: VisualDensity.compact,
+                label: Text(title, style: const TextStyle(fontSize: 10)),
+                visualDensity: VisualDensity.compact,
               ),
             ),
             if (canExpand && onToggle != null)
@@ -3502,7 +3575,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       if (objClass != null && objClass.isNotEmpty) {
         metadata = ModuleRegistry.getMetadataForAlias(info.alias, objClass);
       } else {
-        metadata = available.firstWhereOrNull(
+        metadata =
+            available.firstWhereOrNull(
               (item) =>
                   item.defaultAlias == info.alias &&
                   item.defaultSource == info.source,
@@ -3742,77 +3816,77 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               padding: const EdgeInsets.only(bottom: 16),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                final isWide = constraints.maxWidth > 500;
-                final titlePart = Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8,
-                  children: [
+                  final isWide = constraints.maxWidth > 500;
+                  final titlePart = Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    children: [
                       Icon(
                         Icons.auto_awesome,
                         size: 20,
                         color: theme.colorScheme.primary.withValues(alpha: 0.9),
                       ),
-                    _buildSectionTitle(featuresLabel, theme),
-                  ],
-                );
+                      _buildSectionTitle(featuresLabel, theme),
+                    ],
+                  );
 
-                final statusPart = statusIcons.isNotEmpty
-                    ? Wrap(
-                        spacing: 12,
-                        alignment: WrapAlignment.end,
+                  final statusPart = statusIcons.isNotEmpty
+                      ? Wrap(
+                          spacing: 12,
+                          alignment: WrapAlignment.end,
                           children: statusIcons
                               .map(
                                 (si) => Tooltip(
-                          message: si.title,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(si.icon, size: 20, color: si.color),
-                              if (si.label != null && !isDesktop)
-                                Padding(
+                                  message: si.title,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(si.icon, size: 20, color: si.color),
+                                      if (si.label != null && !isDesktop)
+                                        Padding(
                                           padding: const EdgeInsets.only(
                                             top: 2,
                                           ),
-                                  child: Text(
-                                    si.label!,
-                                    style: TextStyle(
-                                      fontSize: 9,
+                                          child: Text(
+                                            si.label!,
+                                            style: TextStyle(
+                                              fontSize: 9,
                                               color: si.color.withValues(
                                                 alpha: 0.8,
                                               ),
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
-                                ),
-                            ],
-                          ),
                                 ),
                               )
                               .toList(),
-                      )
-                    : const SizedBox.shrink();
+                        )
+                      : const SizedBox.shrink();
 
-                if (isWide) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  if (isWide) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: titlePart),
+                        const SizedBox(width: 16),
+                        Flexible(child: statusPart),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: titlePart),
-                      const SizedBox(width: 16),
-                      Flexible(child: statusPart),
+                      titlePart,
+                      if (statusIcons.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        statusPart,
+                      ],
                     ],
                   );
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    titlePart,
-                    if (statusIcons.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      statusPart,
-                    ],
-                  ],
-                );
                 },
               ),
             ),
@@ -3824,24 +3898,24 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 children: statusIcons
                     .map(
                       (si) => Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 4,
-                  children: [
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 4,
+                        children: [
                           Icon(
                             si.icon,
                             size: 12,
                             color: si.color.withValues(alpha: 0.6),
                           ),
-                    Text(
-                      si.title,
+                          Text(
+                            si.title,
                             style: TextStyle(
                               fontSize: 10,
                               color: theme.colorScheme.onSurface.withValues(
                                 alpha: 0.8,
                               ),
                             ),
-                    ),
-                  ],
+                          ),
+                        ],
                       ),
                     )
                     .toList(),
@@ -3863,9 +3937,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   ),
                   if (canExpandModules)
                     IconButton(
-                      onPressed: () => setState(
-                        () => _modulesExpanded = !_modulesExpanded,
-                      ),
+                      onPressed: () =>
+                          setState(() => _modulesExpanded = !_modulesExpanded),
                       icon: Icon(
                         _modulesExpanded
                             ? Icons.keyboard_arrow_up
@@ -3909,43 +3982,43 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     .toList(),
               ),
             ],
-    if (featureInfos.isNotEmpty) ...[
-      if (activeModules.isNotEmpty) const SizedBox(height: 20),
-      Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 12,
-        runSpacing: 8,
-        children: [
+            if (featureInfos.isNotEmpty) ...[
+              if (activeModules.isNotEmpty) const SizedBox(height: 20),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 12,
+                runSpacing: 8,
+                children: [
                   _buildSubSectionTitle(
                     l10n.moduleTitle_StarChallengeModuleProperties,
                     theme,
                   ),
-          if (featureInfos.length > 5)
-            IconButton(
+                  if (featureInfos.length > 5)
+                    IconButton(
                       onPressed: () => setState(
                         () => _challengesExpanded = !_challengesExpanded,
                       ),
-              icon: Icon(
+                      icon: Icon(
                         _challengesExpanded
                             ? Icons.keyboard_arrow_up
                             : Icons.keyboard_arrow_down,
-                color: Colors.blueAccent,
-              ),
-              style: IconButton.styleFrom(
+                        color: Colors.blueAccent,
+                      ),
+                      style: IconButton.styleFrom(
                         backgroundColor: theme.colorScheme.onSurface.withValues(
                           alpha: 0.05,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                padding: const EdgeInsets.all(4),
-                minimumSize: const Size(32, 32),
+                        padding: const EdgeInsets.all(4),
+                        minimumSize: const Size(32, 32),
+                      ),
+                    ),
+                ],
               ),
-            ),
-        ],
-      ),
-      const SizedBox(height: 12),
+              const SizedBox(height: 12),
               ...((_challengesExpanded ? featureInfos : featureInfos.take(3))
                   .map((info) {
                     final isClickable = targetChallengeClasses.contains(
@@ -3961,15 +4034,15 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                         ? '${info.title} ($param)'
                         : info.title;
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.start,
-            spacing: 10,
-            runSpacing: 4,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.start,
+                        spacing: 10,
+                        runSpacing: 4,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
                             child: Icon(
                               info.icon,
                               size: 16,
@@ -3977,50 +4050,50 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                                   ? Colors.amber
                                   : Colors.greenAccent,
                             ),
-              ),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  isClickable
-                      ? InkWell(
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              isClickable
+                                  ? InkWell(
                                       onTap: () => _showChallengeDetails(
                                         context,
                                         info.objClass,
                                         info.objData,
                                         info.title,
                                       ),
-                          borderRadius: BorderRadius.circular(4),
-                          child: Text(
-                            title,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.blueAccent,
-                            ),
-                          ),
-                        )
-                      : Text(
-                          title,
-                          style: const TextStyle(fontSize: 15),
-                        ),
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: Text(
+                                        title,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.blueAccent,
+                                        ),
+                                      ),
+                                    )
+                                  : Text(
+                                      title,
+                                      style: const TextStyle(fontSize: 15),
+                                    ),
                               if (info.objClass ==
                                       'StarChallengeDisablePlantProps' &&
                                   param != null)
-                    AssetImageWidget(
+                                AssetImageWidget(
                                   assetPath: StarChallengeProfessions.iconAsset(
                                     param,
                                   ),
-                      width: 20,
-                      height: 20,
-                    ),
-                ],
-              ),
+                                  width: 20,
+                                  height: 20,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  })),
             ],
-          ),
-        );
-      })),
-    ],
             if (themeTitles.isNotEmpty) ...[
               if (activeModules.isNotEmpty || featureInfos.isNotEmpty)
                 const SizedBox(height: 20),
@@ -4036,11 +4109,11 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 children: [
                   ...displayThemes.map(
                     (t) => Chip(
-                        label: Text(t, style: const TextStyle(fontSize: 11)),
-                        backgroundColor: Colors.blue.withValues(alpha: 0.15),
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      label: Text(t, style: const TextStyle(fontSize: 11)),
+                      backgroundColor: Colors.blue.withValues(alpha: 0.15),
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ),
                   if (canExpandThemes)
@@ -4098,8 +4171,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
-          ),
             ),
+          ),
           content: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 500, minWidth: 280),
             child: SingleChildScrollView(
@@ -4283,10 +4356,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             final name = ResourceNames.lookup(context, id);
             children.add(
               Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
                       name != id ? name : id,
                       style: const TextStyle(fontSize: 14),
@@ -4300,8 +4373,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                         ),
                       ),
                     ),
-                ],
-              ),
+                  ],
+                ),
               ),
             );
           }
@@ -4342,28 +4415,28 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children.add(const SizedBox(height: 8));
           children.add(
             Row(
-            children: [
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: UniversalIcon(id: plantId, size: 48),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                ResourceNames.lookup(context, 'plant_$plantId'),
+              children: [
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: UniversalIcon(id: plantId, size: 48),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    ResourceNames.lookup(context, 'plant_$plantId'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       color: theme.colorScheme.onSurface,
                     ),
-              ),
-            ),
-          ],
+                  ),
+                ),
+              ],
             ),
           );
-      }
-      break;
+        }
+        break;
 
       case 'DefeatZombiesOfTypeChallengeProps':
         final count = data['NumZombiesToKill'] ?? 0;
@@ -4384,8 +4457,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         );
         children.add(
           _detailItem(
-          ChallengeResourceL10n.property(context, objClass, 'ListType'),
-          ChallengeResourceL10n.listTypeOption(context, objClass, listType),
+            ChallengeResourceL10n.property(context, objClass, 'ListType'),
+            ChallengeResourceL10n.listTypeOption(context, objClass, listType),
             theme,
           ),
         );
@@ -4394,7 +4467,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children.add(const SizedBox(height: 12));
           children.add(
             Text(
-            ChallengeResourceL10n.property(context, objClass, 'TypesToKill'),
+              ChallengeResourceL10n.property(context, objClass, 'TypesToKill'),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
@@ -4405,8 +4478,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children.add(const SizedBox(height: 8));
           children.add(
             Wrap(
-            spacing: 12,
-            runSpacing: 10,
+              spacing: 12,
+              runSpacing: 10,
               children: zombies
                   .map((z) => UniversalIcon(id: z.toString(), size: 44))
                   .toList(),
@@ -4434,7 +4507,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children.add(const SizedBox(height: 12));
           children.add(
             Text(
-            ChallengeResourceL10n.property(context, objClass, 'GridItemType'),
+              ChallengeResourceL10n.property(context, objClass, 'GridItemType'),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
@@ -4445,28 +4518,28 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           children.add(const SizedBox(height: 8));
           children.add(
             Row(
-            children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: GridItemIcon(id: itemType, size: 40, isGrid: true),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                ResourceNames.lookup(context, 'griditem_$itemType'),
+              children: [
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: GridItemIcon(id: itemType, size: 40, isGrid: true),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    ResourceNames.lookup(context, 'griditem_$itemType'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       color: theme.colorScheme.onSurface,
                     ),
-              ),
-            ),
-          ],
+                  ),
+                ),
+              ],
             ),
           );
-      }
-      break;
+        }
+        break;
     }
 
     return children;
@@ -4545,7 +4618,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   300.0,
                   1000.0,
                 ),
-    );
+        );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -4575,7 +4648,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   300.0,
                   1000.0,
                 ),
-    );
+        );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -4887,7 +4960,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         category.index == null ||
         category.index! >= data.appearWaves.length)
       return const SizedBox.shrink();
-    
+
     final wave = data.appearWaves[category.index!];
 
     return Padding(
@@ -4899,18 +4972,18 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             spacing: 12,
             runSpacing: 10,
             children: [
-               _buildInfoChip(
-                 icon: Icons.person,
-                 label: '${l10n.impLv}: ${wave.impLv}',
-                 color: const Color(0xFF4AC380),
-                 theme: theme,
-               ),
-               _buildInfoChip(
-                 icon: Icons.group,
-                 label: '+${l10n.impsCount(wave.imp)}',
-                 color: const Color(0xFF42A5F5),
-                 theme: theme,
-               ),
+              _buildInfoChip(
+                icon: Icons.person,
+                label: '${l10n.impLv}: ${wave.impLv}',
+                color: const Color(0xFF4AC380),
+                theme: theme,
+              ),
+              _buildInfoChip(
+                icon: Icons.group,
+                label: '+${l10n.impsCount(wave.imp)}',
+                color: const Color(0xFF42A5F5),
+                theme: theme,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -4937,9 +5010,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     required LevelPreviewGridStyle style,
     required Widget? Function(int col, int row) cellBuilder,
     BoxDecoration? Function(int col, int row, bool isSelected, bool isStripe)?
-        cellDecorationBuilder,
+    cellDecorationBuilder,
     BoxDecoration? Function(int col, int row, bool isSelected)?
-        foregroundDecorationBuilder,
+    foregroundDecorationBuilder,
     Map<String, List<String>>? moduleData,
     int? activeTabIndex,
     Widget? background,
@@ -5037,30 +5110,30 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       cols: cols,
       style: style,
       background: pirateData != null
-              ? Column(
-                children: List.generate(
-                  rows,
-                  (row) => Expanded(
-                    child: Row(
-                      children: [
-                        Spacer(flex: cols - 4),
-                        if (pirateData.plankRows.contains(row))
-                          Expanded(
-                            flex: 4,
-                            child: AssetImageWidget(
-                              assetPath:
-                                  'assets/images/others/Pirate_Seas_Planks.png',
-                              fit: BoxFit.fill,
-                            ),
-                          )
-                        else
-                          Spacer(flex: 4),
-                      ],
-                    ),
+          ? Column(
+              children: List.generate(
+                rows,
+                (row) => Expanded(
+                  child: Row(
+                    children: [
+                      Spacer(flex: cols - 4),
+                      if (pirateData.plankRows.contains(row))
+                        Expanded(
+                          flex: 4,
+                          child: AssetImageWidget(
+                            assetPath:
+                                'assets/images/others/Pirate_Seas_Planks.png',
+                            fit: BoxFit.fill,
+                          ),
+                        )
+                      else
+                        Spacer(flex: 4),
+                    ],
                   ),
                 ),
-              )
-              : null,
+              ),
+            )
+          : null,
       cellDecorationBuilder: (col, row, isSelected, isStripe) {
         final isPlankArea =
             pirateData != null &&
@@ -5243,8 +5316,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         final scale = armrackGridScale(item.type);
         return LayoutBuilder(
           builder: (context, constraints) {
-          final w = constraints.maxWidth * scale;
-          final h = constraints.maxHeight * scale;
+            final w = constraints.maxWidth * scale;
+            final h = constraints.maxHeight * scale;
             return Align(
               alignment: Alignment.bottomCenter,
               child: SizedBox(
@@ -5284,9 +5357,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         if (!tileSet.contains('$col,$row')) return null;
         return LayoutBuilder(
           builder: (context, constraints) {
-          const scale = 0.92;
-          final w = constraints.maxWidth * scale;
-          final h = constraints.maxHeight * scale;
+            const scale = 0.92;
+            final w = constraints.maxWidth * scale;
+            final h = constraints.maxHeight * scale;
             return Align(
               alignment: Alignment.bottomCenter,
               child: SizedBox(
@@ -5434,7 +5507,7 @@ class _ConveyorBadgeIcon extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-      UniversalIcon(id: id, size: 40, levelFile: levelFile),
+        UniversalIcon(id: id, size: 40, levelFile: levelFile),
         Positioned(
           top: -4,
           right: -4,

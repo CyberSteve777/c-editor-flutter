@@ -778,7 +778,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
 
     showEditorHelpDialog(
       context,
-      isEvent: false,
       title: switch (section) {
         _WaveGeneratorWaveSection.fixedSpawns =>
           l10n?.waveGeneratorFixedSpawnsHelpTitle ?? 'Fixed spawns',

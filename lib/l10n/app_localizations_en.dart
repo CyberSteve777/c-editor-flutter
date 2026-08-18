@@ -1684,7 +1684,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveContainerAliasHint =>
-      'Alias for the WaveManagerProperties object that stores wave data.';
+      'The alias used in the level file for the WaveManagerProperties object that stores wave data. It generally does not need to be changed manually.';
 
   @override
   String waveManagerGlobalSummary(
@@ -5456,7 +5456,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get levelAccount => 'Level: account';
+  String get levelAccount => 'Level: follows account';
 
   @override
   String levelDisplay(String value) {
@@ -8564,16 +8564,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waveGeneratorWaveSettingsTitle => 'Wave settings';
 
   @override
-  String get waveGeneratorFixedSpawnsHelpTitle => 'Fixed spawns';
+  String get waveGeneratorFixedSpawnsHelpTitle => 'Fixed spawns section';
 
   @override
-  String get waveGeneratorRandomSpawnsHelpTitle => 'Random spawns';
+  String get waveGeneratorRandomSpawnsHelpTitle => 'Random spawns section';
 
   @override
-  String get waveGeneratorZombiePoolHelpTitle => 'Zombie pool';
+  String get waveGeneratorZombiePoolHelpTitle => 'Zombie pool section';
 
   @override
-  String get waveGeneratorWaveSettingsHelpTitle => 'Wave settings';
+  String get waveGeneratorWaveSettingsHelpTitle => 'Wave settings section';
 
   @override
   String get waveGeneratorFixedSpawnsHelpBody =>
