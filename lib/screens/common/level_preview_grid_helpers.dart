@@ -1096,6 +1096,7 @@ String? findLawnMowerAlias(LevelDefinitionData def) {
     'SteamMowers',
     'RenaiMowers',
     'HeianMowers',
+    'MoonMowers',
     'FairyTaleMowers',
     'ZCorpMowers',
     'RunningSubwayMowers',

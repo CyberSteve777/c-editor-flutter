@@ -72,4 +72,37 @@ void main() {
       );
     });
   });
+
+  group('MoonStage catalog entry', () {
+    setUpAll(() async {
+      await StageCatalogRepository.init();
+      await StageRepository.init();
+    });
+
+    test('appears after Heian Ages in the main stage list', () {
+      final options = StageCatalogRepository.stageBaseOptions();
+      final aliases = options.map((option) => option.alias).toList();
+      final moon = options.firstWhere((option) => option.alias == 'MoonStage');
+
+      expect(
+        aliases.indexOf('HeianStage'),
+        lessThan(aliases.indexOf('MoonStage')),
+      );
+      expect(
+        aliases.indexOf('MoonStage'),
+        lessThan(aliases.indexOf('FairyTaleStage')),
+      );
+      expect(moon.type, 'main');
+      expect(moon.iconName, 'Stage_Moon.webp');
+    });
+
+    test('keeps the Moon-specific custom-stage setting', () {
+      final impl = StageCatalogRepository.catalogImplementation('MoonStage');
+
+      expect(impl, isNotNull);
+      expect(impl!.objclass, 'MoonStageProperties');
+      expect(impl.objdata['MusicSuffix'], 'Moon');
+      expect(impl.objdata['CosmicPlantfoodFillSeconds'], 50.0);
+    });
+  });
 }

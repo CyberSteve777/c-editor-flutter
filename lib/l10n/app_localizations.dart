@@ -2005,7 +2005,7 @@ abstract class AppLocalizations {
   /// No description provided for @feature3.
   ///
   /// In en, this message translates to:
-  /// **'Custom injection: Inject and manage custom zombies, custom lawns, and custom Zomboss Mechs within a level, including their core properties.'**
+  /// **'Custom injection: Inject and manage custom zombies, custom lawns, and custom Zomboss mechs within a level, including their core properties.'**
   String get feature3;
 
   /// No description provided for @feature4.
@@ -2299,7 +2299,7 @@ abstract class AppLocalizations {
   /// No description provided for @failedToLoadLevel.
   ///
   /// In en, this message translates to:
-  /// **'Failed to load level'**
+  /// **'Failed to load the level.\nWe recommend checking whether the level file is encrypted (for example, a JSON file used by hot updates).'**
   String get failedToLoadLevel;
 
   /// No description provided for @noLevelDefinition.
@@ -2419,13 +2419,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombieTagMoon.
   ///
   /// In en, this message translates to:
-  /// **'Moon Base'**
+  /// **'Moon BaseZ'**
   String get zombieTagMoon;
 
   /// No description provided for @zombieTagTaleZCorp.
   ///
   /// In en, this message translates to:
-  /// **'Fairytale Forest / ZCorp Takeover'**
+  /// **'Fairy Forest / Zombie Corporation'**
   String get zombieTagTaleZCorp;
 
   /// No description provided for @zombieTagParkourSpeed.
@@ -2791,19 +2791,19 @@ abstract class AppLocalizations {
   /// No description provided for @plantTagWorldMoon.
   ///
   /// In en, this message translates to:
-  /// **'Moon Base'**
+  /// **'Moon BaseZ'**
   String get plantTagWorldMoon;
 
   /// No description provided for @plantTagWorldFairytale.
   ///
   /// In en, this message translates to:
-  /// **'Fairytale Forest'**
+  /// **'Fairy Forest'**
   String get plantTagWorldFairytale;
 
   /// No description provided for @plantTagWorldZcorp.
   ///
   /// In en, this message translates to:
-  /// **'ZCorp Takeover'**
+  /// **'Zombie Corporation'**
   String get plantTagWorldZcorp;
 
   /// No description provided for @plantTagWorldMausoleum.
@@ -4165,7 +4165,7 @@ abstract class AppLocalizations {
   /// No description provided for @stayTunedMoonZombieBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Moon Base Part 2 is coming soon. Keep a lookout!'**
+  /// **'Moon BaseZ Part 2 is coming soon. Keep a lookout!'**
   String get stayTunedMoonZombieBlockedMessage;
 
   /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
@@ -7573,7 +7573,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpFairyFogBody.
   ///
   /// In en, this message translates to:
-  /// **'Creates magic fog that covers the lawn and grants shields to zombies. Commonly used in Fairytale Forest levels. Can only be cleared by the Fairtyale Breeze event.\nHigher-tier fog grants stronger shields and increased control immunity to zombies. Tiers, from lowest to highest, are White, Blue, and Purple.'**
+  /// **'Creates magic fog that covers the lawn and grants shields to zombies. Commonly used in Fairy Forest levels. Can only be cleared by the Fairtyale Breeze event.\nHigher-tier fog grants stronger shields and increased control immunity to zombies. Tiers, from lowest to highest, are White, Blue, and Purple.'**
   String get eventHelpFairyFogBody;
 
   /// No description provided for @eventHelpFairyFogRange.
@@ -7585,7 +7585,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpFairyWindBody.
   ///
   /// In en, this message translates to:
-  /// **'Generates a continuous breeze that clears magical fog. Commonly used in Fairytale Forest levels.'**
+  /// **'Generates a continuous breeze that clears magical fog. Commonly used in Fairy Forest levels.'**
   String get eventHelpFairyWindBody;
 
   /// No description provided for @eventHelpFairyWindVelocity.
@@ -10115,7 +10115,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechSelection.
   ///
   /// In en, this message translates to:
-  /// **'Zomboss Mech selection'**
+  /// **'Zomboss mech selection'**
   String get zombossMechSelection;
 
   /// No description provided for @zombossMechBaseLabel.
@@ -11894,6 +11894,12 @@ abstract class AppLocalizations {
   /// **'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.'**
   String get tunnelExpeditionCompatibilityWarningBody;
 
+  /// No description provided for @lifeSupportLastStandConflictWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The Life Support System and Last Stand modules cannot coexist; otherwise, the level will fail to start correctly.'**
+  String get lifeSupportLastStandConflictWarning;
+
   /// No description provided for @moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties.
   ///
   /// In en, this message translates to:
@@ -12035,7 +12041,7 @@ abstract class AppLocalizations {
   /// No description provided for @witchModuleSpawnInterval.
   ///
   /// In en, this message translates to:
-  /// **'Witch spawn interval (WitchSpawnInterval, seconds)'**
+  /// **'Witch spawn interval (WitchSpawnInterval, unit: seconds)'**
   String get witchModuleSpawnInterval;
 
   /// No description provided for @gulliverTunnelTitle.
@@ -13304,6 +13310,12 @@ abstract class AppLocalizations {
   /// **'About this module'**
   String get tooltipAboutModule;
 
+  /// No description provided for @tooltipAboutSection.
+  ///
+  /// In en, this message translates to:
+  /// **'About this section'**
+  String get tooltipAboutSection;
+
   /// No description provided for @tooltipAboutEvent.
   ///
   /// In en, this message translates to:
@@ -13796,6 +13808,54 @@ abstract class AppLocalizations {
   /// **'This removes the phase and its action list. This cannot be undone.'**
   String get zombossMechDeletePhaseMessage;
 
+  /// No description provided for @zombossMechDeleteEightiesPhaseMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the phase, its action list, and the corresponding music and Zomboss animation. This cannot be undone.'**
+  String get zombossMechDeleteEightiesPhaseMessage;
+
+  /// No description provided for @zombossMechStageJamOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Music playback order (StageJamOrder)'**
+  String get zombossMechStageJamOrder;
+
+  /// No description provided for @zombossMechZombossAnimOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Zomboss animation order (ZombossAnimOrder)'**
+  String get zombossMechZombossAnimOrder;
+
+  /// No description provided for @zombossMechAddEightiesPhaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose music and Zomboss animation for the new phase'**
+  String get zombossMechAddEightiesPhaseTitle;
+
+  /// No description provided for @zombossMechEightiesPhaseSelectionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select both the music played during this phase and the Zomboss animation it uses before creating the phase.'**
+  String get zombossMechEightiesPhaseSelectionRequired;
+
+  /// No description provided for @zombossMechCreatePhase.
+  ///
+  /// In en, this message translates to:
+  /// **'Create phase'**
+  String get zombossMechCreatePhase;
+
+  /// No description provided for @zombossAnimNewWave.
+  ///
+  /// In en, this message translates to:
+  /// **'New Wave'**
+  String get zombossAnimNewWave;
+
+  /// No description provided for @zombossAnimHipHop.
+  ///
+  /// In en, this message translates to:
+  /// **'Hip-Hop'**
+  String get zombossAnimHipHop;
+
   /// No description provided for @zombossMechOrphanActionDeleteTitle.
   ///
   /// In en, this message translates to:
@@ -13991,7 +14051,7 @@ abstract class AppLocalizations {
   /// No description provided for @viewZombossMechProperties.
   ///
   /// In en, this message translates to:
-  /// **'View Properties'**
+  /// **'View properties'**
   String get viewZombossMechProperties;
 
   /// No description provided for @zombossMechEditRetreatAction.
@@ -15137,43 +15197,43 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorRandomSpawnsSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Random spawns'**
+  /// **'Random Spawns'**
   String get waveGeneratorRandomSpawnsSectionTitle;
 
   /// No description provided for @waveGeneratorZombiePoolSectionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Zombie pool'**
+  /// **'Zombie Pool'**
   String get waveGeneratorZombiePoolSectionTitle;
 
   /// No description provided for @waveGeneratorWaveSettingsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave settings'**
+  /// **'Wave Settings'**
   String get waveGeneratorWaveSettingsTitle;
 
   /// No description provided for @waveGeneratorFixedSpawnsHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Fixed spawns section'**
+  /// **'Fixed Spawns section'**
   String get waveGeneratorFixedSpawnsHelpTitle;
 
   /// No description provided for @waveGeneratorRandomSpawnsHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Random spawns section'**
+  /// **'Random Spawns section'**
   String get waveGeneratorRandomSpawnsHelpTitle;
 
   /// No description provided for @waveGeneratorZombiePoolHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Zombie pool section'**
+  /// **'Zombie Pool section'**
   String get waveGeneratorZombiePoolHelpTitle;
 
   /// No description provided for @waveGeneratorWaveSettingsHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wave settings section'**
+  /// **'Wave Settings section'**
   String get waveGeneratorWaveSettingsHelpTitle;
 
   /// No description provided for @waveGeneratorFixedSpawnsHelpBody.
@@ -15281,13 +15341,13 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorExpectationTapHint.
   ///
   /// In en, this message translates to:
-  /// **'View the random-spawn statistical preview'**
+  /// **'View the random spawn estimate for this wave'**
   String get waveGeneratorExpectationTapHint;
 
   /// No description provided for @waveGeneratorStatisticalPreview.
   ///
   /// In en, this message translates to:
-  /// **'Point-based spawning'**
+  /// **'Random-spawn preview'**
   String get waveGeneratorStatisticalPreview;
 
   /// No description provided for @waveGeneratorExpectationEmpty.
@@ -15323,7 +15383,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorFixedSpawns.
   ///
   /// In en, this message translates to:
-  /// **'Fixed spawns'**
+  /// **'Fixed Spawns'**
   String get waveGeneratorFixedSpawns;
 
   /// No description provided for @waveGeneratorPoolAddedCount.
@@ -16159,6 +16219,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Optionally set the minimum and maximum time between zombie spawns.'**
   String get customPortalSpawnIntervalSubtitle;
+
+  /// No description provided for @moduleTitle_MoonLifeSupportSystemProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Life Support System'**
+  String get moduleTitle_MoonLifeSupportSystemProperties;
+
+  /// No description provided for @moduleDesc_MoonLifeSupportSystemProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Configures the Moon BaseZ power capacity and overload protocols'**
+  String get moduleDesc_MoonLifeSupportSystemProperties;
+
+  /// No description provided for @moduleTitle_LunarTerminalModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar Terminal'**
+  String get moduleTitle_LunarTerminalModuleProperties;
+
+  /// No description provided for @moduleDesc_LunarTerminalModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Deploys mining robots to collect crystal energy and increase the power capacity limit'**
+  String get moduleDesc_LunarTerminalModuleProperties;
+
+  /// No description provided for @moduleTitle_LunarMineVeinModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar Veins'**
+  String get moduleTitle_LunarMineVeinModuleProperties;
+
+  /// No description provided for @moduleDesc_LunarMineVeinModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Places Lunar Energy Crystal veins and sets their growth waves'**
+  String get moduleDesc_LunarMineVeinModuleProperties;
+
+  /// No description provided for @moduleTitle_RadiationMeteorModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Radioactive Meteorite'**
+  String get moduleTitle_RadiationMeteorModuleProperties;
+
+  /// No description provided for @moduleDesc_RadiationMeteorModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Drops meteorites that destroy plants and contaminate surrounding tiles'**
+  String get moduleDesc_RadiationMeteorModuleProperties;
+
+  /// No description provided for @eventTitle_SpawnRocketLandingWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Rocket Landing'**
+  String get eventTitle_SpawnRocketLandingWaveActionProps;
+
+  /// No description provided for @eventDesc_SpawnRocketLandingWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawns capturable Moon rockets at set positions'**
+  String get eventDesc_SpawnRocketLandingWaveActionProps;
+
+  /// No description provided for @moonLifeSupportHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Life Support System'**
+  String get moonLifeSupportHelpTitle;
+
+  /// No description provided for @moonLifeSupportHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'An economy system commonly used in Moon Base levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.'**
+  String get moonLifeSupportHelpOverview;
+
+  /// No description provided for @moonLifeSupportHelpProtocolsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overload protocols'**
+  String get moonLifeSupportHelpProtocolsTitle;
+
+  /// No description provided for @moonLifeSupportHelpProtocols.
+  ///
+  /// In en, this message translates to:
+  /// **'When the Life Support System\'s power usage exceeds its initial power capacity, the system enters an overloaded state and activates the Power-Saving Protocol, reducing the attack speed of plants on the lawn and the recharge speed of seed slots.\nWhen power usage exceeds (initial power capacity × required hibernation ratio), the system forcibly activates the Hibernation Protocol after the configured countdown, putting every plant on the lawn into hibernation. Seed slots and the Cosmic Plant Food meter are also locked and cannot be used.'**
+  String get moonLifeSupportHelpProtocols;
+
+  /// No description provided for @moonLifeSupportHelpPlantFoodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Independent cooldowns'**
+  String get moonLifeSupportHelpPlantFoodTitle;
+
+  /// No description provided for @moonLifeSupportHelpPlantFood.
+  ///
+  /// In en, this message translates to:
+  /// **'The module defines a dedicated list of plants with independent cooldowns. The cooldowns of plants in this list are not affected by the Power-Saving Protocol, but those plants still cannot be planted under the Hibernation Protocol.'**
+  String get moonLifeSupportHelpPlantFood;
+
+  /// No description provided for @moonLifeSupportPowerSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Power settings'**
+  String get moonLifeSupportPowerSettings;
+
+  /// No description provided for @moonInitialCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial power capacity (InitialCapacity)'**
+  String get moonInitialCapacity;
+
+  /// No description provided for @moonBufferOverloadRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'Required hibernation ratio (BufferOverloadRatio)'**
+  String get moonBufferOverloadRatio;
+
+  /// No description provided for @moonPenaltyCountdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Hibernation countdown (PenaltyCountdown, unit: seconds)'**
+  String get moonPenaltyCountdown;
+
+  /// No description provided for @moonPlantImmunityList.
+  ///
+  /// In en, this message translates to:
+  /// **'Plants with independent cooldowns (PlantImmunityList)'**
+  String get moonPlantImmunityList;
+
+  /// No description provided for @moonPlantImmunityListHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The cooldowns of plants in this list are not affected by the Power-Saving Protocol, but those plants still cannot be planted under the Hibernation Protocol.'**
+  String get moonPlantImmunityListHint;
+
+  /// No description provided for @moonSelectImmunePlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Select plants to add to the list'**
+  String get moonSelectImmunePlants;
+
+  /// No description provided for @lunarTerminalHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar Terminal'**
+  String get lunarTerminalHelpTitle;
+
+  /// No description provided for @lunarTerminalHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'An Artifact commonly used in Moon BaseZ levels. It remains at a fixed position on the lawn, similar to the cannon in Sky City. After tapping the collection terminal, select one of three mining robots and drag it onto the lawn. Robots automatically collect energy from Lunar Energy Crystals and Radioactive Meteorites within range, permanently increasing the base Life Support System\'s available power capacity for the current level and allowing stronger lineups. Robots have health and can be attacked and destroyed by zombies, Radioactive Meteorites, and other targets.'**
+  String get lunarTerminalHelpOverview;
+
+  /// No description provided for @lunarTerminalHelpFixedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deployment cooldown'**
+  String get lunarTerminalHelpFixedTitle;
+
+  /// No description provided for @lunarTerminalHelpFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'After deploying a robot, the Lunar Energy Collection Terminal enters a cooldown period. The cooldown duration can be customized in the level.'**
+  String get lunarTerminalHelpFixed;
+
+  /// No description provided for @lunarTerminalCollectorCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot deployment cooldown (CollectorCooldown, unit: seconds)'**
+  String get lunarTerminalCollectorCooldown;
+
+  /// No description provided for @lunarMineVeinHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar Veins'**
+  String get lunarMineVeinHelpTitle;
+
+  /// No description provided for @lunarMineVeinHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Places Lunar Energy Crystal veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a Lunar Energy Crystal grows at the same position and can then be harvested normally to supply power.'**
+  String get lunarMineVeinHelpOverview;
+
+  /// No description provided for @lunarMineVeinHelpWaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave numbering'**
+  String get lunarMineVeinHelpWaveTitle;
+
+  /// No description provided for @lunarMineVeinHelpWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth wave (EmergenceWave) is numbered from 1. Enter 1 to grow on the first wave, 2 to grow on the second wave, and so on.'**
+  String get lunarMineVeinHelpWave;
+
+  /// No description provided for @lunarMineVeinPlacements.
+  ///
+  /// In en, this message translates to:
+  /// **'Vein placements (VeinPlacements)'**
+  String get lunarMineVeinPlacements;
+
+  /// No description provided for @lunarMineEmergenceWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth wave (EmergenceWave, 1-based)'**
+  String get lunarMineEmergenceWave;
+
+  /// No description provided for @moonPlacementGestureHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap an empty tile to add an entry. Right-click or long-press an occupied tile to remove it.'**
+  String get moonPlacementGestureHint;
+
+  /// No description provided for @radiationMeteorHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Radioactive Meteorite'**
+  String get radiationMeteorHelpTitle;
+
+  /// No description provided for @radiationMeteorHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Drops special Radioactive Meteorites on specified waves, as commonly seen in Moon BaseZ. Before a meteorite lands, a red-text warning appears in the level and a crosshair marks its expected landing tile. After the configured warning duration, the meteorite falls straight down, instantly destroying units on its landing tile, then slowly contaminates surrounding tiles clockwise.\nZombies on contaminated tiles gain increased movement speed and health regeneration, while Cosmic plants continuously take damage.'**
+  String get radiationMeteorHelpOverview;
+
+  /// No description provided for @radiationMeteorHelpMiningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mining to destroy'**
+  String get radiationMeteorHelpMiningTitle;
+
+  /// No description provided for @radiationMeteorHelpMining.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar Energy Collection Units can mine Radioactive Meteorites and destroy them after a period of time. After a meteorite is destroyed, the terminal grants the player a permanent power-capacity increase for the current level and removes the contamination effects.'**
+  String get radiationMeteorHelpMining;
+
+  /// No description provided for @radiationMeteorParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Meteor parameters'**
+  String get radiationMeteorParameters;
+
+  /// No description provided for @radiationMeteorWarningDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning duration (WarningDuration, unit: seconds)'**
+  String get radiationMeteorWarningDuration;
+
+  /// No description provided for @radiationMeteorPollutionInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Contamination interval (PollutionInterval, unit: seconds)'**
+  String get radiationMeteorPollutionInterval;
+
+  /// No description provided for @radiationMeteorMiningDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Required mining duration (MiningDurationRequired, unit: seconds)'**
+  String get radiationMeteorMiningDuration;
+
+  /// No description provided for @radiationMeteorPowerReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Power reward on destruction (PowerRewardOnDestroy)'**
+  String get radiationMeteorPowerReward;
+
+  /// No description provided for @radiationMeteorSpawnSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Landing schedule (SpawnSchedule)'**
+  String get radiationMeteorSpawnSchedule;
+
+  /// No description provided for @radiationMeteorWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave (Wave, 1-based)'**
+  String get radiationMeteorWave;
+
+  /// No description provided for @rocketLandingHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rocket Landing'**
+  String get rocketLandingHelpTitle;
+
+  /// No description provided for @rocketLandingHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid-item obstacles, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.'**
+  String get rocketLandingHelpOverview;
+
+  /// No description provided for @rocketLandingHelpPlantsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plants take control'**
+  String get rocketLandingHelpPlantsTitle;
+
+  /// No description provided for @rocketLandingHelpPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant a designated Cosmic plant inside a rocket. After a short time, the rocket launches, locks onto a high-threat zombie on the lawn, and bombards it for massive damage. Cosmic Pea releases ricocheting Cosmic projectiles; Cosmic Mushroom summons Mushroom Wormholes in the area; Cosmic Nut creates a short-lived small black hole that pulls and continuously damages nearby zombies.'**
+  String get rocketLandingHelpPlants;
+
+  /// No description provided for @rocketLandingHelpZombiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombies take control'**
+  String get rocketLandingHelpZombiesTitle;
+
+  /// No description provided for @rocketLandingHelpZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'When a zombie enters a rocket, it launches after a short delay and lands farther back on the lawn, transporting the zombie to that tile. Some zombies cannot enter rockets.'**
+  String get rocketLandingHelpZombies;
+
+  /// No description provided for @rocketLandingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Rocket settings'**
+  String get rocketLandingSettings;
+
+  /// No description provided for @rocketPoolCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Rocket count (Count)'**
+  String get rocketPoolCount;
+
+  /// No description provided for @rocketSpawnCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total grid items to spawn (SpawnCount)'**
+  String get rocketSpawnCount;
+
+  /// No description provided for @rocketSpawnInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn interval (SpawnInterval, unit: seconds)'**
+  String get rocketSpawnInterval;
+
+  /// No description provided for @rocketDisplacePlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Displace plants (DisplacePlants)'**
+  String get rocketDisplacePlants;
+
+  /// No description provided for @rocketDisplacePlantsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, the rocket moves plants on its landing tile to nearby empty tiles'**
+  String get rocketDisplacePlantsSubtitle;
 }
 
 class _AppLocalizationsDelegate

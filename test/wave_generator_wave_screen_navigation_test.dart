@@ -5,6 +5,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('updated localization is consistent in every locale', () {
+    expect(
+      lookupAppLocalizations(const Locale('zh')).failedToLoadLevel,
+      '加载关卡失败。\n建议检查关卡文件是否为加密格式（如热更新使用的JSON文件）。',
+    );
+    expect(
+      lookupAppLocalizations(const Locale('en')).failedToLoadLevel,
+      'Failed to load the level.\nWe recommend checking whether the level '
+      'file is encrypted (for example, a JSON file used by hot updates).',
+    );
+    expect(
+      lookupAppLocalizations(const Locale('ru')).failedToLoadLevel,
+      'Не удалось загрузить уровень.\nРекомендуется проверить, не зашифрован '
+      'ли файл уровня (например, JSON-файл из горячего обновления).',
+    );
+    expect(
+      lookupAppLocalizations(
+        const Locale('zh'),
+      ).waveGeneratorStatisticalPreview,
+      '统计预览',
+    );
+    expect(
+      lookupAppLocalizations(
+        const Locale('en'),
+      ).waveGeneratorStatisticalPreview,
+      'Statistical preview',
+    );
+    expect(
+      lookupAppLocalizations(
+        const Locale('ru'),
+      ).waveGeneratorStatisticalPreview,
+      'Статистический предпросмотр',
+    );
+  });
+
   testWidgets('wave editor uses overview cards and preserves child edits', (
     tester,
   ) async {
@@ -52,6 +87,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('WavePointStart'), findsOneWidget);
     expect(find.byIcon(Icons.help_outline), findsOneWidget);
+    expect(find.byTooltip('关于此分区'), findsOneWidget);
 
     await tester.enterText(find.byType(TextFormField).first, '120');
     await tester.pump();
@@ -123,6 +159,7 @@ void main() {
       await tester.tap(find.text(title));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: title);
+      expect(find.byTooltip('关于此分区'), findsOneWidget, reason: title);
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: '$title 返回');

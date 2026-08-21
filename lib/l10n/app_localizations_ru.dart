@@ -1246,7 +1246,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get saved => 'Сохранено';
 
   @override
-  String get failedToLoadLevel => 'Не удалось загрузить уровень';
+  String get failedToLoadLevel =>
+      'Не удалось загрузить уровень.\nРекомендуется проверить, не зашифрован ли файл уровня (например, JSON-файл из горячего обновления).';
 
   @override
   String get noLevelDefinition => 'Определение уровня не найдено';
@@ -6656,11 +6657,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tunnelExpeditionCompatibilityWarningTitle =>
-      'Use Underground Palace Pathways with Expedition Tiles carefully';
+      'Предупреждение о совместимости модулей';
 
   @override
   String get tunnelExpeditionCompatibilityWarningBody =>
       'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.';
+
+  @override
+  String get lifeSupportLastStandConflictWarning =>
+      'Модули «Система жизнеобеспечения» и «Последний рубеж» нельзя использовать одновременно, иначе уровень не сможет нормально запуститься.';
 
   @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
@@ -7483,6 +7488,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tooltipAboutModule => 'О модуле';
 
   @override
+  String get tooltipAboutSection => 'Об этом разделе';
+
+  @override
   String get tooltipAboutEvent => 'О событии';
 
   @override
@@ -7748,6 +7756,34 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get zombossMechDeletePhaseMessage =>
       'Фаза и её список действий будут удалены. Это нельзя отменить.';
+
+  @override
+  String get zombossMechDeleteEightiesPhaseMessage =>
+      'Фаза, её список действий, а также соответствующие ей музыка и анимация Зомбосса будут удалены. Это действие нельзя отменить.';
+
+  @override
+  String get zombossMechStageJamOrder => 'Порядок музыки (StageJamOrder)';
+
+  @override
+  String get zombossMechZombossAnimOrder =>
+      'Порядок анимаций Зомбосса (ZombossAnimOrder)';
+
+  @override
+  String get zombossMechAddEightiesPhaseTitle =>
+      'Выберите музыку и анимацию Зомбосса для новой фазы';
+
+  @override
+  String get zombossMechEightiesPhaseSelectionRequired =>
+      'Перед созданием фазы необходимо выбрать музыку и анимацию Зомбосса.';
+
+  @override
+  String get zombossMechCreatePhase => 'Создать фазу';
+
+  @override
+  String get zombossAnimNewWave => 'Новая волна';
+
+  @override
+  String get zombossAnimHipHop => 'Хип-хоп';
 
   @override
   String get zombossMechOrphanActionDeleteTitle =>
@@ -9126,4 +9162,212 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get customPortalSpawnIntervalSubtitle =>
       'Необязательно задайте минимальное и максимальное время между появлениями зомби.';
+
+  @override
+  String get moduleTitle_MoonLifeSupportSystemProperties =>
+      'Система жизнеобеспечения';
+
+  @override
+  String get moduleDesc_MoonLifeSupportSystemProperties =>
+      'Настраивает запас энергии Лунной базы и протоколы перегрузки';
+
+  @override
+  String get moduleTitle_LunarTerminalModuleProperties => 'Лунный терминал';
+
+  @override
+  String get moduleDesc_LunarTerminalModuleProperties =>
+      'Развёртывает добывающих роботов для сбора энергии кристаллов и повышения предела энергии';
+
+  @override
+  String get moduleTitle_LunarMineVeinModuleProperties => 'Лунные жилы';
+
+  @override
+  String get moduleDesc_LunarMineVeinModuleProperties =>
+      'Размещает жилы лунных энергетических кристаллов и задаёт волны их роста';
+
+  @override
+  String get moduleTitle_RadiationMeteorModuleProperties =>
+      'Радиоактивный метеорит';
+
+  @override
+  String get moduleDesc_RadiationMeteorModuleProperties =>
+      'Обрушивает метеориты, уничтожающие растения и заражающие соседние клетки';
+
+  @override
+  String get eventTitle_SpawnRocketLandingWaveActionProps => 'Посадка ракеты';
+
+  @override
+  String get eventDesc_SpawnRocketLandingWaveActionProps =>
+      'Создаёт в заданных позициях лунные ракеты, которые можно захватить';
+
+  @override
+  String get moonLifeSupportHelpTitle => 'Система жизнеобеспечения';
+
+  @override
+  String get moonLifeSupportHelpOverview =>
+      'Экономическая система, часто используемая в уровнях Лунной базы. После добавления этого модуля посадка растений не расходует солнце: вместо этого растения в реальном времени занимают часть запаса энергии системы жизнеобеспечения. Когда растение выкапывают лопатой, уничтожают зомби или оно исчезает из-за особой механики, весь занятый им запас немедленно возвращается.';
+
+  @override
+  String get moonLifeSupportHelpProtocolsTitle => 'Протоколы перегрузки';
+
+  @override
+  String get moonLifeSupportHelpProtocols =>
+      'Когда потребление энергии системы жизнеобеспечения превышает её начальный запас, система переходит в состояние перегрузки и включает протокол энергосбережения, снижая скорость атаки растений на поле и скорость перезарядки ячеек семян.\nКогда потребление энергии превышает (начальный запас энергии × требуемый коэффициент гибернации), после заданного отсчёта система принудительно включает протокол гибернации: все растения на поле впадают в спячку, а ячейки семян и шкала космической подкормки блокируются и становятся недоступны.';
+
+  @override
+  String get moonLifeSupportHelpPlantFoodTitle => 'Независимая перезарядка';
+
+  @override
+  String get moonLifeSupportHelpPlantFood =>
+      'Модуль содержит отдельный список растений с независимой перезарядкой. Время перезарядки растений из списка не зависит от протокола энергосбережения, но при протоколе гибернации их всё равно нельзя высаживать.';
+
+  @override
+  String get moonLifeSupportPowerSettings => 'Настройки энергии';
+
+  @override
+  String get moonInitialCapacity => 'Начальный запас энергии (InitialCapacity)';
+
+  @override
+  String get moonBufferOverloadRatio =>
+      'Требуемый коэффициент гибернации (BufferOverloadRatio)';
+
+  @override
+  String get moonPenaltyCountdown =>
+      'Отсчёт до гибернации (PenaltyCountdown, секунды)';
+
+  @override
+  String get moonPlantImmunityList =>
+      'Растения с независимой перезарядкой (PlantImmunityList)';
+
+  @override
+  String get moonPlantImmunityListHint =>
+      'Время перезарядки растений из списка не зависит от протокола энергосбережения, но при протоколе гибернации их всё равно нельзя высаживать.';
+
+  @override
+  String get moonSelectImmunePlants =>
+      'Выбрать растения для добавления в список';
+
+  @override
+  String get lunarTerminalHelpTitle => 'Лунный терминал';
+
+  @override
+  String get lunarTerminalHelpOverview =>
+      'Артефакт, часто используемый в уровнях Лунной базы. Он занимает постоянную позицию на поле, как пушка Небесного города. После нажатия на терминал сбора энергии можно выбрать одного из трёх добывающих роботов и перетащить его на поле. Роботы автоматически собирают энергию лунных энергетических кристаллов и радиоактивных метеоритов в пределах досягаемости, навсегда увеличивая доступный в этом уровне запас энергии системы жизнеобеспечения и позволяя создавать более сильные построения. У роботов есть здоровье; зомби, радиоактивные метеориты и другие цели могут атаковать и уничтожать их.';
+
+  @override
+  String get lunarTerminalHelpFixedTitle => 'Перезарядка развёртывания';
+
+  @override
+  String get lunarTerminalHelpFixed =>
+      'После каждого развёртывания робота терминал сбора лунной энергии уходит на перезарядку. Её длительность можно настроить в уровне.';
+
+  @override
+  String get lunarTerminalCollectorCooldown =>
+      'Перезарядка развёртывания робота (CollectorCooldown, секунды)';
+
+  @override
+  String get lunarMineVeinHelpTitle => 'Лунные жилы';
+
+  @override
+  String get lunarMineVeinHelpOverview =>
+      'В начале уровня размещает на поле жилы лунных энергетических кристаллов, часто встречающиеся на Лунной базе. Изначально жилы не дают энергии. На заданной волне на прежнем месте вырастает лунный энергетический кристалл, после чего его можно добывать для получения энергии.';
+
+  @override
+  String get lunarMineVeinHelpWaveTitle => 'Нумерация волн';
+
+  @override
+  String get lunarMineVeinHelpWave =>
+      'Волна роста (EmergenceWave) нумеруется с 1: для роста на первой волне укажите 1, на второй — 2 и так далее.';
+
+  @override
+  String get lunarMineVeinPlacements => 'Размещение жил (VeinPlacements)';
+
+  @override
+  String get lunarMineEmergenceWave =>
+      'Волна роста (EmergenceWave, нумерация с 1)';
+
+  @override
+  String get moonPlacementGestureHint =>
+      'Нажмите пустую клетку, чтобы добавить объект. Щёлкните правой кнопкой или удерживайте занятую клетку, чтобы удалить его.';
+
+  @override
+  String get radiationMeteorHelpTitle => 'Радиоактивный метеорит';
+
+  @override
+  String get radiationMeteorHelpOverview =>
+      'На заданных волнах обрушивает особые радиоактивные метеориты, часто встречающиеся на Лунной базе. Перед падением метеорита в уровне появляется красное предупреждение, а предполагаемая клетка падения отмечается прицелом. По окончании заданного времени предупреждения метеорит падает вертикально, мгновенно уничтожает всех в клетке приземления, а затем медленно заражает соседние клетки по часовой стрелке.\nЗомби на заражённых клетках получают прибавку к скорости передвижения и восстановлению здоровья, а космические растения непрерывно получают урон.';
+
+  @override
+  String get radiationMeteorHelpMiningTitle => 'Уничтожение добычей';
+
+  @override
+  String get radiationMeteorHelpMining =>
+      'Устройства сбора лунной энергии могут добывать радиоактивные метеориты и через некоторое время уничтожать их. После уничтожения метеорита терминал навсегда повышает доступный в этом уровне запас энергии игрока и устраняет эффект заражения.';
+
+  @override
+  String get radiationMeteorParameters => 'Параметры метеорита';
+
+  @override
+  String get radiationMeteorWarningDuration =>
+      'Длительность предупреждения (WarningDuration, секунды)';
+
+  @override
+  String get radiationMeteorPollutionInterval =>
+      'Интервал загрязнения (PollutionInterval, секунды)';
+
+  @override
+  String get radiationMeteorMiningDuration =>
+      'Время добычи (MiningDurationRequired, секунды)';
+
+  @override
+  String get radiationMeteorPowerReward =>
+      'Награда энергией (PowerRewardOnDestroy)';
+
+  @override
+  String get radiationMeteorSpawnSchedule => 'Порядок падения (SpawnSchedule)';
+
+  @override
+  String get radiationMeteorWave => 'Волна (Wave, нумерация с 1)';
+
+  @override
+  String get rocketLandingHelpTitle => 'Посадка ракеты';
+
+  @override
+  String get rocketLandingHelpOverview =>
+      'Событие, часто используемое на Лунной базе. Оно создаёт ракеты в заданных позициях как цели, за которые борются растения и зомби. По умолчанию ракеты игнорируют надгробия и другие препятствия на клетках, приземляются напрямую и уничтожают растения в клетках падения. Можно настроить, будут ли препятствия мешать появлению ракет и будут ли растения из клеток падения отброшены.';
+
+  @override
+  String get rocketLandingHelpPlantsTitle => 'Захват растениями';
+
+  @override
+  String get rocketLandingHelpPlants =>
+      'Посадите подходящее космическое растение в ракету. Через некоторое время ракета взлетит, наведётся на опасного зомби на поле и нанесёт ему огромный урон. Космический горох выпускает рикошетящие космические снаряды; Космический гриб создаёт грибные червоточины в области; Космический орех создаёт небольшую кратковременную чёрную дыру, которая притягивает ближайших зомби и непрерывно наносит им урон.';
+
+  @override
+  String get rocketLandingHelpZombiesTitle => 'Захват зомби';
+
+  @override
+  String get rocketLandingHelpZombies =>
+      'Вошедший в ракету зомби после запуска переносится в клетку ближе к тылу. Некоторые зомби не могут входить в ракеты.';
+
+  @override
+  String get rocketLandingSettings => 'Настройки ракеты';
+
+  @override
+  String get rocketPoolCount => 'Количество ракет (Count)';
+
+  @override
+  String get rocketSpawnCount =>
+      'Общее количество создаваемых объектов (SpawnCount)';
+
+  @override
+  String get rocketSpawnInterval =>
+      'Интервал появления (SpawnInterval, секунды)';
+
+  @override
+  String get rocketDisplacePlants => 'Отбрасывать растения (DisplacePlants)';
+
+  @override
+  String get rocketDisplacePlantsSubtitle =>
+      'Если включено, ракета перемещает растения из клетки падения на соседние свободные клетки';
 }

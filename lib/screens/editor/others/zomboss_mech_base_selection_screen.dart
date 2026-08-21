@@ -26,7 +26,7 @@ class ZombossMechBaseSelectionScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
-            tooltip: l10n?.tooltipAboutModule ?? 'Help',
+            tooltip: l10n?.tooltipAboutSection ?? 'About this section',
             onPressed: () => showEditorHelpDialog(
               context,
               title:

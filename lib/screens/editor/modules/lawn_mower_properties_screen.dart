@@ -49,6 +49,7 @@ class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
     'SteamMowers',
     'RenaiMowers',
     'HeianMowers',
+    'MoonMowers',
     'FairyTaleMowers',
     'ZCorpMowers',
     'RunningSubwayMowers',

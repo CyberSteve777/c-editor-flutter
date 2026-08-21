@@ -223,6 +223,9 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     final existingObjClasses = currentModulesList
         .map((m) => m.objClass)
         .toSet();
+    final showLifeSupportLastStandConflict =
+        existingObjClasses.contains('MoonLifeSupportSystemProperties') &&
+        existingObjClasses.contains('LastStandMinigameProperties');
     final activeConflicts = ConflictRegistry.getActiveConflicts(
       context,
       existingObjClasses,
@@ -397,6 +400,21 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                 ),
               ),
             ),
+
+            if (showLifeSupportLastStandConflict) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                key: const ValueKey('lifeSupportLastStandConflictWarning'),
+                title:
+                    l10n?.tunnelExpeditionCompatibilityWarningTitle ??
+                    'Module compatibility warning',
+                message:
+                    l10n?.lifeSupportLastStandConflictWarning ??
+                    'The Life Support System and Last Stand modules cannot '
+                        'coexist; otherwise, the level will fail to start '
+                        'correctly.',
+              ),
+            ],
 
             // Missing module for parallel plants (same style as conflicts)
             if (widget.missingModuleWarnings != null &&

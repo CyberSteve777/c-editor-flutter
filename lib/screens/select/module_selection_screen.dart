@@ -139,7 +139,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
         ),
         title: Text(l10n?.addNewModule ?? 'Add module'),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(100),
+          preferredSize: const Size.fromHeight(106),
           child: Column(
             children: [
               Padding(
@@ -156,7 +156,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
               ),
               HorizontalTagScroller(
                 onAccentBar: true,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 14),
                 children: [
                   AccentBarChoiceChip(
                     key: const ValueKey('moduleCategory_all'),

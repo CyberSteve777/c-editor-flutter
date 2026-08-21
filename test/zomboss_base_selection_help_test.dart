@@ -38,6 +38,14 @@ void main() {
       ),
     );
     await tester.pump();
+    expect(
+      tester
+          .widget<IconButton>(
+            find.widgetWithIcon(IconButton, Icons.help_outline),
+          )
+          .tooltip,
+      'About this section',
+    );
     await tester.tap(find.byIcon(Icons.help_outline));
     await tester.pumpAndSettle();
 
@@ -65,6 +73,14 @@ void main() {
       ),
     );
     await tester.pump();
+    expect(
+      tester
+          .widget<IconButton>(
+            find.widgetWithIcon(IconButton, Icons.help_outline),
+          )
+          .tooltip,
+      'About this section',
+    );
     await tester.tap(find.byIcon(Icons.help_outline));
     await tester.pumpAndSettle();
 
@@ -118,6 +134,14 @@ void main() {
       ),
     );
     await tester.pump();
+    expect(
+      tester
+          .widget<IconButton>(
+            find.widgetWithIcon(IconButton, Icons.help_outline),
+          )
+          .tooltip,
+      'About this section',
+    );
     await tester.tap(find.byIcon(Icons.help_outline));
     await tester.pumpAndSettle();
 

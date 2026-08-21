@@ -1,6 +1,7 @@
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/tabs/level_settings_tab.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -61,6 +62,70 @@ void main() {
     await tester.pump();
     expect(edited, [zombossRtid]);
     expect(find.byIcon(Icons.smart_toy_outlined), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('warns when Life Support System and Last Stand coexist', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1400);
+    addTearDown(tester.view.reset);
+
+    const lifeSupportRtid = 'RTID(MoonLifeSupportSystemModule@CurrentLevel)';
+    const lastStandRtid = 'RTID(LastStand@CurrentLevel)';
+    final levelDef = LevelDefinitionData(
+      modules: const [lifeSupportRtid, lastStandRtid],
+    );
+    final objects = <String, PvzObject>{
+      'MoonLifeSupportSystemModule': PvzObject(
+        aliases: const ['MoonLifeSupportSystemModule'],
+        objClass: 'MoonLifeSupportSystemProperties',
+        objData: const <String, dynamic>{},
+      ),
+      'LastStand': PvzObject(
+        aliases: const ['LastStand'],
+        objClass: 'LastStandMinigameProperties',
+        objData: const <String, dynamic>{},
+      ),
+    };
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('zh'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: LevelSettingsTab(
+            levelDef: levelDef,
+            objectMap: objects,
+            missingModules: const [],
+            onEditBasicInfo: () {},
+            onEditModule: (_) {},
+            onRemoveModule: (_) {},
+            onReorderModules:
+                ({
+                  required isCoreSection,
+                  required oldIndex,
+                  required newIndex,
+                }) {},
+            onNavigateToAddModule: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final warning = find.byKey(
+      const ValueKey('lifeSupportLastStandConflictWarning'),
+    );
+    expect(warning, findsOneWidget);
+    expect(find.text('模块兼容性提示'), findsOneWidget);
+    expect(find.text('「维生系统」与「坚不可摧」模块不能共存，否则关卡无法正常开始。'), findsOneWidget);
+    final card = tester.widget<Card>(
+      find.descendant(of: warning, matching: find.byType(Card)),
+    );
+    expect(card.color, editorWarningBannerBackground(Brightness.light));
     expect(tester.takeException(), isNull);
   });
 }

@@ -1255,7 +1255,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
             if (activeSection != null)
               IconButton(
                 icon: const Icon(Icons.help_outline),
-                tooltip: l10n?.tooltipAboutModule ?? 'Help',
+                tooltip: l10n?.tooltipAboutSection ?? 'About this section',
                 onPressed: () => _showSectionHelp(l10n, activeSection),
               ),
           ],

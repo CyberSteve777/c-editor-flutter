@@ -1072,7 +1072,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feature3 =>
-      'Custom injection: Inject and manage custom zombies, custom lawns, and custom Zomboss Mechs within a level, including their core properties.';
+      'Custom injection: Inject and manage custom zombies, custom lawns, and custom Zomboss mechs within a level, including their core properties.';
 
   @override
   String get feature4 =>
@@ -1234,7 +1234,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Saved';
 
   @override
-  String get failedToLoadLevel => 'Failed to load level';
+  String get failedToLoadLevel =>
+      'Failed to load the level.\nWe recommend checking whether the level file is encrypted (for example, a JSON file used by hot updates).';
 
   @override
   String get noLevelDefinition => 'No level definition';
@@ -1295,10 +1296,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagHenaiAtlantis => 'Heian Ages / Underwater World';
 
   @override
-  String get zombieTagMoon => 'Moon Base';
+  String get zombieTagMoon => 'Moon BaseZ';
 
   @override
-  String get zombieTagTaleZCorp => 'Fairytale Forest / ZCorp Takeover';
+  String get zombieTagTaleZCorp => 'Fairy Forest / Zombie Corporation';
 
   @override
   String get zombieTagParkourSpeed => 'Parkour Party / Speed Racing';
@@ -1481,13 +1482,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plantTagWorldAtlantis => 'Underwater World';
 
   @override
-  String get plantTagWorldMoon => 'Moon Base';
+  String get plantTagWorldMoon => 'Moon BaseZ';
 
   @override
-  String get plantTagWorldFairytale => 'Fairytale Forest';
+  String get plantTagWorldFairytale => 'Fairy Forest';
 
   @override
-  String get plantTagWorldZcorp => 'ZCorp Takeover';
+  String get plantTagWorldZcorp => 'Zombie Corporation';
 
   @override
   String get plantTagWorldMausoleum => 'Underground Palace';
@@ -2273,7 +2274,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stayTunedMoonZombieBlockedMessage =>
-      'Moon Base Part 2 is coming soon. Keep a lookout!';
+      'Moon BaseZ Part 2 is coming soon. Keep a lookout!';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedLabel => 'Work\'s Not Over Yet';
@@ -4229,7 +4230,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpFairyFogBody =>
-      'Creates magic fog that covers the lawn and grants shields to zombies. Commonly used in Fairytale Forest levels. Can only be cleared by the Fairtyale Breeze event.\nHigher-tier fog grants stronger shields and increased control immunity to zombies. Tiers, from lowest to highest, are White, Blue, and Purple.';
+      'Creates magic fog that covers the lawn and grants shields to zombies. Commonly used in Fairy Forest levels. Can only be cleared by the Fairtyale Breeze event.\nHigher-tier fog grants stronger shields and increased control immunity to zombies. Tiers, from lowest to highest, are White, Blue, and Purple.';
 
   @override
   String get eventHelpFairyFogRange =>
@@ -4237,7 +4238,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpFairyWindBody =>
-      'Generates a continuous breeze that clears magical fog. Commonly used in Fairytale Forest levels.';
+      'Generates a continuous breeze that clears magical fog. Commonly used in Fairy Forest levels.';
 
   @override
   String get eventHelpFairyWindVelocity =>
@@ -5669,7 +5670,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unknownZombossMech => 'Unknown Zomboss Mech';
 
   @override
-  String get zombossMechSelection => 'Zomboss Mech selection';
+  String get zombossMechSelection => 'Zomboss mech selection';
 
   @override
   String get zombossMechBaseLabel => 'Base Zomboss Mech';
@@ -6710,6 +6711,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.';
 
   @override
+  String get lifeSupportLastStandConflictWarning =>
+      'The Life Support System and Last Stand modules cannot coexist; otherwise, the level will fail to start correctly.';
+
+  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
       'Finisher Countdown';
 
@@ -6795,7 +6800,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get witchModuleSpawnInterval =>
-      'Witch spawn interval (WitchSpawnInterval, seconds)';
+      'Witch spawn interval (WitchSpawnInterval, unit: seconds)';
 
   @override
   String get gulliverTunnelTitle => 'Gulliver Tunnels';
@@ -7527,6 +7532,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooltipAboutModule => 'About this module';
 
   @override
+  String get tooltipAboutSection => 'About this section';
+
+  @override
   String get tooltipAboutEvent => 'About this event';
 
   @override
@@ -7795,6 +7803,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'This removes the phase and its action list. This cannot be undone.';
 
   @override
+  String get zombossMechDeleteEightiesPhaseMessage =>
+      'This removes the phase, its action list, and the corresponding music and Zomboss animation. This cannot be undone.';
+
+  @override
+  String get zombossMechStageJamOrder => 'Music playback order (StageJamOrder)';
+
+  @override
+  String get zombossMechZombossAnimOrder =>
+      'Zomboss animation order (ZombossAnimOrder)';
+
+  @override
+  String get zombossMechAddEightiesPhaseTitle =>
+      'Choose music and Zomboss animation for the new phase';
+
+  @override
+  String get zombossMechEightiesPhaseSelectionRequired =>
+      'Select both the music played during this phase and the Zomboss animation it uses before creating the phase.';
+
+  @override
+  String get zombossMechCreatePhase => 'Create phase';
+
+  @override
+  String get zombossAnimNewWave => 'New Wave';
+
+  @override
+  String get zombossAnimHipHop => 'Hip-Hop';
+
+  @override
   String get zombossMechOrphanActionDeleteTitle => 'Remove custom action data?';
 
   @override
@@ -7902,7 +7938,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechPropertiesViewTitle => 'Zomboss Mech Properties';
 
   @override
-  String get viewZombossMechProperties => 'View Properties';
+  String get viewZombossMechProperties => 'View properties';
 
   @override
   String get zombossMechEditRetreatAction => 'Choose retreat action';
@@ -8555,25 +8591,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'During random spawning, the game selects by weight from zombies affordable with the remaining points, deducts the selected cost, and filters the candidates again until no zombies are eligible. Unused points do not carry over to the next wave. Fixed spawns are added directly to this wave and consume no random-spawn points.';
 
   @override
-  String get waveGeneratorRandomSpawnsSectionTitle => 'Random spawns';
+  String get waveGeneratorRandomSpawnsSectionTitle => 'Random Spawns';
 
   @override
-  String get waveGeneratorZombiePoolSectionTitle => 'Zombie pool';
+  String get waveGeneratorZombiePoolSectionTitle => 'Zombie Pool';
 
   @override
-  String get waveGeneratorWaveSettingsTitle => 'Wave settings';
+  String get waveGeneratorWaveSettingsTitle => 'Wave Settings';
 
   @override
-  String get waveGeneratorFixedSpawnsHelpTitle => 'Fixed spawns section';
+  String get waveGeneratorFixedSpawnsHelpTitle => 'Fixed Spawns section';
 
   @override
-  String get waveGeneratorRandomSpawnsHelpTitle => 'Random spawns section';
+  String get waveGeneratorRandomSpawnsHelpTitle => 'Random Spawns section';
 
   @override
-  String get waveGeneratorZombiePoolHelpTitle => 'Zombie pool section';
+  String get waveGeneratorZombiePoolHelpTitle => 'Zombie Pool section';
 
   @override
-  String get waveGeneratorWaveSettingsHelpTitle => 'Wave settings section';
+  String get waveGeneratorWaveSettingsHelpTitle => 'Wave Settings section';
 
   @override
   String get waveGeneratorFixedSpawnsHelpBody =>
@@ -8649,10 +8685,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorExpectationTapHint =>
-      'View the random-spawn statistical preview';
+      'View the random spawn estimate for this wave';
 
   @override
-  String get waveGeneratorStatisticalPreview => 'Point-based spawning';
+  String get waveGeneratorStatisticalPreview => 'Random-spawn preview';
 
   @override
   String get waveGeneratorExpectationEmpty =>
@@ -8678,7 +8714,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get waveGeneratorFixedSpawns => 'Fixed spawns';
+  String get waveGeneratorFixedSpawns => 'Fixed Spawns';
 
   @override
   String waveGeneratorPoolAddedCount(int count) {
@@ -9154,4 +9190,209 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get customPortalSpawnIntervalSubtitle =>
       'Optionally set the minimum and maximum time between zombie spawns.';
+
+  @override
+  String get moduleTitle_MoonLifeSupportSystemProperties =>
+      'Life Support System';
+
+  @override
+  String get moduleDesc_MoonLifeSupportSystemProperties =>
+      'Configures the Moon BaseZ power capacity and overload protocols';
+
+  @override
+  String get moduleTitle_LunarTerminalModuleProperties => 'Lunar Terminal';
+
+  @override
+  String get moduleDesc_LunarTerminalModuleProperties =>
+      'Deploys mining robots to collect crystal energy and increase the power capacity limit';
+
+  @override
+  String get moduleTitle_LunarMineVeinModuleProperties => 'Lunar Veins';
+
+  @override
+  String get moduleDesc_LunarMineVeinModuleProperties =>
+      'Places Lunar Energy Crystal veins and sets their growth waves';
+
+  @override
+  String get moduleTitle_RadiationMeteorModuleProperties =>
+      'Radioactive Meteorite';
+
+  @override
+  String get moduleDesc_RadiationMeteorModuleProperties =>
+      'Drops meteorites that destroy plants and contaminate surrounding tiles';
+
+  @override
+  String get eventTitle_SpawnRocketLandingWaveActionProps => 'Rocket Landing';
+
+  @override
+  String get eventDesc_SpawnRocketLandingWaveActionProps =>
+      'Spawns capturable Moon rockets at set positions';
+
+  @override
+  String get moonLifeSupportHelpTitle => 'Life Support System';
+
+  @override
+  String get moonLifeSupportHelpOverview =>
+      'An economy system commonly used in Moon Base levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.';
+
+  @override
+  String get moonLifeSupportHelpProtocolsTitle => 'Overload protocols';
+
+  @override
+  String get moonLifeSupportHelpProtocols =>
+      'When the Life Support System\'s power usage exceeds its initial power capacity, the system enters an overloaded state and activates the Power-Saving Protocol, reducing the attack speed of plants on the lawn and the recharge speed of seed slots.\nWhen power usage exceeds (initial power capacity × required hibernation ratio), the system forcibly activates the Hibernation Protocol after the configured countdown, putting every plant on the lawn into hibernation. Seed slots and the Cosmic Plant Food meter are also locked and cannot be used.';
+
+  @override
+  String get moonLifeSupportHelpPlantFoodTitle => 'Independent cooldowns';
+
+  @override
+  String get moonLifeSupportHelpPlantFood =>
+      'The module defines a dedicated list of plants with independent cooldowns. The cooldowns of plants in this list are not affected by the Power-Saving Protocol, but those plants still cannot be planted under the Hibernation Protocol.';
+
+  @override
+  String get moonLifeSupportPowerSettings => 'Power settings';
+
+  @override
+  String get moonInitialCapacity => 'Initial power capacity (InitialCapacity)';
+
+  @override
+  String get moonBufferOverloadRatio =>
+      'Required hibernation ratio (BufferOverloadRatio)';
+
+  @override
+  String get moonPenaltyCountdown =>
+      'Hibernation countdown (PenaltyCountdown, unit: seconds)';
+
+  @override
+  String get moonPlantImmunityList =>
+      'Plants with independent cooldowns (PlantImmunityList)';
+
+  @override
+  String get moonPlantImmunityListHint =>
+      'The cooldowns of plants in this list are not affected by the Power-Saving Protocol, but those plants still cannot be planted under the Hibernation Protocol.';
+
+  @override
+  String get moonSelectImmunePlants => 'Select plants to add to the list';
+
+  @override
+  String get lunarTerminalHelpTitle => 'Lunar Terminal';
+
+  @override
+  String get lunarTerminalHelpOverview =>
+      'An Artifact commonly used in Moon BaseZ levels. It remains at a fixed position on the lawn, similar to the cannon in Sky City. After tapping the collection terminal, select one of three mining robots and drag it onto the lawn. Robots automatically collect energy from Lunar Energy Crystals and Radioactive Meteorites within range, permanently increasing the base Life Support System\'s available power capacity for the current level and allowing stronger lineups. Robots have health and can be attacked and destroyed by zombies, Radioactive Meteorites, and other targets.';
+
+  @override
+  String get lunarTerminalHelpFixedTitle => 'Deployment cooldown';
+
+  @override
+  String get lunarTerminalHelpFixed =>
+      'After deploying a robot, the Lunar Energy Collection Terminal enters a cooldown period. The cooldown duration can be customized in the level.';
+
+  @override
+  String get lunarTerminalCollectorCooldown =>
+      'Robot deployment cooldown (CollectorCooldown, unit: seconds)';
+
+  @override
+  String get lunarMineVeinHelpTitle => 'Lunar Veins';
+
+  @override
+  String get lunarMineVeinHelpOverview =>
+      'Places Lunar Energy Crystal veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a Lunar Energy Crystal grows at the same position and can then be harvested normally to supply power.';
+
+  @override
+  String get lunarMineVeinHelpWaveTitle => 'Wave numbering';
+
+  @override
+  String get lunarMineVeinHelpWave =>
+      'Growth wave (EmergenceWave) is numbered from 1. Enter 1 to grow on the first wave, 2 to grow on the second wave, and so on.';
+
+  @override
+  String get lunarMineVeinPlacements => 'Vein placements (VeinPlacements)';
+
+  @override
+  String get lunarMineEmergenceWave => 'Growth wave (EmergenceWave, 1-based)';
+
+  @override
+  String get moonPlacementGestureHint =>
+      'Tap an empty tile to add an entry. Right-click or long-press an occupied tile to remove it.';
+
+  @override
+  String get radiationMeteorHelpTitle => 'Radioactive Meteorite';
+
+  @override
+  String get radiationMeteorHelpOverview =>
+      'Drops special Radioactive Meteorites on specified waves, as commonly seen in Moon BaseZ. Before a meteorite lands, a red-text warning appears in the level and a crosshair marks its expected landing tile. After the configured warning duration, the meteorite falls straight down, instantly destroying units on its landing tile, then slowly contaminates surrounding tiles clockwise.\nZombies on contaminated tiles gain increased movement speed and health regeneration, while Cosmic plants continuously take damage.';
+
+  @override
+  String get radiationMeteorHelpMiningTitle => 'Mining to destroy';
+
+  @override
+  String get radiationMeteorHelpMining =>
+      'Lunar Energy Collection Units can mine Radioactive Meteorites and destroy them after a period of time. After a meteorite is destroyed, the terminal grants the player a permanent power-capacity increase for the current level and removes the contamination effects.';
+
+  @override
+  String get radiationMeteorParameters => 'Meteor parameters';
+
+  @override
+  String get radiationMeteorWarningDuration =>
+      'Warning duration (WarningDuration, unit: seconds)';
+
+  @override
+  String get radiationMeteorPollutionInterval =>
+      'Contamination interval (PollutionInterval, unit: seconds)';
+
+  @override
+  String get radiationMeteorMiningDuration =>
+      'Required mining duration (MiningDurationRequired, unit: seconds)';
+
+  @override
+  String get radiationMeteorPowerReward =>
+      'Power reward on destruction (PowerRewardOnDestroy)';
+
+  @override
+  String get radiationMeteorSpawnSchedule => 'Landing schedule (SpawnSchedule)';
+
+  @override
+  String get radiationMeteorWave => 'Wave (Wave, 1-based)';
+
+  @override
+  String get rocketLandingHelpTitle => 'Rocket Landing';
+
+  @override
+  String get rocketLandingHelpOverview =>
+      'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid-item obstacles, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.';
+
+  @override
+  String get rocketLandingHelpPlantsTitle => 'Plants take control';
+
+  @override
+  String get rocketLandingHelpPlants =>
+      'Plant a designated Cosmic plant inside a rocket. After a short time, the rocket launches, locks onto a high-threat zombie on the lawn, and bombards it for massive damage. Cosmic Pea releases ricocheting Cosmic projectiles; Cosmic Mushroom summons Mushroom Wormholes in the area; Cosmic Nut creates a short-lived small black hole that pulls and continuously damages nearby zombies.';
+
+  @override
+  String get rocketLandingHelpZombiesTitle => 'Zombies take control';
+
+  @override
+  String get rocketLandingHelpZombies =>
+      'When a zombie enters a rocket, it launches after a short delay and lands farther back on the lawn, transporting the zombie to that tile. Some zombies cannot enter rockets.';
+
+  @override
+  String get rocketLandingSettings => 'Rocket settings';
+
+  @override
+  String get rocketPoolCount => 'Rocket count (Count)';
+
+  @override
+  String get rocketSpawnCount => 'Total grid items to spawn (SpawnCount)';
+
+  @override
+  String get rocketSpawnInterval =>
+      'Spawn interval (SpawnInterval, unit: seconds)';
+
+  @override
+  String get rocketDisplacePlants => 'Displace plants (DisplacePlants)';
+
+  @override
+  String get rocketDisplacePlantsSubtitle =>
+      'When enabled, the rocket moves plants on its landing tile to nearby empty tiles';
 }

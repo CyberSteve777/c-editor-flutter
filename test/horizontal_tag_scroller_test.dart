@@ -1,3 +1,7 @@
+import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/screens/select/event_selection_screen.dart';
+import 'package:c_editor/screens/select/module_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -109,5 +113,67 @@ void main() {
     // Six pixels are occupied by the scrollbar; the remaining four pixels
     // are the visual gap requested between it and the active underline.
     expect(rowBottom - indicatorBottom, greaterThanOrEqualTo(10));
+  });
+
+  testWidgets('module and event category tags leave a clear scrollbar lane', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 640);
+    addTearDown(tester.view.reset);
+
+    Widget localized(Widget home) => MaterialApp(
+      locale: const Locale('zh'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: home,
+    );
+
+    Future<void> expectScrollbarGap() async {
+      await tester.pumpAndSettle();
+      final scroller = find.byType(HorizontalTagScroller);
+      final firstTag = find
+          .descendant(of: scroller, matching: find.byType(AccentBarChoiceChip))
+          .first;
+      final gap =
+          tester.getBottomLeft(scroller).dy - tester.getBottomLeft(firstTag).dy;
+      expect(gap, greaterThanOrEqualTo(14));
+      expect(
+        tester.widget<HorizontalTagScroller>(scroller).padding,
+        const EdgeInsets.fromLTRB(8, 8, 8, 14),
+      );
+    }
+
+    await tester.pumpWidget(
+      localized(
+        const ModuleSelectionScreen(
+          existingObjClasses: {},
+          stateBucketId: 'scrollbar-gap-test',
+        ),
+      ),
+    );
+    await expectScrollbarGap();
+
+    final levelDef = LevelDefinitionData();
+    await tester.pumpWidget(
+      localized(
+        EventSelectionScreen(
+          waveIndex: 1,
+          levelFile: PvzLevelFile(
+            objects: [
+              PvzObject(
+                aliases: const ['LevelDefinition'],
+                objClass: 'LevelDefinition',
+                objData: levelDef.toJson(),
+              ),
+            ],
+          ),
+          onEventSelected: (_) {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await expectScrollbarGap();
+    expect(tester.takeException(), isNull);
   });
 }

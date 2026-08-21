@@ -3374,16 +3374,6 @@
     "icon": "zombie_atlantis_basic.webp"
   },
   {
-    "id": "atlantis_flag",
-    "name": "zombie_atlantis_flag",
-    "tags": [
-      "Henai_Atlantis",
-      "Basic",
-      "Chinese"
-    ],
-    "icon": "zombie_atlantis_flag.webp"
-  },
-  {
     "id": "atlantis_armor1",
     "name": "zombie_atlantis_armor1",
     "tags": [
@@ -3412,6 +3402,16 @@
       "Chinese"
     ],
     "icon": "zombie_atlantis_armor4.webp"
+  },
+  {
+    "id": "atlantis_flag",
+    "name": "zombie_atlantis_flag",
+    "tags": [
+      "Henai_Atlantis",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_atlantis_flag.webp"
   },
   {
     "id": "atlantis_land_basic",
@@ -3545,6 +3545,206 @@
       "Chinese"
     ],
     "icon": "zombie_seaurchinpitcher.webp"
+  },
+  {
+    "id": "moon",
+    "name": "zombie_moon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon.webp"
+  },
+  {
+    "id": "moon_armor1",
+    "name": "zombie_moon_armor1",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_armor1.webp"
+  },
+  {
+    "id": "moon_armor2",
+    "name": "zombie_moon_armor2",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_armor2.webp"
+  },
+  {
+    "id": "moon_armor3",
+    "name": "zombie_moon_armor3",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_armor3.webp"
+  },
+  {
+    "id": "moon_flag",
+    "name": "zombie_moon_flag",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_flag.webp"
+  },
+  {
+    "id": "moon_gargantuar",
+    "name": "zombie_moon_gargantuar",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_gargantuar.webp"
+  },
+  {
+    "id": "moon_walker",
+    "name": "zombie_moon_walker",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_walker.webp"
+  },
+  {
+    "id": "moon_walker_beacon",
+    "name": "zombie_moon_walker_beacon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moonwalker_beacon.webp"
+  },
+  {
+    "id": "teleport_left",
+    "name": "zombie_teleport_left",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_left.webp"
+  },
+  {
+    "id": "teleport_left_beacon",
+    "name": "zombie_teleport_left_beacon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_left_beacon.webp"
+  },
+  {
+    "id": "teleport_right",
+    "name": "zombie_teleport_right",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_right.webp"
+  },
+  {
+    "id": "teleport_right_beacon",
+    "name": "zombie_teleport_right_beacon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_right_beacon.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp",
+    "name": "zombie_cosmic_imp",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_bubblegun",
+    "name": "zombie_cosmic_imp_bubblegun",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_bubblegun.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_bubble",
+    "name": "zombie_cosmic_imp_bubble",
+    "tags": [
+      "Moon",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_bubble.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_toycar",
+    "name": "zombie_cosmic_imp_toycar",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_toycar.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_corporate",
+    "name": "zombie_cosmic_imp_corporate",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_corporate.webp"
+  },
+  {
+    "id": "moon_ship5000",
+    "name": "zombie_moon_ship5000",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_ship5000.webp"
+  },
+  {
+    "id": "zombie_supernova_gargantuar",
+    "name": "zombie_supernova_gargantuar",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_supernova_gargantuar.webp"
+  },
+  {
+    "id": "zombie_supernova_gargantuar_beacon",
+    "name": "zombie_supernova_gargantuar_beacon",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_supernova_gargantuar_beacon.webp"
   },
   {
     "id": "fairy_tale",
@@ -3863,6 +4063,7 @@
     "name": "zombie_zcorp_gargantuar",
     "tags": [
       "Tale_ZCorp",
+      "Imp",
       "Gargantuar",
       "International"
     ],

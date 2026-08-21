@@ -41,6 +41,10 @@ import 'package:c_editor/screens/editor/modules/seed_rain_properties_screen.dart
 import 'package:c_editor/screens/editor/modules/conveyor_seedbank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/sun_dropper_properties_screen.dart';
+import 'package:c_editor/screens/editor/modules/moon_life_support_system_screen.dart';
+import 'package:c_editor/screens/editor/modules/lunar_terminal_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/lunar_mine_vein_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/radiation_meteor_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/witch_module_properties_screen.dart';
 import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/screens/editor/modules/starting_plantfood_module_screen.dart';
@@ -120,6 +124,7 @@ import 'package:c_editor/screens/editor/events/tidal_change_event_screen.dart';
 import 'package:c_editor/screens/editor/events/zombie_potion_event_screen.dart';
 import 'package:c_editor/screens/editor/events/shell_event_screen.dart';
 import 'package:c_editor/screens/editor/events/pumpkin_house_event_screen.dart';
+import 'package:c_editor/screens/editor/events/rocket_landing_event_screen.dart';
 import 'package:c_editor/screens/editor/events/jittered_event_screen.dart';
 import 'package:c_editor/screens/editor/events/ground_spawn_event_screen.dart';
 import 'package:c_editor/data/pvz_alias_utils.dart';
@@ -2010,6 +2015,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
 
+    if (objClass == 'SpawnRocketLandingWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RocketLandingEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
     AppMessage.show(
       context,
       l10n?.eventEditorInDevelopment ?? 'Event editor in development',
@@ -2750,6 +2770,53 @@ class _EditorScreenState extends State<EditorScreen> {
       openSunDropper(rtid);
       return;
     }
+    if (objClass == 'MoonLifeSupportSystemProperties' &&
+        _ec.state.parsedData?.levelDef != null) {
+      void openLifeSupport(String rt) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MoonLifeSupportSystemScreen(
+              rtid: rt,
+              levelFile: _ec.state.levelFile!,
+              levelDef: _ec.state.parsedData!.levelDef!,
+              onChanged: _markDirty,
+              onBack: () => Navigator.pop(context),
+              onRequestPlantSelection: (initialIds, onSelected) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PlantSelectionScreen(
+                      stateBucketId: _selectionStateBucketId,
+                      isMultiSelect: true,
+                      initialSelectedIds: initialIds,
+                      onPlantSelected: (_) {},
+                      onMultiPlantSelected: (ids) {
+                        Navigator.pop(context);
+                        onSelected(ids);
+                      },
+                      onBack: () => Navigator.pop(context),
+                      levelFile: _ec.state.levelFile,
+                      onAddModule: (objClass) {
+                        _addModule(ModuleRegistry.getMetadata(objClass));
+                      },
+                    ),
+                  ),
+                );
+              },
+              onModeToggled: (newRtid) {
+                _markDirty();
+                Navigator.pop(context);
+                openLifeSupport(newRtid);
+              },
+            ),
+          ),
+        );
+      }
+
+      openLifeSupport(rtid);
+      return;
+    }
     if (objClass == 'WitchModuleProperties' &&
         _ec.state.parsedData?.levelDef != null) {
       void openWitchModule(String rt) {
@@ -3248,6 +3315,51 @@ class _EditorScreenState extends State<EditorScreen> {
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
             initialModuleWave: hint?.gridOverrideModuleWave,
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'LunarTerminalModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LunarTerminalModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'LunarMineVeinModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LunarMineVeinModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'RadiationMeteorModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RadiationMeteorModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
           ),
         ),
       );

@@ -5,6 +5,8 @@ import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/asset_image.dart'
+    show AssetImageWidget, imageAltCandidates;
 
 /// Event selection for wave timeline. Ported from Z-Editor-master EventSelectionScreen.kt
 class EventSelectionScreen extends StatefulWidget {
@@ -110,6 +112,10 @@ class EventSelectionScreen extends StatefulWidget {
           return isTitle
               ? l10n.eventTitle_SpawnModernPortalsWaveActionProps
               : l10n.eventDesc_SpawnModernPortalsWaveActionProps;
+        case 'SpawnRocketLandingWaveActionProps':
+          return isTitle
+              ? l10n.eventTitle_SpawnRocketLandingWaveActionProps
+              : l10n.eventDesc_SpawnRocketLandingWaveActionProps;
         case 'StormZombieSpawnerProps':
           return isTitle
               ? l10n.eventTitle_StormZombieSpawnerProps
@@ -246,7 +252,7 @@ class _EventSelectionScreenState extends State<EventSelectionScreen> {
           overflow: TextOverflow.ellipsis,
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(100),
+          preferredSize: const Size.fromHeight(106),
           child: Column(
             children: [
               Padding(
@@ -263,7 +269,7 @@ class _EventSelectionScreenState extends State<EventSelectionScreen> {
               ),
               HorizontalTagScroller(
                 onAccentBar: true,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 14),
                 children: [
                   AccentBarChoiceChip(
                     label: l10n?.stageTypeAll ?? 'All',
@@ -380,7 +386,18 @@ class _EventSelectionCard extends StatelessWidget {
                   color: accentColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(meta.icon, size: 28, color: accentColor),
+                child: meta.assetIconPath == null
+                    ? Icon(meta.icon, size: 28, color: accentColor)
+                    : Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: AssetImageWidget(
+                          assetPath: meta.assetIconPath!,
+                          fit: BoxFit.contain,
+                          altCandidates: imageAltCandidates(
+                            meta.assetIconPath!,
+                          ),
+                        ),
+                      ),
               ),
               const SizedBox(width: 16),
               Expanded(

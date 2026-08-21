@@ -212,6 +212,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => AlertDialog(
+            scrollable: true,
             title: Text(
               l10n?.zombossMechEightiesSpeakerPresetPromptTitle ??
                   'Pre-place Zomboss speakers?',
@@ -246,6 +247,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => AlertDialog(
+            scrollable: true,
             title: Text(
               l10n?.zombossMechEightiesSpeakerRemovePromptTitle ??
                   'Remove pre-placed speakers?',
@@ -345,6 +347,7 @@ class _ZombossMechBattleTabState extends State<ZombossMechBattleTab> {
           context: context,
           barrierDismissible: false,
           builder: (dialogContext) => AlertDialog(
+            scrollable: true,
             title: Text(
               l10n?.glacierModuleVariationPresetPromptTitle ??
                   'Enable matching Ice Chunk preset?',

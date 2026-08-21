@@ -122,6 +122,14 @@ class ModuleRegistry {
         return l10n.moduleTitle_ConveyorSeedBankProperties;
       case 'moduleTitle_SunDropperProperties':
         return l10n.moduleTitle_SunDropperProperties;
+      case 'moduleTitle_MoonLifeSupportSystemProperties':
+        return l10n.moduleTitle_MoonLifeSupportSystemProperties;
+      case 'moduleTitle_LunarTerminalModuleProperties':
+        return l10n.moduleTitle_LunarTerminalModuleProperties;
+      case 'moduleTitle_LunarMineVeinModuleProperties':
+        return l10n.moduleTitle_LunarMineVeinModuleProperties;
+      case 'moduleTitle_RadiationMeteorModuleProperties':
+        return l10n.moduleTitle_RadiationMeteorModuleProperties;
       case 'moduleTitle_LevelMutatorMaxSunProps':
         return l10n.moduleTitle_LevelMutatorMaxSunProps;
       case 'moduleTitle_LevelMutatorStartingPlantfoodProps':
@@ -274,6 +282,14 @@ class ModuleRegistry {
         return l10n.moduleDesc_ConveyorSeedBankProperties;
       case 'moduleDesc_SunDropperProperties':
         return l10n.moduleDesc_SunDropperProperties;
+      case 'moduleDesc_MoonLifeSupportSystemProperties':
+        return l10n.moduleDesc_MoonLifeSupportSystemProperties;
+      case 'moduleDesc_LunarTerminalModuleProperties':
+        return l10n.moduleDesc_LunarTerminalModuleProperties;
+      case 'moduleDesc_LunarMineVeinModuleProperties':
+        return l10n.moduleDesc_LunarMineVeinModuleProperties;
+      case 'moduleDesc_RadiationMeteorModuleProperties':
+        return l10n.moduleDesc_RadiationMeteorModuleProperties;
       case 'moduleDesc_LevelMutatorMaxSunProps':
         return l10n.moduleDesc_LevelMutatorMaxSunProps;
       case 'moduleDesc_LevelMutatorStartingPlantfoodProps':
@@ -1051,6 +1067,18 @@ class ModuleRegistry {
       initialDataFactory: () => RenaiModulePropertiesData(),
       routeId: 'RenaiModule',
     ),
+    'LunarMineVeinModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LunarMineVeinModuleProperties',
+      descriptionKey: 'moduleDesc_LunarMineVeinModuleProperties',
+      icon: Icons.diamond_outlined,
+      assetIconPath: 'assets/images/griditems/lunar_mine_vein.webp',
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.scene,
+      defaultAlias: 'ExampleLunarMineVeins',
+      initialDataFactory: () => LunarMineVeinModulePropertiesData(),
+      routeId: 'LunarMineVeinModule',
+    ),
     'RoofProperties': ModuleMetadata(
       titleKey: 'moduleTitle_RoofProperties',
       descriptionKey: 'moduleDesc_RoofProperties',
@@ -1128,6 +1156,39 @@ class ModuleRegistry {
       defaultAlias: 'HeianWindModule',
       initialDataFactory: () => HeianWindModulePropertiesData(),
       routeId: 'HeianWindModule',
+    ),
+    'MoonLifeSupportSystemProperties': const ModuleMetadata(
+      titleKey: 'moduleTitle_MoonLifeSupportSystemProperties',
+      descriptionKey: 'moduleDesc_MoonLifeSupportSystemProperties',
+      icon: Icons.battery_charging_full,
+      isCore: true,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'MoonLifeSupportSystemModule',
+      defaultSource: 'LevelModules',
+      routeId: 'MoonLifeSupportSystem',
+    ),
+    'LunarTerminalModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LunarTerminalModuleProperties',
+      descriptionKey: 'moduleDesc_LunarTerminalModuleProperties',
+      icon: Icons.precision_manufacturing,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'LunarTerminalModule',
+      initialDataFactory: () => LunarTerminalModulePropertiesData(),
+      routeId: 'LunarTerminalModule',
+    ),
+    'RadiationMeteorModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_RadiationMeteorModuleProperties',
+      descriptionKey: 'moduleDesc_RadiationMeteorModuleProperties',
+      icon: Icons.public,
+      assetIconPath: 'assets/images/griditems/radiation_meteor_ore.webp',
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'RadiationMeteorModule',
+      initialDataFactory: () => RadiationMeteorModulePropertiesData(),
+      routeId: 'RadiationMeteorModule',
     ),
     'SpermWhaleModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_SpermWhaleModuleProperties',

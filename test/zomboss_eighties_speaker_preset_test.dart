@@ -182,6 +182,10 @@ void main() {
     await _selectBase(tester, ZombossEightiesSpeakerPresets.baseId);
 
     expect(
+      tester.widget<AlertDialog>(find.byType(AlertDialog)).scrollable,
+      isTrue,
+    );
+    expect(
       find.text(
         '摇滚年代僵王的第一阶段通常需要场上的专属音响配合其技能，因此官方关卡会在地图指定位置预置音响。您即将切换至摇滚年代僵王，是否要按照官方关卡的位置一并预置这些音响？',
       ),

@@ -479,8 +479,10 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
+              runSpacing: 8,
               children: [
                 FilterChip(
+                  key: const ValueKey('seedBankChooserModeChip'),
                   label: Text(
                     AppLocalizations.of(context)?.chooser ?? 'Chooser',
                   ),
@@ -490,6 +492,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
                       : (_) => _switchToChooserMode(),
                 ),
                 FilterChip(
+                  key: const ValueKey('seedBankPresetModeChip'),
                   label: Text(AppLocalizations.of(context)?.preset ?? 'Preset'),
                   selected: _data.selectionMethod == 'preset' || isZombieMode,
                   onSelected: isZombieMode

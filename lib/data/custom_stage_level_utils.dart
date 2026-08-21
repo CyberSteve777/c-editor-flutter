@@ -64,6 +64,7 @@ abstract final class CustomStageLevelUtils {
     'MusicSuffix',
     'AmbientAudioSuffix',
     'DisabledStreetCells',
+    'CosmicPlantfoodFillSeconds',
     'LinkedTilePropagationAlpha',
     'BackgroundImageMiddle',
     'InitSubmarineInfo',
@@ -393,6 +394,9 @@ abstract final class CustomStageLevelUtils {
 
   static bool supportsBeachMinigame(Map<String, dynamic> objdata) =>
       objdata['BackgroundImagePrefix'] == 'IMAGE_BACKGROUNDS_BEACH';
+
+  static bool supportsCosmicPlantfoodFill(String objclass) =>
+      objclass == 'MoonStageProperties';
 
   static bool isBeachMinigameEnabled(Map<String, dynamic> objdata) =>
       objdata['BackgroundImageMiddle'] == 'TEXTURE_01';

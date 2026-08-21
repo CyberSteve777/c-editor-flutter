@@ -1204,7 +1204,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saved => '已保存';
 
   @override
-  String get failedToLoadLevel => '加载关卡失败';
+  String get failedToLoadLevel => '加载关卡失败。\n建议检查关卡文件是否为加密格式（如热更新使用的JSON文件）。';
 
   @override
   String get noLevelDefinition => '未找到关卡定义';
@@ -6348,7 +6348,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpOverview =>
-      '远征地砖模块用于配置远征之门地图中的不可种植区域。该模块沿用地宫坑道的地块数据结构，并通过远征模式专用的地砖地图显示禁种区域。可以在禁种地块上种植草垛来恢复其种植职能。';
+      '远征地砖模块用于配置远征之门地图中的不可种植区域。该模块沿用地宫坑道的地块数据结构，并通过远征模式专用的地砖图案显示禁种区域。可以在禁种地块上种植草垛来恢复其种植职能。';
 
   @override
   String get expeditionTilesHelpEditing => '地块编辑';
@@ -6381,6 +6381,10 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get tunnelExpeditionCompatibilityWarningBody =>
       '同时使用「地宫坑道」模块与「远征地砖」模块时，可能会出现地砖贴图互相覆盖的现象，影响关卡整体观感。如一定要同时使用，请万分注意。';
+
+  @override
+  String get lifeSupportLastStandConflictWarning =>
+      '「维生系统」与「坚不可摧」模块不能共存，否则关卡无法正常开始。';
 
   @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
@@ -7154,6 +7158,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tooltipAboutModule => '关于此模块';
 
   @override
+  String get tooltipAboutSection => '关于此分区';
+
+  @override
   String get tooltipAboutEvent => '关于此事件';
 
   @override
@@ -7409,6 +7416,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechDeletePhaseMessage => '将移除此阶段及其动作列表，且无法撤销。';
+
+  @override
+  String get zombossMechDeleteEightiesPhaseMessage =>
+      '将移除此阶段、动作列表，以及同一阶段对应的音乐和僵王动画，且无法撤销。';
+
+  @override
+  String get zombossMechStageJamOrder => '音乐播放顺序 (StageJamOrder)';
+
+  @override
+  String get zombossMechZombossAnimOrder => '僵王动画顺序 (ZombossAnimOrder)';
+
+  @override
+  String get zombossMechAddEightiesPhaseTitle => '选择新阶段的音乐与僵王动画';
+
+  @override
+  String get zombossMechEightiesPhaseSelectionRequired =>
+      '必须同时选择该阶段播放的音乐和调用的僵王动画，才能新建阶段。';
+
+  @override
+  String get zombossMechCreatePhase => '新建阶段';
+
+  @override
+  String get zombossAnimNewWave => '新浪潮 (New Wave)';
+
+  @override
+  String get zombossAnimHipHop => '嘻哈 (Hip-Hop)';
 
   @override
   String get zombossMechOrphanActionDeleteTitle => '移除自定义动作数据？';
@@ -8236,10 +8269,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get waveGeneratorExpectationTapHint => '查看随机出怪预览';
+  String get waveGeneratorExpectationTapHint => '查看本波随机出怪预估结果';
 
   @override
-  String get waveGeneratorStatisticalPreview => '随机出怪';
+  String get waveGeneratorStatisticalPreview => '出怪预览';
 
   @override
   String get waveGeneratorExpectationEmpty => '本波的僵尸池中没有可用于随机出怪的僵尸。';
@@ -8721,4 +8754,194 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get customPortalSpawnIntervalSubtitle => '设置僵尸从裂缝出现所需的最短与最长时间。';
+
+  @override
+  String get moduleTitle_MoonLifeSupportSystemProperties => '维生系统';
+
+  @override
+  String get moduleDesc_MoonLifeSupportSystemProperties => '配置月球基地的电力容量与过载协议';
+
+  @override
+  String get moduleTitle_LunarTerminalModuleProperties => '月能采集终端';
+
+  @override
+  String get moduleDesc_LunarTerminalModuleProperties => '部署采矿机器人采集水晶能量，提高电力上限';
+
+  @override
+  String get moduleTitle_LunarMineVeinModuleProperties => '月球矿脉';
+
+  @override
+  String get moduleDesc_LunarMineVeinModuleProperties => '放置月能水晶矿脉并设置其成长波次';
+
+  @override
+  String get moduleTitle_RadiationMeteorModuleProperties => '辐射陨石';
+
+  @override
+  String get moduleDesc_RadiationMeteorModuleProperties => '天降陨石，摧毁植物并侵蚀周围地块';
+
+  @override
+  String get eventTitle_SpawnRocketLandingWaveActionProps => '火箭降落';
+
+  @override
+  String get eventDesc_SpawnRocketLandingWaveActionProps => '在指定位置生成可被占领的月球火箭';
+
+  @override
+  String get moonLifeSupportHelpTitle => '维生系统';
+
+  @override
+  String get moonLifeSupportHelpOverview =>
+      '常见于月球基地关卡的经济系统。添加该模块后，植物种植不消耗阳光，而是实时占用维生系统的一定电力容量。植物被铲除、被僵尸摧毁或因特殊机制消失时，其占用的容量会立即全额返还。';
+
+  @override
+  String get moonLifeSupportHelpProtocolsTitle => '过载协议';
+
+  @override
+  String get moonLifeSupportHelpProtocols =>
+      '当维生系统的电力超过初始电力容量时，系统会进入过载状态并启动节能协议，降低场上植物的攻击速度和卡槽的冷却恢复速度。\n当电力值超过（初始电力容量×休眠所需倍率）时，系统会在设定倒计时结束后强制进入休眠协议，使场上所有植物进入休眠状态，卡槽和宇宙能量豆槽也会被锁定，无法继续使用。';
+
+  @override
+  String get moonLifeSupportHelpPlantFoodTitle => '独立冷却';
+
+  @override
+  String get moonLifeSupportHelpPlantFood =>
+      '模块为拥有独立冷却的植物定义了专属列表，列表中植物的冷却时间不会受到节能协议的影响，但在休眠协议下仍会强制无法种植。';
+
+  @override
+  String get moonLifeSupportPowerSettings => '电力设置';
+
+  @override
+  String get moonInitialCapacity => '初始电力容量 (InitialCapacity)';
+
+  @override
+  String get moonBufferOverloadRatio => '休眠所需倍率 (BufferOverloadRatio)';
+
+  @override
+  String get moonPenaltyCountdown => '休眠倒计时 (PenaltyCountdown，单位：秒)';
+
+  @override
+  String get moonPlantImmunityList => '拥有独立冷却的植物 (PlantImmunityList)';
+
+  @override
+  String get moonPlantImmunityListHint =>
+      '列表中植物的冷却时间不会受到节能协议的影响，但在休眠协议下仍会强制无法种植。';
+
+  @override
+  String get moonSelectImmunePlants => '选择植物加入列表';
+
+  @override
+  String get lunarTerminalHelpTitle => '月能采集终端';
+
+  @override
+  String get lunarTerminalHelpOverview =>
+      '常见于月球基地关卡的神器道具，在场地中的位置固定，类似天空之城的火炮。点击采集终端后，可从三种采矿机器人中选择一种并拖动至场上。机器人会自动采集范围内月能水晶和辐射陨石的能量，从而为基地维生系统永久提升本局可用的电力容量，支持布置更强大的阵容。机器人拥有一定生命值，会被僵尸、辐射陨石等目标攻击并摧毁。';
+
+  @override
+  String get lunarTerminalHelpFixedTitle => '部署冷却';
+
+  @override
+  String get lunarTerminalHelpFixed =>
+      '月能采集终端每次部署机器人后都会进入一段冷却时间，具体冷却时长可在关卡中自定义。';
+
+  @override
+  String get lunarTerminalCollectorCooldown =>
+      '机器人部署冷却 (CollectorCooldown，单位：秒)';
+
+  @override
+  String get lunarMineVeinHelpTitle => '月球矿脉';
+
+  @override
+  String get lunarMineVeinHelpOverview =>
+      '在关卡开始时于场上放置月能水晶矿脉，常见于月球基地。矿脉初始无法提供能量，进入设定波次后，会在原位置生长出月能水晶，此后可正常采集供能。';
+
+  @override
+  String get lunarMineVeinHelpWaveTitle => '波次编号';
+
+  @override
+  String get lunarMineVeinHelpWave =>
+      '成长波次 (EmergenceWave) 从1开始计数：第1波成长填1，第2波成长填2，以此类推。';
+
+  @override
+  String get lunarMineVeinPlacements => '矿脉放置 (VeinPlacements)';
+
+  @override
+  String get lunarMineEmergenceWave => '成长波次 (EmergenceWave，从1开始计数)';
+
+  @override
+  String get moonPlacementGestureHint => '点击空地块添加项目；右键单击或长按已有项目的地块可将其移除。';
+
+  @override
+  String get radiationMeteorHelpTitle => '辐射陨石';
+
+  @override
+  String get radiationMeteorHelpOverview =>
+      '在指定波次降下特殊的辐射陨石，常见于月球基地。陨石落下前，关卡中会显示红字警告，预计落点也会出现准星标记。预警持续指定时间后，陨石会垂直落下，直接消灭落点格上的单位，随后以顺时针方向缓慢侵蚀周围地块。\n污染地块上的僵尸会获得移速加成和生命值恢复效果，宇宙植物则会持续受到伤害。';
+
+  @override
+  String get radiationMeteorHelpMiningTitle => '挖矿销毁';
+
+  @override
+  String get radiationMeteorHelpMining =>
+      '月能采集单元可以挖掘辐射陨石，经过一段时间后摧毁陨石。摧毁陨石后，终端将为玩家提供本局永久生效的电力容量，并消除污染效果。';
+
+  @override
+  String get radiationMeteorParameters => '陨石参数';
+
+  @override
+  String get radiationMeteorWarningDuration => '预警时长 (WarningDuration，单位：秒)';
+
+  @override
+  String get radiationMeteorPollutionInterval =>
+      '污染间隔 (PollutionInterval，单位：秒)';
+
+  @override
+  String get radiationMeteorMiningDuration =>
+      '所需开采时长 (MiningDurationRequired，单位：秒)';
+
+  @override
+  String get radiationMeteorPowerReward => '摧毁后电力奖励 (PowerRewardOnDestroy)';
+
+  @override
+  String get radiationMeteorSpawnSchedule => '降落安排 (SpawnSchedule)';
+
+  @override
+  String get radiationMeteorWave => '波次 (Wave，从1开始计数)';
+
+  @override
+  String get rocketLandingHelpTitle => '火箭降落';
+
+  @override
+  String get rocketLandingHelpOverview =>
+      '常见于月球基地的事件，在指定位置生成火箭，作为植物和僵尸双方争夺的目标。默认情况下，火箭会无视墓碑等障碍物直接降落，并消灭落点处的植物。可设置火箭是否会因障碍物阻挡而无法生成，以及是否将落点格上的植物弹开。';
+
+  @override
+  String get rocketLandingHelpPlantsTitle => '植物占领';
+
+  @override
+  String get rocketLandingHelpPlants =>
+      '将指定宇宙植物种在火箭内，一段时间后火箭会发射升空，锁定场上的高威胁僵尸轰炸并造成高额伤害。宇宙豌豆会爆发可在场上反弹的宇宙子弹；宇宙蘑菇会在范围内召唤蘑菇虫洞；宇宙坚果会产生短暂存在的小型黑洞，拖拽并持续伤害附近僵尸。';
+
+  @override
+  String get rocketLandingHelpZombiesTitle => '僵尸占领';
+
+  @override
+  String get rocketLandingHelpZombies =>
+      '僵尸进入火箭后，火箭会在片刻后发射并向场地后方某格降落，将僵尸传送到该格。部分僵尸无法进入火箭。';
+
+  @override
+  String get rocketLandingSettings => '火箭设置';
+
+  @override
+  String get rocketPoolCount => '火箭数量 (Count)';
+
+  @override
+  String get rocketSpawnCount => '生成物品总数 (SpawnCount)';
+
+  @override
+  String get rocketSpawnInterval => '生成间隔 (SpawnInterval，单位：秒)';
+
+  @override
+  String get rocketDisplacePlants => '弹开植物 (DisplacePlants)';
+
+  @override
+  String get rocketDisplacePlantsSubtitle => '开启后，火箭会将落点格上的植物弹至周围空地';
 }

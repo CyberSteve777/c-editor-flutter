@@ -15,11 +15,13 @@ class EventMetadata {
     required this.defaultObjClass,
     required this.initialDataFactory,
     this.summaryProvider,
+    this.assetIconPath,
   });
 
   final String titleKey;
   final String descriptionKey;
   final IconData icon;
+  final String? assetIconPath;
   final Color color;
   final Color darkColor;
   final EventCategory category;
@@ -379,6 +381,28 @@ class EventRegistry {
             obj.objData as Map<String, dynamic>,
           );
           return '${data.tiles.length}';
+        } catch (_) {
+          return '';
+        }
+      },
+    ),
+    'SpawnRocketLandingWaveActionProps': EventMetadata(
+      titleKey: 'eventTitle_SpawnRocketLandingWaveActionProps',
+      descriptionKey: 'eventDesc_SpawnRocketLandingWaveActionProps',
+      icon: Icons.rocket_launch,
+      assetIconPath: 'assets/images/griditems/rocket_landing.webp',
+      color: const Color(0xFF5C6BC0),
+      darkColor: const Color(0xFF9FA8DA),
+      category: EventCategory.gridItemSpawn,
+      defaultAlias: 'Rocket',
+      defaultObjClass: 'SpawnRocketLandingWaveActionProps',
+      initialDataFactory: () => SpawnRocketLandingWaveActionPropsData(),
+      summaryProvider: (obj) {
+        try {
+          final data = SpawnRocketLandingWaveActionPropsData.fromJson(
+            obj.objData as Map<String, dynamic>,
+          );
+          return '${data.spawnCount}';
         } catch (_) {
           return '';
         }

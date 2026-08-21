@@ -164,6 +164,46 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('Seed Bank selection mode chips keep a gap when wrapped', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 800);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        SeedBankPropertiesScreen(
+          rtid: 'RTID(SeedBank@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: []),
+          onChanged: () {},
+          onBack: () {},
+          onRequestPlantSelection:
+              (
+                _, {
+                excludeIds,
+                initialSelectedIds,
+                blockRealmExclusiveInChooser = false,
+                blockHiddenPlantsInChooser = false,
+                allowDuplicateSelection = false,
+              }) {},
+          onRequestZombieSelection: (_) {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final chooser = find.byKey(const ValueKey('seedBankChooserModeChip'));
+    final preset = find.byKey(const ValueKey('seedBankPresetModeChip'));
+    expect(chooser, findsOneWidget);
+    expect(preset, findsOneWidget);
+    expect(
+      tester.getTopLeft(preset).dy - tester.getBottomLeft(chooser).dy,
+      greaterThanOrEqualTo(8),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Seed Bank reorder hint sits above the drag handle', (
     tester,
   ) async {
