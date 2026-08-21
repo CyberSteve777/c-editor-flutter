@@ -435,12 +435,15 @@ class _SpawnGraveStonesEventScreenState
   ) {
     final parsed = RtidParser.parse(item.type);
     final alias = parsed?.alias ?? item.type;
+    final displayTypeName =
+        GridItemRepository.getByTypeName(alias)?.typeName ?? alias;
     final source = parsed?.source ?? '';
     final isValid = source == 'CurrentLevel'
         ? internalAliases.contains(alias)
-        : GridItemRepository.isValid(alias);
-    final displayName = ResourceNames.lookup(context, 'griditem_$alias');
-    final name = displayName != 'griditem_$alias' ? displayName : alias;
+        : GridItemRepository.isValid(displayTypeName);
+    final resourceKey = 'griditem_$displayTypeName';
+    final displayName = ResourceNames.lookup(context, resourceKey);
+    final name = displayName != resourceKey ? displayName : displayTypeName;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -455,7 +458,11 @@ class _SpawnGraveStonesEventScreenState
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            GridItemIcon(typeName: alias, size: 48, fit: BoxFit.contain),
+            GridItemIcon(
+              typeName: displayTypeName,
+              size: 48,
+              fit: BoxFit.contain,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -468,7 +475,7 @@ class _SpawnGraveStonesEventScreenState
                     ),
                   ),
                   Text(
-                    alias,
+                    displayTypeName,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isValid
                           ? theme.colorScheme.onSurfaceVariant
@@ -484,12 +491,13 @@ class _SpawnGraveStonesEventScreenState
               width: 80,
               child: TextFormField(
                 initialValue: '${item.count}',
-                decoration: const InputDecoration(
-                  labelText: 'Count',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n?.count ?? 'Count',
+                  border: const OutlineInputBorder(),
                   isDense: true,
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: const [PositiveIntegerInputFormatter()],
                 onChanged: (s) {
                   final v = int.tryParse(s) ?? 1;
                   _updateCount(index, v.clamp(1, 999));

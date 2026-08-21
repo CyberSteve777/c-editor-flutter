@@ -94,6 +94,8 @@ LevelPreviewGridStyle resolveGridStyle(
     case GridPreviewModuleKind.common:
     case GridPreviewModuleKind.armrack:
     case GridPreviewModuleKind.energyGrid:
+    case GridPreviewModuleKind.lunarMineVein:
+    case GridPreviewModuleKind.radiationMeteor:
     case GridPreviewModuleKind.piratePlank:
     case GridPreviewModuleKind.fogSystem:
     case GridPreviewModuleKind.roofProperties:
@@ -223,6 +225,8 @@ enum GridPreviewModuleKind {
   mechanismPlank,
   armrack,
   energyGrid,
+  lunarMineVein,
+  radiationMeteor,
   bronzeStatue,
   powerTile,
   fogSystem,
@@ -288,6 +292,8 @@ bool levelHasPrePlacedGridPreview(PvzLevelFile levelFile) {
     return true;
   if (levelHasModule(levelFile, 'ArmrackProperties')) return true;
   if (levelHasModule(levelFile, 'EnergyGridProperties')) return true;
+  if (levelHasModule(levelFile, 'LunarMineVeinModuleProperties')) return true;
+  if (levelHasModule(levelFile, 'RadiationMeteorModuleProperties')) return true;
   if (levelHasModule(levelFile, 'VaseBreakerPresetProperties')) return true;
   if (levelHasModule(levelFile, 'VaseBreakerArcadeModuleProperties'))
     return true;
@@ -641,6 +647,56 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
     }
   }
 
+  final lunarMineData = readLunarMineVeinModuleData(levelFile);
+  if (lunarMineData != null) {
+    final waves =
+        lunarMineData.placements
+            .map((placement) => placement.emergenceWave)
+            .toSet()
+            .toList()
+          ..sort();
+    if (waves.isEmpty) waves.add(1);
+    for (final wave in waves) {
+      categories.add(
+        GridPreviewCategoryOption(
+          kind: GridPreviewModuleKind.lunarMineVein,
+          label: _waveCategoryLabel(
+            l10n,
+            l10n.moduleTitle_LunarMineVeinModuleProperties,
+            wave,
+            waves.length,
+          ),
+          wave: wave,
+        ),
+      );
+    }
+  }
+
+  final radiationMeteorData = readRadiationMeteorModuleData(levelFile);
+  if (radiationMeteorData != null) {
+    final waves =
+        radiationMeteorData.spawnSchedule
+            .map((spawn) => spawn.wave)
+            .toSet()
+            .toList()
+          ..sort();
+    if (waves.isEmpty) waves.add(1);
+    for (final wave in waves) {
+      categories.add(
+        GridPreviewCategoryOption(
+          kind: GridPreviewModuleKind.radiationMeteor,
+          label: _waveCategoryLabel(
+            l10n,
+            l10n.moduleTitle_RadiationMeteorModuleProperties,
+            wave,
+            waves.length,
+          ),
+          wave: wave,
+        ),
+      );
+    }
+  }
+
   if (levelHasZomboss(levelFile)) {
     categories.add(
       GridPreviewCategoryOption(
@@ -704,6 +760,28 @@ PvzObject? findModuleObject(PvzLevelFile levelFile, String objClass) {
     }
   }
   return null;
+}
+
+LunarMineVeinModulePropertiesData? readLunarMineVeinModuleData(
+  PvzLevelFile levelFile,
+) {
+  final obj = findModuleObject(levelFile, 'LunarMineVeinModuleProperties');
+  return obj != null
+      ? LunarMineVeinModulePropertiesData.fromJson(
+          Map<String, dynamic>.from(obj.objData as Map),
+        )
+      : null;
+}
+
+RadiationMeteorModulePropertiesData? readRadiationMeteorModuleData(
+  PvzLevelFile levelFile,
+) {
+  final obj = findModuleObject(levelFile, 'RadiationMeteorModuleProperties');
+  return obj != null
+      ? RadiationMeteorModulePropertiesData.fromJson(
+          Map<String, dynamic>.from(obj.objData as Map),
+        )
+      : null;
 }
 
 SmokePollutionModulePropertiesData? readSmokePollutionData(

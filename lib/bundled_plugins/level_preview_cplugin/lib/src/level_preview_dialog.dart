@@ -180,6 +180,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         return l10n.moduleTitle_ArmrackProperties;
       case GridPreviewModuleKind.energyGrid:
         return l10n.moduleTitle_EnergyGridProperties;
+      case GridPreviewModuleKind.lunarMineVein:
+        return l10n.moduleTitle_LunarMineVeinModuleProperties;
+      case GridPreviewModuleKind.radiationMeteor:
+        return l10n.moduleTitle_RadiationMeteorModuleProperties;
       case GridPreviewModuleKind.bronzeStatue:
         return l10n.moduleTitle_BronzeProperties;
       case GridPreviewModuleKind.powerTile:
@@ -2768,6 +2772,15 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           style,
           category?.wave ?? gridOverrideInitialWave,
         );
+      case GridPreviewModuleKind.lunarMineVein:
+        return _buildLunarMineVeinGrid(rows, cols, style, category?.wave ?? 1);
+      case GridPreviewModuleKind.radiationMeteor:
+        return _buildRadiationMeteorGrid(
+          rows,
+          cols,
+          style,
+          category?.wave ?? 1,
+        );
       case GridPreviewModuleKind.bronzeStatue:
         return _buildBronzeStatueGrid(rows, cols, style);
       case GridPreviewModuleKind.powerTile:
@@ -3421,7 +3434,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             ...data.waveWindInfos.map((info) {
               final wave = info.waveNumber + 1;
               final rows = info.windInfos
-                  .map((w) => w.row == -1 ? l10n.all : '${w.row + 1}')
+                  .map((w) => w.row == -1 ? l10n.all : l10n.rowN(w.row + 1))
                   .join(', ');
               return Padding(
                 padding: const EdgeInsets.only(bottom: 6),
@@ -3431,7 +3444,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     const Icon(Icons.air, size: 16, color: Colors.blueGrey),
                     const SizedBox(width: 8),
                     Text(
-                      '${l10n.customZombieWaveItem(wave)}: ${l10n.row} $rows',
+                      '${l10n.customZombieWaveItem(wave)}: $rows',
                       style: TextStyle(
                         fontSize: 14,
                         color: theme.colorScheme.onSurface.withValues(
@@ -5371,6 +5384,73 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   height: h,
                   fit: BoxFit.contain,
                 ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildLunarMineVeinGrid(
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+    int wave,
+  ) {
+    const asset = 'assets/images/griditems/lunar_mine_vein.webp';
+    final placements =
+        readLunarMineVeinModuleData(
+          widget.levelFile,
+        )?.placements.where((placement) => placement.emergenceWave == wave) ??
+        const <LunarMineVeinPlacementData>[];
+    final cells = placements
+        .map((placement) => '${placement.gridX},${placement.gridY}')
+        .toSet();
+    return _buildMoonGridItemPreview(rows, cols, style, asset, cells);
+  }
+
+  Widget _buildRadiationMeteorGrid(
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+    int wave,
+  ) {
+    const asset = 'assets/images/griditems/radiation_meteor_ore.webp';
+    final placements =
+        readRadiationMeteorModuleData(
+          widget.levelFile,
+        )?.spawnSchedule.where((spawn) => spawn.wave == wave) ??
+        const <RadiationMeteorSpawnData>[];
+    final cells = placements
+        .map((spawn) => '${spawn.gridX},${spawn.gridY}')
+        .toSet();
+    return _buildMoonGridItemPreview(rows, cols, style, asset, cells);
+  }
+
+  Widget _buildMoonGridItemPreview(
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+    String asset,
+    Set<String> cells,
+  ) {
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      cellBuilder: (col, row) {
+        if (!cells.contains('$col,$row')) return null;
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth * 0.92;
+            final height = constraints.maxHeight * 0.92;
+            return Center(
+              child: AssetImageWidget(
+                assetPath: asset,
+                width: width,
+                height: height,
+                fit: BoxFit.contain,
               ),
             );
           },

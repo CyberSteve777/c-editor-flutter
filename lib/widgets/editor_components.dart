@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -21,6 +22,25 @@ export 'package:c_editor/theme/app_theme.dart'
         warningBarLight,
         editorWarningBannerBackground,
         editorWarningBannerForeground;
+
+/// Accepts only positive whole numbers while still allowing the field to be
+/// cleared temporarily during editing.
+class PositiveIntegerInputFormatter extends TextInputFormatter {
+  const PositiveIntegerInputFormatter();
+
+  static final RegExp _positiveInteger = RegExp(r'^[1-9][0-9]*$');
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty || _positiveInteger.hasMatch(newValue.text)) {
+      return newValue;
+    }
+    return oldValue;
+  }
+}
 
 /// Yellow warning card used across editor screens (Settings, modules, events).
 class EditorWarningBanner extends StatelessWidget {

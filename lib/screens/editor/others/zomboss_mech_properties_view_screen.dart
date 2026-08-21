@@ -36,6 +36,11 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
         ) ??
         <String, dynamic>{};
     final stages = _stages(propsData);
+    final stageJamOrder = _stringOrder(propsData, 'StageJamOrder');
+    final zombossAnimOrder = _stringOrder(propsData, 'ZombossAnimOrder');
+    final showEightiesOrders =
+        catalog.id == 'ZombieZombossMech_Eighties' &&
+        (stageJamOrder.isNotEmpty || zombossAnimOrder.isNotEmpty);
     final propertiesLabel = ZombossMechRepository.propertiesDisplayLabel(
       mechType,
       catalog: catalog,
@@ -118,6 +123,28 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
+            if (showEightiesOrders) ...[
+              _ReadOnlyStageOrderCard(
+                key: const ValueKey('readOnlyStageJamOrderCard'),
+                title:
+                    l10n?.zombossMechStageJamOrder ??
+                    'Music playback order (StageJamOrder)',
+                values: stageJamOrder,
+                valueLabel: (value) => _stageJamLabel(l10n, value),
+                accentColor: accent,
+              ),
+              const SizedBox(height: 4),
+              _ReadOnlyStageOrderCard(
+                key: const ValueKey('readOnlyZombossAnimOrderCard'),
+                title:
+                    l10n?.zombossMechZombossAnimOrder ??
+                    'Zomboss animation order (ZombossAnimOrder)',
+                values: zombossAnimOrder,
+                valueLabel: (value) => _zombossAnimLabel(l10n, value),
+                accentColor: accent,
+              ),
+              const SizedBox(height: 4),
+            ],
             if (stages.isEmpty)
               Text(
                 l10n?.zombossMechNoStageActions ?? 'No actions yet',
@@ -165,6 +192,34 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
         .toList();
   }
 
+  List<String> _stringOrder(Map<String, dynamic> propsData, String key) {
+    final raw = propsData[key];
+    if (raw is! List) return const [];
+    return raw.map((value) => value.toString()).toList();
+  }
+
+  String _stageJamLabel(AppLocalizations? l10n, String value) {
+    return switch (value) {
+      'jam_punk' => l10n?.jamPunk ?? 'Punk',
+      'jam_pop' => l10n?.jamPop ?? 'Pop',
+      'jam_rap' => l10n?.jamRap ?? 'Rap',
+      'jam_8bit' => l10n?.jam8Bit ?? '8-Bit',
+      'jam_metal' => l10n?.jamMetal ?? 'Metal',
+      _ => value,
+    };
+  }
+
+  String _zombossAnimLabel(AppLocalizations? l10n, String value) {
+    return switch (value) {
+      'idle_punk' => l10n?.jamPunk ?? 'Punk',
+      'idle_newwave' => l10n?.zombossAnimNewWave ?? 'New Wave',
+      'idle_hiphop' => l10n?.zombossAnimHipHop ?? 'Hip-Hop',
+      'idle_8bit' => l10n?.jam8Bit ?? '8-Bit',
+      'idle_metal' => l10n?.jamMetal ?? 'Metal',
+      _ => value,
+    };
+  }
+
   List<(String, String)> _generalEntries(
     BuildContext context,
     Map<String, dynamic> propsData,
@@ -196,6 +251,62 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
           catalog: catalog,
           levelFile: levelFile,
           rtid: rtid,
+        ),
+      ),
+    );
+  }
+}
+
+class _ReadOnlyStageOrderCard extends StatelessWidget {
+  const _ReadOnlyStageOrderCard({
+    super.key,
+    required this.title,
+    required this.values,
+    required this.valueLabel,
+    required this.accentColor,
+  });
+
+  final String title;
+  final List<String> values;
+  final String Function(String value) valueLabel;
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: accentColor.withValues(alpha: 0.25)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: accentColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            for (var index = 0; index < values.length; index++)
+              ListTile(
+                dense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                leading: CircleAvatar(
+                  radius: 15,
+                  backgroundColor: accentColor.withValues(alpha: 0.14),
+                  foregroundColor: accentColor,
+                  child: Text('${index + 1}'),
+                ),
+                title: Text(valueLabel(values[index])),
+                subtitle: Text(values[index]),
+              ),
+          ],
         ),
       ),
     );

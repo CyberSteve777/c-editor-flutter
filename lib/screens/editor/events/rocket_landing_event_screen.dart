@@ -1,11 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
-import 'package:c_editor/widgets/grid_override_placement_grid.dart';
 
 class RocketLandingEventScreen extends StatefulWidget {
   const RocketLandingEventScreen({
@@ -28,16 +28,12 @@ class RocketLandingEventScreen extends StatefulWidget {
 
 class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
   static const _objClass = 'SpawnRocketLandingWaveActionProps';
-  static const _asset = 'assets/images/griditems/rocket_landing.webp';
 
   late String _alias;
   late PvzObject _eventObject;
   late SpawnRocketLandingWaveActionPropsData _data;
-  late TextEditingController _poolCountCtrl;
-  late TextEditingController _spawnCountCtrl;
+  late TextEditingController _countCtrl;
   late TextEditingController _intervalCtrl;
-  int _selectedX = 0;
-  int _selectedY = 0;
 
   int get _gridRows =>
       LevelParser.getGridDimensionsFromFile(widget.levelFile).$1;
@@ -70,21 +66,13 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
     if (_data.rocketPool.isEmpty) {
       _data.rocketPool.add(RocketPoolEntryData());
     }
-    if (_data.spawnPositionsPool.isNotEmpty) {
-      _selectedX = _data.spawnPositionsPool.first.mx;
-      _selectedY = _data.spawnPositionsPool.first.my;
-    }
-    _poolCountCtrl = TextEditingController(
-      text: '${_data.rocketPool.first.count}',
-    );
-    _spawnCountCtrl = TextEditingController(text: '${_data.spawnCount}');
+    _countCtrl = TextEditingController(text: '${_data.spawnCount}');
     _intervalCtrl = TextEditingController(text: '${_data.spawnInterval}');
   }
 
   @override
   void dispose() {
-    _poolCountCtrl.dispose();
-    _spawnCountCtrl.dispose();
+    _countCtrl.dispose();
     _intervalCtrl.dispose();
     super.dispose();
   }
@@ -99,22 +87,14 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
     (entry) => entry.mx == col && entry.my == row,
   );
 
-  void _tapCell(int col, int row) {
-    setState(() {
-      _selectedX = col;
-      _selectedY = row;
-    });
+  void _togglePosition(int col, int row) {
     if (_hasAt(col, row)) {
-      return;
+      _data.spawnPositionsPool.removeWhere(
+        (entry) => entry.mx == col && entry.my == row,
+      );
+    } else {
+      _data.spawnPositionsPool.add(TileLocationData(mx: col, my: row));
     }
-    _data.spawnPositionsPool.add(TileLocationData(mx: col, my: row));
-    _sync();
-  }
-
-  void _removeAt(int col, int row) {
-    _data.spawnPositionsPool.removeWhere(
-      (entry) => entry.mx == col && entry.my == row,
-    );
     _sync();
   }
 
@@ -186,6 +166,8 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
               onChanged: widget.onChanged,
             ),
             const SizedBox(height: 16),
+            _buildPositionPoolCard(theme, l10n),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -200,27 +182,14 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
                     ),
                     const SizedBox(height: 16),
                     _numberField(
-                      controller: _poolCountCtrl,
-                      label: l10n?.rocketPoolCount ?? 'Rocket count (Count)',
+                      controller: _countCtrl,
+                      label: l10n?.count ?? 'Count',
                       decimal: false,
+                      integersOnly: true,
                       onChanged: (value) {
                         final parsed = int.tryParse(value);
-                        if (parsed != null && parsed >= 0) {
+                        if (parsed != null && parsed >= 1) {
                           _data.rocketPool.first.count = parsed;
-                          _sync();
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _numberField(
-                      controller: _spawnCountCtrl,
-                      label:
-                          l10n?.rocketSpawnCount ??
-                          'Total grid items to spawn (SpawnCount)',
-                      decimal: false,
-                      onChanged: (value) {
-                        final parsed = int.tryParse(value);
-                        if (parsed != null && parsed >= 0) {
                           _data.spawnCount = parsed;
                           _sync();
                         }
@@ -277,48 +246,143 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPositionPoolCard(ThemeData theme, AppLocalizations? l10n) {
+    final positionCount = _data.spawnPositionsPool.length;
+    final spawnCount = _data.spawnCount;
+    final isDark = theme.brightness == Brightness.dark;
+    final gridColor = isDark
+        ? const Color(0xFF3B332F)
+        : const Color(0xFFD7CCC8);
+    const borderColor = Color(0xFF8D6E63);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n?.positionPoolSpawnPositions ??
+                  'Position pool (SpawnPositionsPool)',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n?.tapCellsSelectDeselect ??
+                  'Tap cells to select/deselect spawn positions',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      l10n?.positionPoolSpawnPositions ??
-                          'Position pool (SpawnPositionsPool)',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+            scaleTableForDesktop(
+              context: context,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth:
+                      EditorItemCardLayout.gridPreviewMaxWidth(context) * 0.7,
+                ),
+                child: AspectRatio(
+                  aspectRatio: _gridCols / _gridRows,
+                  child: Container(
+                    key: const ValueKey('rocketLandingPositionPreviewGrid'),
+                    decoration: BoxDecoration(
+                      color: gridColor,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: borderColor),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n?.moonPlacementGestureHint ?? '',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                    child: Column(
+                      children: List.generate(_gridRows, (row) {
+                        return Expanded(
+                          child: Row(
+                            children: List.generate(_gridCols, (col) {
+                              final isSelected = _hasAt(col, row);
+                              return Expanded(
+                                child: GestureDetector(
+                                  onTap: () => _togglePosition(col, row),
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final cellSize = constraints.maxWidth;
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? const Color(0xFF2E7D32)
+                                              : Colors.transparent,
+                                          border: Border.all(
+                                            color: borderColor.withValues(
+                                              alpha: 0.5,
+                                            ),
+                                            width: 0.5,
+                                          ),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: isSelected
+                                            ? Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                                size: (cellSize * 0.85).clamp(
+                                                  16,
+                                                  56,
+                                                ),
+                                              )
+                                            : null,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        );
+                      }),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '${l10n?.selectedPosition ?? 'Selected position'}: '
-                      'R${_selectedY + 1} : C${_selectedX + 1}',
-                    ),
-                    const SizedBox(height: 12),
-                    GridOverridePlacementGrid(
-                      gridRows: _gridRows,
-                      gridCols: _gridCols,
-                      selectedCol: _selectedX,
-                      selectedRow: _selectedY,
-                      onPrimaryTap: _tapCell,
-                      onRemoveAt: _removeAt,
-                      cellImageAt: (col, row) =>
-                          _hasAt(col, row) ? _asset : null,
-                      cellImageScaleAt: (_, _) => 0.92,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 8),
+            EditorResponsiveFieldRow(
+              breakpoint: 480,
+              children: [
+                Text(
+                  l10n?.positionsCount(positionCount) ??
+                      'Positions: $positionCount',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  l10n?.totalItemsCount(spawnCount) ??
+                      'Total items: $spawnCount',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: spawnCount > positionCount
+                        ? theme.colorScheme.error
+                        : null,
+                  ),
+                ),
+              ],
+            ),
+            if (spawnCount > positionCount)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  l10n?.itemCountExceedsPositionsWarning ??
+                      'Warning: item count exceeds positions. Some will not spawn.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.error,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -330,12 +394,16 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
     required String label,
     required ValueChanged<String> onChanged,
     bool decimal = true,
+    bool integersOnly = false,
   }) {
     return EditorResponsiveInputField(
       label: label,
       builder: (context, decoration) => TextField(
         controller: controller,
         keyboardType: TextInputType.numberWithOptions(decimal: decimal),
+        inputFormatters: integersOnly
+            ? <TextInputFormatter>[const PositiveIntegerInputFormatter()]
+            : null,
         decoration: decoration,
         onChanged: onChanged,
       ),

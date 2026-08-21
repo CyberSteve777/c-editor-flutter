@@ -112,6 +112,15 @@ bool levelHasKongfuGridOverrideModules(PvzLevelFile levelFile) {
       levelHasModule(levelFile, 'EnergyGridProperties');
 }
 
+bool levelUsesWaveGenerator(PvzLevelFile levelFile) {
+  return levelHasModule(levelFile, 'WaveGeneratorProperties');
+}
+
+bool levelUsesWaveManager(PvzLevelFile levelFile) {
+  return levelHasModule(levelFile, 'WaveManagerModuleProperties') ||
+      levelHasModule(levelFile, 'WaveManagerProperties');
+}
+
 String? moduleRtidForClass(PvzLevelFile levelFile, String objClass) {
   final obj = levelFile.objects.firstWhereOrNull((o) => o.objClass == objClass);
   final alias = obj?.aliases?.firstOrNull;

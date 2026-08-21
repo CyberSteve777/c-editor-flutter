@@ -4009,7 +4009,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_WaveGeneratorProperties.
   ///
   /// In en, this message translates to:
-  /// **'Legacy embedded wave configuration with fixed and point-based random spawns'**
+  /// **'Legacy wave format used by Kongfu World and other early levels'**
   String get moduleDesc_WaveGeneratorProperties;
 
   /// No description provided for @moduleTitle_CustomLevelModuleProperties.
@@ -13745,7 +13745,7 @@ abstract class AppLocalizations {
   /// No description provided for @customZombossMechStages.
   ///
   /// In en, this message translates to:
-  /// **'Mech phases'**
+  /// **'Mech Phases'**
   String get customZombossMechStages;
 
   /// No description provided for @customZombossMechEditHint.

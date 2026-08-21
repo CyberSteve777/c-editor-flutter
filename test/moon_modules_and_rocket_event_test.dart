@@ -4,15 +4,28 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/registry/object_order_registry.dart';
+import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/app_localizations_en.dart';
 import 'package:c_editor/l10n/app_localizations_ru.dart';
 import 'package:c_editor/l10n/app_localizations_zh.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/modules/moon_life_support_system_screen.dart';
+import 'package:c_editor/screens/editor/events/rocket_landing_event_screen.dart';
+import 'package:c_editor/screens/editor/events/spawn_grave_stones_event_screen.dart';
+import 'package:c_editor/screens/editor/modules/radiation_meteor_module_screen.dart';
+import 'package:c_editor/widgets/grid_override_placement_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    await GridItemRepository.init();
+    await ResourceNames.ensureLoaded();
+  });
+
   group('Moon Base module models', () {
     test('reads the LevelModules life support definition', () {
       final data = MoonLifeSupportSystemPropertiesData.fromJson({
@@ -197,39 +210,52 @@ void main() {
       );
     });
 
-    test('registers the rocket event and required grid icons exist', () {
-      final event = EventRegistry.getByObjClass(
-        'SpawnRocketLandingWaveActionProps',
-      );
-      expect(event, isNotNull);
-      expect(event!.defaultAlias, 'Rocket');
-      expect(event.category, EventCategory.gridItemSpawn);
-      expect(
-        event.assetIconPath,
-        'assets/images/griditems/rocket_landing.webp',
-      );
+    test(
+      'uses Flutter list icons while keeping placement artwork available',
+      () {
+        final event = EventRegistry.getByObjClass(
+          'SpawnRocketLandingWaveActionProps',
+        );
+        expect(event, isNotNull);
+        expect(event!.defaultAlias, 'Rocket');
+        expect(event.category, EventCategory.gridItemSpawn);
+        expect(event.assetIconPath, isNull);
+        expect(
+          ModuleRegistry.getMetadata(
+            'LunarMineVeinModuleProperties',
+          ).assetIconPath,
+          isNull,
+        );
+        expect(
+          ModuleRegistry.getMetadata(
+            'RadiationMeteorModuleProperties',
+          ).assetIconPath,
+          isNull,
+        );
 
-      for (final path in [
-        'assets/images/griditems/lunar_mine_vein.webp',
-        'assets/images/griditems/radiation_meteor_ore.webp',
-        'assets/images/griditems/rocket_landing.webp',
-      ]) {
-        expect(File(path).existsSync(), isTrue, reason: path);
-      }
+        for (final path in [
+          'assets/images/griditems/lunar_mine_vein.webp',
+          'assets/images/griditems/radiation_meteor_ore.webp',
+          'assets/images/griditems/rocket_landing.webp',
+        ]) {
+          expect(File(path).existsSync(), isTrue, reason: path);
+        }
 
-      final events = EventRegistry.getAll();
-      final shellIndex = events.indexWhere(
-        (entry) => entry.defaultObjClass == 'ZombieAtlantisShellActionProps',
-      );
-      final rocketIndex = events.indexWhere(
-        (entry) => entry.defaultObjClass == 'SpawnRocketLandingWaveActionProps',
-      );
-      expect(rocketIndex, shellIndex + 1);
-      expect(
-        ObjectOrderRegistry.getPriority('SpawnRocketLandingWaveActionProps'),
-        ObjectOrderRegistry.getPriority('ZombieAtlantisShellActionProps') + 1,
-      );
-    });
+        final events = EventRegistry.getAll();
+        final shellIndex = events.indexWhere(
+          (entry) => entry.defaultObjClass == 'ZombieAtlantisShellActionProps',
+        );
+        final rocketIndex = events.indexWhere(
+          (entry) =>
+              entry.defaultObjClass == 'SpawnRocketLandingWaveActionProps',
+        );
+        expect(rocketIndex, shellIndex + 1);
+        expect(
+          ObjectOrderRegistry.getPriority('SpawnRocketLandingWaveActionProps'),
+          ObjectOrderRegistry.getPriority('ZombieAtlantisShellActionProps') + 1,
+        );
+      },
+    );
 
     test('keeps the requested CollectorCooldown Chinese label', () {
       expect(
@@ -315,5 +341,163 @@ void main() {
     );
     expect(copy.objData['InitialCapacity'], 10);
     expect(copy.objData['PlantImmunityList']['List'], contains('cosmoss'));
+  });
+
+  testWidgets('rocket Count is positive-only and writes both JSON fields', (
+    tester,
+  ) async {
+    final event = PvzObject(
+      aliases: const ['Rocket'],
+      objClass: 'SpawnRocketLandingWaveActionProps',
+      objData: const <String, dynamic>{
+        'RocketPool': [
+          {'Type': 'RTID(rocket_landing@GridItemTypes)', 'Count': 2},
+        ],
+        'SpawnPositionsPool': [
+          {'mX': 0, 'mY': 0},
+        ],
+        'SpawnCount': 2,
+        'SpawnInterval': 3,
+        'DisplacePlants': false,
+        'IgnoreGraveStone': true,
+      },
+    );
+    final level = PvzLevelFile(objects: [event]);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: RocketLandingEventScreen(
+          rtid: 'RTID(Rocket@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('rocketLandingPositionPreviewGrid')),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.check), findsOneWidget);
+    final countField = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField && widget.decoration?.labelText == 'Count',
+    );
+    expect(countField, findsOneWidget);
+
+    await tester.enterText(countField, '0');
+    await tester.pump();
+    expect(tester.widget<TextField>(countField).controller!.text, '2');
+    await tester.enterText(countField, '3.5');
+    await tester.pump();
+    expect(tester.widget<TextField>(countField).controller!.text, '2');
+
+    await tester.enterText(countField, '4');
+    await tester.pump();
+    final json = Map<String, dynamic>.from(event.objData as Map);
+    expect(json['SpawnCount'], 4);
+    expect((json['RocketPool'] as List).single['Count'], 4);
+  });
+
+  testWidgets('gravestone event shows canonical Egypt name and integer Count', (
+    tester,
+  ) async {
+    final event = PvzObject(
+      aliases: const ['GravestoneSpawn'],
+      objClass: 'SpawnGravestonesWaveActionProps',
+      objData: const <String, dynamic>{
+        'GravestonePool': [
+          {'Type': 'RTID(gravestone@GridItemTypes)', 'Count': 2},
+        ],
+        'SpawnPositionsPool': <dynamic>[],
+      },
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SpawnGraveStonesEventScreen(
+          rtid: 'RTID(GravestoneSpawn@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [event]),
+          onChanged: () {},
+          onBack: () {},
+          onRequestGridItemSelection: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ancient Egypt tombstone'), findsOneWidget);
+    expect(find.text('gravestone_egypt'), findsOneWidget);
+    final countField = find.byType(TextFormField);
+    expect(countField, findsOneWidget);
+    await tester.enterText(countField, '0');
+    await tester.pump();
+    final editable = find.descendant(
+      of: countField,
+      matching: find.byType(EditableText),
+    );
+    expect(tester.widget<EditableText>(editable).controller.text, '2');
+  });
+
+  testWidgets('meteor wave groups allow the same tile in different waves', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1400);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final module = PvzObject(
+      aliases: const ['RadiationMeteorModule'],
+      objClass: 'RadiationMeteorModuleProperties',
+      objData: const <String, dynamic>{
+        'SpawnSchedule': [
+          {'Wave': 1, 'GridX': 0, 'GridY': 0},
+          {'Wave': 2, 'GridX': 1, 'GridY': 0},
+        ],
+      },
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: RadiationMeteorModuleScreen(
+          rtid: 'RTID(RadiationMeteorModule@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [module]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Group 2'));
+    await tester.pumpAndSettle();
+    final gridFinder = find.byType(GridOverridePlacementGrid);
+    final grid = tester.widget<GridOverridePlacementGrid>(gridFinder);
+    final rect = tester.getRect(gridFinder);
+    await tester.tapAt(
+      Offset(
+        rect.left + rect.width / grid.gridCols / 2,
+        rect.top + rect.height / grid.gridRows / 2,
+      ),
+    );
+    await tester.pump();
+
+    final schedule = (module.objData['SpawnSchedule'] as List)
+        .where((entry) => entry['GridX'] == 0 && entry['GridY'] == 0)
+        .map((entry) => entry['Wave'])
+        .toList();
+    expect(schedule, [1, 2]);
   });
 }

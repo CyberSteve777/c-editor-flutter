@@ -121,4 +121,71 @@ void main() {
       ]);
     },
   );
+
+  testWidgets('includes Moon Base placement modules by wave', (tester) async {
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['ExampleLunarMineVeins'],
+          objClass: 'LunarMineVeinModuleProperties',
+          objData: const <String, dynamic>{
+            'VeinPlacements': [
+              {'GridX': 1, 'GridY': 2, 'EmergenceWave': 1},
+              {'GridX': 3, 'GridY': 4, 'EmergenceWave': 5},
+            ],
+          },
+        ),
+        PvzObject(
+          aliases: const ['RadiationMeteorModule'],
+          objClass: 'RadiationMeteorModuleProperties',
+          objData: const <String, dynamic>{
+            'SpawnSchedule': [
+              {'Wave': 2, 'GridX': 4, 'GridY': 1},
+              {'Wave': 8, 'GridX': 4, 'GridY': 1},
+            ],
+          },
+        ),
+      ],
+    );
+    late List<GridPreviewCategoryOption> categories;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: Builder(
+          builder: (context) {
+            categories = collectGridPreviewCategories(
+              context,
+              level,
+              AppLocalizations.of(context)!,
+            );
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(levelHasPrePlacedGridPreview(level), isTrue);
+    expect(
+      categories
+          .where(
+            (category) => category.kind == GridPreviewModuleKind.lunarMineVein,
+          )
+          .map((category) => category.wave),
+      [1, 5],
+    );
+    expect(
+      categories
+          .where(
+            (category) =>
+                category.kind == GridPreviewModuleKind.radiationMeteor,
+          )
+          .map((category) => category.wave),
+      [2, 8],
+    );
+    expect(readLunarMineVeinModuleData(level)!.placements, hasLength(2));
+    expect(readRadiationMeteorModuleData(level)!.spawnSchedule, hasLength(2));
+  });
 }

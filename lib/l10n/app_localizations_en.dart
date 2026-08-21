@@ -2178,7 +2178,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_WaveGeneratorProperties =>
-      'Legacy embedded wave configuration with fixed and point-based random spawns';
+      'Legacy wave format used by Kongfu World and other early levels';
 
   @override
   String get moduleTitle_CustomLevelModuleProperties =>
@@ -7766,7 +7766,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customZombossMechScalars => 'Movement Range';
 
   @override
-  String get customZombossMechStages => 'Mech phases';
+  String get customZombossMechStages => 'Mech Phases';
 
   @override
   String get customZombossMechEditHint =>

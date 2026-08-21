@@ -390,7 +390,6 @@ class EventRegistry {
       titleKey: 'eventTitle_SpawnRocketLandingWaveActionProps',
       descriptionKey: 'eventDesc_SpawnRocketLandingWaveActionProps',
       icon: Icons.rocket_launch,
-      assetIconPath: 'assets/images/griditems/rocket_landing.webp',
       color: const Color(0xFF5C6BC0),
       darkColor: const Color(0xFF9FA8DA),
       category: EventCategory.gridItemSpawn,

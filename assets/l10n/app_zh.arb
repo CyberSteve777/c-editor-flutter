@@ -948,7 +948,7 @@
   "moduleTitle_WaveManagerModuleProperties": "波次管理器",
   "moduleDesc_WaveManagerModuleProperties": "管理关卡的波次事件总配置",
   "moduleTitle_WaveGeneratorProperties": "波次生成器",
-  "moduleDesc_WaveGeneratorProperties": "在模块内配置固定出怪与点数随机出怪的旧版波次系统",
+  "moduleDesc_WaveGeneratorProperties": "功夫世界等早期关卡使用的旧版波次写法",
   "moduleTitle_CustomLevelModuleProperties": "庭院模块",
   "moduleDesc_CustomLevelModuleProperties": "开启后关卡适配庭院框架，并屏蔽装扮功能",
   "powerTileModuleRequiredTitle": "需要能量瓷砖模块",

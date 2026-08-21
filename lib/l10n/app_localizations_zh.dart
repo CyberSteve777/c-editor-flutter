@@ -2111,7 +2111,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleTitle_WaveGeneratorProperties => '波次生成器';
 
   @override
-  String get moduleDesc_WaveGeneratorProperties => '在模块内配置固定出怪与点数随机出怪的旧版波次系统';
+  String get moduleDesc_WaveGeneratorProperties => '功夫世界等早期关卡使用的旧版波次写法';
 
   @override
   String get moduleTitle_CustomLevelModuleProperties => '庭院模块';

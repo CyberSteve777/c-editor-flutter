@@ -1,11 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/grid_override_placement_grid.dart';
+import 'package:c_editor/widgets/grid_override_wave_groups_bar.dart';
 
 class RadiationMeteorModuleScreen extends StatefulWidget {
   const RadiationMeteorModuleScreen({
@@ -38,6 +40,8 @@ class _RadiationMeteorModuleScreenState
   late TextEditingController _pollutionCtrl;
   late TextEditingController _miningCtrl;
   late TextEditingController _rewardCtrl;
+  late List<int> _waveGroups;
+  int _selectedGroupIndex = 0;
   int _selectedX = 0;
   int _selectedY = 0;
 
@@ -45,10 +49,10 @@ class _RadiationMeteorModuleScreenState
       LevelParser.getGridDimensionsFromFile(widget.levelFile).$1;
   int get _gridCols =>
       LevelParser.getGridDimensionsFromFile(widget.levelFile).$2;
-  RadiationMeteorSpawnData? get _selectedSpawn =>
-      _data.spawnSchedule.firstWhereOrNull(
-        (entry) => entry.gridX == _selectedX && entry.gridY == _selectedY,
-      );
+  int? get _selectedWave =>
+      _selectedGroupIndex >= 0 && _selectedGroupIndex < _waveGroups.length
+      ? _waveGroups[_selectedGroupIndex]
+      : null;
 
   @override
   void initState() {
@@ -73,6 +77,9 @@ class _RadiationMeteorModuleScreenState
     } catch (_) {
       _data = RadiationMeteorModulePropertiesData();
     }
+    _waveGroups =
+        _data.spawnSchedule.map((entry) => entry.wave).toSet().toList()..sort();
+    if (_waveGroups.isEmpty) _waveGroups.add(1);
     if (_data.spawnSchedule.isNotEmpty) {
       _selectedX = _data.spawnSchedule.first.gridX;
       _selectedY = _data.spawnSchedule.first.gridY;
@@ -100,9 +107,14 @@ class _RadiationMeteorModuleScreenState
     setState(() {});
   }
 
-  bool _hasAt(int col, int row) => _data.spawnSchedule.any(
-    (entry) => entry.gridX == col && entry.gridY == row,
-  );
+  bool _hasAt(int col, int row) {
+    final wave = _selectedWave;
+    return wave != null &&
+        _data.spawnSchedule.any(
+          (entry) =>
+              entry.wave == wave && entry.gridX == col && entry.gridY == row,
+        );
+  }
 
   void _tapCell(int col, int row) {
     setState(() {
@@ -112,16 +124,72 @@ class _RadiationMeteorModuleScreenState
     if (_hasAt(col, row)) {
       return;
     }
+    final wave = _selectedWave;
+    if (wave == null) return;
     _data.spawnSchedule.add(
-      RadiationMeteorSpawnData(wave: 1, gridX: col, gridY: row),
+      RadiationMeteorSpawnData(wave: wave, gridX: col, gridY: row),
     );
     _sync();
   }
 
   void _removeAt(int col, int row) {
+    final wave = _selectedWave;
+    if (wave == null) return;
     _data.spawnSchedule.removeWhere(
-      (entry) => entry.gridX == col && entry.gridY == row,
+      (entry) => entry.wave == wave && entry.gridX == col && entry.gridY == row,
     );
+    _sync();
+  }
+
+  void _addWaveGroup() {
+    final nextWave = _waveGroups.isEmpty ? 1 : _waveGroups.last + 1;
+    setState(() {
+      _waveGroups.add(nextWave);
+      _selectedGroupIndex = _waveGroups.length - 1;
+    });
+  }
+
+  void _updateSelectedWave(int wave) {
+    final oldWave = _selectedWave;
+    if (oldWave == null || wave < 1 || wave == oldWave) return;
+    if (_waveGroups.contains(wave)) return;
+    for (final entry in _data.spawnSchedule) {
+      if (entry.wave == oldWave) entry.wave = wave;
+    }
+    _waveGroups[_selectedGroupIndex] = wave;
+    _sync();
+  }
+
+  Future<void> _confirmDeleteWaveGroup(int index) async {
+    if (index < 0 || index >= _waveGroups.length) return;
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n?.removeItem ?? 'Remove item'),
+        content: Text(
+          l10n?.removeItemConfirm(l10n.groupN(index + 1)) ??
+              'Remove group ${index + 1}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n?.remove ?? 'Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final wave = _waveGroups[index];
+    _data.spawnSchedule.removeWhere((entry) => entry.wave == wave);
+    _waveGroups.removeAt(index);
+    if (_selectedGroupIndex >= _waveGroups.length) {
+      _selectedGroupIndex = _waveGroups.length - 1;
+    }
     _sync();
   }
 
@@ -139,7 +207,7 @@ class _RadiationMeteorModuleScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final selected = _selectedSpawn;
+    final selectedWave = _selectedWave;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -262,50 +330,44 @@ class _RadiationMeteorModuleScreenState
               ),
             ),
             const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      l10n?.radiationMeteorSpawnSchedule ??
-                          'Landing schedule (SpawnSchedule)',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n?.moonPlacementGestureHint ?? '',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '${l10n?.selectedPosition ?? 'Selected position'}: '
-                      'R${_selectedY + 1} : C${_selectedX + 1}',
-                    ),
-                    const SizedBox(height: 12),
-                    GridOverridePlacementGrid(
-                      gridRows: _gridRows,
-                      gridCols: _gridCols,
-                      selectedCol: _selectedX,
-                      selectedRow: _selectedY,
-                      onPrimaryTap: _tapCell,
-                      onRemoveAt: _removeAt,
-                      cellImageAt: (col, row) =>
-                          _hasAt(col, row) ? _asset : null,
-                      cellImageScaleAt: (_, _) => 0.92,
-                    ),
-                    if (selected != null) ...[
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        key: ValueKey(
-                          'meteor-wave-${selected.gridX}-${selected.gridY}',
+            Text(
+              l10n?.radiationMeteorSpawnSchedule ??
+                  'Landing schedule (SpawnSchedule)',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            GridOverrideWaveGroupsBar(
+              itemCount: _waveGroups.length,
+              selectedIndex: _selectedGroupIndex,
+              onSelected: (index) =>
+                  setState(() => _selectedGroupIndex = index),
+              onDeleteAt: _confirmDeleteWaveGroup,
+              onAdd: _addWaveGroup,
+              groupLabel: (index) =>
+                  l10n?.groupN(index + 1) ?? 'Group ${index + 1}',
+            ),
+            if (selectedWave != null) ...[
+              const SizedBox(height: 16),
+              Card(
+                key: ValueKey('radiationMeteorGroup-$_selectedGroupIndex'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l10n?.groupN(_selectedGroupIndex + 1) ??
+                            'Group ${_selectedGroupIndex + 1}',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                        initialValue: '${selected.wave}',
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        key: ValueKey('meteor-wave-$selectedWave'),
+                        initialValue: '$selectedWave',
                         decoration: InputDecoration(
                           labelText:
                               l10n?.radiationMeteorWave ??
@@ -313,19 +375,43 @@ class _RadiationMeteorModuleScreenState
                           border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         onChanged: (value) {
                           final parsed = int.tryParse(value);
-                          if (parsed != null && parsed >= 1) {
-                            selected.wave = parsed;
-                            _sync();
-                          }
+                          if (parsed != null) _updateSelectedWave(parsed);
                         },
                       ),
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n?.moonPlacementGestureHint ?? '',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        '${l10n?.selectedPosition ?? 'Selected position'}: '
+                        'R${_selectedY + 1} : C${_selectedX + 1}',
+                      ),
+                      const SizedBox(height: 12),
+                      GridOverridePlacementGrid(
+                        gridRows: _gridRows,
+                        gridCols: _gridCols,
+                        selectedCol: _selectedX,
+                        selectedRow: _selectedY,
+                        onPrimaryTap: _tapCell,
+                        onRemoveAt: _removeAt,
+                        cellImageAt: (col, row) =>
+                            _hasAt(col, row) ? _asset : null,
+                        cellImageScaleAt: (_, _) => 0.92,
+                      ),
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

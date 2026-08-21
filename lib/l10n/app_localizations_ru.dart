@@ -2193,7 +2193,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_WaveGeneratorProperties =>
-      'Устаревшая система волн с фиксированным и случайным спавном за очки, данные которой хранятся внутри модуля';
+      'Старый формат волн, используемый в Мире кунг-фу и других ранних уровнях';
 
   @override
   String get moduleTitle_CustomLevelModuleProperties => 'Модуль лужайки';

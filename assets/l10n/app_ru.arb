@@ -1013,7 +1013,7 @@
   "moduleTitle_WaveManagerModuleProperties": "Менеджер волн",
   "moduleDesc_WaveManagerModuleProperties": "Управление волнами уровня",
   "moduleTitle_WaveGeneratorProperties": "Генератор волн",
-  "moduleDesc_WaveGeneratorProperties": "Устаревшая система волн с фиксированным и случайным спавном за очки, данные которой хранятся внутри модуля",
+  "moduleDesc_WaveGeneratorProperties": "Старый формат волн, используемый в Мире кунг-фу и других ранних уровнях",
   "moduleTitle_CustomLevelModuleProperties": "Модуль лужайки",
   "moduleDesc_CustomLevelModuleProperties": "Включает режим творческого двора. Костюмы растений в этом режиме недоступны.",
   "powerTileModuleRequiredTitle": "Нужен модуль силовых плиток",
