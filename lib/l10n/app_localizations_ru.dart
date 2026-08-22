@@ -2278,6 +2278,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Растения продолжают расти и крепнуть. Следите за будущими обновлениями!';
 
   @override
+  String get stayTunedMoonPlantBlockedTitle => 'Послание из космоса';
+
+  @override
+  String get stayTunedMoonPlantBlockedMessage =>
+      'Вторая часть «Лунной базы» скоро выйдет. Следите за новостями!';
+
+  @override
   String get stayTunedMoonZombieBlockedLabel => 'Послание из космоса';
 
   @override

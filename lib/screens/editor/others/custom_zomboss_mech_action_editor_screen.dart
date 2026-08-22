@@ -53,6 +53,10 @@ class _CustomZombossMechActionEditorScreenState
   late bool _aliasManuallyEdited;
   late final PvzLevelFile _initialLevelSnapshot;
   late final Map<String, dynamic>? _initialPropsSnapshot;
+  late final Map<String, dynamic> _initialDataSnapshot;
+  late final String _initialAliasText;
+  late final String _initialObjclass;
+  late final String _initialBaseActionAlias;
   bool _canPop = false;
   bool _exitDialogOpen = false;
 
@@ -162,6 +166,10 @@ class _CustomZombossMechActionEditorScreenState
     _initialPropsSnapshot = widget.propsData == null
         ? null
         : _cloneMap(widget.propsData!);
+    _initialDataSnapshot = _cloneMap(_data);
+    _initialAliasText = _aliasCtrl.text;
+    _initialObjclass = _objclass;
+    _initialBaseActionAlias = _baseActionAlias;
   }
 
   PvzLevelFile _cloneLevel(PvzLevelFile levelFile) => PvzLevelFile.fromJson(
@@ -172,6 +180,19 @@ class _CustomZombossMechActionEditorScreenState
       Map<String, dynamic>.from(
         jsonDecode(jsonEncode(value)) as Map<String, dynamic>,
       );
+
+  bool get _hasUnsavedChanges {
+    const equality = DeepCollectionEquality();
+    return _aliasCtrl.text != _initialAliasText ||
+        _objclass != _initialObjclass ||
+        _baseActionAlias != _initialBaseActionAlias ||
+        !equality.equals(_data, _initialDataSnapshot) ||
+        !equality.equals(
+          widget.levelFile.toJson(),
+          _initialLevelSnapshot.toJson(),
+        ) ||
+        !equality.equals(widget.propsData, _initialPropsSnapshot);
+  }
 
   bool _looksLikeGeneratedAlias(String alias, String baseAlias) {
     if (alias == baseAlias) return true;
@@ -555,6 +576,10 @@ class _CustomZombossMechActionEditorScreenState
 
   Future<void> _confirmExit() async {
     if (_exitDialogOpen || !mounted) return;
+    if (!_hasUnsavedChanges) {
+      _exitWithResult(null);
+      return;
+    }
     _exitDialogOpen = true;
     final l10n = AppLocalizations.of(context);
     final choice = await showDialog<_CustomActionExitChoice>(

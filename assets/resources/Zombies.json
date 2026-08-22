@@ -3547,6 +3547,28 @@
     "icon": "zombie_seaurchinpitcher.webp"
   },
   {
+    "id": "giant_hermit_crab",
+    "name": "zombie_giant_hermit_crab",
+    "tags": [
+      "Henai_Atlantis",
+      "Pet",
+      "Elite",
+      "Chinese"
+    ],
+    "icon": "zombie_giant_hermit_crab.webp"
+  },
+  {
+    "id": "cthulhu_jelly_fish",
+    "name": "zombie_cthulhu_jelly_fish",
+    "tags": [
+      "Henai_Atlantis",
+      "Pet",
+      "Elite",
+      "Chinese"
+    ],
+    "icon": "zombie_cthulhu_jelly_fish.webp"
+  },
+  {
     "id": "moon",
     "name": "zombie_moon",
     "tags": [

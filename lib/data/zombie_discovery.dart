@@ -2,6 +2,7 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
+import 'package:c_editor/data/repository/grid_item_repository.dart';
 
 class ZombieDiscovery {
   static const skyCityImp = 'skycity_ggtimp';
@@ -25,14 +26,28 @@ class ZombieDiscovery {
   };
 
   static const ignoredIds = {
-    'sandstorm', 'snowstorm',
-    'barrelmoster', 'barrelempty', 'barrelpowder',
-    'schoolbus_normal', 'schoolbus_special',
-    'krill', 'hermitcrab', 'inkfish', 'jellyfish', 'pufferfish', 'starfish', 'swordfish',
-    'cthulhusmalljelly', 'smalljellyfish',
+    'sandstorm',
+    'snowstorm',
+    'barrelmoster',
+    'barrelempty',
+    'barrelpowder',
+    'schoolbus_normal',
+    'schoolbus_special',
+    'krill',
+    'hermitcrab',
+    'inkfish',
+    'jellyfish',
+    'pufferfish',
+    'starfish',
+    'swordfish',
+    'cthulhusmalljelly',
+    'smalljellyfish',
   };
 
-  static Set<String> discoverZombies(PvzLevelFile levelFile, ParsedLevelData parsed) {
+  static Set<String> discoverZombies(
+    PvzLevelFile levelFile,
+    ParsedLevelData parsed,
+  ) {
     final zombies = <String>{};
 
     for (final obj in levelFile.objects) {
@@ -106,7 +121,10 @@ class ZombieDiscovery {
 
     final renaiData = readRenaiModuleData(levelFile);
     if (renaiData != null) {
-      final allStatues = [...renaiData.statueInfos, ...renaiData.statueNightInfos];
+      final allStatues = [
+        ...renaiData.statueInfos,
+        ...renaiData.statueNightInfos,
+      ];
       for (final s in allStatues) {
         final z = renaissanceStatueMap[_cleanId(s.typeName)];
         if (z != null) _addZombie(z, zombies);
@@ -116,7 +134,6 @@ class ZombieDiscovery {
     if (levelHasModule(levelFile, 'DropShipProperties')) {
       _addZombie(skyCityImp, zombies);
     }
-
 
     if (levelHasModule(levelFile, 'GlacierModuleProperties')) {
       for (final obj in levelFile.objects) {
@@ -194,6 +211,7 @@ class ZombieDiscovery {
       'PumpkinHouseActionProps',
       'ThunderWaveActionProps',
       'ZombieAtlantisShellActionProps',
+      'SpawnRocketLandingWaveActionProps',
     };
 
     if (skippedClasses.contains(obj.objClass)) {
@@ -212,7 +230,13 @@ class ZombieDiscovery {
 
   static void _scanForZombies(dynamic d, Set<String> out) {
     if (d is Map) {
-      final t = d['TypeName'] ?? d['ZombieType'] ?? d['Type'] ?? d['ZombieName'] ?? d['ZombieTypeName'] ?? d['SpiderZombieName'];
+      final t =
+          d['TypeName'] ??
+          d['ZombieType'] ??
+          d['Type'] ??
+          d['ZombieName'] ??
+          d['ZombieTypeName'] ??
+          d['SpiderZombieName'];
       if (t is String && t.isNotEmpty) {
         _addZombie(t, out);
       }
@@ -228,7 +252,7 @@ class ZombieDiscovery {
 
   static void _addZombie(String id, Set<String> out) {
     final clean = _cleanId(id);
-    if (!ignoredIds.contains(clean)) {
+    if (!ignoredIds.contains(clean) && !GridItemRepository.isValid(clean)) {
       out.add(clean);
     }
   }

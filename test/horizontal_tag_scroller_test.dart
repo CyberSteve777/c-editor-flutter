@@ -70,6 +70,51 @@ void main() {
     expect(scrollbar.thumbVisibility, isFalse);
   });
 
+  testWidgets('horizontal tag rows restore an explicit scroll offset', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(320, 260);
+    addTearDown(tester.view.reset);
+
+    double savedOffset = 0;
+    Widget buildScroller(double initialOffset) => MaterialApp(
+      home: Scaffold(
+        body: HorizontalTagScroller(
+          initialScrollOffset: initialOffset,
+          onScrollOffsetChanged: (offset) => savedOffset = offset,
+          children: List.generate(
+            8,
+            (index) => SizedBox(width: 100, child: Text('Tag $index')),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(buildScroller(0));
+    await tester.pumpAndSettle();
+    await tester.drag(
+      find.byType(HorizontalTagScroller),
+      const Offset(-280, 0),
+    );
+    await tester.pumpAndSettle();
+    expect(savedOffset, greaterThan(100));
+
+    final offsetToRestore = savedOffset;
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(buildScroller(offsetToRestore));
+    await tester.pumpAndSettle();
+
+    final scrollable = tester.state<ScrollableState>(
+      find.descendant(
+        of: find.byType(HorizontalTagScroller),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    expect(scrollable.position.pixels, closeTo(offsetToRestore, 1));
+  });
+
   testWidgets('accent filter leaves space below the selected underline', (
     tester,
   ) async {

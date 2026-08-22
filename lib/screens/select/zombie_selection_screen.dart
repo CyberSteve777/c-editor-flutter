@@ -26,15 +26,14 @@ enum _ZombieBlockedReason {
 }
 
 class _ZombieSelectionViewState {
-  _ZombieSelectionViewState({
-    required this.category,
-    required this.tag,
-    this.scrollOffset = 0,
-  });
+  _ZombieSelectionViewState({required this.category, required this.tag})
+    : scrollOffset = 0,
+      tagScrollOffset = 0;
 
   ZombieCategory category;
   ZombieTag tag;
   double scrollOffset;
+  double tagScrollOffset;
 }
 
 final Map<String, _ZombieSelectionViewState> _zombieSelectionViewStates = {};
@@ -164,7 +163,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       _selectedTag = tags.isNotEmpty ? tags.first : ZombieTag.all;
     });
     _resetRememberedScrollOffset();
-    _rememberViewState(scrollOffset: 0);
+    _rememberViewState(scrollOffset: 0, tagScrollOffset: 0);
   }
 
   void _setTag(ZombieTag tag) {
@@ -191,7 +190,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     }
   }
 
-  void _rememberViewState({double? scrollOffset}) {
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
     final state = _zombieSelectionViewStates.putIfAbsent(
       _viewStateKey,
       () => _ZombieSelectionViewState(
@@ -202,6 +201,13 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     state.category = _selectedCategory;
     state.tag = _selectedTag;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) {
+      state.tagScrollOffset = tagScrollOffset;
+    }
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
   }
 
   void _rememberScrollOffset() {
@@ -477,6 +483,11 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                       if (_selectedCategory != ZombieCategory.collection)
                         AccentBarFilterTabRow(
                           key: ValueKey('${_selectedCategory.name}_tags'),
+                          initialScrollOffset:
+                              _zombieSelectionViewStates[_viewStateKey]
+                                  ?.tagScrollOffset ??
+                              0,
+                          onScrollOffsetChanged: _rememberTagScrollOffset,
                           selectedIndex: safeTagIndex,
                           onSelected: (index) => _setTag(visibleTags[index]),
                           tabs: visibleTags.map((tag) {

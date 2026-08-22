@@ -16,10 +16,12 @@ class _StageResourceGroupSelectionViewState {
   _StageResourceGroupSelectionViewState({
     required this.selectedType,
     required this.scrollOffset,
+    required this.tagScrollOffset,
   });
 
   String selectedType;
   double scrollOffset;
+  double tagScrollOffset;
 }
 
 final Map<String, _StageResourceGroupSelectionViewState>
@@ -105,16 +107,22 @@ class _StageResourceGroupImportScreenState
     _resetRememberedScrollOffset(persist: query.trim().isEmpty);
   }
 
-  void _rememberViewState({double? scrollOffset}) {
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
     final state = _stageResourceGroupSelectionViewStates.putIfAbsent(
       _viewStateKey,
       () => _StageResourceGroupSelectionViewState(
         selectedType: _selectedType,
         scrollOffset: 0,
+        tagScrollOffset: 0,
       ),
     );
     state.selectedType = _selectedType;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) state.tagScrollOffset = tagScrollOffset;
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
   }
 
   void _rememberScrollOffset() {
@@ -415,6 +423,11 @@ class _StageResourceGroupImportScreenState
           if (isFromStage)
             HorizontalTagScroller(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              initialScrollOffset:
+                  _stageResourceGroupSelectionViewStates[_viewStateKey]
+                      ?.tagScrollOffset ??
+                  0,
+              onScrollOffsetChanged: _rememberTagScrollOffset,
               children: _typeTabs.map((type) {
                 return AccentBarChoiceChip(
                   label: _typeLabel(type, l10n),

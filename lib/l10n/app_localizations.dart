@@ -973,7 +973,7 @@ abstract class AppLocalizations {
   /// No description provided for @importFolderSuccess.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{Imported 1 level} other{Imported {count} levels}}'**
+  /// **'{count, plural, =1{Imported 1 file} other{Imported {count} files}}'**
   String importFolderSuccess(int count);
 
   /// No description provided for @importFilesUnreadable.
@@ -4149,6 +4149,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The plants are still growing strong. Stay tuned for future updates!'**
   String get comingSoonPlantBlockedMessage;
+
+  /// No description provided for @stayTunedMoonPlantBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonPlantBlockedTitle;
+
+  /// No description provided for @stayTunedMoonPlantBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon BaseZ Part 2 is coming soon. Keep a lookout!'**
+  String get stayTunedMoonPlantBlockedMessage;
 
   /// No description provided for @stayTunedMoonZombieBlockedLabel.
   ///
@@ -15815,7 +15827,7 @@ abstract class AppLocalizations {
   /// No description provided for @startupLoadingStages.
   ///
   /// In en, this message translates to:
-  /// **'Stages'**
+  /// **'Lawns'**
   String get startupLoadingStages;
 
   /// No description provided for @startupLoadingAudio.
@@ -16289,7 +16301,7 @@ abstract class AppLocalizations {
   /// No description provided for @moonLifeSupportHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'An economy system commonly used in Moon Base levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.'**
+  /// **'An economy system commonly used in Moon BaseZ levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.'**
   String get moonLifeSupportHelpOverview;
 
   /// No description provided for @moonLifeSupportHelpProtocolsTitle.
@@ -16505,7 +16517,7 @@ abstract class AppLocalizations {
   /// No description provided for @rocketLandingHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid-item obstacles, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.'**
+  /// **'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid items, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.'**
   String get rocketLandingHelpOverview;
 
   /// No description provided for @rocketLandingHelpPlantsTitle.

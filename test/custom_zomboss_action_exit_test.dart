@@ -28,7 +28,7 @@ const _catalog = ZombossMechCatalogEntry(
 );
 
 void main() {
-  testWidgets('top-left exit asks whether to save the custom action', (
+  testWidgets('top-left exit closes an untouched new custom action', (
     tester,
   ) async {
     final level = PvzLevelFile(objects: []);
@@ -64,15 +64,46 @@ void main() {
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
 
+    expect(find.text('Unsaved changes'), findsNothing);
+    expect(find.text('Open editor'), findsOneWidget);
+    expect(level.objects, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('top-left exit still prompts after editing a custom action', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(objects: []);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CustomZombossMechActionEditorScreen(
+                  catalog: _catalog,
+                  levelFile: level,
+                ),
+              ),
+            ),
+            child: const Text('Open editor'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open editor'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).first, 'EditedAction');
+    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.pumpAndSettle();
+
     expect(find.text('Unsaved changes'), findsOneWidget);
     expect(find.text('Save before leaving?'), findsOneWidget);
     final dialog = find.byType(AlertDialog);
-    expect(
-      find.descendant(of: dialog, matching: find.text('Discard')),
-      findsOne,
-    );
-    expect(find.descendant(of: dialog, matching: find.text('Save')), findsOne);
-
     await tester.tap(
       find.descendant(of: dialog, matching: find.text('Discard')),
     );
@@ -80,6 +111,49 @@ void main() {
 
     expect(find.text('Open editor'), findsOneWidget);
     expect(level.objects, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('top-left exit closes an untouched existing custom action', (
+    tester,
+  ) async {
+    final action = PvzObject(
+      aliases: const ['ExistingAction'],
+      objClass: 'ExitPromptActionDefinition',
+      objData: const <String, dynamic>{'Weight': 10},
+    );
+    final level = PvzLevelFile(objects: [action]);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CustomZombossMechActionEditorScreen(
+                  catalog: _catalog,
+                  levelFile: level,
+                  existingRtid: 'RTID(ExistingAction@CurrentLevel)',
+                ),
+              ),
+            ),
+            child: const Text('Open existing editor'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open existing editor'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Unsaved changes'), findsNothing);
+    expect(find.text('Open existing editor'), findsOneWidget);
+    expect(level.objects, hasLength(1));
+    expect(level.objects.single.objData, const <String, dynamic>{'Weight': 10});
     expect(tester.takeException(), isNull);
   });
 

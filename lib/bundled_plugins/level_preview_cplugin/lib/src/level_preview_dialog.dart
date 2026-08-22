@@ -31,6 +31,7 @@ import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/widgets/rift_theme_widgets.dart';
 
 class LevelPreviewDialog extends StatefulWidget {
   final CPluginHost host;
@@ -453,6 +454,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       widget.levelFile,
       'SpermWhaleModuleProperties',
     );
+    bool hasLifeSupportSystem = levelHasModule(
+      widget.levelFile,
+      'MoonLifeSupportSystemProperties',
+    );
+    bool hasLunarTerminal = levelHasModule(
+      widget.levelFile,
+      'LunarTerminalModuleProperties',
+    );
     bool hasWitch = levelHasModule(widget.levelFile, 'WitchModuleProperties');
     bool hasZombieRush = levelHasModule(
       widget.levelFile,
@@ -561,6 +570,22 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         iconId: null,
         color: Colors.cyanAccent,
       ));
+    if (hasLifeSupportSystem) {
+      summaryLegends.add((
+        title: l10n.moduleTitle_MoonLifeSupportSystemProperties,
+        icon: Icons.battery_charging_full,
+        iconId: null,
+        color: Colors.lightBlueAccent,
+      ));
+    }
+    if (hasLunarTerminal) {
+      summaryLegends.add((
+        title: l10n.moduleTitle_LunarTerminalModuleProperties,
+        icon: Icons.precision_manufacturing,
+        iconId: null,
+        color: Colors.purpleAccent,
+      ));
+    }
     if (hasWitch)
       summaryLegends.add((
         title: l10n.witchLabel,
@@ -779,6 +804,20 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     label: '',
                     color: Colors.cyanAccent,
                     tooltip: l10n.spermWhaleLabel,
+                  ),
+                if (hasLifeSupportSystem)
+                  ResourceChip(
+                    icon: Icons.battery_charging_full,
+                    label: '',
+                    color: Colors.lightBlueAccent,
+                    tooltip: l10n.moduleTitle_MoonLifeSupportSystemProperties,
+                  ),
+                if (hasLunarTerminal)
+                  ResourceChip(
+                    icon: Icons.precision_manufacturing,
+                    label: '',
+                    color: Colors.purpleAccent,
+                    tooltip: l10n.moduleTitle_LunarTerminalModuleProperties,
                   ),
                 if (hasWitch)
                   ResourceChip(
@@ -1322,6 +1361,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     bool expanded, {
     VoidCallback? onToggle,
     PvzLevelFile? levelFile,
+    bool showGridItemIcons = false,
   }) {
     final bool canExpand = items.length > 8;
     final displayItems = (canExpand && !expanded)
@@ -1342,7 +1382,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             ...displayItems
                 .where((id) => id.isNotEmpty)
                 .map(
-                  (id) => UniversalIcon(id: id, size: 40, levelFile: levelFile),
+                  (id) => showGridItemIcons
+                      ? GridItemIcon(id: id, size: 40)
+                      : UniversalIcon(id: id, size: 40, levelFile: levelFile),
                 ),
             if (canExpand && onToggle != null)
               IconButton(
@@ -3213,6 +3255,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                       !_encounterGridItemsExpanded,
                 ),
                 levelFile: widget.levelFile,
+                showGridItemIcons: true,
               ),
             ],
             if (events.isNotEmpty) ...[
@@ -3773,7 +3816,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final riftThemeObjs = widget.levelFile.objects.where(
       (o) => o.objClass == 'RiftThemeDemoModuleProperties',
     );
-    final List<String> themeTitles = [];
+    final List<({String id, String title})> riftThemes = [];
     for (var obj in riftThemeObjs) {
       final data = RiftThemeDemoModulePropertiesData.fromJson(
         Map<String, dynamic>.from(obj.objData as Map),
@@ -3781,13 +3824,16 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       for (var themeId in data.demoRiftThemeName) {
         final key = RiftThemeRepository.nameKey(themeId);
         final localized = ResourceNames.lookup(context, key);
-        themeTitles.add(localized != key ? localized : themeId);
+        riftThemes.add((
+          id: themeId,
+          title: localized != key ? localized : themeId,
+        ));
       }
     }
 
     if (activeModules.isEmpty &&
         featureInfos.isEmpty &&
-        themeTitles.isEmpty &&
+        riftThemes.isEmpty &&
         statusIcons.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -3797,10 +3843,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         ? activeModules.take(10).toList()
         : activeModules;
 
-    final bool canExpandThemes = themeTitles.length > 8;
+    final bool canExpandThemes = riftThemes.length > 8;
     final displayThemes = (canExpandThemes && !_riftThemesExpanded)
-        ? themeTitles.take(8).toList()
-        : themeTitles;
+        ? riftThemes.take(8).toList()
+        : riftThemes;
 
     final targetChallengeClasses = {
       'ApplyZombieConditionsChallengeProps',
@@ -4107,7 +4153,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     );
                   })),
             ],
-            if (themeTitles.isNotEmpty) ...[
+            if (riftThemes.isNotEmpty) ...[
               if (activeModules.isNotEmpty || featureInfos.isNotEmpty)
                 const SizedBox(height: 20),
               _buildSubSectionTitle(
@@ -4121,8 +4167,16 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   ...displayThemes.map(
-                    (t) => Chip(
-                      label: Text(t, style: const TextStyle(fontSize: 11)),
+                    (entry) => Chip(
+                      avatar: RiftThemeIcon(
+                        themeId: entry.id,
+                        size: 22,
+                        borderRadius: 5,
+                      ),
+                      label: Text(
+                        entry.title,
+                        style: const TextStyle(fontSize: 11),
+                      ),
                       backgroundColor: Colors.blue.withValues(alpha: 0.15),
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
@@ -5562,6 +5616,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     bool isGrid = false,
     PvzLevelFile? levelFile,
   }) {
+    if (activeTabIndex == 2) {
+      return GridItemIcon(id: id, size: size, isGrid: isGrid);
+    }
     return UniversalIcon(
       id: id,
       size: size,

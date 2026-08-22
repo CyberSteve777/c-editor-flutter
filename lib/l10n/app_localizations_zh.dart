@@ -484,8 +484,8 @@ class AppLocalizationsZh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '已导入 $count 个关卡',
-      one: '已导入 1 个关卡',
+      other: '已导入 $count 个文件',
+      one: '已导入 1 个文件',
     );
     return '$_temp0';
   }
@@ -2187,6 +2187,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get comingSoonPlantBlockedMessage => '植物们仍在茁壮成长。敬请期待后续更新！';
+
+  @override
+  String get stayTunedMoonPlantBlockedTitle => '来自宇宙的预告';
+
+  @override
+  String get stayTunedMoonPlantBlockedMessage => '月球基地第二章节即将推出，敬请关注！';
 
   @override
   String get stayTunedMoonZombieBlockedLabel => '来自宇宙的预告';
@@ -8541,7 +8547,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editCustomStage => '编辑自定义地图';
 
   @override
-  String get startupLoadingLocalization => '本地化';
+  String get startupLoadingLocalization => '本地化文本';
 
   @override
   String get startupLoadingStages => '地图';
@@ -8550,7 +8556,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get startupLoadingAudio => '音频';
 
   @override
-  String get startupLoadingGridItems => '网格物品';
+  String get startupLoadingGridItems => '障碍物';
 
   @override
   String get startupLoadingZomboss => '僵王';

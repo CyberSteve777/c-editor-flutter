@@ -4,6 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/rift_theme_widgets.dart';
 
 /// Multi-select picker for rift themes. Tap to toggle; confirm with the check button.
 class RiftThemeSelectionScreen extends StatefulWidget {
@@ -137,6 +138,9 @@ class _RiftThemeSelectionScreenState extends State<RiftThemeSelectionScreen> {
                   ),
                   child: InkWell(
                     onTap: () => _toggle(id),
+                    onLongPress: () => showRiftThemeDetailsDialog(context, id),
+                    onSecondaryTap: () =>
+                        showRiftThemeDetailsDialog(context, id),
                     borderRadius: BorderRadius.circular(12),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -145,23 +149,7 @@ class _RiftThemeSelectionScreenState extends State<RiftThemeSelectionScreen> {
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: widget.accentColor.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: widget.accentColor.withValues(
-                                  alpha: 0.35,
-                                ),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.palette_outlined,
-                              color: widget.accentColor,
-                            ),
-                          ),
+                          RiftThemeIcon(themeId: id),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(

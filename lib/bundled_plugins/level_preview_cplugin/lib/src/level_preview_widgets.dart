@@ -278,7 +278,8 @@ class GridItemIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path = GridItemRepository.getIconPath(id);
-    final tooltip = ResourceNames.lookup(context, 'griditem_$id');
+    final resourceKey = id.startsWith('Armrack') ? 'armrack_$id' : 'griditem_$id';
+    final tooltip = ResourceNames.lookup(context, resourceKey);
 
     return _IconWrapper(
       id: id,

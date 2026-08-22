@@ -864,40 +864,61 @@ class _EightiesStageOrderCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: DragBoundary(
-                child: ReorderableListView.builder(
-                  clipBehavior: Clip.none,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  buildDefaultDragHandles: false,
-                  dragBoundaryProvider: DragBoundary.forRectOf,
-                  itemCount: values.length,
-                  onReorderItem: onReorderItem,
-                  itemBuilder: (context, index) {
-                    final value = values[index];
-                    return ListTile(
-                      key: ValueKey('$title-$index-$value'),
-                      dense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                      leading: CircleAvatar(
-                        radius: 15,
-                        backgroundColor: accent.withValues(alpha: 0.14),
-                        foregroundColor: accent,
-                        child: Text('${index + 1}'),
-                      ),
-                      title: Text(valueLabel(value)),
-                      subtitle: Text(value),
-                      trailing: ReorderableDragStartListener(
-                        index: index,
-                        child: const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Icon(Icons.drag_indicator),
-                        ),
-                      ),
-                    );
-                  },
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 840),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: DragBoundary(
+                    child: ReorderableListView.builder(
+                      clipBehavior: Clip.hardEdge,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      buildDefaultDragHandles: false,
+                      dragBoundaryProvider: DragBoundary.forRectOf,
+                      proxyDecorator: (child, index, animation) {
+                        return AnimatedBuilder(
+                          animation: animation,
+                          child: child,
+                          builder: (context, child) => Material(
+                            color: theme.colorScheme.surfaceContainerHigh,
+                            elevation: 6 * animation.value,
+                            borderRadius: BorderRadius.circular(10),
+                            clipBehavior: Clip.antiAlias,
+                            child: child,
+                          ),
+                        );
+                      },
+                      itemCount: values.length,
+                      onReorderItem: onReorderItem,
+                      itemBuilder: (context, index) {
+                        final value = values[index];
+                        return ListTile(
+                          key: ValueKey('$title-$index-$value'),
+                          dense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                          ),
+                          leading: CircleAvatar(
+                            radius: 15,
+                            backgroundColor: accent.withValues(alpha: 0.14),
+                            foregroundColor: accent,
+                            child: Text('${index + 1}'),
+                          ),
+                          title: Text(valueLabel(value)),
+                          subtitle: Text(value),
+                          trailing: ReorderableDragStartListener(
+                            index: index,
+                            child: const Padding(
+                              padding: EdgeInsets.all(12),
+                              child: Icon(Icons.drag_indicator),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),

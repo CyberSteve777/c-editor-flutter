@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
   "pluginName": "Data Package Download",
-  "pluginDescription": "If no .rsb.smf file is found while building a level testing mod, dynamic.rsb.smf can be downloaded from the GitHub Releases for Archiver2c/pvz2c-dynamic.",
+  "pluginDescription": "If no .rsb.smf file is found while building a level testing mod, dynamic.rsb.smf can be downloaded from the GitHub Releases for Archiver2c/pvz2c-dynamic",
   "levelTestingMod": "Level testing mod",
   "dynamicOfferTitle": "Download dynamic?",
   "dynamicOfferBody": "No .rsb.smf files were found in your workspace.\n\nDo you want to download a dynamic.rsb.smf from the Archiver2c/pvz2c-dynamic GitHub releases?",

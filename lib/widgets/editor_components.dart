@@ -760,12 +760,16 @@ class HorizontalTagScroller extends StatefulWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     this.onAccentBar = false,
     this.narrowWidth = 720,
+    this.initialScrollOffset = 0,
+    this.onScrollOffsetChanged,
   });
 
   final List<Widget> children;
   final EdgeInsetsGeometry padding;
   final bool onAccentBar;
   final double narrowWidth;
+  final double initialScrollOffset;
+  final ValueChanged<double>? onScrollOffsetChanged;
 
   @override
   State<HorizontalTagScroller> createState() => _HorizontalTagScrollerState();
@@ -778,7 +782,9 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _scrollController = ScrollController(
+      initialScrollOffset: widget.initialScrollOffset,
+    )..addListener(_notifyScrollOffsetChanged);
   }
 
   @override
@@ -789,8 +795,15 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_notifyScrollOffsetChanged);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _notifyScrollOffsetChanged() {
+    if (_scrollController.hasClients) {
+      widget.onScrollOffsetChanged?.call(_scrollController.offset);
+    }
   }
 
   void _scheduleOverflowCheck() {
@@ -878,6 +891,8 @@ class AccentBarFilterTabRow extends StatefulWidget {
     required this.onSelected,
     this.height = 46,
     this.scrollbarSlotHeight = 16,
+    this.initialScrollOffset = 0,
+    this.onScrollOffsetChanged,
   });
 
   final List<Widget> tabs;
@@ -885,6 +900,8 @@ class AccentBarFilterTabRow extends StatefulWidget {
   final ValueChanged<int> onSelected;
   final double height;
   final double scrollbarSlotHeight;
+  final double initialScrollOffset;
+  final ValueChanged<double>? onScrollOffsetChanged;
 
   @override
   State<AccentBarFilterTabRow> createState() => _AccentBarFilterTabRowState();
@@ -900,13 +917,22 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _scrollController = ScrollController(
+      initialScrollOffset: widget.initialScrollOffset,
+    )..addListener(_notifyScrollOffsetChanged);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_notifyScrollOffsetChanged);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _notifyScrollOffsetChanged() {
+    if (_scrollController.hasClients) {
+      widget.onScrollOffsetChanged?.call(_scrollController.offset);
+    }
   }
 
   void _onPointerScroll(PointerScrollEvent event) {

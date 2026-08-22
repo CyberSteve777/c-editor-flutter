@@ -492,8 +492,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Imported $count levels',
-      one: 'Imported 1 level',
+      other: 'Imported $count files',
+      one: 'Imported 1 file',
     );
     return '$_temp0';
   }
@@ -2265,6 +2265,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get comingSoonPlantBlockedMessage =>
       'The plants are still growing strong. Stay tuned for future updates!';
+
+  @override
+  String get stayTunedMoonPlantBlockedTitle => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonPlantBlockedMessage =>
+      'Moon BaseZ Part 2 is coming soon. Keep a lookout!';
 
   @override
   String get stayTunedMoonZombieBlockedLabel => 'A Message from Space';
@@ -8969,7 +8976,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startupLoadingLocalization => 'Localization';
 
   @override
-  String get startupLoadingStages => 'Stages';
+  String get startupLoadingStages => 'Lawns';
 
   @override
   String get startupLoadingAudio => 'Audio';
@@ -9233,7 +9240,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moonLifeSupportHelpOverview =>
-      'An economy system commonly used in Moon Base levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.';
+      'An economy system commonly used in Moon BaseZ levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.';
 
   @override
   String get moonLifeSupportHelpProtocolsTitle => 'Overload protocols';
@@ -9360,7 +9367,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rocketLandingHelpOverview =>
-      'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid-item obstacles, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.';
+      'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid items, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.';
 
   @override
   String get rocketLandingHelpPlantsTitle => 'Plants take control';

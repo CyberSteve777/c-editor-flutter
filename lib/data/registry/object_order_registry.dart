@@ -31,6 +31,7 @@ class ObjectOrderRegistry {
     'SmokePollutionModuleProperties',
     'DropShipProperties',
     'HeianWindModuleProperties',
+    'SpermWhaleModuleProperties',
     'MoonLifeSupportSystemProperties',
     'LunarTerminalModuleProperties',
     'RadiationMeteorModuleProperties',

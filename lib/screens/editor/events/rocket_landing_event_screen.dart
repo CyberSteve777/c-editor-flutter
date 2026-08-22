@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
@@ -181,20 +183,7 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _numberField(
-                      controller: _countCtrl,
-                      label: l10n?.count ?? 'Count',
-                      decimal: false,
-                      integersOnly: true,
-                      onChanged: (value) {
-                        final parsed = int.tryParse(value);
-                        if (parsed != null && parsed >= 1) {
-                          _data.rocketPool.first.count = parsed;
-                          _data.spawnCount = parsed;
-                          _sync();
-                        }
-                      },
-                    ),
+                    _buildRocketPoolItem(theme, l10n),
                     const SizedBox(height: 12),
                     _numberField(
                       controller: _intervalCtrl,
@@ -244,6 +233,83 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRocketPoolItem(ThemeData theme, AppLocalizations? l10n) {
+    final alias = LevelParser.extractAlias(_data.rocketPool.first.type);
+    final displayTypeName =
+        GridItemRepository.getByTypeName(alias)?.typeName ?? alias;
+    final resourceKey = 'griditem_$displayTypeName';
+    final localizedName = ResourceNames.lookup(context, resourceKey);
+    final displayName = localizedName != resourceKey
+        ? localizedName
+        : displayTypeName;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            GridItemIcon(
+              typeName: displayTypeName,
+              size: 48,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    displayName,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    displayTypeName,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            SizedBox(
+              width: 80,
+              child: TextField(
+                key: const ValueKey('rocketLandingCountField'),
+                controller: _countCtrl,
+                keyboardType: TextInputType.number,
+                inputFormatters: const [PositiveIntegerInputFormatter()],
+                decoration: InputDecoration(
+                  labelText: l10n?.count ?? 'Count',
+                  border: const OutlineInputBorder(),
+                  isDense: true,
+                ),
+                onChanged: (value) {
+                  final parsed = int.tryParse(value);
+                  if (parsed != null && parsed >= 1) {
+                    _data.rocketPool.first.count = parsed;
+                    _data.spawnCount = parsed;
+                    _sync();
+                  }
+                },
               ),
             ),
           ],

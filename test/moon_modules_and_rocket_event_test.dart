@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/grid_item_discovery.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/registry/object_order_registry.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
+import 'package:c_editor/data/zombie_discovery.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/app_localizations_en.dart';
 import 'package:c_editor/l10n/app_localizations_ru.dart';
@@ -15,6 +18,7 @@ import 'package:c_editor/screens/editor/events/rocket_landing_event_screen.dart'
 import 'package:c_editor/screens/editor/events/spawn_grave_stones_event_screen.dart';
 import 'package:c_editor/screens/editor/modules/radiation_meteor_module_screen.dart';
 import 'package:c_editor/widgets/grid_override_placement_grid.dart';
+import 'package:c_editor/widgets/editor_components.dart' show GridItemIcon;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -168,6 +172,7 @@ void main() {
       final renai = moduleKeys.indexOf('RenaiModuleProperties');
       final veins = moduleKeys.indexOf('LunarMineVeinModuleProperties');
       final heian = moduleKeys.indexOf('HeianWindModuleProperties');
+      final whale = moduleKeys.indexOf('SpermWhaleModuleProperties');
       final life = moduleKeys.indexOf('MoonLifeSupportSystemProperties');
       final terminal = moduleKeys.indexOf('LunarTerminalModuleProperties');
       final meteor = moduleKeys.indexOf('RadiationMeteorModuleProperties');
@@ -188,7 +193,8 @@ void main() {
         );
       }
       expect(veins, renai + 1);
-      expect(life, heian + 1);
+      expect(whale, heian + 1);
+      expect(life, whale + 1);
       expect(terminal, life + 1);
       expect(meteor, terminal + 1);
 
@@ -197,8 +203,12 @@ void main() {
         ObjectOrderRegistry.getPriority('RenaiModuleProperties') + 1,
       );
       expect(
-        ObjectOrderRegistry.getPriority('MoonLifeSupportSystemProperties'),
+        ObjectOrderRegistry.getPriority('SpermWhaleModuleProperties'),
         ObjectOrderRegistry.getPriority('HeianWindModuleProperties') + 1,
+      );
+      expect(
+        ObjectOrderRegistry.getPriority('MoonLifeSupportSystemProperties'),
+        ObjectOrderRegistry.getPriority('SpermWhaleModuleProperties') + 1,
       );
       expect(
         ObjectOrderRegistry.getPriority('LunarTerminalModuleProperties'),
@@ -384,6 +394,15 @@ void main() {
       findsOneWidget,
     );
     expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(find.text('Moon Rocket'), findsOneWidget);
+    expect(find.text('rocket_landing'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is GridItemIcon && widget.typeName == 'rocket_landing',
+      ),
+      findsOneWidget,
+    );
     final countField = find.byWidgetPredicate(
       (widget) =>
           widget is TextField && widget.decoration?.labelText == 'Count',
@@ -402,6 +421,43 @@ void main() {
     final json = Map<String, dynamic>.from(event.objData as Map);
     expect(json['SpawnCount'], 4);
     expect((json['RocketPool'] as List).single['Count'], 4);
+  });
+
+  test('level overview classifies rockets as grid items, not zombies', () {
+    final rocketEvent = PvzObject(
+      aliases: const ['Rocket'],
+      objClass: 'SpawnRocketLandingWaveActionProps',
+      objData: SpawnRocketLandingWaveActionPropsData().toJson(),
+    );
+    final obstacleEvent = PvzObject(
+      aliases: const ['ObstacleEvent'],
+      objClass: 'SpawnModernPortalsWaveActionProps',
+      objData: const <String, dynamic>{'Type': 'RTID(cosmoss@GridItemTypes)'},
+    );
+    final waveManager = PvzObject(
+      aliases: const ['WaveManager'],
+      objClass: 'WaveManagerProperties',
+      objData: WaveManagerData(
+        waves: const [
+          ['RTID(Rocket@CurrentLevel)', 'RTID(ObstacleEvent@CurrentLevel)'],
+        ],
+      ).toJson(),
+    );
+    final level = PvzLevelFile(
+      objects: [rocketEvent, obstacleEvent, waveManager],
+    );
+    final parsed = LevelParser.parseLevel(level);
+
+    final zombies = ZombieDiscovery.discoverZombies(level, parsed);
+    final gridItems = GridItemDiscovery.discoverGridItems(level);
+
+    expect(zombies, isNot(contains('rocket_landing')));
+    expect(zombies, isNot(contains('cosmoss')));
+    expect(gridItems, contains('rocket_landing'));
+    expect(
+      GridItemRepository.getIconPath('rocket_landing'),
+      'assets/images/griditems/rocket_landing.webp',
+    );
   });
 
   testWidgets('gravestone event shows canonical Egypt name and integer Count', (

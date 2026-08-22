@@ -53,6 +53,20 @@ class GridItemRepository {
   GridItemRepository._();
 
   static const String _resourcePath = 'assets/resources/GridItems.json';
+  static const Map<String, String> _moduleGridItemIcons = {
+    'ArmrackArmor': 'ArmrackArmor.webp',
+    'ArmrackBlade': 'ArmrackBlade.webp',
+    'ArmrackBomb': 'ArmrackBomb.webp',
+    'ArmrackFlag': 'ArmrackFlag.webp',
+    'ArmrackHammer': 'ArmrackHammer.webp',
+    'ArmrackNunchaku': 'ArmrackNunchaku.webp',
+    'ArmrackTorch': 'ArmrackTorch.webp',
+    'lunar_mine_vein': 'lunar_mine_vein.webp',
+    'radiation_meteor_ore': 'radiation_meteor_ore.webp',
+    'SmokeManhole': 'SmokeManhole.webp',
+    'steam_down': 'steam_down.webp',
+    'steam_up': 'steam_up.webp',
+  };
   static final List<GridItemInfo> staticItems = [];
   static bool _isLoaded = false;
 
@@ -104,8 +118,15 @@ class GridItemRepository {
 
   /// Returns asset path for icon, or unknown placeholder if no icon.
   static String getIconPath(String aliases) {
+    final moduleIcon = _moduleGridItemIcons[aliases];
+    if (moduleIcon != null) {
+      return 'assets/images/griditems/$moduleIcon';
+    }
     if (aliases == 'gulliver_tunnel') {
       return 'assets/images/tunnels/GULLIVERTUNNEL_ORIENTATION_BIG_ON_LEFT.webp';
+    }
+    if (aliases.startsWith('tool_powertile_')) {
+      return 'assets/images/tools/$aliases.png';
     }
     if (aliases == 'pumpkin_house') {
       return 'assets/images/griditems/pumpkin_house.webp';

@@ -6,10 +6,15 @@ import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 class _ModuleSelectionViewState {
-  _ModuleSelectionViewState({this.selectedCategory, this.scrollOffset = 0});
+  _ModuleSelectionViewState({
+    this.selectedCategory,
+    this.scrollOffset = 0,
+    this.tagScrollOffset = 0,
+  });
 
   ModuleCategory? selectedCategory;
   double scrollOffset;
+  double tagScrollOffset;
 }
 
 final Map<String, _ModuleSelectionViewState> _moduleSelectionViewStates = {};
@@ -70,6 +75,16 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
     state
       ..selectedCategory = _selectedCategory
       ..scrollOffset = _listScrollController.offset;
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    final state = _moduleSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      _ModuleSelectionViewState.new,
+    );
+    state
+      ..selectedCategory = _selectedCategory
+      ..tagScrollOffset = offset;
   }
 
   void _restoreRememberedScrollOffset() {
@@ -157,6 +172,11 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
               HorizontalTagScroller(
                 onAccentBar: true,
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 14),
+                initialScrollOffset:
+                    _moduleSelectionViewStates[_viewStateKey]
+                        ?.tagScrollOffset ??
+                    0,
+                onScrollOffsetChanged: _rememberTagScrollOffset,
                 children: [
                   AccentBarChoiceChip(
                     key: const ValueKey('moduleCategory_all'),

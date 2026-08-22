@@ -22,12 +22,14 @@ class _StageSelectionViewState {
     required this.type,
     required this.builtinScrollOffset,
     required this.customScrollOffset,
+    required this.typeScrollOffset,
   });
 
   _StagePickerTab tab;
   StageType type;
   double builtinScrollOffset;
   double customScrollOffset;
+  double typeScrollOffset;
 }
 
 final Map<String, _StageSelectionViewState> _stageSelectionViewStates = {};
@@ -131,6 +133,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
   void _rememberViewState({
     double? builtinScrollOffset,
     double? customScrollOffset,
+    double? typeScrollOffset,
   }) {
     final state = _stageSelectionViewStates.putIfAbsent(
       _viewStateKey,
@@ -139,6 +142,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
         type: _selectedType,
         builtinScrollOffset: 0,
         customScrollOffset: 0,
+        typeScrollOffset: 0,
       ),
     );
     state.tab = _tab;
@@ -149,6 +153,13 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
     if (customScrollOffset != null) {
       state.customScrollOffset = customScrollOffset;
     }
+    if (typeScrollOffset != null) {
+      state.typeScrollOffset = typeScrollOffset;
+    }
+  }
+
+  void _rememberTypeScrollOffset(double offset) {
+    _rememberViewState(typeScrollOffset: offset);
   }
 
   void _rememberScrollOffsets() {
@@ -336,6 +347,11 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
                       horizontal: 8,
                       vertical: 8,
                     ),
+                    initialScrollOffset:
+                        _stageSelectionViewStates[_viewStateKey]
+                            ?.typeScrollOffset ??
+                        0,
+                    onScrollOffsetChanged: _rememberTypeScrollOffset,
                     children: StageType.values.map((t) {
                       return AccentBarChoiceChip(
                         label: _typeLabel(t, l10n),

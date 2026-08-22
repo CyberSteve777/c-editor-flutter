@@ -212,7 +212,7 @@
   "importFiles": "导入文件",
   "importFolder": "导入文件夹",
   "importFolderEmpty": "所选文件夹中没有关卡文件",
-  "importFolderSuccess": "{count, plural, =1{已导入 1 个关卡} other{已导入 {count} 个关卡}}",
+  "importFolderSuccess": "{count, plural, =1{已导入 1 个文件} other{已导入 {count} 个文件}}",
   "@importFolderSuccess": {
     "placeholders": {
       "count": { "type": "int" }
@@ -973,6 +973,8 @@
   "comingSoonPlantBlockedLabel": "未完待续",
   "comingSoonPlantBlockedTitle": "未完待续",
   "comingSoonPlantBlockedMessage": "植物们仍在茁壮成长。敬请期待后续更新！",
+  "stayTunedMoonPlantBlockedTitle": "来自宇宙的预告",
+  "stayTunedMoonPlantBlockedMessage": "月球基地第二章节即将推出，敬请关注！",
   "stayTunedMoonZombieBlockedLabel": "来自宇宙的预告",
   "stayTunedMoonZombieBlockedTitle": "来自宇宙的预告",
   "stayTunedMoonZombieBlockedMessage": "月球基地第二章节即将推出，敬请关注！",
@@ -3086,10 +3088,10 @@
   "customStageDeleteMessage": "将在关卡中永久删除该自定义地图的相关数据，并将当前地图切换为默认的教程庭院地图。",
   "customStagePresetSectionTitle": "预设自定义地图",
   "editCustomStage": "编辑自定义地图",
-  "startupLoadingLocalization": "本地化",
+  "startupLoadingLocalization": "本地化文本",
   "startupLoadingStages": "地图",
   "startupLoadingAudio": "音频",
-  "startupLoadingGridItems": "网格物品",
+  "startupLoadingGridItems": "障碍物",
   "startupLoadingZomboss": "僵王",
   "startupLoadingReference": "参考数据",
   "startupLoadingZombies": "僵尸",

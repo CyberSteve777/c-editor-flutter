@@ -44,7 +44,7 @@ void main() {
     'Eighties phase orders are localized and independently sortable',
     (tester) async {
       tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(800, 1400);
+      tester.view.physicalSize = const Size(1600, 1400);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
 
@@ -99,6 +99,19 @@ void main() {
         ),
       );
       expect(jamOrder.dragBoundaryProvider, isNotNull);
+      expect(jamOrder.proxyDecorator, isNotNull);
+      expect(jamOrder.clipBehavior, Clip.hardEdge);
+      expect(
+        tester
+            .getSize(
+              find.descendant(
+                of: jamCard,
+                matching: find.byType(ReorderableListView),
+              ),
+            )
+            .width,
+        closeTo(840, 0.1),
+      );
       expect(
         find.descendant(of: jamCard, matching: find.byType(DragBoundary)),
         findsOneWidget,
