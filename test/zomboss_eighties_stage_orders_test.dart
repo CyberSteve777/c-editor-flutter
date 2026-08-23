@@ -230,6 +230,50 @@ void main() {
     },
   );
 
+  testWidgets('Eighties order drag proxy stays compact in a narrow window', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(600, 1200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final catalog = ZombossMechRepository.getCatalog(
+      'ZombieZombossMech_Eighties',
+    )!;
+    await tester.pumpWidget(
+      _localizedApp(
+        CustomZombossMechPropertiesScreen(
+          catalog: catalog,
+          levelFile: PvzLevelFile(objects: []),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final jamCard = find.byKey(const ValueKey('stageJamOrderCard'));
+    final list = tester.widget<ReorderableListView>(
+      find.descendant(of: jamCard, matching: find.byType(ReorderableListView)),
+    );
+    final proxy = list.proxyDecorator!(
+      const SizedBox(width: 360, height: 600),
+      0,
+      const AlwaysStoppedAnimation<double>(1),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Center(child: SizedBox(width: 360, child: proxy)),
+      ),
+    );
+    expect(
+      tester.getSize(find.byKey(const ValueKey('eightiesOrderDragProxy'))),
+      const Size(360, 64),
+    );
+  });
+
   testWidgets('non-custom Eighties variants expose both phase orders', (
     tester,
   ) async {

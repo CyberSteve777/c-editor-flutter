@@ -64,4 +64,74 @@ void main() {
     expect(highlightedMatch.style?.backgroundColor, isNotNull);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('replacing a match does not append a trailing newline', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: ['TestObject'],
+          objClass: 'TestClass',
+          objData: {'Value': 'before'},
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: JsonViewerScreen(
+          fileName: 'test.json',
+          filePath: 'test.json',
+          levelFile: level,
+          onBack: () {},
+          saveLevel: (_, _) async {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
+
+    final searchField = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField && widget.decoration?.hintText == 'Search',
+    );
+    final replaceField = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField && widget.decoration?.hintText == 'Replace',
+    );
+    final originalEditor = tester.widget<TextField>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TextField &&
+            widget.controller?.text.contains('"before"') == true,
+      ),
+    );
+    final originalNewlineCount = '\n'
+        .allMatches(originalEditor.controller!.text)
+        .length;
+
+    await tester.enterText(searchField, 'before');
+    await tester.enterText(replaceField, 'after');
+    await tester.tap(find.byIcon(Icons.find_replace));
+    await tester.pump();
+
+    final updatedEditor = tester.widget<TextField>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TextField &&
+            widget.controller?.text.contains('"after"') == true,
+      ),
+    );
+    final updatedText = updatedEditor.controller!.text;
+    expect(updatedText.endsWith('\n'), isFalse);
+    expect('\n'.allMatches(updatedText).length, originalNewlineCount);
+    expect(tester.takeException(), isNull);
+  });
 }

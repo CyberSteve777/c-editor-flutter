@@ -74,7 +74,9 @@ class _JsonEditController extends TextEditingController {
   }) {
     if (_searchMatches.isEmpty ||
         text.isEmpty ||
-        (withComposing && value.composing.isValid && !value.composing.isCollapsed)) {
+        (withComposing &&
+            value.composing.isValid &&
+            !value.composing.isCollapsed)) {
       return super.buildTextSpan(
         context: context,
         style: style,
@@ -427,7 +429,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       match,
       replacement,
     );
-    _editController.text = next;
+    _applyReplacementText(
+      next,
+      preferredCaretOffset: match.start + replacement.length,
+    );
     _pushHistory(_replaceHistoryKey, replacement, _replaceHistory);
     _runSearch();
   }
@@ -441,9 +446,23 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       replacement,
       _searchOptions,
     );
-    _editController.text = next;
+    final previousSelection = _editController.selection;
+    _applyReplacementText(
+      next,
+      preferredCaretOffset: previousSelection.isValid
+          ? previousSelection.extentOffset
+          : 0,
+    );
     _pushHistory(_replaceHistoryKey, replacement, _replaceHistory);
     _runSearch();
+  }
+
+  void _applyReplacementText(String text, {required int preferredCaretOffset}) {
+    final caretOffset = preferredCaretOffset.clamp(0, text.length);
+    _editController.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: caretOffset),
+    );
   }
 
   void _onSearchChanged(String value) {

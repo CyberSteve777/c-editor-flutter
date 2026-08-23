@@ -49,6 +49,7 @@ Future<void> showRiftThemeDetailsDialog(
     ResourceNames.ensureLoaded(),
     PlantRepository().init(),
     ZombieRepository().init(),
+    RiftThemeRepository.ensureTargetListsLoaded(),
   ]);
   if (!context.mounted) return;
 

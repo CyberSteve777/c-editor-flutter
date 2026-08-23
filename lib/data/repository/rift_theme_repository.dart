@@ -1,22 +1,32 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:c_editor/data/asset_loader.dart';
+
 enum RiftThemeTargetType { plants, zombies }
 
 class RiftThemeTargetList {
-  const RiftThemeTargetList({required this.type, required this.ids});
+  const RiftThemeTargetList({
+    required this.type,
+    required this.ids,
+    this.isBlacklist = false,
+  });
 
   final RiftThemeTargetType type;
   final List<String> ids;
+  final bool isBlacklist;
 }
 
-/// Known Penny Pursuit / Memory Lane rift theme ids for
-/// [RiftThemeDemoModuleProperties].
+/// Known Penny Pursuit / Memory Lane rift themes and their reference data.
 class RiftThemeRepository {
   RiftThemeRepository._();
+
+  static const referenceAssetPath = 'assets/reference/Rift_Themes.json';
 
   static const themeIds = [
     'zombie',
     'ko',
     'projectile',
-    'rusher',
     'nuke',
     'gravity',
     'rift',
@@ -31,6 +41,7 @@ class RiftThemeRepository {
     'invisible',
     'sun',
     'dark',
+    'rusher',
     'blizzard',
     'gravestone',
     'plant_exploder',
@@ -60,309 +71,138 @@ class RiftThemeRepository {
     'rift',
   };
 
-  static const targetLists = <String, RiftThemeTargetList>{
-    'zombie': RiftThemeTargetList(
-      type: RiftThemeTargetType.zombies,
-      ids: [
-        'roman',
-        'roman_armor1',
-        'roman_armor2',
-        'roman_armor3',
-        'tutorial',
-        'tutorial_armor1',
-        'tutorial_armor2',
-        'mummy',
-        'mummy_armor1',
-        'mummy_armor2',
-        'pirate',
-        'pirate_armor1',
-        'pirate_armor2',
-        'cowboy',
-        'cowboy_armor1',
-        'cowboy_armor2',
-        'kongfu_basic',
-        'kongfu_basic_armor1',
-        'kongfu_basic_armor2',
-        'kongfu_basic_armor3',
-        'future',
-        'future_armor1',
-        'future_armor2',
-        'dark',
-        'dark_armor1',
-        'dark_armor2',
-        'dark_armor3',
-        'beach',
-        'beach_armor1',
-        'beach_armor2',
-        'beach_fem',
-        'beach_fem_armor1',
-        'beach_fem_armor2',
-        'iceage',
-        'iceage_armor1',
-        'iceage_armor2',
-        'iceage_armor3',
-        'skycity',
-        'skycity_armor1',
-        'skycity_armor2',
-        'skycity_armor3',
-        'lostcity',
-        'lostcity_armor1',
-        'lostcity_armor2',
-        'lostcity_bug',
-        'lostcity_bug_armor1',
-        'lostcity_bug_armor2',
-        'eighties',
-        'eighties_armor1',
-        'eighties_armor2',
-        'eighties_8bit',
-        'eighties_8bit_armor1',
-        'eighties_8bit_armor2',
-        'dino',
-        'dino_armor1',
-        'dino_armor2',
-        'dino_armor3',
-        'steam_worker',
-        'steam_armor1',
-        'steam_armor2',
-        'renai_worker',
-        'renai_armor1',
-        'renai_armor2',
-      ],
-    ),
-    'ko': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'bonkchoy',
-        'spikeweed',
-        'spikerock',
-        'turnip',
-        'broccoli',
-        'chardguard',
-        'stunion',
-        'roseswordman',
-        'redstinger',
-        'agave',
-        'matchflower',
-        'phatbeet',
-        'celerystalker',
-        'garlic',
-        'dragoncane',
-        'electriccurrant',
-        'whitemelon',
-        'nighyshade',
-        'wasabiwhip',
-        'kiwibeast',
-        'icycurrant',
-        'alarmsagittifolia',
-        'pokra',
-      ],
-    ),
-    'nuke': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'wallnut',
-        'primalwallnut',
-        'torchwood',
-        'tallnut',
-        'turnip',
-        'holonut',
-        'broccoli',
-        'sweetpotato',
-        'sugarcane',
-        'pineapple',
-        'endurian',
-        'cactus',
-        'whitemelon',
-        'explodeonut',
-        'kiwibeast',
-        'hotdate',
-        'hollyknight',
-        'waxgourd',
-      ],
-    ),
-    'gravity': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'cabbagepult',
-        'melonpult',
-        'kernelpult',
-        'wintermelon',
-        'carrotlauncher',
-        'sapfling',
-        'pepperpult',
-        'pumpkinwitch',
-        'akee',
-        'dragonfruit',
-        'primalrafflesia',
-        'applemortar',
-        'dusklobber',
-        'bloominghearts',
-        'convallariachemist',
-        'slingpea',
-        'pomegranatejeweler',
-        'elaeocarpus',
-      ],
-    ),
-    'plant_exploder': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: ['flowerpot', 'imitater'],
-    ),
-    'plant_aoe': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'potatomine',
-        'cherry_bomb',
-        'jalapeno',
-        'cracker',
-        'lavaguava',
-        'primalpotatomine',
-        'grapeshot',
-        'escaperoot',
-        'explodeonut',
-        'electricitea',
-        'alarmsagittifolia',
-        'strawburst',
-        'hotdate',
-      ],
-    ),
-    'plant_fastcd': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'wallnut',
-        'tallnut',
-        'turnip',
-        'holonut',
-        'peanut',
-        'broccoli',
-        'sweetpotato',
-        'chardguard',
-        'sugarcane',
-        'pineapple',
-        'endurian',
-        'agave',
-        'primalwallnut',
-        'Whitemelonsumowrestlers',
-        'explodeonut',
-        'kiwibeast',
-        'hotdate',
-        'hollyknight',
-        'waxgourd',
-        'dendrobiumguard',
-        'beercoconut',
-      ],
-    ),
-    'plant_melee': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'spikerock',
-        'spikeweed',
-        'bamboo',
-        'broccoli',
-        'guacodile',
-        'roseswordman',
-        'jackfruit',
-        'flamelady',
-        'dragoncane',
-        'Whitemelonsumowrestlers',
-        'wasabiwhip',
-        'parsnip',
-        'kiwibeast',
-        'bromelblade',
-        'tupistrastalker',
-        'bonkchoy',
-        'matchflower',
-        'heavendatura',
-      ],
-    ),
-    'plant_seed': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'carrotmissile',
-        'powerplant',
-        'smallChestnut',
-        'flowerpot',
-        'bitpeashooter',
-        'magicbeans',
-        'frog',
-        'pumpkin',
-      ],
-    ),
-    'watering': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'minigame_imitater',
-        'imitater',
-        'intensivecarrot',
-        'flowerpot',
-        'jalapeno',
-        'cherry_bomb',
-        'gravebuster',
-        'chilibean',
-        'blover',
-        'tanglekelp',
-        'hurrikale',
-        'ghostpepper',
-        'doublesamara',
-        'saucer',
-        'stunion',
-        'lavaguava',
-        'jackfruit',
-        'thymewarp',
-        'celerystalker',
-        'grapeshot',
-        'perfumeshroom',
-        'flattenedshroom',
-        'olive',
-        'icelotus',
-        'olivepit',
-        'heathseeker',
-        'powerplant',
-        'powerlily',
-        'goldbloom',
-        'coffeebean',
-        'squash',
-        'smallChestnut',
-        'hotdate',
-        'buduhboom',
-      ],
-    ),
-    'pea_rain': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'peashooter',
-        'splitpea',
-        'snowpea',
-        'peapod',
-        'threepeater',
-        'firepeashooter',
-        'repeater',
-        'gatlingpea',
-        'primalpeashooter',
-        'electricpeashooter',
-        'snappea',
-        'slingpea',
-        'poisonpeashooter',
-        'beanchemist',
-        'peavine',
-        'shadowpeashooter',
-      ],
-    ),
-    'sun_disabled': RiftThemeTargetList(
-      type: RiftThemeTargetType.plants,
-      ids: [
-        'sunflower',
-        'sunshroom',
-        'sunbean',
-        'happyleek',
-        'primalsunflower',
-        'birthsunflower',
-        'twinsunflower',
-        'goldbloom',
-        'toadstool',
-        'moonflower',
-      ],
-    ),
+  static const _sourceTypeToThemeId = {
+    'armored': 'zombie',
+    'noplantfood': 'ko',
+    'healthdebuff': 'nuke',
+    'reducerange': 'gravity',
+    'shrunken': 'rusher',
   };
+
+  static Map<String, RiftThemeTargetList> _targetLists = const {};
+  static Future<void>? _loadFuture;
+
+  static Map<String, RiftThemeTargetList> get targetLists => _targetLists;
+
+  /// Loads theme target lists directly from the bundled official reference.
+  /// Updating [referenceAssetPath] is therefore enough to pick up expanded
+  /// plant and zombie lists on the next app launch.
+  static Future<void> ensureTargetListsLoaded() {
+    return _loadFuture ??= _loadTargetLists();
+  }
+
+  static Future<void> _loadTargetLists() async {
+    try {
+      final source = await loadJsonString(referenceAssetPath);
+      final root = jsonDecode(source);
+      if (root is! Map) return;
+      final objects = root['objects'];
+      if (objects is! List) return;
+
+      final parsed = <String, RiftThemeTargetList>{};
+      for (final rawObject in objects) {
+        if (rawObject is! Map) continue;
+        final rawData = rawObject['objdata'];
+        if (rawData is! Map) continue;
+        final data = Map<String, dynamic>.from(rawData);
+        final sourceType = _sourceType(rawObject, data);
+        if (sourceType == null) continue;
+        final targetList = _extractTargetList(data);
+        if (targetList == null || targetList.ids.isEmpty) continue;
+        parsed[_sourceTypeToThemeId[sourceType] ?? sourceType] = targetList;
+      }
+      _targetLists = Map.unmodifiable(parsed);
+    } catch (error) {
+      debugPrint('Failed to load $referenceAssetPath: $error');
+    }
+  }
+
+  static String? _sourceType(Map rawObject, Map<String, dynamic> data) {
+    final typeName = data['TypeName']?.toString().trim();
+    if (typeName != null && typeName.isNotEmpty) return typeName;
+    final aliases = rawObject['aliases'];
+    if (aliases is List && aliases.isNotEmpty) {
+      final alias = aliases.first.toString().trim();
+      if (alias.isNotEmpty) return alias;
+    }
+    return null;
+  }
+
+  static RiftThemeTargetList? _extractTargetList(Map<String, dynamic> data) {
+    final knightTargets = _stringList(data['ValidKnightTargets']);
+    if (knightTargets.isNotEmpty) {
+      return RiftThemeTargetList(
+        type: RiftThemeTargetType.zombies,
+        ids: knightTargets,
+      );
+    }
+
+    final targetableZombies = _typedList(data['TargetableZombieTypes']);
+    if (targetableZombies != null) {
+      return RiftThemeTargetList(
+        type: RiftThemeTargetType.zombies,
+        ids: targetableZombies.ids,
+        isBlacklist: targetableZombies.isBlacklist,
+      );
+    }
+
+    final targetablePlants = _typedList(data['TargetablePlantTypes']);
+    if (targetablePlants != null) {
+      return RiftThemeTargetList(
+        type: RiftThemeTargetType.plants,
+        ids: targetablePlants.ids,
+        isBlacklist: targetablePlants.isBlacklist,
+      );
+    }
+
+    final validPlants = _typedList(data['ValidPlants']);
+    if (validPlants != null) {
+      return RiftThemeTargetList(
+        type: RiftThemeTargetType.plants,
+        ids: validPlants.ids,
+        isBlacklist: validPlants.isBlacklist,
+      );
+    }
+
+    final plantBlacklist = _stringList(data['PlantBlackList']);
+    if (plantBlacklist.isNotEmpty) {
+      return RiftThemeTargetList(
+        type: RiftThemeTargetType.plants,
+        ids: plantBlacklist,
+        isBlacklist: true,
+      );
+    }
+
+    final blacklistPlants = _typedList(data['BlackListPlantTypes']);
+    if (blacklistPlants != null) {
+      return RiftThemeTargetList(
+        type: RiftThemeTargetType.plants,
+        ids: blacklistPlants.ids,
+        isBlacklist: true,
+      );
+    }
+
+    return null;
+  }
+
+  static ({List<String> ids, bool isBlacklist})? _typedList(dynamic raw) {
+    if (raw is! Map) return null;
+    final ids = _stringList(raw['List']);
+    if (ids.isEmpty) return null;
+    return (
+      ids: ids,
+      isBlacklist: raw['ListType']?.toString().toLowerCase() == 'blacklist',
+    );
+  }
+
+  static List<String> _stringList(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .map((value) => value.toString().trim())
+        .where((value) => value.isNotEmpty)
+        .toSet()
+        .toList(growable: false);
+  }
 
   static String nameKey(String id) => 'rift_theme_$id';
 

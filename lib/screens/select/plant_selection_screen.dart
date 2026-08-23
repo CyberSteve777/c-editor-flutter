@@ -508,6 +508,13 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     }
   }
 
+  void _deselectPlant(String plantId) {
+    setState(() {
+      _selectedIds.remove(plantId);
+      _selectedIdsWithDuplicates.removeWhere((id) => id == plantId);
+    });
+  }
+
   bool _isMagicHatPlant(PlantInfo plant) =>
       plant.id.startsWith('minigame_imitater');
 
@@ -764,6 +771,9 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                         isFavorite: isFavorite,
                         isEnabled: isEnabled,
                         onTap: () => _onPlantTap(context, plant, blockedReason),
+                        onSelectedIconTap: widget.isMultiSelect && isSelected
+                            ? () => _deselectPlant(plant.id)
+                            : null,
                         onSecondaryTap: isHat
                             ? () => _openMagicHatPreview(context, plant.id)
                             : null,
@@ -787,6 +797,7 @@ class _PlantGridItem extends StatelessWidget {
     required this.isFavorite,
     required this.isEnabled,
     required this.onTap,
+    this.onSelectedIconTap,
     this.onSecondaryTap,
     required this.onLongPress,
   });
@@ -796,6 +807,7 @@ class _PlantGridItem extends StatelessWidget {
   final bool isFavorite;
   final bool isEnabled;
   final VoidCallback onTap;
+  final VoidCallback? onSelectedIconTap;
   final VoidCallback? onSecondaryTap;
   final VoidCallback onLongPress;
 
@@ -829,32 +841,37 @@ class _PlantGridItem extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  ClipOval(
-                    child: SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: hasIcon
-                          ? AssetImageWidget(
-                              assetPath: iconPath,
-                              altCandidates: imageAltCandidates(iconPath),
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                              cacheWidth: 88,
-                              cacheHeight: 88,
-                              errorWidget: Image.asset(
+                  GestureDetector(
+                    key: ValueKey('plantSelectionIcon-${plant.id}'),
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onSelectedIconTap,
+                    child: ClipOval(
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: hasIcon
+                            ? AssetImageWidget(
+                                assetPath: iconPath,
+                                altCandidates: imageAltCandidates(iconPath),
+                                width: 44,
+                                height: 44,
+                                fit: BoxFit.cover,
+                                cacheWidth: 88,
+                                cacheHeight: 88,
+                                errorWidget: Image.asset(
+                                  _kUnknownIconPath,
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.asset(
                                 _kUnknownIconPath,
                                 width: 44,
                                 height: 44,
                                 fit: BoxFit.cover,
                               ),
-                            )
-                          : Image.asset(
-                              _kUnknownIconPath,
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                            ),
+                      ),
                     ),
                   ),
                   if (isFavorite)

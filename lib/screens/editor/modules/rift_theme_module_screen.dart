@@ -201,14 +201,15 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
                       final name = ResourceNames.lookup(context, nameKey);
                       final displayName = name != nameKey ? name : id;
                       final isUnknown = !RiftThemeRepository.isKnown(id);
-                      return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onLongPress: () =>
-                            showRiftThemeDetailsDialog(context, id),
-                        onSecondaryTap: () =>
-                            showRiftThemeDetailsDialog(context, id),
-                        child: Card(
-                          margin: const EdgeInsets.only(bottom: 8),
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onLongPress: () =>
+                              showRiftThemeDetailsDialog(context, id),
+                          onSecondaryTap: () =>
+                              showRiftThemeDetailsDialog(context, id),
+                          borderRadius: BorderRadius.circular(12),
                           child: ListTile(
                             leading: SizedBox(
                               width: 76,

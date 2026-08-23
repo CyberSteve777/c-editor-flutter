@@ -1,7 +1,6 @@
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/tabs/level_settings_tab.dart';
-import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -120,12 +119,11 @@ void main() {
       const ValueKey('lifeSupportLastStandConflictWarning'),
     );
     expect(warning, findsOneWidget);
-    expect(find.text('模块兼容性提示'), findsOneWidget);
+    expect(find.text('模块逻辑冲突'), findsOneWidget);
     expect(find.text('「维生系统」与「坚不可摧」模块不能共存，否则关卡无法正常开始。'), findsOneWidget);
-    final card = tester.widget<Card>(
-      find.descendant(of: warning, matching: find.byType(Card)),
-    );
-    expect(card.color, editorWarningBannerBackground(Brightness.light));
+    final card = tester.widget<Card>(warning);
+    final context = tester.element(warning);
+    expect(card.color, Theme.of(context).colorScheme.errorContainer);
     expect(tester.takeException(), isNull);
   });
 }

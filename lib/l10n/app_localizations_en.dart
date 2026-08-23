@@ -2254,7 +2254,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hiddenPlantChooserBlockedMessage =>
-      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.';
+      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nExcept for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, all other hidden plants appear as Sunflowers in the in-game seed bank; plants such as Mini Cactus Ball and Magic Beanstalk also have some abnormal interactions that may affect the level\'s overall presentation, so use them with caution.';
 
   @override
   String get comingSoonPlantBlockedLabel => 'To Be Continued';
@@ -5511,7 +5511,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpJitteredZtPerks =>
-      'Assign Ztalemate Escape perkss to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
+      'Assign Ztalemate Escape perks to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
 
   @override
   String get ztPerkCategoryCrystal => 'Crystallization';
@@ -5541,7 +5541,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ztPerkPropDamageTakenInterval => 'Damage interval';
 
   @override
-  String get ztPerkPropDamageTotalTaken => 'Total damage taken';
+  String get ztPerkPropDamageTotalTaken => 'Cumulative damage instances taken';
 
   @override
   String get ztPerkPropDamageTakenPerTime => 'Damage per hit';
@@ -5567,10 +5567,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String ztPerkDescCrystal(
     String interval,
+    String damageCount,
     String damagePerHit,
     String hpReduced,
   ) {
-    return 'Grants immunity to instant-kill effects, allows damage to be taken only once every $interval seconds, reduces all damage taken to $damagePerHit, and reduces health by $hpReduced.';
+    return 'Grants immunity to instant-kill effects, allows damage to be taken only $damageCount times every $interval seconds, reduces each instance of damage taken to $damagePerHit, and reduces health by $hpReduced.';
   }
 
   @override
@@ -5610,7 +5611,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ztPerkCategoryDescCrystal =>
-      'Grants immunity to instant-kill effects, allows damage to be taken only once every A seconds, reduces all damage taken to B, and reduces health by X.';
+      'Grants immunity to instant-kill effects, allows damage to be taken only N times every A seconds, reduces each instance of damage taken to B, and reduces health by X.';
 
   @override
   String get ztPerkCategoryDescGravity =>
@@ -6877,7 +6878,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get riftThemeHelpOverview =>
-      'This module defines a list of themes for the level. Themes are global conditions found in modes such as Penny\'s Pursuit, Memory Lane, and Secret Realm. Each theme provides unique effects. For detailed descriptions of individual themes, please refer to the wiki.gg pages covering those themes.';
+      'This module defines a list of themes for the level. Themes are global conditions found in modes such as Penny\'s Pursuit, Memory Lane, and Secret Realm. Each theme provides unique effects. Long-press or right-click a theme card to view a brief description of its effects and the related plant and zombie lists.';
 
   @override
   String get riftThemeHelpUsage => 'Usage';
@@ -8480,7 +8481,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String waveGeneratorDeleteWaveConfirm(int count) {
-    return 'This will remove the wave and its $count fixed spawns.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'This will remove the wave and its $count fixed spawns.',
+      one: 'This will remove the wave and its 1 fixed spawn.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8647,7 +8654,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String waveGeneratorFixedSummary(int count, int rows) {
-    return '$count fixed spawns · $rows rows';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fixed spawns',
+      one: '1 fixed spawn',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      rows,
+      locale: localeName,
+      other: '$rows rows',
+      one: '1 row',
+    );
+    return '$_temp0 · $_temp1';
   }
 
   @override
@@ -8655,12 +8674,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String waveGeneratorRandomSummary(int points) {
-    return 'Enabled · $points points';
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: 'Enabled · $points points',
+      one: 'Enabled · 1 point',
+    );
+    return '$_temp0';
   }
 
   @override
   String waveGeneratorRandomLocalSummary(int points) {
-    return 'Enabled · $points points · Current-wave points';
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: 'Enabled · $points points · Current-wave points',
+      one: 'Enabled · 1 point · Current-wave points',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8669,12 +8700,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String waveGeneratorPoolSummary(int current, int added) {
-    return '$current current types · $added added on this wave';
+    String _temp0 = intl.Intl.pluralLogic(
+      current,
+      locale: localeName,
+      other: '$current current types',
+      one: '1 current type',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      added,
+      locale: localeName,
+      other: '$added added on this wave',
+      one: '1 added on this wave',
+    );
+    return '$_temp0 · $_temp1';
   }
 
   @override
   String waveGeneratorPoolSummaryNoAdditions(int current) {
-    return '$current current types · No additions on this wave';
+    String _temp0 = intl.Intl.pluralLogic(
+      current,
+      locale: localeName,
+      other: '$current current types · No additions on this wave',
+      one: '1 current type · No additions on this wave',
+    );
+    return '$_temp0';
   }
 
   @override

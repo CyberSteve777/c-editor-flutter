@@ -471,11 +471,8 @@ class _PluginsScreenState extends State<PluginsScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (detailContext) => _PluginDetailPage(
-                                    plugin: plugin,
+                                    pluginId: plugin.id,
                                     busy: _busy,
-                                    screens: _manager.screenRegistry.screens
-                                        .where((s) => s.pluginId == plugin.id)
-                                        .toList(growable: false),
                                     onToggle: (v) => _toggleEnabled(plugin, v),
                                     onUninstall: () async {
                                       final removed = await _uninstall(plugin);
@@ -650,36 +647,47 @@ class _PluginListTile extends StatelessWidget {
 
 class _PluginDetailPage extends StatelessWidget {
   const _PluginDetailPage({
-    required this.plugin,
+    required this.pluginId,
     required this.busy,
-    required this.screens,
     required this.onToggle,
     required this.onUninstall,
     required this.onOpenScreen,
   });
 
-  final InstalledPluginRecord plugin;
+  final String pluginId;
   final bool busy;
-  final List<PluginRegisteredScreen> screens;
   final ValueChanged<bool> onToggle;
   final Future<void> Function() onUninstall;
   final ValueChanged<PluginRegisteredScreen> onOpenScreen;
 
   @override
   Widget build(BuildContext context) {
-    final name = plugin.localizedName(
-      Localizations.localeOf(context).languageCode,
-    );
-    return Scaffold(
-      appBar: AppBar(title: Text(name)),
-      body: _PluginDetailPane(
-        plugin: plugin,
-        busy: busy,
-        screens: screens,
-        onToggle: onToggle,
-        onUninstall: onUninstall,
-        onOpenScreen: onOpenScreen,
-      ),
+    final manager = PluginManager.instance;
+    return ListenableBuilder(
+      listenable: Listenable.merge([manager, manager.screenRegistry]),
+      builder: (context, _) {
+        final plugin = manager.installed
+            .where((candidate) => candidate.id == pluginId)
+            .firstOrNull;
+        if (plugin == null) return const SizedBox.shrink();
+        final name = plugin.localizedName(
+          Localizations.localeOf(context).languageCode,
+        );
+        final screens = manager.screenRegistry.screens
+            .where((screen) => screen.pluginId == pluginId)
+            .toList(growable: false);
+        return Scaffold(
+          appBar: AppBar(title: Text(name)),
+          body: _PluginDetailPane(
+            plugin: plugin,
+            busy: busy,
+            screens: screens,
+            onToggle: onToggle,
+            onUninstall: onUninstall,
+            onOpenScreen: onOpenScreen,
+          ),
+        );
+      },
     );
   }
 }

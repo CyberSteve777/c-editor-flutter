@@ -4129,7 +4129,7 @@ abstract class AppLocalizations {
   /// No description provided for @hiddenPlantChooserBlockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.'**
+  /// **'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nExcept for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, all other hidden plants appear as Sunflowers in the in-game seed bank; plants such as Mini Cactus Ball and Magic Beanstalk also have some abnormal interactions that may affect the level\'s overall presentation, so use them with caution.'**
   String get hiddenPlantChooserBlockedMessage;
 
   /// No description provided for @comingSoonPlantBlockedLabel.
@@ -9847,7 +9847,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpJitteredZtPerks.
   ///
   /// In en, this message translates to:
-  /// **'Assign Ztalemate Escape perkss to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).'**
+  /// **'Assign Ztalemate Escape perks to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).'**
   String get eventHelpJitteredZtPerks;
 
   /// No description provided for @ztPerkCategoryCrystal.
@@ -9907,7 +9907,7 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkPropDamageTotalTaken.
   ///
   /// In en, this message translates to:
-  /// **'Total damage taken'**
+  /// **'Cumulative damage instances taken'**
   String get ztPerkPropDamageTotalTaken;
 
   /// No description provided for @ztPerkPropDamageTakenPerTime.
@@ -9955,9 +9955,10 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkDescCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Grants immunity to instant-kill effects, allows damage to be taken only once every {interval} seconds, reduces all damage taken to {damagePerHit}, and reduces health by {hpReduced}.'**
+  /// **'Grants immunity to instant-kill effects, allows damage to be taken only {damageCount} times every {interval} seconds, reduces each instance of damage taken to {damagePerHit}, and reduces health by {hpReduced}.'**
   String ztPerkDescCrystal(
     String interval,
+    String damageCount,
     String damagePerHit,
     String hpReduced,
   );
@@ -10013,7 +10014,7 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkCategoryDescCrystal.
   ///
   /// In en, this message translates to:
-  /// **'Grants immunity to instant-kill effects, allows damage to be taken only once every A seconds, reduces all damage taken to B, and reduces health by X.'**
+  /// **'Grants immunity to instant-kill effects, allows damage to be taken only N times every A seconds, reduces each instance of damage taken to B, and reduces health by X.'**
   String get ztPerkCategoryDescCrystal;
 
   /// No description provided for @ztPerkCategoryDescGravity.
@@ -12173,7 +12174,7 @@ abstract class AppLocalizations {
   /// No description provided for @riftThemeHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'This module defines a list of themes for the level. Themes are global conditions found in modes such as Penny\'s Pursuit, Memory Lane, and Secret Realm. Each theme provides unique effects. For detailed descriptions of individual themes, please refer to the wiki.gg pages covering those themes.'**
+  /// **'This module defines a list of themes for the level. Themes are global conditions found in modes such as Penny\'s Pursuit, Memory Lane, and Secret Realm. Each theme provides unique effects. Long-press or right-click a theme card to view a brief description of its effects and the related plant and zombie lists.'**
   String get riftThemeHelpOverview;
 
   /// No description provided for @riftThemeHelpUsage.
@@ -15023,7 +15024,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorDeleteWaveConfirm.
   ///
   /// In en, this message translates to:
-  /// **'This will remove the wave and its {count} fixed spawns.'**
+  /// **'{count, plural, =1{This will remove the wave and its 1 fixed spawn.} other{This will remove the wave and its {count} fixed spawns.}}'**
   String waveGeneratorDeleteWaveConfirm(int count);
 
   /// No description provided for @waveGeneratorEmptyWaveRow.
@@ -15293,7 +15294,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorFixedSummary.
   ///
   /// In en, this message translates to:
-  /// **'{count} fixed spawns · {rows} rows'**
+  /// **'{count, plural, =1{1 fixed spawn} other{{count} fixed spawns}} · {rows, plural, =1{1 row} other{{rows} rows}}'**
   String waveGeneratorFixedSummary(int count, int rows);
 
   /// No description provided for @waveGeneratorFixedSummaryEmpty.
@@ -15305,13 +15306,13 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorRandomSummary.
   ///
   /// In en, this message translates to:
-  /// **'Enabled · {points} points'**
+  /// **'{points, plural, =1{Enabled · 1 point} other{Enabled · {points} points}}'**
   String waveGeneratorRandomSummary(int points);
 
   /// No description provided for @waveGeneratorRandomLocalSummary.
   ///
   /// In en, this message translates to:
-  /// **'Enabled · {points} points · Current-wave points'**
+  /// **'{points, plural, =1{Enabled · 1 point · Current-wave points} other{Enabled · {points} points · Current-wave points}}'**
   String waveGeneratorRandomLocalSummary(int points);
 
   /// No description provided for @waveGeneratorRandomSummaryDisabled.
@@ -15323,13 +15324,13 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorPoolSummary.
   ///
   /// In en, this message translates to:
-  /// **'{current} current types · {added} added on this wave'**
+  /// **'{current, plural, =1{1 current type} other{{current} current types}} · {added, plural, =1{1 added on this wave} other{{added} added on this wave}}'**
   String waveGeneratorPoolSummary(int current, int added);
 
   /// No description provided for @waveGeneratorPoolSummaryNoAdditions.
   ///
   /// In en, this message translates to:
-  /// **'{current} current types · No additions on this wave'**
+  /// **'{current, plural, =1{1 current type · No additions on this wave} other{{current} current types · No additions on this wave}}'**
   String waveGeneratorPoolSummaryNoAdditions(int current);
 
   /// No description provided for @waveGeneratorWaveSettingsDefaultSummary.

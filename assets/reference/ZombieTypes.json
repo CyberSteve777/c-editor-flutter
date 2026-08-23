@@ -24398,7 +24398,7 @@
         "AnimRigClass": "ZombieAnimRig_MoonTeleportation",
         "PopAnim": "POPANIM_ZOMBIE_ZOMBIE_MOON_TELEPORT_LEFT",
         "Placeable": true,
-        "BoardAlmanac": false,
+        "BoardAlmanac": true,
         "RecommendPlants": [
           "cosmicpea",
           "cosmicmushroom"
@@ -24451,7 +24451,7 @@
         "AnimRigClass": "ZombieAnimRig_MoonTeleportation",
         "PopAnim": "POPANIM_ZOMBIE_ZOMBIE_MOON_TELEPORT_LEFT",
         "Placeable": true,
-        "BoardAlmanac": false,
+        "BoardAlmanac": true,
         "HomeWorld": "moon"
       }
     },

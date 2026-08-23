@@ -969,7 +969,7 @@
   "realmExclusivePlantChooserBlockedMessage": "秘境专属植物无法在自选模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。",
   "hiddenPlantChooserBlockedLabel": "无法选择该植物",
   "hiddenPlantChooserBlockedTitle": "无法选择该植物",
-  "hiddenPlantChooserBlockedMessage": "隐藏植物无法在自选模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n此外，除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵，可能影响关卡的整体观感。",
+  "hiddenPlantChooserBlockedMessage": "隐藏植物无法在自选模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵；小仙人球、魔法豆藤等植物还存在一些异常交互表现，可能影响关卡的整体观感，请谨慎选用。",
   "comingSoonPlantBlockedLabel": "未完待续",
   "comingSoonPlantBlockedTitle": "未完待续",
   "comingSoonPlantBlockedMessage": "植物们仍在茁壮成长。敬请期待后续更新！",
@@ -1898,7 +1898,7 @@
   "ztPerkCategoryAntiControl": "定力",
   "ztPerksViewStats": "查看数值",
   "ztPerkPropDamageTakenInterval": "受伤间隔",
-  "ztPerkPropDamageTotalTaken": "累计承受伤害",
+  "ztPerkPropDamageTotalTaken": "累计承受伤害次数",
   "ztPerkPropDamageTakenPerTime": "单次伤害",
   "ztPerkPropHpReduced": "生命值削减",
   "ztPerkPropShieldNum": "护盾次数",
@@ -1906,10 +1906,11 @@
   "ztPerkPropReducedDamagePercent": "伤害减免",
   "ztPerkPropImprovedDamagePercent": "攻击力提升",
   "ztPerkPropImprovedSpeedPercent": "移动速度提升",
-  "ztPerkDescCrystal": "免疫秒杀效果，在{interval}秒内只会受到 1 次伤害，每次受到的伤害降至{damagePerHit} 点，生命值降低{hpReduced}。",
+  "ztPerkDescCrystal": "免疫秒杀效果，在{interval}秒内只会受到{damageCount}次伤害，每次受到的伤害降至{damagePerHit}点，生命值降低{hpReduced}。",
   "@ztPerkDescCrystal": {
     "placeholders": {
       "interval": {"type": "String"},
+      "damageCount": {"type": "String"},
       "damagePerHit": {"type": "String"},
       "hpReduced": {"type": "String"}
     }
@@ -1947,7 +1948,7 @@
   },
   "ztPerksCategoryInfoTitle": "增益说明",
   "ztPerkCategoryDescNumericHint": "A、B、X、N、P 代表随增益等级变化的数值。",
-  "ztPerkCategoryDescCrystal": "免疫秒杀效果，在A秒内只会受到1次伤害，每次受到的伤害降至B点，生命值降低X。",
+  "ztPerkCategoryDescCrystal": "免疫秒杀效果，在A秒内只会受到N次伤害，每次受到的伤害降至B点，生命值降低X。",
   "ztPerkCategoryDescGravity": "免疫击退和击飞效果。",
   "ztPerkCategoryDescShield": "前N次伤害无效，持续期间免疫秒杀效果。",
   "ztPerkCategoryDescImmuneControl": "受到的控制效果降低P%。",
@@ -2333,7 +2334,7 @@
   "moduleDesc_RiftThemeDemoModuleProperties": "为关卡配置来自潘妮的追击、回忆之旅等模式的主题效果",
   "riftThemeModuleTitle": "主题配置",
   "riftThemeHelpTitle": "主题配置模块说明",
-  "riftThemeHelpOverview": "本模块用于为关卡添加主题列表。主题是在潘妮的追击、回忆之旅、时空秘境等模式中出现的全局机制，不同的主题有着不同的效果。各主题的详细说明请参阅创辅文件。",
+  "riftThemeHelpOverview": "本模块用于为关卡添加主题列表。主题是在潘妮的追击、回忆之旅、时空秘境等模式中出现的全局机制，不同的主题有着不同的效果。长按或右键点击主题卡片，可查看该主题效果的简要说明，以及相关植物和僵尸名单。",
   "riftThemeHelpUsage": "使用说明",
   "riftThemeHelpUsageBody": "点击右下角按钮打开主题选择界面。点击主题可将其加入或移出主题列表。全部设置完成后，再次点击右下角按钮确认，即可完成添加。主题将在关卡中按照列表顺序依次生效。",
   "riftThemeHelpUnique": "添加规范",

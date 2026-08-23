@@ -1191,7 +1191,7 @@ class ModuleRegistry {
     'RadiationMeteorModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_RadiationMeteorModuleProperties',
       descriptionKey: 'moduleDesc_RadiationMeteorModuleProperties',
-      icon: Icons.public,
+      icon: Icons.crisis_alert_rounded,
       isCore: true,
       allowMultiple: false,
       category: ModuleCategory.gimmick,

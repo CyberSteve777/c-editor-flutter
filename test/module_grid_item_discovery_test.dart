@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:c_editor/data/asset_loader.dart';
 import 'package:c_editor/data/grid_item_discovery.dart';
 import 'package:c_editor/data/mold_colony_module_utils.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -12,6 +17,7 @@ void main() {
   setUpAll(() async {
     await GridItemRepository.init();
     await ResourceNames.ensureLoaded();
+    await RiftThemeRepository.ensureTargetListsLoaded();
   });
 
   test('discovers module-spawned grid items with dedicated icons', () {
@@ -191,26 +197,81 @@ void main() {
     );
   });
 
-  test('uses the RIFT_THEMES target aliases for theme detail lists', () {
+  test(
+    'reads theme detail lists directly from the bundled reference',
+    () async {
+      final root =
+          jsonDecode(
+                await loadJsonString(RiftThemeRepository.referenceAssetPath),
+              )
+              as Map<String, dynamic>;
+      final objects = root['objects'] as List<dynamic>;
+      final koSource = objects.cast<Map<String, dynamic>>().firstWhere(
+        (object) =>
+            (object['aliases'] as List<dynamic>).contains('noplantfood'),
+      );
+      final koSourceIds =
+          (((koSource['objdata']
+                          as Map<String, dynamic>)['TargetablePlantTypes']
+                      as Map<String, dynamic>)['List']
+                  as List<dynamic>)
+              .cast<String>();
+
+      expect(RiftThemeRepository.targetLists['ko']?.ids, koSourceIds);
+      expect(
+        RiftThemeRepository.targetLists['zombie']?.ids,
+        containsAll(['roman', 'renai_armor2']),
+      );
+      expect(
+        RiftThemeRepository.targetLists['ko']?.ids,
+        containsAll(['bonkchoy', 'pokra']),
+      );
+      expect(
+        RiftThemeRepository.targetLists['nuke']?.ids,
+        containsAll(['wallnut', 'waxgourd']),
+      );
+      expect(
+        RiftThemeRepository.targetLists['gravity']?.ids,
+        containsAll(['cabbagepult', 'elaeocarpus']),
+      );
+      expect(
+        RiftThemeRepository.targetLists['sun_disabled']?.ids,
+        containsAll(['sunflower', 'moonflower']),
+      );
+      expect(
+        RiftThemeRepository.targetLists['plant_exploder']?.isBlacklist,
+        isTrue,
+      );
+    },
+  );
+
+  test('orders Rusher between Dark and Blizzard', () {
+    final themes = RiftThemeRepository.themeIds;
+    expect(themes.indexOf('rusher'), themes.indexOf('dark') + 1);
+    expect(themes.indexOf('blizzard'), themes.indexOf('rusher') + 1);
+  });
+
+  test('uses the corrected Sunday and Sun from Death names', () {
     expect(
-      RiftThemeRepository.targetLists['zombie']?.ids,
-      containsAll(['roman', 'renai_armor2']),
+      ResourceNames.lookupWithLocale(
+        'zh',
+        RiftThemeRepository.nameKey('sun_disabled'),
+      ),
+      '星期日',
     );
     expect(
-      RiftThemeRepository.targetLists['ko']?.ids,
-      containsAll(['bonkchoy', 'pokra']),
+      ResourceNames.lookupWithLocale(
+        'zh',
+        RiftThemeRepository.nameKey('zombie_sun'),
+      ),
+      '死亡阳光',
     );
+  });
+
+  test('uses a radiation-style icon for Radiation Meteor', () {
     expect(
-      RiftThemeRepository.targetLists['nuke']?.ids,
-      containsAll(['wallnut', 'waxgourd']),
-    );
-    expect(
-      RiftThemeRepository.targetLists['gravity']?.ids,
-      containsAll(['cabbagepult', 'elaeocarpus']),
-    );
-    expect(
-      RiftThemeRepository.targetLists['sun_disabled']?.ids,
-      containsAll(['sunflower', 'moonflower']),
+      ModuleRegistry.getMetadata('RadiationMeteorModuleProperties').icon,
+      Icons.crisis_alert_rounded,
     );
   });
 
@@ -270,5 +331,20 @@ void main() {
     expect(heavyBalloonEn, contains('blown away'));
     expect(heavyBalloonEn, contains('knocked back'));
     expect(heavyBalloonEn.toLowerCase(), isNot(contains('knockback')));
+
+    expect(
+      ResourceNames.lookupWithLocale(
+        'zh',
+        RiftThemeRepository.descriptionKey('plant_exploder'),
+      ),
+      startsWith('除黑名单内的植物外，'),
+    );
+    expect(
+      ResourceNames.lookupWithLocale(
+        'zh',
+        RiftThemeRepository.descriptionDetailsKey('printer'),
+      ),
+      contains('使用火属性植物攻击可以快速烧毁纸团'),
+    );
   });
 }

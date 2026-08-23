@@ -3534,6 +3534,17 @@
         "icon": "icon_smallcherry.webp"
     },
     {
+        "id": "carrotmissile",
+        "name": "plant_carrotmissile",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_carrotmissile.webp"
+    },
+    {
         "id": "smallChestnut",
         "name": "plant_smallChestnut",
         "tags": [
@@ -3543,6 +3554,17 @@
             "Chinese"
         ],
         "icon": "icon_smallChestnut.webp"
+    },
+    {
+        "id": "smallcactus",
+        "name": "plant_smallcactus",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_smallcactus.webp"
     },
     {
         "id": "minishroom",
@@ -3576,6 +3598,16 @@
             "Chinese"
         ],
         "icon": "icon_bitpeashooter.webp"
+    },
+    {
+        "id": "magicbeans",
+        "name": "plant_magicbeans",
+        "tags": [
+            "White",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_magicbeans.webp"
     },
     {
         "id": "frog",

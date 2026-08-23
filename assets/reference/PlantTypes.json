@@ -6710,7 +6710,8 @@
             }
           ],
           "Tags": [
-            "support"
+            "support",
+            "cosmic"
           ]
         },
         "TypeName": "cosmoss",
@@ -6727,7 +6728,7 @@
         "AvatarPieceImageName": "IMAGE_UI_FRAGMENT_AVATAR_AVATAR_COSMOSS",
         "AdventureFlags": [
           "short",
-          "brown"
+          "green"
         ],
         "Avatars": [
           {
@@ -12675,9 +12676,10 @@
             }
           ],
           "Tags": [
-            "support",
-            "consume",
-            "control"
+            "physical",
+            "control",
+            "aoe",
+            "cosmic"
           ]
         },
         "TypeName": "gravitree",
@@ -12742,7 +12744,7 @@
             }
           ],
           "Tags": [
-            "ranged",
+            "aoe",
             "cosmic"
           ]
         },
@@ -12756,7 +12758,8 @@
           "PlantDarkMatterDragonfruitAudio"
         ],
         "AdventureFlags": [
-          "red"
+          "red",
+          "cosmic"
         ],
         "Properties": "RTID(DarkMatterDragonfruitDefault@PropertySheets)",
         "AnimRigClass": "PlantAnimRig_DarkMatterDragonfruit",
@@ -27063,7 +27066,8 @@
           ],
           "Tags": [
             "dps",
-            "pea"
+            "pea",
+            "cosmic"
           ]
         },
         "TypeName": "cosmicpea",
@@ -27174,7 +27178,7 @@
         "cosmicnut"
       ],
       "objdata": {
-        "Profession": "defender",
+        "Profession": "protector",
         "Attribute": {
           "Attributes": [
             {
@@ -27203,7 +27207,8 @@
             }
           ],
           "Tags": [
-            "defense"
+            "defence",
+            "cosmic"
           ]
         },
         "TypeName": "cosmicnut",
@@ -28894,68 +28899,6 @@
             "AvatarType": "normal",
             "AvatarLayers": [
               "custom_02"
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "objclass": "PlantType",
-      "aliases": [
-        "marigold"
-      ],
-      "objdata": {
-        "Profession": "supporter",
-        "Attribute": {
-          "Attributes": [
-            {
-              "Type": "hp",
-              "Rank": "D"
-            },
-            {
-              "Type": "plant",
-              "Rank": "C"
-            },
-            {
-              "Type": "attack",
-              "Rank": "none"
-            },
-            {
-              "Type": "range",
-              "Rank": "none"
-            },
-            {
-              "Type": "support",
-              "Rank": "none"
-            },
-            {
-              "Type": "control",
-              "Rank": "none"
-            }
-          ],
-          "Tags": [
-            "support"
-          ]
-        },
-        "TypeName": "marigold",
-        "PlantFramework": "PlantMarigold",
-        "Rare": 0,
-        "PlantResourceGroups": [],
-        "Properties": "RTID(MarigoldDefault@PropertySheets)",
-        "AnimRigClass": "PlantAnimRig_Sunflower",
-        "PopAnim": "POPANIM_PLANT_MARIGOLD",
-        "PlantPieceImageName": "IMAGE_UI_FRAGMENT_PIECES_PACKETS_MARIGOLD",
-        "AvatarPieceImageName": "IMAGE_UI_FRAGMENT_AVATAR_AVATAR_MARIGOLD",
-        "Enabled": true,
-        "HomeWorld": "tutorial",
-        "AdventureFlags": [
-          "white"
-        ],
-        "Avatars": [
-          {
-            "AvatarType": "normal",
-            "AvatarLayers": [
-              "custom_03"
             ]
           }
         ]

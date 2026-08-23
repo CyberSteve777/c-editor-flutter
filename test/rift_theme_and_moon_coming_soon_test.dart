@@ -1,4 +1,5 @@
 import 'package:c_editor/data/repository/plant_repository.dart';
+import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -29,7 +30,23 @@ void main() {
       ResourceNames.ensureLoaded(),
       PlantRepository().init(),
       ZombieRepository().init(),
+      RiftThemeRepository.ensureTargetListsLoaded(),
     ]);
+  });
+
+  test('rift theme help explains card details interaction in every locale', () {
+    expect(
+      lookupAppLocalizations(const Locale('zh')).riftThemeHelpOverview,
+      contains('长按或右键点击主题卡片'),
+    );
+    expect(
+      lookupAppLocalizations(const Locale('en')).riftThemeHelpOverview,
+      contains('Long-press or right-click a theme card'),
+    );
+    expect(
+      lookupAppLocalizations(const Locale('ru')).riftThemeHelpOverview,
+      contains('Нажмите и удерживайте карточку темы'),
+    );
   });
 
   testWidgets('all-plants coming soon keeps the general message', (
@@ -109,6 +126,10 @@ void main() {
     expect(find.byIcon(Icons.palette_outlined), findsNothing);
 
     await tester.longPress(find.text('Fully Armored'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
     await tester.pumpAndSettle();
 
     expect(
@@ -147,8 +168,28 @@ void main() {
     final indexText = tester.widget<Text>(find.text('1.'));
     expect(indexText.style?.fontWeight, FontWeight.normal);
     expect(indexText.style?.color, isNotNull);
+    final selectedThemeCard = find.ancestor(
+      of: find.text('Fully Armored'),
+      matching: find.byType(Card),
+    );
+    final interactiveSurface = tester
+        .widgetList<InkWell>(
+          find.descendant(
+            of: selectedThemeCard,
+            matching: find.byType(InkWell),
+          ),
+        )
+        .where(
+          (inkWell) =>
+              inkWell.onLongPress != null && inkWell.onSecondaryTap != null,
+        );
+    expect(interactiveSurface, isNotEmpty);
 
     await tester.longPress(find.text('Fully Armored'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Zombie list'), findsOneWidget);
   });

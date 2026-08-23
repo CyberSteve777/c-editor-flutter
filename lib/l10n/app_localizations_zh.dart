@@ -2177,7 +2177,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hiddenPlantChooserBlockedMessage =>
-      '隐藏植物无法在自选模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n此外，除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵，可能影响关卡的整体观感。';
+      '隐藏植物无法在自选模式下选择。请通过预选模式、传送带、卡片掉落等其他方式使用。\n除祭司小喷菇、植甲拼装者-炎星等特定植物外，其余隐藏植物在游戏卡槽中的图标均会显示为向日葵；小仙人球、魔法豆藤等植物还存在一些异常交互表现，可能影响关卡的整体观感，请谨慎选用。';
 
   @override
   String get comingSoonPlantBlockedLabel => '未完待续';
@@ -5285,7 +5285,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ztPerkPropDamageTakenInterval => '受伤间隔';
 
   @override
-  String get ztPerkPropDamageTotalTaken => '累计承受伤害';
+  String get ztPerkPropDamageTotalTaken => '累计承受伤害次数';
 
   @override
   String get ztPerkPropDamageTakenPerTime => '单次伤害';
@@ -5311,10 +5311,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String ztPerkDescCrystal(
     String interval,
+    String damageCount,
     String damagePerHit,
     String hpReduced,
   ) {
-    return '免疫秒杀效果，在$interval秒内只会受到 1 次伤害，每次受到的伤害降至$damagePerHit 点，生命值降低$hpReduced。';
+    return '免疫秒杀效果，在$interval秒内只会受到$damageCount次伤害，每次受到的伤害降至$damagePerHit点，生命值降低$hpReduced。';
   }
 
   @override
@@ -5353,7 +5354,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ztPerkCategoryDescCrystal =>
-      '免疫秒杀效果，在A秒内只会受到1次伤害，每次受到的伤害降至B点，生命值降低X。';
+      '免疫秒杀效果，在A秒内只会受到N次伤害，每次受到的伤害降至B点，生命值降低X。';
 
   @override
   String get ztPerkCategoryDescGravity => '免疫击退和击飞效果。';
@@ -6535,7 +6536,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get riftThemeHelpOverview =>
-      '本模块用于为关卡添加主题列表。主题是在潘妮的追击、回忆之旅、时空秘境等模式中出现的全局机制，不同的主题有着不同的效果。各主题的详细说明请参阅创辅文件。';
+      '本模块用于为关卡添加主题列表。主题是在潘妮的追击、回忆之旅、时空秘境等模式中出现的全局机制，不同的主题有着不同的效果。长按或右键点击主题卡片，可查看该主题效果的简要说明，以及相关植物和僵尸名单。';
 
   @override
   String get riftThemeHelpUsage => '使用说明';

@@ -333,7 +333,8 @@
           "darkmatter_dragonfruit",
           "cosmicpea",
           "cosmicmushroom",
-          "cosmicnut"
+          "cosmicnut",
+          "phoenixfloat"
         ],
         "PlantAlmanacOrder": [
           "sunflower",
@@ -649,9 +650,11 @@
           "cosmoss",
           "organiccarpet",
           "cosmicpea",
+          "gravitree",
           "cosmicmushroom",
           "cosmicnut",
-          "darkmatter_dragonfruit"
+          "darkmatter_dragonfruit",
+          "phoenixfloat"
         ],
         "ParallelPlantAlmanacOrder": [
           "parallel_sunflower",
@@ -16687,7 +16690,7 @@
       ],
       "objdata": {
         "Cost": 150,
-        "PowerCost": 7,
+        "PowerCost": 2,
         "Hitpoints": 300,
         "MinLevel": 1,
         "MaxLevel": 5,
@@ -27460,7 +27463,7 @@
       ],
       "objdata": {
         "Cost": 175,
-        "PowerCost": 2,
+        "PowerCost": 7,
         "Hitpoints": 300,
         "MinLevel": 1,
         "MaxLevel": 5,
@@ -29582,7 +29585,7 @@
         "Actions": [
           {
             "Type": "none",
-            "Damage": 200,
+            "Damage": 60,
             "TriggerType": "none",
             "CooldownTimeMin": 6,
             "CooldownTimeMax": 6
@@ -29626,7 +29629,7 @@
             "AdvancedSkillType": "RTID(plant_wakeup_level1@SkillTypes)"
           },
           {
-            "AttackLevel": 3,
+            "AttackLevel": 4,
             "HitPointsLevel": 3,
             "PropertySkillType": "RTID(Plant_PropertyUp_Level4@SkillTypes)",
             "AdvancedSkillType": "RTID(Gravitree_Skill_Level5@SkillTypes)"
@@ -29643,11 +29646,11 @@
             "area"
           ],
           "Damages": [
-            200,
-            250,
-            300,
-            350,
-            600
+            60,
+            90,
+            120,
+            150,
+            240
           ],
           "AttackInterval": [
             6,
@@ -29682,7 +29685,7 @@
       ],
       "objdata": {
         "Cost": 200,
-        "PowerCost": 2,
+        "PowerCost": 6,
         "MinLevel": 1,
         "MaxLevel": 5,
         "Hitpoints": 300,
@@ -29701,11 +29704,11 @@
         "ProjectileTimeOfFlight": 0.59999999999999998,
         "GiantProjectileTimeOfFlight": 1.8,
         "QuantumDuration": [
-          6.0,
-          6.0,
-          6.0,
-          6.0,
-          6.0
+          3.6000000000000001,
+          3.6000000000000001,
+          3.6000000000000001,
+          3.6000000000000001,
+          3.6000000000000001
         ],
         "MagicianSlowScale": [
           4.0,
@@ -29728,8 +29731,8 @@
             "Projectile": "RTID(DarkMatterProjectileDefault@ProjectileTypes)",
             "Damage": 200,
             "InitialMinCooldownTime": 1,
-            "CooldownTimeMin": 1.5,
-            "CooldownTimeMax": 1.5,
+            "CooldownTimeMin": 2.3999999999999999,
+            "CooldownTimeMax": 2.3999999999999999,
             "SpawnOffset": {
               "x": 15,
               "y": -50
@@ -29757,19 +29760,27 @@
           },
           {
             "AttackLevel": 1.5,
-            "HitPointsLevel": 1.5
+            "HitPointsLevel": 1.5,
+            "PropertySkillType": "RTID(Plant_PropertyUp_Level1@SkillTypes)",
+            "AdvancedSkillType": "RTID(Darkmatter_dragonfruit_Skill_Level1@SkillTypes)"
           },
           {
             "AttackLevel": 2,
-            "HitPointsLevel": 2
+            "HitPointsLevel": 2,
+            "PropertySkillType": "RTID(Plant_PropertyUp_Level2@SkillTypes)",
+            "AdvancedSkillType": "RTID(Darkmatter_dragonfruit_Skill_Level2@SkillTypes)"
           },
           {
             "AttackLevel": 2.5,
-            "HitPointsLevel": 2.5
+            "HitPointsLevel": 2.5,
+            "PropertySkillType": "RTID(Plant_PropertyUp_Level3@SkillTypes)",
+            "AdvancedSkillType": "RTID(plant_wakeup_level1@SkillTypes)"
           },
           {
             "AttackLevel": 3,
-            "HitPointsLevel": 3
+            "HitPointsLevel": 3,
+            "PropertySkillType": "RTID(Plant_PropertyUp_Level4@SkillTypes)",
+            "AdvancedSkillType": "RTID(Darkmatter_dragonfruit_Skill_Level5@SkillTypes)"
           }
         ],
         "DisplayActions": "RTID(DarkMatterDragonfruitDefault@DisplayActions)",
@@ -52137,7 +52148,8 @@
             "nukelauncher",
             "cthulhuactinia",
             "scaredyshroom",
-            "doomshroom"
+            "doomshroom",
+            "cosmicmushroom"
           ]
         },
         "Actions": [
@@ -110304,7 +110316,7 @@
           "mWidth": 32,
           "mHeight": 95
         },
-        "Cost": 250,
+        "Cost": 150,
         "WavePointCost": 700,
         "Weight": 3500,
         "HeadDropFraction": -1,
@@ -172765,7 +172777,7 @@
           "mWidth": 32,
           "mHeight": 95
         },
-        "Cost": 150,
+        "Cost": 250,
         "WavePointCost": 700,
         "Weight": 3500,
         "HeadDropFraction": -1,

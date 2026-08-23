@@ -881,12 +881,16 @@ class _EightiesStageOrderCard extends StatelessWidget {
                         return AnimatedBuilder(
                           animation: animation,
                           child: child,
-                          builder: (context, child) => Material(
-                            color: theme.colorScheme.surfaceContainerHigh,
-                            elevation: 6 * animation.value,
-                            borderRadius: BorderRadius.circular(10),
-                            clipBehavior: Clip.antiAlias,
-                            child: child,
+                          builder: (context, child) => SizedBox(
+                            key: const ValueKey('eightiesOrderDragProxy'),
+                            height: 64,
+                            child: Material(
+                              color: theme.colorScheme.surfaceContainerHigh,
+                              elevation: 6 * animation.value,
+                              borderRadius: BorderRadius.circular(10),
+                              clipBehavior: Clip.antiAlias,
+                              child: child,
+                            ),
                           ),
                         );
                       },
@@ -894,25 +898,36 @@ class _EightiesStageOrderCard extends StatelessWidget {
                       onReorderItem: onReorderItem,
                       itemBuilder: (context, index) {
                         final value = values[index];
-                        return ListTile(
+                        return SizedBox(
                           key: ValueKey('$title-$index-$value'),
-                          dense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                          ),
-                          leading: CircleAvatar(
-                            radius: 15,
-                            backgroundColor: accent.withValues(alpha: 0.14),
-                            foregroundColor: accent,
-                            child: Text('${index + 1}'),
-                          ),
-                          title: Text(valueLabel(value)),
-                          subtitle: Text(value),
-                          trailing: ReorderableDragStartListener(
-                            index: index,
-                            child: const Padding(
-                              padding: EdgeInsets.all(12),
-                              child: Icon(Icons.drag_indicator),
+                          height: 64,
+                          child: ListTile(
+                            dense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                            ),
+                            leading: CircleAvatar(
+                              radius: 15,
+                              backgroundColor: accent.withValues(alpha: 0.14),
+                              foregroundColor: accent,
+                              child: Text('${index + 1}'),
+                            ),
+                            title: Text(
+                              valueLabel(value),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              value,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: ReorderableDragStartListener(
+                              index: index,
+                              child: const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Icon(Icons.drag_indicator),
+                              ),
                             ),
                           ),
                         );

@@ -797,8 +797,12 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       return l10n?.waveGeneratorFixedSummaryEmpty ?? 'No fixed spawns';
     }
     final rowCount = _wave.zombies.map((z) => _rowValue(z.row)).toSet().length;
+    final spawnLabel = _wave.zombies.length == 1
+        ? '1 fixed spawn'
+        : '${_wave.zombies.length} fixed spawns';
+    final rowLabel = rowCount == 1 ? '1 row' : '$rowCount rows';
     return l10n?.waveGeneratorFixedSummary(_wave.zombies.length, rowCount) ??
-        '${_wave.zombies.length} fixed spawns · $rowCount rows';
+        '$spawnLabel · $rowLabel';
   }
 
   String _randomSpawnsSummary(AppLocalizations? l10n, int points) {
@@ -808,10 +812,11 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     }
     if (_wave.wavePointStart != null) {
       return l10n?.waveGeneratorRandomLocalSummary(points) ??
-          'Enabled · $points points · Current-wave points';
+          'Enabled · $points ${points == 1 ? 'point' : 'points'} · '
+              'Current-wave points';
     }
     return l10n?.waveGeneratorRandomSummary(points) ??
-        'Enabled · $points points';
+        'Enabled · $points ${points == 1 ? 'point' : 'points'}';
   }
 
   String _poolSummary(AppLocalizations? l10n, List<String> effectivePool) {
@@ -819,10 +824,12 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     final addedCount = _wave.addToZombiePool.map((e) => e.type).toSet().length;
     if (addedCount == 0) {
       return l10n?.waveGeneratorPoolSummaryNoAdditions(currentCount) ??
-          'Current: $currentCount types · No additions on this wave';
+          'Current: $currentCount ${currentCount == 1 ? 'type' : 'types'} · '
+              'No additions on this wave';
     }
     return l10n?.waveGeneratorPoolSummary(currentCount, addedCount) ??
-        'Current: $currentCount types · Added $addedCount on this wave';
+        'Current: $currentCount ${currentCount == 1 ? 'type' : 'types'} · '
+            'Added $addedCount on this wave';
   }
 
   String _settingsSummary(AppLocalizations? l10n) {

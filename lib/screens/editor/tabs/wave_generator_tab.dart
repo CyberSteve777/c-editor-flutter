@@ -219,7 +219,8 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
             children: [
               Text(
                 l10n?.waveGeneratorDeleteWaveConfirm(zombieCount) ??
-                    'This will remove the wave and its $zombieCount fixed spawns.',
+                    'This will remove the wave and its $zombieCount fixed '
+                        '${zombieCount == 1 ? 'spawn' : 'spawns'}.',
               ),
               const SizedBox(height: 16),
               CheckboxListTile(

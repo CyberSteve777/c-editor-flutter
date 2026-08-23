@@ -24,19 +24,26 @@ void main() {
       lookupAppLocalizations(
         const Locale('zh'),
       ).waveGeneratorStatisticalPreview,
-      '统计预览',
+      '出怪预览',
     );
     expect(
       lookupAppLocalizations(
         const Locale('en'),
       ).waveGeneratorStatisticalPreview,
-      'Statistical preview',
+      'Random-spawn preview',
     );
     expect(
       lookupAppLocalizations(
         const Locale('ru'),
       ).waveGeneratorStatisticalPreview,
       'Статистический предпросмотр',
+    );
+    final english = lookupAppLocalizations(const Locale('en'));
+    expect(english.waveGeneratorFixedSummary(1, 1), '1 fixed spawn · 1 row');
+    expect(english.waveGeneratorRandomSummary(1), 'Enabled · 1 point');
+    expect(
+      english.waveGeneratorPoolSummaryNoAdditions(1),
+      '1 current type · No additions on this wave',
     );
   });
 

@@ -10,6 +10,7 @@ import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/portal_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/repository/resilience_config_repository.dart';
+import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
@@ -31,7 +32,7 @@ abstract final class AppBootstrap {
   static Future<void> load({BootstrapProgressCallback? onProgress}) async {
     if (_complete) return;
 
-    const dataSteps = 18;
+    const dataSteps = 19;
     var dataStep = 0;
     void dataTick(BootstrapLoadingCategory category) {
       dataStep++;
@@ -41,6 +42,9 @@ abstract final class AppBootstrap {
     onProgress?.call(0, BootstrapLoadingCategory.localization);
     await ResourceNames.ensureLoaded();
     dataTick(BootstrapLoadingCategory.localization);
+
+    await RiftThemeRepository.ensureTargetListsLoaded();
+    dataTick(BootstrapLoadingCategory.reference);
 
     onProgress?.call(
       (dataStep / dataSteps) * 0.25,
