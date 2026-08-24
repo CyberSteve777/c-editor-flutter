@@ -2482,6 +2482,12 @@ abstract class AppLocalizations {
   /// **'Expedition Gate Variants'**
   String get zombieTagExpedition;
 
+  /// No description provided for @zombieTagPvp.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-Player Mode Variants'**
+  String get zombieTagPvp;
+
   /// No description provided for @zombieTagPet.
   ///
   /// In en, this message translates to:
@@ -3724,6 +3730,12 @@ abstract class AppLocalizations {
   /// **'Last Stand mode does not need an opening intro.'**
   String get conflictDesc_LastStandIntro;
 
+  /// No description provided for @conflictDesc_CowboyIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Not OK Corral conflicts with the Intro Animation module. Using them together will cause the zombie preview and transition effect at the start of the level to behave incorrectly.'**
+  String get conflictDesc_CowboyIntro;
+
   /// No description provided for @conflictDesc_EvilDaveZombieDrop.
   ///
   /// In en, this message translates to:
@@ -4675,7 +4687,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_CowboyMinigameProperties.
   ///
   /// In en, this message translates to:
-  /// **'Starts a zombie wave whenever a conveyor-belt plant is planted'**
+  /// **'Starts each zombie wave only after a plant from the conveyor belt is planted'**
   String get moduleDesc_CowboyMinigameProperties;
 
   /// No description provided for @moduleTitle_PVZ1OverwhelmModuleProperties.
@@ -8587,7 +8599,7 @@ abstract class AppLocalizations {
   /// No description provided for @cowboyMinigameBeginStringHint.
   ///
   /// In en, this message translates to:
-  /// **'The prompt text appears together with the zombie preview before every plant placement. The default message is “Plant a plant from the conveyor belt to begin!”.'**
+  /// **'Adding the Not OK Corral module automatically enables Manual Packet Spawning in the Conveyor Belt module.'**
   String get cowboyMinigameBeginStringHint;
 
   /// No description provided for @cowboyMinigameHelpTitle.

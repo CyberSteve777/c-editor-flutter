@@ -14,6 +14,7 @@ Future<void> showChallengeEditorDialog(
   required VoidCallback onChanged,
   Color? accentColor,
   PvzLevelFile? levelFile,
+  void Function(String objClass)? onAddModule,
 }) async {
   final l10n = AppLocalizations.of(context);
   final theme = Theme.of(context);
@@ -50,6 +51,7 @@ Future<void> showChallengeEditorDialog(
               onChanged: onChanged,
               l10n: l10n,
               levelFile: levelFile,
+              onAddModule: onAddModule,
             ),
           ),
         ),
@@ -107,12 +109,14 @@ class ChallengeEditorContent extends StatelessWidget {
     required this.onChanged,
     this.l10n,
     this.levelFile,
+    this.onAddModule,
   });
 
   final PvzObject object;
   final VoidCallback onChanged;
   final AppLocalizations? l10n;
   final PvzLevelFile? levelFile;
+  final void Function(String objClass)? onAddModule;
 
   @override
   Widget build(BuildContext context) {
@@ -249,6 +253,8 @@ class ChallengeEditorContent extends StatelessWidget {
         return DestroyGridItemsChallengeEditor(
           object: object,
           onChanged: onChanged,
+          levelFile: levelFile,
+          onAddModule: onAddModule,
         );
       case 'StarChallengeDisablePlantProps':
         return StarChallengeDisablePlantEditor(

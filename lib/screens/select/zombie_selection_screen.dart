@@ -143,6 +143,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         ZombieTag.evildave,
         ZombieTag.custom,
         ZombieTag.expedition,
+        ZombieTag.pvp,
         ZombieTag.chinese,
         ZombieTag.international,
       ];

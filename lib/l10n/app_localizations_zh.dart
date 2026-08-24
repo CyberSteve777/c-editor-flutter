@@ -634,7 +634,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get exportDisclaimerBody =>
-      '本功能通过向游戏数据包（SMF/RSB 容器文件）中注入关卡文件来生成关卡测试包，该过程会直接修改《植物大战僵尸2》的游戏数据。\n\n• 使用本功能修改游戏数据可能违反游戏服务条款\n• 可能导致游戏账号被临时或永久封禁\n• 可能导致游戏存档损坏或数据丢失\n• 所有操作均为用户自行选择，风险自负\n\n开发者在此明确声明：\n\n1. 本功能仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n2. 用户使用本功能所产生的一切后果，包括但不限于账号封禁、数据丢失、游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n3. 用户在使用本功能前应充分了解相关风险，并自行决定是否承担这些风险。\n4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。';
+      '本功能通过向游戏数据包 (SMF/RSB 容器文件)中注入关卡文件来生成关卡测试包，该过程会直接修改《植物大战僵尸2》的游戏数据。\n\n• 使用本功能修改游戏数据可能违反游戏服务条款\n• 可能导致游戏账号被临时或永久封禁\n• 可能导致游戏存档损坏或数据丢失\n• 所有操作均为用户自行选择，风险自负\n\n开发者在此明确声明：\n\n1. 本功能仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n2. 用户使用本功能所产生的一切后果，包括但不限于账号封禁、数据丢失、游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n3. 用户在使用本功能前应充分了解相关风险，并自行决定是否承担这些风险。\n4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。';
 
   @override
   String get exportDisclaimerDoNotShowAgain => '不再默认显示';
@@ -1060,15 +1060,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json)或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageTextDesktop =>
-      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json)或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageTextMobile =>
-      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON（导入前需手动将扩展名从 .hujson 改回 .json）或加密后的 RTON（用于替换 dynamic.rsb.smf 中的关卡数据）。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json)或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageRecommendedLevelsLabel => '创意庭院·推荐关卡展示：';
@@ -1204,7 +1204,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saved => '已保存';
 
   @override
-  String get failedToLoadLevel => '关卡加载失败。\n建议检查关卡文件是否为加密格式（如热更新使用的JSON文件）。';
+  String get failedToLoadLevel => '关卡加载失败。\n建议检查关卡文件是否为加密格式 (如热更新使用的JSON文件)。';
 
   @override
   String get noLevelDefinition => '未找到关卡定义';
@@ -1296,6 +1296,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombieTagExpedition => '远征变体';
+
+  @override
+  String get zombieTagPvp => '双人变体';
 
   @override
   String get zombieTagPet => '宠物';
@@ -1961,6 +1964,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conflictDesc_LastStandIntro => '坚不可摧模式不需要开场动画。';
 
   @override
+  String get conflictDesc_CowboyIntro =>
+      '围栏之战与转场模块存在冲突，同时使用会导致开局时的僵尸预览和转场效果异常。';
+
+  @override
   String get conflictDesc_EvilDaveZombieDrop => '我是僵尸模式不能使用僵尸掉落模块。';
 
   @override
@@ -2140,7 +2147,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modifyConveyorAddPoolEmpty => '列表为空，请添加植物或工具卡';
 
   @override
-  String get modifyConveyorRemovePoolTitle => '移出传送带池（Remove List，在庭院模块下不生效）';
+  String get modifyConveyorRemovePoolTitle => '移出传送带池 (Remove List，在庭院模块下不生效)';
 
   @override
   String get modifyConveyorEntryEditTitle => '编辑具体参数';
@@ -2746,13 +2753,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bronzeModuleAddTitle => '添加铜人像';
 
   @override
-  String get bronzeKindStrength => '大汉铜人像（strength）';
+  String get bronzeKindStrength => '大汉铜人像 (strength)';
 
   @override
-  String get bronzeKindMage => '气功铜人像（mage）';
+  String get bronzeKindMage => '气功铜人像 (mage)';
 
   @override
-  String get bronzeKindAgile => '侠客铜人像（agile）';
+  String get bronzeKindAgile => '侠客铜人像 (agile)';
 
   @override
   String get bronzeKindStrengthShort => '大汉铜人';
@@ -2981,7 +2988,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get weatherOption_DefaultRainDark_desc => '场上会进入持续较长时间的黑暗状态';
 
   @override
-  String get iZombiePlantReserveLabel => '植物预留列（PlantDistance）';
+  String get iZombiePlantReserveLabel => '植物预留列 (PlantDistance)';
 
   @override
   String get column => '列';
@@ -3109,7 +3116,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String propertyObjectNotFoundHint(String alias) {
-    return '自定义僵尸的属性对象（$alias）在关卡中未找到。属性定义未指向关卡内部，因此无法在此编辑。';
+    return '自定义僵尸的属性对象 ($alias)在关卡中未找到。属性定义未指向关卡内部，因此无法在此编辑。';
   }
 
   @override
@@ -4081,7 +4088,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusBody =>
-      '此事件用于在指定行生成冰淇淋车。冰淇淋车载着僵尸从右侧缓慢驶入，占据两行。前进路径上被车体碾压到的植物会被直接摧毁。\n若冰淇淋车贴图显示搭乘的是泡泡枪小鬼僵尸和棒棒糖僵尸（即类型为 schoolbus_special），则会在前进过程中持续释放对应僵尸的技能。\n地刺、钢地刺等植物可以扎破冰淇淋车的轮胎。轮胎破裂后，冰淇淋车会逐渐减速并进入滑行状态，一段时间后停止移动并损毁。';
+      '此事件用于在指定行生成冰淇淋车。冰淇淋车载着僵尸从右侧缓慢驶入，占据两行。前进路径上被车体碾压到的植物会被直接摧毁。\n若冰淇淋车贴图显示搭乘的是泡泡枪小鬼僵尸和棒棒糖僵尸 (即类型为 schoolbus_special)，则会在前进过程中持续释放对应僵尸的技能。\n地刺、钢地刺等植物可以扎破冰淇淋车的轮胎。轮胎破裂后，冰淇淋车会逐渐减速并进入滑行状态，一段时间后停止移动并损毁。';
 
   @override
   String get schoolBusHelpRows => '行数说明';
@@ -4092,7 +4099,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusType =>
-      '类型决定生成的冰淇淋车变体。普通（schoolbus_normal）为标准冰淇淋车。特殊（schoolbus_special）贴图显示泡泡枪小鬼和棒棒糖僵尸，车辆在前进过程中会持续释放对应技能。';
+      '类型决定生成的冰淇淋车变体。普通 (schoolbus_normal)为标准冰淇淋车。特殊 (schoolbus_special)贴图显示泡泡枪小鬼和棒棒糖僵尸，车辆在前进过程中会持续释放对应技能。';
 
   @override
   String get schoolBusHelpZombies => '乘客说明';
@@ -4568,7 +4575,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cowboyMinigameBeginStringHint =>
-      '“提示文本”会在每次种植植物之前与僵尸预览一同出现。默认文本内容为“种植传送带上的植物以开始关卡！”。';
+      '添加围栏之战模块后，会自动在传送带模块中启用“手动生成卡片”开关。';
 
   @override
   String get cowboyMinigameHelpTitle => '围栏之战模块说明';
@@ -4579,11 +4586,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cowboyMinigameHelpBeginStringBody =>
-      '“提示文本”会在每次种植植物之前与僵尸预览一同出现。“默认文本”的游戏内内容为“种植传送带上的植物以开始关卡！”。也可以不显示文本，或自由输入自定义内容。';
+      '提示文本会在每次种植植物前与僵尸预览一同显示。选择“默认文本”时，关卡内对话框会显示“种植传送带上的植物以开始关卡！”。也可以选择不显示文本，或自由输入自定义内容。';
 
   @override
   String get cowboyMinigameHelpTutorialBody =>
-      '开启“显示教程对话”后，戴夫和潘妮会在关卡开始前出现，以对话形式交代小游戏的背景。游戏使用的对话参考狂野西部-第4天初次游玩时的内容。';
+      '开启“显示教程对话”后，戴夫和潘妮会在关卡开始前出现，以对话形式交代小游戏的背景。对话内容固定为首次游玩狂野西部-第4天时的剧情。';
 
   @override
   String get cowboyMinigameDependencyWarningTitle => '缺少必需模块';
@@ -4893,7 +4900,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get powerTileLinkedTilesSection => '瓷砖列表';
 
   @override
-  String get powerTilePropagationDelayLabel => '传导延迟（PropagationDelay，单位：秒）';
+  String get powerTilePropagationDelayLabel => '传导延迟 (PropagationDelay，单位：秒)';
 
   @override
   String get powerTilePropagationDelayTooltip =>
@@ -4909,7 +4916,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get powerTileDialogNone => '无';
 
   @override
-  String get powerTileDialogPropagationDelay => '传导延迟（PropagationDelay，单位：秒）';
+  String get powerTileDialogPropagationDelay => '传导延迟 (PropagationDelay，单位：秒)';
 
   @override
   String get powerTileHelpOverview =>
@@ -5508,7 +5515,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechVariationHint =>
-      '关卡中使用的具体机甲类型（ZombossMechType），可选项取决于上方选择的基础机甲。更改类型时，机甲的阶段数和出现位置也会相应变化。';
+      '关卡中使用的具体机甲类型 (ZombossMechType)，可选项取决于上方选择的基础机甲。更改类型时，机甲的阶段数和出现位置也会相应变化。';
 
   @override
   String get zombossBattleSelection => '非机甲僵王选择';
@@ -5531,7 +5538,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossBattleVariationHint =>
-      '关卡中使用的具体僵王类型（ZombossTypeName），可选项取决于上方选择的基础僵王。';
+      '关卡中使用的具体僵王类型 (ZombossTypeName)，可选项取决于上方选择的基础僵王。';
 
   @override
   String get zombossBattleStartingSunLabel => '初始阳光 (StartingSun)';
@@ -5775,7 +5782,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveDropConfigTitle => '掉落物配置';
 
   @override
-  String get waveDropTotalLabel => '携带掉落物的僵尸总数（AdditionalPlantfood）';
+  String get waveDropTotalLabel => '携带掉落物的僵尸总数 (AdditionalPlantfood)';
 
   @override
   String get waveDropAddZombiesFirst => '请先为本波次添加僵尸，再配置掉落物。';
@@ -6908,7 +6915,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '运兵艇的出现波次从0开始计数，如第1波登场填0，第2波登场填1。运兵艇至少会投放1只飞行小鬼僵尸，因此额外小鬼数量填写的是在这1只的基础上，该波次额外投放的小鬼数量。';
 
   @override
-  String get airDropShipModuleAppearWaves => '出现波次（Wave, 从0开始计数）';
+  String get airDropShipModuleAppearWaves => '出现波次 (Wave, 从0开始计数)';
 
   @override
   String get airDropShipModuleAppearances => '投放组';
@@ -7462,7 +7469,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get customZombossMechEditHint =>
-      '编辑关卡内使用的自定义机甲变体（memo）的属性。此类自定义僵王机甲常见于回忆之旅关卡。';
+      '编辑关卡内使用的自定义机甲变体 (memo)的属性。此类自定义僵王机甲常见于回忆之旅关卡。';
 
   @override
   String get zombossMechMinColumn => '最小列';
@@ -7587,7 +7594,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechNoActionsFound => '未找到动作';
 
   @override
-  String get zombossMechCustomActionLabel => '自定义（CurrentLevel）';
+  String get zombossMechCustomActionLabel => '自定义 (CurrentLevel)';
 
   @override
   String zombossCustomActionBaseAction(String action) {

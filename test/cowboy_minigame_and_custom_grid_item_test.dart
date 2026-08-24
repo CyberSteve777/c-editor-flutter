@@ -3,11 +3,16 @@ import 'dart:io';
 
 import 'package:c_editor/data/cowboy_minigame_utils.dart';
 import 'package:c_editor/data/grid_item_discovery.dart';
+import 'package:c_editor/data/level_validator.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_widgets.dart'
+    as level_preview;
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/screens/editor/modules/conveyor_seedbank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_grid_item_entry_screen.dart';
+import 'package:c_editor/screens/editor/modules/protect_grid_item_challenge_screen.dart';
 import 'package:c_editor/screens/select/grid_item_selection_screen.dart';
 import 'package:c_editor/screens/select/module_selection_screen.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
@@ -36,6 +41,12 @@ GridItemInfo _memoPreset() => GridItemInfo(
   icon: 'gravestone_tutorial.webp',
   source: GridItemSource.custom,
   companionObjects: [_memoPropertySheet()],
+);
+
+GridItemInfo _armrackPreset() => const GridItemInfo(
+  typeName: 'armrack',
+  category: GridItemCategory.scene,
+  source: GridItemSource.custom,
 );
 
 Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) {
@@ -73,6 +84,48 @@ void main() {
         jsonDecode(File('assets/l10n/app_zh.arb').readAsStringSync())
             as Map<String, dynamic>;
     expect(arb['moduleDesc_CowboyMinigameProperties'], '每种植一个传送带植物，才开始一波僵尸进攻');
+    expect(
+      arb['cowboyMinigameBeginStringHint'],
+      '添加围栏之战模块后，会自动在传送带模块中启用“手动生成卡片”开关。',
+    );
+  });
+
+  testWidgets('Not OK Corral does not require the standard intro module', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['LevelDefinition'],
+          objClass: 'LevelDefinition',
+          objData: LevelDefinitionData(
+            modules: const ['RTID(CowboyMinigame@CurrentLevel)'],
+          ).toJson(),
+        ),
+        PvzObject(
+          aliases: const ['CowboyMinigame'],
+          objClass: CowboyMinigameUtils.moduleObjClass,
+          objData: const <String, dynamic>{},
+        ),
+      ],
+    );
+    late List<ValidationIssue> issues;
+
+    await tester.pumpWidget(
+      _localizedApp(
+        Builder(
+          builder: (context) {
+            issues = LevelValidator.validate(context, level);
+            return const SizedBox.shrink();
+          },
+        ),
+        locale: const Locale('zh'),
+      ),
+    );
+    await tester.pump();
+
+    final missing = issues.singleWhere((issue) => issue.title == '缺失模块');
+    expect(missing.bulletPoints, isNot(contains('转场动画')));
   });
 
   test('Cowboy data matches both official reference shapes', () {
@@ -110,6 +163,44 @@ void main() {
     expect((conveyor.objData as Map)['ManualPacketSpawning'], isTrue);
     expect((conveyor.objData as Map)['InitialPlantList'], isNotEmpty);
     expect(CowboyMinigameUtils.enableManualPacketSpawning(level), isFalse);
+
+    expect(CowboyMinigameUtils.removeManualPacketSpawning(level), isTrue);
+    expect(conveyor.objData, isNot(contains('ManualPacketSpawning')));
+    expect((conveyor.objData as Map)['InitialPlantList'], isNotEmpty);
+    expect(CowboyMinigameUtils.removeManualPacketSpawning(level), isFalse);
+  });
+
+  testWidgets('conveyor keeps the automatic field without exposing a switch', (
+    tester,
+  ) async {
+    final conveyor = PvzObject(
+      aliases: ['Conveyor'],
+      objClass: CowboyMinigameUtils.conveyorObjClass,
+      objData: {
+        'InitialPlantList': <dynamic>[],
+        'DropDelayConditions': <dynamic>[],
+        'SpeedConditions': <dynamic>[],
+        'ManualPacketSpawning': true,
+      },
+    );
+    final level = PvzLevelFile(objects: [conveyor]);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        ConveyorSeedBankPropertiesScreen(
+          rtid: 'RTID(Conveyor@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+          onRequestPlantSelection: (_) {},
+          onRequestToolSelection: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Manual packet spawning'), findsNothing);
+    expect(conveyor.objData['ManualPacketSpawning'], isTrue);
   });
 
   test('custom grid item recognition requires an exact preset object', () {
@@ -321,21 +412,25 @@ void main() {
     );
   });
 
-  testWidgets('custom grid item badge is not shown inside the placement grid', (
+  testWidgets('unknown custom grid item keeps its codename as the card title', (
     tester,
   ) async {
     GridItemRepository.staticItems.add(_memoPreset());
-    final initialGridItems = PvzObject(
-      aliases: ['InitialGridItems'],
-      objClass: 'InitialGridItemProperties',
-      objData: {
-        'InitialGridItemPlacements': [
-          {'GridX': 2, 'GridY': 1, 'TypeName': 'gravestone_egypt_memo'},
-        ],
-      },
-    );
+    final conflictingSheet = _memoPropertySheet();
+    conflictingSheet.objData['Hitpoints'] = 701;
     final level = PvzLevelFile(
-      objects: [_memoPropertySheet(), initialGridItems],
+      objects: [
+        conflictingSheet,
+        PvzObject(
+          aliases: ['InitialGridItems'],
+          objClass: 'InitialGridItemProperties',
+          objData: {
+            'InitialGridItemPlacements': [
+              {'GridX': 0, 'GridY': 0, 'TypeName': 'gravestone_egypt_memo'},
+            ],
+          },
+        ),
+      ],
     );
 
     await tester.pumpWidget(
@@ -346,13 +441,138 @@ void main() {
           onChanged: () {},
           onBack: () {},
         ),
+        locale: const Locale('zh'),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(GridItemIcon), findsWidgets);
-    expect(find.byType(CustomResourceBadge), findsNothing);
+    expect(find.text('gravestone_egypt_memo'), findsOneWidget);
+    expect(find.text('未知'), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is GridItemIcon && widget.typeName == '__unknown__',
+      ),
+      findsWidgets,
+    );
   });
+
+  testWidgets(
+    'Chinese property labels use ASCII parentheses around codenames',
+    (tester) async {
+      await tester.pumpWidget(
+        _localizedApp(
+          Builder(
+            builder: (context) =>
+                Text(localizedPropertyLabel(context, '显示教程对话', 'ShowTutorial')),
+          ),
+          locale: const Locale('zh'),
+        ),
+      );
+
+      expect(find.text('显示教程对话 (ShowTutorial)'), findsOneWidget);
+      expect(find.text('显示教程对话（ShowTutorial）'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'custom grid item badge is limited to the list beside the placement grid',
+    (tester) async {
+      GridItemRepository.staticItems.add(_memoPreset());
+      final initialGridItems = PvzObject(
+        aliases: ['InitialGridItems'],
+        objClass: 'InitialGridItemProperties',
+        objData: {
+          'InitialGridItemPlacements': [
+            {'GridX': 0, 'GridY': 0, 'TypeName': 'gravestone_egypt_memo'},
+          ],
+        },
+      );
+      final level = PvzLevelFile(
+        objects: [_memoPropertySheet(), initialGridItems],
+      );
+
+      await tester.pumpWidget(
+        _localizedApp(
+          InitialGridItemEntryScreen(
+            rtid: 'RTID(InitialGridItems@CurrentLevel)',
+            levelFile: level,
+            onChanged: () {},
+            onBack: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GridItemIcon), findsWidgets);
+      expect(find.byType(CustomResourceBadge), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'level overview badges preset list icons but not concrete grid icons',
+    (tester) async {
+      GridItemRepository.staticItems.add(_memoPreset());
+
+      await tester.pumpWidget(
+        _localizedApp(
+          const Column(
+            children: [
+              level_preview.GridItemIcon(id: 'gravestone_egypt_memo', size: 40),
+              level_preview.GridItemIcon(
+                id: 'gravestone_egypt_memo',
+                size: 40,
+                isGrid: true,
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CustomResourceBadge), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'protect-item selection keeps the preset badge and module prompt',
+    (tester) async {
+      GridItemRepository.staticItems.add(_armrackPreset());
+      final protect = PvzObject(
+        aliases: ['ProtectGridItems'],
+        objClass: 'ProtectTheGridItemChallengeProperties',
+        objData: ProtectTheGridItemChallengePropertiesData().toJson(),
+      );
+      final level = PvzLevelFile(objects: [protect]);
+      String? addedModule;
+
+      await tester.pumpWidget(
+        _localizedApp(
+          ProtectGridItemChallengeScreen(
+            rtid: 'RTID(ProtectGridItems@CurrentLevel)',
+            levelFile: level,
+            onChanged: () {},
+            onBack: () {},
+            onAddModule: (objClass) => addedModule = objClass,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+      expect(find.byType(CustomResourceBadge), findsOneWidget);
+
+      await tester.tap(find.text('armrack').first);
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(addedModule, isNull);
+
+      await tester.tap(find.text('Add').last);
+      await tester.pumpAndSettle();
+      expect(addedModule, 'ArmrackProperties');
+      expect(find.byType(CustomResourceBadge), findsOneWidget);
+    },
+  );
 
   testWidgets('conflicting custom tombstone asks before replacing it', (
     tester,

@@ -12585,6 +12585,7 @@
           "DelayLoad_Background_Moon_Compressed",
           "Dirt_Spawn_Moon",
           "PlantCosmoss",
+          "AudioMoon",
           "Energy_Bean_effects"
         ]
       },
@@ -12609,6 +12610,7 @@
             "DelayLoad_Background_Moon_Compressed",
             "Dirt_Spawn_Moon",
             "PlantCosmoss",
+            "AudioMoon",
             "Energy_Bean_effects"
           ],
           "GroupsToUnloadForAds": [

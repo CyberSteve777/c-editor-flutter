@@ -1,5 +1,6 @@
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/rift_theme_repository.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -30,6 +31,7 @@ void main() {
       ResourceNames.ensureLoaded(),
       PlantRepository().init(),
       ZombieRepository().init(),
+      ZombiePropertiesRepository.init(),
       RiftThemeRepository.ensureTargetListsLoaded(),
     ]);
   });
@@ -239,5 +241,103 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
     }
+  });
+
+  test('ZombieClass themes resolve exact classes in Zombies.json order', () {
+    expect(
+      ZombiePropertiesRepository.getZombieClassByAlias('modern_allstar'),
+      'ZombieModernAllStar',
+    );
+    expect(
+      ZombiePropertiesRepository.getZombieClassByAlias(
+        'universe_uncharted_prospector',
+      ),
+      'ZombieProspectorUniverseUncharted',
+    );
+
+    List<String> affected(String themeId) =>
+        RiftThemeRepository.getAffectedZombiesForRiftTheme(
+          themeId,
+        ).map((zombie) => zombie.id).toList();
+
+    expect(affected('knight_cheating'), [
+      'west_bull',
+      'new_pvp_west_bull',
+      'dark_cavalry',
+      'new_pvp_dark_cavalry',
+      'modern_allstar',
+      'new_pvp_modern_allstar',
+      'fairy_tale_knight',
+      'fairy_tale_knight_memo',
+      'journey_to_the_west_allstar',
+    ]);
+    expect(affected('mage_cheating'), [
+      'ra',
+      'tomb_raiser',
+      'new_pvp_tomb_raiser',
+      'dark_wizard',
+      'new_pvp_dark_wizard',
+      'dark_archmage',
+      'beach_octopus',
+      'new_pvp_beach_octopus',
+      'renai_perfumer',
+      'spring_wizard',
+      'sportzball_wizard',
+      'roman_healer',
+      'new_pvp_roman_healer',
+    ]);
+    expect(affected('miner_cheating'), [
+      'prospector',
+      'new_pvp_prospector',
+      'modern_miner',
+      'new_pvp_modern_miner',
+    ]);
+    expect(
+      affected('miner_cheating'),
+      isNot(containsAll(['universe_uncharted_prospector', 'uncharted_miner'])),
+    );
+  });
+
+  testWidgets('ZombieClass theme details show only registered matches', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _localizedApp(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () =>
+                showRiftThemeDetailsDialog(context, 'knight_cheating'),
+            child: const Text('open-knight-theme'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open-knight-theme'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Zombie list'), findsOneWidget);
+    for (final id in const [
+      'west_bull',
+      'new_pvp_west_bull',
+      'dark_cavalry',
+      'new_pvp_dark_cavalry',
+      'modern_allstar',
+      'new_pvp_modern_allstar',
+      'fairy_tale_knight',
+      'fairy_tale_knight_memo',
+      'journey_to_the_west_allstar',
+    ]) {
+      expect(find.byKey(ValueKey('riftThemeTarget-$id')), findsOneWidget);
+    }
+    expect(
+      find.byKey(
+        const ValueKey('riftThemeTarget-universe_uncharted_prospector'),
+      ),
+      findsNothing,
+    );
   });
 }

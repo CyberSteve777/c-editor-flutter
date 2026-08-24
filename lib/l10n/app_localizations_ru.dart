@@ -1341,6 +1341,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombieTagExpedition => 'Expedition Gate Variants';
 
   @override
+  String get zombieTagPvp => 'Варианты режима для двух игроков';
+
+  @override
   String get zombieTagPet => 'Питомец';
 
   @override
@@ -2027,6 +2030,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get conflictDesc_LastStandIntro =>
       'Режиму Last Stand не нужна вступительная заставка.';
+
+  @override
+  String get conflictDesc_CowboyIntro =>
+      '«Неудачный загон» конфликтует с модулем вступительной заставки. Их совместное использование нарушает предпросмотр зомби и эффект перехода в начале уровня.';
 
   @override
   String get conflictDesc_EvilDaveZombieDrop =>
@@ -4769,7 +4776,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cowboyMinigameBeginStringHint =>
-      'Текст подсказки появляется вместе с предпросмотром зомби перед каждой посадкой. Стандартный текст: «Посадите растение с конвейера, чтобы начать уровень!».';
+      'При добавлении модуля «Неудачный загон» в модуле конвейера автоматически включается переключатель «Ручное создание карточек».';
 
   @override
   String get cowboyMinigameHelpTitle => 'Модуль мини-игры «Неудачный загон»';

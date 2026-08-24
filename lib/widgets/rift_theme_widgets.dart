@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/rift_theme_repository.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
@@ -49,6 +50,7 @@ Future<void> showRiftThemeDetailsDialog(
     ResourceNames.ensureLoaded(),
     PlantRepository().init(),
     ZombieRepository().init(),
+    ZombiePropertiesRepository.init(),
     RiftThemeRepository.ensureTargetListsLoaded(),
   ]);
   if (!context.mounted) return;
@@ -59,10 +61,7 @@ Future<void> showRiftThemeDetailsDialog(
   final description = ResourceNames.lookup(context, descriptionKey);
   final detailsKey = RiftThemeRepository.descriptionDetailsKey(themeId);
   final details = ResourceNames.lookup(context, detailsKey);
-  final rawTargetList = RiftThemeRepository.targetLists[themeId];
-  final targetList = rawTargetList?.shouldDisplayInThemeDetails == true
-      ? rawTargetList
-      : null;
+  final targetList = RiftThemeRepository.detailsTargetList(themeId);
 
   await showDialog<void>(
     context: context,
@@ -121,7 +120,7 @@ Future<void> showRiftThemeDetailsDialog(
                   const SizedBox(height: 6),
                   Text(details),
                 ],
-                if (targetList != null && targetList.ids.isNotEmpty) ...[
+                if (targetList != null) ...[
                   const SizedBox(height: 20),
                   _SectionTitle(
                     text: _resourceLabel(
@@ -135,20 +134,30 @@ Future<void> showRiftThemeDetailsDialog(
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Wrap(
-                    spacing: cardSpacing,
-                    runSpacing: cardSpacing,
-                    children: targetList.ids
-                        .map(
-                          (id) => _TargetCard(
-                            id: id.trim(),
-                            type: targetList.type,
-                            colorScheme: colorScheme,
-                            width: targetCardWidth,
-                          ),
-                        )
-                        .toList(),
-                  ),
+                  if (targetList.ids.isEmpty)
+                    Text(
+                      _resourceLabel(
+                        dialogContext,
+                        'rift_theme_no_related_zombies',
+                        'There are currently no matching zombies available '
+                            'in the editor.',
+                      ),
+                    )
+                  else
+                    Wrap(
+                      spacing: cardSpacing,
+                      runSpacing: cardSpacing,
+                      children: targetList.ids
+                          .map(
+                            (id) => _TargetCard(
+                              id: id.trim(),
+                              type: targetList.type,
+                              colorScheme: colorScheme,
+                              width: targetCardWidth,
+                            ),
+                          )
+                          .toList(),
+                    ),
                 ],
               ],
             ),

@@ -7,6 +7,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Spawn gravestones event editor. Ported from Z-Editor-master SpawnGraveStonesEventEP.kt
@@ -458,7 +459,7 @@ class _SpawnGraveStonesEventScreenState
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            GridItemIcon(
+            PresetAwareGridItemIcon(
               typeName: displayTypeName,
               size: 48,
               fit: BoxFit.contain,

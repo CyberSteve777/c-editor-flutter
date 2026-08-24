@@ -114,21 +114,19 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
             ..._generalEntries(context, propsData).map(
               (entry) => _ReadOnlyValueRow(label: entry.$1, value: entry.$2),
             ),
-            _ReadOnlyBoolRow(
+            ZombossMechReadOnlyBoolRow(
               key: const ValueKey('readOnlySquashZombies'),
-              label:
-                  l10n?.zombossMechSquashZombies ?? 'Can squash zombies',
+              label: l10n?.zombossMechSquashZombies ?? 'Can squash zombies',
               value: ZombossMechRepository.boolPropertyWithTemplateFallback(
                 data: propsData,
                 catalog: catalog,
                 key: 'SquashZombies',
               ),
             ),
-            _ReadOnlyBoolRow(
+            ZombossMechReadOnlyBoolRow(
               key: const ValueKey('readOnlySquashGridItems'),
               label:
-                  l10n?.zombossMechSquashGridItems ??
-                  'Can squash grid items',
+                  l10n?.zombossMechSquashGridItems ?? 'Can squash grid items',
               value: ZombossMechRepository.boolPropertyWithTemplateFallback(
                 data: propsData,
                 catalog: catalog,
@@ -278,8 +276,8 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
   }
 }
 
-class _ReadOnlyBoolRow extends StatelessWidget {
-  const _ReadOnlyBoolRow({
+class ZombossMechReadOnlyBoolRow extends StatelessWidget {
+  const ZombossMechReadOnlyBoolRow({
     super.key,
     required this.label,
     required this.value,
@@ -290,11 +288,10 @@ class _ReadOnlyBoolRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile.adaptive(
+    return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Text(label),
-      value: value,
-      onChanged: null,
+      trailing: Switch.adaptive(value: value, onChanged: null),
     );
   }
 }

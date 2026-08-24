@@ -5,6 +5,7 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_properties_screen.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_properties_view_screen.dart';
+import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -99,9 +100,9 @@ void main() {
           matching: find.byType(ReorderableListView),
         ),
       );
-      expect(jamOrder.dragBoundaryProvider, isNotNull);
-      expect(jamOrder.proxyDecorator, isNotNull);
-      expect(jamOrder.clipBehavior, Clip.hardEdge);
+      expect(jamOrder.dragBoundaryProvider, isNull);
+      expect(jamOrder.proxyDecorator, isNull);
+      expect(jamOrder.clipBehavior, Clip.none);
       expect(
         tester
             .getSize(
@@ -112,10 +113,6 @@ void main() {
             )
             .width,
         closeTo(840, 0.1),
-      );
-      expect(
-        find.descendant(of: jamCard, matching: find.byType(DragBoundary)),
-        findsOneWidget,
       );
       jamOrder.onReorderItem!(0, 4);
       await tester.pump();
@@ -231,7 +228,7 @@ void main() {
     },
   );
 
-  testWidgets('Eighties order drag proxy stays compact in a narrow window', (
+  testWidgets('Eighties order uses left handles in a narrow window', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -255,14 +252,17 @@ void main() {
     await tester.pumpAndSettle();
 
     final jamCard = find.byKey(const ValueKey('stageJamOrderCard'));
-    final listFinder = find.descendant(
-      of: jamCard,
-      matching: find.byType(ReorderableListView),
-    );
-    final list = tester.widget<ReorderableListView>(listFinder);
     final handle = find
         .descendant(of: jamCard, matching: find.byIcon(Icons.drag_indicator))
         .first;
+    final firstNumber = find
+        .descendant(of: jamCard, matching: find.byType(CircleAvatar))
+        .first;
+    expect(
+      tester.getCenter(handle).dx,
+      lessThan(tester.getCenter(firstNumber).dx),
+    );
+
     await tester.ensureVisible(handle);
     await tester.pump();
     final gesture = await tester.startGesture(
@@ -272,37 +272,63 @@ void main() {
     await tester.pump();
     await gesture.moveBy(const Offset(0, 40));
     await tester.pump();
-
-    final visualProxy = find.byKey(
-      const ValueKey('eightiesOrderDragProxyVisual'),
-    );
-    expect(tester.getSize(visualProxy).height, 64);
-    expect(
-      tester.getSize(visualProxy).width,
-      closeTo(tester.getSize(listFinder).width, 0.1),
-    );
+    expect(find.text('朋克 (Punk)'), findsWidgets);
+    expect(tester.takeException(), isNull);
     await gesture.up();
     await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
 
-    final constrainedProxy = list.proxyDecorator!(
-      const SizedBox(width: 360, height: 600),
-      0,
-      const AlwaysStoppedAnimation<double>(1),
-    );
+  testWidgets('stage action list keeps its exact height while dragging', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(600, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final catalog = ZombossMechRepository.getCatalog(
+      'ZombieZombossMech_Eighties',
+    )!;
+    final level = PvzLevelFile(objects: []);
     await tester.pumpWidget(
-      MaterialApp(
-        home: Align(
-          alignment: Alignment.topLeft,
-          child: SizedBox(width: 360, height: 600, child: constrainedProxy),
+      _localizedApp(
+        CustomZombossMechPropertiesScreen(
+          catalog: catalog,
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
         ),
       ),
     );
-    expect(
-      tester.getSize(
-        find.byKey(const ValueKey('eightiesOrderDragProxyVisual')),
-      ),
-      const Size(360, 64),
+    await tester.pumpAndSettle();
+
+    final actions = List<dynamic>.from(
+      (_list(_props(level, catalog), 'Stages')[2]
+              as Map<String, dynamic>)['Actions']
+          as List,
     );
+    final actionList = find.byKey(const ValueKey('stageActionList-2'));
+    expect(actionList, findsOneWidget);
+    final expectedHeight = actions.length * kZombossMechActionRowHeight;
+    expect(tester.getSize(actionList).height, expectedHeight);
+
+    final handle = find
+        .descendant(of: actionList, matching: find.byIcon(Icons.drag_indicator))
+        .first;
+    final gesture = await tester.startGesture(
+      tester.getCenter(handle),
+      kind: PointerDeviceKind.mouse,
+    );
+    await tester.pump();
+    await gesture.moveBy(const Offset(0, 40));
+    await tester.pump();
+
+    expect(tester.getSize(actionList).height, expectedHeight);
+    expect(tester.takeException(), isNull);
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('non-custom Eighties variants expose both phase orders', (

@@ -135,10 +135,7 @@ String localizedPropertyLabel(
   String localizedName,
   String codeName,
 ) {
-  final languageCode = Localizations.localeOf(context).languageCode;
-  return languageCode == 'zh'
-      ? '$localizedName（$codeName）'
-      : '$localizedName ($codeName)';
+  return '$localizedName ($codeName)';
 }
 
 /// Shared editor UI components. Ported from Z-Editor-master EditorComponents.kt

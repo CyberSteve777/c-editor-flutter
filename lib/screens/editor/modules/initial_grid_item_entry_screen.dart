@@ -7,6 +7,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/select/grid_item_selection_screen.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Initial grid item entry. Ported from Z-Editor-master InitialGridItemEntryEP.kt
@@ -431,7 +432,7 @@ class _GridItemCard extends StatelessWidget {
         ? ResourceNames.lookup(context, 'griditem_$displayTypeName')
         : '';
     final name = !isKnown
-        ? (AppLocalizations.of(context)?.levelTypeUnknown ?? 'Unknown')
+        ? item.typeName
         : displayName != 'griditem_$displayTypeName'
         ? displayName
         : displayTypeName!;
@@ -447,7 +448,7 @@ class _GridItemCard extends StatelessWidget {
             EditorDeletableIconHeader(
               onDelete: onDelete,
               deleteTooltip: deleteTooltip,
-              icon: GridItemIcon(
+              icon: PresetAwareGridItemIcon(
                 typeName: displayTypeName ?? '__unknown__',
                 size: 64,
                 fit: BoxFit.contain,

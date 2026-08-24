@@ -154,6 +154,13 @@ class _EditorEscapeIntent extends Intent {
   const _EditorEscapeIntent();
 }
 
+typedef _EditorTopTabEntry = ({
+  EditorTabType type,
+  String? moduleRtid,
+  int instanceIndex,
+  int instanceCount,
+});
+
 class EditorScreen extends StatefulWidget {
   const EditorScreen({
     super.key,
@@ -362,6 +369,9 @@ class _EditorScreenState extends State<EditorScreen> {
       'ZombossLastStandMinigameProperties',
     );
     final isLastStand = existingClasses.contains('LastStandMinigameProperties');
+    final isCowboyMinigame = existingClasses.contains(
+      'CowboyMinigameProperties',
+    );
     final isEvilDave = existingClasses.contains('EvilDaveProperties');
 
     final missingList = <String>[];
@@ -380,6 +390,7 @@ class _EditorScreenState extends State<EditorScreen> {
     if (!existingClasses.contains('StandardLevelIntroProperties')) {
       if (!isVaseBreaker &&
           !isLastStand &&
+          !isCowboyMinigame &&
           !isZombossMechBattle &&
           !isZombossBattle) {
         missingList.add('StandardLevelIntroProperties');
@@ -1136,34 +1147,6 @@ class _EditorScreenState extends State<EditorScreen> {
     _ec.recalculateTabs();
   }
 
-  void _handleDuplicateModule(String rtid) {
-    final def = _ec.state.parsedData?.levelDef;
-    final levelFile = _ec.state.levelFile;
-    final info = RtidParser.parse(rtid);
-    if (def == null || levelFile == null || info?.source != 'CurrentLevel') {
-      return;
-    }
-
-    final sourceObject = levelFile.objects.firstWhereOrNull(
-      (object) => object.aliases?.contains(info!.alias) == true,
-    );
-    if (sourceObject == null) return;
-    final metadata = ModuleRegistry.getMetadataForAlias(
-      info!.alias,
-      sourceObject.objClass,
-    );
-    final duplicateRtid = ModuleInstanceUtils.duplicateCurrentLevelModule(
-      levelFile: levelFile,
-      levelDef: def,
-      rtid: rtid,
-      metadata: metadata,
-    );
-    if (duplicateRtid == null) return;
-
-    _markDirty();
-    _ec.recalculateTabs();
-  }
-
   void _handleRemoveModule(String rtid) {
     final def = _ec.state.parsedData?.levelDef;
     if (def == null) return;
@@ -1182,11 +1165,14 @@ class _EditorScreenState extends State<EditorScreen> {
       }
     }
 
-    ModuleInstanceUtils.removeModule(
+    final removedModule = ModuleInstanceUtils.removeModule(
       levelFile: _ec.state.levelFile!,
       levelDef: def,
       rtid: rtid,
     );
+    if (removedModule?.objClass == CowboyMinigameUtils.moduleObjClass) {
+      CowboyMinigameUtils.removeManualPacketSpawning(_ec.state.levelFile!);
+    }
     if (moldLocations != null) {
       MoldColonyModuleUtils.removeUnreferencedLayout(
         levelFile: _ec.state.levelFile!,
@@ -2443,6 +2429,64 @@ class _EditorScreenState extends State<EditorScreen> {
     }
   }
 
+  List<String> _moduleRtidsForEditorTab(EditorTabType type) {
+    final objClass = switch (type) {
+      EditorTabType.zombossMech => 'ZombossBattleModuleProperties',
+      EditorTabType.zombossBattle => 'ZombossLastStandMinigameProperties',
+      _ => null,
+    };
+    final def = _ec.state.parsedData?.levelDef;
+    final objectMap = _ec.state.parsedData?.objectMap;
+    if (objClass == null || def == null || objectMap == null) return const [];
+
+    return def.modules
+        .where((rtid) {
+          final info = RtidParser.parse(rtid);
+          if (info == null) return false;
+          final resolvedObjClass = info.source == 'CurrentLevel'
+              ? objectMap[info.alias]?.objClass
+              : ReferenceRepository.instance.getObjClass(info.alias);
+          return resolvedObjClass == objClass;
+        })
+        .toList(growable: false);
+  }
+
+  List<_EditorTopTabEntry> _editorTopTabEntries() {
+    final rtidsByType = <EditorTabType, List<String>>{
+      EditorTabType.zombossMech: _moduleRtidsForEditorTab(
+        EditorTabType.zombossMech,
+      ),
+      EditorTabType.zombossBattle: _moduleRtidsForEditorTab(
+        EditorTabType.zombossBattle,
+      ),
+    };
+    final occurrences = <EditorTabType, int>{};
+    return _ec.state.availableTabs
+        .map((type) {
+          final index = occurrences.update(
+            type,
+            (value) => value + 1,
+            ifAbsent: () => 0,
+          );
+          final rtids = rtidsByType[type] ?? const <String>[];
+          return (
+            type: type,
+            moduleRtid: index < rtids.length ? rtids[index] : null,
+            instanceIndex: index,
+            instanceCount: rtids.isEmpty ? 1 : rtids.length,
+          );
+        })
+        .toList(growable: false);
+  }
+
+  void _setActiveModuleTab(EditorTabType type, String rtid) {
+    final entries = _editorTopTabEntries();
+    final index = entries.indexWhere(
+      (entry) => entry.type == type && entry.moduleRtid == rtid,
+    );
+    if (index >= 0) _tabController?.animateTo(index);
+  }
+
   dynamic _cloneJson(dynamic data) {
     return jsonDecode(jsonEncode(data));
   }
@@ -2531,6 +2575,8 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
           ),
         ),
       );
@@ -2807,27 +2853,6 @@ class _EditorScreenState extends State<EditorScreen> {
 
       openSunDropper(rtid);
       return;
-    }
-
-    String instanceTitle() {
-      final metadata = ModuleRegistry.getMetadataForAlias(info.alias, objClass);
-      final matchingRtids = <String>[];
-      for (final moduleRtid
-          in _ec.state.parsedData!.levelDef?.modules ?? const <String>[]) {
-        final moduleInfo = RtidParser.parse(moduleRtid);
-        if (moduleInfo == null) continue;
-        final moduleClass = moduleInfo.source == 'CurrentLevel'
-            ? _ec.state.parsedData!.objectMap[moduleInfo.alias]?.objClass
-            : ReferenceRepository.instance.getObjClass(moduleInfo.alias);
-        if (moduleClass == objClass) matchingRtids.add(moduleRtid);
-      }
-      final index = matchingRtids.indexOf(rtid);
-      return moduleInstanceDisplayName(
-        baseName: metadata.getTitle(context),
-        objClass: objClass,
-        instanceCount: matchingRtids.length,
-        instanceIndex: index < 0 ? 0 : index,
-      );
     }
 
     if (objClass == 'MoonLifeSupportSystemProperties' &&
@@ -3194,6 +3219,8 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
           ),
         ),
       );
@@ -3238,6 +3265,8 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
           ),
         ),
       );
@@ -3442,21 +3471,7 @@ class _EditorScreenState extends State<EditorScreen> {
     }
     if (info.source == 'CurrentLevel' &&
         objClass == 'ZombossBattleModuleProperties') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(title: Text(instanceTitle())),
-            body: ZombossMechBattleTab(
-              moduleRtid: rtid,
-              levelFile: _ec.state.levelFile!,
-              onChanged: _markDirty,
-              onOpenGlacierModule: _openGlacierModuleSettings,
-              onOpenInitialGridItems: _openInitialGridItemSettings,
-            ),
-          ),
-        ),
-      );
+      _setActiveModuleTab(EditorTabType.zombossMech, rtid);
       return;
     }
     if (info.source == 'CurrentLevel' &&
@@ -3466,19 +3481,7 @@ class _EditorScreenState extends State<EditorScreen> {
     }
     if (info.source == 'CurrentLevel' &&
         objClass == 'ZombossLastStandMinigameProperties') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(title: Text(instanceTitle())),
-            body: ZombossBattleTab(
-              moduleRtid: rtid,
-              levelFile: _ec.state.levelFile!,
-              onChanged: _markDirty,
-            ),
-          ),
-        ),
-      );
+      _setActiveModuleTab(EditorTabType.zombossBattle, rtid);
       return;
     }
     if (const {
@@ -3720,6 +3723,7 @@ class _EditorScreenState extends State<EditorScreen> {
       child: BlocBuilder<EditorCubit, EditorState>(
         builder: (context, editorState) {
           final l10n = AppLocalizations.of(context);
+          final editorTopTabs = _editorTopTabEntries();
           final isDesktop =
               Theme.of(context).platform == TargetPlatform.windows ||
               Theme.of(context).platform == TargetPlatform.macOS ||
@@ -3897,7 +3901,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                   )
                 : DefaultTabController(
-                    length: _ec.state.availableTabs.length,
+                    length: editorTopTabs.length,
                     child: Builder(
                       builder: (context) {
                         _tabController = DefaultTabController.of(context);
@@ -3914,7 +3918,8 @@ class _EditorScreenState extends State<EditorScreen> {
                                       : TabAlignment.fill,
                                   dividerHeight: 0,
                                   indicatorSize: TabBarIndicatorSize.tab,
-                                  tabs: _ec.state.availableTabs.map((t) {
+                                  tabs: editorTopTabs.map((entry) {
+                                    final t = entry.type;
                                     IconData icon;
                                     String label;
                                     switch (t) {
@@ -3943,15 +3948,27 @@ class _EditorScreenState extends State<EditorScreen> {
                                         break;
                                       case EditorTabType.zombossMech:
                                         icon = Icons.smart_toy_outlined;
-                                        label =
-                                            l10n?.zombossMech ??
-                                            'ZombossMech Battle';
+                                        label = moduleInstanceDisplayName(
+                                          baseName:
+                                              l10n?.zombossMech ??
+                                              'ZombossMech Battle',
+                                          objClass:
+                                              'ZombossBattleModuleProperties',
+                                          instanceCount: entry.instanceCount,
+                                          instanceIndex: entry.instanceIndex,
+                                        );
                                         break;
                                       case EditorTabType.zombossBattle:
                                         icon = Icons.castle;
-                                        label =
-                                            l10n?.zombossBattle ??
-                                            'Zomboss Battle';
+                                        label = moduleInstanceDisplayName(
+                                          baseName:
+                                              l10n?.zombossBattle ??
+                                              'Zomboss Battle',
+                                          objClass:
+                                              'ZombossLastStandMinigameProperties',
+                                          instanceCount: entry.instanceCount,
+                                          instanceIndex: entry.instanceIndex,
+                                        );
                                         break;
                                     }
                                     return Tab(text: label, icon: Icon(icon));
@@ -3959,9 +3976,10 @@ class _EditorScreenState extends State<EditorScreen> {
                                 ),
                                 Expanded(
                                   child: TabBarView(
-                                    children: _ec.state.availableTabs.map<Widget>((
-                                      t,
+                                    children: editorTopTabs.map<Widget>((
+                                      entry,
                                     ) {
+                                      final t = entry.type;
                                       switch (t) {
                                         case EditorTabType.settings:
                                           return LevelSettingsTab(
@@ -3982,8 +4000,6 @@ class _EditorScreenState extends State<EditorScreen> {
                                             onEditBasicInfo:
                                                 _handleEditBasicInfo,
                                             onEditModule: _handleEditModule,
-                                            onDuplicateModule:
-                                                _handleDuplicateModule,
                                             onRemoveModule: _handleRemoveModule,
                                             onReorderModules:
                                                 _handleReorderModules,
@@ -4042,8 +4058,10 @@ class _EditorScreenState extends State<EditorScreen> {
                                           );
                                         case EditorTabType.zombossMech:
                                           return ZombossMechBattleTab(
+                                            key: ValueKey(entry.moduleRtid),
                                             levelFile: _ec.state.levelFile!,
                                             onChanged: _markDirty,
+                                            moduleRtid: entry.moduleRtid,
                                             onOpenGlacierModule:
                                                 _openGlacierModuleSettings,
                                             onOpenInitialGridItems:
@@ -4051,8 +4069,10 @@ class _EditorScreenState extends State<EditorScreen> {
                                           );
                                         case EditorTabType.zombossBattle:
                                           return ZombossBattleTab(
+                                            key: ValueKey(entry.moduleRtid),
                                             levelFile: _ec.state.levelFile!,
                                             onChanged: _markDirty,
+                                            moduleRtid: entry.moduleRtid,
                                           );
                                       }
                                     }).toList(),

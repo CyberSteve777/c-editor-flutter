@@ -56,6 +56,7 @@ enum ZombieTag {
   evildave,
   custom,
   expedition,
+  pvp,
   chinese,
   international,
 }
@@ -120,6 +121,8 @@ extension ZombieTagExtension on ZombieTag {
         return s.zombieTagCustom;
       case ZombieTag.expedition:
         return s.zombieTagExpedition;
+      case ZombieTag.pvp:
+        return s.zombieTagPvp;
       case ZombieTag.evildave:
         return s.zombieTagEvildave;
       case ZombieTag.international:
@@ -162,6 +165,7 @@ extension ZombieTagExtension on ZombieTag {
       case ZombieTag.evildave:
       case ZombieTag.custom:
       case ZombieTag.expedition:
+      case ZombieTag.pvp:
       case ZombieTag.international:
       case ZombieTag.chinese:
         return ZombieCategory.other;

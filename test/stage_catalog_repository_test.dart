@@ -98,11 +98,20 @@ void main() {
 
     test('keeps the Moon-specific custom-stage setting', () {
       final impl = StageCatalogRepository.catalogImplementation('MoonStage');
+      final moonBase = StageCatalogRepository.stageBaseOptions().firstWhere(
+        (option) => option.alias == 'MoonStage',
+      );
+      final resourceGroupField = StageCatalogRepository.sectionForObjclass(
+        'MoonStageProperties',
+      )!.fields.firstWhere((field) => field.name == 'ResourceGroupNames');
 
       expect(impl, isNotNull);
       expect(impl!.objclass, 'MoonStageProperties');
       expect(impl.objdata['MusicSuffix'], 'Moon');
       expect(impl.objdata['CosmicPlantfoodFillSeconds'], 50.0);
+      expect(impl.objdata['ResourceGroupNames'], contains('AudioMoon'));
+      expect(moonBase.objdata['ResourceGroupNames'], contains('AudioMoon'));
+      expect(resourceGroupField.defaultValue, contains('AudioMoon'));
     });
   });
 }

@@ -1329,6 +1329,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagExpedition => 'Expedition Gate Variants';
 
   @override
+  String get zombieTagPvp => 'Two-Player Mode Variants';
+
+  @override
   String get zombieTagPet => 'Pet';
 
   @override
@@ -2013,6 +2016,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Last Stand mode does not need an opening intro.';
 
   @override
+  String get conflictDesc_CowboyIntro =>
+      'Not OK Corral conflicts with the Intro Animation module. Using them together will cause the zombie preview and transition effect at the start of the level to behave incorrectly.';
+
+  @override
   String get conflictDesc_EvilDaveZombieDrop =>
       'I, Zombie mode cannot have Zombie Drop module.';
 
@@ -2580,7 +2587,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_CowboyMinigameProperties =>
-      'Starts a zombie wave whenever a conveyor-belt plant is planted';
+      'Starts each zombie wave only after a plant from the conveyor belt is planted';
 
   @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
@@ -4806,7 +4813,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cowboyMinigameBeginStringHint =>
-      'The prompt text appears together with the zombie preview before every plant placement. The default message is “Plant a plant from the conveyor belt to begin!”.';
+      'Adding the Not OK Corral module automatically enables Manual Packet Spawning in the Conveyor Belt module.';
 
   @override
   String get cowboyMinigameHelpTitle => 'Not OK Corral module';

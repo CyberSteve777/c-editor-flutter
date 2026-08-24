@@ -4,6 +4,8 @@ import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart'
+    show CustomResourceBadge, presetCustomResourceBadgeColor;
 import 'package:c_editor/data/repository/tool_repository.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -280,14 +282,34 @@ class GridItemIcon extends StatelessWidget {
     final path = GridItemRepository.getIconPath(id);
     final resourceKey = id.startsWith('Armrack') ? 'armrack_$id' : 'griditem_$id';
     final tooltip = ResourceNames.lookup(context, resourceKey);
+    final isPreset =
+        !isGrid &&
+        GridItemRepository.getByTypeName(id)?.source == GridItemSource.custom;
 
-    return _IconWrapper(
-      id: id,
-      tooltip: tooltip,
-      asset: path,
-      size: size,
-      isGrid: isGrid,
-      fallbackIcon: Icons.grid_on,
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          _IconWrapper(
+            id: id,
+            tooltip: tooltip,
+            asset: path,
+            size: size,
+            isGrid: isGrid,
+            fallbackIcon: Icons.grid_on,
+          ),
+          if (isPreset)
+            Positioned(
+              top: 0,
+              left: 0,
+              child: CustomResourceBadge(
+                color: presetCustomResourceBadgeColor(context),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

@@ -35,6 +35,13 @@ class ConflictRegistry {
       descriptionKey: 'conflictDesc_LastStandIntro',
     ),
     ModuleConflictRule(
+      conflictingClasses: {
+        'CowboyMinigameProperties',
+        'StandardLevelIntroProperties',
+      },
+      descriptionKey: 'conflictDesc_CowboyIntro',
+    ),
+    ModuleConflictRule(
       conflictingClasses: {'EvilDaveProperties', 'ZombiesDeadWinConProperties'},
       descriptionKey: 'conflictDesc_EvilDaveZombieDrop',
     ),
@@ -153,6 +160,8 @@ class ConflictRegistry {
         return l10n.conflictDesc_VaseBreakerIntro;
       case 'conflictDesc_LastStandIntro':
         return l10n.conflictDesc_LastStandIntro;
+      case 'conflictDesc_CowboyIntro':
+        return l10n.conflictDesc_CowboyIntro;
       case 'conflictDesc_EvilDaveZombieDrop':
         return l10n.conflictDesc_EvilDaveZombieDrop;
       case 'conflictDesc_EvilDaveVictory':

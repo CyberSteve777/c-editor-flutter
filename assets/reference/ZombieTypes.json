@@ -24424,7 +24424,7 @@
         "AnimRigClass": "ZombieAnimRig_MoonTeleportation",
         "PopAnim": "POPANIM_ZOMBIE_ZOMBIE_MOON_TELEPORT_RIGHT",
         "Placeable": true,
-        "BoardAlmanac": false,
+        "BoardAlmanac": true,
         "RecommendPlants": [
           "cosmicpea",
           "cosmicmushroom"
@@ -24474,7 +24474,7 @@
         "AnimRigClass": "ZombieAnimRig_MoonTeleportation",
         "PopAnim": "POPANIM_ZOMBIE_ZOMBIE_MOON_TELEPORT_RIGHT",
         "Placeable": true,
-        "BoardAlmanac": false,
+        "BoardAlmanac": true,
         "HomeWorld": "moon"
       }
     },
@@ -24496,6 +24496,11 @@
           "ZombieZcorpGargGroup",
           "ZombieZcorpImpGroup",
           "ZombieGargantuarEffects"
+        ],
+        "AudioGroups": [
+          "ZombieFutureMechFootballAudio",
+          "ZombieZcorpGargAudio",
+          "ZombieZcorpImpAudio"
         ],
         "AnimRigClass": "ZombieAnimRig_CosmicImp",
         "PopAnim": "POPANIM_ZOMBIE_ZOMBIE_GALACTIC_IMP",

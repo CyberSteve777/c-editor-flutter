@@ -11,6 +11,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/zombie_flat_lane_drag_drop_editor.dart';
 import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
@@ -501,7 +502,7 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                   margin: const EdgeInsets.only(bottom: 8),
                   color: isValid ? null : theme.colorScheme.errorContainer,
                   child: ListTile(
-                    leading: GridItemIcon(
+                    leading: PresetAwareGridItemIcon(
                       typeName: displayTypeName,
                       size: 40,
                       fit: BoxFit.contain,

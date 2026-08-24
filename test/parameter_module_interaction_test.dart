@@ -126,4 +126,66 @@ void main() {
     expect(card.color, Theme.of(context).colorScheme.errorContainer);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('warns when Not OK Corral and Intro Animation coexist', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1400);
+    addTearDown(tester.view.reset);
+
+    const cowboyRtid = 'RTID(CowboyMinigame@CurrentLevel)';
+    const introRtid = 'RTID(StandardIntro@CurrentLevel)';
+    final levelDef = LevelDefinitionData(
+      modules: const [cowboyRtid, introRtid],
+    );
+    final objects = <String, PvzObject>{
+      'CowboyMinigame': PvzObject(
+        aliases: const ['CowboyMinigame'],
+        objClass: 'CowboyMinigameProperties',
+        objData: const <String, dynamic>{},
+      ),
+      'StandardIntro': PvzObject(
+        aliases: const ['StandardIntro'],
+        objClass: 'StandardLevelIntroProperties',
+        objData: const <String, dynamic>{},
+      ),
+    };
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('zh'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: LevelSettingsTab(
+            levelDef: levelDef,
+            objectMap: objects,
+            missingModules: const [],
+            onEditBasicInfo: () {},
+            onEditModule: (_) {},
+            onRemoveModule: (_) {},
+            onReorderModules:
+                ({
+                  required isCoreSection,
+                  required oldIndex,
+                  required newIndex,
+                }) {},
+            onNavigateToAddModule: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final message = find.text('围栏之战与转场模块存在冲突，同时使用会导致开局时的僵尸预览和转场效果异常。');
+    expect(message, findsOneWidget);
+    expect(find.text('模块逻辑冲突'), findsOneWidget);
+    final cardFinder = find.ancestor(of: message, matching: find.byType(Card));
+    expect(cardFinder, findsOneWidget);
+    final card = tester.widget<Card>(cardFinder);
+    final context = tester.element(cardFinder);
+    expect(card.color, Theme.of(context).colorScheme.errorContainer);
+    expect(tester.takeException(), isNull);
+  });
 }

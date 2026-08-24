@@ -858,6 +858,8 @@ class _EightiesStageOrderCard extends StatelessWidget {
   final String Function(String value) valueLabel;
   final ReorderCallback onReorderItem;
 
+  static const _rowHeight = 64.0;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -896,77 +898,77 @@ class _EightiesStageOrderCard extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 840),
                 child: SizedBox(
                   width: double.infinity,
-                  child: DragBoundary(
-                    child: ReorderableListView.builder(
-                      clipBehavior: Clip.hardEdge,
-                      shrinkWrap: true,
-                      itemExtent: 64,
-                      physics: const NeverScrollableScrollPhysics(),
-                      buildDefaultDragHandles: false,
-                      dragBoundaryProvider: DragBoundary.forRectOf,
-                      proxyDecorator: (child, index, animation) {
-                        return AnimatedBuilder(
-                          animation: animation,
-                          child: child,
-                          builder: (context, child) => OverflowBox(
-                            alignment: Alignment.topCenter,
-                            minHeight: 64,
-                            maxHeight: 64,
-                            child: SizedBox(
-                              key: const ValueKey(
-                                'eightiesOrderDragProxyVisual',
+                  height: values.length * _rowHeight,
+                  child: ReorderableListView.builder(
+                    clipBehavior: Clip.none,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    buildDefaultDragHandles: false,
+                    itemCount: values.length,
+                    onReorderItem: onReorderItem,
+                    itemBuilder: (context, index) {
+                      final value = values[index];
+                      return Material(
+                        key: ValueKey('$title-$index-$value'),
+                        color: Colors.transparent,
+                        child: SizedBox(
+                          height: _rowHeight,
+                          child: Row(
+                            children: [
+                              ReorderableDragStartListener(
+                                key: ValueKey(
+                                  'eightiesOrderDragHandle-$title-$index-$value',
+                                ),
+                                index: index,
+                                child: SizedBox(
+                                  width: 48,
+                                  height: _rowHeight,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.drag_indicator,
+                                      color: theme.colorScheme.onSurfaceVariant
+                                          .withValues(alpha: 0.85),
+                                    ),
+                                  ),
+                                ),
                               ),
-                              height: 64,
-                              child: Material(
-                                color: theme.colorScheme.surfaceContainerHigh,
-                                elevation: 6 * animation.value,
-                                borderRadius: BorderRadius.circular(10),
-                                clipBehavior: Clip.antiAlias,
-                                child: child,
+                              CircleAvatar(
+                                radius: 15,
+                                backgroundColor: accent.withValues(alpha: 0.14),
+                                foregroundColor: accent,
+                                child: Text('${index + 1}'),
                               ),
-                            ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      valueLabel(value),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      value,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
                           ),
-                        );
-                      },
-                      itemCount: values.length,
-                      onReorderItem: onReorderItem,
-                      itemBuilder: (context, index) {
-                        final value = values[index];
-                        return SizedBox(
-                          key: ValueKey('$title-$index-$value'),
-                          height: 64,
-                          child: ListTile(
-                            dense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 4,
-                            ),
-                            leading: CircleAvatar(
-                              radius: 15,
-                              backgroundColor: accent.withValues(alpha: 0.14),
-                              foregroundColor: accent,
-                              child: Text('${index + 1}'),
-                            ),
-                            title: Text(
-                              valueLabel(value),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              value,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: ReorderableDragStartListener(
-                              index: index,
-                              child: const Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Icon(Icons.drag_indicator),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -1160,48 +1162,52 @@ class _StageCard extends StatelessWidget {
                       ),
                     )
                   else
-                    ReorderableListView.builder(
-                      clipBehavior: Clip.none,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      buildDefaultDragHandles: false,
-                      itemCount: selectedActions.length,
-                      onReorder: (oldIndex, newIndex) {
-                        if (newIndex > oldIndex) newIndex--;
-                        final next = List<String>.from(selectedActions);
-                        final item = next.removeAt(oldIndex);
-                        next.insert(newIndex, item);
-                        onActionsChanged(next);
-                      },
-                      itemBuilder: (context, actionIndex) {
-                        final rtid = selectedActions[actionIndex];
-                        final isCustom = ZombossMechActionUtils.isCustomRtid(
-                          rtid,
-                        );
-                        final resolved = ZombossMechActionUtils.resolveAction(
-                          rtid: rtid,
-                          catalog: catalog,
-                          levelFile: levelFile,
-                        );
-                        final tag = resolved?.tag ?? '';
+                    SizedBox(
+                      key: ValueKey('stageActionList-$index'),
+                      height:
+                          selectedActions.length * kZombossMechActionRowHeight,
+                      child: ReorderableListView.builder(
+                        clipBehavior: Clip.none,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        buildDefaultDragHandles: false,
+                        itemCount: selectedActions.length,
+                        onReorderItem: (oldIndex, newIndex) {
+                          final next = List<String>.from(selectedActions);
+                          final item = next.removeAt(oldIndex);
+                          next.insert(newIndex, item);
+                          onActionsChanged(next);
+                        },
+                        itemBuilder: (context, actionIndex) {
+                          final rtid = selectedActions[actionIndex];
+                          final isCustom = ZombossMechActionUtils.isCustomRtid(
+                            rtid,
+                          );
+                          final resolved = ZombossMechActionUtils.resolveAction(
+                            rtid: rtid,
+                            catalog: catalog,
+                            levelFile: levelFile,
+                          );
+                          final tag = resolved?.tag ?? '';
 
-                        return ZombossMechActionListTile(
-                          key: ValueKey('$index-$actionIndex-$rtid'),
-                          mechId: catalog.id,
-                          catalog: catalog,
-                          levelFile: levelFile,
-                          rtid: rtid,
-                          tag: tag,
-                          reorderIndex: actionIndex,
-                          onEdit: isCustom
-                              ? () => onEditStageAction(actionIndex, rtid)
-                              : null,
-                          onInspect: isCustom
-                              ? null
-                              : () => onInspectAction(rtid),
-                          onRemove: () => onRemoveAction(actionIndex),
-                        );
-                      },
+                          return ZombossMechActionListTile(
+                            key: ValueKey('$index-$actionIndex-$rtid'),
+                            mechId: catalog.id,
+                            catalog: catalog,
+                            levelFile: levelFile,
+                            rtid: rtid,
+                            tag: tag,
+                            reorderIndex: actionIndex,
+                            onEdit: isCustom
+                                ? () => onEditStageAction(actionIndex, rtid)
+                                : null,
+                            onInspect: isCustom
+                                ? null
+                                : () => onInspectAction(rtid),
+                            onRemove: () => onRemoveAction(actionIndex),
+                          );
+                        },
+                      ),
                     ),
                 ],
               ),

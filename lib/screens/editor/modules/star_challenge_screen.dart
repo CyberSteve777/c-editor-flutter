@@ -18,12 +18,14 @@ class StarChallengeModuleScreen extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     required this.onBack,
+    this.onAddModule,
   });
 
   final String rtid;
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback onBack;
+  final void Function(String objClass)? onAddModule;
 
   @override
   State<StarChallengeModuleScreen> createState() =>
@@ -151,6 +153,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       object: obj,
       accentColor: themeColor,
       levelFile: widget.levelFile,
+      onAddModule: widget.onAddModule,
       onChanged: () {
         setState(() {
           _saveData();
@@ -324,7 +327,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           ModuleAliasInputField(
-              rtid: widget.rtid,
+            rtid: widget.rtid,
             alias: _alias,
             levelFile: widget.levelFile,
             onAliasChanged: _handleAliasChanged,

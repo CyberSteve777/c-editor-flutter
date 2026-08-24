@@ -27079,7 +27079,8 @@
         "ExchangeAvatarCost": 400,
         "PlantResourceGroups": [
           "PlantCosmicPea",
-          "PlantCosmicPeaAudio"
+          "PlantCosmicPeaAudio",
+          "PlantPeashooterAudio"
         ],
         "Properties": "RTID(CosmicPeaDefault@PropertySheets)",
         "AnimRigClass": "PlantAnimRig_CosmicPea",

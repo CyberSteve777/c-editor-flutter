@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:c_editor/data/asset_loader.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
+import 'package:c_editor/data/repository/zombie_repository.dart';
 
 enum RiftThemeTargetType { plants, zombies }
 
@@ -82,6 +84,23 @@ class RiftThemeRepository {
     'healthdebuff': 'nuke',
     'reducerange': 'gravity',
     'shrunken': 'rusher',
+  };
+
+  /// Theme query targets recovered from the game's exact ZombieClass checks.
+  /// Alias discovery remains dynamic through the bundled ZombieTypes data.
+  static const Map<String, Set<String>> targetZombieClasses = {
+    'knight_cheating': {'ZombieModernAllStar', 'ZombieCavalry', 'ZombieBull'},
+    'mage_cheating': {
+      'ZombieBeachOctopus',
+      'ZombieDarkWizard',
+      'ZombieArchmage',
+      'ZombieRa',
+      'ZombieTombRaiser',
+      'ZombiePerfumer',
+      'ZombieToxicWater',
+      'ZombieRomanHealer',
+    },
+    'miner_cheating': {'ZombieProspector', 'ZombieModernMiner'},
   };
 
   static Map<String, RiftThemeTargetList> _targetLists = const {};
@@ -224,6 +243,42 @@ class RiftThemeRepository {
   static List<String> availableThemes(Iterable<String> used) {
     final usedSet = used.toSet();
     return themeIds.where((id) => !usedSet.contains(id)).toList();
+  }
+
+  /// Resolves a ZombieClass-targeted theme to editor-supported zombies.
+  ///
+  /// Iterating [ZombieRepository.allZombies] preserves the Zombies.json / chooser
+  /// order and naturally intersects ZombieTypes with editor-known aliases.
+  /// Class matching is intentionally exact; derived or similarly named classes
+  /// are not inferred.
+  static List<ZombieInfo> getAffectedZombiesForRiftTheme(String themeId) {
+    final targetClasses = targetZombieClasses[themeId];
+    if (targetClasses == null) return const [];
+    return List<ZombieInfo>.unmodifiable(
+      ZombieRepository().allZombies.where((zombie) {
+        final zombieClass = ZombiePropertiesRepository.getZombieClassByAlias(
+          zombie.id,
+        );
+        return zombieClass != null && targetClasses.contains(zombieClass);
+      }),
+    );
+  }
+
+  /// Returns the list shown by the theme details UI.
+  ///
+  /// The three behavior-driven themes use exact ZombieClass resolution. Other
+  /// themes continue to use explicit lists from the official Rift_Themes file.
+  static RiftThemeTargetList? detailsTargetList(String themeId) {
+    if (targetZombieClasses.containsKey(themeId)) {
+      return RiftThemeTargetList(
+        type: RiftThemeTargetType.zombies,
+        ids: getAffectedZombiesForRiftTheme(
+          themeId,
+        ).map((zombie) => zombie.id).toList(growable: false),
+      );
+    }
+    final targetList = _targetLists[themeId];
+    return targetList?.shouldDisplayInThemeDetails == true ? targetList : null;
   }
 
   static bool isKnown(String id) => themeIds.contains(id);

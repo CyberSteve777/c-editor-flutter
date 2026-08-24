@@ -1,3 +1,4 @@
+import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_instance_display_name.dart';
 import 'package:c_editor/data/module_instance_utils.dart';
@@ -53,6 +54,49 @@ void main() {
         instanceIndex: 0,
       ),
       'Zomboss Last Stand',
+    );
+  });
+
+  test('each referenced Boss instance receives its own editor tab', () async {
+    final levelDef = LevelDefinitionData(
+      modules: [
+        'RTID(ZombossBattle1@CurrentLevel)',
+        'RTID(ZombossBattle2@CurrentLevel)',
+        'RTID(ZombossLastStand1@CurrentLevel)',
+        'RTID(ZombossLastStand2@CurrentLevel)',
+        'RTID(ZombossLastStand3@CurrentLevel)',
+      ],
+    );
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: ['LevelDefinition'],
+          objClass: 'LevelDefinition',
+          objData: levelDef.toJson(),
+        ),
+        _module('ZombossBattle1', battleClass, 1),
+        _module('ZombossBattle2', battleClass, 2),
+        _module('ZombossLastStand1', lastStandClass, 1),
+        _module('ZombossLastStand2', lastStandClass, 2),
+        _module('ZombossLastStand3', lastStandClass, 3),
+      ],
+    );
+    final cubit = EditorCubit(fileName: 'boss.json', filePath: '');
+    addTearDown(cubit.close);
+
+    cubit.applyLevelFile(level, markDirty: false);
+
+    expect(
+      cubit.state.availableTabs.where(
+        (tab) => tab == EditorTabType.zombossMech,
+      ),
+      hasLength(2),
+    );
+    expect(
+      cubit.state.availableTabs.where(
+        (tab) => tab == EditorTabType.zombossBattle,
+      ),
+      hasLength(3),
     );
   });
 
@@ -209,7 +253,6 @@ void main() {
           missingModules: const [],
           onEditBasicInfo: () {},
           onEditModule: (_) {},
-          onDuplicateModule: (_) {},
           onRemoveModule: (_) {},
           onReorderModules:
               ({
@@ -230,6 +273,7 @@ void main() {
       find.text('Non-mech Zomboss Battle (ZombossLastStand1)'),
       findsOneWidget,
     );
+    expect(find.byIcon(Icons.copy_outlined), findsNothing);
 
     levelDef.modules.remove('RTID(ZombossBattle2@CurrentLevel)');
     objectMap.remove('ZombossBattle2');

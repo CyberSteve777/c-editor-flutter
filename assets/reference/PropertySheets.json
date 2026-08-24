@@ -29711,17 +29711,17 @@
           3.6000000000000001
         ],
         "MagicianSlowScale": [
-          4.0,
-          4.0,
-          4.0,
-          4.0,
-          4.0
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
         ],
         "BoostRate": 0.29999999999999999,
         "AnnihilationChance": 0.14999999999999999,
         "PlantfoodShotCount": 3,
         "AvatarPlantfoodShotCount": 5,
-        "PlantfoodGiantDamage": 1800,
+        "PlantfoodGiantDamage": 1500,
         "PlantfoodShotInterval": 0.34999999999999998,
         "CanLiveUniverse": true,
         "IsPultPlant": false,
@@ -29783,6 +29783,45 @@
             "AdvancedSkillType": "RTID(Darkmatter_dragonfruit_Skill_Level5@SkillTypes)"
           }
         ],
+        "DetailProps": {
+          "DetailsList": [
+            "suncost",
+            "cooldown",
+            "hitpoint",
+            "damage",
+            "attackInterval",
+            "range",
+            "area"
+          ],
+          "Damages": [
+            250,
+            375,
+            500,
+            625,
+            750
+          ],
+          "AttackInterval": [
+            2.3999999999999999,
+            2.3999999999999999,
+            2.3999999999999999,
+            2.3999999999999999,
+            2.3999999999999999
+          ],
+          "Ranage": [
+            "[RANGE_0]",
+            "[RANGE_0]",
+            "[RANGE_0]",
+            "[RANGE_0]",
+            "[RANGE_0]"
+          ],
+          "Area": [
+            "[AREA_GROUP1]",
+            "[AREA_GROUP1]",
+            "[AREA_GROUP1]",
+            "[AREA_GROUP1]",
+            "[AREA_GROUP1]"
+          ]
+        },
         "DisplayActions": "RTID(DarkMatterDragonfruitDefault@DisplayActions)",
         "DisplayAvatarActions": "RTID(DarkMatterDragonfruitDefault@DisplayAvatarActions)"
       }

@@ -366,6 +366,7 @@ class LevelValidator {
       'ZombossLastStandMinigameProperties',
     );
     final isLastStand = existingClasses.contains('LastStandMinigameProperties');
+    final isCowboyMinigame = existingClasses.contains('CowboyMinigameProperties');
     final isEvilDave = existingClasses.contains('EvilDaveProperties');
 
     final missingList = <String>[];
@@ -384,6 +385,7 @@ class LevelValidator {
     if (!existingClasses.contains('StandardLevelIntroProperties')) {
       if (!isVaseBreaker &&
           !isLastStand &&
+          !isCowboyMinigame &&
           !isZombossMechBattle &&
           !isZombossBattle) {
         missingList.add('StandardLevelIntroProperties');

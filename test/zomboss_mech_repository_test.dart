@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
+import 'package:c_editor/screens/editor/others/zomboss_mech_properties_view_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -53,44 +55,78 @@ void main() {
     );
   });
 
-  test('squash fields use mech template defaults and persist on custom props', (
+  test(
+    'squash fields use mech template defaults and persist on custom props',
+    () async {
+      await ZombossMechRepository.init();
+      await ZombiePropertiesRepository.init();
+      final catalog = ZombossMechRepository.getCatalog(
+        'ZombieZombossMech_Egypt',
+      )!;
+
+      expect(
+        ZombossMechRepository.boolPropertyWithTemplateFallback(
+          data: const {},
+          catalog: catalog,
+          key: 'SquashZombies',
+        ),
+        isTrue,
+      );
+      expect(
+        ZombossMechRepository.boolPropertyWithTemplateFallback(
+          data: const {},
+          catalog: catalog,
+          key: 'SquashGridItems',
+        ),
+        isFalse,
+      );
+
+      final levelFile = PvzLevelFile(objects: []);
+      final custom = ZombossMechRepository.ensureCustomPropertiesInLevel(
+        catalog: catalog,
+        levelFile: levelFile,
+        sourceVariation: 'zombossmech_egypt',
+      );
+      expect(custom.objData['SquashZombies'], isTrue);
+      expect(custom.objData['SquashGridItems'], isFalse);
+
+      custom.objData['SquashZombies'] = false;
+      custom.objData['SquashGridItems'] = true;
+      final reloaded = PvzLevelFile.fromJson(levelFile.toJson());
+      expect(reloaded.objects.single.objData['SquashZombies'], isFalse);
+      expect(reloaded.objects.single.objData['SquashGridItems'], isTrue);
+    },
+  );
+
+  testWidgets('read-only squash labels stay enabled while switches are grey', (
+    tester,
   ) async {
-    await ZombossMechRepository.init();
-    await ZombiePropertiesRepository.init();
-    final catalog = ZombossMechRepository.getCatalog(
-      'ZombieZombossMech_Egypt',
-    )!;
-
-    expect(
-      ZombossMechRepository.boolPropertyWithTemplateFallback(
-        data: const {},
-        catalog: catalog,
-        key: 'SquashZombies',
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: ZombossMechReadOnlyBoolRow(
+            key: ValueKey('readOnlySquashZombies'),
+            label: 'Can squash zombies',
+            value: true,
+          ),
+        ),
       ),
-      isTrue,
     );
+    await tester.pump();
+
+    final row = find.byKey(const ValueKey('readOnlySquashZombies'));
+    final label = find.descendant(
+      of: row,
+      matching: find.text('Can squash zombies'),
+    );
+    final labelContext = tester.element(label);
     expect(
-      ZombossMechRepository.boolPropertyWithTemplateFallback(
-        data: const {},
-        catalog: catalog,
-        key: 'SquashGridItems',
-      ),
-      isFalse,
+      DefaultTextStyle.of(labelContext).style.color,
+      isNot(Theme.of(labelContext).disabledColor),
     );
-
-    final levelFile = PvzLevelFile(objects: []);
-    final custom = ZombossMechRepository.ensureCustomPropertiesInLevel(
-      catalog: catalog,
-      levelFile: levelFile,
-      sourceVariation: 'zombossmech_egypt',
+    final toggle = tester.widget<Switch>(
+      find.descendant(of: row, matching: find.byType(Switch)),
     );
-    expect(custom.objData['SquashZombies'], isTrue);
-    expect(custom.objData['SquashGridItems'], isFalse);
-
-    custom.objData['SquashZombies'] = false;
-    custom.objData['SquashGridItems'] = true;
-    final reloaded = PvzLevelFile.fromJson(levelFile.toJson());
-    expect(reloaded.objects.single.objData['SquashZombies'], isFalse);
-    expect(reloaded.objects.single.objData['SquashGridItems'], isTrue);
+    expect(toggle.onChanged, isNull);
   });
 }
