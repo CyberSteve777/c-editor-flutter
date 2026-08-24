@@ -114,6 +114,27 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
             ..._generalEntries(context, propsData).map(
               (entry) => _ReadOnlyValueRow(label: entry.$1, value: entry.$2),
             ),
+            _ReadOnlyBoolRow(
+              key: const ValueKey('readOnlySquashZombies'),
+              label:
+                  l10n?.zombossMechSquashZombies ?? 'Can squash zombies',
+              value: ZombossMechRepository.boolPropertyWithTemplateFallback(
+                data: propsData,
+                catalog: catalog,
+                key: 'SquashZombies',
+              ),
+            ),
+            _ReadOnlyBoolRow(
+              key: const ValueKey('readOnlySquashGridItems'),
+              label:
+                  l10n?.zombossMechSquashGridItems ??
+                  'Can squash grid items',
+              value: ZombossMechRepository.boolPropertyWithTemplateFallback(
+                data: propsData,
+                catalog: catalog,
+                key: 'SquashGridItems',
+              ),
+            ),
             const SizedBox(height: 24),
             Text(
               l10n?.customZombossMechStages ?? 'Battle phases',
@@ -253,6 +274,27 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
           rtid: rtid,
         ),
       ),
+    );
+  }
+}
+
+class _ReadOnlyBoolRow extends StatelessWidget {
+  const _ReadOnlyBoolRow({
+    super.key,
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final bool value;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile.adaptive(
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      value: value,
+      onChanged: null,
     );
   }
 }

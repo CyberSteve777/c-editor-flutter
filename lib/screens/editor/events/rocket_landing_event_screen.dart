@@ -244,7 +244,7 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
   Widget _buildRocketPoolItem(ThemeData theme, AppLocalizations? l10n) {
     final alias = LevelParser.extractAlias(_data.rocketPool.first.type);
     final displayTypeName =
-        GridItemRepository.getByTypeName(alias)?.typeName ?? alias;
+        GridItemRepository.getByTypeName(alias)?.actualTypeName ?? alias;
     final resourceKey = 'griditem_$displayTypeName';
     final localizedName = ResourceNames.lookup(context, resourceKey);
     final displayName = localizedName != resourceKey
@@ -258,40 +258,43 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            GridItemIcon(
-              typeName: displayTypeName,
-              size: 48,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final rocketIdentity = Row(
+              children: [
+                GridItemIcon(
+                  typeName: displayTypeName,
+                  size: 48,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        displayName,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        displayTypeName,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  Text(
-                    displayTypeName,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            SizedBox(
-              width: 80,
+                ),
+              ],
+            );
+            final countField = SizedBox(
+              width: 132,
               child: TextField(
                 key: const ValueKey('rocketLandingCountField'),
                 controller: _countCtrl,
@@ -311,8 +314,26 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
                   }
                 },
               ),
-            ),
-          ],
+            );
+
+            if (constraints.maxWidth < 360) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  rocketIdentity,
+                  const SizedBox(height: 12),
+                  Align(alignment: Alignment.centerRight, child: countField),
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: rocketIdentity),
+                const SizedBox(width: 12),
+                countField,
+              ],
+            );
+          },
         ),
       ),
     );

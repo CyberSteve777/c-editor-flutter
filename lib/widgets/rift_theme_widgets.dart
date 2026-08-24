@@ -59,13 +59,25 @@ Future<void> showRiftThemeDetailsDialog(
   final description = ResourceNames.lookup(context, descriptionKey);
   final detailsKey = RiftThemeRepository.descriptionDetailsKey(themeId);
   final details = ResourceNames.lookup(context, detailsKey);
-  final targetList = RiftThemeRepository.targetLists[themeId];
+  final rawTargetList = RiftThemeRepository.targetLists[themeId];
+  final targetList = rawTargetList?.shouldDisplayInThemeDetails == true
+      ? rawTargetList
+      : null;
 
   await showDialog<void>(
     context: context,
     builder: (dialogContext) {
       final l10n = AppLocalizations.of(dialogContext);
       final colorScheme = Theme.of(dialogContext).colorScheme;
+      const compactCardWidth = 154.0;
+      const cardSpacing = 8.0;
+      final availableContentWidth =
+          (MediaQuery.sizeOf(dialogContext).width - 128).clamp(0.0, 720.0);
+      final useSingleColumn =
+          availableContentWidth < compactCardWidth * 2 + cardSpacing;
+      final targetCardWidth = useSingleColumn
+          ? availableContentWidth
+          : compactCardWidth;
       return AlertDialog(
         title: Row(
           children: [
@@ -75,7 +87,11 @@ Future<void> showRiftThemeDetailsDialog(
           ],
         ),
         content: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720, maxHeight: 620),
+          constraints: BoxConstraints(
+            minWidth: useSingleColumn ? availableContentWidth : 0,
+            maxWidth: 720,
+            maxHeight: 620,
+          ),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,14 +136,15 @@ Future<void> showRiftThemeDetailsDialog(
                   ),
                   const SizedBox(height: 10),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: cardSpacing,
+                    runSpacing: cardSpacing,
                     children: targetList.ids
                         .map(
                           (id) => _TargetCard(
                             id: id.trim(),
                             type: targetList.type,
                             colorScheme: colorScheme,
+                            width: targetCardWidth,
                           ),
                         )
                         .toList(),
@@ -175,11 +192,13 @@ class _TargetCard extends StatelessWidget {
     required this.id,
     required this.type,
     required this.colorScheme,
+    required this.width,
   });
 
   final String id;
   final RiftThemeTargetType type;
   final ColorScheme colorScheme;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +218,8 @@ class _TargetCard extends StatelessWidget {
     return Tooltip(
       message: '$displayName\n$id',
       child: Container(
-        width: 154,
+        key: ValueKey('riftThemeTarget-$id'),
+        width: width,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
@@ -224,7 +244,7 @@ class _TargetCard extends StatelessWidget {
                 children: [
                   Text(
                     displayName,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),

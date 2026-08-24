@@ -166,6 +166,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_SeedRainProperties;
       case 'moduleTitle_LastStandMinigameProperties':
         return l10n.moduleTitle_LastStandMinigameProperties;
+      case 'moduleTitle_CowboyMinigameProperties':
+        return l10n.moduleTitle_CowboyMinigameProperties;
       case 'moduleTitle_PVZ1OverwhelmModuleProperties':
         return l10n.moduleTitle_PVZ1OverwhelmModuleProperties;
       case 'moduleTitle_SunBombChallengeProperties':
@@ -326,6 +328,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_SeedRainProperties;
       case 'moduleDesc_LastStandMinigameProperties':
         return l10n.moduleDesc_LastStandMinigameProperties;
+      case 'moduleDesc_CowboyMinigameProperties':
+        return l10n.moduleDesc_CowboyMinigameProperties;
       case 'moduleDesc_PVZ1OverwhelmModuleProperties':
         return l10n.moduleDesc_PVZ1OverwhelmModuleProperties;
       case 'moduleDesc_SunBombChallengeProperties':
@@ -613,6 +617,16 @@ class ModuleRegistry {
       initialDataFactory: () => LastStandMinigamePropertiesData(),
       routeId: 'LastStandMinigame',
     ),
+    'CowboyMinigameProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_CowboyMinigameProperties',
+      descriptionKey: 'moduleDesc_CowboyMinigameProperties',
+      icon: Icons.fence,
+      isCore: true,
+      category: ModuleCategory.mode,
+      defaultAlias: 'CowboyMinigame',
+      initialDataFactory: () => CowboyMinigamePropertiesData(),
+      routeId: 'CowboyMinigame',
+    ),
     'BombProperties': ModuleMetadata(
       titleKey: 'moduleTitle_BombProperties',
       descriptionKey: 'moduleDesc_BombProperties',
@@ -631,6 +645,8 @@ class ModuleRegistry {
       isCore: false,
       category: ModuleCategory.mode,
       defaultAlias: 'ZombossBattle',
+      allowMultiple: true,
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ZombossMechBattleModuleData(),
       routeId: 'ZombossMechBattle',
     ),
@@ -651,6 +667,8 @@ class ModuleRegistry {
       isCore: false,
       category: ModuleCategory.mode,
       defaultAlias: 'ZombossLastStand',
+      allowMultiple: true,
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ZombossLastStandMinigameData(),
       routeId: 'ZombossBattle',
     ),

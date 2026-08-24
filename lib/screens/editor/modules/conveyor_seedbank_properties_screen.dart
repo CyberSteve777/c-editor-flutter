@@ -81,6 +81,7 @@ class _ConveyorSeedBankPropertiesScreenState
       initialPlantList: List.from(_data.initialPlantList),
       dropDelayConditions: List.from(_data.dropDelayConditions),
       speedConditions: List.from(_data.speedConditions),
+      manualPacketSpawning: _data.manualPacketSpawning,
     );
   }
 
@@ -240,6 +241,24 @@ class _ConveyorSeedBankPropertiesScreenState
                 levelFile: widget.levelFile,
                 onAliasChanged: _handleAliasChanged,
                 onChanged: widget.onChanged,
+              ),
+              const SizedBox(height: 16),
+              Card(
+                child: SwitchListTile(
+                  title: Text(
+                    localizedPropertyLabel(
+                      context,
+                      l10n?.conveyorManualPacketSpawning ??
+                          'Manual packet spawning',
+                      'ManualPacketSpawning',
+                    ),
+                  ),
+                  value: _data.manualPacketSpawning ?? false,
+                  onChanged: (value) {
+                    _data.manualPacketSpawning = value;
+                    _sync();
+                  },
+                ),
               ),
               const SizedBox(height: 16),
               _ConveyorPlantListEditor(

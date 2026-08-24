@@ -15,6 +15,11 @@ class RiftThemeTargetList {
   final RiftThemeTargetType type;
   final List<String> ids;
   final bool isBlacklist;
+
+  /// Zombie blacklists describe internal exclusions rather than the zombies
+  /// affected by a theme, so they should not be presented as a related list.
+  bool get shouldDisplayInThemeDetails =>
+      type != RiftThemeTargetType.zombies || !isBlacklist;
 }
 
 /// Known Penny Pursuit / Memory Lane rift themes and their reference data.

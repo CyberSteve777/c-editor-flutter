@@ -275,6 +275,14 @@ class _CustomZombossMechPropertiesScreenState
     return fallback;
   }
 
+  bool _readBoolProperty(String key) {
+    return ZombossMechRepository.boolPropertyWithTemplateFallback(
+      data: _propsData,
+      catalog: widget.catalog,
+      key: key,
+    );
+  }
+
   Future<void> _confirmDeletePhase(int index) async {
     final l10n = AppLocalizations.of(context);
     final phaseNum = index + 1;
@@ -726,6 +734,24 @@ class _CustomZombossMechPropertiesScreenState
               max: 9,
               onChanged: (v) => _updateScalar('MaxColumn', v),
             ),
+            SwitchListTile.adaptive(
+              key: const ValueKey('squashZombiesSwitch'),
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                l10n?.zombossMechSquashZombies ?? 'Can squash zombies',
+              ),
+              value: _readBoolProperty('SquashZombies'),
+              onChanged: (value) => _updateScalar('SquashZombies', value),
+            ),
+            SwitchListTile.adaptive(
+              key: const ValueKey('squashGridItemsSwitch'),
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                l10n?.zombossMechSquashGridItems ?? 'Can squash grid items',
+              ),
+              value: _readBoolProperty('SquashGridItems'),
+              onChanged: (value) => _updateScalar('SquashGridItems', value),
+            ),
             const SizedBox(height: 24),
             Row(
               children: [
@@ -874,6 +900,7 @@ class _EightiesStageOrderCard extends StatelessWidget {
                     child: ReorderableListView.builder(
                       clipBehavior: Clip.hardEdge,
                       shrinkWrap: true,
+                      itemExtent: 64,
                       physics: const NeverScrollableScrollPhysics(),
                       buildDefaultDragHandles: false,
                       dragBoundaryProvider: DragBoundary.forRectOf,
@@ -881,15 +908,22 @@ class _EightiesStageOrderCard extends StatelessWidget {
                         return AnimatedBuilder(
                           animation: animation,
                           child: child,
-                          builder: (context, child) => SizedBox(
-                            key: const ValueKey('eightiesOrderDragProxy'),
-                            height: 64,
-                            child: Material(
-                              color: theme.colorScheme.surfaceContainerHigh,
-                              elevation: 6 * animation.value,
-                              borderRadius: BorderRadius.circular(10),
-                              clipBehavior: Clip.antiAlias,
-                              child: child,
+                          builder: (context, child) => OverflowBox(
+                            alignment: Alignment.topCenter,
+                            minHeight: 64,
+                            maxHeight: 64,
+                            child: SizedBox(
+                              key: const ValueKey(
+                                'eightiesOrderDragProxyVisual',
+                              ),
+                              height: 64,
+                              child: Material(
+                                color: theme.colorScheme.surfaceContainerHigh,
+                                elevation: 6 * animation.value,
+                                borderRadius: BorderRadius.circular(10),
+                                clipBehavior: Clip.antiAlias,
+                                child: child,
+                              ),
                             ),
                           ),
                         );

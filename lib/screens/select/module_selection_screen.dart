@@ -5,6 +5,16 @@ import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
+class ModuleSelectionResult {
+  const ModuleSelectionResult({
+    required this.metadata,
+    this.requiredModuleObjClass,
+  });
+
+  final ModuleMetadata metadata;
+  final String? requiredModuleObjClass;
+}
+
 class _ModuleSelectionViewState {
   _ModuleSelectionViewState({
     this.selectedCategory,
@@ -233,19 +243,70 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
                   meta.selectionKey,
                 );
                 final isEnabled = !isAlreadyAdded || meta.allowMultiple;
+                final requiredModuleObjClass =
+                    meta.objClass == 'CowboyMinigameProperties' &&
+                        !widget.existingObjClasses.contains(
+                          'ConveyorSeedBankProperties',
+                        )
+                    ? 'ConveyorSeedBankProperties'
+                    : null;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _ModuleSelectionCard(
                     meta: meta,
                     isAlreadyAdded: isAlreadyAdded,
                     isEnabled: isEnabled,
-                    onTap: () {
-                      if (isEnabled) Navigator.pop(context, meta);
-                    },
+                    isDependencyMissing: requiredModuleObjClass != null,
+                    onTap: () => _handleModuleTap(
+                      meta,
+                      isEnabled: isEnabled,
+                      requiredModuleObjClass: requiredModuleObjClass,
+                    ),
                   ),
                 );
               },
             ),
+    );
+  }
+
+  Future<void> _handleModuleTap(
+    ModuleMetadata metadata, {
+    required bool isEnabled,
+    required String? requiredModuleObjClass,
+  }) async {
+    if (!isEnabled) return;
+    if (requiredModuleObjClass == null) {
+      Navigator.pop(context, ModuleSelectionResult(metadata: metadata));
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    final requiredName = ModuleRegistry.getMetadata(
+      requiredModuleObjClass,
+    ).getTitle(context);
+    final addRequiredModule = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        content: Text(l10n.moduleDependencyRequiredMessage(requiredName)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.add),
+          ),
+        ],
+      ),
+    );
+    if (addRequiredModule != true || !mounted) return;
+    Navigator.pop(
+      context,
+      ModuleSelectionResult(
+        metadata: metadata,
+        requiredModuleObjClass: requiredModuleObjClass,
+      ),
     );
   }
 
@@ -280,24 +341,27 @@ class _ModuleSelectionCard extends StatelessWidget {
     required this.meta,
     required this.isAlreadyAdded,
     required this.isEnabled,
+    required this.isDependencyMissing,
     required this.onTap,
   });
 
   final ModuleMetadata meta;
   final bool isAlreadyAdded;
   final bool isEnabled;
+  final bool isDependencyMissing;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isVisuallyEnabled = isEnabled && !isDependencyMissing;
     return Opacity(
-      opacity: isEnabled ? 1 : 0.6,
+      opacity: isVisuallyEnabled ? 1 : 0.6,
       child: Card(
-        color: isEnabled
+        color: isVisuallyEnabled
             ? theme.colorScheme.surface
             : theme.colorScheme.surfaceContainerHighest,
-        elevation: isEnabled ? 2 : 0,
+        elevation: isVisuallyEnabled ? 2 : 0,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
@@ -310,7 +374,7 @@ class _ModuleSelectionCard extends StatelessWidget {
                   height: 48,
                   decoration: BoxDecoration(
                     color:
-                        (isEnabled
+                        (isVisuallyEnabled
                                 ? theme.colorScheme.primary
                                 : theme.colorScheme.outline)
                             .withValues(alpha: 0.1),
@@ -330,7 +394,7 @@ class _ModuleSelectionCard extends StatelessWidget {
                       : Icon(
                           meta.icon,
                           size: 28,
-                          color: isEnabled
+                          color: isVisuallyEnabled
                               ? theme.colorScheme.primary
                               : theme.colorScheme.outline,
                         ),
@@ -344,7 +408,7 @@ class _ModuleSelectionCard extends StatelessWidget {
                         meta.getTitle(context),
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isEnabled
+                          color: isVisuallyEnabled
                               ? theme.colorScheme.onSurface
                               : theme.colorScheme.onSurfaceVariant,
                         ),

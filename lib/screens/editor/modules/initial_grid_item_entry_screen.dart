@@ -204,6 +204,11 @@ class _InitialGridItemEntryScreenState
                     ...itemsAtPosition.map(
                       (item) => _GridItemCard(
                         item: item,
+                        displayTypeName:
+                            GridItemRepository.displayTypeNameForLevel(
+                              item.typeName,
+                              widget.levelFile,
+                            ),
                         gridRows: _gridRows,
                         gridCols: _gridCols,
                         showCoordinates: false,
@@ -231,6 +236,11 @@ class _InitialGridItemEntryScreenState
                         .map(
                           (item) => _GridItemCard(
                             item: item,
+                            displayTypeName:
+                                GridItemRepository.displayTypeNameForLevel(
+                                  item.typeName,
+                                  widget.levelFile,
+                                ),
                             gridRows: _gridRows,
                             gridCols: _gridCols,
                             showCoordinates: true,
@@ -313,7 +323,12 @@ class _InitialGridItemEntryScreenState
                                               child: FittedBox(
                                                 fit: BoxFit.contain,
                                                 child: GridItemIcon(
-                                                  typeName: firstItem.typeName,
+                                                  typeName:
+                                                      GridItemRepository.displayTypeNameForLevel(
+                                                        firstItem.typeName,
+                                                        widget.levelFile,
+                                                      ) ??
+                                                      '__unknown__',
                                                   size: 32,
                                                   fit: BoxFit.contain,
                                                   borderRadius: 4,
@@ -348,13 +363,19 @@ class _InitialGridItemEntryScreenState
   Widget _buildDeleteDialog() {
     final l10n = AppLocalizations.of(context);
     final item = _itemToDelete!;
+    final displayTypeName =
+        GridItemRepository.displayTypeNameForLevel(
+          item.typeName,
+          widget.levelFile,
+        ) ??
+        item.typeName;
     final displayName = ResourceNames.lookup(
       context,
-      'griditem_${item.typeName}',
+      'griditem_$displayTypeName',
     );
-    final name = displayName != 'griditem_${item.typeName}'
+    final name = displayName != 'griditem_$displayTypeName'
         ? displayName
-        : item.typeName;
+        : displayTypeName;
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
@@ -386,6 +407,7 @@ class _InitialGridItemEntryScreenState
 class _GridItemCard extends StatelessWidget {
   const _GridItemCard({
     required this.item,
+    required this.displayTypeName,
     required this.gridRows,
     required this.gridCols,
     required this.showCoordinates,
@@ -394,6 +416,7 @@ class _GridItemCard extends StatelessWidget {
   });
 
   final InitialGridItemData item;
+  final String? displayTypeName;
   final int gridRows;
   final int gridCols;
   final bool showCoordinates;
@@ -403,13 +426,15 @@ class _GridItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final displayName = ResourceNames.lookup(
-      context,
-      'griditem_${item.typeName}',
-    );
-    final name = displayName != 'griditem_${item.typeName}'
+    final isKnown = displayTypeName != null;
+    final displayName = isKnown
+        ? ResourceNames.lookup(context, 'griditem_$displayTypeName')
+        : '';
+    final name = !isKnown
+        ? (AppLocalizations.of(context)?.levelTypeUnknown ?? 'Unknown')
+        : displayName != 'griditem_$displayTypeName'
         ? displayName
-        : item.typeName;
+        : displayTypeName!;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -423,7 +448,7 @@ class _GridItemCard extends StatelessWidget {
               onDelete: onDelete,
               deleteTooltip: deleteTooltip,
               icon: GridItemIcon(
-                typeName: item.typeName,
+                typeName: displayTypeName ?? '__unknown__',
                 size: 64,
                 fit: BoxFit.contain,
               ),

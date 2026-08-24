@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 
@@ -50,5 +51,46 @@ void main() {
       ZombossMechRepository.resolveBaseId(null, 'zombossmech_future_memo'),
       'ZombieZombossMech_Future',
     );
+  });
+
+  test('squash fields use mech template defaults and persist on custom props', (
+  ) async {
+    await ZombossMechRepository.init();
+    await ZombiePropertiesRepository.init();
+    final catalog = ZombossMechRepository.getCatalog(
+      'ZombieZombossMech_Egypt',
+    )!;
+
+    expect(
+      ZombossMechRepository.boolPropertyWithTemplateFallback(
+        data: const {},
+        catalog: catalog,
+        key: 'SquashZombies',
+      ),
+      isTrue,
+    );
+    expect(
+      ZombossMechRepository.boolPropertyWithTemplateFallback(
+        data: const {},
+        catalog: catalog,
+        key: 'SquashGridItems',
+      ),
+      isFalse,
+    );
+
+    final levelFile = PvzLevelFile(objects: []);
+    final custom = ZombossMechRepository.ensureCustomPropertiesInLevel(
+      catalog: catalog,
+      levelFile: levelFile,
+      sourceVariation: 'zombossmech_egypt',
+    );
+    expect(custom.objData['SquashZombies'], isTrue);
+    expect(custom.objData['SquashGridItems'], isFalse);
+
+    custom.objData['SquashZombies'] = false;
+    custom.objData['SquashGridItems'] = true;
+    final reloaded = PvzLevelFile.fromJson(levelFile.toJson());
+    expect(reloaded.objects.single.objData['SquashZombies'], isFalse);
+    expect(reloaded.objects.single.objData['SquashGridItems'], isTrue);
   });
 }

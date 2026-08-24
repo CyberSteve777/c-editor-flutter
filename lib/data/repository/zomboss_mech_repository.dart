@@ -165,6 +165,7 @@ class ZombossMechRepository {
   static PvzObject ensureCustomPropertiesInLevel({
     required ZombossMechCatalogEntry catalog,
     required PvzLevelFile levelFile,
+    String? sourceVariation,
   }) {
     final alias = catalog.editableInstancePropsName;
     final existing = levelFile.objects.firstWhereOrNull(
@@ -173,10 +174,24 @@ class ZombossMechRepository {
     if (existing != null) {
       return existing;
     }
+    final initialData = catalog.templatePropsData();
+    if (sourceVariation != null && sourceVariation.isNotEmpty) {
+      final sourceData = propertiesDataForVariation(
+        sourceVariation,
+        catalog: catalog,
+      );
+      for (final key in const ['SquashZombies', 'SquashGridItems']) {
+        initialData[key] = boolPropertyWithTemplateFallback(
+          data: sourceData,
+          catalog: catalog,
+          key: key,
+        );
+      }
+    }
     final obj = PvzObject(
       aliases: [alias],
       objClass: catalog.propsObjclass,
-      objData: catalog.templatePropsData(),
+      objData: initialData,
     );
     levelFile.objects.add(obj);
     return obj;
@@ -291,5 +306,27 @@ class ZombossMechRepository {
       if (data != null) return ZombossMechActionUtils.cloneMap(data);
     }
     return null;
+  }
+
+  /// Reads a bool from a mech property object and falls back to the default
+  /// declared by that mech's property template when older data omits it.
+  static bool boolPropertyWithTemplateFallback({
+    required Map<String, dynamic>? data,
+    required ZombossMechCatalogEntry catalog,
+    required String key,
+  }) {
+    final value = data?[key];
+    if (value is bool) return value;
+
+    for (final group in catalog.properties) {
+      for (final field in group.fields) {
+        if (field.name == key && field.defaultValue is bool) {
+          return field.defaultValue as bool;
+        }
+      }
+    }
+
+    final templateValue = catalog.templatePropsData()[key];
+    return templateValue is bool ? templateValue : false;
   }
 }

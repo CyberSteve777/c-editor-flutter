@@ -5,6 +5,7 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_properties_screen.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_properties_view_screen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -254,22 +255,52 @@ void main() {
     await tester.pumpAndSettle();
 
     final jamCard = find.byKey(const ValueKey('stageJamOrderCard'));
-    final list = tester.widget<ReorderableListView>(
-      find.descendant(of: jamCard, matching: find.byType(ReorderableListView)),
+    final listFinder = find.descendant(
+      of: jamCard,
+      matching: find.byType(ReorderableListView),
     );
-    final proxy = list.proxyDecorator!(
+    final list = tester.widget<ReorderableListView>(listFinder);
+    final handle = find
+        .descendant(of: jamCard, matching: find.byIcon(Icons.drag_indicator))
+        .first;
+    await tester.ensureVisible(handle);
+    await tester.pump();
+    final gesture = await tester.startGesture(
+      tester.getCenter(handle),
+      kind: PointerDeviceKind.mouse,
+    );
+    await tester.pump();
+    await gesture.moveBy(const Offset(0, 40));
+    await tester.pump();
+
+    final visualProxy = find.byKey(
+      const ValueKey('eightiesOrderDragProxyVisual'),
+    );
+    expect(tester.getSize(visualProxy).height, 64);
+    expect(
+      tester.getSize(visualProxy).width,
+      closeTo(tester.getSize(listFinder).width, 0.1),
+    );
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    final constrainedProxy = list.proxyDecorator!(
       const SizedBox(width: 360, height: 600),
       0,
       const AlwaysStoppedAnimation<double>(1),
     );
-
     await tester.pumpWidget(
       MaterialApp(
-        home: Center(child: SizedBox(width: 360, child: proxy)),
+        home: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(width: 360, height: 600, child: constrainedProxy),
+        ),
       ),
     );
     expect(
-      tester.getSize(find.byKey(const ValueKey('eightiesOrderDragProxy'))),
+      tester.getSize(
+        find.byKey(const ValueKey('eightiesOrderDragProxyVisual')),
+      ),
       const Size(360, 64),
     );
   });

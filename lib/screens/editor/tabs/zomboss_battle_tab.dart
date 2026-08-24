@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/module_instance_utils.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -16,10 +17,12 @@ class ZombossBattleTab extends StatefulWidget {
     super.key,
     required this.levelFile,
     required this.onChanged,
+    this.moduleRtid,
   });
 
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
+  final String? moduleRtid;
 
   @override
   State<ZombossBattleTab> createState() => _ZombossBattleTabState();
@@ -27,6 +30,7 @@ class ZombossBattleTab extends StatefulWidget {
 
 class _ZombossBattleTabState extends State<ZombossBattleTab> {
   PvzObject? _moduleObj;
+  bool _hasMultipleBattleModules = false;
   LevelDefinitionData? _levelDef;
   late ZombossLastStandMinigameData _data;
   String _selectedBaseId = '';
@@ -57,9 +61,17 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
   }
 
   void _loadData() {
-    _moduleObj = widget.levelFile.objects
+    final moduleObjects = widget.levelFile.objects
         .where((o) => o.objClass == 'ZombossLastStandMinigameProperties')
-        .firstOrNull;
+        .toList();
+    _hasMultipleBattleModules = moduleObjects.length > 1;
+    _moduleObj = widget.moduleRtid == null
+        ? (moduleObjects.length == 1 ? moduleObjects.single : null)
+        : ModuleInstanceUtils.findCurrentLevelObject(
+            levelFile: widget.levelFile,
+            rtid: widget.moduleRtid!,
+            expectedObjClass: 'ZombossLastStandMinigameProperties',
+          );
 
     if (_moduleObj != null && _moduleObj!.objData is Map) {
       _data = ZombossLastStandMinigameData.fromJson(
@@ -183,9 +195,16 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
 
     if (_moduleObj == null) {
       return Center(
-        child: Text(
-          l10n?.missingZombossBattleModule ??
-              'Missing ZombossLastStandMinigameProperties',
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            _hasMultipleBattleModules
+                ? (l10n?.zombossMultipleModuleSelectionHint ??
+                      'Multiple Boss modules were found. Select the instance to edit from the module list in Level Settings.')
+                : (l10n?.missingZombossBattleModule ??
+                      'Missing ZombossLastStandMinigameProperties'),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }

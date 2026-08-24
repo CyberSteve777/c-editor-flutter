@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/registry/conflict_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/module_instance_display_name.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -51,6 +52,7 @@ class ModuleUIInfo {
   final bool isCore;
   final bool isExpeditionTiles;
   final bool canEdit;
+  final bool canDuplicate;
 
   const ModuleUIInfo({
     required this.rtid,
@@ -63,7 +65,22 @@ class ModuleUIInfo {
     required this.isCore,
     this.isExpeditionTiles = false,
     required this.canEdit,
+    this.canDuplicate = false,
   });
+
+  ModuleUIInfo copyWith({String? friendlyName}) => ModuleUIInfo(
+    rtid: rtid,
+    alias: alias,
+    objClass: objClass,
+    friendlyName: friendlyName ?? this.friendlyName,
+    description: description,
+    icon: icon,
+    assetIconPath: assetIconPath,
+    isCore: isCore,
+    isExpeditionTiles: isExpeditionTiles,
+    canEdit: canEdit,
+    canDuplicate: canDuplicate,
+  );
 }
 
 class LevelSettingsTab extends StatefulWidget {
@@ -78,6 +95,7 @@ class LevelSettingsTab extends StatefulWidget {
     this.showIceAgePlantPuzzleWarning = false,
     required this.onEditBasicInfo,
     required this.onEditModule,
+    this.onDuplicateModule,
     required this.onRemoveModule,
     required this.onReorderModules,
     required this.onNavigateToAddModule,
@@ -94,6 +112,7 @@ class LevelSettingsTab extends StatefulWidget {
   final bool showIceAgePlantPuzzleWarning;
   final VoidCallback onEditBasicInfo;
   final ValueChanged<String> onEditModule;
+  final ValueChanged<String>? onDuplicateModule;
   final ValueChanged<String> onRemoveModule;
   final void Function({
     required bool isCoreSection,
@@ -181,7 +200,7 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
       );
     }
 
-    final currentModulesList = levelDef.modules.map((rtid) {
+    final unnumberedModules = levelDef.modules.map((rtid) {
       final info = RtidParser.parse(rtid);
       final alias = info?.alias ?? 'Unknown';
       String? objClass;
@@ -214,6 +233,33 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
         isCore: metadata.isCore,
         isExpeditionTiles: isExpeditionTiles,
         canEdit: _hasEditor(metadata, objClass),
+        canDuplicate: info?.source == 'CurrentLevel' && metadata.allowMultiple,
+      );
+    }).toList();
+
+    final instanceCounts = <String, int>{};
+    for (final module in unnumberedModules) {
+      if (repeatableBossModuleObjClasses.contains(module.objClass)) {
+        instanceCounts.update(
+          module.objClass,
+          (count) => count + 1,
+          ifAbsent: () => 1,
+        );
+      }
+    }
+    final seenInstances = <String, int>{};
+    final currentModulesList = unnumberedModules.map((module) {
+      final instanceIndex = seenInstances[module.objClass] ?? 0;
+      if (repeatableBossModuleObjClasses.contains(module.objClass)) {
+        seenInstances[module.objClass] = instanceIndex + 1;
+      }
+      return module.copyWith(
+        friendlyName: moduleInstanceDisplayName(
+          baseName: module.friendlyName,
+          objClass: module.objClass,
+          instanceCount: instanceCounts[module.objClass] ?? 1,
+          instanceIndex: instanceIndex,
+        ),
       );
     }).toList();
 
@@ -226,6 +272,9 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     final showLifeSupportLastStandConflict =
         existingObjClasses.contains('MoonLifeSupportSystemProperties') &&
         existingObjClasses.contains('LastStandMinigameProperties');
+    final showCowboyWithoutConveyorWarning =
+        existingObjClasses.contains('CowboyMinigameProperties') &&
+        !existingObjClasses.contains('ConveyorSeedBankProperties');
     final activeConflicts = ConflictRegistry.getActiveConflicts(
       context,
       existingObjClasses,
@@ -283,6 +332,7 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                 removeTooltip: l10n?.removeModule ?? 'Remove module',
                 reorderHint: _moduleReorderHint(context, l10n),
                 onEditModule: widget.onEditModule,
+                onDuplicate: widget.onDuplicateModule,
                 onDelete: (rtid) => setState(() => pendingDeleteRtid = rtid),
                 onReorder: (oldIndex, newIndex) => widget.onReorderModules(
                   isCoreSection: true,
@@ -307,6 +357,7 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                 removeTooltip: l10n?.removeModule ?? 'Remove module',
                 reorderHint: _moduleReorderHint(context, l10n),
                 onEditModule: widget.onEditModule,
+                onDuplicate: widget.onDuplicateModule,
                 onDelete: (rtid) => setState(() => pendingDeleteRtid = rtid),
                 onReorder: (oldIndex, newIndex) => widget.onReorderModules(
                   isCoreSection: false,
@@ -447,6 +498,20 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                     ],
                   ),
                 ),
+              ),
+            ],
+
+            if (showCowboyWithoutConveyorWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                key: const ValueKey('cowboyMinigameConveyorWarning'),
+                title:
+                    l10n?.cowboyMinigameDependencyWarningTitle ??
+                    'Required module missing',
+                message:
+                    l10n?.cowboyMinigameConveyorWarning ??
+                    'The Not OK Corral module must be used with the Conveyor '
+                        'Belt module, or the level will crash.',
               ),
             ],
 
@@ -715,6 +780,7 @@ class _ReorderableModuleList extends StatelessWidget {
     required this.removeTooltip,
     required this.reorderHint,
     required this.onEditModule,
+    required this.onDuplicate,
     required this.onDelete,
     required this.onReorder,
   });
@@ -724,6 +790,7 @@ class _ReorderableModuleList extends StatelessWidget {
   final String removeTooltip;
   final String reorderHint;
   final ValueChanged<String> onEditModule;
+  final ValueChanged<String>? onDuplicate;
   final ValueChanged<String> onDelete;
   final void Function(int oldIndex, int newIndex) onReorder;
 
@@ -754,6 +821,9 @@ class _ReorderableModuleList extends StatelessWidget {
               reorderIndex: index,
               removeTooltip: removeTooltip,
               onClick: item.canEdit ? () => onEditModule(item.rtid) : null,
+              onDuplicate: item.canDuplicate && onDuplicate != null
+                  ? () => onDuplicate!(item.rtid)
+                  : null,
               onDelete: () => onDelete(item.rtid),
             );
           },
@@ -771,6 +841,7 @@ class _ReorderableModuleTile extends StatelessWidget {
     required this.reorderIndex,
     required this.removeTooltip,
     this.onClick,
+    this.onDuplicate,
     required this.onDelete,
   });
 
@@ -779,6 +850,7 @@ class _ReorderableModuleTile extends StatelessWidget {
   final int reorderIndex;
   final String removeTooltip;
   final VoidCallback? onClick;
+  final VoidCallback? onDuplicate;
   final VoidCallback onDelete;
 
   @override
@@ -846,6 +918,16 @@ class _ReorderableModuleTile extends StatelessWidget {
                   ],
                 ),
               ),
+              if (onDuplicate != null)
+                IconButton(
+                  icon: Icon(
+                    Icons.copy_outlined,
+                    size: isCore ? 22 : 16,
+                    color: iconColor,
+                  ),
+                  tooltip: AppLocalizations.of(context)?.copy ?? 'Copy',
+                  onPressed: onDuplicate,
+                ),
               IconButton(
                 icon: Icon(
                   Icons.close,

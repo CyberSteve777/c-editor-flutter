@@ -575,7 +575,8 @@ class _ActionListItem {
     final color = switch (itemOrigin) {
       ZombossCustomActionOrigin.presetTemplate =>
         presetCustomResourceBadgeColor(context),
-      ZombossCustomActionOrigin.presetDerived => customStageBadgeColor(context),
+      ZombossCustomActionOrigin.presetDerived =>
+        presetDerivedCustomResourceBadgeColor(context),
       ZombossCustomActionOrigin.userCreated => userCustomResourceBadgeColor(
         context,
       ),

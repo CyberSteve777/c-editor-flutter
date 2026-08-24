@@ -2578,6 +2578,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Стартовые ресурсы и фаза подготовки';
 
   @override
+  String get moduleTitle_CowboyMinigameProperties => 'Неудачный загон';
+
+  @override
+  String get moduleDesc_CowboyMinigameProperties =>
+      'Запускает волну зомби после посадки растения с конвейера';
+
+  @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
       'Высадка по 5-ти линиям';
 
@@ -4729,6 +4736,71 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get lastStandHelpNotesBody =>
       'Для Last Stand нужно включить Manual Startup в Wave Manager, иначе зомби появятся автоматически. Редактор сам управляет этим переключателем при добавлении или удалении модуля Last Stand.';
+
+  @override
+  String moduleDependencyRequiredMessage(String moduleName) {
+    return 'Чтобы выбрать этот модуль, сначала добавьте модуль «$moduleName».';
+  }
+
+  @override
+  String get conveyorManualPacketSpawning => 'Ручное создание карточек';
+
+  @override
+  String get cowboyMinigameSettings => 'Настройки мини-игры «Неудачный загон»';
+
+  @override
+  String get cowboyMinigameBeginString => 'Текст подсказки';
+
+  @override
+  String get cowboyMinigameBeginStringHidden => 'Не показывать текст';
+
+  @override
+  String get cowboyMinigameBeginStringDefault => 'Стандартный текст';
+
+  @override
+  String get cowboyMinigameBeginStringCustom =>
+      'Свой текст (поддерживает китайский)';
+
+  @override
+  String get cowboyMinigameCustomTextInput => 'Свой текст подсказки';
+
+  @override
+  String get cowboyMinigameShowTutorial => 'Показывать обучающий диалог';
+
+  @override
+  String get cowboyMinigameBeginStringHint =>
+      'Текст подсказки появляется вместе с предпросмотром зомби перед каждой посадкой. Стандартный текст: «Посадите растение с конвейера, чтобы начать уровень!».';
+
+  @override
+  String get cowboyMinigameHelpTitle => 'Модуль мини-игры «Неудачный загон»';
+
+  @override
+  String get cowboyMinigameHelpOverviewBody =>
+      'Мини-игра Дикого Запада. Перед каждой волной игрок получает случайную карточку растения. После посадки начинается волна зомби; для победы нужно уничтожить всех зомби.\nПеред каждой посадкой показываются типы, количество и позиции зомби на каждой линии, что позволяет выбрать место для растения.';
+
+  @override
+  String get cowboyMinigameHelpBeginStringBody =>
+      'Текст подсказки появляется вместе с предпросмотром зомби перед каждой посадкой. Стандартный текст в игре: «Посадите растение с конвейера, чтобы начать уровень!». Текст можно скрыть или заменить своим.';
+
+  @override
+  String get cowboyMinigameHelpTutorialBody =>
+      'Если включить обучающий диалог, Безумный Дейв и Пенни появятся перед началом уровня и объяснят сюжет мини-игры. Диалог основан на первом прохождении 4-го дня Дикого Запада.';
+
+  @override
+  String get cowboyMinigameDependencyWarningTitle =>
+      'Отсутствует обязательный модуль';
+
+  @override
+  String get cowboyMinigameConveyorWarning =>
+      'Модуль «Неудачный загон» должен использоваться вместе с модулем конвейера, иначе уровень завершится с ошибкой.';
+
+  @override
+  String customGravestoneReplacePrompt(String gridItemName) {
+    return 'На уровень можно добавить только одно пользовательское надгробие. Заменить существующее пользовательское надгробие на «$gridItemName»?';
+  }
+
+  @override
+  String get customGridItemReplaceAction => 'Заменить';
 
   @override
   String get roofFlowerPot => 'Цветочный горшок на крыше';
@@ -7726,7 +7798,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get customZombossMechProperties => 'Свои свойства ZombossMech';
 
   @override
-  String get customZombossMechScalars => 'Общие';
+  String get customZombossMechScalars => 'Параметры перемещения';
 
   @override
   String get customZombossMechStages => 'Фазы боя';
@@ -7740,6 +7812,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossMechMaxColumn => 'Макс. колонка';
+
+  @override
+  String get zombossMechSquashZombies => 'Может раздавливать зомби';
+
+  @override
+  String get zombossMechSquashGridItems => 'Может раздавливать объекты газона';
+
+  @override
+  String get zombossMultipleModuleSelectionHint =>
+      'Обнаружено несколько одинаковых модулей босса. Выберите нужный экземпляр в списке модулей в настройках уровня.';
 
   @override
   String get zombossMechStageActions => 'Действия';

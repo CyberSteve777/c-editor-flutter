@@ -423,6 +423,43 @@ void main() {
     expect((json['RocketPool'] as List).single['Count'], 4);
   });
 
+  testWidgets('Chinese rocket Count label has enough room on every layout', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(340, 900);
+    addTearDown(tester.view.reset);
+    final event = PvzObject(
+      aliases: const ['RocketZh'],
+      objClass: 'SpawnRocketLandingWaveActionProps',
+      objData: SpawnRocketLandingWaveActionPropsData().toJson(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('zh'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: RocketLandingEventScreen(
+          rtid: 'RTID(RocketZh@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [event]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final countField = find.byKey(const ValueKey('rocketLandingCountField'));
+    expect(countField, findsOneWidget);
+    expect(tester.getSize(countField).width, 132);
+    expect(
+      tester.widget<TextField>(countField).decoration?.labelText,
+      '数量 (Count)',
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   test('level overview classifies rockets as grid items, not zombies', () {
     final rocketEvent = PvzObject(
       aliases: const ['Rocket'],

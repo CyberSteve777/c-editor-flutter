@@ -46,6 +46,58 @@ void main() {
     expect(items[speakerIndex]['icon'], 'speaker_zomboss.webp');
   });
 
+  test('Player House tombstone preset follows the PvZ1 tombstone', () {
+    final raw =
+        jsonDecode(File('assets/resources/GridItems.json').readAsStringSync())
+            as List<dynamic>;
+    final items = raw.cast<Map<String, dynamic>>();
+    final pvz1Index = items.indexWhere(
+      (item) => item['typeName'] == 'pvz1grid',
+    );
+    final memoIndex = items.indexWhere(
+      (item) => item['typeName'] == 'gravestone_tutorial',
+    );
+    final memo = items[memoIndex];
+
+    expect(memoIndex, pvz1Index + 1);
+    expect(memo['category'], 'scene');
+    expect(memo['source'], 'custom');
+    expect(memo['gameTypeName'], 'gravestone_egypt_memo');
+    expect(memo['gridItemTypeAlias'], 'gravestone_memo');
+    expect(memo['exclusivePresetGroup'], 'gravestone_egypt_memo');
+    expect(memo['icon'], 'gravestone_tutorial.webp');
+    expect(
+      File('assets/images/griditems/gravestone_tutorial.webp').existsSync(),
+      isTrue,
+    );
+    final zhNames =
+        jsonDecode(File('assets/l10n/resource_zh.json').readAsStringSync())
+            as Map<String, dynamic>;
+    expect(zhNames['griditem_gravestone_egypt_memo'], '庭院墓碑');
+    expect(zhNames, isNot(contains('griditem_gravestone_tutorial')));
+    expect((memo['companionObjects'] as List<dynamic>).single, {
+      'objclass': 'GridItemGravestonePropertySheet',
+      'aliases': ['GridItemGravestoneDefaultMemo'],
+      'objdata': {
+        'Hitpoints': 700,
+        'HitRectOffsetX': 15,
+        'HitRectOffsetWidth': -30,
+        'GridItemLevelStats': [
+          {'HitPointsLevel': 1},
+          {'HitPointsLevel': 2},
+          {'HitPointsLevel': 3},
+          {'HitPointsLevel': 4},
+          {'HitPointsLevel': 5},
+        ],
+        'ArtCenter': {'x': 98, 'y': 127},
+        'PopAnim': 'POPANIM_GRAVESTONES_TUTORIAL_GRAVESTONE',
+        'DamageStateCount': 5,
+        'BreakEffect': 'POPANIM_EFFECTS_TOMBSTONE_TUTORIAL_DAMAGE',
+        'BreakEffectSound': 'Play_Zomb_Egypt_Grave_Crumble',
+      },
+    });
+  });
+
   for (final typeName in const [
     'renai_roller',
     'renai_tile_left',

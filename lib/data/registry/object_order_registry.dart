@@ -17,6 +17,7 @@ class ObjectOrderRegistry {
     'ArmrackProperties',
     'EnergyGridProperties',
     'LastStandMinigameProperties',
+    'CowboyMinigameProperties',
     'BowlingMinigameProperties',
     'NewBowlingMinigameProperties',
     'SeedRainProperties',

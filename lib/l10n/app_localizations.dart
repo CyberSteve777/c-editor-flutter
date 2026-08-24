@@ -4666,6 +4666,18 @@ abstract class AppLocalizations {
   /// **'Sets initial resources and enables setup phase'**
   String get moduleDesc_LastStandMinigameProperties;
 
+  /// No description provided for @moduleTitle_CowboyMinigameProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Not OK Corral'**
+  String get moduleTitle_CowboyMinigameProperties;
+
+  /// No description provided for @moduleDesc_CowboyMinigameProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts a zombie wave whenever a conveyor-belt plant is planted'**
+  String get moduleDesc_CowboyMinigameProperties;
+
   /// No description provided for @moduleTitle_PVZ1OverwhelmModuleProperties.
   ///
   /// In en, this message translates to:
@@ -8517,6 +8529,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last Stand requires Manual Startup to be enabled in the Wave Manager; otherwise zombies will appear automatically. The editor manages this switch automatically when the Last Stand module is added or removed.'**
   String get lastStandHelpNotesBody;
+
+  /// No description provided for @moduleDependencyRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To select this module, add the \"{moduleName}\" module first.'**
+  String moduleDependencyRequiredMessage(String moduleName);
+
+  /// No description provided for @conveyorManualPacketSpawning.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual packet spawning'**
+  String get conveyorManualPacketSpawning;
+
+  /// No description provided for @cowboyMinigameSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Not OK Corral settings'**
+  String get cowboyMinigameSettings;
+
+  /// No description provided for @cowboyMinigameBeginString.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt text'**
+  String get cowboyMinigameBeginString;
+
+  /// No description provided for @cowboyMinigameBeginStringHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not show text'**
+  String get cowboyMinigameBeginStringHidden;
+
+  /// No description provided for @cowboyMinigameBeginStringDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default text'**
+  String get cowboyMinigameBeginStringDefault;
+
+  /// No description provided for @cowboyMinigameBeginStringCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom text (Chinese supported)'**
+  String get cowboyMinigameBeginStringCustom;
+
+  /// No description provided for @cowboyMinigameCustomTextInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom prompt text'**
+  String get cowboyMinigameCustomTextInput;
+
+  /// No description provided for @cowboyMinigameShowTutorial.
+  ///
+  /// In en, this message translates to:
+  /// **'Show tutorial dialogue'**
+  String get cowboyMinigameShowTutorial;
+
+  /// No description provided for @cowboyMinigameBeginStringHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The prompt text appears together with the zombie preview before every plant placement. The default message is “Plant a plant from the conveyor belt to begin!”.'**
+  String get cowboyMinigameBeginStringHint;
+
+  /// No description provided for @cowboyMinigameHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not OK Corral module'**
+  String get cowboyMinigameHelpTitle;
+
+  /// No description provided for @cowboyMinigameHelpOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A Wild West-exclusive minigame. Before each wave, the player receives a randomly selected seed packet. Planting it starts a zombie wave, and defeating every zombie completes the level.\nBefore planting each seed packet, the player can preview the types, counts, and positions of zombies in each row, allowing them to plan where to place the plant.'**
+  String get cowboyMinigameHelpOverviewBody;
+
+  /// No description provided for @cowboyMinigameHelpBeginStringBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be hidden or replaced with custom text.'**
+  String get cowboyMinigameHelpBeginStringBody;
+
+  /// No description provided for @cowboyMinigameHelpTutorialBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When Show Tutorial Dialogue is enabled, Crazy Dave and Penny appear before the level and explain the minigame through dialogue based on the first-play conversation from Wild West - Day 4.'**
+  String get cowboyMinigameHelpTutorialBody;
+
+  /// No description provided for @cowboyMinigameDependencyWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Required module missing'**
+  String get cowboyMinigameDependencyWarningTitle;
+
+  /// No description provided for @cowboyMinigameConveyorWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The Not OK Corral module must be used together with the Conveyor Belt module; otherwise, the level will crash.'**
+  String get cowboyMinigameConveyorWarning;
+
+  /// No description provided for @customGravestoneReplacePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Only one custom tombstone can be added to a level. Replace the level\'s existing custom tombstone with \"{gridItemName}\"?'**
+  String customGravestoneReplacePrompt(String gridItemName);
+
+  /// No description provided for @customGridItemReplaceAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get customGridItemReplaceAction;
 
   /// No description provided for @roofFlowerPot.
   ///
@@ -13752,7 +13872,7 @@ abstract class AppLocalizations {
   /// No description provided for @customZombossMechScalars.
   ///
   /// In en, this message translates to:
-  /// **'Movement Range'**
+  /// **'Movement Parameters'**
   String get customZombossMechScalars;
 
   /// No description provided for @customZombossMechStages.
@@ -13778,6 +13898,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Max column'**
   String get zombossMechMaxColumn;
+
+  /// No description provided for @zombossMechSquashZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Can squash zombies'**
+  String get zombossMechSquashZombies;
+
+  /// No description provided for @zombossMechSquashGridItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Can squash grid items'**
+  String get zombossMechSquashGridItems;
+
+  /// No description provided for @zombossMultipleModuleSelectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple Boss modules were found. Select the instance to edit from the module list in Level Settings.'**
+  String get zombossMultipleModuleSelectionHint;
 
   /// No description provided for @zombossMechStageActions.
   ///

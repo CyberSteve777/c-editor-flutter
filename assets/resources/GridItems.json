@@ -7,6 +7,38 @@
   { "typeName": "gravestone_battlez_sun", "category": "scene", "icon": "gravestoneSunOnDestruction.webp" },
   { "typeName": "pvz1grid", "category": "scene", "icon": "pvz1grid.webp" },
   {
+    "typeName": "gravestone_tutorial",
+    "gameTypeName": "gravestone_egypt_memo",
+    "gridItemTypeAlias": "gravestone_memo",
+    "exclusivePresetGroup": "gravestone_egypt_memo",
+    "category": "scene",
+    "icon": "gravestone_tutorial.webp",
+    "source": "custom",
+    "companionObjects": [
+      {
+        "objclass": "GridItemGravestonePropertySheet",
+        "aliases": ["GridItemGravestoneDefaultMemo"],
+        "objdata": {
+          "Hitpoints": 700,
+          "HitRectOffsetX": 15,
+          "HitRectOffsetWidth": -30,
+          "GridItemLevelStats": [
+            { "HitPointsLevel": 1 },
+            { "HitPointsLevel": 2 },
+            { "HitPointsLevel": 3 },
+            { "HitPointsLevel": 4 },
+            { "HitPointsLevel": 5 }
+          ],
+          "ArtCenter": { "x": 98, "y": 127 },
+          "PopAnim": "POPANIM_GRAVESTONES_TUTORIAL_GRAVESTONE",
+          "DamageStateCount": 5,
+          "BreakEffect": "POPANIM_EFFECTS_TOMBSTONE_TUTORIAL_DAMAGE",
+          "BreakEffectSound": "Play_Zomb_Egypt_Grave_Crumble"
+        }
+      }
+    ]
+  },
+  {
     "typeName": "armrack",
     "category": "scene",
     "icon": "ArmrackRandom.webp",
@@ -21,6 +53,7 @@
       }
     }
   },
+  { "typeName": "speaker_zomboss", "category": "scene", "icon": "speaker_zomboss.webp" },
   { "typeName": "heian_box_sun", "category": "scene", "icon": "heian_box_sun.webp" },
   { "typeName": "heian_box_plantfood", "category": "scene", "icon": "heian_box_plantfood.webp" },
   { "typeName": "heian_box_levelup", "category": "scene", "icon": "heian_box_levelup.webp" },
@@ -80,7 +113,6 @@
   { "typeName": "surfboard", "category": "spawnableObjects", "icon": "surfboard.webp" },
   { "typeName": "backpack", "category": "spawnableObjects", "icon": "backpack.webp" },
   { "typeName": "eightiesarcadecabinet", "category": "spawnableObjects", "icon": "eightiesarcadecabinet.webp" },
-  { "typeName": "speaker_zomboss", "category": "spawnableObjects", "icon": "speaker_zomboss.webp" },
   { "typeName": "gridItem_sushi", "category": "spawnableObjects", "icon": "griditem_sushi.webp" },
   { "typeName": "dinoegg_zomshell", "category": "spawnableObjects", "icon": "dinoegg_zomshell.webp" },
   { "typeName": "dinoegg_ptero", "category": "spawnableObjects", "icon": "dinoegg_ptero.webp" },

@@ -436,7 +436,7 @@ class _SpawnGraveStonesEventScreenState
     final parsed = RtidParser.parse(item.type);
     final alias = parsed?.alias ?? item.type;
     final displayTypeName =
-        GridItemRepository.getByTypeName(alias)?.typeName ?? alias;
+        GridItemRepository.getByTypeName(alias)?.actualTypeName ?? alias;
     final source = parsed?.source ?? '';
     final isValid = source == 'CurrentLevel'
         ? internalAliases.contains(alias)

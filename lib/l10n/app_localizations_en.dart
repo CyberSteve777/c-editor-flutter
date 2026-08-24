@@ -2576,6 +2576,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sets initial resources and enables setup phase';
 
   @override
+  String get moduleTitle_CowboyMinigameProperties => 'Not OK Corral';
+
+  @override
+  String get moduleDesc_CowboyMinigameProperties =>
+      'Starts a zombie wave whenever a conveyor-belt plant is planted';
+
+  @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
       'Column Like You See \'Em';
 
@@ -4766,6 +4773,70 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get lastStandHelpNotesBody =>
       'Last Stand requires Manual Startup to be enabled in the Wave Manager; otherwise zombies will appear automatically. The editor manages this switch automatically when the Last Stand module is added or removed.';
+
+  @override
+  String moduleDependencyRequiredMessage(String moduleName) {
+    return 'To select this module, add the \"$moduleName\" module first.';
+  }
+
+  @override
+  String get conveyorManualPacketSpawning => 'Manual packet spawning';
+
+  @override
+  String get cowboyMinigameSettings => 'Not OK Corral settings';
+
+  @override
+  String get cowboyMinigameBeginString => 'Prompt text';
+
+  @override
+  String get cowboyMinigameBeginStringHidden => 'Do not show text';
+
+  @override
+  String get cowboyMinigameBeginStringDefault => 'Default text';
+
+  @override
+  String get cowboyMinigameBeginStringCustom =>
+      'Custom text (Chinese supported)';
+
+  @override
+  String get cowboyMinigameCustomTextInput => 'Custom prompt text';
+
+  @override
+  String get cowboyMinigameShowTutorial => 'Show tutorial dialogue';
+
+  @override
+  String get cowboyMinigameBeginStringHint =>
+      'The prompt text appears together with the zombie preview before every plant placement. The default message is “Plant a plant from the conveyor belt to begin!”.';
+
+  @override
+  String get cowboyMinigameHelpTitle => 'Not OK Corral module';
+
+  @override
+  String get cowboyMinigameHelpOverviewBody =>
+      'A Wild West-exclusive minigame. Before each wave, the player receives a randomly selected seed packet. Planting it starts a zombie wave, and defeating every zombie completes the level.\nBefore planting each seed packet, the player can preview the types, counts, and positions of zombies in each row, allowing them to plan where to place the plant.';
+
+  @override
+  String get cowboyMinigameHelpBeginStringBody =>
+      'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be hidden or replaced with custom text.';
+
+  @override
+  String get cowboyMinigameHelpTutorialBody =>
+      'When Show Tutorial Dialogue is enabled, Crazy Dave and Penny appear before the level and explain the minigame through dialogue based on the first-play conversation from Wild West - Day 4.';
+
+  @override
+  String get cowboyMinigameDependencyWarningTitle => 'Required module missing';
+
+  @override
+  String get cowboyMinigameConveyorWarning =>
+      'The Not OK Corral module must be used together with the Conveyor Belt module; otherwise, the level will crash.';
+
+  @override
+  String customGravestoneReplacePrompt(String gridItemName) {
+    return 'Only one custom tombstone can be added to a level. Replace the level\'s existing custom tombstone with \"$gridItemName\"?';
+  }
+
+  @override
+  String get customGridItemReplaceAction => 'Replace';
 
   @override
   String get roofFlowerPot => 'Roof Pots module';
@@ -7771,7 +7842,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customZombossMechProperties => 'Custom Zomboss Mech properties';
 
   @override
-  String get customZombossMechScalars => 'Movement Range';
+  String get customZombossMechScalars => 'Movement Parameters';
 
   @override
   String get customZombossMechStages => 'Mech Phases';
@@ -7785,6 +7856,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechMaxColumn => 'Max column';
+
+  @override
+  String get zombossMechSquashZombies => 'Can squash zombies';
+
+  @override
+  String get zombossMechSquashGridItems => 'Can squash grid items';
+
+  @override
+  String get zombossMultipleModuleSelectionHint =>
+      'Multiple Boss modules were found. Select the instance to edit from the module list in Level Settings.';
 
   @override
   String get zombossMechStageActions => 'Actions';

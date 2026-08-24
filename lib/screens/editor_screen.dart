@@ -6,10 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
+import 'package:c_editor/data/cowboy_minigame_utils.dart';
 import 'package:c_editor/data/glacier_module_presets.dart';
 import 'package:c_editor/data/zomboss_eighties_speaker_presets.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
+import 'package:c_editor/data/module_instance_display_name.dart';
+import 'package:c_editor/data/module_instance_utils.dart';
 import 'package:c_editor/data/mold_colony_module_utils.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/models/custom_stage_preset.dart';
@@ -52,6 +55,7 @@ import 'package:c_editor/screens/editor/modules/tide_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/zombie_move_fast_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/wave_manager_settings_screen.dart';
 import 'package:c_editor/screens/editor/modules/last_stand_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/cowboy_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_plant_entry_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_plant_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_zombie_entry_screen.dart';
@@ -418,7 +422,6 @@ class _EditorScreenState extends State<EditorScreen> {
         missingList.add('SeedBankProperties');
       }
     }
-
     final metas = missingList
         .map((cls) => ModuleRegistry.getMetadata(cls))
         .where((m) {
@@ -1036,7 +1039,7 @@ class _EditorScreenState extends State<EditorScreen> {
       }
     }
 
-    final meta = await Navigator.push<ModuleMetadata>(
+    final selection = await Navigator.push<ModuleSelectionResult>(
       context,
       MaterialPageRoute(
         builder: (context) => ModuleSelectionScreen(
@@ -1046,8 +1049,9 @@ class _EditorScreenState extends State<EditorScreen> {
       ),
     );
 
-    if (meta != null) {
+    if (selection != null) {
       if (!mounted) return;
+      final meta = selection.metadata;
       final l10n = AppLocalizations.of(context)!;
       String? chosenAlias;
       if (meta.defaultSource == 'CurrentLevel') {
@@ -1064,6 +1068,10 @@ class _EditorScreenState extends State<EditorScreen> {
           levelFile: _ec.state.levelFile!,
         );
         if (chosenAlias == null || !mounted) return;
+      }
+      final requiredModuleObjClass = selection.requiredModuleObjClass;
+      if (requiredModuleObjClass != null) {
+        _addModule(ModuleRegistry.getMetadata(requiredModuleObjClass));
       }
       _addModule(meta, aliasOverride: chosenAlias);
     }
@@ -1110,6 +1118,9 @@ class _EditorScreenState extends State<EditorScreen> {
         objData: objData,
       );
       _ec.state.levelFile!.objects.add(moduleObject);
+      if (meta.objClass == CowboyMinigameUtils.moduleObjClass) {
+        CowboyMinigameUtils.enableManualPacketSpawning(_ec.state.levelFile!);
+      }
       if (meta.objClass == MoldColonyModuleUtils.moduleObjClass) {
         MoldColonyModuleUtils.ensureCurrentLevelLayout(
           levelFile: _ec.state.levelFile!,
@@ -1120,6 +1131,34 @@ class _EditorScreenState extends State<EditorScreen> {
       final rtid = RtidParser.build(alias, source);
       def.modules.add(rtid);
     }
+
+    _markDirty();
+    _ec.recalculateTabs();
+  }
+
+  void _handleDuplicateModule(String rtid) {
+    final def = _ec.state.parsedData?.levelDef;
+    final levelFile = _ec.state.levelFile;
+    final info = RtidParser.parse(rtid);
+    if (def == null || levelFile == null || info?.source != 'CurrentLevel') {
+      return;
+    }
+
+    final sourceObject = levelFile.objects.firstWhereOrNull(
+      (object) => object.aliases?.contains(info!.alias) == true,
+    );
+    if (sourceObject == null) return;
+    final metadata = ModuleRegistry.getMetadataForAlias(
+      info!.alias,
+      sourceObject.objClass,
+    );
+    final duplicateRtid = ModuleInstanceUtils.duplicateCurrentLevelModule(
+      levelFile: levelFile,
+      levelDef: def,
+      rtid: rtid,
+      metadata: metadata,
+    );
+    if (duplicateRtid == null) return;
 
     _markDirty();
     _ec.recalculateTabs();
@@ -1143,12 +1182,11 @@ class _EditorScreenState extends State<EditorScreen> {
       }
     }
 
-    def.modules.remove(rtid);
-    if (info != null && info.source == 'CurrentLevel') {
-      _ec.state.levelFile!.objects.removeWhere(
-        (o) => o.aliases?.contains(info.alias) == true,
-      );
-    }
+    ModuleInstanceUtils.removeModule(
+      levelFile: _ec.state.levelFile!,
+      levelDef: def,
+      rtid: rtid,
+    );
     if (moldLocations != null) {
       MoldColonyModuleUtils.removeUnreferencedLayout(
         levelFile: _ec.state.levelFile!,
@@ -2770,6 +2808,28 @@ class _EditorScreenState extends State<EditorScreen> {
       openSunDropper(rtid);
       return;
     }
+
+    String instanceTitle() {
+      final metadata = ModuleRegistry.getMetadataForAlias(info.alias, objClass);
+      final matchingRtids = <String>[];
+      for (final moduleRtid
+          in _ec.state.parsedData!.levelDef?.modules ?? const <String>[]) {
+        final moduleInfo = RtidParser.parse(moduleRtid);
+        if (moduleInfo == null) continue;
+        final moduleClass = moduleInfo.source == 'CurrentLevel'
+            ? _ec.state.parsedData!.objectMap[moduleInfo.alias]?.objClass
+            : ReferenceRepository.instance.getObjClass(moduleInfo.alias);
+        if (moduleClass == objClass) matchingRtids.add(moduleRtid);
+      }
+      final index = matchingRtids.indexOf(rtid);
+      return moduleInstanceDisplayName(
+        baseName: metadata.getTitle(context),
+        objClass: objClass,
+        instanceCount: matchingRtids.length,
+        instanceIndex: index < 0 ? 0 : index,
+      );
+    }
+
     if (objClass == 'MoonLifeSupportSystemProperties' &&
         _ec.state.parsedData?.levelDef != null) {
       void openLifeSupport(String rt) {
@@ -2950,6 +3010,21 @@ class _EditorScreenState extends State<EditorScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => LastStandMinigameScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == CowboyMinigameUtils.moduleObjClass) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CowboyMinigameScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
@@ -3367,7 +3442,21 @@ class _EditorScreenState extends State<EditorScreen> {
     }
     if (info.source == 'CurrentLevel' &&
         objClass == 'ZombossBattleModuleProperties') {
-      _setActiveTab(EditorTabType.zombossMech);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(title: Text(instanceTitle())),
+            body: ZombossMechBattleTab(
+              moduleRtid: rtid,
+              levelFile: _ec.state.levelFile!,
+              onChanged: _markDirty,
+              onOpenGlacierModule: _openGlacierModuleSettings,
+              onOpenInitialGridItems: _openInitialGridItemSettings,
+            ),
+          ),
+        ),
+      );
       return;
     }
     if (info.source == 'CurrentLevel' &&
@@ -3377,7 +3466,19 @@ class _EditorScreenState extends State<EditorScreen> {
     }
     if (info.source == 'CurrentLevel' &&
         objClass == 'ZombossLastStandMinigameProperties') {
-      _setActiveTab(EditorTabType.zombossBattle);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(title: Text(instanceTitle())),
+            body: ZombossBattleTab(
+              moduleRtid: rtid,
+              levelFile: _ec.state.levelFile!,
+              onChanged: _markDirty,
+            ),
+          ),
+        ),
+      );
       return;
     }
     if (const {
@@ -3783,8 +3884,16 @@ class _EditorScreenState extends State<EditorScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _ec.state.levelFile == null || _ec.state.parsedData == null
                 ? Center(
-                    child: Text(
-                      l10n?.failedToLoadLevel ?? 'Failed to load level',
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 640),
+                        child: Text(
+                          l10n?.failedToLoadLevel ?? 'Failed to load level',
+                          key: const ValueKey('level-load-failure-message'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                   )
                 : DefaultTabController(
@@ -3873,6 +3982,8 @@ class _EditorScreenState extends State<EditorScreen> {
                                             onEditBasicInfo:
                                                 _handleEditBasicInfo,
                                             onEditModule: _handleEditModule,
+                                            onDuplicateModule:
+                                                _handleDuplicateModule,
                                             onRemoveModule: _handleRemoveModule,
                                             onReorderModules:
                                                 _handleReorderModules,

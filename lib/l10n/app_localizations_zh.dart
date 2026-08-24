@@ -1204,7 +1204,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saved => '已保存';
 
   @override
-  String get failedToLoadLevel => '加载关卡失败。\n建议检查关卡文件是否为加密格式（如热更新使用的JSON文件）。';
+  String get failedToLoadLevel => '关卡加载失败。\n建议检查关卡文件是否为加密格式（如热更新使用的JSON文件）。';
 
   @override
   String get noLevelDefinition => '未找到关卡定义';
@@ -2460,6 +2460,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moduleDesc_LastStandMinigameProperties => '设置初始资源，开启布阵阶段';
+
+  @override
+  String get moduleTitle_CowboyMinigameProperties => '围栏之战';
+
+  @override
+  String get moduleDesc_CowboyMinigameProperties => '每种植一个传送带植物，才开始一波僵尸进攻';
 
   @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties => '排山倒海';
@@ -4530,6 +4536,69 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get lastStandHelpNotesBody =>
       '启用坚不可摧后，需要在波次管理器中启用“手动开始游戏”开关，否则僵尸会自动出现。添加或移除坚不可摧模块时，软件会自动管理此开关。';
+
+  @override
+  String moduleDependencyRequiredMessage(String moduleName) {
+    return '要选择此模块，需要先添加「$moduleName」模块。';
+  }
+
+  @override
+  String get conveyorManualPacketSpawning => '手动生成卡片';
+
+  @override
+  String get cowboyMinigameSettings => '围栏之战设置';
+
+  @override
+  String get cowboyMinigameBeginString => '提示文本';
+
+  @override
+  String get cowboyMinigameBeginStringHidden => '不显示文本';
+
+  @override
+  String get cowboyMinigameBeginStringDefault => '默认文本';
+
+  @override
+  String get cowboyMinigameBeginStringCustom => '自由编辑（支持输入中文）';
+
+  @override
+  String get cowboyMinigameCustomTextInput => '自定义提示文本';
+
+  @override
+  String get cowboyMinigameShowTutorial => '显示教程对话';
+
+  @override
+  String get cowboyMinigameBeginStringHint =>
+      '“提示文本”会在每次种植植物之前与僵尸预览一同出现。默认文本内容为“种植传送带上的植物以开始关卡！”。';
+
+  @override
+  String get cowboyMinigameHelpTitle => '围栏之战模块说明';
+
+  @override
+  String get cowboyMinigameHelpOverviewBody =>
+      '狂野西部的专属小游戏。玩家会在每波开始前随机获得一张植物卡片，每种植一个植物就会出现一波僵尸，消灭所有僵尸即可完成关卡。\n每次种植植物之前，游戏会预览每一行即将出现的僵尸数量、种类及位置，便于玩家斟酌植物的种植选择。';
+
+  @override
+  String get cowboyMinigameHelpBeginStringBody =>
+      '“提示文本”会在每次种植植物之前与僵尸预览一同出现。“默认文本”的游戏内内容为“种植传送带上的植物以开始关卡！”。也可以不显示文本，或自由输入自定义内容。';
+
+  @override
+  String get cowboyMinigameHelpTutorialBody =>
+      '开启“显示教程对话”后，戴夫和潘妮会在关卡开始前出现，以对话形式交代小游戏的背景。游戏使用的对话参考狂野西部-第4天初次游玩时的内容。';
+
+  @override
+  String get cowboyMinigameDependencyWarningTitle => '缺少必需模块';
+
+  @override
+  String get cowboyMinigameConveyorWarning =>
+      '「围栏之战」模块必须与「传送带」模块搭配使用，否则会造成关卡闪退。';
+
+  @override
+  String customGravestoneReplacePrompt(String gridItemName) {
+    return '一关中只能添加一种自定义墓碑。是否将关卡中原本的自定义墓碑替换为「$gridItemName」？';
+  }
+
+  @override
+  String get customGridItemReplaceAction => '替换';
 
   @override
   String get roofFlowerPot => '屋顶花盆模块';
@@ -7386,7 +7455,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customZombossMechProperties => '自定义僵王机甲属性';
 
   @override
-  String get customZombossMechScalars => '活动范围';
+  String get customZombossMechScalars => '活动参数';
 
   @override
   String get customZombossMechStages => '机甲阶段';
@@ -7400,6 +7469,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechMaxColumn => '最大列';
+
+  @override
+  String get zombossMechSquashZombies => '可碾压僵尸';
+
+  @override
+  String get zombossMechSquashGridItems => '可碾压障碍物';
+
+  @override
+  String get zombossMultipleModuleSelectionHint =>
+      '检测到多个同类 Boss 模块，请在关卡设置的模块列表中选择要编辑的具体实例。';
 
   @override
   String get zombossMechStageActions => '动作';

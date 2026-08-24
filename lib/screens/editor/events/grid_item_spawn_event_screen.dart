@@ -259,10 +259,7 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
     final isElite = _isElite(zombie);
     final baseType = _resolveBaseTypeName(zombie);
     final info = ZombieRepository().getZombieById(baseType);
-    final displayName = ResourceNames.lookup(
-      context,
-      info?.name ?? baseType,
-    );
+    final displayName = ResourceNames.lookup(context, info?.name ?? baseType);
     final iconPath = info?.iconAssetPath;
     final isCustom = _isCustomZombie(zombie);
 
@@ -316,13 +313,12 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
           parentContext: context,
           levelFile: widget.levelFile,
           zombieTypeRtid: zombie.type,
-          onRemove: (eraseOrphan) => _removeZombie(
-            index,
-            eraseOrphanProperties: eraseOrphan,
-          ),
+          onRemove: (eraseOrphan) =>
+              _removeZombie(index, eraseOrphanProperties: eraseOrphan),
         );
       },
-      customPropertiesActions: widget.onEditCustomZombie != null ||
+      customPropertiesActions:
+          widget.onEditCustomZombie != null ||
               widget.onInjectCustomZombie != null
           ? CustomZombiePropertiesSheetActions(
               levelFile: widget.levelFile,
@@ -334,11 +330,7 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
               onRtidSelected: (rtid) {
                 _updateZombie(
                   index,
-                  ZombieSpawnData(
-                    type: rtid,
-                    row: null,
-                    level: zombie.level,
-                  ),
+                  ZombieSpawnData(type: rtid, row: null, level: zombie.level),
                 );
               },
             )
@@ -497,26 +489,36 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                 final rtid = e.value;
                 final parsed = RtidParser.parse(rtid);
                 final gridAlias = parsed?.alias ?? rtid;
+                final displayTypeName =
+                    GridItemRepository.getByTypeName(
+                      gridAlias,
+                    )?.actualTypeName ??
+                    gridAlias;
                 final isValid = parsed?.source == 'CurrentLevel'
                     ? objectAliases.contains(gridAlias)
-                    : GridItemRepository.isValid(gridAlias);
+                    : GridItemRepository.isValid(displayTypeName);
                 return Card(
                   margin: const EdgeInsets.only(bottom: 8),
                   color: isValid ? null : theme.colorScheme.errorContainer,
                   child: ListTile(
                     leading: GridItemIcon(
-                      typeName: gridAlias,
+                      typeName: displayTypeName,
                       size: 40,
                       fit: BoxFit.contain,
                     ),
                     title: Text(() {
                       final d = ResourceNames.lookup(
                         context,
-                        'griditem_$gridAlias',
+                        'griditem_$displayTypeName',
                       );
-                      return d != 'griditem_$gridAlias' ? d : gridAlias;
+                      return d != 'griditem_$displayTypeName'
+                          ? d
+                          : displayTypeName;
                     }()),
-                    subtitle: Text(gridAlias, style: theme.textTheme.bodySmall),
+                    subtitle: Text(
+                      displayTypeName,
+                      style: theme.textTheme.bodySmall,
+                    ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
                       tooltip: l10n?.delete ?? 'Delete',

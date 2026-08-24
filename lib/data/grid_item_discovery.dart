@@ -17,8 +17,12 @@ class GridItemDiscovery {
             d['ItemType'];
         if (t is String && t.isNotEmpty) {
           final clean = _cleanId(t);
-          if (clean != 'flowerpot' && GridItemRepository.isValid(clean)) {
-            items.add(clean);
+          final displayTypeName = GridItemRepository.displayTypeNameForLevel(
+            clean,
+            levelFile,
+          );
+          if (clean != 'flowerpot' && displayTypeName != null) {
+            items.add(displayTypeName);
           }
         }
         for (final v in d.values) {
@@ -48,8 +52,12 @@ class GridItemDiscovery {
             final type = entry['Type'];
             if (type is! String || type.isEmpty) continue;
             final clean = _cleanId(type);
-            if (GridItemRepository.isValid(clean)) {
-              items.add(clean);
+            final displayTypeName = GridItemRepository.displayTypeNameForLevel(
+              clean,
+              levelFile,
+            );
+            if (displayTypeName != null) {
+              items.add(displayTypeName);
             }
           }
         }

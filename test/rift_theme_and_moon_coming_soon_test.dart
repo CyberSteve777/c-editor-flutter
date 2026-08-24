@@ -110,6 +110,11 @@ void main() {
   testWidgets('rift theme list uses icons and opens target details', (
     tester,
   ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
     await tester.pumpWidget(
       _localizedApp(
         RiftThemeSelectionScreen(
@@ -138,6 +143,11 @@ void main() {
     );
     expect(find.text('Zombie list'), findsOneWidget);
     expect(find.text('roman'), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('riftThemeTarget-roman'))).width,
+      greaterThan(200),
+    );
+    expect(tester.widget<Text>(find.text('Roman Zombie')).maxLines, 2);
   });
 
   testWidgets('selected themes use a neutral list number and support details', (
@@ -192,5 +202,42 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Zombie list'), findsOneWidget);
+  });
+
+  testWidgets('theme details hide every zombie blacklist', (tester) async {
+    for (final themeId in const ['invisible', 'gravestone']) {
+      final targetList = RiftThemeRepository.targetLists[themeId];
+      expect(targetList, isNotNull);
+      expect(targetList!.type, RiftThemeTargetType.zombies);
+      expect(targetList.isBlacklist, isTrue);
+
+      await tester.pumpWidget(
+        _localizedApp(
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showRiftThemeDetailsDialog(context, themeId),
+              child: Text(themeId),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text(themeId));
+      await tester.pump();
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Zombie list'), findsNothing);
+      for (final zombieId in targetList.ids) {
+        expect(
+          find.byKey(ValueKey('riftThemeTarget-${zombieId.trim()}')),
+          findsNothing,
+        );
+      }
+
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+    }
   });
 }

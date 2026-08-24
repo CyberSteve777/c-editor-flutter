@@ -25,6 +25,7 @@ export 'pvz_models/BronzeStatueItemData.dart';
 export 'pvz_models/BungeeWaveActionData.dart';
 export 'pvz_models/BungeeWaveTargetData.dart';
 export 'pvz_models/ConveyorBeltData.dart';
+export 'pvz_models/CowboyMinigamePropertiesData.dart';
 export 'pvz_models/DeathHoleModuleData.dart';
 export 'pvz_models/DinoRunActionPropsData.dart';
 export 'pvz_models/DinoTreadActionPropsData.dart';
