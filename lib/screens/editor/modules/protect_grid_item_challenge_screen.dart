@@ -19,6 +19,7 @@ class ProtectGridItemChallengeScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
@@ -26,6 +27,7 @@ class ProtectGridItemChallengeScreen extends StatefulWidget {
   final VoidCallback onChanged;
   final VoidCallback onBack;
   final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<ProtectGridItemChallengeScreen> createState() =>
@@ -87,6 +89,7 @@ class _ProtectGridItemChallengeScreenState
           filterMode: GridItemFilterMode.restricted,
           levelFile: widget.levelFile,
           onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (id) {
             Navigator.pop(context);
             final list = List<ProtectGridItemData>.from(_data.gridItems)

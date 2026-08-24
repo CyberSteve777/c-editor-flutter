@@ -730,6 +730,7 @@
   "stageTypeExtra": "Дополнительные",
   "stageTypeSeasons": "Сезоны",
   "stageTypeSpecial": "Мини-игры",
+  "stageTypeCustomPresets": "Пользовательские шаблоны",
   "search": "Поиск",
   "disablePeavine": "Отключить плющ",
   "disableArtifact": "Отключить артефакт",
@@ -1678,6 +1679,8 @@
       "gridItemName": { "type": "String" }
     }
   },
+  "customGravestoneResourceGroupPrompt": "Чтобы надгробие дома игрока отображалось правильно и не использовало текстуру солнца, на газон нужно добавить группу ресурсов \"Modern_Gravestone\". Перейти к пользовательским газонам и добавить её? За основу можно взять шаблон «Современное кладбище».",
+  "openCustomStageSelection": "Открыть пользовательские газоны",
   "customGridItemReplaceAction": "Заменить",
   "roofFlowerPot": "Цветочный горшок на крыше",
   "roofFlowerPotColumns": "Диапазон цветочных горшков",

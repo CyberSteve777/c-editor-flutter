@@ -2113,6 +2113,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stageTypeSpecial => 'Special';
 
   @override
+  String get stageTypeCustomPresets => 'Custom Presets';
+
+  @override
   String get search => 'Search';
 
   @override
@@ -4841,6 +4844,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String customGravestoneReplacePrompt(String gridItemName) {
     return 'Only one custom tombstone can be added to a level. Replace the level\'s existing custom tombstone with \"$gridItemName\"?';
   }
+
+  @override
+  String get customGravestoneResourceGroupPrompt =>
+      'To display the Player\'s House tombstone correctly and prevent it from using the Sun texture, the lawn must include the \"Modern_Gravestone\" resource group. Open the custom lawn screen to add it? You can use the \"Modern Graveyard\" preset as a base.';
+
+  @override
+  String get openCustomStageSelection => 'Open custom lawns';
 
   @override
   String get customGridItemReplaceAction => 'Replace';

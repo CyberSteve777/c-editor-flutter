@@ -729,12 +729,14 @@ class DestroyGridItemsChallengeEditor extends StatefulWidget {
     required this.onChanged,
     required this.levelFile,
     this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final PvzObject object;
   final VoidCallback onChanged;
   final PvzLevelFile? levelFile;
   final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<DestroyGridItemsChallengeEditor> createState() =>
@@ -775,6 +777,7 @@ class _DestroyGridItemsChallengeEditorState
           filterMode: GridItemFilterMode.all,
           levelFile: widget.levelFile,
           onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (id) {
             Navigator.pop(ctx);
             setState(() {

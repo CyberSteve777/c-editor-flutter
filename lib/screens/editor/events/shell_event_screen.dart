@@ -251,7 +251,10 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
                           deleteTooltip: l10n?.delete ?? 'Delete',
                         ),
                       ),
-                      AddItemCard(onPressed: _addShell, minHeight: 130),
+                      AddItemCard(
+                        onPressed: _addShell,
+                        minHeight: EditorItemCardLayout.gridItemCardHeight,
+                      ),
                     ],
                   ),
                   if (itemsOutsideLawn.isNotEmpty) ...[
@@ -459,6 +462,7 @@ class _ShellItemCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
         width: EditorItemCardLayout.cardWidth(context),
+        height: EditorItemCardLayout.gridItemCardHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

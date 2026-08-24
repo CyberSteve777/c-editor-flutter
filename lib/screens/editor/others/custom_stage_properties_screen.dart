@@ -225,14 +225,21 @@ class _CustomStagePropertiesScreenState
               ({
                 required groups,
                 sourceStageAlias,
+                sourceStageObjdata,
                 applySourceLawnAppearance = false,
               }) {
+                Map<String, dynamic>? sourceObjdata = sourceStageObjdata;
+                if (sourceObjdata == null && sourceStageAlias != null) {
+                  sourceObjdata = StageCatalogRepository.catalogImplementation(
+                    sourceStageAlias,
+                  )?.objdata;
+                }
                 if (targetUnloadList) {
                   final toUnload =
                       mode == StageResourceGroupImportMode.fromStage &&
-                          sourceStageAlias != null
-                      ? CustomStageLevelUtils.sourceUnloadGroupsForImport(
-                          sourceStageAlias: sourceStageAlias,
+                          sourceObjdata != null
+                      ? CustomStageLevelUtils.sourceUnloadGroupsForObjdata(
+                          sourceObjdata: sourceObjdata,
                           importedGroups: groups,
                         )
                       : groups;
@@ -246,27 +253,17 @@ class _CustomStagePropertiesScreenState
                     [..._resourceGroups, ...groups],
                   );
                   if (mode == StageResourceGroupImportMode.fromStage &&
-                      sourceStageAlias != null) {
-                    final impl = StageCatalogRepository.catalogImplementation(
-                      sourceStageAlias,
+                      sourceObjdata != null) {
+                    CustomStageLevelUtils.syncUnloadGroupsFromSourceObjdata(
+                      objdata: _objdata,
+                      sourceObjdata: sourceObjdata,
+                      importedGroups: groups,
                     );
-                    if (impl != null) {
-                      CustomStageLevelUtils.syncUnloadGroupsFromSourceStage(
-                        objdata: _objdata,
-                        sourceStageAlias: sourceStageAlias,
-                        importedGroups: groups,
+                    if (applySourceLawnAppearance) {
+                      CustomStageLevelUtils.applyLawnAppearanceFromSource(
+                        _objdata,
+                        sourceObjdata,
                       );
-                      if (applySourceLawnAppearance) {
-                        CustomStageLevelUtils.applyLawnAppearanceFromSource(
-                          _objdata,
-                          Map<String, dynamic>.from(impl.objdata),
-                        );
-                      } else {
-                        CustomStageLevelUtils.restoreLawnAppearance(
-                          _objdata,
-                          appearanceSnapshot,
-                        );
-                      }
                     } else {
                       CustomStageLevelUtils.restoreLawnAppearance(
                         _objdata,

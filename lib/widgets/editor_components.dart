@@ -213,6 +213,8 @@ class PvzAddButton extends StatelessWidget {
 
 /// Layout metrics for editor item cards and placement grids on narrow screens.
 abstract final class EditorItemCardLayout {
+  static const double gridItemCardHeight = 148;
+
   static bool compact(BuildContext context) =>
       MediaQuery.sizeOf(context).width < 400;
 

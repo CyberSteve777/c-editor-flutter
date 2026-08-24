@@ -49,6 +49,28 @@ GridItemInfo _armrackPreset() => const GridItemInfo(
   source: GridItemSource.custom,
 );
 
+PvzLevelFile _levelWithModernGravestoneResourceGroup([
+  List<PvzObject> objects = const [],
+]) => PvzLevelFile(
+  objects: [
+    PvzObject(
+      aliases: const ['LevelDefinition'],
+      objClass: 'LevelDefinition',
+      objData: LevelDefinitionData(
+        stageModule: 'RTID(TestModernStage@CurrentLevel)',
+      ).toJson(),
+    ),
+    PvzObject(
+      aliases: const ['TestModernStage'],
+      objClass: 'ModernStageProperties',
+      objData: const {
+        'ResourceGroupNames': ['Modern_Gravestone'],
+      },
+    ),
+    ...objects,
+  ],
+);
+
 Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) {
   return MaterialApp(
     locale: locale,
@@ -381,7 +403,7 @@ void main() {
     tester,
   ) async {
     GridItemRepository.staticItems.add(_memoPreset());
-    final level = PvzLevelFile(objects: []);
+    final level = _levelWithModernGravestoneResourceGroup();
     String? selected;
 
     await tester.pumpWidget(
@@ -405,7 +427,16 @@ void main() {
     await tester.tap(find.text('gravestone_egypt_memo').first);
     await tester.pump();
     expect(selected, 'gravestone_egypt_memo');
-    expect(level.objects.single.aliases, ['GridItemGravestoneDefaultMemo']);
+    expect(
+      level.objects
+          .singleWhere(
+            (object) =>
+                object.aliases?.contains('GridItemGravestoneDefaultMemo') ==
+                true,
+          )
+          .aliases,
+      ['GridItemGravestoneDefaultMemo'],
+    );
     expect(
       _containsExactString(level.toJson(), 'gravestone_tutorial'),
       isFalse,
@@ -580,7 +611,7 @@ void main() {
     GridItemRepository.staticItems.add(_memoPreset());
     final conflictingSheet = _memoPropertySheet();
     (conflictingSheet.objData as Map)['Hitpoints'] = 701;
-    final level = PvzLevelFile(objects: [conflictingSheet]);
+    final level = _levelWithModernGravestoneResourceGroup([conflictingSheet]);
     String? selected;
 
     await tester.pumpWidget(
@@ -608,10 +639,90 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(selected, 'gravestone_egypt_memo');
-    expect((level.objects.single.objData as Map)['Hitpoints'], 700);
+    final replacedSheet = level.objects.singleWhere(
+      (object) =>
+          object.aliases?.contains('GridItemGravestoneDefaultMemo') == true,
+    );
+    expect((replacedSheet.objData as Map)['Hitpoints'], 700);
     expect(
       _containsExactString(level.toJson(), 'gravestone_tutorial'),
       isFalse,
+    );
+  });
+
+  testWidgets(
+    'missing Modern_Gravestone prompt takes priority over replacement',
+    (tester) async {
+      GridItemRepository.staticItems.add(_memoPreset());
+      final conflictingSheet = _memoPropertySheet();
+      conflictingSheet.objData['Hitpoints'] = 701;
+      final level = PvzLevelFile(objects: [conflictingSheet]);
+      var openedCustomStages = false;
+
+      await tester.pumpWidget(
+        _localizedApp(
+          GridItemSelectionScreen(
+            filterMode: GridItemFilterMode.all,
+            levelFile: level,
+            onGridItemSelected: (_) {},
+            onBack: () {},
+            onOpenCustomStageSelection: () async {
+              openedCustomStages = true;
+            },
+          ),
+          locale: const Locale('zh'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('gravestone_egypt_memo').first);
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Modern_Gravestone'), findsOneWidget);
+      expect(find.textContaining('只能添加一种自定义墓碑'), findsNothing);
+      expect(conflictingSheet.objData['Hitpoints'], 701);
+
+      await tester.tap(find.text('前往自定义地图'));
+      await tester.pumpAndSettle();
+      expect(openedCustomStages, isTrue);
+      expect(conflictingSheet.objData['Hitpoints'], 701);
+    },
+  );
+
+  testWidgets('grid item and add cards use the same height', (tester) async {
+    GridItemRepository.staticItems.add(_memoPreset());
+    final level = _levelWithModernGravestoneResourceGroup([
+      _memoPropertySheet(),
+      PvzObject(
+        aliases: const ['InitialGridItems'],
+        objClass: 'InitialGridItemProperties',
+        objData: const {
+          'InitialGridItemPlacements': [
+            {'GridX': 0, 'GridY': 0, 'TypeName': 'gravestone_egypt_memo'},
+          ],
+        },
+      ),
+    ]);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        InitialGridItemEntryScreen(
+          rtid: 'RTID(InitialGridItems@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final itemCard = find.ancestor(
+      of: find.byType(PresetAwareGridItemIcon).first,
+      matching: find.byType(Card),
+    );
+    expect(
+      tester.getSize(itemCard.first).height,
+      tester.getSize(find.byType(AddItemCard)).height,
     );
   });
 }

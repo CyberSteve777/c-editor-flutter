@@ -198,28 +198,32 @@ class _ZombiePotionEventScreenState extends State<ZombiePotionEventScreen> {
                         children: [
                           Row(
                             children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                  Text(
-                                    l10n?.selectedPosition ??
-                                        'Selected position',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      l10n?.selectedPosition ??
+                                          'Selected position',
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                     ),
-                                  ),
-                                  Text(
-                                    'R${_selectedY + 1} : C${_selectedX + 1}',
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.colorScheme.primary,
+                                    Text(
+                                      'R${_selectedY + 1} : C${_selectedX + 1}',
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.primary,
+                                          ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
                           ),
                           const SizedBox(height: 16),
                           _buildGrid(),
@@ -250,7 +254,10 @@ class _ZombiePotionEventScreenState extends State<ZombiePotionEventScreen> {
                           deleteTooltip: l10n?.delete ?? 'Delete',
                         ),
                       ),
-                      AddItemCard(onPressed: _addPotion, minHeight: 130),
+                      AddItemCard(
+                        onPressed: _addPotion,
+                        minHeight: EditorItemCardLayout.gridItemCardHeight,
+                      ),
                     ],
                   ),
                   if (itemsOutsideLawn.isNotEmpty) ...[
@@ -452,6 +459,7 @@ class _PotionItemCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
         width: EditorItemCardLayout.cardWidth(context),
+        height: EditorItemCardLayout.gridItemCardHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

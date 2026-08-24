@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
@@ -19,6 +20,7 @@ class GridItemSelectionScreen extends StatefulWidget {
     required this.filterMode,
     this.levelFile,
     this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final void Function(String id) onGridItemSelected;
@@ -26,6 +28,7 @@ class GridItemSelectionScreen extends StatefulWidget {
   final GridItemFilterMode filterMode;
   final PvzLevelFile? levelFile;
   final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<GridItemSelectionScreen> createState() =>
@@ -189,6 +192,30 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
         onAddModule: widget.onAddModule,
       );
       if (!proceed || !mounted) return;
+      if (item.typeName == 'gravestone_tutorial' &&
+          !_activeStageHasResourceGroup(levelFile, 'Modern_Gravestone')) {
+        final l10n = AppLocalizations.of(context)!;
+        final openCustomStage = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            content: Text(l10n.customGravestoneResourceGroupPrompt),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(l10n.openCustomStageSelection),
+              ),
+            ],
+          ),
+        );
+        if (openCustomStage == true && mounted) {
+          await widget.onOpenCustomStageSelection?.call();
+        }
+        return;
+      }
       if (GridItemRepository.hasConflictingExclusivePreset(
         item.typeName,
         levelFile,
@@ -225,6 +252,13 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
       }
     }
     widget.onGridItemSelected(GridItemRepository.toGameTypeName(item.typeName));
+  }
+
+  bool _activeStageHasResourceGroup(PvzLevelFile levelFile, String group) {
+    final parsed = LevelParser.parseLevel(levelFile);
+    final objdata = LevelParser.resolveStageObjdata(parsed.levelDef, levelFile);
+    final groups = objdata?['ResourceGroupNames'];
+    return groups is List && groups.contains(group);
   }
 
   String _categoryLabel(GridItemCategory cat, AppLocalizations? l10n) {

@@ -3892,6 +3892,12 @@ abstract class AppLocalizations {
   /// **'Special'**
   String get stageTypeSpecial;
 
+  /// No description provided for @stageTypeCustomPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Presets'**
+  String get stageTypeCustomPresets;
+
   /// No description provided for @search.
   ///
   /// In en, this message translates to:
@@ -8643,6 +8649,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only one custom tombstone can be added to a level. Replace the level\'s existing custom tombstone with \"{gridItemName}\"?'**
   String customGravestoneReplacePrompt(String gridItemName);
+
+  /// No description provided for @customGravestoneResourceGroupPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'To display the Player\'s House tombstone correctly and prevent it from using the Sun texture, the lawn must include the \"Modern_Gravestone\" resource group. Open the custom lawn screen to add it? You can use the \"Modern Graveyard\" preset as a base.'**
+  String get customGravestoneResourceGroupPrompt;
+
+  /// No description provided for @openCustomStageSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Open custom lawns'**
+  String get openCustomStageSelection;
 
   /// No description provided for @customGridItemReplaceAction.
   ///

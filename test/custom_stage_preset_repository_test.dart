@@ -76,4 +76,46 @@ void main() {
       ['RenamedStage'],
     );
   });
+
+  test('Modern Graveyard preset is ordered before Lost Volcano', () {
+    final presets = CustomStagePresetRepository.presets;
+    final aliases = presets.map((preset) => preset.alias).toList();
+    final modern = presets.firstWhere(
+      (preset) => preset.alias == 'ModernGraveyardCustom',
+    );
+
+    expect(
+      aliases.indexOf('OneSidedAtlantisCustom'),
+      lessThan(aliases.indexOf('ModernGraveyardCustom')),
+    );
+    expect(
+      aliases.indexOf('ModernGraveyardCustom'),
+      lessThan(aliases.indexOf('LostVolcanoCustom')),
+    );
+    expect(modern.objclass, 'ModernStageProperties');
+    expect(modern.objdata['ResourceGroupNames'], contains('Modern_Gravestone'));
+  });
+
+  test('collects resource groups from every custom lawn preset', () {
+    final expected = <String>{};
+    for (final preset in CustomStagePresetRepository.presets) {
+      for (final key in const ['ResourceGroupNames', 'GroupsToUnloadForAds']) {
+        final raw = preset.objdata[key];
+        if (raw is List) expected.addAll(raw.whereType<String>());
+      }
+    }
+
+    expect(CustomStagePresetRepository.resourceGroups, containsAll(expected));
+  });
+
+  test('filters unload groups directly from custom lawn preset data', () {
+    final groups = CustomStageLevelUtils.sourceUnloadGroupsForObjdata(
+      sourceObjdata: const {
+        'GroupsToUnloadForAds': ['Shared', 'UnloadOnly'],
+      },
+      importedGroups: const ['Shared', 'MainOnly', 'UnloadOnly'],
+    );
+
+    expect(groups, ['Shared', 'UnloadOnly']);
+  });
 }

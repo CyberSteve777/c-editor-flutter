@@ -47,6 +47,7 @@ class StageSelectionScreen extends StatefulWidget {
     this.onOpenCustomStageEditor,
     this.onDeleteCustomStage,
     this.onSwitchFromCustomToBuiltin,
+    this.openCustomSection = false,
   });
 
   final String currentStageRtid;
@@ -59,6 +60,7 @@ class StageSelectionScreen extends StatefulWidget {
   final void Function(String alias)? onOpenCustomStageEditor;
   final Future<bool> Function(String alias)? onDeleteCustomStage;
   final Future<bool> Function(String customAlias)? onSwitchFromCustomToBuiltin;
+  final bool openCustomSection;
 
   @override
   State<StageSelectionScreen> createState() => _StageSelectionScreenState();
@@ -82,11 +84,12 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
     super.initState();
     final info = RtidParser.parse(widget.currentStageRtid);
     final remembered = _stageSelectionViewStates[_viewStateKey];
-    _tab =
-        remembered?.tab ??
-        (info?.source == CustomStageLevelUtils.currentLevel
-            ? _StagePickerTab.custom
-            : _StagePickerTab.builtin);
+    _tab = widget.openCustomSection
+        ? _StagePickerTab.custom
+        : remembered?.tab ??
+              (info?.source == CustomStageLevelUtils.currentLevel
+                  ? _StagePickerTab.custom
+                  : _StagePickerTab.builtin);
     _selectedType = remembered?.type ?? StageType.all;
     _builtinScrollController = ScrollController(
       initialScrollOffset: remembered?.builtinScrollOffset ?? 0,

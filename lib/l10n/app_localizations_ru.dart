@@ -2129,6 +2129,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stageTypeSpecial => 'Мини-игры';
 
   @override
+  String get stageTypeCustomPresets => 'Пользовательские шаблоны';
+
+  @override
   String get search => 'Поиск';
 
   @override
@@ -4805,6 +4808,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String customGravestoneReplacePrompt(String gridItemName) {
     return 'На уровень можно добавить только одно пользовательское надгробие. Заменить существующее пользовательское надгробие на «$gridItemName»?';
   }
+
+  @override
+  String get customGravestoneResourceGroupPrompt =>
+      'Чтобы надгробие дома игрока отображалось правильно и не использовало текстуру солнца, на газон нужно добавить группу ресурсов \"Modern_Gravestone\". Перейти к пользовательским газонам и добавить её? За основу можно взять шаблон «Современное кладбище».';
+
+  @override
+  String get openCustomStageSelection => 'Открыть пользовательские газоны';
 
   @override
   String get customGridItemReplaceAction => 'Заменить';

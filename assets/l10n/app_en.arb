@@ -792,6 +792,7 @@
   "stageTypeExtra": "Extra",
   "stageTypeSeasons": "Seasons",
   "stageTypeSpecial": "Special",
+  "stageTypeCustomPresets": "Custom Presets",
   "search": "Search",
   "disablePeavine": "Disable Pea Vine's Pea Symbiosis",
   "disableArtifact": "Disable Artifact (auto-applied when Creative Courtyard module is enabled)",
@@ -1647,6 +1648,8 @@
       "gridItemName": { "type": "String" }
     }
   },
+  "customGravestoneResourceGroupPrompt": "To display the Player's House tombstone correctly and prevent it from using the Sun texture, the lawn must include the \"Modern_Gravestone\" resource group. Open the custom lawn screen to add it? You can use the \"Modern Graveyard\" preset as a base.",
+  "openCustomStageSelection": "Open custom lawns",
   "customGridItemReplaceAction": "Replace",
   "roofFlowerPot": "Roof Pots module",
   "roofFlowerPotColumns": "Flower Pot Range",

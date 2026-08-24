@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
 import 'package:c_editor/data/repository/stage_catalog_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -114,4 +115,21 @@ void main() {
       expect(resourceGroupField.defaultValue, contains('AudioMoon'));
     });
   });
+
+  test(
+    'global resource-group list includes every custom lawn preset',
+    () async {
+      await StageCatalogRepository.init();
+      await CustomStagePresetRepository.init();
+
+      expect(
+        StageCatalogRepository.knownResourceGroups,
+        containsAll(CustomStagePresetRepository.resourceGroups),
+      );
+      expect(
+        StageCatalogRepository.knownResourceGroups,
+        contains('Modern_Gravestone'),
+      );
+    },
+  );
 }

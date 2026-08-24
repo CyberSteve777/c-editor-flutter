@@ -17,6 +17,7 @@ class ZombiePotionModuleScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
@@ -24,6 +25,7 @@ class ZombiePotionModuleScreen extends StatefulWidget {
   final VoidCallback onChanged;
   final VoidCallback onBack;
   final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<ZombiePotionModuleScreen> createState() =>
@@ -93,6 +95,7 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
           filterMode: GridItemFilterMode.all,
           levelFile: widget.levelFile,
           onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (id) {
             Navigator.pop(context);
             final list = List<String>.from(_data.potionTypes);

@@ -19,6 +19,7 @@ class InitialGridItemEntryScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
@@ -26,6 +27,7 @@ class InitialGridItemEntryScreen extends StatefulWidget {
   final VoidCallback onChanged;
   final VoidCallback onBack;
   final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<InitialGridItemEntryScreen> createState() =>
@@ -84,6 +86,7 @@ class _InitialGridItemEntryScreenState
           filterMode: GridItemFilterMode.all,
           levelFile: widget.levelFile,
           onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (typeName) {
             Navigator.pop(context);
             final newList = List<InitialGridItemData>.from(_data.placements);
@@ -217,7 +220,10 @@ class _InitialGridItemEntryScreenState
                         deleteTooltip: l10n?.delete ?? 'Delete',
                       ),
                     ),
-                    AddItemCard(onPressed: _handleSelectItem, minHeight: 130),
+                    AddItemCard(
+                      onPressed: _handleSelectItem,
+                      minHeight: EditorItemCardLayout.gridItemCardHeight,
+                    ),
                   ],
                 ),
                 if (itemsOutsideLawn.isNotEmpty) ...[
@@ -441,6 +447,7 @@ class _GridItemCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
         width: EditorItemCardLayout.cardWidth(context),
+        height: EditorItemCardLayout.gridItemCardHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

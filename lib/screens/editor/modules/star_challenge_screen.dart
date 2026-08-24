@@ -19,6 +19,7 @@ class StarChallengeModuleScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
@@ -26,6 +27,7 @@ class StarChallengeModuleScreen extends StatefulWidget {
   final VoidCallback onChanged;
   final VoidCallback onBack;
   final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<StarChallengeModuleScreen> createState() =>
@@ -154,6 +156,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       accentColor: themeColor,
       levelFile: widget.levelFile,
       onAddModule: widget.onAddModule,
+      onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
       onChanged: () {
         setState(() {
           _saveData();

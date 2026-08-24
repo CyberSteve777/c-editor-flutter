@@ -565,6 +565,7 @@ class _EditorScreenState extends State<EditorScreen> {
           onBack: () => Navigator.pop(context),
           onAddModule: (objClass) =>
               _addModule(ModuleRegistry.getMetadata(objClass)),
+          onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
         ),
       ),
     );
@@ -881,6 +882,7 @@ class _EditorScreenState extends State<EditorScreen> {
   Future<void> _openStageSelection({
     required LevelDefinitionData levelDef,
     VoidCallback? onStagePicked,
+    bool openCustomSection = false,
   }) async {
     if (_ec.state.levelFile == null) return;
     final current = levelDef.stageModule;
@@ -891,6 +893,7 @@ class _EditorScreenState extends State<EditorScreen> {
         builder: (stageRouteContext) => StageSelectionScreen(
           currentStageRtid: current,
           levelFile: _ec.state.levelFile!,
+          openCustomSection: openCustomSection,
           onCreateCustomStage: () {
             Navigator.pop(stageRouteContext);
             _createCustomStage(
@@ -1020,6 +1023,12 @@ class _EditorScreenState extends State<EditorScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _openCustomStageSelectionFromGridItem() async {
+    final levelDef = _ec.state.parsedData?.levelDef;
+    if (levelDef == null) return;
+    await _openStageSelection(levelDef: levelDef, openCustomSection: true);
   }
 
   void _handleNavigateToAddModule() async {
@@ -1382,6 +1391,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     levelFile: _ec.state.levelFile,
                     onAddModule: (objClass) =>
                         _addModule(ModuleRegistry.getMetadata(objClass)),
+                    onOpenCustomStageSelection:
+                        _openCustomStageSelectionFromGridItem,
                   ),
                 ),
               );
@@ -1887,6 +1898,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     levelFile: _ec.state.levelFile,
                     onAddModule: (objClass) =>
                         _addModule(ModuleRegistry.getMetadata(objClass)),
+                    onOpenCustomStageSelection:
+                        _openCustomStageSelectionFromGridItem,
                   ),
                 ),
               );
@@ -1938,6 +1951,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     levelFile: _ec.state.levelFile,
                     onAddModule: (objClass) =>
                         _addModule(ModuleRegistry.getMetadata(objClass)),
+                    onOpenCustomStageSelection:
+                        _openCustomStageSelectionFromGridItem,
                   ),
                 ),
               );
@@ -2577,6 +2592,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );
@@ -3187,6 +3203,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );
@@ -3221,6 +3238,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );
@@ -3267,6 +3285,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );

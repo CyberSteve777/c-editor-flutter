@@ -237,7 +237,10 @@ class _PumpkinHouseEventScreenState extends State<PumpkinHouseEventScreen> {
                           deleteTooltip: l10n?.delete ?? 'Delete',
                         ),
                       ),
-                      AddItemCard(onPressed: _addHouse, minHeight: 130),
+                      AddItemCard(
+                        onPressed: _addHouse,
+                        minHeight: EditorItemCardLayout.gridItemCardHeight,
+                      ),
                     ],
                   ),
                   if (itemsOutsideLawn.isNotEmpty) ...[
@@ -433,6 +436,7 @@ class _PumpkinHouseItemCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
         width: EditorItemCardLayout.cardWidth(context),
+        height: EditorItemCardLayout.gridItemCardHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

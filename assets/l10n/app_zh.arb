@@ -730,6 +730,7 @@
   "stageTypeExtra": "秘境/活动",
   "stageTypeSeasons": "一代/季节",
   "stageTypeSpecial": "特殊",
+  "stageTypeCustomPresets": "自定义预设",
   "search": "搜索",
   "disablePeavine": "禁用豆藤共生",
   "disableArtifact": "禁用神器（庭院模式下自动生效）",
@@ -1666,6 +1667,8 @@
       "gridItemName": { "type": "String" }
     }
   },
+  "customGravestoneResourceGroupPrompt": "为使庭院墓碑正常显示且不出现阳光贴图，需要在地图中添加\"Modern_Gravestone\"资源组。是否前往自定义地图界面进行添加？可直接以预设自定义地图「现代墓园」为基础进行配置。",
+  "openCustomStageSelection": "前往自定义地图",
   "customGridItemReplaceAction": "替换",
   "roofFlowerPot": "屋顶花盆模块",
   "roofFlowerPotColumns": "花盆范围设置",

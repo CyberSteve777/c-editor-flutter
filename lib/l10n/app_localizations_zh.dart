@@ -2049,6 +2049,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stageTypeSpecial => '特殊';
 
   @override
+  String get stageTypeCustomPresets => '自定义预设';
+
+  @override
   String get search => '搜索';
 
   @override
@@ -4603,6 +4606,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String customGravestoneReplacePrompt(String gridItemName) {
     return '一关中只能添加一种自定义墓碑。是否将关卡中原本的自定义墓碑替换为「$gridItemName」？';
   }
+
+  @override
+  String get customGravestoneResourceGroupPrompt =>
+      '为使庭院墓碑正常显示且不出现阳光贴图，需要在地图中添加\"Modern_Gravestone\"资源组。是否前往自定义地图界面进行添加？可直接以预设自定义地图「现代墓园」为基础进行配置。';
+
+  @override
+  String get openCustomStageSelection => '前往自定义地图';
 
   @override
   String get customGridItemReplaceAction => '替换';
