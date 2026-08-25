@@ -2048,10 +2048,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Смертельные капли в режиме ZombossMech помешают корректному завершению уровня.';
 
   @override
-  String get conflictDesc_ZombossBattleDeathDrop =>
-      'Смертельные капли в режиме боя с Зомбоссом помешают корректному завершению уровня.';
-
-  @override
   String get conflictDesc_WinConditionExclusive =>
       'В LevelModules должно быть только одно условие победы/поражения из: смертельные капли, победа за бронзу или стандартное «съели мозги». Удалите лишние модули.';
 
@@ -2348,7 +2344,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_ZombiesDeadWinConProperties =>
-      'Нужно для стабильности уровня';
+      'Выполняет расчёт результатов после смерти зомби';
 
   @override
   String get moduleTitle_BronzeDeadWinConProperties => 'Победа: бронза очищена';
@@ -4281,7 +4277,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusBody =>
-      'Спавнит фургон с мороженым в выбранном ряду. Фургон выезжает справа, занимает два ряда и раздавливает растения на пути. Тип «Особый» (schoolbus_special) — с зомби на кузове, использующими способности в движении. Тип «Обычный» (schoolbus_normal) — стандартный вариант. После уничтожения выпускает настроенных зомби.';
+      'Спавнит фургон с мороженым в выбранном ряду. Фургон выезжает справа, занимает два ряда и раздавливает растения на пути. Тип «Особый» (schoolbus_special) — с зомби на кузове, которые при наличии растений на поле используют способности во время движения. Тип «Обычный» (schoolbus_normal) — стандартный вариант. После уничтожения выпускает настроенных зомби.';
 
   @override
   String get schoolBusHelpRows => 'Ряд';
@@ -4292,7 +4288,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusType =>
-      'Тип выбирает вариант фургона. Обычный (schoolbus_normal) — стандартный фургон. Особый (schoolbus_special) — с пузырными и леденцовыми зомби на кузове; они используют способности во время движения.';
+      'Тип выбирает вариант фургона. Обычный (schoolbus_normal) — стандартный фургон. Особый (schoolbus_special) — с пузырными и леденцовыми зомби на кузове; при наличии растений на поле они используют способности во время движения.';
 
   @override
   String get schoolBusHelpZombies => 'Зомби';
@@ -5756,6 +5752,20 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossBattleSelectBaseTitle => 'Выбор базового Зомбосса';
+
+  @override
+  String get zombossBattleLeaveUndergroundTitle => 'Смена базового Зомбосса';
+
+  @override
+  String zombossBattleLeaveUndergroundBody(String zombossName) {
+    return 'Вы собираетесь сменить $zombossName на другого базового Зомбосса. Модуль «Лимит времени финальной фазы» будет автоматически удалён из уровня. Удалить также модуль «Тоннели Подземного Дворца»?';
+  }
+
+  @override
+  String get zombossBattleKeepTunnelDefend => 'Сохранить тоннели';
+
+  @override
+  String get zombossBattleRemoveTunnelDefend => 'Удалить и тоннели';
 
   @override
   String get zombossBattleChangeBase => 'Сменить базового Зомбосса';

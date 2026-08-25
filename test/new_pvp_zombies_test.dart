@@ -74,13 +74,17 @@ void main() {
 
       final tags = (pvp['tags'] as List<dynamic>).cast<String>();
       expect(tags, isNot(contains('International')), reason: pvpId);
+      expect(tags, isNot(contains('Evildave')), reason: pvpId);
       expect(tags, contains('PvP'), reason: pvpId);
       expect(tags, contains('Chinese'), reason: pvpId);
       expect(tags.indexOf('PvP') + 1, tags.indexOf('Chinese'), reason: pvpId);
 
       final inheritedTags = (base['tags'] as List<dynamic>)
           .cast<String>()
-          .where((tag) => tag != 'International' && tag != 'Chinese')
+          .where(
+            (tag) =>
+                tag != 'International' && tag != 'Chinese' && tag != 'Evildave',
+          )
           .toList();
       expect(tags.take(tags.length - 2), inheritedTags, reason: pvpId);
 
@@ -171,11 +175,11 @@ void main() {
     }
   });
 
-  test('PvP tag is in Other after Expedition variants', () {
+  test('PvP tag is in Other before Expedition variants', () {
     expect(ZombieTag.pvp.category, ZombieCategory.other);
     expect(
       ZombieTag.values.indexOf(ZombieTag.pvp),
-      ZombieTag.values.indexOf(ZombieTag.expedition) + 1,
+      ZombieTag.values.indexOf(ZombieTag.expedition) - 1,
     );
     expect(lookupAppLocalizations(const Locale('zh')).zombieTagPvp, '双人变体');
     expect(
@@ -184,7 +188,7 @@ void main() {
     );
   });
 
-  testWidgets('zombie picker shows PvP after Expedition in Other', (
+  testWidgets('zombie picker shows PvP before Expedition in Other', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1400, 900);
@@ -209,6 +213,6 @@ void main() {
     final pvp = find.text('Two-Player Mode Variants');
     expect(expedition, findsOneWidget);
     expect(pvp, findsOneWidget);
-    expect(tester.getCenter(expedition).dx, lessThan(tester.getCenter(pvp).dx));
+    expect(tester.getCenter(pvp).dx, lessThan(tester.getCenter(expedition).dx));
   });
 }

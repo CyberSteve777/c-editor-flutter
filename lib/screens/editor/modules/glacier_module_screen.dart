@@ -473,6 +473,7 @@ class _ColumnCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                if (column.entries.isNotEmpty) const SizedBox(height: 8),
                 ...column.entries.asMap().entries.map((e) {
                   return _EntryRow(
                     key: ValueKey(
@@ -526,12 +527,11 @@ class _EntryRow extends StatelessWidget {
   final void Function(GlacierSpawnEntryData entry) onUpdate;
   final VoidCallback onPickZombie;
 
-  InputDecoration _fieldDecoration(String label) => InputDecoration(
-    labelText: label,
-    border: const OutlineInputBorder(),
+  InputDecoration _fieldDecoration() => const InputDecoration(
+    border: OutlineInputBorder(),
     isDense: true,
     contentPadding: _fieldPadding,
-    constraints: const BoxConstraints(minHeight: _fieldMinHeight),
+    constraints: BoxConstraints(minHeight: _fieldMinHeight),
   );
 
   @override
@@ -609,64 +609,72 @@ class _EntryRow extends StatelessWidget {
                 'Weight for the outcome in which the Ice Chunk releases no zombie.')
           : (l10n?.glacierModuleWeightTooltip ??
                 'Spawn weight for this zombie in this column.'),
-      child: TextFormField(
-        key: ValueKey('w_${entry.typeName}_${entry.weight}'),
-        initialValue: '${entry.weight}',
-        style: theme.textTheme.bodyLarge,
-        decoration: _fieldDecoration(weightLabel),
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-        ],
-        onChanged: (v) {
-          final w = num.tryParse(v);
-          if (w != null && w >= 0) {
-            onUpdate(
-              GlacierSpawnEntryData(
-                typeName: entry.typeName,
-                weight: w,
-                level: entry.level,
-              ),
-            );
-          }
-        },
+      child: EditorResponsiveInputField(
+        label: weightLabel,
+        decoration: _fieldDecoration(),
+        builder: (context, decoration) => TextFormField(
+          key: ValueKey('w_${entry.typeName}_${entry.weight}'),
+          initialValue: '${entry.weight}',
+          style: theme.textTheme.bodyLarge,
+          decoration: decoration,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          onChanged: (v) {
+            final w = num.tryParse(v);
+            if (w != null && w >= 0) {
+              onUpdate(
+                GlacierSpawnEntryData(
+                  typeName: entry.typeName,
+                  weight: w,
+                  level: entry.level,
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
 
     Widget buildLevelField() => Tooltip(
       message: l10n?.glacierModuleLevelTooltip ?? 'Zombie level from 0 to 4.',
-      child: DropdownButtonFormField<int>(
-        key: ValueKey('lv_${entry.typeName}_${entry.level}'),
-        initialValue: entry.level.clamp(
-          _GlacierModuleScreenState._levelMin,
-          _GlacierModuleScreenState._levelMax,
-        ),
-        isExpanded: true,
-        isDense: true,
-        padding: EdgeInsets.zero,
-        style: theme.textTheme.bodyLarge,
-        iconSize: 22,
-        items: List.generate(
-          _GlacierModuleScreenState._levelMax -
-              _GlacierModuleScreenState._levelMin +
-              1,
-          (i) {
-            final lv = i + _GlacierModuleScreenState._levelMin;
-            return DropdownMenuItem(value: lv, child: Text('$lv'));
+      child: EditorResponsiveInputField(
+        label: levelLabel,
+        decoration: _fieldDecoration(),
+        builder: (context, decoration) => DropdownButtonFormField<int>(
+          key: ValueKey('lv_${entry.typeName}_${entry.level}'),
+          initialValue: entry.level.clamp(
+            _GlacierModuleScreenState._levelMin,
+            _GlacierModuleScreenState._levelMax,
+          ),
+          isExpanded: true,
+          isDense: true,
+          padding: EdgeInsets.zero,
+          style: theme.textTheme.bodyLarge,
+          iconSize: 22,
+          items: List.generate(
+            _GlacierModuleScreenState._levelMax -
+                _GlacierModuleScreenState._levelMin +
+                1,
+            (i) {
+              final lv = i + _GlacierModuleScreenState._levelMin;
+              return DropdownMenuItem(value: lv, child: Text('$lv'));
+            },
+          ),
+          onChanged: (lv) {
+            if (lv != null) {
+              onUpdate(
+                GlacierSpawnEntryData(
+                  typeName: entry.typeName,
+                  weight: entry.weight,
+                  level: lv,
+                ),
+              );
+            }
           },
+          decoration: decoration,
         ),
-        onChanged: (lv) {
-          if (lv != null) {
-            onUpdate(
-              GlacierSpawnEntryData(
-                typeName: entry.typeName,
-                weight: entry.weight,
-                level: lv,
-              ),
-            );
-          }
-        },
-        decoration: _fieldDecoration(levelLabel),
       ),
     );
 

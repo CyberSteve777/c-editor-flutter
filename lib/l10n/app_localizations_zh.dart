@@ -1974,14 +1974,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conflictDesc_EvilDaveVictory => '我是僵尸模式不能使用僵尸胜利条件。';
 
   @override
-  String get conflictDesc_ZombossDeathDrop => '机甲僵王战中死亡掉落会阻止关卡正常完成。';
-
-  @override
-  String get conflictDesc_ZombossBattleDeathDrop => '非机甲僵王战中死亡掉落会阻止关卡正常完成。';
+  String get conflictDesc_ZombossDeathDrop => '机甲僵王战中死亡结算会阻止关卡正常完成。';
 
   @override
   String get conflictDesc_WinConditionExclusive =>
-      '「死亡掉落」与「铜人阵死亡结算」不需要同时添加，建议移除其中一个。';
+      '「死亡结算」与「铜人阵死亡结算」不需要同时添加，建议移除其中一个。';
 
   @override
   String get conflictDesc_ZombossTwoIntros => '两个开场动画不能共存，否则僵王的血条会显示异常。';
@@ -2249,10 +2246,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_ZombiesAteYourBrainsProperties => '僵尸进屋判负的位置';
 
   @override
-  String get moduleTitle_ZombiesDeadWinConProperties => '死亡掉落';
+  String get moduleTitle_ZombiesDeadWinConProperties => '死亡结算';
 
   @override
-  String get moduleDesc_ZombiesDeadWinConProperties => '关卡稳定运行必需模块';
+  String get moduleDesc_ZombiesDeadWinConProperties => '在僵尸死亡后进行结算';
 
   @override
   String get moduleTitle_BronzeDeadWinConProperties => '铜人阵死亡结算';
@@ -4091,7 +4088,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusBody =>
-      '此事件用于在指定行生成冰淇淋车。冰淇淋车载着僵尸从右侧缓慢驶入，占据两行。前进路径上被车体碾压到的植物会被直接摧毁。\n若冰淇淋车贴图显示搭乘的是泡泡枪小鬼僵尸和棒棒糖僵尸 (即类型为 schoolbus_special)，则会在前进过程中持续释放对应僵尸的技能。\n地刺、钢地刺等植物可以扎破冰淇淋车的轮胎。轮胎破裂后，冰淇淋车会逐渐减速并进入滑行状态，一段时间后停止移动并损毁。';
+      '此事件用于在指定行生成冰淇淋车。冰淇淋车载着僵尸从右侧缓慢驶入，占据两行。前进路径上被车体碾压到的植物会被直接摧毁。\n若冰淇淋车贴图显示搭乘的是泡泡枪小鬼僵尸和棒棒糖僵尸 (即类型为 schoolbus_special)，且场上存在植物，则会在前进过程中持续释放对应僵尸的技能。\n地刺、钢地刺等植物可以扎破冰淇淋车的轮胎。轮胎破裂后，冰淇淋车会逐渐减速并进入滑行状态，一段时间后停止移动并损毁。';
 
   @override
   String get schoolBusHelpRows => '行数说明';
@@ -4102,7 +4099,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusType =>
-      '类型决定生成的冰淇淋车变体。普通 (schoolbus_normal)为标准冰淇淋车。特殊 (schoolbus_special)贴图显示泡泡枪小鬼和棒棒糖僵尸，车辆在前进过程中会持续释放对应技能。';
+      '类型决定生成的冰淇淋车变体。普通 (schoolbus_normal) 为标准冰淇淋车。特殊 (schoolbus_special) 贴图显示泡泡枪小鬼和棒棒糖僵尸，场上存在植物时，车辆会在前进过程中持续释放对应技能。';
 
   @override
   String get schoolBusHelpZombies => '乘客说明';
@@ -4383,7 +4380,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noPortalTypeSelected => '未选择裂缝类型。';
 
   @override
-  String get direction => '方向 (Direction)';
+  String get direction => '风向 (Direction)';
 
   @override
   String get windDirectionLabel => '风向';
@@ -5532,6 +5529,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossBattleSelectBaseTitle => '选择基础僵王';
+
+  @override
+  String get zombossBattleLeaveUndergroundTitle => '切换基础僵王';
+
+  @override
+  String zombossBattleLeaveUndergroundBody(String zombossName) {
+    return '您即将从$zombossName切换至其他基础僵王，将会为您自动清除关卡中的「终结技计时」模块。是否同时清除「地宫坑道」模块？';
+  }
+
+  @override
+  String get zombossBattleKeepTunnelDefend => '保留地宫坑道';
+
+  @override
+  String get zombossBattleRemoveTunnelDefend => '同时清除';
 
   @override
   String get zombossBattleChangeBase => '更换基础僵王';

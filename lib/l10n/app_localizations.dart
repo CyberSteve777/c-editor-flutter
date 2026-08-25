@@ -3754,12 +3754,6 @@ abstract class AppLocalizations {
   /// **'Loot Drop in Zomboss Mech Battle mode will prevent proper level completion.'**
   String get conflictDesc_ZombossDeathDrop;
 
-  /// No description provided for @conflictDesc_ZombossBattleDeathDrop.
-  ///
-  /// In en, this message translates to:
-  /// **'Loot Drop in Non-mech Zomboss Battle mode will prevent proper level completion.'**
-  String get conflictDesc_ZombossBattleDeathDrop;
-
   /// No description provided for @conflictDesc_WinConditionExclusive.
   ///
   /// In en, this message translates to:
@@ -4273,7 +4267,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_ZombiesDeadWinConProperties.
   ///
   /// In en, this message translates to:
-  /// **'Required module for level stability'**
+  /// **'Performs level settlement after zombies die'**
   String get moduleDesc_ZombiesDeadWinConProperties;
 
   /// No description provided for @moduleTitle_BronzeDeadWinConProperties.
@@ -7435,7 +7429,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpFrostWindDirection.
   ///
   /// In en, this message translates to:
-  /// **'You can set the direction of the wind (from left or right). Note that there is an interval between each wind event. To make them occur simultaneously, try adding multiple Freezing Wind events.'**
+  /// **'You can set the direction of the wind (from left or right). Note that there is an interval between each wind. To make them occur simultaneously, try adding multiple Freezing Wind events.'**
   String get eventHelpFrostWindDirection;
 
   /// No description provided for @eventHelpModifyConveyorBody.
@@ -7705,7 +7699,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpSchoolBusBody.
   ///
   /// In en, this message translates to:
-  /// **'Spawns an Ice Cream Van in the specified lane. Ice Cream Van slowly enters from the right side while carrying zombies, occupying 2 lanes. Any plants run over by the van are instantly crushed.\nIf the van is displayed with Bubble Gun Imps and Lollipop Zombies (i.e. the schoolbus_special variant), they will continuously use their respective abilities while the van is moving.\nPlants like Spikeweed and Spikerock can puncture the van\'s tires. After its tires are punctured, the Ice Cream Van gradually slows down and enters a gliding state. After a short period of time, it comes to a stop and breaks down.'**
+  /// **'Spawns an Ice Cream Van in the specified lane. Ice Cream Van slowly enters from the right side while carrying zombies, occupying 2 lanes. Any plants run over by the van are instantly crushed.\nIf the van is displayed with Bubble Gun Imps and Lollipop Zombies (i.e. the schoolbus_special variant) and at least one plant is present on the lawn, they will continuously use their respective abilities while the van is moving.\nPlants like Spikeweed and Spikerock can puncture the van\'s tires. After its tires are punctured, the Ice Cream Van gradually slows down and enters a gliding state. After a short period of time, it comes to a stop and breaks down.'**
   String get eventHelpSchoolBusBody;
 
   /// No description provided for @schoolBusHelpRows.
@@ -7723,7 +7717,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpSchoolBusType.
   ///
   /// In en, this message translates to:
-  /// **'Type selects the ice cream van variant. Normal (schoolbus_normal) is the standard van. Special (schoolbus_special) shows Bubble Gun Imps and Lollipop Zombies on the van; they use their abilities while the van is moving.'**
+  /// **'Type selects the ice cream van variant. Normal (schoolbus_normal) is the standard van. Special (schoolbus_special) shows Bubble Gun Imps and Lollipop Zombies on the van; while at least one plant is present on the lawn, they use their abilities as the van moves.'**
   String get eventHelpSchoolBusType;
 
   /// No description provided for @schoolBusHelpZombies.
@@ -10334,6 +10328,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select base Zomboss'**
   String get zombossBattleSelectBaseTitle;
+
+  /// No description provided for @zombossBattleLeaveUndergroundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch base Zomboss'**
+  String get zombossBattleLeaveUndergroundTitle;
+
+  /// No description provided for @zombossBattleLeaveUndergroundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You are about to switch from {zombossName} to another base Zomboss. The Finisher Countdown module will be removed from the level automatically. Remove the Underground Palace Pathways module as well?'**
+  String zombossBattleLeaveUndergroundBody(String zombossName);
+
+  /// No description provided for @zombossBattleKeepTunnelDefend.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep pathways'**
+  String get zombossBattleKeepTunnelDefend;
+
+  /// No description provided for @zombossBattleRemoveTunnelDefend.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove pathways too'**
+  String get zombossBattleRemoveTunnelDefend;
 
   /// No description provided for @zombossBattleChangeBase.
   ///

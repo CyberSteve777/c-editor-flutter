@@ -108,11 +108,16 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
     }
 
     if (_levelDef != null && _selectedBaseId.isNotEmpty) {
-      ZombossBattleRepository.ensureAutoModules(
+      final autoModulesAdded = ZombossBattleRepository.ensureAutoModules(
         levelFile: widget.levelFile,
         levelDef: _levelDef!,
         baseId: _selectedBaseId,
       );
+      if (autoModulesAdded) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) widget.onChanged();
+        });
+      }
     }
   }
 
@@ -149,15 +154,22 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
       ),
     );
     if (baseId != null && mounted) {
-      _onBaseChanged(baseId);
+      await _onBaseChanged(baseId);
     }
   }
 
-  void _onBaseChanged(String baseId) {
+  Future<void> _onBaseChanged(String baseId) async {
     if (baseId == _selectedBaseId) return;
     final base = ZombossBattleRepository.getBase(baseId);
     if (base == null) return;
     final previousBaseId = _selectedBaseId;
+    var removePreviousTunnelDefend = true;
+    if (ZombossBattleRepository.isUndergroundPalaceBase(previousBaseId) &&
+        !ZombossBattleRepository.isUndergroundPalaceBase(baseId)) {
+      final choice = await _confirmLeavingUndergroundPalace(previousBaseId);
+      if (choice == null || !mounted) return;
+      removePreviousTunnelDefend = choice;
+    }
     _sync(
       extra: () {
         _selectedBaseId = baseId;
@@ -171,9 +183,40 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
             levelDef: _levelDef!,
             previousBaseId: previousBaseId,
             newBaseId: baseId,
+            removePreviousTunnelDefend: removePreviousTunnelDefend,
           );
         }
       },
+    );
+  }
+
+  Future<bool?> _confirmLeavingUndergroundPalace(
+    String previousBaseId,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final previousName = _displayName(context, previousBaseId);
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.zombossBattleLeaveUndergroundTitle),
+        content: Text(
+          l10n.zombossBattleLeaveUndergroundBody(previousName),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.zombossBattleKeepTunnelDefend),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.zombossBattleRemoveTunnelDefend),
+          ),
+        ],
+      ),
     );
   }
 

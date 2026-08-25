@@ -2032,10 +2032,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Loot Drop in Zomboss Mech Battle mode will prevent proper level completion.';
 
   @override
-  String get conflictDesc_ZombossBattleDeathDrop =>
-      'Loot Drop in Non-mech Zomboss Battle mode will prevent proper level completion.';
-
-  @override
   String get conflictDesc_WinConditionExclusive =>
       'Loot Drop and Bronze Matrix Loot Drop do not need to be used together. It is recommended to remove one of them.';
 
@@ -2337,7 +2333,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_ZombiesDeadWinConProperties =>
-      'Required module for level stability';
+      'Performs level settlement after zombies die';
 
   @override
   String get moduleTitle_BronzeDeadWinConProperties =>
@@ -4148,7 +4144,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpFrostWindDirection =>
-      'You can set the direction of the wind (from left or right). Note that there is an interval between each wind event. To make them occur simultaneously, try adding multiple Freezing Wind events.';
+      'You can set the direction of the wind (from left or right). Note that there is an interval between each wind. To make them occur simultaneously, try adding multiple Freezing Wind events.';
 
   @override
   String get eventHelpModifyConveyorBody =>
@@ -4311,7 +4307,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusBody =>
-      'Spawns an Ice Cream Van in the specified lane. Ice Cream Van slowly enters from the right side while carrying zombies, occupying 2 lanes. Any plants run over by the van are instantly crushed.\nIf the van is displayed with Bubble Gun Imps and Lollipop Zombies (i.e. the schoolbus_special variant), they will continuously use their respective abilities while the van is moving.\nPlants like Spikeweed and Spikerock can puncture the van\'s tires. After its tires are punctured, the Ice Cream Van gradually slows down and enters a gliding state. After a short period of time, it comes to a stop and breaks down.';
+      'Spawns an Ice Cream Van in the specified lane. Ice Cream Van slowly enters from the right side while carrying zombies, occupying 2 lanes. Any plants run over by the van are instantly crushed.\nIf the van is displayed with Bubble Gun Imps and Lollipop Zombies (i.e. the schoolbus_special variant) and at least one plant is present on the lawn, they will continuously use their respective abilities while the van is moving.\nPlants like Spikeweed and Spikerock can puncture the van\'s tires. After its tires are punctured, the Ice Cream Van gradually slows down and enters a gliding state. After a short period of time, it comes to a stop and breaks down.';
 
   @override
   String get schoolBusHelpRows => 'Row';
@@ -4322,7 +4318,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusType =>
-      'Type selects the ice cream van variant. Normal (schoolbus_normal) is the standard van. Special (schoolbus_special) shows Bubble Gun Imps and Lollipop Zombies on the van; they use their abilities while the van is moving.';
+      'Type selects the ice cream van variant. Normal (schoolbus_normal) is the standard van. Special (schoolbus_special) shows Bubble Gun Imps and Lollipop Zombies on the van; while at least one plant is present on the lawn, they use their abilities as the van moves.';
 
   @override
   String get schoolBusHelpZombies => 'Zombies';
@@ -5796,6 +5792,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossBattleSelectBaseTitle => 'Select base Zomboss';
+
+  @override
+  String get zombossBattleLeaveUndergroundTitle => 'Switch base Zomboss';
+
+  @override
+  String zombossBattleLeaveUndergroundBody(String zombossName) {
+    return 'You are about to switch from $zombossName to another base Zomboss. The Finisher Countdown module will be removed from the level automatically. Remove the Underground Palace Pathways module as well?';
+  }
+
+  @override
+  String get zombossBattleKeepTunnelDefend => 'Keep pathways';
+
+  @override
+  String get zombossBattleRemoveTunnelDefend => 'Remove pathways too';
 
   @override
   String get zombossBattleChangeBase => 'Change base Zomboss';

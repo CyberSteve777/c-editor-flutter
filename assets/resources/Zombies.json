@@ -85,7 +85,6 @@
     "name": "zombie_new_pvp_explorer",
     "tags": [
       "Egypt_Pirate",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -316,7 +315,6 @@
     "name": "zombie_new_pvp_barrelroller",
     "tags": [
       "Egypt_Pirate",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -340,7 +338,6 @@
     "name": "zombie_new_pvp_pirate_captain",
     "tags": [
       "Egypt_Pirate",
-      "Evildave",
       "Basic",
       "Pet",
       "PvP",
@@ -500,7 +497,6 @@
     "name": "zombie_new_pvp_prospector",
     "tags": [
       "West_Future",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -524,7 +520,6 @@
     "name": "zombie_new_pvp_chicken_farmer",
     "tags": [
       "West_Future",
-      "Evildave",
       "Basic",
       "Pet",
       "PvP",
@@ -693,7 +688,6 @@
     "name": "zombie_new_pvp_kongfu_selfexplode",
     "tags": [
       "Kongfu_Skycity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -768,7 +762,6 @@
     "name": "zombie_new_pvp_kongfu_qigong",
     "tags": [
       "Kongfu_Skycity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -914,7 +907,6 @@
     "name": "zombie_new_pvp_kongfu_monk_nunchaku",
     "tags": [
       "Kongfu_Skycity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -937,7 +929,6 @@
     "name": "zombie_new_pvp_kongfu_strong_bronze",
     "tags": [
       "Kongfu_Skycity",
-      "Evildave",
       "Gargantuar",
       "PvP",
       "Chinese"
@@ -1033,7 +1024,6 @@
     "name": "zombie_new_pvp_future_gargantuar",
     "tags": [
       "West_Future",
-      "Evildave",
       "Gargantuar",
       "PvP",
       "Chinese"
@@ -1088,7 +1078,6 @@
     "name": "zombie_new_pvp_future_protector",
     "tags": [
       "West_Future",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -1121,7 +1110,6 @@
     "name": "zombie_new_pvp_mech_cone",
     "tags": [
       "West_Future",
-      "Evildave",
       "PvP",
       "Chinese"
     ],
@@ -1266,7 +1254,6 @@
     "name": "zombie_new_pvp_dark_juggler",
     "tags": [
       "Dark_Beach",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -1300,7 +1287,6 @@
     "name": "zombie_new_pvp_dark_rogue",
     "tags": [
       "Dark_Beach",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -1376,7 +1362,6 @@
     "name": "zombie_new_pvp_dark_wizard",
     "tags": [
       "Dark_Beach",
-      "Evildave",
       "Basic",
       "Pet",
       "PvP",
@@ -1439,7 +1424,6 @@
     "name": "zombie_new_pvp_dark_imp_dragon",
     "tags": [
       "Dark_Beach",
-      "Evildave",
       "Imp",
       "Pet",
       "PvP",
@@ -1647,7 +1631,6 @@
     "name": "zombie_new_pvp_beach_surfer",
     "tags": [
       "Dark_Beach",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -1681,7 +1664,6 @@
     "name": "zombie_new_pvp_beach_shell",
     "tags": [
       "Dark_Beach",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -1745,7 +1727,6 @@
     "name": "zombie_new_pvp_iceage_armor3",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -1818,7 +1799,6 @@
     "name": "zombie_new_pvp_iceage_hunter",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -1875,7 +1855,6 @@
     "name": "zombie_new_pvp_iceage_dodo",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Pet",
       "PvP",
       "Chinese"
@@ -1959,7 +1938,6 @@
     "name": "zombie_new_pvp_iceage_weasel",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Pet",
       "PvP",
       "Chinese"
@@ -2397,7 +2375,6 @@
     "name": "zombie_new_pvp_lostcity_bug",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Pet",
       "PvP",
       "Chinese"
@@ -2450,7 +2427,6 @@
     "name": "zombie_new_pvp_lostcity_jane",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -2473,7 +2449,6 @@
     "name": "zombie_new_pvp_lostcity_excavator",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -2537,7 +2512,6 @@
     "name": "zombie_new_pvp_lostcity_crystalskull",
     "tags": [
       "Iceage_Lostcity",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -2663,7 +2637,6 @@
     "name": "zombie_new_pvp_eighties_punk",
     "tags": [
       "Eighties_Dino",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -2768,7 +2741,6 @@
     "name": "zombie_new_pvp_eighties_breakdancer",
     "tags": [
       "Eighties_Dino",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -3066,7 +3038,6 @@
     "name": "zombie_new_pvp_tutorial",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -3089,7 +3060,6 @@
     "name": "zombie_new_pvp_tutorial_armor1",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -3112,7 +3082,6 @@
     "name": "zombie_new_pvp_tutorial_armor2",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -3166,7 +3135,6 @@
     "name": "zombie_new_pvp_tutorial_gargantuar",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Gargantuar",
       "PvP",
       "Chinese"
@@ -3273,7 +3241,6 @@
     "name": "zombie_new_pvp_modern_balloon",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -3296,7 +3263,6 @@
     "name": "zombie_new_pvp_modern_allstar",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Strong",
       "PvP",
       "Chinese"
@@ -3359,7 +3325,6 @@
     "name": "zombie_new_pvp_modern_miner",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Fat",
       "PvP",
       "Chinese"
@@ -6553,7 +6518,6 @@
     "name": "zombie_new_pvp_zombie_snowpea",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Memory",
       "Basic",
       "PvP",
@@ -6614,7 +6578,6 @@
     "name": "zombie_new_pvp_zombie_gatlingpea",
     "tags": [
       "Modern_Pvz1",
-      "Evildave",
       "Memory",
       "Basic",
       "PvP",
@@ -6638,7 +6601,6 @@
     "name": "zombie_new_pvp_zombie_explodenut",
     "tags": [
       "Memory",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"
@@ -7397,7 +7359,6 @@
     "name": "zombie_new_pvp_roman_healer",
     "tags": [
       "Roman",
-      "Evildave",
       "Basic",
       "PvP",
       "Chinese"

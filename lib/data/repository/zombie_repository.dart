@@ -55,8 +55,8 @@ enum ZombieTag {
   elite,
   evildave,
   custom,
-  expedition,
   pvp,
+  expedition,
   chinese,
   international,
 }

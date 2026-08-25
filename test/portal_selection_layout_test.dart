@@ -236,6 +236,38 @@ void main() {
     },
   );
 
+  testWidgets('weighted zombie rows can be copied and use trash delete', (
+    tester,
+  ) async {
+    List<String>? changedIds;
+    List<int>? changedWeights;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ZombossMechWeightedZombieListEditor(
+            fieldLabel: 'Zombies',
+            weightLabel: 'Weight',
+            zombieIds: const ['mummy'],
+            weights: const [7],
+            editable: true,
+            onChanged: (ids, weights) {
+              changedIds = ids;
+              changedWeights = weights;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.copy_outlined));
+    expect(changedIds, ['mummy', 'mummy']);
+    expect(changedWeights, [7, 7]);
+    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   test(
     'boss portal catalog uses exact suffixes and Danger Room zombie data',
     () {

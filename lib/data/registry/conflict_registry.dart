@@ -61,13 +61,6 @@ class ConflictRegistry {
     ),
     ModuleConflictRule(
       conflictingClasses: {
-        'ZombossLastStandMinigameProperties',
-        'ZombiesDeadWinConProperties',
-      },
-      descriptionKey: 'conflictDesc_ZombossBattleDeathDrop',
-    ),
-    ModuleConflictRule(
-      conflictingClasses: {
         'ZombossBattleIntroProperties',
         'StandardLevelIntroProperties',
       },
