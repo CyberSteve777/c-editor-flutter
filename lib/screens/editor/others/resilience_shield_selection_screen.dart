@@ -30,12 +30,14 @@ class _ResilienceSelectionViewState {
     required this.axis,
     required this.sourceChoice,
     required this.typeChoice,
+    required this.query,
     required this.scrollOffset,
   });
 
   _FilterAxis axis;
   String sourceChoice;
   int typeChoice;
+  String query;
   double scrollOffset;
 }
 
@@ -83,8 +85,6 @@ class _ResilienceShieldSelectionScreenState
   String get _viewStateKey =>
       'level:${identityHashCode(widget.levelFile)}:resilience';
 
-  bool get _canRememberScroll => _query.trim().isEmpty;
-
   bool get _showCreateFab =>
       _axis == _FilterAxis.bySource &&
       _sourceChoice == ResilienceShieldUtils.customSource;
@@ -99,6 +99,7 @@ class _ResilienceShieldSelectionScreenState
       _axis = remembered.axis;
       _sourceChoice = remembered.sourceChoice;
       _typeChoice = remembered.typeChoice;
+      _query = remembered.query;
     }
 
     final current = widget.currentRtid;
@@ -193,7 +194,7 @@ class _ResilienceShieldSelectionScreenState
       _query = query;
       _listScrollAtTop = true;
     });
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _resetRememberedScrollOffset();
   }
 
   void _rememberViewState({double? scrollOffset}) {
@@ -203,17 +204,19 @@ class _ResilienceShieldSelectionScreenState
         axis: _axis,
         sourceChoice: _sourceChoice,
         typeChoice: _typeChoice,
+        query: _query,
         scrollOffset: 0,
       ),
     );
     state.axis = _axis;
     state.sourceChoice = _sourceChoice;
     state.typeChoice = _typeChoice;
+    state.query = _query;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_listScrollController.hasClients) return;
+    if (!_listScrollController.hasClients) return;
     _rememberViewState(scrollOffset: _listScrollController.offset);
   }
 

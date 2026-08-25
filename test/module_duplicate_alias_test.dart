@@ -4,6 +4,13 @@ import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('seed bank modules can be added more than once', () {
+    final metadata = ModuleRegistry.getMetadata('SeedBankProperties');
+
+    expect(metadata.allowMultiple, isTrue);
+    expect(metadata.defaultAlias, 'SeedBank');
+  });
+
   test('connected minecart duplicates append the number directly', () {
     final level = PvzLevelFile(
       objects: [

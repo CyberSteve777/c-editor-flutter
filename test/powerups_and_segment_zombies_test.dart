@@ -110,6 +110,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(
+      find.text(
+        'Tap or drag across zombies to unleash a powerful electric shock that continuously damages every zombie it touches.',
+      ),
+      findsNothing,
+    );
+
     final field = find.byKey(
       const ValueKey('powerupFreeUseCount_powerupwizardfinger'),
     );
@@ -126,5 +133,50 @@ void main() {
       )['FreeUseCount'],
       5,
     );
+  });
+
+  testWidgets('Power Ups count label moves above the field when needed', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final object = PvzObject(
+      aliases: const ['LevelPowerups'],
+      objClass: 'LevelPowerupModuleProperties',
+      objData: LevelPowerupModulePropertiesData().toJson(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ru'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) {
+          final media = MediaQuery.of(context);
+          return MediaQuery(
+            data: media.copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          );
+        },
+        home: LevelPowerupModuleScreen(
+          rtid: 'RTID(LevelPowerups@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [object]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final fieldFinder = find.byKey(
+      const ValueKey('powerupFreeUseCount_powerupflickzombie'),
+    );
+    await tester.ensureVisible(fieldFinder);
+    final field = tester.widget<TextField>(fieldFinder);
+    expect(field.decoration?.labelText, isNull);
+    expect(find.text('Бесплатные применения (FreeUseCount)'), findsWidgets);
+    expect(tester.takeException(), isNull);
   });
 }

@@ -421,7 +421,7 @@ void main() {
     expect((json['RocketPool'] as List).single['Count'], 4);
   });
 
-  testWidgets('Chinese rocket Count label has enough room on every layout', (
+  testWidgets('Chinese rocket Count label moves above on a narrow layout', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -450,10 +450,13 @@ void main() {
 
     final countField = find.byKey(const ValueKey('rocketLandingCountField'));
     expect(countField, findsOneWidget);
-    expect(tester.getSize(countField).width, 132);
+    expect(tester.getSize(countField).width, greaterThanOrEqualTo(160));
+    expect(tester.widget<TextField>(countField).decoration?.labelText, isNull);
+    final externalLabel = find.text('数量 (Count)');
+    expect(externalLabel, findsOneWidget);
     expect(
-      tester.widget<TextField>(countField).decoration?.labelText,
-      '数量 (Count)',
+      tester.getRect(externalLabel).bottom,
+      lessThanOrEqualTo(tester.getRect(countField).top),
     );
     expect(tester.takeException(), isNull);
   });

@@ -2434,7 +2434,7 @@ class RenaiStatueIcon extends StatelessWidget {
 /// Default [MaterialScrollBehavior] omits [PointerDeviceKind.mouse], so horizontal
 /// [TabBar]s and nested scroll views do not respond to click-drag on desktop.
 /// Vertically centered search field for colored app bar titles (light text).
-class AppBarSearchField extends StatelessWidget {
+class AppBarSearchField extends StatefulWidget {
   const AppBarSearchField({
     super.key,
     required this.hintText,
@@ -2453,36 +2453,67 @@ class AppBarSearchField extends StatelessWidget {
   final double borderRadius;
 
   @override
+  State<AppBarSearchField> createState() => _AppBarSearchFieldState();
+}
+
+class _AppBarSearchFieldState extends State<AppBarSearchField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.query);
+  }
+
+  @override
+  void didUpdateWidget(covariant AppBarSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.query != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: widget.query,
+        selection: TextSelection.collapsed(offset: widget.query.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final iconColor = foregroundColor.withValues(alpha: 0.9);
-    final hintColor = foregroundColor.withValues(alpha: 0.75);
-    final border = borderRadius > 0
+    final iconColor = widget.foregroundColor.withValues(alpha: 0.9);
+    final hintColor = widget.foregroundColor.withValues(alpha: 0.75);
+    final border = widget.borderRadius > 0
         ? OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
+            borderRadius: BorderRadius.circular(widget.borderRadius),
             borderSide: BorderSide.none,
           )
         : InputBorder.none;
 
     return TextField(
-      onChanged: onChanged,
+      controller: _controller,
+      onChanged: widget.onChanged,
       textAlignVertical: TextAlignVertical.center,
-      style: TextStyle(color: foregroundColor, height: 1.2),
-      cursorColor: foregroundColor,
+      style: TextStyle(color: widget.foregroundColor, height: 1.2),
+      cursorColor: widget.foregroundColor,
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: widget.hintText,
         hintStyle: TextStyle(color: hintColor, height: 1.2),
         prefixIcon: Icon(Icons.search, color: iconColor),
-        suffixIcon: query.isNotEmpty
+        suffixIcon: widget.query.isNotEmpty
             ? IconButton(
                 icon: Icon(Icons.clear, color: iconColor),
-                onPressed: onClear,
+                onPressed: widget.onClear,
               )
             : null,
         border: border,
         enabledBorder: border,
         focusedBorder: border,
         filled: true,
-        fillColor: foregroundColor.withValues(alpha: 0.18),
+        fillColor: widget.foregroundColor.withValues(alpha: 0.18),
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
         isDense: true,
       ),
@@ -2491,7 +2522,7 @@ class AppBarSearchField extends StatelessWidget {
 }
 
 /// Search field for selection screens (module, plant, zombie, dialogs, etc.).
-class SelectionSearchField extends StatelessWidget {
+class SelectionSearchField extends StatefulWidget {
   const SelectionSearchField({
     super.key,
     required this.hintText,
@@ -2522,53 +2553,95 @@ class SelectionSearchField extends StatelessWidget {
   final bool useOutlineBorder;
 
   @override
+  State<SelectionSearchField> createState() => _SelectionSearchFieldState();
+}
+
+class _SelectionSearchFieldState extends State<SelectionSearchField> {
+  TextEditingController? _internalController;
+
+  TextEditingController get _effectiveController =>
+      widget.controller ?? _internalController!;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller == null) {
+      _internalController = TextEditingController(text: widget.query);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SelectionSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      _internalController?.dispose();
+      _internalController = widget.controller == null
+          ? TextEditingController(text: widget.query)
+          : null;
+    }
+    final controller = _effectiveController;
+    if (widget.query != controller.text) {
+      controller.value = TextEditingValue(
+        text: widget.query,
+        selection: TextSelection.collapsed(offset: widget.query.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _internalController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = foregroundColor ?? theme.colorScheme.onSurface;
-    final hintColor = foregroundColor != null
-        ? foregroundColor!.withValues(alpha: 0.75)
+    final textColor = widget.foregroundColor ?? theme.colorScheme.onSurface;
+    final hintColor = widget.foregroundColor != null
+        ? widget.foregroundColor!.withValues(alpha: 0.75)
         : (isDark
               ? theme.colorScheme.onSurface.withValues(alpha: 0.65)
               : theme.colorScheme.onSurface.withValues(alpha: 0.55));
-    final iconColor = foregroundColor != null
-        ? foregroundColor!.withValues(alpha: 0.9)
+    final iconColor = widget.foregroundColor != null
+        ? widget.foregroundColor!.withValues(alpha: 0.9)
         : theme.colorScheme.onSurface.withValues(alpha: 0.7);
     final bg =
-        fillColor ??
-        (foregroundColor != null
-            ? foregroundColor!.withValues(alpha: 0.18)
+        widget.fillColor ??
+        (widget.foregroundColor != null
+            ? widget.foregroundColor!.withValues(alpha: 0.18)
             : theme.colorScheme.surfaceContainerHighest);
 
     InputBorder border;
-    if (useOutlineBorder) {
+    if (widget.useOutlineBorder) {
       border = OutlineInputBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         borderSide: BorderSide(
           color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
         ),
       );
     } else {
       border = OutlineInputBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         borderSide: BorderSide.none,
       );
     }
 
     return TextField(
-      controller: controller,
-      onChanged: onChanged,
+      controller: _effectiveController,
+      onChanged: widget.onChanged,
       textAlignVertical: TextAlignVertical.center,
       style: TextStyle(color: textColor, height: 1.2),
       cursorColor: textColor,
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: widget.hintText,
         hintStyle: TextStyle(color: hintColor, height: 1.2),
         prefixIcon: Icon(Icons.search, color: iconColor),
-        suffixIcon: query.isNotEmpty && onClear != null
+        suffixIcon: widget.query.isNotEmpty && widget.onClear != null
             ? IconButton(
                 icon: Icon(Icons.clear, color: iconColor),
-                onPressed: onClear,
+                onPressed: widget.onClear,
               )
             : null,
         filled: true,
@@ -2577,20 +2650,20 @@ class SelectionSearchField extends StatelessWidget {
         isDense: true,
         border: border,
         enabledBorder: border,
-        focusedBorder: useOutlineBorder
+        focusedBorder: widget.useOutlineBorder
             ? OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
                 borderSide: BorderSide(
-                  color: focusedBorderColor ?? theme.colorScheme.primary,
+                  color: widget.focusedBorderColor ?? theme.colorScheme.primary,
                   width: 1.5,
                 ),
               )
             : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
                 borderSide: BorderSide(
                   color:
-                      focusedBorderColor ??
-                      foregroundColor ??
+                      widget.focusedBorderColor ??
+                      widget.foregroundColor ??
                       theme.colorScheme.primary,
                   width: 1.5,
                 ),

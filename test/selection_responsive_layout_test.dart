@@ -4,6 +4,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/stage_catalog_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
+import 'package:c_editor/screens/editor/basic_info_screen.dart';
 import 'package:c_editor/screens/editor/others/custom_portal_properties_screen.dart';
 import 'package:c_editor/screens/select/music_suffix_selection_screen.dart';
 import 'package:c_editor/screens/select/stage_resource_group_import_screen.dart';
@@ -103,6 +104,42 @@ void main() {
     final iconRect = tester.getRect(find.byType(AssetImageWidget).first);
     final aliasRect = tester.getRect(find.text(preset.alias));
     expect(aliasRect.top, greaterThan(iconRect.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('preset-derived custom lawn uses the purple C badge', (
+    tester,
+  ) async {
+    final preset = CustomStagePresetRepository.presets.first;
+    final derivedData =
+        CustomStageLevelUtils.cloneJson(preset.objdata) as Map<String, dynamic>;
+    derivedData['MusicSuffix'] = 'customized_from_preset';
+    final stageObject = PvzObject(
+      aliases: [preset.alias],
+      objClass: preset.objclass,
+      objData: derivedData,
+    );
+    final levelDef = LevelDefinitionData(
+      stageModule: 'RTID(${preset.alias}@CurrentLevel)',
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BasicInfoScreen(
+          levelFile: PvzLevelFile(objects: [stageObject]),
+          levelDef: levelDef,
+          onBack: () {},
+          onStageTap: null,
+          onChanged: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final badge = tester.widget<CustomResourceBadge>(
+      find.byType(CustomResourceBadge),
+    );
+    expect(badge.color, const Color(0xFF6A1B9A));
     expect(tester.takeException(), isNull);
   });
 

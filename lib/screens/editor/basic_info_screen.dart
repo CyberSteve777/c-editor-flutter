@@ -561,7 +561,9 @@ class _CurrentCustomStageBadge extends StatelessWidget {
       CustomStageOrigin.presetTemplate => presetCustomResourceBadgeColor(
         context,
       ),
-      CustomStageOrigin.presetDerived => customStageBadgeColor(context),
+      CustomStageOrigin.presetDerived => presetDerivedCustomResourceBadgeColor(
+        context,
+      ),
       CustomStageOrigin.userCreated => userCustomResourceBadgeColor(context),
     };
   }

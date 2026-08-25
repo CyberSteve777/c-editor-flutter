@@ -8904,7 +8904,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moonLifeSupportHelpOverview =>
-      '常见于月球基地关卡的经济系统。添加该模块后，植物种植不消耗阳光，而是实时占用维生系统的一定电力容量。植物被铲除、被僵尸摧毁或因特殊机制消失时，其占用的容量会立即全额返还。';
+      '常见于月球基地关卡的经济系统。添加该模块后，植物种植不消耗阳光，而是实时占用维生系统的一定电力容量。植物被铲除、被僵尸摧毁或因特殊机制消失时，其占用的容量会立即全额返还。\n注意，该模块还会屏蔽四阶及以上植物的落地开大效果。';
 
   @override
   String get moonLifeSupportHelpProtocolsTitle => '过载协议';
@@ -9071,7 +9071,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get powerUpsHelpOverview =>
-      '于十三周年秘境中重磅回归的妙趣横生玩法，允许你在道具持续时间内使用特定手势操作击杀僵尸。开启本模块后可设置各个金手指在关卡中免费使用的具体次数。注意国际版中的冰雹指 (Power Snow) 和火焰指 (Power Flame) 在中文版并不存在。';
+      '于十三周年秘境重磅回归的“六脉神剑”，允许玩家在道具持续时间内使用特定手势操作击杀僵尸。开启本模块后可设置各个金手指在关卡中免费使用的具体次数。注意国际版中的冰雹指和火焰指在中文版并不存在。';
 
   @override
   String get powerUpsFreeUseCount => '免费使用次数 (FreeUseCount)';

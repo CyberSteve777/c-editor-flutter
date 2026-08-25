@@ -696,20 +696,23 @@ class _BarrelZombieRow extends StatelessWidget {
         ),
       ],
     );
-    final levelField = DropdownButtonFormField<int>(
-      key: ValueKey('barrelZombieLevel_$typeName'),
-      isExpanded: true,
-      initialValue: level,
-      items: List.generate(11, (value) {
-        return DropdownMenuItem(value: value, child: Text('$value'));
-      }),
-      onChanged: (value) {
-        if (value != null) onLevelChanged(value);
-      },
-      decoration: InputDecoration(
-        labelText: levelLabel,
-        border: const OutlineInputBorder(),
+    final levelField = EditorResponsiveInputField(
+      label: levelLabel,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         isDense: true,
+      ),
+      builder: (context, decoration) => DropdownButtonFormField<int>(
+        key: ValueKey('barrelZombieLevel_$typeName'),
+        isExpanded: true,
+        initialValue: level,
+        items: List.generate(11, (value) {
+          return DropdownMenuItem(value: value, child: Text('$value'));
+        }),
+        onChanged: (value) {
+          if (value != null) onLevelChanged(value);
+        },
+        decoration: decoration,
       ),
     );
     final actions = Row(

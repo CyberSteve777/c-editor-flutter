@@ -43,11 +43,13 @@ enum _PlantBlockedReason {
 
 class _PlantSelectionViewState {
   _PlantSelectionViewState({required this.category, required this.tag})
-    : scrollOffset = 0,
+    : searchQuery = '',
+      scrollOffset = 0,
       tagScrollOffset = 0;
 
   PlantCategory category;
   PlantTag tag;
+  String searchQuery;
   double scrollOffset;
   double tagScrollOffset;
 }
@@ -122,14 +124,13 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     return 'global';
   }
 
-  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
     final rememberedState = _plantSelectionViewStates[_viewStateKey];
     _selectedCategory = rememberedState?.category ?? PlantCategory.quality;
     _selectedTag = rememberedState?.tag ?? PlantTag.all;
+    _searchQuery = rememberedState?.searchQuery ?? '';
     _normalizeSelectedTag();
     _scrollController = ScrollController(
       initialScrollOffset: rememberedState?.scrollOffset ?? 0,
@@ -190,7 +191,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   void _setSearchQuery(String query) {
     if (_searchQuery == query) return;
     setState(() => _searchQuery = query);
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _resetRememberedScrollOffset();
   }
 
   void _normalizeSelectedTag() {
@@ -214,6 +215,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     );
     state.category = _selectedCategory;
     state.tag = _selectedTag;
+    state.searchQuery = _searchQuery;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
     if (tagScrollOffset != null) {
       state.tagScrollOffset = tagScrollOffset;
@@ -225,7 +227,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    if (!_scrollController.hasClients) return;
     _rememberViewState(scrollOffset: _scrollController.offset);
   }
 

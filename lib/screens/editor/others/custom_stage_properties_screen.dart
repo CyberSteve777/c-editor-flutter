@@ -335,6 +335,8 @@ class _CustomStagePropertiesScreenState
       context,
       MaterialPageRoute(
         builder: (ctx) => MusicSuffixSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:music-suffix',
           currentCodename: current,
           onCodenameSelected: (code) {
             _objdata['MusicSuffix'] = code;

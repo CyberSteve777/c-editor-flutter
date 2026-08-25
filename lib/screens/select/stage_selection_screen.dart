@@ -20,6 +20,7 @@ class _StageSelectionViewState {
   _StageSelectionViewState({
     required this.tab,
     required this.type,
+    required this.searchQuery,
     required this.builtinScrollOffset,
     required this.customScrollOffset,
     required this.typeScrollOffset,
@@ -27,6 +28,7 @@ class _StageSelectionViewState {
 
   _StagePickerTab tab;
   StageType type;
+  String searchQuery;
   double builtinScrollOffset;
   double customScrollOffset;
   double typeScrollOffset;
@@ -77,8 +79,6 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
   String get _viewStateKey =>
       'level:${identityHashCode(widget.levelFile)}:stage';
 
-  bool get _canRememberBuiltinScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
@@ -91,6 +91,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
                   ? _StagePickerTab.custom
                   : _StagePickerTab.builtin);
     _selectedType = remembered?.type ?? StageType.all;
+    _searchQuery = remembered?.searchQuery ?? '';
     _builtinScrollController = ScrollController(
       initialScrollOffset: remembered?.builtinScrollOffset ?? 0,
     )..addListener(_rememberScrollOffsets);
@@ -130,7 +131,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
   void _setSearchQuery(String query) {
     if (_searchQuery == query) return;
     setState(() => _searchQuery = query);
-    _resetBuiltinScrollOffset(persist: query.trim().isEmpty);
+    _resetBuiltinScrollOffset();
   }
 
   void _rememberViewState({
@@ -143,6 +144,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
       () => _StageSelectionViewState(
         tab: _tab,
         type: _selectedType,
+        searchQuery: _searchQuery,
         builtinScrollOffset: 0,
         customScrollOffset: 0,
         typeScrollOffset: 0,
@@ -150,6 +152,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
     );
     state.tab = _tab;
     state.type = _selectedType;
+    state.searchQuery = _searchQuery;
     if (builtinScrollOffset != null) {
       state.builtinScrollOffset = builtinScrollOffset;
     }
@@ -168,7 +171,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
   void _rememberScrollOffsets() {
     double? builtinOffset;
     double? customOffset;
-    if (_canRememberBuiltinScroll && _builtinScrollController.hasClients) {
+    if (_builtinScrollController.hasClients) {
       builtinOffset = _builtinScrollController.offset;
     }
     if (_customScrollController.hasClients) {
@@ -670,7 +673,9 @@ class _CurrentCustomStageBadge extends StatelessWidget {
       CustomStageOrigin.presetTemplate => presetCustomResourceBadgeColor(
         context,
       ),
-      CustomStageOrigin.presetDerived => customStageBadgeColor(context),
+      CustomStageOrigin.presetDerived => presetDerivedCustomResourceBadgeColor(
+        context,
+      ),
       CustomStageOrigin.userCreated => userCustomResourceBadgeColor(context),
     };
   }

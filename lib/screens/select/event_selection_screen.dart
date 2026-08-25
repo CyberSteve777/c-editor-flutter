@@ -8,6 +8,22 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 
+class _EventSelectionViewState {
+  _EventSelectionViewState({
+    this.selectedCategory,
+    this.searchQuery = '',
+    this.scrollOffset = 0,
+    this.tagScrollOffset = 0,
+  });
+
+  EventCategory? selectedCategory;
+  String searchQuery;
+  double scrollOffset;
+  double tagScrollOffset;
+}
+
+final Map<String, _EventSelectionViewState> _eventSelectionViewStates = {};
+
 /// Event selection for wave timeline. Ported from Z-Editor-master EventSelectionScreen.kt
 class EventSelectionScreen extends StatefulWidget {
   const EventSelectionScreen({
@@ -201,6 +217,80 @@ class EventSelectionScreen extends StatefulWidget {
 class _EventSelectionScreenState extends State<EventSelectionScreen> {
   String _searchQuery = '';
   EventCategory? _selectedCategory;
+  late final ScrollController _listScrollController;
+
+  String get _viewStateKey =>
+      'level:${identityHashCode(widget.levelFile)}:event-selection';
+
+  @override
+  void initState() {
+    super.initState();
+    final remembered = _eventSelectionViewStates[_viewStateKey];
+    _searchQuery = remembered?.searchQuery ?? '';
+    _selectedCategory = remembered?.selectedCategory;
+    _listScrollController = ScrollController(
+      initialScrollOffset: remembered?.scrollOffset ?? 0,
+    )..addListener(_rememberScrollOffset);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _listScrollController.dispose();
+    super.dispose();
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetRememberedScrollOffset();
+  }
+
+  void _setCategory(EventCategory? category) {
+    if (_selectedCategory == category) return;
+    setState(() => _selectedCategory = category);
+    _resetRememberedScrollOffset();
+  }
+
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
+    final state = _eventSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      _EventSelectionViewState.new,
+    );
+    state
+      ..selectedCategory = _selectedCategory
+      ..searchQuery = _searchQuery;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) state.tagScrollOffset = tagScrollOffset;
+  }
+
+  void _rememberScrollOffset() {
+    if (!_listScrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _listScrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset() {
+    _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_listScrollController.hasClients) return;
+      _listScrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_listScrollController.hasClients) return;
+    final offset = _eventSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _listScrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_listScrollController.offset != target) {
+      _listScrollController.jumpTo(target);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -263,26 +353,31 @@ class _EventSelectionScreenState extends State<EventSelectionScreen> {
                 child: SelectionSearchField(
                   hintText: l10n?.search ?? 'Search',
                   query: _searchQuery,
-                  onChanged: (v) => setState(() => _searchQuery = v),
-                  onClear: () => setState(() => _searchQuery = ''),
+                  onChanged: _setSearchQuery,
+                  onClear: () => _setSearchQuery(''),
                 ),
               ),
               HorizontalTagScroller(
                 onAccentBar: true,
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 14),
+                initialScrollOffset:
+                    _eventSelectionViewStates[_viewStateKey]?.tagScrollOffset ??
+                    0,
+                onScrollOffsetChanged: (offset) {
+                  _rememberViewState(tagScrollOffset: offset);
+                },
                 children: [
                   AccentBarChoiceChip(
                     label: l10n?.stageTypeAll ?? 'All',
                     selected: _selectedCategory == null,
-                    onSelected: (_) => setState(() => _selectedCategory = null),
+                    onSelected: (_) => _setCategory(null),
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                   ),
                   ...EventCategory.values.map((cat) {
                     return AccentBarChoiceChip(
                       label: _categoryLabel(cat, l10n),
                       selected: _selectedCategory == cat,
-                      onSelected: (_) =>
-                          setState(() => _selectedCategory = cat),
+                      onSelected: (_) => _setCategory(cat),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                     );
                   }),
@@ -315,6 +410,7 @@ class _EventSelectionScreenState extends State<EventSelectionScreen> {
               ),
             )
           : ListView.builder(
+              controller: _listScrollController,
               padding: const EdgeInsets.all(16),
               itemCount: filteredEvents.length,
               itemBuilder: (context, index) {

@@ -1695,6 +1695,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ToolSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     onToolSelected: (id) {
                       Navigator.pop(context);
                       onSelected(id);
@@ -3032,6 +3033,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ToolSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     onToolSelected: (id) {
                       Navigator.pop(context);
                       onSelected(id);

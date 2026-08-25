@@ -7,6 +7,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/select/grid_item_module_prompt.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/selection_grid_layout.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
@@ -38,6 +39,67 @@ class GridItemSelectionScreen extends StatefulWidget {
 class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
   String _searchQuery = '';
   GridItemCategory _selectedCategory = GridItemCategory.all;
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
+
+  String get _memoryKey {
+    final level = widget.levelFile;
+    final bucket = level == null
+        ? 'global'
+        : 'level:${identityHashCode(level)}';
+    return '$bucket:grid-item:${widget.filterMode.name}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _memory = SelectionViewMemoryStore.forKey(_memoryKey);
+    _searchQuery = _memory.query;
+    final categoryName = _memory.filters['category'] as String?;
+    _selectedCategory = GridItemCategory.values.firstWhere(
+      (category) => category.name == categoryName,
+      orElse: () => GridItemCategory.all,
+    );
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffset,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _memory.query = query;
+    _resetScrollOffset();
+  }
+
+  void _setCategory(GridItemCategory category) {
+    if (_selectedCategory == category) return;
+    setState(() => _selectedCategory = category);
+    _memory.filters['category'] = category.name;
+    _resetScrollOffset();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _resetScrollOffset() {
+    _memory.scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
+  }
 
   List<GridItemInfo> get _displayList {
     final baseList = switch (widget.filterMode) {
@@ -86,8 +148,8 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
           title: AppBarSearchField(
             hintText: l10n?.searchGridItems ?? 'Search grid items',
             query: _searchQuery,
-            onChanged: (v) => setState(() => _searchQuery = v),
-            onClear: () => setState(() => _searchQuery = ''),
+            onChanged: _setSearchQuery,
+            onClear: () => _setSearchQuery(''),
           ),
         ),
         body: Column(
@@ -100,11 +162,15 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
                   horizontal: 16,
                   vertical: 8,
                 ),
+                initialScrollOffset: _memory.tagScrollOffset,
+                onScrollOffsetChanged: (offset) {
+                  _memory.tagScrollOffset = offset;
+                },
                 children: GridItemCategory.values.map((cat) {
                   return AccentBarChoiceChip(
                     label: _categoryLabel(cat, l10n),
                     selected: _selectedCategory == cat,
-                    onSelected: (_) => setState(() => _selectedCategory = cat),
+                    onSelected: (_) => _setCategory(cat),
                   );
                 }).toList(),
               ),
@@ -140,6 +206,7 @@ class _GridItemSelectionScreenState extends State<GridItemSelectionScreen> {
                           );
 
                           return GridView.builder(
+                            controller: _scrollController,
                             padding: const EdgeInsets.all(16),
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(

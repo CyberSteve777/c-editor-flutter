@@ -236,6 +236,8 @@ class _ApplyZombieConditionsChallengeEditorState
       context,
       MaterialPageRoute(
         builder: (ctx) => ZombieConditionSelectionScreen(
+          stateBucketId:
+              'challenge:${identityHashCode(widget.object)}:zombie-condition',
           initialSelected: _conditions,
           onBack: () => Navigator.pop(ctx),
           onDone: (selected) {

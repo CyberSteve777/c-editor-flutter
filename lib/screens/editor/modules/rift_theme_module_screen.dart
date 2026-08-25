@@ -89,6 +89,8 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => RiftThemeSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:rift-theme',
           initialSelectedIds: _data.demoRiftThemeName,
           accentColor: accentColor,
           onThemesConfirmed: (ids) => Navigator.pop(context, ids),

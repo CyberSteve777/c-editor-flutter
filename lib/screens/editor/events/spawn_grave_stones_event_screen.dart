@@ -489,20 +489,23 @@ class _SpawnGraveStonesEventScreenState
               ),
             ),
             SizedBox(
-              width: 80,
-              child: TextFormField(
-                initialValue: '${item.count}',
-                decoration: InputDecoration(
-                  labelText: l10n?.count ?? 'Count',
-                  border: const OutlineInputBorder(),
+              width: 104,
+              child: EditorResponsiveInputField(
+                label: l10n?.count ?? 'Count',
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
                   isDense: true,
                 ),
-                keyboardType: TextInputType.number,
-                inputFormatters: const [PositiveIntegerInputFormatter()],
-                onChanged: (s) {
-                  final v = int.tryParse(s) ?? 1;
-                  _updateCount(index, v.clamp(1, 999));
-                },
+                builder: (context, decoration) => TextFormField(
+                  initialValue: '${item.count}',
+                  decoration: decoration,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: const [PositiveIntegerInputFormatter()],
+                  onChanged: (s) {
+                    final v = int.tryParse(s) ?? 1;
+                    _updateCount(index, v.clamp(1, 999));
+                  },
+                ),
               ),
             ),
             const SizedBox(width: 8),

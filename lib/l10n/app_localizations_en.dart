@@ -9397,7 +9397,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moonLifeSupportHelpOverview =>
-      'An economy system commonly used in Moon BaseZ levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.';
+      'An economy system commonly used in Moon BaseZ levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.\nNote that this module also prevents Level 4 and higher plants from automatically using their Plant Food ability when planted.';
 
   @override
   String get moonLifeSupportHelpProtocolsTitle => 'Overload protocols';
@@ -9572,7 +9572,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get powerUpsHelpOverview =>
-      'This wonderfully entertaining mechanic makes a major return in the 13th Anniversary Secret Realm, allowing you to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.';
+      'This wonderfully interesting mechanic makes a major return in the 13th Anniversary Secret Realm, allowing players to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.';
 
   @override
   String get powerUpsFreeUseCount => 'Free uses (FreeUseCount)';

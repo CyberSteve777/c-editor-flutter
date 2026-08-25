@@ -202,6 +202,8 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => ChallengeSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:challenge',
           onChallengeSelected: (i) => Navigator.pop(context, i),
           onBack: () => Navigator.pop(context),
         ),

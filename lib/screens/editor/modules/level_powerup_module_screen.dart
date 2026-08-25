@@ -148,21 +148,18 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
               typeName: 'powerupflickzombie',
               icon: Icons.swipe_vertical,
               title: l10n.powerToss,
-              description: l10n.powerTossInfo,
             ),
             const SizedBox(height: 12),
             _buildPowerupCard(
               typeName: 'powerupwizardfinger',
               icon: Icons.bolt,
               title: l10n.powerZap,
-              description: l10n.powerZapInfo,
             ),
             const SizedBox(height: 12),
             _buildPowerupCard(
               typeName: 'poweruppinchzombie',
               icon: Icons.content_cut,
               title: l10n.powerPinch,
-              description: l10n.powerPinchInfo,
             ),
           ],
         ),
@@ -174,7 +171,6 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
     required String typeName,
     required IconData icon,
     required String title,
-    required String description,
   }) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
@@ -205,30 +201,28 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(description),
                     ],
                   ),
                 ),
               ],
             );
             final countField = SizedBox(
-              width: constraints.maxWidth < 420 ? double.infinity : 190,
-              child: TextField(
-                key: ValueKey('powerupFreeUseCount_$typeName'),
-                controller: _controllers[typeName],
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(
-                  labelText: l10n.powerUpsFreeUseCount,
-                  border: const OutlineInputBorder(),
+              width: constraints.maxWidth < 520 ? double.infinity : 300,
+              child: EditorResponsiveInputField(
+                label: l10n.powerUpsFreeUseCount,
+                builder: (context, decoration) => TextField(
+                  key: ValueKey('powerupFreeUseCount_$typeName'),
+                  controller: _controllers[typeName],
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: decoration,
+                  onChanged: (value) {
+                    final parsed = int.tryParse(value);
+                    if (parsed == null || parsed < 0) return;
+                    _data.entryFor(typeName).freeUseCount = parsed;
+                    _sync();
+                  },
                 ),
-                onChanged: (value) {
-                  final parsed = int.tryParse(value);
-                  if (parsed == null || parsed < 0) return;
-                  _data.entryFor(typeName).freeUseCount = parsed;
-                  _sync();
-                },
               ),
             );
 

@@ -138,6 +138,53 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('module picker restores search query and result position', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    const bucket = 'module-picker-search-results';
+    Widget picker() => _localizedApp(
+      const ModuleSelectionScreen(
+        existingObjClasses: {},
+        stateBucketId: bucket,
+      ),
+    );
+
+    await tester.pumpWidget(picker());
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'Properties');
+    await tester.pumpAndSettle();
+    await tester.drag(_moduleListScrollable(), const Offset(0, -500));
+    await tester.pumpAndSettle();
+    final savedOffset = tester
+        .state<ScrollableState>(_moduleListScrollable())
+        .position
+        .pixels;
+    expect(savedOffset, greaterThan(0));
+
+    await tester.pumpWidget(_localizedApp(const SizedBox.shrink()));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(picker());
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<EditableText>(find.byType(EditableText).first)
+          .controller
+          .text,
+      'Properties',
+    );
+    expect(
+      tester.state<ScrollableState>(_moduleListScrollable()).position.pixels,
+      closeTo(savedOffset, 1),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('placement grid uses full card width on narrow screens', (
     tester,
   ) async {

@@ -3,6 +3,7 @@ import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/rift_theme_widgets.dart';
 
@@ -14,12 +15,14 @@ class RiftThemeSelectionScreen extends StatefulWidget {
     required this.accentColor,
     required this.onThemesConfirmed,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final List<String> initialSelectedIds;
   final Color accentColor;
   final void Function(List<String> ids) onThemesConfirmed;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<RiftThemeSelectionScreen> createState() =>
@@ -29,11 +32,47 @@ class RiftThemeSelectionScreen extends StatefulWidget {
 class _RiftThemeSelectionScreenState extends State<RiftThemeSelectionScreen> {
   String _searchQuery = '';
   late List<String> _selectedIds;
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _selectedIds = List<String>.from(widget.initialSelectedIds);
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    _memory = SelectionViewMemoryStore.forKey('$bucket:rift-theme');
+    _searchQuery = _memory.query;
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffset,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _memory
+      ..query = query
+      ..scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
   }
 
   List<String> get _filteredThemes {
@@ -89,8 +128,8 @@ class _RiftThemeSelectionScreenState extends State<RiftThemeSelectionScreen> {
               'Selected ${_selectedIds.length}, tap to search',
           query: _searchQuery,
           borderRadius: 24,
-          onChanged: (v) => setState(() => _searchQuery = v),
-          onClear: () => setState(() => _searchQuery = ''),
+          onChanged: _setSearchQuery,
+          onClear: () => _setSearchQuery(''),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -115,6 +154,7 @@ class _RiftThemeSelectionScreenState extends State<RiftThemeSelectionScreen> {
               ),
             )
           : ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
               itemCount: themes.length,
               itemBuilder: (context, index) {

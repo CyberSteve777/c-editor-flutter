@@ -261,25 +261,28 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
               ],
             );
             final countField = SizedBox(
-              width: 132,
-              child: TextField(
-                key: const ValueKey('rocketLandingCountField'),
-                controller: _countCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: const [PositiveIntegerInputFormatter()],
-                decoration: InputDecoration(
-                  labelText: l10n?.count ?? 'Count',
-                  border: const OutlineInputBorder(),
+              width: 160,
+              child: EditorResponsiveInputField(
+                label: l10n?.count ?? 'Count',
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
                   isDense: true,
                 ),
-                onChanged: (value) {
-                  final parsed = int.tryParse(value);
-                  if (parsed != null && parsed >= 1) {
-                    _data.rocketPool.first.count = parsed;
-                    _data.spawnCount = parsed;
-                    _sync();
-                  }
-                },
+                builder: (context, decoration) => TextField(
+                  key: const ValueKey('rocketLandingCountField'),
+                  controller: _countCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: const [PositiveIntegerInputFormatter()],
+                  decoration: decoration,
+                  onChanged: (value) {
+                    final parsed = int.tryParse(value);
+                    if (parsed != null && parsed >= 1) {
+                      _data.rocketPool.first.count = parsed;
+                      _data.spawnCount = parsed;
+                      _sync();
+                    }
+                  },
+                ),
               ),
             );
 

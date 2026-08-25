@@ -18,11 +18,13 @@ enum StageResourceGroupImportMode { global, fromStage }
 class _StageResourceGroupSelectionViewState {
   _StageResourceGroupSelectionViewState({
     required this.selectedType,
+    required this.searchQuery,
     required this.scrollOffset,
     required this.tagScrollOffset,
   });
 
   String selectedType;
+  String searchQuery;
   double scrollOffset;
   double tagScrollOffset;
 }
@@ -81,8 +83,6 @@ class _StageResourceGroupImportScreenState
     return '$bucket:${widget.mode.name}';
   }
 
-  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
@@ -90,6 +90,7 @@ class _StageResourceGroupImportScreenState
     _selectedType = _typeTabs.contains(remembered?.selectedType)
         ? remembered!.selectedType
         : 'all';
+    _searchQuery = remembered?.searchQuery ?? '';
     _scrollController = ScrollController(
       initialScrollOffset: remembered?.scrollOffset ?? 0,
     )..addListener(_rememberScrollOffset);
@@ -115,7 +116,7 @@ class _StageResourceGroupImportScreenState
   void _setSearchQuery(String query) {
     if (_searchQuery == query) return;
     setState(() => _searchQuery = query);
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _resetRememberedScrollOffset();
   }
 
   void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
@@ -123,11 +124,13 @@ class _StageResourceGroupImportScreenState
       _viewStateKey,
       () => _StageResourceGroupSelectionViewState(
         selectedType: _selectedType,
+        searchQuery: _searchQuery,
         scrollOffset: 0,
         tagScrollOffset: 0,
       ),
     );
     state.selectedType = _selectedType;
+    state.searchQuery = _searchQuery;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
     if (tagScrollOffset != null) state.tagScrollOffset = tagScrollOffset;
   }
@@ -137,7 +140,7 @@ class _StageResourceGroupImportScreenState
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    if (!_scrollController.hasClients) return;
     _rememberViewState(scrollOffset: _scrollController.offset);
   }
 

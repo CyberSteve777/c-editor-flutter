@@ -18,11 +18,13 @@ class ModuleSelectionResult {
 class _ModuleSelectionViewState {
   _ModuleSelectionViewState({
     this.selectedCategory,
+    this.searchQuery = '',
     this.scrollOffset = 0,
     this.tagScrollOffset = 0,
   });
 
   ModuleCategory? selectedCategory;
+  String searchQuery;
   double scrollOffset;
   double tagScrollOffset;
 }
@@ -53,13 +55,12 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
       ? widget.stateBucketId!
       : 'global';
 
-  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
     final remembered = _moduleSelectionViewStates[_viewStateKey];
     _selectedCategory = remembered?.selectedCategory;
+    _searchQuery = remembered?.searchQuery ?? '';
     _listScrollController = ScrollController(
       initialScrollOffset: remembered?.scrollOffset ?? 0,
     )..addListener(_rememberViewState);
@@ -77,13 +78,14 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
   }
 
   void _rememberViewState() {
-    if (!_canRememberScroll || !_listScrollController.hasClients) return;
+    if (!_listScrollController.hasClients) return;
     final state = _moduleSelectionViewStates.putIfAbsent(
       _viewStateKey,
       _ModuleSelectionViewState.new,
     );
     state
       ..selectedCategory = _selectedCategory
+      ..searchQuery = _searchQuery
       ..scrollOffset = _listScrollController.offset;
   }
 
@@ -94,6 +96,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
     );
     state
       ..selectedCategory = _selectedCategory
+      ..searchQuery = _searchQuery
       ..tagScrollOffset = offset;
   }
 
@@ -119,6 +122,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
     );
     state
       ..selectedCategory = category
+      ..searchQuery = _searchQuery
       ..scrollOffset = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_listScrollController.hasClients) return;
@@ -129,6 +133,14 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
   void _setSearchQuery(String query) {
     if (_searchQuery == query) return;
     setState(() => _searchQuery = query);
+    final state = _moduleSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      _ModuleSelectionViewState.new,
+    );
+    state
+      ..selectedCategory = _selectedCategory
+      ..searchQuery = query
+      ..scrollOffset = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_listScrollController.hasClients) return;
       _listScrollController.jumpTo(0);

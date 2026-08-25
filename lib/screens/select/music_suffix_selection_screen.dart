@@ -3,6 +3,7 @@ import 'package:c_editor/data/music_suffix_catalog.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
@@ -17,11 +18,13 @@ class MusicSuffixSelectionScreen extends StatefulWidget {
     required this.currentCodename,
     required this.onCodenameSelected,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final String currentCodename;
   final void Function(String codename) onCodenameSelected;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<MusicSuffixSelectionScreen> createState() =>
@@ -31,8 +34,49 @@ class MusicSuffixSelectionScreen extends StatefulWidget {
 class _MusicSuffixSelectionScreenState
     extends State<MusicSuffixSelectionScreen> {
   String _searchQuery = '';
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
 
   static const double _iconLogicalSize = 96;
+
+  @override
+  void initState() {
+    super.initState();
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    _memory = SelectionViewMemoryStore.forKey('$bucket:music-suffix');
+    _searchQuery = _memory.query;
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffset,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _memory
+      ..query = query
+      ..scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +114,8 @@ class _MusicSuffixSelectionScreenState
             child: SelectionSearchField(
               hintText: l10n?.searchMusicSuffix ?? 'Search name or codename',
               query: _searchQuery,
-              onChanged: (v) => setState(() => _searchQuery = v),
-              onClear: () => setState(() => _searchQuery = ''),
+              onChanged: _setSearchQuery,
+              onClear: () => _setSearchQuery(''),
             ),
           ),
         ),
@@ -95,6 +139,7 @@ class _MusicSuffixSelectionScreenState
               ),
             )
           : GridView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 180,

@@ -20,10 +20,12 @@ import 'package:c_editor/widgets/editor_components.dart';
 class _ZombossActionSelectionViewState {
   _ZombossActionSelectionViewState({
     required this.category,
+    required this.query,
     required this.scrollOffset,
   });
 
   String category;
+  String query;
   double scrollOffset;
 }
 
@@ -67,8 +69,6 @@ class _ZombossMechActionSelectionScreenState
       'level:${identityHashCode(widget.levelFile)}:'
       '${widget.catalog.id}:${widget.retreatOnly}';
 
-  bool get _canRememberScroll => _query.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
@@ -79,6 +79,7 @@ class _ZombossMechActionSelectionScreenState
             _categories.contains(remembered.category)
         ? remembered.category
         : ZombossMechActionOrdering.allFilter;
+    _query = remembered?.query ?? '';
     final initialOffset = remembered?.scrollOffset ?? 0;
     _listScrollAtTop = initialOffset <= 0;
     _listScrollController = ScrollController(initialScrollOffset: initialOffset)
@@ -121,7 +122,7 @@ class _ZombossMechActionSelectionScreenState
       _query = query;
       _listScrollAtTop = true;
     });
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _resetRememberedScrollOffset();
   }
 
   void _rememberViewState({double? scrollOffset}) {
@@ -129,15 +130,17 @@ class _ZombossMechActionSelectionScreenState
       _viewStateKey,
       () => _ZombossActionSelectionViewState(
         category: _category,
+        query: _query,
         scrollOffset: 0,
       ),
     );
     state.category = _category;
+    state.query = _query;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_listScrollController.hasClients) return;
+    if (!_listScrollController.hasClients) return;
     _rememberViewState(scrollOffset: _listScrollController.offset);
   }
 

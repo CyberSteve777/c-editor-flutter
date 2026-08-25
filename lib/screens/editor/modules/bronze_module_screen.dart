@@ -180,7 +180,6 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
     _sync();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -243,14 +242,14 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -267,28 +266,29 @@ ModuleAliasInputField(
                         ),
                         const SizedBox(height: 8),
                         SizedBox(
-                          width: 160,
-                          child: TextFormField(
-                            initialValue: _data.shakeOffset.toString(),
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
+                          width: 240,
+                          child: EditorResponsiveInputField(
+                            label:
+                                l10n?.bronzeModuleShakeOffsetLabel ??
+                                'Shake offset',
+                            builder: (context, decoration) => TextFormField(
+                              initialValue: _data.shakeOffset.toString(),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              decoration: decoration,
+                              onChanged: (v) {
+                                final n = double.tryParse(v);
+                                if (n != null) {
+                                  _data = BronzePropertiesData(
+                                    data: _data.data,
+                                    shakeOffset: n,
+                                  );
+                                  _sync();
+                                }
+                              },
                             ),
-                            decoration: InputDecoration(
-                              labelText:
-                                  l10n?.bronzeModuleShakeOffsetLabel ??
-                                  'Shake offset',
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (v) {
-                              final n = double.tryParse(v);
-                              if (n != null) {
-                                _data = BronzePropertiesData(
-                                  data: _data.data,
-                                  shakeOffset: n,
-                                );
-                                _sync();
-                              }
-                            },
                           ),
                         ),
                       ],
@@ -308,19 +308,20 @@ ModuleAliasInputField(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                Text(
-                                  l10n?.selectedPosition ?? 'Selected position',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
+                                  Text(
+                                    l10n?.selectedPosition ??
+                                        'Selected position',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
+                                  Text(
+                                    'R${_selectedY + 1} : C${_selectedX + 1}',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
-                                ),
                                 ],
                               ),
                             ),
@@ -403,12 +404,10 @@ ModuleAliasInputField(
                                                     count > 0 &&
                                                         firstItem != null
                                                     ? LayoutBuilder(
-                                                        builder: (
-                                                          context,
-                                                          constraints,
-                                                        ) {
+                                                        builder: (context, constraints) {
                                                           return Stack(
-                                                            fit: StackFit.expand,
+                                                            fit:
+                                                                StackFit.expand,
                                                             children: [
                                                               Positioned.fill(
                                                                 child: Padding(
@@ -420,10 +419,9 @@ ModuleAliasInputField(
                                                                     fit: BoxFit
                                                                         .contain,
                                                                     child: _BronzeZombieIcon(
-                                                                      kind:
-                                                                          firstItem
-                                                                              .item
-                                                                              .kind,
+                                                                      kind: firstItem
+                                                                          .item
+                                                                          .kind,
                                                                       size: 38,
                                                                     ),
                                                                   ),
@@ -848,22 +846,25 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
                         ),
                       ),
                     const Spacer(),
-                    TextField(
-                      controller: _spawnCtrl,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.bronzeModuleSpawnTimeLabel ??
-                            'Revival time (s)',
-                        border: const OutlineInputBorder(),
+                    EditorResponsiveInputField(
+                      label:
+                          l10n?.bronzeModuleSpawnTimeLabel ??
+                          'Revival time (s)',
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
                         isDense: true,
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          widget.onSpawnTimeChanged(n);
-                        }
-                      },
+                      builder: (context, decoration) => TextField(
+                        controller: _spawnCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            widget.onSpawnTimeChanged(n);
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
