@@ -67,6 +67,7 @@ export 'pvz_models/LinkedTileData.dart';
 export 'pvz_models/LocationData.dart';
 export 'pvz_models/LunarMineVeinModulePropertiesData.dart';
 export 'pvz_models/LunarTerminalModulePropertiesData.dart';
+export 'pvz_models/LevelPowerupModulePropertiesData.dart';
 export 'pvz_models/MagicMirrorArrayData.dart';
 export 'pvz_models/MagicMirrorWaveActionData.dart';
 export 'pvz_models/ManholePipelineModuleData.dart';

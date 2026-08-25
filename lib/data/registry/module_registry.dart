@@ -246,6 +246,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_RiftThemeDemoModuleProperties;
       case 'moduleTitle_InitialGridItemGulliverTunnelProperties':
         return l10n.moduleTitle_InitialGridItemGulliverTunnelProperties;
+      case 'moduleTitle_LevelPowerupModuleProperties':
+        return l10n.moduleTitle_LevelPowerupModuleProperties;
       case 'moduleTitle_RocketZombieFlickModuleProperties':
         return l10n.moduleTitle_RocketZombieFlickModuleProperties;
       case 'moduleTitle_PVZ1PassageModuleProperties':
@@ -408,6 +410,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_RiftThemeDemoModuleProperties;
       case 'moduleDesc_InitialGridItemGulliverTunnelProperties':
         return l10n.moduleDesc_InitialGridItemGulliverTunnelProperties;
+      case 'moduleDesc_LevelPowerupModuleProperties':
+        return l10n.moduleDesc_LevelPowerupModuleProperties;
       case 'moduleDesc_RocketZombieFlickModuleProperties':
         return l10n.moduleDesc_RocketZombieFlickModuleProperties;
       case 'moduleDesc_PVZ1PassageModuleProperties':
@@ -1141,6 +1145,17 @@ class ModuleRegistry {
       defaultAlias: 'TunnelPlacement',
       initialDataFactory: () => InitialGridItemGulliverTunnelPropertiesData(),
       routeId: 'GulliverTunnelModule',
+    ),
+    'LevelPowerupModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LevelPowerupModuleProperties',
+      descriptionKey: 'moduleDesc_LevelPowerupModuleProperties',
+      icon: Icons.touch_app,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'LevelPowerups',
+      initialDataFactory: () => LevelPowerupModulePropertiesData(),
+      routeId: 'LevelPowerups',
     ),
     'RocketZombieFlickModuleProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_RocketZombieFlickModuleProperties',

@@ -11,6 +11,7 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
     String filePath, {
     double levelListScrollOffset = 0,
     bool levelListFavoritesView = false,
+    String levelListSearchQuery = '',
   }) {
     emit(
       state.copyWith(
@@ -20,6 +21,7 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
         lastOpenedLevelPath: filePath,
         levelListScrollOffset: levelListScrollOffset,
         levelListFavoritesView: levelListFavoritesView,
+        levelListSearchQuery: levelListSearchQuery,
         showUploadAfterLevelReturn: false,
       ),
     );

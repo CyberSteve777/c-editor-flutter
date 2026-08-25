@@ -16641,6 +16641,18 @@ abstract class AppLocalizations {
   /// **'Drops special Radioactive Meteorites on specified waves, as commonly seen in Moon BaseZ. Before a meteorite lands, a red-text warning appears in the level and a crosshair marks its expected landing tile. After the configured warning duration, the meteorite falls straight down, instantly destroying units on its landing tile, then slowly contaminates surrounding tiles clockwise.\nZombies on contaminated tiles gain increased movement speed and health regeneration, while Cosmic plants continuously take damage.'**
   String get radiationMeteorHelpOverview;
 
+  /// No description provided for @radiationMeteorHelpWaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave numbering'**
+  String get radiationMeteorHelpWaveTitle;
+
+  /// No description provided for @radiationMeteorHelpWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Radioactive Meteorite landing waves use a 0-based index: enter 0 for the first wave, 1 for the second wave, and so on. When a landing schedule group is added in the editor, Group 1 defaults to 0, Group 2 to 1, and so forth.'**
+  String get radiationMeteorHelpWave;
+
   /// No description provided for @radiationMeteorHelpMiningTitle.
   ///
   /// In en, this message translates to:
@@ -16692,7 +16704,7 @@ abstract class AppLocalizations {
   /// No description provided for @radiationMeteorWave.
   ///
   /// In en, this message translates to:
-  /// **'Wave (Wave, 1-based)'**
+  /// **'Wave (Wave, 0-based)'**
   String get radiationMeteorWave;
 
   /// No description provided for @rocketLandingHelpTitle.
@@ -16704,7 +16716,7 @@ abstract class AppLocalizations {
   /// No description provided for @rocketLandingHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid items, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.'**
+  /// **'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies.'**
   String get rocketLandingHelpOverview;
 
   /// No description provided for @rocketLandingHelpPlantsTitle.
@@ -16755,17 +16767,71 @@ abstract class AppLocalizations {
   /// **'Spawn interval (SpawnInterval, unit: seconds)'**
   String get rocketSpawnInterval;
 
-  /// No description provided for @rocketDisplacePlants.
+  /// No description provided for @moduleTitle_LevelPowerupModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Displace plants (DisplacePlants)'**
-  String get rocketDisplacePlants;
+  /// **'Power Ups'**
+  String get moduleTitle_LevelPowerupModuleProperties;
 
-  /// No description provided for @rocketDisplacePlantsSubtitle.
+  /// No description provided for @moduleDesc_LevelPowerupModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, the rocket moves plants on its landing tile to nearby empty tiles'**
-  String get rocketDisplacePlantsSubtitle;
+  /// **'Enables the wonderfully interesting gesture system'**
+  String get moduleDesc_LevelPowerupModuleProperties;
+
+  /// No description provided for @powerUpsHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Power Ups'**
+  String get powerUpsHelpTitle;
+
+  /// No description provided for @powerUpsHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'This wonderfully entertaining mechanic makes a major return in the 13th Anniversary Secret Realm, allowing you to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.'**
+  String get powerUpsHelpOverview;
+
+  /// No description provided for @powerUpsFreeUseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Free uses (FreeUseCount)'**
+  String get powerUpsFreeUseCount;
+
+  /// No description provided for @powerZap.
+  ///
+  /// In en, this message translates to:
+  /// **'Power Zap'**
+  String get powerZap;
+
+  /// No description provided for @powerZapInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap or drag across zombies to unleash a powerful electric shock that continuously damages every zombie it touches.'**
+  String get powerZapInfo;
+
+  /// No description provided for @powerToss.
+  ///
+  /// In en, this message translates to:
+  /// **'Power Toss'**
+  String get powerToss;
+
+  /// No description provided for @powerTossInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe quickly across a zombie to fling it into the air. Swipe again to throw it completely off the lawn.'**
+  String get powerTossInfo;
+
+  /// No description provided for @powerPinch.
+  ///
+  /// In en, this message translates to:
+  /// **'Power Pinch'**
+  String get powerPinch;
+
+  /// No description provided for @powerPinchInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinch a zombie with two fingers like a pair of scissors to snip off its head and quickly remove the threat.'**
+  String get powerPinchInfo;
 }
 
 class _AppLocalizationsDelegate

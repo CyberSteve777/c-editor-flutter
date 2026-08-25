@@ -9488,6 +9488,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Drops special Radioactive Meteorites on specified waves, as commonly seen in Moon BaseZ. Before a meteorite lands, a red-text warning appears in the level and a crosshair marks its expected landing tile. After the configured warning duration, the meteorite falls straight down, instantly destroying units on its landing tile, then slowly contaminates surrounding tiles clockwise.\nZombies on contaminated tiles gain increased movement speed and health regeneration, while Cosmic plants continuously take damage.';
 
   @override
+  String get radiationMeteorHelpWaveTitle => 'Wave numbering';
+
+  @override
+  String get radiationMeteorHelpWave =>
+      'Radioactive Meteorite landing waves use a 0-based index: enter 0 for the first wave, 1 for the second wave, and so on. When a landing schedule group is added in the editor, Group 1 defaults to 0, Group 2 to 1, and so forth.';
+
+  @override
   String get radiationMeteorHelpMiningTitle => 'Mining to destroy';
 
   @override
@@ -9517,14 +9524,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radiationMeteorSpawnSchedule => 'Landing schedule (SpawnSchedule)';
 
   @override
-  String get radiationMeteorWave => 'Wave (Wave, 1-based)';
+  String get radiationMeteorWave => 'Wave (Wave, 0-based)';
 
   @override
   String get rocketLandingHelpTitle => 'Rocket Landing';
 
   @override
   String get rocketLandingHelpOverview =>
-      'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies. By default, rockets ignore tombstones and other grid items, land directly, and destroy plants on their landing tiles. You can configure whether obstacles prevent rockets from spawning and whether plants on the landing tile are displaced.';
+      'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies.';
 
   @override
   String get rocketLandingHelpPlantsTitle => 'Plants take control';
@@ -9554,9 +9561,40 @@ class AppLocalizationsEn extends AppLocalizations {
       'Spawn interval (SpawnInterval, unit: seconds)';
 
   @override
-  String get rocketDisplacePlants => 'Displace plants (DisplacePlants)';
+  String get moduleTitle_LevelPowerupModuleProperties => 'Power Ups';
 
   @override
-  String get rocketDisplacePlantsSubtitle =>
-      'When enabled, the rocket moves plants on its landing tile to nearby empty tiles';
+  String get moduleDesc_LevelPowerupModuleProperties =>
+      'Enables the wonderfully interesting gesture system';
+
+  @override
+  String get powerUpsHelpTitle => 'Power Ups';
+
+  @override
+  String get powerUpsHelpOverview =>
+      'This wonderfully entertaining mechanic makes a major return in the 13th Anniversary Secret Realm, allowing you to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.';
+
+  @override
+  String get powerUpsFreeUseCount => 'Free uses (FreeUseCount)';
+
+  @override
+  String get powerZap => 'Power Zap';
+
+  @override
+  String get powerZapInfo =>
+      'Tap or drag across zombies to unleash a powerful electric shock that continuously damages every zombie it touches.';
+
+  @override
+  String get powerToss => 'Power Toss';
+
+  @override
+  String get powerTossInfo =>
+      'Swipe quickly across a zombie to fling it into the air. Swipe again to throw it completely off the lawn.';
+
+  @override
+  String get powerPinch => 'Power Pinch';
+
+  @override
+  String get powerPinchInfo =>
+      'Pinch a zombie with two fingers like a pair of scissors to snip off its head and quickly remove the threat.';
 }

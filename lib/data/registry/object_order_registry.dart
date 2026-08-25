@@ -36,6 +36,7 @@ class ObjectOrderRegistry {
     'MoonLifeSupportSystemProperties',
     'LunarTerminalModuleProperties',
     'RadiationMeteorModuleProperties',
+    'LevelPowerupModuleProperties',
     'WarMistProperties',
     'ZombieMoveFastModuleProperties',
     'ZombossFinalStageTimeLimitedChallengeProperties',

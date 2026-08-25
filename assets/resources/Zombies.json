@@ -133,6 +133,16 @@
     "icon": "zombie_tomb_raiser.webp"
   },
   {
+    "id": "camel_segment",
+    "name": "zombie_camel_segment",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_camel_onehump.webp"
+  },
+  {
     "id": "camel_onehump",
     "name": "zombie_camel_onehump",
     "tags": [
@@ -5329,6 +5339,16 @@
     "icon": "zombie_lny_flag.webp"
   },
   {
+    "id": "lny_camel_segment",
+    "name": "zombie_lny_camel_segment",
+    "tags": [
+      "Festival1",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_lny_camel_onehump.webp"
+  },
+  {
     "id": "lny_camel_onehump",
     "name": "zombie_lny_camel_onehump",
     "tags": [
@@ -6277,6 +6297,16 @@
       "International"
     ],
     "icon": "zombie_christmas_imp2.webp"
+  },
+  {
+    "id": "christmas_camel_segment",
+    "name": "zombie_christmas_camel_segment",
+    "tags": [
+      "Festival2",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_christmas_camel_onehump.webp"
   },
   {
     "id": "christmas_camel_onehump",
@@ -7418,6 +7448,16 @@
   {
     "id": "roman_shield_top",
     "name": "zombie_roman_shield_top",
+    "tags": [
+      "Roman",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_roman_shield_top.webp"
+  },
+  {
+    "id": "roman_segment",
+    "name": "zombie_roman_segment",
     "tags": [
       "Roman",
       "Basic",

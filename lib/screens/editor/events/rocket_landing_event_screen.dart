@@ -198,39 +198,6 @@ class _RocketLandingEventScreenState extends State<RocketLandingEventScreen> {
                         }
                       },
                     ),
-                    const SizedBox(height: 8),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        l10n?.rocketDisplacePlants ??
-                            'Displace plants (DisplacePlants)',
-                      ),
-                      subtitle: Text(
-                        l10n?.rocketDisplacePlantsSubtitle ??
-                            'When enabled, the rocket moves plants on its landing tile to nearby empty tiles',
-                      ),
-                      value: _data.displacePlants,
-                      onChanged: (value) {
-                        _data.displacePlants = value;
-                        _sync();
-                      },
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        l10n?.ignoreGravestone ??
-                            'Ignore tombstone (IgnoreGraveStone)',
-                      ),
-                      subtitle: Text(
-                        l10n?.ignoreGravestoneSubtitle ??
-                            'Enable to spawn regardless of grid items',
-                      ),
-                      value: _data.ignoreGraveStone,
-                      onChanged: (value) {
-                        _data.ignoreGraveStone = value;
-                        _sync();
-                      },
-                    ),
                   ],
                 ),
               ),

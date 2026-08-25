@@ -8991,6 +8991,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '在指定波次降下特殊的辐射陨石，常见于月球基地。陨石落下前，关卡中会显示红字警告，预计落点也会出现准星标记。预警持续指定时间后，陨石会垂直落下，直接消灭落点格上的单位，随后以顺时针方向缓慢侵蚀周围地块。\n污染地块上的僵尸会获得移速加成和生命值恢复效果，宇宙植物则会持续受到伤害。';
 
   @override
+  String get radiationMeteorHelpWaveTitle => '波次计数';
+
+  @override
+  String get radiationMeteorHelpWave =>
+      '辐射陨石的降落波次从0开始计数，如第1波降落填0，第2波降落填1。编辑器新增降落安排时，第1组默认为0，第2组默认为1，以此类推。';
+
+  @override
   String get radiationMeteorHelpMiningTitle => '挖矿销毁';
 
   @override
@@ -9018,14 +9025,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get radiationMeteorSpawnSchedule => '降落安排 (SpawnSchedule)';
 
   @override
-  String get radiationMeteorWave => '波次 (Wave，从1开始计数)';
+  String get radiationMeteorWave => '波次 (Wave，从0开始计数)';
 
   @override
   String get rocketLandingHelpTitle => '火箭降落';
 
   @override
   String get rocketLandingHelpOverview =>
-      '常见于月球基地的事件，在指定位置生成火箭，作为植物和僵尸双方争夺的目标。默认情况下，火箭会无视墓碑等障碍物直接降落，并消灭落点处的植物。可设置火箭是否会因障碍物阻挡而无法生成，以及是否将落点格上的植物弹开。';
+      '常见于月球基地的事件，在指定位置生成火箭，作为植物和僵尸双方争夺的目标。';
 
   @override
   String get rocketLandingHelpPlantsTitle => '植物占领';
@@ -9054,8 +9061,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rocketSpawnInterval => '生成间隔 (SpawnInterval，单位：秒)';
 
   @override
-  String get rocketDisplacePlants => '弹开植物 (DisplacePlants)';
+  String get moduleTitle_LevelPowerupModuleProperties => '金手指';
 
   @override
-  String get rocketDisplacePlantsSubtitle => '开启后，火箭会将落点格上的植物弹至周围空地';
+  String get moduleDesc_LevelPowerupModuleProperties => '使用妙趣横生的手势系统';
+
+  @override
+  String get powerUpsHelpTitle => '金手指';
+
+  @override
+  String get powerUpsHelpOverview =>
+      '于十三周年秘境中重磅回归的妙趣横生玩法，允许你在道具持续时间内使用特定手势操作击杀僵尸。开启本模块后可设置各个金手指在关卡中免费使用的具体次数。注意国际版中的冰雹指 (Power Snow) 和火焰指 (Power Flame) 在中文版并不存在。';
+
+  @override
+  String get powerUpsFreeUseCount => '免费使用次数 (FreeUseCount)';
+
+  @override
+  String get powerZap => '闪电指';
+
+  @override
+  String get powerZapInfo => '点击或拖动对僵尸释放强力电击，对触碰到的僵尸持续造成伤害。';
+
+  @override
+  String get powerToss => '浮空指';
+
+  @override
+  String get powerTossInfo => '在僵尸身上快速划动，将其弹向空中；再次划动，还能把僵尸直接甩出战场。';
+
+  @override
+  String get powerPinch => '剪刀指';
+
+  @override
+  String get powerPinchInfo => '用双指对准僵尸做捏合手势，像使用剪刀一样剪掉僵尸的脑袋，快速解除威胁。';
 }

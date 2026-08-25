@@ -18,11 +18,13 @@ class ZombossBattleTab extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     this.moduleRtid,
+    this.onAutoModulesEnsured,
   });
 
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final String? moduleRtid;
+  final VoidCallback? onAutoModulesEnsured;
 
   @override
   State<ZombossBattleTab> createState() => _ZombossBattleTabState();
@@ -115,7 +117,7 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
       );
       if (autoModulesAdded) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) widget.onChanged();
+          if (mounted) widget.onAutoModulesEnsured?.call();
         });
       }
     }
@@ -190,18 +192,14 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
     );
   }
 
-  Future<bool?> _confirmLeavingUndergroundPalace(
-    String previousBaseId,
-  ) {
+  Future<bool?> _confirmLeavingUndergroundPalace(String previousBaseId) {
     final l10n = AppLocalizations.of(context)!;
     final previousName = _displayName(context, previousBaseId);
     return showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.zombossBattleLeaveUndergroundTitle),
-        content: Text(
-          l10n.zombossBattleLeaveUndergroundBody(previousName),
-        ),
+        content: Text(l10n.zombossBattleLeaveUndergroundBody(previousName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),

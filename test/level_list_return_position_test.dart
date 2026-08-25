@@ -14,6 +14,7 @@ void main() {
       r'C:\levels\world\level.json',
       levelListScrollOffset: 347.5,
       levelListFavoritesView: true,
+      levelListSearchQuery: 'moon boss',
     );
     navigation.backToLevelList();
 
@@ -21,6 +22,7 @@ void main() {
     expect(navigation.state.screen, AppScreen.levelList);
     expect(navigation.state.levelListScrollOffset, 347.5);
     expect(navigation.state.levelListFavoritesView, isTrue);
+    expect(navigation.state.levelListSearchQuery, 'moon boss');
     expect(navigation.state.showUploadAfterLevelReturn, isTrue);
 
     navigation.openAbout();
@@ -32,6 +34,7 @@ void main() {
     expect(restartedNavigation.state.lastOpenedLevelPath, isEmpty);
     expect(restartedNavigation.state.levelListScrollOffset, 0);
     expect(restartedNavigation.state.levelListFavoritesView, isFalse);
+    expect(restartedNavigation.state.levelListSearchQuery, isEmpty);
     expect(restartedNavigation.state.showUploadAfterLevelReturn, isFalse);
   });
 

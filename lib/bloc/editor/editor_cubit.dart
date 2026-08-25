@@ -157,6 +157,12 @@ class EditorCubit extends Cubit<EditorState> {
     emit(state.copyWith(hasChanges: true, parsedData: parsed));
   }
 
+  /// Rebuilds parsed indexes after derived editor data is synchronized without
+  /// turning that synchronization into a user-visible unsaved change.
+  void refreshParsedData() {
+    _refreshLevelState(hasChanges: state.hasChanges);
+  }
+
   Future<void> save() async {
     final lf = state.levelFile;
     if (lf == null) return;

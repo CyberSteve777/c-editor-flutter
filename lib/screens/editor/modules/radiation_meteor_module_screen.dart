@@ -79,7 +79,7 @@ class _RadiationMeteorModuleScreenState
     }
     _waveGroups =
         _data.spawnSchedule.map((entry) => entry.wave).toSet().toList()..sort();
-    if (_waveGroups.isEmpty) _waveGroups.add(1);
+    if (_waveGroups.isEmpty) _waveGroups.add(0);
     if (_data.spawnSchedule.isNotEmpty) {
       _selectedX = _data.spawnSchedule.first.gridX;
       _selectedY = _data.spawnSchedule.first.gridY;
@@ -142,7 +142,7 @@ class _RadiationMeteorModuleScreenState
   }
 
   void _addWaveGroup() {
-    final nextWave = _waveGroups.isEmpty ? 1 : _waveGroups.last + 1;
+    final nextWave = _waveGroups.isEmpty ? 0 : _waveGroups.last + 1;
     setState(() {
       _waveGroups.add(nextWave);
       _selectedGroupIndex = _waveGroups.length - 1;
@@ -151,7 +151,7 @@ class _RadiationMeteorModuleScreenState
 
   void _updateSelectedWave(int wave) {
     final oldWave = _selectedWave;
-    if (oldWave == null || wave < 1 || wave == oldWave) return;
+    if (oldWave == null || wave < 0 || wave == oldWave) return;
     if (_waveGroups.contains(wave)) return;
     for (final entry in _data.spawnSchedule) {
       if (entry.wave == oldWave) entry.wave = wave;
@@ -231,6 +231,10 @@ class _RadiationMeteorModuleScreenState
                 HelpSectionData(
                   title: l10n?.overview ?? 'Overview',
                   body: l10n?.radiationMeteorHelpOverview ?? '',
+                ),
+                HelpSectionData(
+                  title: l10n?.radiationMeteorHelpWaveTitle ?? 'Wave numbering',
+                  body: l10n?.radiationMeteorHelpWave ?? '',
                 ),
                 HelpSectionData(
                   title:
@@ -371,7 +375,7 @@ class _RadiationMeteorModuleScreenState
                         decoration: InputDecoration(
                           labelText:
                               l10n?.radiationMeteorWave ??
-                              'Wave (Wave, starts at 1)',
+                              'Wave (Wave, starts at 0)',
                           border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,

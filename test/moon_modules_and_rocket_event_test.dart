@@ -106,6 +106,12 @@ void main() {
   });
 
   group('Rocket landing event', () {
+    test('new events keep the fixed non-editable landing flags', () {
+      final json = SpawnRocketLandingWaveActionPropsData().toJson();
+      expect(json['DisplacePlants'], isFalse);
+      expect(json['IgnoreGraveStone'], isTrue);
+    });
+
     test('round-trips the sample Wave 5 event', () {
       final data = SpawnRocketLandingWaveActionPropsData.fromJson({
         'RocketPool': [
@@ -267,32 +273,23 @@ void main() {
       },
     );
 
-    test('keeps the requested CollectorCooldown Chinese label', () {
+    test('keeps the requested CollectorCooldown and position labels', () {
       expect(
         AppLocalizationsZh().lunarTerminalCollectorCooldown,
         '机器人部署冷却 (CollectorCooldown，单位：秒)',
       );
       expect(
-        AppLocalizationsZh().rocketDisplacePlantsSubtitle,
-        '开启后，火箭会将落点格上的植物弹至周围空地',
-      );
-      expect(
         AppLocalizationsZh().positionPoolSpawnPositions,
         '候选位置池 (SpawnPositionsPool)',
       );
+      expect(AppLocalizationsZh().radiationMeteorWave, '波次 (Wave，从0开始计数)');
+      expect(
+        AppLocalizationsZh().radiationMeteorHelpWave,
+        contains('第1波降落填0，第2波降落填1'),
+      );
     });
 
-    test('keeps English and Russian rocket switch subtitles localized', () {
-      expect(
-        AppLocalizationsEn().rocketDisplacePlantsSubtitle,
-        'When enabled, the rocket moves plants on its landing tile to nearby '
-        'empty tiles',
-      );
-      expect(
-        AppLocalizationsRu().rocketDisplacePlantsSubtitle,
-        'Если включено, ракета перемещает растения из клетки падения на '
-        'соседние свободные клетки',
-      );
+    test('keeps English and Russian rocket position labels localized', () {
       expect(
         AppLocalizationsEn().positionPoolSpawnPositions,
         'Position pool (SpawnPositionsPool)',
@@ -403,6 +400,7 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(find.byType(SwitchListTile), findsNothing);
     final countField = find.byWidgetPredicate(
       (widget) =>
           widget is TextField && widget.decoration?.labelText == 'Count',
@@ -540,7 +538,7 @@ void main() {
     expect(tester.widget<EditableText>(editable).controller.text, '2');
   });
 
-  testWidgets('meteor wave groups allow the same tile in different waves', (
+  testWidgets('new meteor groups map Group 1 and Group 2 to waves 0 and 1', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -551,12 +549,7 @@ void main() {
     final module = PvzObject(
       aliases: const ['RadiationMeteorModule'],
       objClass: 'RadiationMeteorModuleProperties',
-      objData: const <String, dynamic>{
-        'SpawnSchedule': [
-          {'Wave': 1, 'GridX': 0, 'GridY': 0},
-          {'Wave': 2, 'GridX': 1, 'GridY': 0},
-        ],
-      },
+      objData: const <String, dynamic>{'SpawnSchedule': []},
     );
 
     await tester.pumpWidget(
@@ -574,11 +567,24 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Group 2'));
-    await tester.pumpAndSettle();
     final gridFinder = find.byType(GridOverridePlacementGrid);
-    final grid = tester.widget<GridOverridePlacementGrid>(gridFinder);
-    final rect = tester.getRect(gridFinder);
+    expect(find.byKey(const ValueKey('meteor-wave-0')), findsOneWidget);
+    var grid = tester.widget<GridOverridePlacementGrid>(gridFinder);
+    var rect = tester.getRect(gridFinder);
+    await tester.tapAt(
+      Offset(
+        rect.left + rect.width / grid.gridCols / 2,
+        rect.top + rect.height / grid.gridRows / 2,
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byKey(const ValueKey('addGridOverrideWaveGroup')));
+    await tester.pumpAndSettle();
+    expect(find.text('Group 2'), findsNWidgets(2));
+    expect(find.byKey(const ValueKey('meteor-wave-1')), findsOneWidget);
+    grid = tester.widget<GridOverridePlacementGrid>(gridFinder);
+    rect = tester.getRect(gridFinder);
     await tester.tapAt(
       Offset(
         rect.left + rect.width / grid.gridCols / 2,
@@ -591,6 +597,6 @@ void main() {
         .where((entry) => entry['GridX'] == 0 && entry['GridY'] == 0)
         .map((entry) => entry['Wave'])
         .toList();
-    expect(schedule, [1, 2]);
+    expect(schedule, [0, 1]);
   });
 }

@@ -198,7 +198,7 @@ class _StageResourceGroupImportScreenState
         return matchesSelectionSearch(_searchQuery, [
           group,
           key,
-          ResourceNames.lookup(context, key),
+          ResourceNames.lookupOrFallback(context, key, group),
         ]);
       }).toList();
     }
@@ -233,9 +233,10 @@ class _StageResourceGroupImportScreenState
     return items;
   }
 
-  String _groupLabel(String group) => ResourceNames.lookup(
+  String _groupLabel(String group) => ResourceNames.lookupOrFallback(
     context,
     StageCatalogRepository.resourceGroupKey(group),
+    group,
   );
 
   String _typeLabel(String type, AppLocalizations? l10n) {

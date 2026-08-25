@@ -34,6 +34,17 @@ class ResourceNames {
     return map[key] ?? key;
   }
 
+  /// Looks up [key], but never exposes the internal localization key when the
+  /// resource has not been added to the localization catalog yet.
+  static String lookupOrFallback(
+    BuildContext context,
+    String key,
+    String fallback,
+  ) {
+    final localized = lookup(context, key);
+    return localized == key || localized.isEmpty ? fallback : localized;
+  }
+
   static String lookupWithLocale(String localeCode, String key) {
     final map = _cache[localeCode] ?? _cache['en'] ?? {};
     return map[key] ?? key;

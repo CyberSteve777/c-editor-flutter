@@ -145,6 +145,7 @@ class LevelListScreen extends StatefulWidget {
     this.returnToLevelPath = '',
     this.returnToScrollOffset = 0,
     this.returnToViewMode = LevelViewMode.all,
+    this.returnToSearchQuery = '',
     this.showUploadAfterLevelReturn = false,
     required this.onLevelClick,
     required this.onAboutClick,
@@ -159,12 +160,14 @@ class LevelListScreen extends StatefulWidget {
   final String returnToLevelPath;
   final double returnToScrollOffset;
   final LevelViewMode returnToViewMode;
+  final String returnToSearchQuery;
   final bool showUploadAfterLevelReturn;
   final void Function(
     String fileName,
     String filePath,
     double scrollOffset,
     LevelViewMode viewMode,
+    String searchQuery,
   )
   onLevelClick;
   final VoidCallback onAboutClick;
@@ -176,7 +179,7 @@ class LevelListScreen extends StatefulWidget {
 }
 
 class _LevelListScreenState extends State<LevelListScreen> {
-  final TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController;
   String _searchQuery = '';
   List<FileItem> _fileItems = [];
   bool _isLoading = true;
@@ -276,6 +279,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
   void initState() {
     super.initState();
     _viewMode = widget.returnToViewMode;
+    _searchQuery = widget.returnToSearchQuery;
+    _searchController = TextEditingController(text: _searchQuery);
     final returnPath = widget.returnToLevelPath.trim();
     final returnOffset = returnPath.isEmpty
         ? 0.0
@@ -1956,6 +1961,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                           convertedPath,
                                                           returnScrollOffset,
                                                           _viewMode,
+                                                          _searchQuery,
                                                         );
                                                       });
                                                 }
@@ -1976,6 +1982,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                           item.path,
                                                           returnScrollOffset,
                                                           _viewMode,
+                                                          _searchQuery,
                                                         );
                                                       });
                                                 }

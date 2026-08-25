@@ -9415,6 +9415,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'На заданных волнах обрушивает особые радиоактивные метеориты, часто встречающиеся на Лунной базе. Перед падением метеорита в уровне появляется красное предупреждение, а предполагаемая клетка падения отмечается прицелом. По окончании заданного времени предупреждения метеорит падает вертикально, мгновенно уничтожает всех в клетке приземления, а затем медленно заражает соседние клетки по часовой стрелке.\nЗомби на заражённых клетках получают прибавку к скорости передвижения и восстановлению здоровья, а космические растения непрерывно получают урон.';
 
   @override
+  String get radiationMeteorHelpWaveTitle => 'Нумерация волн';
+
+  @override
+  String get radiationMeteorHelpWave =>
+      'Волны падения радиоактивных метеоритов нумеруются с 0: для первой волны укажите 0, для второй — 1 и так далее. При добавлении групп в редакторе группа 1 по умолчанию получает значение 0, группа 2 — 1 и так далее.';
+
+  @override
   String get radiationMeteorHelpMiningTitle => 'Уничтожение добычей';
 
   @override
@@ -9444,14 +9451,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get radiationMeteorSpawnSchedule => 'Порядок падения (SpawnSchedule)';
 
   @override
-  String get radiationMeteorWave => 'Волна (Wave, нумерация с 1)';
+  String get radiationMeteorWave => 'Волна (Wave, нумерация с 0)';
 
   @override
   String get rocketLandingHelpTitle => 'Посадка ракеты';
 
   @override
   String get rocketLandingHelpOverview =>
-      'Событие, часто используемое на Лунной базе. Оно создаёт ракеты в заданных позициях как цели, за которые борются растения и зомби. По умолчанию ракеты игнорируют надгробия и другие препятствия на клетках, приземляются напрямую и уничтожают растения в клетках падения. Можно настроить, будут ли препятствия мешать появлению ракет и будут ли растения из клеток падения отброшены.';
+      'Событие, часто используемое на Лунной базе. Оно создаёт ракеты в заданных позициях как цели, за которые борются растения и зомби.';
 
   @override
   String get rocketLandingHelpPlantsTitle => 'Захват растениями';
@@ -9482,9 +9489,40 @@ class AppLocalizationsRu extends AppLocalizations {
       'Интервал появления (SpawnInterval, секунды)';
 
   @override
-  String get rocketDisplacePlants => 'Отбрасывать растения (DisplacePlants)';
+  String get moduleTitle_LevelPowerupModuleProperties => 'Усилители';
 
   @override
-  String get rocketDisplacePlantsSubtitle =>
-      'Если включено, ракета перемещает растения из клетки падения на соседние свободные клетки';
+  String get moduleDesc_LevelPowerupModuleProperties =>
+      'Включает увлекательную систему жестов';
+
+  @override
+  String get powerUpsHelpTitle => 'Усилители';
+
+  @override
+  String get powerUpsHelpOverview =>
+      'Эта увлекательная механика триумфально вернулась в Тайном мире 13-й годовщины и позволяет уничтожать зомби особыми жестами, пока действует усилитель. После включения модуля можно задать точное число бесплатных применений каждого усилителя на уровне. Обратите внимание: Power Snow и Power Flame из международной версии отсутствуют в китайской версии.';
+
+  @override
+  String get powerUpsFreeUseCount => 'Бесплатные применения (FreeUseCount)';
+
+  @override
+  String get powerZap => 'Электроразряд';
+
+  @override
+  String get powerZapInfo =>
+      'Нажмите на зомби или проведите по ним, чтобы выпустить мощный электрический разряд, непрерывно наносящий урон всем задетым зомби.';
+
+  @override
+  String get powerToss => 'Подброс';
+
+  @override
+  String get powerTossInfo =>
+      'Быстро проведите по зомби, чтобы подбросить его в воздух. Повторный взмах полностью выбросит его с поля.';
+
+  @override
+  String get powerPinch => 'Щипок';
+
+  @override
+  String get powerPinchInfo =>
+      'Сведите два пальца на зомби, словно ножницы, чтобы отрезать ему голову и быстро устранить угрозу.';
 }

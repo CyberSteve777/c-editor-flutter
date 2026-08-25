@@ -46,6 +46,7 @@ import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart
 import 'package:c_editor/screens/editor/modules/sun_dropper_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/moon_life_support_system_screen.dart';
 import 'package:c_editor/screens/editor/modules/lunar_terminal_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/level_powerup_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/lunar_mine_vein_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/radiation_meteor_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/witch_module_properties_screen.dart';
@@ -3459,6 +3460,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'LevelPowerupModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LevelPowerupModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'LunarMineVeinModuleProperties') {
       Navigator.push(
         context,
@@ -4091,6 +4107,8 @@ class _EditorScreenState extends State<EditorScreen> {
                                             key: ValueKey(entry.moduleRtid),
                                             levelFile: _ec.state.levelFile!,
                                             onChanged: _markDirty,
+                                            onAutoModulesEnsured:
+                                                _ec.refreshParsedData,
                                             moduleRtid: entry.moduleRtid,
                                           );
                                       }
