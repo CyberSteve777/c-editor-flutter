@@ -42,15 +42,16 @@ enum _PlantBlockedReason {
 }
 
 class _PlantSelectionViewState {
-  _PlantSelectionViewState({
-    required this.category,
-    required this.tag,
-    this.scrollOffset = 0,
-  });
+  _PlantSelectionViewState({required this.category, required this.tag})
+    : searchQuery = '',
+      scrollOffset = 0,
+      tagScrollOffset = 0;
 
   PlantCategory category;
   PlantTag tag;
+  String searchQuery;
   double scrollOffset;
+  double tagScrollOffset;
 }
 
 final Map<String, _PlantSelectionViewState> _plantSelectionViewStates = {};
@@ -123,14 +124,13 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     return 'global';
   }
 
-  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
     final rememberedState = _plantSelectionViewStates[_viewStateKey];
     _selectedCategory = rememberedState?.category ?? PlantCategory.quality;
     _selectedTag = rememberedState?.tag ?? PlantTag.all;
+    _searchQuery = rememberedState?.searchQuery ?? '';
     _normalizeSelectedTag();
     _scrollController = ScrollController(
       initialScrollOffset: rememberedState?.scrollOffset ?? 0,
@@ -178,7 +178,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
       _selectedTag = tags.isNotEmpty ? tags.first : PlantTag.all;
     });
     _resetRememberedScrollOffset();
-    _rememberViewState(scrollOffset: 0);
+    _rememberViewState(scrollOffset: 0, tagScrollOffset: 0);
   }
 
   void _setTag(PlantTag tag) {
@@ -191,7 +191,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   void _setSearchQuery(String query) {
     if (_searchQuery == query) return;
     setState(() => _searchQuery = query);
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _resetRememberedScrollOffset();
   }
 
   void _normalizeSelectedTag() {
@@ -205,7 +205,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     }
   }
 
-  void _rememberViewState({double? scrollOffset}) {
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
     final state = _plantSelectionViewStates.putIfAbsent(
       _viewStateKey,
       () => _PlantSelectionViewState(
@@ -215,11 +215,19 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     );
     state.category = _selectedCategory;
     state.tag = _selectedTag;
+    state.searchQuery = _searchQuery;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) {
+      state.tagScrollOffset = tagScrollOffset;
+    }
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    if (!_scrollController.hasClients) return;
     _rememberViewState(scrollOffset: _scrollController.offset);
   }
 
@@ -388,16 +396,22 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
 
   Future<void> _showComingSoonPlantBlockedDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
+    final isMoonTag = _selectedTag == PlantTag.worldMoon;
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
-          l10n?.comingSoonPlantBlockedTitle ?? 'A Message from Space',
+          isMoonTag
+              ? (l10n?.stayTunedMoonPlantBlockedTitle ?? 'A Message from Space')
+              : (l10n?.comingSoonPlantBlockedTitle ?? 'To Be Continued'),
         ),
         content: Text(
-          l10n?.comingSoonPlantBlockedMessage ??
-              'The brand-new world, Moon Base, is coming in the '
-                  'not-too-distant future. Stay tuned!',
+          isMoonTag
+              ? (l10n?.stayTunedMoonPlantBlockedMessage ??
+                    'Moon BaseZ Part 2 is coming soon. Keep a lookout!')
+              : (l10n?.comingSoonPlantBlockedMessage ??
+                    'The plants are still growing strong. Stay tuned for '
+                        'future updates!'),
         ),
         actions: [
           TextButton(
@@ -494,6 +508,13 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
       }
       setState(() {});
     }
+  }
+
+  void _deselectPlant(String plantId) {
+    setState(() {
+      _selectedIds.remove(plantId);
+      _selectedIdsWithDuplicates.removeWhere((id) => id == plantId);
+    });
   }
 
   bool _isMagicHatPlant(PlantInfo plant) =>
@@ -658,6 +679,11 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                       if (_selectedCategory != PlantCategory.collection)
                         AccentBarFilterTabRow(
                           key: ValueKey('${_selectedCategory.name}_tags'),
+                          initialScrollOffset:
+                              _plantSelectionViewStates[_viewStateKey]
+                                  ?.tagScrollOffset ??
+                              0,
+                          onScrollOffsetChanged: _rememberTagScrollOffset,
                           selectedIndex: safeTagIndex,
                           onSelected: (index) => _setTag(visibleTags[index]),
                           tabs: visibleTags.map((tag) {
@@ -747,6 +773,9 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                         isFavorite: isFavorite,
                         isEnabled: isEnabled,
                         onTap: () => _onPlantTap(context, plant, blockedReason),
+                        onSelectedIconTap: widget.isMultiSelect && isSelected
+                            ? () => _deselectPlant(plant.id)
+                            : null,
                         onSecondaryTap: isHat
                             ? () => _openMagicHatPreview(context, plant.id)
                             : null,
@@ -770,6 +799,7 @@ class _PlantGridItem extends StatelessWidget {
     required this.isFavorite,
     required this.isEnabled,
     required this.onTap,
+    this.onSelectedIconTap,
     this.onSecondaryTap,
     required this.onLongPress,
   });
@@ -779,6 +809,7 @@ class _PlantGridItem extends StatelessWidget {
   final bool isFavorite;
   final bool isEnabled;
   final VoidCallback onTap;
+  final VoidCallback? onSelectedIconTap;
   final VoidCallback? onSecondaryTap;
   final VoidCallback onLongPress;
 
@@ -812,32 +843,37 @@ class _PlantGridItem extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  ClipOval(
-                    child: SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: hasIcon
-                          ? AssetImageWidget(
-                              assetPath: iconPath,
-                              altCandidates: imageAltCandidates(iconPath),
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                              cacheWidth: 88,
-                              cacheHeight: 88,
-                              errorWidget: Image.asset(
+                  GestureDetector(
+                    key: ValueKey('plantSelectionIcon-${plant.id}'),
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onSelectedIconTap,
+                    child: ClipOval(
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: hasIcon
+                            ? AssetImageWidget(
+                                assetPath: iconPath,
+                                altCandidates: imageAltCandidates(iconPath),
+                                width: 44,
+                                height: 44,
+                                fit: BoxFit.cover,
+                                cacheWidth: 88,
+                                cacheHeight: 88,
+                                errorWidget: Image.asset(
+                                  _kUnknownIconPath,
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.asset(
                                 _kUnknownIconPath,
                                 width: 44,
                                 height: 44,
                                 fit: BoxFit.cover,
                               ),
-                            )
-                          : Image.asset(
-                              _kUnknownIconPath,
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                            ),
+                      ),
                     ),
                   ),
                   if (isFavorite)

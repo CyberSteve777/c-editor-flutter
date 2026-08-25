@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -21,6 +22,25 @@ export 'package:c_editor/theme/app_theme.dart'
         warningBarLight,
         editorWarningBannerBackground,
         editorWarningBannerForeground;
+
+/// Accepts only positive whole numbers while still allowing the field to be
+/// cleared temporarily during editing.
+class PositiveIntegerInputFormatter extends TextInputFormatter {
+  const PositiveIntegerInputFormatter();
+
+  static final RegExp _positiveInteger = RegExp(r'^[1-9][0-9]*$');
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty || _positiveInteger.hasMatch(newValue.text)) {
+      return newValue;
+    }
+    return oldValue;
+  }
+}
 
 /// Yellow warning card used across editor screens (Settings, modules, events).
 class EditorWarningBanner extends StatelessWidget {
@@ -115,10 +135,7 @@ String localizedPropertyLabel(
   String localizedName,
   String codeName,
 ) {
-  final languageCode = Localizations.localeOf(context).languageCode;
-  return languageCode == 'zh'
-      ? '$localizedName（$codeName）'
-      : '$localizedName ($codeName)';
+  return '$localizedName ($codeName)';
 }
 
 /// Shared editor UI components. Ported from Z-Editor-master EditorComponents.kt
@@ -196,6 +213,8 @@ class PvzAddButton extends StatelessWidget {
 
 /// Layout metrics for editor item cards and placement grids on narrow screens.
 abstract final class EditorItemCardLayout {
+  static const double gridItemCardHeight = 148;
+
   static bool compact(BuildContext context) =>
       MediaQuery.sizeOf(context).width < 400;
 
@@ -208,11 +227,54 @@ abstract final class EditorItemCardLayout {
   static double gridPreviewMaxWidth(BuildContext context) =>
       compact(context) ? 360 : 480;
 
+  /// Matches the wider lawn editors used by Tunnel Defend and Expedition
+  /// Tiles while still filling the available width on narrow screens.
+  static const double placementGridMaxWidth = 560;
+
   /// Scales +N count badges from rendered lawn cell width (cells are square).
   static double gridCellBadgeScaleForCell(double cellWidth) {
     if (cellWidth <= 0 || !cellWidth.isFinite) return 1.0;
     const referenceCell = 52.0;
     return (cellWidth / referenceCell).clamp(0.4, 1.0);
+  }
+}
+
+/// A placement-grid card that lets the lawn use the card's full width on
+/// narrow screens. The heading keeps the usual inset so only the grid grows.
+class EditorPlacementGridCard extends StatelessWidget {
+  const EditorPlacementGridCard({
+    super.key,
+    required this.header,
+    required this.grid,
+  });
+
+  final Widget header;
+  final Widget grid;
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = EditorItemCardLayout.compact(context);
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          compact ? 0 : 16,
+          16,
+          compact ? 0 : 16,
+          16,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: compact ? 16 : 0),
+              child: header,
+            ),
+            const SizedBox(height: 16),
+            grid,
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -374,7 +436,7 @@ class EditorResponsiveInputField extends StatelessWidget {
               label,
               style:
                   externalLabelStyle ??
-                  theme.textTheme.bodyMedium?.copyWith(
+                  theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
             ),
@@ -684,6 +746,139 @@ abstract class AccentBarTabBarStyle {
   }
 }
 
+/// Horizontally scrollable tag/filter row with an overflow affordance.
+///
+/// On narrow layouts the scrollbar thumb remains visible whenever the tags do
+/// not fit, so touch users can discover the remaining options. The caller's
+/// bottom padding is used as the scrollbar lane, keeping the thumb clear of
+/// chip contents.
+class HorizontalTagScroller extends StatefulWidget {
+  const HorizontalTagScroller({
+    super.key,
+    required this.children,
+    this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    this.onAccentBar = false,
+    this.narrowWidth = 720,
+    this.initialScrollOffset = 0,
+    this.onScrollOffsetChanged,
+  });
+
+  final List<Widget> children;
+  final EdgeInsetsGeometry padding;
+  final bool onAccentBar;
+  final double narrowWidth;
+  final double initialScrollOffset;
+  final ValueChanged<double>? onScrollOffsetChanged;
+
+  @override
+  State<HorizontalTagScroller> createState() => _HorizontalTagScrollerState();
+}
+
+class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
+  late final ScrollController _scrollController;
+  bool _hasOverflow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController(
+      initialScrollOffset: widget.initialScrollOffset,
+    )..addListener(_notifyScrollOffsetChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant HorizontalTagScroller oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _scheduleOverflowCheck();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_notifyScrollOffsetChanged);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _notifyScrollOffsetChanged() {
+    if (_scrollController.hasClients) {
+      widget.onScrollOffsetChanged?.call(_scrollController.offset);
+    }
+  }
+
+  void _scheduleOverflowCheck() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final hasOverflow =
+          _scrollController.position.maxScrollExtent >
+          _scrollController.position.minScrollExtent;
+      if (hasOverflow != _hasOverflow) {
+        setState(() => _hasOverflow = hasOverflow);
+      }
+    });
+  }
+
+  void _onPointerScroll(PointerScrollEvent event) {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    final delta = event.scrollDelta.dx != 0
+        ? event.scrollDelta.dx
+        : event.scrollDelta.dy;
+    final target = (_scrollController.offset + delta).clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    if (target != _scrollController.offset) {
+      _scrollController.jumpTo(target);
+    }
+  }
+
+  ScrollbarThemeData _scrollbarTheme(BuildContext context) {
+    final color = widget.onAccentBar
+        ? Colors.white.withValues(alpha: 0.78)
+        : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7);
+    return ScrollbarThemeData(
+      thumbColor: WidgetStateProperty.all(color),
+      trackColor: WidgetStateProperty.all(Colors.transparent),
+      trackBorderColor: WidgetStateProperty.all(Colors.transparent),
+      thickness: WidgetStateProperty.all(4),
+      radius: const Radius.circular(4),
+      crossAxisMargin: 2,
+      mainAxisMargin: 8,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _scheduleOverflowCheck();
+    final keepThumbVisible =
+        _hasOverflow && MediaQuery.sizeOf(context).width < widget.narrowWidth;
+
+    return ScrollbarTheme(
+      data: _scrollbarTheme(context),
+      child: Scrollbar(
+        key: const ValueKey('horizontalTagScrollerScrollbar'),
+        controller: _scrollController,
+        thumbVisibility: keepThumbVisible,
+        interactive: true,
+        scrollbarOrientation: ScrollbarOrientation.bottom,
+        child: Listener(
+          onPointerSignal: (event) {
+            if (event is PointerScrollEvent) _onPointerScroll(event);
+          },
+          child: ScrollableWithMouseDrag(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              padding: widget.padding,
+              child: Row(children: widget.children),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Scrollable filter tab row for saturated accent headers.
 /// Matches accent [TabBar] underline selection. On desktop, shows a horizontal
 /// scrollbar below. Vertical wheel / trackpad scroll moves the row horizontally.
@@ -695,6 +890,8 @@ class AccentBarFilterTabRow extends StatefulWidget {
     required this.onSelected,
     this.height = 46,
     this.scrollbarSlotHeight = 16,
+    this.initialScrollOffset = 0,
+    this.onScrollOffsetChanged,
   });
 
   final List<Widget> tabs;
@@ -702,26 +899,39 @@ class AccentBarFilterTabRow extends StatefulWidget {
   final ValueChanged<int> onSelected;
   final double height;
   final double scrollbarSlotHeight;
+  final double initialScrollOffset;
+  final ValueChanged<double>? onScrollOffsetChanged;
 
   @override
   State<AccentBarFilterTabRow> createState() => _AccentBarFilterTabRowState();
 }
 
 class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
-  static const double _scrollbarUnderlineGap = 6;
+  // The scrollbar is 6 px high. Four additional pixels keep it visually
+  // separate from the selected tab's 3 px underline.
+  static const double _scrollbarUnderlineGap = 10;
 
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _scrollController = ScrollController(
+      initialScrollOffset: widget.initialScrollOffset,
+    )..addListener(_notifyScrollOffsetChanged);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_notifyScrollOffsetChanged);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _notifyScrollOffsetChanged() {
+    if (_scrollController.hasClients) {
+      widget.onScrollOffsetChanged?.call(_scrollController.offset);
+    }
   }
 
   void _onPointerScroll(PointerScrollEvent event) {
@@ -780,6 +990,9 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
                     ),
                   ),
                   Container(
+                    key: selected
+                        ? const ValueKey('accentBarFilterSelectedIndicator')
+                        : null,
                     height: 3,
                     color: selected ? tabColors.indicator : Colors.transparent,
                   ),
@@ -868,6 +1081,7 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
       child: ScrollbarTheme(
         data: _desktopScrollbarTheme(),
         child: Scrollbar(
+          key: const ValueKey('accentBarFilterScrollbar'),
           controller: _scrollController,
           thumbVisibility: true,
           interactive: true,
@@ -1059,12 +1273,155 @@ class EventChipWidget extends StatelessWidget {
   }
 }
 
+/// A rich, reusable choice shown in editor add-content dialogs.
+class EditorChoiceDialogOption<T> {
+  const EditorChoiceDialogOption({
+    required this.value,
+    required this.icon,
+    required this.title,
+    this.subtitle,
+  });
+
+  final T value;
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+}
+
+/// Shows add-content choices as descriptive cards instead of plain text rows.
+Future<T?> showEditorChoiceDialog<T>(
+  BuildContext context, {
+  required String title,
+  required List<EditorChoiceDialogOption<T>> options,
+}) {
+  return showDialog<T>(
+    context: context,
+    builder: (ctx) {
+      final theme = Theme.of(ctx);
+      final colors = theme.colorScheme;
+      final l10n = AppLocalizations.of(ctx);
+      final compact = MediaQuery.sizeOf(ctx).width < 400;
+      return AlertDialog(
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: compact ? 16 : 40,
+          vertical: 24,
+        ),
+        titlePadding: EdgeInsets.fromLTRB(
+          compact ? 16 : 24,
+          compact ? 20 : 24,
+          compact ? 16 : 24,
+          12,
+        ),
+        contentPadding: EdgeInsets.fromLTRB(
+          compact ? 12 : 24,
+          0,
+          compact ? 12 : 24,
+          0,
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 440),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final option in options)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Material(
+                      key: ValueKey('editorChoiceOption_${option.value}'),
+                      color: colors.surfaceContainerHighest.withValues(
+                        alpha: 0.65,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(
+                          color: colors.outlineVariant.withValues(alpha: 0.7),
+                        ),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () => Navigator.pop(ctx, option.value),
+                        child: Padding(
+                          padding: EdgeInsets.all(compact ? 12 : 14),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: compact ? 44 : 48,
+                                height: compact ? 44 : 48,
+                                decoration: BoxDecoration(
+                                  color: colors.primaryContainer,
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Icon(
+                                  option.icon,
+                                  color: colors.onPrimaryContainer,
+                                  size: 27,
+                                ),
+                              ),
+                              SizedBox(width: compact ? 12 : 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      option.title,
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    if (option.subtitle?.trim().isNotEmpty ==
+                                        true) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        option.subtitle!,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: colors.onSurfaceVariant,
+                                              height: 1.3,
+                                            ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: compact ? 4 : 8),
+                              Icon(
+                                Icons.chevron_right,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 /// Help dialog for editor screens.
 void showEditorHelpDialog(
   BuildContext context, {
   required String title,
   required List<HelpSectionData> sections,
   Color? themeColor,
+  bool? isEvent,
+  bool useNeutralSectionTitles = false,
 }) {
   showDialog<void>(
     context: context,
@@ -1072,6 +1429,9 @@ void showEditorHelpDialog(
       final l10n = AppLocalizations.of(ctx);
       final confirmLabel =
           l10n?.helpDialogGotIt ?? MaterialLocalizations.of(ctx).okButtonLabel;
+      final displayTitle = isEvent == null
+          ? title
+          : _standardizeEditorHelpTitle(ctx, title, isEvent: isEvent);
       return AlertDialog(
         title: Row(
           children: [
@@ -1082,7 +1442,7 @@ void showEditorHelpDialog(
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                title,
+                displayTitle,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -1109,8 +1469,10 @@ void showEditorHelpDialog(
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color:
-                                themeColor ?? Theme.of(ctx).colorScheme.primary,
+                            color: useNeutralSectionTitles
+                                ? Theme.of(ctx).colorScheme.onSurface
+                                : themeColor ??
+                                      Theme.of(ctx).colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -1146,6 +1508,59 @@ void showEditorHelpDialog(
       );
     },
   );
+}
+
+String _standardizeEditorHelpTitle(
+  BuildContext context,
+  String title, {
+  required bool isEvent,
+}) {
+  final languageCode = Localizations.localeOf(context).languageCode;
+  var base = title.trim();
+
+  switch (languageCode) {
+    case 'zh':
+      base = base
+          .replaceFirst(RegExp(r'^事件类型\s*[：:]\s*'), '')
+          .replaceFirst(RegExp(r'(模块说明|事件说明|模块|事件|说明|帮助)$'), '')
+          .trim();
+      return '$base${isEvent ? '事件说明' : '模块说明'}';
+    case 'ru':
+      base = base
+          .replaceFirst(
+            RegExp(
+              r'^(?:Справка\s+по\s+)?(?:Модуль|Событие)\s*[:：]?\s*',
+              caseSensitive: false,
+            ),
+            '',
+          )
+          .replaceFirst(
+            RegExp(
+              r'\s+(?:module|event|модуль|событие)$',
+              caseSensitive: false,
+            ),
+            '',
+          )
+          .replaceAll(RegExp(r'^[«"]|[»"]$'), '')
+          .trim();
+      return '${isEvent ? 'Событие' : 'Модуль'} «$base»';
+    default:
+      base = base
+          .replaceFirst(RegExp(r'^event\s*[:：]\s*', caseSensitive: false), '')
+          .replaceFirst(
+            RegExp(
+              r'\s+(?:module|event)(?:\s+(?:help|guide|instructions))?$',
+              caseSensitive: false,
+            ),
+            '',
+          )
+          .replaceFirst(
+            RegExp(r'\s+(?:help|guide|instructions)$', caseSensitive: false),
+            '',
+          )
+          .trim();
+      return '$base ${isEvent ? 'event' : 'module'}';
+  }
 }
 
 class HelpSectionData {
@@ -1834,41 +2249,43 @@ class ZombieEditSheetIdentityTile extends StatelessWidget {
                 ),
               const SizedBox(width: 10),
               Expanded(
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Flexible(
-                      child: Text(
-                        displayName,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      displayName,
+                      softWrap: true,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (isCustom) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: pvzOrangeLight,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          customLabel,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    if (isCustom)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: pvzOrangeLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            customLabel,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ],
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               Icon(
                 Icons.edit_outlined,
                 size: 20,
@@ -1895,8 +2312,20 @@ Widget scaleTableForDesktop({
   double desktopScale = 0.6,
 }) {
   if (!isDesktopPlatform(context)) return child;
-  return Center(
-    child: FractionallySizedBox(widthFactor: desktopScale, child: child),
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final viewportWidth = MediaQuery.sizeOf(context).width;
+      final availableWidth = constraints.maxWidth;
+      final useFullWidth =
+          viewportWidth < 720 ||
+          (availableWidth.isFinite && availableWidth < 720);
+      return Center(
+        child: FractionallySizedBox(
+          widthFactor: useFullWidth ? 1 : desktopScale,
+          child: child,
+        ),
+      );
+    },
   );
 }
 
@@ -1918,12 +2347,16 @@ InputDecoration editorInputDecoration(
   final baseDecoration = InputDecoration(
     labelText: labelText,
     hintText: hintText,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
     border: const OutlineInputBorder(),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: unfocusedColor.withValues(alpha: 0.6)),
     ),
-    labelStyle: TextStyle(color: unfocusedColor),
-    hintStyle: TextStyle(color: unfocusedColor.withValues(alpha: 0.7)),
+    labelStyle: TextStyle(color: unfocusedColor, height: 1.2),
+    hintStyle: TextStyle(
+      color: unfocusedColor.withValues(alpha: 0.7),
+      height: 1.2,
+    ),
     filled: filled,
     fillColor: fillColor,
   );
@@ -1934,6 +2367,7 @@ InputDecoration editorInputDecoration(
     ),
     floatingLabelStyle: TextStyle(
       color: isFocused ? focusColor : unfocusedColor,
+      height: 1.2,
     ),
     focusColor: focusColor,
   );
@@ -2000,7 +2434,7 @@ class RenaiStatueIcon extends StatelessWidget {
 /// Default [MaterialScrollBehavior] omits [PointerDeviceKind.mouse], so horizontal
 /// [TabBar]s and nested scroll views do not respond to click-drag on desktop.
 /// Vertically centered search field for colored app bar titles (light text).
-class AppBarSearchField extends StatelessWidget {
+class AppBarSearchField extends StatefulWidget {
   const AppBarSearchField({
     super.key,
     required this.hintText,
@@ -2019,36 +2453,67 @@ class AppBarSearchField extends StatelessWidget {
   final double borderRadius;
 
   @override
+  State<AppBarSearchField> createState() => _AppBarSearchFieldState();
+}
+
+class _AppBarSearchFieldState extends State<AppBarSearchField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.query);
+  }
+
+  @override
+  void didUpdateWidget(covariant AppBarSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.query != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: widget.query,
+        selection: TextSelection.collapsed(offset: widget.query.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final iconColor = foregroundColor.withValues(alpha: 0.9);
-    final hintColor = foregroundColor.withValues(alpha: 0.75);
-    final border = borderRadius > 0
+    final iconColor = widget.foregroundColor.withValues(alpha: 0.9);
+    final hintColor = widget.foregroundColor.withValues(alpha: 0.75);
+    final border = widget.borderRadius > 0
         ? OutlineInputBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
+            borderRadius: BorderRadius.circular(widget.borderRadius),
             borderSide: BorderSide.none,
           )
         : InputBorder.none;
 
     return TextField(
-      onChanged: onChanged,
+      controller: _controller,
+      onChanged: widget.onChanged,
       textAlignVertical: TextAlignVertical.center,
-      style: TextStyle(color: foregroundColor, height: 1.2),
-      cursorColor: foregroundColor,
+      style: TextStyle(color: widget.foregroundColor, height: 1.2),
+      cursorColor: widget.foregroundColor,
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: widget.hintText,
         hintStyle: TextStyle(color: hintColor, height: 1.2),
         prefixIcon: Icon(Icons.search, color: iconColor),
-        suffixIcon: query.isNotEmpty
+        suffixIcon: widget.query.isNotEmpty
             ? IconButton(
                 icon: Icon(Icons.clear, color: iconColor),
-                onPressed: onClear,
+                onPressed: widget.onClear,
               )
             : null,
         border: border,
         enabledBorder: border,
         focusedBorder: border,
         filled: true,
-        fillColor: foregroundColor.withValues(alpha: 0.18),
+        fillColor: widget.foregroundColor.withValues(alpha: 0.18),
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
         isDense: true,
       ),
@@ -2057,7 +2522,7 @@ class AppBarSearchField extends StatelessWidget {
 }
 
 /// Search field for selection screens (module, plant, zombie, dialogs, etc.).
-class SelectionSearchField extends StatelessWidget {
+class SelectionSearchField extends StatefulWidget {
   const SelectionSearchField({
     super.key,
     required this.hintText,
@@ -2088,53 +2553,95 @@ class SelectionSearchField extends StatelessWidget {
   final bool useOutlineBorder;
 
   @override
+  State<SelectionSearchField> createState() => _SelectionSearchFieldState();
+}
+
+class _SelectionSearchFieldState extends State<SelectionSearchField> {
+  TextEditingController? _internalController;
+
+  TextEditingController get _effectiveController =>
+      widget.controller ?? _internalController!;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller == null) {
+      _internalController = TextEditingController(text: widget.query);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SelectionSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      _internalController?.dispose();
+      _internalController = widget.controller == null
+          ? TextEditingController(text: widget.query)
+          : null;
+    }
+    final controller = _effectiveController;
+    if (widget.query != controller.text) {
+      controller.value = TextEditingValue(
+        text: widget.query,
+        selection: TextSelection.collapsed(offset: widget.query.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _internalController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = foregroundColor ?? theme.colorScheme.onSurface;
-    final hintColor = foregroundColor != null
-        ? foregroundColor!.withValues(alpha: 0.75)
+    final textColor = widget.foregroundColor ?? theme.colorScheme.onSurface;
+    final hintColor = widget.foregroundColor != null
+        ? widget.foregroundColor!.withValues(alpha: 0.75)
         : (isDark
               ? theme.colorScheme.onSurface.withValues(alpha: 0.65)
               : theme.colorScheme.onSurface.withValues(alpha: 0.55));
-    final iconColor = foregroundColor != null
-        ? foregroundColor!.withValues(alpha: 0.9)
+    final iconColor = widget.foregroundColor != null
+        ? widget.foregroundColor!.withValues(alpha: 0.9)
         : theme.colorScheme.onSurface.withValues(alpha: 0.7);
     final bg =
-        fillColor ??
-        (foregroundColor != null
-            ? foregroundColor!.withValues(alpha: 0.18)
+        widget.fillColor ??
+        (widget.foregroundColor != null
+            ? widget.foregroundColor!.withValues(alpha: 0.18)
             : theme.colorScheme.surfaceContainerHighest);
 
     InputBorder border;
-    if (useOutlineBorder) {
+    if (widget.useOutlineBorder) {
       border = OutlineInputBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         borderSide: BorderSide(
           color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
         ),
       );
     } else {
       border = OutlineInputBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         borderSide: BorderSide.none,
       );
     }
 
     return TextField(
-      controller: controller,
-      onChanged: onChanged,
+      controller: _effectiveController,
+      onChanged: widget.onChanged,
       textAlignVertical: TextAlignVertical.center,
       style: TextStyle(color: textColor, height: 1.2),
       cursorColor: textColor,
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: widget.hintText,
         hintStyle: TextStyle(color: hintColor, height: 1.2),
         prefixIcon: Icon(Icons.search, color: iconColor),
-        suffixIcon: query.isNotEmpty && onClear != null
+        suffixIcon: widget.query.isNotEmpty && widget.onClear != null
             ? IconButton(
                 icon: Icon(Icons.clear, color: iconColor),
-                onPressed: onClear,
+                onPressed: widget.onClear,
               )
             : null,
         filled: true,
@@ -2143,20 +2650,20 @@ class SelectionSearchField extends StatelessWidget {
         isDense: true,
         border: border,
         enabledBorder: border,
-        focusedBorder: useOutlineBorder
+        focusedBorder: widget.useOutlineBorder
             ? OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
                 borderSide: BorderSide(
-                  color: focusedBorderColor ?? theme.colorScheme.primary,
+                  color: widget.focusedBorderColor ?? theme.colorScheme.primary,
                   width: 1.5,
                 ),
               )
             : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
                 borderSide: BorderSide(
                   color:
-                      focusedBorderColor ??
-                      foregroundColor ??
+                      widget.focusedBorderColor ??
+                      widget.foregroundColor ??
                       theme.colorScheme.primary,
                   width: 1.5,
                 ),

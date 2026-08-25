@@ -9,14 +9,19 @@ class PluginRegisteredScreen {
     required this.screenId,
     required this.title,
     required this.builder,
+    this.titleBuilder,
   });
 
   final String pluginId;
   final String screenId;
   final String title;
   final CPluginScreenBuilder builder;
+  final PluginTitleBuilder? titleBuilder;
 
   String get key => '$pluginId::$screenId';
+
+  String resolvedTitle(BuildContext context) =>
+      titleBuilder?.call(context) ?? title;
 }
 
 /// A button / menu item a plugin injects into the host chrome.
@@ -85,7 +90,8 @@ class PluginLevelFileAction {
     BuildContext context,
     String fileName,
     String filePath,
-  ) onActivate;
+  )
+  onActivate;
   final bool Function(String fileName)? matchesFileName;
 
   String get key => '$pluginId::fileAction::$id';
@@ -114,9 +120,8 @@ class PluginScreenRegistry extends ChangeNotifier {
   List<PluginUiElement> elementsForSlot(String slot) =>
       _uiElements.where((e) => e.slot == slot).toList(growable: false);
 
-  List<PluginEditorAction> editorActionsForSlot(String slot) => _editorActions
-      .where((e) => e.slot == slot)
-      .toList(growable: false);
+  List<PluginEditorAction> editorActionsForSlot(String slot) =>
+      _editorActions.where((e) => e.slot == slot).toList(growable: false);
 
   List<PluginLevelFileAction> levelFileActionsFor(String fileName) =>
       _levelFileActions

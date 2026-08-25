@@ -109,6 +109,7 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title:
                   l10n?.eventTitle_BeachStageEventZombieSpawnerProps ??
                   'Low tide event',

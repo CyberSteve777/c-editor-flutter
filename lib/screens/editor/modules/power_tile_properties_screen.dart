@@ -234,6 +234,7 @@ class _PowerTilePropertiesScreenState extends State<PowerTilePropertiesScreen> {
                   : (l10n?.powerTileGridHelpSecondaryDesktop ?? '');
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.powerTile ?? 'Power Tiles',
                 sections: [
                   HelpSectionData(

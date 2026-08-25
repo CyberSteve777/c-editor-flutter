@@ -12,11 +12,15 @@ import 'package:c_editor/widgets/selection_grid_layout.dart';
 class _StageBaseSelectionViewState {
   _StageBaseSelectionViewState({
     required this.selectedType,
+    required this.searchQuery,
     required this.scrollOffset,
+    required this.tagScrollOffset,
   });
 
   String selectedType;
+  String searchQuery;
   double scrollOffset;
+  double tagScrollOffset;
 }
 
 final Map<String, _StageBaseSelectionViewState> _stageBaseSelectionViewStates =
@@ -51,8 +55,6 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
       ? widget.stateBucketId!
       : 'global';
 
-  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
@@ -60,6 +62,7 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
     _selectedType = _typeTabs.contains(remembered?.selectedType)
         ? remembered!.selectedType
         : 'all';
+    _searchQuery = remembered?.searchQuery ?? '';
     _scrollController = ScrollController(
       initialScrollOffset: remembered?.scrollOffset ?? 0,
     )..addListener(_rememberScrollOffset);
@@ -85,23 +88,31 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
   void _setSearchQuery(String query) {
     if (_searchQuery == query) return;
     setState(() => _searchQuery = query);
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _resetRememberedScrollOffset();
   }
 
-  void _rememberViewState({double? scrollOffset}) {
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
     final state = _stageBaseSelectionViewStates.putIfAbsent(
       _viewStateKey,
       () => _StageBaseSelectionViewState(
         selectedType: _selectedType,
+        searchQuery: _searchQuery,
         scrollOffset: 0,
+        tagScrollOffset: 0,
       ),
     );
     state.selectedType = _selectedType;
+    state.searchQuery = _searchQuery;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) state.tagScrollOffset = tagScrollOffset;
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    if (!_scrollController.hasClients) return;
     _rememberViewState(scrollOffset: _scrollController.offset);
   }
 
@@ -178,19 +189,22 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
                   onClear: () => _setSearchQuery(''),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              HorizontalTagScroller(
+                onAccentBar: true,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  children: _typeTabs.map((type) {
-                    return AccentBarChoiceChip(
-                      label: _typeLabel(type, l10n),
-                      selected: _selectedType == type,
-                      onSelected: (_) => _setType(type),
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                    );
-                  }).toList(),
-                ),
+                initialScrollOffset:
+                    _stageBaseSelectionViewStates[_viewStateKey]
+                        ?.tagScrollOffset ??
+                    0,
+                onScrollOffsetChanged: _rememberTagScrollOffset,
+                children: _typeTabs.map((type) {
+                  return AccentBarChoiceChip(
+                    label: _typeLabel(type, l10n),
+                    selected: _selectedType == type,
+                    onSelected: (_) => _setType(type),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  );
+                }).toList(),
               ),
             ],
           ),

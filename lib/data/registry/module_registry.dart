@@ -14,6 +14,7 @@ class ModuleMetadata {
   final String defaultAlias;
   final String defaultSource;
   final bool allowMultiple;
+  final String duplicateAliasNumberSeparator;
   final dynamic Function()? initialDataFactory;
   final String? uniqueKey;
   // In Flutter, we might use a route name or a widget builder
@@ -31,6 +32,7 @@ class ModuleMetadata {
     required this.defaultAlias,
     this.defaultSource = 'CurrentLevel',
     this.allowMultiple = false,
+    this.duplicateAliasNumberSeparator = '_',
     this.initialDataFactory,
     this.uniqueKey,
     required this.routeId,
@@ -120,6 +122,14 @@ class ModuleRegistry {
         return l10n.moduleTitle_ConveyorSeedBankProperties;
       case 'moduleTitle_SunDropperProperties':
         return l10n.moduleTitle_SunDropperProperties;
+      case 'moduleTitle_MoonLifeSupportSystemProperties':
+        return l10n.moduleTitle_MoonLifeSupportSystemProperties;
+      case 'moduleTitle_LunarTerminalModuleProperties':
+        return l10n.moduleTitle_LunarTerminalModuleProperties;
+      case 'moduleTitle_LunarMineVeinModuleProperties':
+        return l10n.moduleTitle_LunarMineVeinModuleProperties;
+      case 'moduleTitle_RadiationMeteorModuleProperties':
+        return l10n.moduleTitle_RadiationMeteorModuleProperties;
       case 'moduleTitle_LevelMutatorMaxSunProps':
         return l10n.moduleTitle_LevelMutatorMaxSunProps;
       case 'moduleTitle_LevelMutatorStartingPlantfoodProps':
@@ -156,6 +166,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_SeedRainProperties;
       case 'moduleTitle_LastStandMinigameProperties':
         return l10n.moduleTitle_LastStandMinigameProperties;
+      case 'moduleTitle_CowboyMinigameProperties':
+        return l10n.moduleTitle_CowboyMinigameProperties;
       case 'moduleTitle_PVZ1OverwhelmModuleProperties':
         return l10n.moduleTitle_PVZ1OverwhelmModuleProperties;
       case 'moduleTitle_SunBombChallengeProperties':
@@ -234,6 +246,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_RiftThemeDemoModuleProperties;
       case 'moduleTitle_InitialGridItemGulliverTunnelProperties':
         return l10n.moduleTitle_InitialGridItemGulliverTunnelProperties;
+      case 'moduleTitle_LevelPowerupModuleProperties':
+        return l10n.moduleTitle_LevelPowerupModuleProperties;
       case 'moduleTitle_RocketZombieFlickModuleProperties':
         return l10n.moduleTitle_RocketZombieFlickModuleProperties;
       case 'moduleTitle_PVZ1PassageModuleProperties':
@@ -272,6 +286,14 @@ class ModuleRegistry {
         return l10n.moduleDesc_ConveyorSeedBankProperties;
       case 'moduleDesc_SunDropperProperties':
         return l10n.moduleDesc_SunDropperProperties;
+      case 'moduleDesc_MoonLifeSupportSystemProperties':
+        return l10n.moduleDesc_MoonLifeSupportSystemProperties;
+      case 'moduleDesc_LunarTerminalModuleProperties':
+        return l10n.moduleDesc_LunarTerminalModuleProperties;
+      case 'moduleDesc_LunarMineVeinModuleProperties':
+        return l10n.moduleDesc_LunarMineVeinModuleProperties;
+      case 'moduleDesc_RadiationMeteorModuleProperties':
+        return l10n.moduleDesc_RadiationMeteorModuleProperties;
       case 'moduleDesc_LevelMutatorMaxSunProps':
         return l10n.moduleDesc_LevelMutatorMaxSunProps;
       case 'moduleDesc_LevelMutatorStartingPlantfoodProps':
@@ -308,6 +330,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_SeedRainProperties;
       case 'moduleDesc_LastStandMinigameProperties':
         return l10n.moduleDesc_LastStandMinigameProperties;
+      case 'moduleDesc_CowboyMinigameProperties':
+        return l10n.moduleDesc_CowboyMinigameProperties;
       case 'moduleDesc_PVZ1OverwhelmModuleProperties':
         return l10n.moduleDesc_PVZ1OverwhelmModuleProperties;
       case 'moduleDesc_SunBombChallengeProperties':
@@ -386,6 +410,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_RiftThemeDemoModuleProperties;
       case 'moduleDesc_InitialGridItemGulliverTunnelProperties':
         return l10n.moduleDesc_InitialGridItemGulliverTunnelProperties;
+      case 'moduleDesc_LevelPowerupModuleProperties':
+        return l10n.moduleDesc_LevelPowerupModuleProperties;
       case 'moduleDesc_RocketZombieFlickModuleProperties':
         return l10n.moduleDesc_RocketZombieFlickModuleProperties;
       case 'moduleDesc_PVZ1PassageModuleProperties':
@@ -489,7 +515,7 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_SeedBankProperties',
       icon: Icons.yard,
       isCore: true,
-      allowMultiple: false,
+      allowMultiple: true,
       category: ModuleCategory.base,
       defaultAlias: 'SeedBank',
       initialDataFactory: () => SeedBankData(),
@@ -595,6 +621,16 @@ class ModuleRegistry {
       initialDataFactory: () => LastStandMinigamePropertiesData(),
       routeId: 'LastStandMinigame',
     ),
+    'CowboyMinigameProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_CowboyMinigameProperties',
+      descriptionKey: 'moduleDesc_CowboyMinigameProperties',
+      icon: Icons.fence,
+      isCore: true,
+      category: ModuleCategory.mode,
+      defaultAlias: 'CowboyMinigame',
+      initialDataFactory: () => CowboyMinigamePropertiesData(),
+      routeId: 'CowboyMinigame',
+    ),
     'BombProperties': ModuleMetadata(
       titleKey: 'moduleTitle_BombProperties',
       descriptionKey: 'moduleDesc_BombProperties',
@@ -609,10 +645,12 @@ class ModuleRegistry {
     'ZombossBattleModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_ZombossBattleModuleProperties',
       descriptionKey: 'moduleDesc_ZombossBattleModuleProperties',
-      icon: Icons.dangerous,
+      icon: Icons.smart_toy_outlined,
       isCore: false,
       category: ModuleCategory.mode,
       defaultAlias: 'ZombossBattle',
+      allowMultiple: true,
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ZombossMechBattleModuleData(),
       routeId: 'ZombossMechBattle',
     ),
@@ -633,6 +671,8 @@ class ModuleRegistry {
       isCore: false,
       category: ModuleCategory.mode,
       defaultAlias: 'ZombossLastStand',
+      allowMultiple: true,
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ZombossLastStandMinigameData(),
       routeId: 'ZombossBattle',
     ),
@@ -880,9 +920,10 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_ProtectTheGridItemChallengeProperties',
       icon: Icons.security,
       isCore: true,
-      allowMultiple: false,
+      allowMultiple: true,
       category: ModuleCategory.scene,
       defaultAlias: 'ProtectTheGridItem',
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ProtectTheGridItemChallengePropertiesData(),
       routeId: 'ProtectTheGridItem',
     ),
@@ -925,6 +966,7 @@ class ModuleRegistry {
       allowMultiple: true,
       category: ModuleCategory.scene,
       defaultAlias: 'MechanismPlank',
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => {
         'MechanismGearsRect': {'mHeight': 5, 'mWidth': 4, 'mX': 0, 'mY': 0},
         'MechanismPlankRows': ['0', '4'],
@@ -1047,6 +1089,17 @@ class ModuleRegistry {
       initialDataFactory: () => RenaiModulePropertiesData(),
       routeId: 'RenaiModule',
     ),
+    'LunarMineVeinModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LunarMineVeinModuleProperties',
+      descriptionKey: 'moduleDesc_LunarMineVeinModuleProperties',
+      icon: Icons.diamond_outlined,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.scene,
+      defaultAlias: 'ExampleLunarMineVeins',
+      initialDataFactory: () => LunarMineVeinModulePropertiesData(),
+      routeId: 'LunarMineVeinModule',
+    ),
     'RoofProperties': ModuleMetadata(
       titleKey: 'moduleTitle_RoofProperties',
       descriptionKey: 'moduleDesc_RoofProperties',
@@ -1093,6 +1146,17 @@ class ModuleRegistry {
       initialDataFactory: () => InitialGridItemGulliverTunnelPropertiesData(),
       routeId: 'GulliverTunnelModule',
     ),
+    'LevelPowerupModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LevelPowerupModuleProperties',
+      descriptionKey: 'moduleDesc_LevelPowerupModuleProperties',
+      icon: Icons.touch_app,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'LevelPowerups',
+      initialDataFactory: () => LevelPowerupModulePropertiesData(),
+      routeId: 'LevelPowerups',
+    ),
     'RocketZombieFlickModuleProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_RocketZombieFlickModuleProperties',
       descriptionKey: 'moduleDesc_RocketZombieFlickModuleProperties',
@@ -1135,6 +1199,38 @@ class ModuleRegistry {
       defaultAlias: 'SpermWhaleModule',
       initialDataFactory: () => SpermWhaleModulePropertiesData(),
       routeId: 'SpermWhaleModule',
+    ),
+    'MoonLifeSupportSystemProperties': const ModuleMetadata(
+      titleKey: 'moduleTitle_MoonLifeSupportSystemProperties',
+      descriptionKey: 'moduleDesc_MoonLifeSupportSystemProperties',
+      icon: Icons.battery_charging_full,
+      isCore: true,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'MoonLifeSupportSystemModule',
+      defaultSource: 'LevelModules',
+      routeId: 'MoonLifeSupportSystem',
+    ),
+    'LunarTerminalModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LunarTerminalModuleProperties',
+      descriptionKey: 'moduleDesc_LunarTerminalModuleProperties',
+      icon: Icons.precision_manufacturing,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'LunarTerminalModule',
+      initialDataFactory: () => LunarTerminalModulePropertiesData(),
+      routeId: 'LunarTerminalModule',
+    ),
+    'RadiationMeteorModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_RadiationMeteorModuleProperties',
+      descriptionKey: 'moduleDesc_RadiationMeteorModuleProperties',
+      icon: Icons.crisis_alert_rounded,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'RadiationMeteorModule',
+      initialDataFactory: () => RadiationMeteorModulePropertiesData(),
+      routeId: 'RadiationMeteorModule',
     ),
     'WitchModuleProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_WitchModuleProperties',
@@ -1194,6 +1290,7 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
     String? defaultAlias,
     String? defaultSource,
     bool? allowMultiple,
+    String? duplicateAliasNumberSeparator,
     dynamic Function()? initialDataFactory,
     String? uniqueKey,
     String? routeId,
@@ -1209,6 +1306,8 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
       defaultAlias: defaultAlias ?? this.defaultAlias,
       defaultSource: defaultSource ?? this.defaultSource,
       allowMultiple: allowMultiple ?? this.allowMultiple,
+      duplicateAliasNumberSeparator:
+          duplicateAliasNumberSeparator ?? this.duplicateAliasNumberSeparator,
       initialDataFactory: initialDataFactory ?? this.initialDataFactory,
       uniqueKey: uniqueKey ?? this.uniqueKey,
       routeId: routeId ?? this.routeId,

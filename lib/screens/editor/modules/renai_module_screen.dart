@@ -111,6 +111,8 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => RenaiStatueSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:renai-statue',
           onStatueSelected: (typeName) {
             Navigator.pop(context);
             final s = RenaiStatueInfoData(
@@ -204,7 +206,6 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -240,6 +241,7 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -266,14 +268,14 @@ class _RenaiModuleScreenState extends State<RenaiModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 Card(
                   child: SwitchListTile(
                     title: Text(
@@ -320,28 +322,33 @@ ModuleAliasInputField(
                             ),
                           ),
                           const SizedBox(height: 8),
-                          SizedBox(
-                            width: 120,
-                            child: TextField(
-                              controller: _nightStartCtrl,
-                              keyboardType: TextInputType.number,
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 280),
+                            child: EditorResponsiveInputField(
+                              label: l10n?.waveLabel ?? 'Wave',
                               decoration: InputDecoration(
-                                labelText: l10n?.waveLabel ?? 'Wave',
                                 helperText: l10n?.moduleWaveIndexZeroBasedHint,
+                                helperMaxLines: 5,
                                 border: const OutlineInputBorder(),
                               ),
-                              onChanged: (v) {
-                                final n = int.tryParse(v);
-                                if (n != null && n >= 0) {
-                                  _data = RenaiModulePropertiesData(
-                                    nightEnabled: _data.nightEnabled,
-                                    nightStartWaveNum: n,
-                                    statueInfos: _data.statueInfos,
-                                    statueNightInfos: _data.statueNightInfos,
-                                  );
-                                  _sync();
-                                }
-                              },
+                              builder: (context, decoration) => TextField(
+                                key: const ValueKey('renaiNightStartWaveField'),
+                                controller: _nightStartCtrl,
+                                keyboardType: TextInputType.number,
+                                decoration: decoration,
+                                onChanged: (v) {
+                                  final n = int.tryParse(v);
+                                  if (n != null && n >= 0) {
+                                    _data = RenaiModulePropertiesData(
+                                      nightEnabled: _data.nightEnabled,
+                                      nightStartWaveNum: n,
+                                      statueInfos: _data.statueInfos,
+                                      statueNightInfos: _data.statueNightInfos,
+                                    );
+                                    _sync();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -418,19 +425,20 @@ ModuleAliasInputField(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                Text(
-                                  l10n?.selectedPosition ?? 'Selected position',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
+                                  Text(
+                                    l10n?.selectedPosition ??
+                                        'Selected position',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
+                                  Text(
+                                    'R${_selectedY + 1} : C${_selectedX + 1}',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
-                                ),
                                 ],
                               ),
                             ),
@@ -513,12 +521,10 @@ ModuleAliasInputField(
                                                     count > 0 &&
                                                         firstItem != null
                                                     ? LayoutBuilder(
-                                                        builder: (
-                                                          context,
-                                                          constraints,
-                                                        ) {
+                                                        builder: (context, constraints) {
                                                           return Stack(
-                                                            fit: StackFit.expand,
+                                                            fit:
+                                                                StackFit.expand,
                                                             children: [
                                                               Positioned.fill(
                                                                 child: Padding(
@@ -750,7 +756,12 @@ class _StatueCardState extends State<_StatueCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(name, style: theme.textTheme.labelMedium, maxLines: 3),
+                  Text(
+                    name,
+                    key: const ValueKey('renaiStatueItemName'),
+                    style: theme.textTheme.labelMedium,
+                    maxLines: 3,
+                  ),
                   if (widget.showCoordinates)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
@@ -777,25 +788,30 @@ class _StatueCardState extends State<_StatueCard> {
                         ],
                       ),
                     ),
-                  const SizedBox(height: 4),
-                  TextField(
-                    controller: _waveCtrl,
-                    keyboardType: TextInputType.number,
+                  const SizedBox(height: 12),
+                  EditorResponsiveInputField(
+                    label:
+                        AppLocalizations.of(context)?.renaiModuleCarveWave ??
+                        'Carve wave',
                     decoration: InputDecoration(
-                      labelText:
-                          AppLocalizations.of(context)?.renaiModuleCarveWave ??
-                          'Carve wave',
                       helperText: AppLocalizations.of(
                         context,
                       )?.moduleWaveIndexZeroBasedHint,
+                      helperMaxLines: 5,
                       border: const OutlineInputBorder(),
                     ),
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n != null && n >= 0) {
-                        widget.onWaveChanged(n);
-                      }
-                    },
+                    builder: (context, decoration) => TextField(
+                      key: const ValueKey('renaiStatueWaveField'),
+                      controller: _waveCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: decoration,
+                      onChanged: (v) {
+                        final n = int.tryParse(v);
+                        if (n != null && n >= 0) {
+                          widget.onWaveChanged(n);
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

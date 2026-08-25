@@ -134,6 +134,7 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -227,18 +228,19 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
               },
             ),
             const SizedBox(height: 12),
-            Tooltip(
-              message:
+            _externalLabelField(
+              context,
+              label:
+                  l10n?.spermWhaleModulePoisonTriggerCount ??
+                  'Poison trigger count (PoisonTriggerCount)',
+              tooltip:
                   l10n?.spermWhaleModuleHelpPoisonTriggerCount ??
                   'How many times the pufferfish poison debuff must stack before switching to poison swallow timing.',
-              child: TextField(
+              field: TextField(
                 controller: _poisonTriggerCountCtrl,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText:
-                      l10n?.spermWhaleModulePoisonTriggerCount ??
-                      'Poison trigger count (PoisonTriggerCount)',
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
                 ),
                 onChanged: (v) {
                   final n = int.tryParse(v);
@@ -263,21 +265,45 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
     required TextEditingController controller,
     required void Function(double v) onValid,
   }) {
+    return _externalLabelField(
+      context,
+      label: label,
+      tooltip: tooltip,
+      field: TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: const InputDecoration(border: OutlineInputBorder()),
+        onChanged: (v) {
+          final n = double.tryParse(v);
+          if (n != null && n >= 0) {
+            onValid(n);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _externalLabelField(
+    BuildContext context, {
+    required String label,
+    required String tooltip,
+    required Widget field,
+  }) {
+    final theme = Theme.of(context);
     return Tooltip(
       message: tooltip,
-      child: EditorResponsiveInputField(
-        label: label,
-        builder: (context, decoration) => TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: decoration,
-          onChanged: (v) {
-            final n = double.tryParse(v);
-            if (n != null && n >= 0) {
-              onValid(n);
-            }
-          },
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          field,
+        ],
       ),
     );
   }

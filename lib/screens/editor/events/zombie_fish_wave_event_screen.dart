@@ -239,6 +239,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventZombieFishWave ?? 'Zombie Fish Wave',
               sections: [
                 HelpSectionData(

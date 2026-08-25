@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 
@@ -90,6 +91,9 @@ Set<String> levelModuleKeys(PvzLevelFile levelFile) {
     if (info.source == 'CurrentLevel') {
       final obj = objectMap[info.alias];
       if (obj != null) keys.add(obj.objClass);
+    } else {
+      final objClass = ReferenceRepository.instance.getObjClass(info.alias);
+      if (objClass != null) keys.add(objClass);
     }
   }
   return keys;
@@ -106,6 +110,15 @@ bool levelHasModule(PvzLevelFile levelFile, String objClass) {
 bool levelHasKongfuGridOverrideModules(PvzLevelFile levelFile) {
   return levelHasModule(levelFile, 'ArmrackProperties') ||
       levelHasModule(levelFile, 'EnergyGridProperties');
+}
+
+bool levelUsesWaveGenerator(PvzLevelFile levelFile) {
+  return levelHasModule(levelFile, 'WaveGeneratorProperties');
+}
+
+bool levelUsesWaveManager(PvzLevelFile levelFile) {
+  return levelHasModule(levelFile, 'WaveManagerModuleProperties') ||
+      levelHasModule(levelFile, 'WaveManagerProperties');
 }
 
 String? moduleRtidForClass(PvzLevelFile levelFile, String objClass) {

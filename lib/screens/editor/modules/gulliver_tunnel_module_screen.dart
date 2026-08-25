@@ -309,6 +309,7 @@ class _GulliverTunnelModuleScreenState
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.gulliverTunnelTitle ?? 'Gulliver tunnels',
                 themeColor: accentColor,
                 sections: [

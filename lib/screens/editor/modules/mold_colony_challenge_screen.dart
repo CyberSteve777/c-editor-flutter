@@ -160,6 +160,7 @@ class _MoldColonyChallengeScreenState extends State<MoldColonyChallengeScreen> {
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.moduleTitle_MoldColonyChallengeProps,
               sections: [
                 HelpSectionData(

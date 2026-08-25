@@ -110,6 +110,7 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.lastStandHelpTitle,
               sections: [
                 HelpSectionData(

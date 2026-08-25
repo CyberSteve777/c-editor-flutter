@@ -30,13 +30,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previewTabGridItems => 'Grid Items';
 
   @override
-  String get sunBombFalling => 'Sun Bombs are falling';
+  String get sunBombFalling => 'Sun Bombs';
 
   @override
   String get sunDroppingActive => 'Sun falls from the sky';
 
   @override
-  String get sunDroppingInactive => 'Sun does not fall from the sky';
+  String get sunDroppingInactive => 'Sun doesn\'t fall from the sky';
 
   @override
   String get conveyorChanges => 'Changes in the conveyor';
@@ -60,7 +60,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allZombiesInLevel => 'All zombies in the level';
 
   @override
-  String get allObjectsInLevel => 'All objects in the level';
+  String get allObjectsInLevel => 'All grid items in the level';
 
   @override
   String get allEventsInLevel => 'All events in the level';
@@ -87,13 +87,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lawnMowerTypeLabel => 'Lawn mower type';
 
   @override
-  String get renaissanceStatues => 'Renaissance Statues';
+  String get renaissanceStatues => 'Renaissance Statues and Mable Mounds';
 
   @override
-  String get zomboss => 'Zomboss';
+  String get zomboss => 'Zomboss Mech';
 
   @override
-  String get boss => 'Boss';
+  String get boss => 'Non-mech Zomboss';
 
   @override
   String get zombossData => 'Zomboss Data';
@@ -120,13 +120,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rainContent => 'Rain content';
 
   @override
-  String get heianWind => 'Heian Wind';
+  String get heianWind => 'Heian Divine Wind';
 
   @override
   String get all => 'All';
 
   @override
-  String get impLv => 'Imp Lv.';
+  String get impLv => 'Imp level';
 
   @override
   String get sortByLabel => 'Sort';
@@ -141,7 +141,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortByModificationDate => 'Sort: By Modification Date';
 
   @override
-  String get sortBySize => 'Sort: By Size';
+  String get sortBySize => 'Sort: By File Size';
 
   @override
   String get sortByFileType => 'Sort: By File Type';
@@ -151,8 +151,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count imps',
-      one: '1 imp',
+      other: '$count Imps',
+      one: '1 Imp',
     );
     return '$_temp0';
   }
@@ -165,7 +165,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalPlantFoodTooltip =>
-      'Total Plant Food (including drops, events, etc.)';
+      'Total drops (including Plant Food, seed packet, etc.)';
 
   @override
   String get appTitle => 'My Workspace';
@@ -198,17 +198,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginsTitle => 'Plugins';
 
   @override
+  String get pluginInstallNew => 'Install New Plugin';
+
+  @override
   String get pluginInstallFromDevice => 'Install from device';
 
   @override
   String get pluginInstallFromUrl => 'Install from URL';
 
   @override
-  String get pluginInstallFromFolder => 'Load folder (debug)';
-
-  @override
-  String get pluginFolderHint =>
-      'Compiles a plugin package folder into C-Editor for testing.';
+  String get pluginInstallFromFolder => 'Compile plugin folder (debug)';
 
   @override
   String get pluginUrlHint => 'https://example.com/my_plugin.cplugin';
@@ -251,11 +250,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginReadFailed => 'Could not read the selected file';
 
   @override
-  String get pluginTrustWarningTitle => 'Trust warning';
+  String get pluginTrustWarningTitle => 'Safety Notice';
 
   @override
   String get pluginTrustWarningBody =>
-      'Plugins run code inside C-Editor. Only install plugins from sources you trust. File and network access are sandboxed by default, but malicious plugins may still disrupt the editor UI.';
+      'Plugins can run code within C-Editor to add more fun and useful features. By default, their access to files and the network is restricted by a sandbox, but malicious plugins may still cause harm. Please install plugins from trusted sources only.';
 
   @override
   String get pluginInstalledSection => 'Installed plugins';
@@ -268,7 +267,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'No plugins installed yet. Install a .cplugin file from your device or a download link.';
 
   @override
-  String get pluginNoScreens => 'This plugin does not register any screens.';
+  String get pluginNoScreens =>
+      'This plugin has no features or screens you can jump to directly.';
 
   @override
   String get pluginUninstall => 'Uninstall';
@@ -303,8 +303,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Showing $count plugins',
-      one: 'Showing 1 plugin',
+      other: '$count installed plugins',
+      one: '1 installed plugin',
     );
     return '$_temp0';
   }
@@ -369,10 +369,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginFeaturesSection => 'Features & screens';
 
   @override
-  String get pluginDropHint =>
-      'Install a .cplugin from your device or a download URL.';
-
-  @override
   String get pluginNoDescription => 'No description provided.';
 
   @override
@@ -429,7 +425,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manualSelectLevelType => 'Manual selection';
 
   @override
-  String get levelTypeAdventure => 'Adventure';
+  String get levelTypeAdventure => 'Regular';
 
   @override
   String get levelTypeLastStand => 'Last Stand';
@@ -496,8 +492,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Imported $count levels',
-      one: 'Imported 1 level',
+      other: 'Imported $count files',
+      one: 'Imported 1 file',
     );
     return '$_temp0';
   }
@@ -598,19 +594,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get download => 'Download';
 
   @override
-  String get downloadAllLevels => 'Export workspace';
+  String get downloadAllLevels => 'Download all levels';
 
   @override
   String get downloadFolder => 'Download this directory';
 
   @override
-  String get exportLevels => 'Export levels';
+  String get exportLevels => 'Level testing mod';
 
   @override
-  String get exportSelectLevels => 'Select levels to export';
+  String get exportSelectLevels => 'Select levels to test';
 
   @override
-  String get exportSelectFile => 'Select level archive for export (.rsb.smf)';
+  String get exportSelectFile =>
+      'Select a game data package for the testing mod (.rsb.smf)';
 
   @override
   String exportSelectedFile(String path) {
@@ -622,7 +619,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupRecommendationBody =>
-      'It is highly recommended to create a backup of your level archive before exporting. This helps prevent data loss if the operation is interrupted.';
+      'It is recommended to back up your game data package before testing. This can help prevent data loss if the process is interrupted or an error occurs.';
 
   @override
   String get backupAndProceed => 'Backup and Proceed';
@@ -634,33 +631,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupSuffix => '_copy';
 
   @override
-  String get exportNoFilesFound => 'No compatible files found (.rsb.smf).';
+  String get exportNoFilesFound =>
+      'No compatible data packages found (.rsb.smf).';
 
   @override
-  String get exportDownloadExternalDynamic => 'Download dynamic…';
+  String get exportDownloadExternalDynamic => 'Download data package';
 
   @override
-  String get cancelExportTitle => 'Cancel Export';
+  String get cancelExportTitle => 'Cancel Build';
 
   @override
   String get cancelExportMessage =>
-      'Are you sure you want to cancel the export process?';
+      'Are you sure you want to cancel building the level testing mod?';
 
   @override
   String get exportDisclaimerTitle => 'Risk Warning & Disclaimer';
 
   @override
   String get exportDisclaimerBody =>
-      'This tool involves direct modification of \"Plants vs. Zombies 2\" game data.\n\n• Using this tool to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nDisclaimer:\n\nThe developer hereby explicitly states:\n1. This tool is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this tool, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developer assumes no direct or indirect liability.\n3. Users should fully understand the associated risks before using this tool and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
+      'This feature generates level testing mods by injecting level files into the game\'s data packages (SMF/RSB container files). This process directly modifies the game data of Plants vs. Zombies 2.\n\n• Using this feature to modify game data may violate the game\'s terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nThe developes hereby explicitly state:\n\n1. This feature is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this feature, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developers assume no direct or indirect liability.\n3. Users should fully understand the associated risks before using this feature and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.';
 
   @override
-  String get exportDisclaimerDoNotShowAgain => 'Do not show again';
+  String get exportDisclaimerDoNotShowAgain => 'Do not show by default';
 
   @override
   String get importProgressTitle => 'Importing files…';
 
   @override
-  String get exportProgressTitle => 'Building export…';
+  String get exportProgressTitle => 'Building data package…';
 
   @override
   String get backupProgressTitle => 'Creating backup…';
@@ -676,7 +674,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webFolderImportNotice =>
-      'Folder imported into browser storage. On this browser, edits are not written back to disk automatically — use Export to save files.';
+      'Folder imported into browser storage. On this browser, edits are not written back to disk automatically——please use the \"Export\" feature to save files.';
 
   @override
   String get favorite => 'Favorite';
@@ -799,15 +797,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFinish => 'Finish';
 
   @override
-  String get exportSuccessTitle => 'Export Successful';
+  String get exportSuccessTitle => 'Build Successful';
 
   @override
   String exportSuccessMessage(String file) {
-    return 'The levels have been successfully exported to $file.';
+    return 'The level testing mod has been successfully built at $file.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced. \nNote: If the game crashes immediately on startup after the replacement, the level itself is most likely the cause.';
   }
 
   @override
-  String get exportCancelled => 'Export cancelled.';
+  String get exportCancelled => 'Build cancelled.';
 
   @override
   String exportDuplicateAssignment(String world, int level) {
@@ -829,15 +827,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportFinalCheckBody =>
-      'The following levels will be exported with new names:';
+      'The following levels will be added to the data package under new names:';
 
   @override
   String exportTargetArchive(String file) {
-    return 'All levels will be exported to $file';
+    return 'The selected levels will be written to $file';
   }
 
   @override
-  String get exportStart => 'Start Export';
+  String get exportStart => 'Build Testing Mod';
 
   @override
   String get exportAssignmentProposalBody =>
@@ -1021,11 +1019,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hujsonFormatDescription =>
-      'Hot-update readable format. Wraps level JSON in PopCap CompiledText internally (zlib compression + Rijndael encryption). Rename to .json before importing into the game.';
+      'Hot-update readable format. Before importing it into the game, please manually change the file extension from .hujson back to .json.';
 
   @override
   String get rtonFormatDescription =>
-      'PopCap RTON binary serialization format (Rijndael-encrypted). Used as level data inside dynamic.rsb.smf.';
+      'Used as level data inside the game\'s data package (dynamic.rsb.smf).';
 
   @override
   String get conversionRequiredTitle => 'Conversion required';
@@ -1052,47 +1050,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cEditor => 'C-Editor';
 
   @override
-  String get pvzEditorSubtitle => 'PVZ2 Visual Level Editor';
+  String get pvzEditorSubtitle => 'PvZ2C Visual Level Editor';
 
   @override
   String get introSection => 'Introduction';
 
   @override
   String get introText =>
-      'C-Editor is a visual level editing tool designed for Plants vs. Zombies 2 Chinese Edition. It aims to simplify editing level JSON files with an intuitive interface.';
+      'C-Editor is a visual level editing tool designed for Plants vs. Zombies 2 (Chinese Version). It aims to simplify editing level JSON files with an intuitive interface.';
 
   @override
   String get featuresSection => 'Core features';
 
   @override
-  String get feature1 => 'Modular editing: Manage level modules and events.';
+  String get feature1 =>
+      'Modular editing: Organize level modules and events in a modular interface for quick configuration.';
 
   @override
   String get feature2 =>
-      'Multi-mode: I, Zombie, Vasebreaker, Last Stand, Zomboss Mech battle, and more.';
+      'Multi-mode support: Edit I, Zombie, Vasebreaker, Last Stand, Zomboss Battle, and many other level modes.';
 
   @override
   String get feature3 =>
-      'Custom zombies: Inject and edit custom zombie properties.';
+      'Custom injection: Inject and manage custom zombies, custom lawns, and custom Zomboss mechs within a level, including their core properties.';
 
   @override
   String get feature4 =>
-      'Validation: Detect missing modules, broken references, and other issues.';
+      'Smart validation: Automatically detect missing module dependencies, broken references, and other issues to help prevent level crashes.';
+
+  @override
+  String get feature5 =>
+      'Resource previews: Built-in icons for plants, zombies, and grid items provide a clearer, what-you-see-is-what-you-get editing experience.';
 
   @override
   String get usageSection => 'Usage';
 
   @override
   String get usageText =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: On first launch, tap the folder icon in the upper-right corner and choose the folder that stores your level JSON files.\n2. Open/Create: Tap a level in the list to edit it, or use the button below to create a new level from a template.\n3. Modules: In the editor, use \"Add New Module\" to extend the level with additional features.\n4. Save: When editing is complete, tap the save button in the upper-right corner to write the changes back to the original JSON file automatically.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextDesktop =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Click a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Click save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: On first launch, click the folder icon in the upper-right corner and choose the folder that stores your level JSON files.\n2. Open/Create: Click a level in the list to edit it, or use the button below to create a new level from a template.\n3. Modules: In the editor, use \"Add New Module\" to extend the level with additional features.\n4. Save: When editing is complete, click the save button in the upper-right corner to write the changes back to the original JSON file automatically.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Click the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageTextMobile =>
-      '1. Directory Setup: Tap the folder icon to select a folder for level JSON files.\n2. Open/Create: Tap a level to edit or use \"+\" to create from template.\n3. Modules: Add modules in the editor.\n4. Save: Tap save to write back to the JSON file.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (rename to .json before importing) or encrypted RTON for use in dynamic.rsb.smf.\n6. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n7. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n8. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
+      '1. Directory Setup: On first launch, tap the folder icon in the upper-right corner and choose the folder that stores your level JSON files.\n2. Open/Create: Tap a level in the list to edit it, or use the button below to create a new level from a template.\n3. Modules: In the editor, use \"Add New Module\" to extend the level with additional features.\n4. Save: When editing is complete, tap the save button in the upper-right corner to write the changes back to the original JSON file automatically.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.';
 
   @override
   String get usageRecommendedLevelsLabel =>
@@ -1197,11 +1200,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateVaseBreakerExample => 'Vasebreaker level template';
 
   @override
-  String get templateZombossMechExample => 'Zomboss Mech battle level template';
+  String get templateZombossMechExample => 'Zomboss Mech Battle level template';
 
   @override
   String get templateZombossBattleExample =>
-      'Non-mech Zomboss battle level template';
+      'Non-mech Zomboss Battle level template';
 
   @override
   String get templateCustomZombieExample => 'Custom zombie level template';
@@ -1231,7 +1234,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Saved';
 
   @override
-  String get failedToLoadLevel => 'Failed to load level';
+  String get failedToLoadLevel =>
+      'Failed to load the level.\nWe recommend checking whether the level file is encrypted (for example, a JSON file used by hot updates).';
 
   @override
   String get noLevelDefinition => 'No level definition';
@@ -1292,10 +1296,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagHenaiAtlantis => 'Heian Ages / Underwater World';
 
   @override
-  String get zombieTagMoon => 'Moon Base';
+  String get zombieTagMoon => 'Moon BaseZ';
 
   @override
-  String get zombieTagTaleZCorp => 'Fairytale Forest / ZCorp Takeover';
+  String get zombieTagTaleZCorp => 'Fairy Forest / Zombie Corporation';
 
   @override
   String get zombieTagParkourSpeed => 'Parkour Party / Speed Racing';
@@ -1323,6 +1327,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieTagExpedition => 'Expedition Gate Variants';
+
+  @override
+  String get zombieTagPvp => 'Two-Player Mode Variants';
 
   @override
   String get zombieTagPet => 'Pet';
@@ -1478,13 +1485,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plantTagWorldAtlantis => 'Underwater World';
 
   @override
-  String get plantTagWorldMoon => 'Moon Base';
+  String get plantTagWorldMoon => 'Moon BaseZ';
 
   @override
-  String get plantTagWorldFairytale => 'Fairytale Forest';
+  String get plantTagWorldFairytale => 'Fairy Forest';
 
   @override
-  String get plantTagWorldZcorp => 'ZCorp Takeover';
+  String get plantTagWorldZcorp => 'Zombie Corporation';
 
   @override
   String get plantTagWorldMausoleum => 'Underground Palace';
@@ -1530,10 +1537,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaseBreaker => 'Vasebreaker';
 
   @override
-  String get zombossMech => 'Zomboss Mech battle';
+  String get zombossMech => 'Zomboss Mech Battle';
 
   @override
-  String get zombossBattle => 'Non-mech Zomboss battle';
+  String get zombossBattle => 'Non-mech Zomboss Battle';
 
   @override
   String get moveSourceSameAsDest => 'Source and target folder are the same';
@@ -1681,7 +1688,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveContainerAliasHint =>
-      'Alias for the WaveManagerProperties object that stores wave data.';
+      'The alias used in the level file for the WaveManagerProperties object that stores wave data. It generally does not need to be changed manually.';
 
   @override
   String waveManagerGlobalSummary(
@@ -2009,6 +2016,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Last Stand mode does not need an opening intro.';
 
   @override
+  String get conflictDesc_CowboyIntro =>
+      'Not OK Corral conflicts with the Intro Animation module. Using them together will cause the zombie preview and transition effect at the start of the level to behave incorrectly.';
+
+  @override
   String get conflictDesc_EvilDaveZombieDrop =>
       'I, Zombie mode cannot have Zombie Drop module.';
 
@@ -2018,11 +2029,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get conflictDesc_ZombossDeathDrop =>
-      'Loot Drop in Zomboss Mech battle mode will prevent proper level completion.';
-
-  @override
-  String get conflictDesc_ZombossBattleDeathDrop =>
-      'Loot Drop in Non-mech Zomboss battle mode will prevent proper level completion.';
+      'Loot Drop in Zomboss Mech Battle mode will prevent proper level completion.';
 
   @override
   String get conflictDesc_WinConditionExclusive =>
@@ -2058,11 +2065,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get conflictDesc_WaveGeneratorRenai =>
-      'Wave Generator is incompatible with the Renai module and will crash the level on load.';
+      'Wave Generator is incompatible with the Renaissance module and will cause the level to crash.';
 
   @override
   String get conflictDesc_WaveGeneratorWitch =>
-      'Wave Generator is incompatible with the Witch module and will crash the level on load.';
+      'Wave Generator is incompatible with the Fright Witch module and will cause the level to crash.';
 
   @override
   String get missingPlantModuleWarningTitle =>
@@ -2100,6 +2107,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stageTypeSpecial => 'Special';
+
+  @override
+  String get stageTypeCustomPresets => 'Custom Presets';
 
   @override
   String get search => 'Search';
@@ -2174,7 +2184,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_WaveGeneratorProperties =>
-      'Legacy embedded wave definition (campaign-style levels). Mutually exclusive with Wave Manager.';
+      'Legacy wave format used by Kongfu World and other early levels';
 
   @override
   String get moduleTitle_CustomLevelModuleProperties =>
@@ -2250,17 +2260,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hiddenPlantChooserBlockedMessage =>
-      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nAlso, except for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, most hidden plants\' seed packet textures appear as Sunflowers in-game, which may affect the level\'s overall appearance.';
+      'Hidden plants cannot be selected in Chooser Mode. Use Preset Mode, Conveyor Belt, Packet Drops, or other methods instead.\nExcept for certain plants such as Priest Puff-shroom and P-Mech Assembler - Flame Star, all other hidden plants appear as Sunflowers in the in-game seed bank; plants such as Mini Cactus Ball and Magic Beanstalk also have some abnormal interactions that may affect the level\'s overall presentation, so use them with caution.';
 
   @override
-  String get comingSoonPlantBlockedLabel => 'A Message from Space';
+  String get comingSoonPlantBlockedLabel => 'To Be Continued';
 
   @override
-  String get comingSoonPlantBlockedTitle => 'A Message from Space';
+  String get comingSoonPlantBlockedTitle => 'To Be Continued';
 
   @override
   String get comingSoonPlantBlockedMessage =>
-      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+      'The plants are still growing strong. Stay tuned for future updates!';
+
+  @override
+  String get stayTunedMoonPlantBlockedTitle => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonPlantBlockedMessage =>
+      'Moon BaseZ Part 2 is coming soon. Keep a lookout!';
 
   @override
   String get stayTunedMoonZombieBlockedLabel => 'A Message from Space';
@@ -2270,18 +2287,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stayTunedMoonZombieBlockedMessage =>
-      'The brand-new world, Moon Base, is coming in the not-too-distant future. Stay tuned!';
+      'Moon BaseZ Part 2 is coming soon. Keep a lookout!';
 
   @override
-  String get stayTunedTaleZCorpZombieBlockedLabel =>
-      'ZCorp\'s story is not over';
+  String get stayTunedTaleZCorpZombieBlockedLabel => 'Work\'s Not Over Yet';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedTitle => 'Under Construction';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedMessage =>
-      'Part 2 of ZCorp Secret Realm is coming soon. Stay tuned!';
+      'Part 2 of ZCorp Secret Realm is coming. Stay tuned!';
 
   @override
   String get stayTunedZombieBlockedLabel => 'Stay tuned';
@@ -2291,7 +2307,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stayTunedZombieBlockedMessage =>
-      'More zombies are approaching. Stay tuned for future updates!';
+      'More zombies are approaching. keep an eye out on upcoming updates!';
 
   @override
   String missingModuleForPlantsWarning(String moduleName, String plantList) {
@@ -2317,7 +2333,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_ZombiesDeadWinConProperties =>
-      'Required module for level stability';
+      'Performs level settlement after zombies die';
 
   @override
   String get moduleTitle_BronzeDeadWinConProperties =>
@@ -2391,7 +2407,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModuleNotDeepSeaWarning =>
-      'This module is recommended for use in Underwater World lawns. The grid belows only reflects the current lawn configuration; using this module on non-20,000 Leagues Under the Sea/Atlantis lawns may cause compatibility issues.';
+      'This module is recommended for Underwater World lawns. Using it on lawns other than 20,000 Leagues Under the Sea/Atlantis may cause compatibility issues.';
 
   @override
   String get spermWhaleModuleLawnPreview => 'Lawn Preview';
@@ -2530,26 +2546,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable I, Zombie mode (requires zombie bank and preset plants)';
 
   @override
-  String get moduleTitle_ZombossBattleModuleProperties => 'Zomboss Mech battle';
+  String get moduleTitle_ZombossBattleModuleProperties => 'Zomboss Mech Battle';
 
   @override
   String get moduleDesc_ZombossBattleModuleProperties =>
-      'Configures ZombossMech parameters and types';
+      'Configures Zomboss Mech types and parameters';
 
   @override
-  String get moduleTitle_ZombossBattleIntroProperties => 'ZombossMech Intro';
+  String get moduleTitle_ZombossBattleIntroProperties => 'Zomboss Mech Intro';
 
   @override
   String get moduleDesc_ZombossBattleIntroProperties =>
-      'Controls ZombossMech cutscenes and health bar display';
+      'Controls Zomboss Mech Battle cutscenes and health bar display';
 
   @override
   String get moduleTitle_ZombossLastStandMinigameProperties =>
-      'Non-mech Zomboss battle';
+      'Non-mech Zomboss Battle';
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
-      'Configures non-mech Zomboss last-stand battles (Kongfu, Qin, etc.)';
+      'Configures non-mech Zomboss Battles such as Qigong Master';
 
   @override
   String get moduleTitle_SeedRainProperties => 'It\'s Raining Seeds';
@@ -2564,6 +2580,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_LastStandMinigameProperties =>
       'Sets initial resources and enables setup phase';
+
+  @override
+  String get moduleTitle_CowboyMinigameProperties => 'Not OK Corral';
+
+  @override
+  String get moduleDesc_CowboyMinigameProperties =>
+      'Starts each zombie wave only after a plant from the conveyor belt is planted';
 
   @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
@@ -2791,11 +2814,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configures Steam Ages transportation sewers';
 
   @override
-  String get moduleTitle_SmokePollutionModuleProperties => 'Smoke Pollution';
+  String get moduleTitle_SmokePollutionModuleProperties => 'Steam Manhole';
 
   @override
   String get moduleDesc_SmokePollutionModuleProperties =>
-      'Configures steam poison fog manholes on the lawn';
+      'Configures Steam Ages steam sewers';
 
   @override
   String get moduleTitle_RoofProperties => 'Roof Pots';
@@ -2830,14 +2853,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_ArmrackProperties =>
-      'Configures weapon stand display on the lawn (wave 1 only)';
+      'Configures the spawning of Kongfu World weapon stands';
 
   @override
   String get moduleTitle_EnergyGridProperties => 'Taiji Tiles';
 
   @override
   String get moduleDesc_EnergyGridProperties =>
-      'Configures Taiji Tile display on the lawn (wave 1 only)';
+      'Configures the spawning of Kongfu World Taiji tiles';
 
   @override
   String get bronzeModuleTitle => 'Bronze Matrix Statues';
@@ -2991,7 +3014,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventDesc_SpawnModernPortalsWaveActionProps =>
-      'Summons spacetime portals at specific locations';
+      'Summons spacetime portals at set locations';
 
   @override
   String get eventTitle_StormZombieSpawnerProps => 'Storm Raid';
@@ -3187,6 +3210,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieVaseOption => 'Zombie Vase (Purple)';
+
+  @override
+  String get plantVaseOptionDescription =>
+      'Choose a plant seed packet to place inside a green vase.';
+
+  @override
+  String get zombieVaseOptionDescription =>
+      'Choose a zombie to place inside a purple vase.';
+
+  @override
+  String get collectableVaseOptionDescription =>
+      'Choose a collectible item to place inside a vase.';
 
   @override
   String get searchZombie => 'Search zombie';
@@ -3562,7 +3597,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customZombieHelpManualBody =>
-      'Custom injection auto-fills all properties from game files. You can further edit the JSON file manually if needed.';
+      'When injecting a custom zombie, the editor automatically fills in the original zombie\'s relevant properties from the corresponding game files. You can further edit the JSON file manually if needed.';
 
   @override
   String editAlias(String alias) {
@@ -3706,6 +3741,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get zombiePreviewTooltip => 'Zombie preview';
+
+  @override
   String get weatherSettings => 'Weather Settings';
 
   @override
@@ -3722,18 +3760,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startingPlantFood => 'Starting Plant Food';
 
   @override
-  String get bowlingFoulLine => 'No-planting line';
+  String get bowlingFoulLine => 'No-planting line (BowlingFoulLine)';
+
+  @override
+  String get bowlingFoulLinePreview => 'No-planting line preview';
 
   @override
   String get bowlingMinigameParams => 'Parameters';
 
   @override
   String get bowlingMinigameHelpOverview =>
-      'Sets the column index of the no-planting line for bulb bowling levels. Plants cannot be placed at or beyond this column.';
+      'A legacy configuration module for Bulb Bowling that sets the no-planting line and disables the shovel. It can also be used in regular levels. Plants cannot be placed on or to the right of the no-planting line.';
 
   @override
   String get bowlingMinigameHelpFoulLine =>
-      'BowlingFoulLine is a 0-based column index from the left edge of the lawn. Zombies and bowling bulbs interact with plants to the right of this line.';
+      'Sets the column boundary for the no-planting area. Its value is counted from the left edge of the lawn starting at 0. For example, the left boundary of the first tile from the left is 0, while its right boundary is 1. Lower boundary values leave less usable space on the left.\nOn Underwater World lawns, the game automatically adds 1 to this value. For example, a value of 0 leaves column 1 plantable and blocks planting from column 2 onward; the minimum value available in the editor is therefore -1.';
 
   @override
   String get stopColumn => 'Stop Column';
@@ -3778,11 +3819,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpDinoRow =>
-      'Row where the dinosaur appears, counted from the top (0-based). On deep-sea lawns, row 5 is also available.';
+      'The row where the dinosaur appears, counted from 0. On Underwater World lawns, this can be set to 5 for the sixth row.';
 
   @override
   String get eventHelpDinoWaveDuration =>
-      'How many waves the dinosaur stays on the lawn before leaving.';
+      'The number of waves a dinosaur remains on the lawn. The dinosaur will leave after staying for the specified number of waves or after interacting with a certain number of zombies. When set to 0, there is no wave limit, and the dinosaur will leave after completing its interactions by default.';
 
   @override
   String get unknownModuleTitle => 'Module editor in development';
@@ -4019,7 +4060,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customFishHelpPropsBody =>
-      'HitRect, AttackRect, ScareRect define collision areas. Speed and ScareSpeed control movement. ArtCenter defines center of the sprite.';
+      'HitRect, AttackRect and ScareRect define collision areas. Speed and ScareSpeed control movement. ArtCenter defines center of the sprite.';
 
   @override
   String get noEditableFishProps => 'No editable properties found.';
@@ -4103,7 +4144,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpFrostWindDirection =>
-      'You can set the direction of the wind (from left or right). Note that there is an interval between each wind event. To make them occur simultaneously, try adding multiple Freezing Wind events.';
+      'You can set the direction of the wind (from left or right). Note that there is an interval between each wind. To make them occur simultaneously, try adding multiple Freezing Wind events.';
 
   @override
   String get eventHelpModifyConveyorBody =>
@@ -4209,7 +4250,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpFairyFogBody =>
-      'Creates magic fog that covers the lawn and grants shields to zombies. Commonly used in Fairytale Forest levels. Can only be cleared by the Fairtyale Breeze event.\nHigher-tier fog grants stronger shields and increased control immunity to zombies. Tiers, from lowest to highest, are White, Blue, and Purple.';
+      'Creates magic fog that covers the lawn and grants shields to zombies. Commonly used in Fairy Forest levels. Can only be cleared by the Fairtyale Breeze event.\nHigher-tier fog grants stronger shields and increased control immunity to zombies. Tiers, from lowest to highest, are White, Blue, and Purple.';
 
   @override
   String get eventHelpFairyFogRange =>
@@ -4217,7 +4258,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpFairyWindBody =>
-      'Generates a continuous breeze that clears magical fog. Commonly used in Fairytale Forest levels.';
+      'Generates a continuous breeze that clears magical fog. Commonly used in Fairy Forest levels.';
 
   @override
   String get eventHelpFairyWindVelocity =>
@@ -4266,7 +4307,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusBody =>
-      'Spawns an Ice Cream Van in the specified lane. Ice Cream Van slowly enters from the right side while carrying zombies, occupying 2 lanes. Any plants run over by the van are instantly crushed.\nIf the van is displayed with Bubble Gun Imps and Lollipop Zombies (i.e. the schoolbus_special variant), they will continuously use their respective abilities while the van is moving.\nPlants like Spikeweed and Spikerock can puncture the van\'s tires. After its tires are punctured, the Ice Cream Van gradually slows down and enters a gliding state. After a short period of time, it comes to a stop and breaks down.';
+      'Spawns an Ice Cream Van in the specified lane. Ice Cream Van slowly enters from the right side while carrying zombies, occupying 2 lanes. Any plants run over by the van are instantly crushed.\nIf the van is displayed with Bubble Gun Imps and Lollipop Zombies (i.e. the schoolbus_special variant) and at least one plant is present on the lawn, they will continuously use their respective abilities while the van is moving.\nPlants like Spikeweed and Spikerock can puncture the van\'s tires. After its tires are punctured, the Ice Cream Van gradually slows down and enters a gliding state. After a short period of time, it comes to a stop and breaks down.';
 
   @override
   String get schoolBusHelpRows => 'Row';
@@ -4277,7 +4318,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpSchoolBusType =>
-      'Type selects the ice cream van variant. Normal (schoolbus_normal) is the standard van. Special (schoolbus_special) shows Bubble Gun Imps and Lollipop Zombies on the van; they use their abilities while the van is moving.';
+      'Type selects the ice cream van variant. Normal (schoolbus_normal) is the standard van. Special (schoolbus_special) shows Bubble Gun Imps and Lollipop Zombies on the van; while at least one plant is present on the lawn, they use their abilities as the van moves.';
 
   @override
   String get schoolBusHelpZombies => 'Zombies';
@@ -4425,11 +4466,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpStormLevels =>
-      'Zombie level and row cannot be set independently within storms. Level settings in the editor should be ignored; zombie levels follow the lawn’s level sequence by default.';
+      'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.';
 
   @override
   String get eventHelpGroundSpawnBody =>
       'Spawns zombies directly from the ground within the specified range. Configuration is similar to natural spawning. Level 0 follows the lawn’s default level (which is Level 1 in Creative Courtyard).\n By default, the Drop config specifies the number of zombies that carry Plant Food. After adding a plant, it will randomly assign a zombie to drop a seed packet of the selected plant.';
+
+  @override
+  String get moduleHelpDeathHoleBody =>
+      'When a plant is shoveled, eaten, or otherwise removed, it leaves an unplantable crater on the tile it occupied for a period of time.';
+
+  @override
+  String get moduleHelpZombieMoveFastBody =>
+      'Makes zombies move quickly as they enter the lawn, returning to normal speed after they reach the specified column. Commonly used in the Zombie Elimination Initiative levels.';
+
+  @override
+  String get moduleHelpSeedRainBody =>
+      'At fixed intervals, this module causes item cards to fall from the sky.';
+
+  @override
+  String get moduleHelpSeedRainParameters => 'Parameter settings';
+
+  @override
+  String get moduleHelpSeedRainParametersBody =>
+      'Weight determines an item\'s chance of dropping, while Max count limits how many copies may be present on the lawn at once. Note that most zombies do not have matching zombie card icons.';
+
+  @override
+  String get moduleHelpSeedRainPlantLevels => 'Plant tiers';
+
+  @override
+  String get seedRainAddContentTitle => 'Add rain content';
+
+  @override
+  String get seedRainAddPlantDescription =>
+      'Select one or more plant seed packets to fall from the sky.';
+
+  @override
+  String get seedRainAddZombieDescription =>
+      'Select one or more zombie cards to fall from the sky.';
+
+  @override
+  String get seedRainAddPlantFoodDescription =>
+      'Add Plant Food as a possible falling item.';
+
+  @override
+  String get moduleHelpRailcartBody =>
+      'Configure the positions of minecarts and rails and select the minecart style. Tap a tile once to place an item, and tap it again to remove it.';
+
+  @override
+  String get moduleHelpRailcartRailsBody =>
+      'In Lay rails mode, tap tiles to lay rails. The editor automatically combines consecutive tiles in the same column into a single rail segment.';
+
+  @override
+  String get moduleHelpRailcartCartsBody =>
+      'Tap tiles to place or remove minecarts. Note that minecarts on the same rail segment can easily stack.';
 
   @override
   String get moduleHelpTideBody =>
@@ -4526,6 +4616,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get direction => 'Direction';
 
   @override
+  String get windDirectionLabel => 'Direction';
+
+  @override
   String get velocityScale => 'Speed multiplier (VelocityScale)';
 
   @override
@@ -4540,7 +4633,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventColumnRangeExampleHint =>
-      'To spawn from columns n through m, enter n - 1 for the start column and m for the end column.';
+      'To spawn from columns X through Y, enter X - 1 for the start column and Y for the end column.';
 
   @override
   String get zombieLevels => 'Zombie level';
@@ -4576,7 +4669,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get costumeOff => 'Costume: off';
 
   @override
-  String get outsideLawnItems => 'Objects outside the lawn';
+  String get outsideLawnItems => 'Item(s) outside the lawn';
 
   @override
   String get zombieFromLeft => 'From left';
@@ -4597,6 +4690,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manholePipelines => 'Manhole pipelines';
 
   @override
+  String get manholePipelineHelpTitle => 'Manhole Pipeline';
+
+  @override
   String get manholePipelineHelpOverview =>
       'Defines an underground pipe system. Commonly used in Steam Ages levels. Pipes connect two sewers, allowing zombies to travel between them.';
 
@@ -4605,27 +4701,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select a pipe group from the list above. The grid below shows the layout. Use \"Set Start\" or \"Set End\", then tap a tile to place it.';
 
   @override
-  String get smokePollutionModuleTitle => 'Smoke pollution module';
+  String get smokePollutionModuleTitle => 'Steam Manhole module';
 
   @override
-  String get smokePollutionModuleHelpTitle => 'Smoke pollution module';
+  String get smokePollutionModuleHelpTitle => 'Steam Manhole module';
 
   @override
   String get smokePollutionModuleHelpOverview => 'Overview';
 
   @override
   String get smokePollutionModuleHelpOverviewBody =>
-      'Places smoke manholes on the lawn that erupt after a delay, releasing poison fog. Commonly used in Steam Ages levels.';
+      'Pre-place covered sewer manholes on the lawn, commonly used in Steam Ages levels. After the specified time, toxic steam blasts the covers off and spreads across a 3×3 area centered on each manhole. Plants caught in the steam take 30 damage per second.';
 
   @override
-  String get smokePollutionModuleHelpManholes => 'Manholes';
+  String get smokePollutionModuleHelpManholes => 'Usage';
 
   @override
   String get smokePollutionModuleHelpManholesBody =>
-      'Select a tile on the grid, then add manholes at that position. Each manhole has a Start Time — seconds from level start until it erupts and releases poison fog.';
+      'Select a tile, then tap \"+\" to place a sewer manhole. Each manhole can have its eruption time (StartTime) configured independently, determining how long after the level begins its cover is blasted off and toxic steam is released.';
 
   @override
-  String get smokePollutionModuleStartTimeLabel => 'Start time (s)';
+  String get smokePollutionModuleStartTimeLabel =>
+      'Eruption time (unit: seconds)';
 
   @override
   String manholePipelineStartEndFormat(int sx, int sy, int ex, int ey) {
@@ -4684,13 +4781,94 @@ class AppLocalizationsEn extends AppLocalizations {
       'Last Stand requires Manual Startup to be enabled in the Wave Manager; otherwise zombies will appear automatically. The editor manages this switch automatically when the Last Stand module is added or removed.';
 
   @override
+  String moduleDependencyRequiredMessage(String moduleName) {
+    return 'To select this module, add the \"$moduleName\" module first.';
+  }
+
+  @override
+  String get conveyorManualPacketSpawning => 'Manual packet spawning';
+
+  @override
+  String get cowboyMinigameSettings => 'Not OK Corral settings';
+
+  @override
+  String get cowboyMinigameBeginString => 'Prompt text';
+
+  @override
+  String get cowboyMinigameBeginStringHidden => 'Do not show text';
+
+  @override
+  String get cowboyMinigameBeginStringDefault => 'Default text';
+
+  @override
+  String get cowboyMinigameBeginStringCustom =>
+      'Custom text (Chinese supported)';
+
+  @override
+  String get cowboyMinigameCustomTextInput => 'Custom prompt text';
+
+  @override
+  String get cowboyMinigameShowTutorial => 'Show tutorial dialogue';
+
+  @override
+  String get cowboyMinigameBeginStringHint =>
+      'Adding the Not OK Corral module automatically enables Manual Packet Spawning in the Conveyor Belt module.';
+
+  @override
+  String get cowboyMinigameHelpTitle => 'Not OK Corral module';
+
+  @override
+  String get cowboyMinigameHelpOverviewBody =>
+      'A Wild West-exclusive minigame. Before each wave, the player receives a randomly selected seed packet. Planting it starts a zombie wave, and defeating every zombie completes the level.\nBefore planting each seed packet, the player can preview the types, counts, and positions of zombies in each row, allowing them to plan where to place the plant.';
+
+  @override
+  String get cowboyMinigameHelpBeginStringBody =>
+      'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be hidden or replaced with custom text.';
+
+  @override
+  String get cowboyMinigameHelpTutorialBody =>
+      'When Show Tutorial Dialogue is enabled, Crazy Dave and Penny appear before the level and explain the minigame through dialogue based on the first-play conversation from Wild West - Day 4.';
+
+  @override
+  String get cowboyMinigameDependencyWarningTitle => 'Required module missing';
+
+  @override
+  String get cowboyMinigameConveyorWarning =>
+      'The Not OK Corral module must be used together with the Conveyor Belt module; otherwise, the level will crash.';
+
+  @override
+  String customGravestoneReplacePrompt(String gridItemName) {
+    return 'Only one custom tombstone can be added to a level. Replace the level\'s existing custom tombstone with \"$gridItemName\"?';
+  }
+
+  @override
+  String get customGravestoneResourceGroupPrompt =>
+      'To display the Player\'s House tombstone correctly and prevent it from using the Sun texture, the lawn must include the \"Modern_Gravestone\" resource group. Open the custom lawn screen to add it? You can use the \"Modern Graveyard\" preset as a base.';
+
+  @override
+  String get openCustomStageSelection => 'Open custom lawns';
+
+  @override
+  String get customGridItemReplaceAction => 'Replace';
+
+  @override
   String get roofFlowerPot => 'Roof Pots module';
 
   @override
-  String get roofFlowerPotColumns => 'Flower pot columns (0–8)';
+  String get roofFlowerPotColumns => 'Flower Pot Range';
+
+  @override
+  String get roofFlowerPotStartColumn => 'Start column (StartColumn)';
+
+  @override
+  String get roofFlowerPotEndColumn => 'End column (EndColumn)';
 
   @override
   String get roofFlowerPotPreview => 'Flower pot preview';
+
+  @override
+  String get roofFlowerPotLawnMismatchWarning =>
+      'The current lawn is not a Roof lawn. This module may not work in-game and could cause the level to crash.';
 
   @override
   String get eventConveyorModify => 'Event: Conveyor Change';
@@ -5041,6 +5219,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get land => 'Land';
 
   @override
+  String get tidePositionOrderHint =>
+      'The rightmost lawn coordinate is 0 and the leftmost is 9. The Tide System module must be added last, or the level may crash.';
+
+  @override
   String groupConfigN(int n) {
     return 'Group $n config';
   }
@@ -5233,11 +5415,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get missingZombossMechModule =>
-      'Missing Zomboss Mech battle module (ZombossBattleModuleProperties)';
+      'Missing Zomboss Mech Battle module (ZombossBattleModuleProperties)';
 
   @override
   String get missingZombossBattleModule =>
-      'Missing Non-mech Zomboss battle module (ZombossLastStandMinigameProperties)';
+      'Missing Non-mech Zomboss Battle module (ZombossLastStandMinigameProperties)';
 
   @override
   String get challengeNoConfig =>
@@ -5298,6 +5480,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String stormCarriedZombiesCount(int count) {
+    return 'Carried zombies ($count total)';
+  }
+
+  @override
   String get eventGraveSpawnSubtitle => 'Event: Grave Item Spawner';
 
   @override
@@ -5321,7 +5508,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpStormZombieLevels =>
-      'Zombie level and row cannot be set independently within storms. Level settings in the editor should be ignored; zombie levels follow the lawn’s level sequence by default.';
+      'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.';
 
   @override
   String get spawnParameters => 'Spawn parameters';
@@ -5361,7 +5548,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get levelAccount => 'Level: account';
+  String get levelAccount => 'Level: follows account';
 
   @override
   String levelDisplay(String value) {
@@ -5408,7 +5595,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpJitteredZtPerks =>
-      'Assign Ztalemate Escape perkss to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
+      'Assign Ztalemate Escape perks to individual zombies. Zombies with perks receive additional bonuses. Perks are saved in the zombie\'s Titles array. Only one perk of each type may be used on the same zombie (for example, Crystal I and Crystal II cannot both be applied).';
 
   @override
   String get ztPerkCategoryCrystal => 'Crystallization';
@@ -5438,7 +5625,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ztPerkPropDamageTakenInterval => 'Damage interval';
 
   @override
-  String get ztPerkPropDamageTotalTaken => 'Total damage taken';
+  String get ztPerkPropDamageTotalTaken => 'Cumulative damage instances taken';
 
   @override
   String get ztPerkPropDamageTakenPerTime => 'Damage per hit';
@@ -5464,10 +5651,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String ztPerkDescCrystal(
     String interval,
+    String damageCount,
     String damagePerHit,
     String hpReduced,
   ) {
-    return 'Grants immunity to instant-kill effects, allows damage to be taken only once every $interval seconds, reduces all damage taken to $damagePerHit, and reduces health by $hpReduced.';
+    return 'Grants immunity to instant-kill effects, allows damage to be taken only $damageCount times every $interval seconds, reduces each instance of damage taken to $damagePerHit, and reduces health by $hpReduced.';
   }
 
   @override
@@ -5507,7 +5695,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ztPerkCategoryDescCrystal =>
-      'Grants immunity to instant-kill effects, allows damage to be taken only once every A seconds, reduces all damage taken to B, and reduces health by X.';
+      'Grants immunity to instant-kill effects, allows damage to be taken only N times every A seconds, reduces each instance of damage taken to B, and reduces health by X.';
 
   @override
   String get ztPerkCategoryDescGravity =>
@@ -5552,7 +5740,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reverseZombieFactionSubtitle =>
-      'When enabled, placed zombies belong to the plant faction and can be used in Plant Wars (ZvZ).';
+      'When enabled, placed zombies belong to the plant faction and can be used in \"Zombie Wars\" (ZvZ) gameplay.';
 
   @override
   String get initialWeight => 'Initial weight';
@@ -5565,29 +5753,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get missingIntroModuleHint =>
-      'Level is missing ZombossMech intro module (ZombossBattleIntroProperties). The level may not function correctly. Please add the module and reselect the ZombossMech.';
+      'Level is missing Zomboss Mech Intro module (ZombossBattleIntroProperties). The level may not function correctly. Please add the module and reselect the ZombossMech.';
 
   @override
-  String get zombossMechType => 'ZombossMech type';
+  String get zombossMechType => 'Zomboss Mech type';
 
   @override
-  String get unknownZombossMech => 'Unknown ZombossMech';
+  String get unknownZombossMech => 'Unknown Zomboss Mech';
 
   @override
-  String get zombossMechSelection => 'ZombossMech selection';
+  String get zombossMechSelection => 'Zomboss mech selection';
 
   @override
-  String get zombossMechBaseLabel => 'Base ZombossMech';
+  String get zombossMechBaseLabel => 'Base Zomboss Mech';
 
   @override
   String get zombossMechBaseHint =>
-      'Mech boss family (Egypt, Future, Memory Lane robot, etc.). Changing this updates the available variations below.';
+      'Zombots built and piloted by Dr. Zomboss himself, commonly encountered as the ultimate challenge of a world or game mode. Changing the base mech will also change the available variations below.';
 
   @override
-  String get zombossMechSelectBaseTitle => 'Select base ZombossMech';
+  String get zombossMechSelectBaseTitle => 'Select base Zomboss mech';
 
   @override
-  String get zombossMechChangeBase => 'Change base ZombossMech';
+  String get zombossMechChangeBase => 'Change base Zomboss mech';
 
   @override
   String get zombossMechUsedProperties => 'Used properties';
@@ -5597,7 +5785,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechVariationHint =>
-      'Specific mech type used in-game (ZombossMechType). Options depend on the base ZombossMech selected above. Phase count and spawn position sync automatically.';
+      'The specific mech type used in the level (ZombossMechType). Available options depend on the base mech selected above; changing the type will also update the mech\'s number of phases and spawn position accordingly.';
 
   @override
   String get zombossBattleSelection => 'Zomboss selection';
@@ -5606,68 +5794,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossBattleSelectBaseTitle => 'Select base Zomboss';
 
   @override
+  String get zombossBattleLeaveUndergroundTitle => 'Switch base Zomboss';
+
+  @override
+  String zombossBattleLeaveUndergroundBody(String zombossName) {
+    return 'You are about to switch from $zombossName to another base Zomboss. The Finisher Countdown module will be removed from the level automatically. Remove the Underground Palace Pathways module as well?';
+  }
+
+  @override
+  String get zombossBattleKeepTunnelDefend => 'Keep pathways';
+
+  @override
+  String get zombossBattleRemoveTunnelDefend => 'Remove pathways too';
+
+  @override
   String get zombossBattleChangeBase => 'Change base Zomboss';
 
   @override
-  String get zombossBattleBaseLabel => 'Base zomboss';
+  String get zombossBattleBaseLabel => 'Base Zomboss';
 
   @override
   String get zombossBattleBaseHint =>
-      'Boss family (Kongfu blade, Qin Shi Huang, etc.). Changing this updates bundled resource groups automatically.';
+      'Zombie bosses who hold sway in a world or realm that Dr. Zomboss has yet to visit, with phase and spawn mechanics similar to those of Zomboss mechs. Changing the base Zomboss will also change its corresponding resource group.';
 
   @override
   String get zombossBattleVariationLabel => 'Variation';
 
   @override
   String get zombossBattleVariationHint =>
-      'Specific Zomboss type used in-game (ZombossTypeName). Options depend on the base zomboss selected above.';
+      'The specific Zomboss type used in the level (ZombossTypeName). Available options depend on the base Zomboss selected above.';
 
   @override
-  String get zombossBattleStartingSunLabel => 'Starting sun (StartingSun)';
+  String get zombossBattleStartingSunLabel => 'Starting Sun (StartingSun)';
 
   @override
   String get zombossBattleStartingSunHint =>
-      'Sun available when the battle begins.';
+      'The amount of sun available when entering the level.';
 
   @override
   String get zombossBattleStartingPlantfoodLabel =>
-      'Starting plant food (StartingPlantfood)';
+      'Starting Plant Food (StartingPlantfood)';
 
   @override
   String get zombossBattleStartingPlantfoodHint =>
-      'Plant Food available when the battle begins.';
+      'The amount of Plant Food available when entering the level.';
 
   @override
   String get zombossBattleInitialGridColLabel =>
-      'Spawn column (ZombossInitialGridCol)';
+      'Starting Column (ZombossInitialGridCol)';
 
   @override
   String get zombossBattleInitialGridColHint =>
-      'Grid column where the Zomboss appears.';
+      'Sets which column the Zomboss initially appears in.';
 
   @override
   String get zombossBattleInitialGridRowLabel =>
-      'Spawn row (ZombossInitialGridRow)';
+      'Starting Row (ZombossInitialGridRow)';
 
   @override
   String get zombossBattleInitialGridRowHint =>
-      'Grid row where the Zomboss appears.';
+      'Sets which row the Zomboss initially appears in.';
 
   @override
   String get zombossBattleStartStageIndexLabel =>
-      'Start stage (ZombossStartStageIndex)';
+      'Starting Stage (ZombossStartStageIndex)';
 
   @override
   String get zombossBattleStartStageIndexHint =>
-      'Which boss phase index the fight begins at (0 = first phase).';
+      'Sets which stage of the Zomboss mech the battle starts from. 0 represents the first stage.';
 
   @override
   String get zombossBattleSkipPlantingLabel =>
-      'Skip planting phase (SkipPlanting)';
+      'Skip Setup Phase (SkipPlanting)';
 
   @override
   String get zombossBattleSkipPlantingHint =>
-      'When enabled, the level skips the setup/planting phase before the boss fight.';
+      'When enabled, the preparation phase used in Last Stand will not appear before the Zomboss battle.';
 
   @override
   String get parameters => 'Parameters';
@@ -5858,7 +6060,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieLevelsBody =>
-      'Zombie level and row cannot be set independently within storms. Level settings in the editor should be ignored; zombie levels follow the lawn’s level sequence by default.';
+      'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.';
 
   @override
   String get batchLevel => 'Batch level';
@@ -5879,7 +6081,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appliesToAllNonElite =>
-      'Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level)';
+      'Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level).';
 
   @override
   String get dropConfigPlants => 'Drop Configuration (seed packets)';
@@ -6043,8 +6245,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cost increase per planting (BaseCostIncreased)';
 
   @override
-  String get maxIncreaseCountLabel =>
-      'Max Increase Count (MaxIncreasedCount) — Capped at 10 in-game, value changes have no effect';
+  String get maxIncreaseCountLabel => 'Max Increase Count (MaxIncreasedCount)';
+
+  @override
+  String get inflationMaxIncreaseCountWarning =>
+      'Due to an issue with the module itself, changing the maximum increase count currently has no effect. The game only reads the default value of 10.';
+
+  @override
+  String get inflationHelpTitle => 'Inflation module';
+
+  @override
+  String get inflationHelpOverview =>
+      'Each time a plant is planted, its sun cost increases, similar to how upgrade plants work in Survival: Endless in the original game.';
+
+  @override
+  String get inflationHelpParametersTitle => 'Parameter description';
+
+  @override
+  String get inflationHelpParametersBody =>
+      'Configure the amount of sun cost added after each planting and the maximum number of price increases.';
 
   @override
   String get selectGroup => 'Select group';
@@ -6124,7 +6343,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seedBankLetsPlayersChoose =>
-      'Seed Bank lets players choose from available plants. In Creative Courtyard, it supports setting a global tier and enables access to all plants. When selection mode is set to Preset, placing the Seed Bank before the Conveyor Belt makes conveyor plants cost sun, while placing it after allows preset plants to be planted without sun cost.';
+      'Seed Bank lets players choose from available plants. In Creative Courtyard, it supports setting a global tier and enables access to all plants.';
 
   @override
   String get iZombieModePresetHint =>
@@ -6133,6 +6352,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invalidIdsHint =>
       'Invalid IDs will appear as empty slots in the Seed Bank. In I, Zombie Mode, plant IDs are invalid, and vice versa. This can be used to create two Seed Banks in one level and combine both modes. Make sure the Zombie Seed Bank is placed first.';
+
+  @override
+  String get seedBankWhiteAndBlacklistTitle => 'Whitelist and blacklist';
+
+  @override
+  String get seedBankIZombieHelpTitle => 'I, Zombie mode';
+
+  @override
+  String get seedBankSlotOccupancyTitle => 'Slot occupancy';
+
+  @override
+  String get seedBankAdvancedGameplayTitle => 'Advanced gameplay';
+
+  @override
+  String get seedBankAdvancedGameplayBody =>
+      'When selection mode is Preset, placing the Seed Bank before the Conveyor Belt makes conveyor plants cost sun, while placing it after allows preset plants to be planted without sun cost.';
 
   @override
   String get seedBankIZombie => 'Seed Bank (I, Zombie Mode)';
@@ -6151,11 +6386,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get presetPlantListReorderHint =>
-      'Long press the ⋮⋮ handle and drag to reorder.';
+      'Long press the ⋮⋮ handle and drag to reorder';
 
   @override
   String get presetPlantListReorderHintDesktop =>
-      'Drag the ⋮⋮ handle to reorder.';
+      'Drag the ⋮⋮ handle to reorder';
 
   @override
   String get whiteListDescription =>
@@ -6174,7 +6409,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seedBankPresetModeHint =>
-      'Preset mode enters game immediately regardless of card count.';
+      'When Preset mode is enabled, the level starts immediately regardless of how many plants are pre-selected.';
 
   @override
   String get seedBankPlantLevelLabel => 'Plant level (0-5)';
@@ -6184,19 +6419,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seedBankCourtyardSlotsHint =>
-      'Courtyard mode ignores slot count. Chooser locks 8 slots.';
+      'In Creative Courtyard, changes to the number of seed slots have no effect. Chooser mode is fixed at 8 slots.';
 
   @override
-  String get seedBankAddGridItemsTitle => 'Add grid items';
+  String get seedBankAddGridItemsTitle => 'Add Grid Items';
 
   @override
   String get seedBankAddGridItemsSubtitle =>
-      'Append grid items to PresetPlantList. Duplicates are allowed.';
+      'Add plantable grid items to the preset plant list. Duplicates are allowed.';
 
   @override
   String seedBankGridItemCount(int count) {
-    return 'In preset list: $count';
+    return 'The preset list already contains $count';
   }
+
+  @override
+  String get seedBankGridItemsPresetOnlySwitchWarning =>
+      'The \"Add Grid Items\" feature only works in Preset mode. Switching to Chooser mode will turn it off. Continue switching?';
 
   @override
   String get starChallengeSelectConditions => 'Select conditions';
@@ -6285,10 +6524,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'By default, this module uses the game’s built-in values. You can enable custom settings to edit detailed parameters.';
 
   @override
-  String get noZombossMechFound => 'No ZombossMech found';
+  String get noZombossMechFound => 'No Zomboss Mech found';
 
   @override
-  String get noZombossBattleFound => 'No zomboss definitions found';
+  String get noZombossBattleFound => 'No Zomboss definitions found';
 
   @override
   String get searchChallengeNameOrCode =>
@@ -6468,14 +6707,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tunnelDefendSequenceInterval =>
-      'Tunnel sequence interval (TunnelSequenceInterval, seconds)';
+      'Pathway Generation Interval (TunnelSequenceInterval, unit: seconds)';
 
   @override
-  String get tunnelDefendHelpSequenceInterval => 'Sequence interval';
+  String get tunnelDefendHelpSequenceInterval => 'Pathway Generation Interval';
 
   @override
   String get tunnelDefendHelpSequenceIntervalBody =>
-      'Delay between tunnel sequence steps. Lower values make pathways appear faster.';
+      'The interval between the appearance of each pathway components when Lord of the Underground Palace generates a pathway. Lower values make pathway components appear more quickly.';
 
   @override
   String get tunnelDefendHelpSodPromptBody =>
@@ -6549,7 +6788,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expeditionTilesHelpEditingBody =>
-      'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Whirlpool tiles and blank tiles are both plantable areas; the whirlpool tiles here only recreate the initial lawn layout used by this module.';
+      'Tap any tile on the lawn to add or remove a non-plantable tile. Non-plantable tiles cover the original floor and cannot be planted on in-game. Swirly tiles and blank tiles are both plantable areas; the Swirly tiles here only recreate the initial lawn layout used by this module.';
 
   @override
   String get expeditionTilesHelpPresets => 'Preset Layouts';
@@ -6571,49 +6810,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tunnelExpeditionCompatibilityWarningTitle =>
-      'Module Compatibility Warning';
+      'Module compatibility warning';
 
   @override
   String get tunnelExpeditionCompatibilityWarningBody =>
       'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.';
 
   @override
+  String get lifeSupportLastStandConflictWarning =>
+      'The Life Support System and Last Stand modules cannot coexist; otherwise, the level will fail to start correctly.';
+
+  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
-      'Final stage time limit';
+      'Finisher Countdown';
 
   @override
   String get moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties =>
-      'Enables the final zomboss desperation timer. Add or remove only — the timer value comes from the zomboss property sheet (e.g. ZombossFinalStageTimeLimited on Qin Shi Huang props), not from module parameters.';
+      'Required module for the Lord of the Underground Palace Zomboss battle';
 
   @override
-  String get finalStageTimeLimitedChallengeTitle => 'Final stage time limit';
+  String get finalStageTimeLimitedChallengeTitle => 'Finisher Countdown';
 
   @override
   String get finalStageTimeLimitedChallengeHelpTitle =>
-      'Final stage time limit challenge module';
+      'Finisher Countdown module';
 
   @override
   String get finalStageTimeLimitedChallengeHelpIntro =>
-      'Adds a timed kill challenge during the final zomboss stage (commonly used in Qin Shi Huang boss fights). The actual timer is read from the zomboss property sheet (ZombossFinalStageTimeLimited), not from this module\'s ZombossTimeLimit field.';
+      'Adds a timed defeat challenge to the final stage of the Lord of the Underground Palace Zomboss battle. If its remaining health is not depleted within the time limit, Lord of the Underground Palace will swing its sword.';
 
   @override
-  String get finalStageTimeLimitedChallengeHelpParams =>
-      'Parameter configuration';
+  String get finalStageTimeLimitedChallengeHelpParams => 'Parameters';
 
   @override
   String get finalStageTimeLimitedChallengeHelpParamsBody =>
-      'This editor screen is currently unwired. Levels should reference RTID(FinalStageTimeLimitedChallenge@LevelModules) only. Custom @CurrentLevel overrides are not supported until the game reads them correctly.';
+      'For now, this module only needs to be referenced directly in LevelModules. The actual countdown duration is determined by ZombossFinalStageTimeLimited in the Zomboss properties rather than the ZombossTimeLimit field in this module, so customizing this module has no practical effect.';
 
   @override
   String get finalStageTimeLimitedChallengeTimeLimit =>
-      'Zomboss time limit (ZombossTimeLimit, seconds)';
+      'Sword Swing Countdown (ZombossTimeLimit, unit: seconds)';
 
   @override
   String get moduleTitle_LawnMowerProperties => 'Lawn Mowers';
 
   @override
   String get moduleDesc_LawnMowerProperties =>
-      'Sets mower styles (may not work in custom lawns)';
+      'Sets mower styles (doesn\'t work in Creative Courtyard)';
 
   @override
   String get moduleTitle_TunnelDefendModuleProperties =>
@@ -6660,11 +6902,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get witchModuleHelpParamsBody =>
-      'By default, this module uses the values defined in the game files. Alternatively, you may enable custom local parameters and modify the interval between witch appearances';
+      'By default, this module uses the values defined in the game files. Alternatively, you may enable custom local parameters and modify the interval between witch appearances.';
 
   @override
   String get witchModuleSpawnInterval =>
-      'Witch spawn interval (WitchSpawnInterval, seconds)';
+      'Witch spawn interval (WitchSpawnInterval, unit: seconds)';
 
   @override
   String get gulliverTunnelTitle => 'Gulliver Tunnels';
@@ -6734,7 +6976,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get riftThemeHelpOverview =>
-      'This module defines a list of themes for the level. Themes are global conditions found in modes such as Penny\'s Pursuit, Memory Lane, and Secret Realm. Each theme provides unique effects. For detailed descriptions of individual themes, please refer to the wiki.gg pages covering those themes.';
+      'This module defines a list of themes for the level. Themes are global conditions found in modes such as Penny\'s Pursuit, Memory Lane, and Secret Realm. Each theme provides unique effects. Long-press or right-click a theme card to view a brief description of its effects and the related plant and zombie lists.';
 
   @override
   String get riftThemeHelpUsage => 'Usage';
@@ -7096,43 +7338,106 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openModuleSettings => 'Open Module Settings';
 
   @override
-  String get moduleTitle_GlacierModuleProperties => 'Glacier Spawn';
+  String get moduleTitle_GlacierModuleProperties => 'Ice Chunk Module';
 
   @override
   String get moduleDesc_GlacierModuleProperties =>
-      'Zombie spawn weights for Ice Age Zomboss glacier blocks (6 columns from the left)';
+      'Configure the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss';
 
   @override
-  String get glacierModuleTitle => 'Glacier module';
+  String get glacierModuleTitle => 'Ice Chunk module';
 
   @override
-  String get glacierModuleHelpTitle => 'Glacier module';
+  String get glacierModuleHelpTitle => 'Ice Chunk module';
 
   @override
   String get glacierModuleHelpOverviewBody =>
-      'Configures which zombies can emerge from glacier blocks when the Ice Age Zomboss destroys them. Place this module at the start of the level Modules list. Without it, glacier blocks will not spawn zombies.';
+      'The Frostbite Caves Zomboss summons zombies differently from other Zomboss mechs: it spits out blasts of ice from bottom to top to create Ice Chunks, which release the zombies hidden inside when they break. This module is used to configure which zombies may appear inside the Ice Chunks.';
 
   @override
-  String get glacierModuleHelpColumnsTitle => 'Columns and entries';
+  String get glacierModuleHelpColumnsTitle => 'Parameters';
 
   @override
   String get glacierModuleHelpColumnsBody =>
-      'ZombieSpawnData always has exactly six elements, one per column counting from the left edge of the lawn. Each column holds a weighted list of zombie types (TypeName), spawn weight (Weight), and level (Level, 0–10).';
+      'This module consists of 6 content groups, with each group corresponding to one column of Ice Chunks. Counting starts from the column farthest from Zomboss, which is the leftmost column on a standard lawn. After selecting Add content, you can add either a zombie or the empty outcome \"No zombie appears.\" Every item has its own appearance weight; only zombie items can switch zombie type and set a level of up to Level 4, while the empty outcome only has a weight.';
 
   @override
-  String get glacierModuleHelpRequirementsTitle => 'Requirements';
+  String get glacierModuleHelpRequirementsTitle => 'Notes';
 
   @override
   String get glacierModuleHelpRequirementsBody =>
-      'Only takes effect together with the Zomboss Mech Battle module when the selected Zomboss Mech is an Ice Age variant (zombossmech_iceage and its variations).';
+      'This module must be used together with the Zomboss Mech Battle module, and the selected base Zomboss mech must be \"Frostbite Caves Zomboss (Zombot Tuskmaster 10,000 BC)\"; otherwise, it will have no effect.\nIn addition, using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn is not recommended, as it negatively affects the overall appearance of the level.';
+
+  @override
+  String get glacierModuleHelpPresetsTitle => 'Preset configurations';
+
+  @override
+  String get glacierModuleHelpPresetsBody =>
+      'The editor includes the Ice Chunk configurations used by each Frostbite Caves Zomboss variation in the original game. Applying a preset replaces all six Ice Chunk groups and cannot be undone; you can still adjust the entries manually afterward. The Beplanted variation does not need the Ice Chunk Module and therefore has no preset. The custom variation uses a blank preset by default.';
+
+  @override
+  String get glacierModulePresetSectionTitle => 'Ice Chunk presets';
+
+  @override
+  String get glacierModulePresetBlankCustom =>
+      'Custom variation (blank preset)';
+
+  @override
+  String get glacierModulePresetCustomConfiguration => 'Custom configuration';
+
+  @override
+  String get glacierModuleSwitchPresetTitle => 'Switch Ice Chunk preset';
+
+  @override
+  String glacierModuleSwitchPresetMessage(String from, String to) {
+    return 'Switch from \"$from\" to \"$to\"? All six current Ice Chunk groups will be replaced and this cannot be undone.';
+  }
+
+  @override
+  String get glacierModuleVariationPresetPromptTitle =>
+      'Enable the matching Ice Chunk preset';
+
+  @override
+  String get glacierModuleVariationPresetPrompt =>
+      'The Frostbite Caves Zomboss summons zombies by filling Ice Chunks. The zombies released from those chunks are configured by the dedicated Ice Chunk Module. You are about to switch to another Frostbite Caves Zomboss variation. Also enable the Ice Chunk Module preset used by that variation in the original game?';
+
+  @override
+  String get glacierModuleCustomVariationPresetPrompt =>
+      'The custom variation uses a blank Ice Chunk preset by default. Also switch the Ice Chunk Module to the blank preset?';
+
+  @override
+  String get zombossMechSwitchVariationOnly => 'Switch variation only';
+
+  @override
+  String get glacierModuleEnablePreset => 'Enable preset too';
+
+  @override
+  String get iceAgePlantPuzzleVariationWarningTitle =>
+      'Beplanted does not need Ice Chunks';
+
+  @override
+  String get iceAgePlantPuzzleVariationWarning =>
+      'The Beplanted variant of Zombot Tuskmaster 10,000 BC was designed specifically for the Beplanted minigame in Frostbite Caves. Its abilities do not require the Ice Chunk Module.';
+
+  @override
+  String get glacierModuleCompatibilityWarningTitle =>
+      'Ice Chunk Module requirements';
 
   @override
   String get glacierModuleCompatibilityWarning =>
-      'This module only works with the Zomboss Mech Battle module and an Ice Age Zomboss Mech (zombossmech_iceage). Add or fix those settings so glacier blocks can spawn zombies.';
+      'Ice Chunk Module must be used together with the Zomboss Mech Battle module, and the selected base Zomboss mech must be \"Frostbite Caves Zomboss (Zombot Tuskmaster 10,000 BC)\"; otherwise, it will have no effect. If you do not intend to use the Frostbite Caves Zomboss in this level, it is recommended to remove this module.';
+
+  @override
+  String get glacierModuleUnderwaterWarningTitle =>
+      'Underwater World appearance incompatibility';
+
+  @override
+  String get glacierModuleUnderwaterWarning =>
+      'Avoid using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn. This combination can harm the level appearance.';
 
   @override
   String glacierModuleColumn(int columnIndex) {
-    return 'Column $columnIndex (from left)';
+    return 'Column $columnIndex from the Left';
   }
 
   @override
@@ -7140,41 +7445,61 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count entries',
-      one: '1 entry',
+      other: '$count items configured',
+      one: '1 item configured',
     );
     return '$_temp0';
   }
 
   @override
   String glacierModuleEntryLabel(int index) {
-    return 'Entry $index';
+    return 'Group $index';
   }
 
   @override
-  String get glacierModuleNoEntries => 'No zombie entries for this column.';
+  String get glacierModuleNoEntries =>
+      'No content has been configured in this group yet.';
 
   @override
-  String get glacierModuleAddEntry => 'Add zombie entry';
+  String get glacierModuleAddEntry => 'Add content';
 
   @override
-  String get glacierModuleSelectZombie => 'Select zombie';
+  String get glacierModuleAddContentTitle => 'Add Ice Chunk content';
 
   @override
-  String get glacierModuleEmptyType => 'No zombie selected';
+  String get glacierModuleAddZombieContent => 'Add zombie';
+
+  @override
+  String get glacierModuleAddZombieDescription =>
+      'Choose a zombie that may appear when the Ice Chunk breaks.';
+
+  @override
+  String get glacierModuleAddEmptyDescription =>
+      'Add a separately weighted outcome in which the Ice Chunk releases no zombie.';
+
+  @override
+  String get glacierModuleSelectZombie => 'Select Zombie';
+
+  @override
+  String get glacierModuleEmptyType => 'No zombie appears';
 
   @override
   String get glacierModuleWeight => 'Weight';
 
   @override
   String get glacierModuleWeightTooltip =>
-      'Relative spawn weight for this zombie in this column.';
+      'Sets the weight of this zombie appearing in Ice Chunks in this column.';
 
   @override
-  String get glacierModuleLevel => 'Level (0–10)';
+  String get glacierModuleEmptyWeightTooltip =>
+      'Sets the weight of the outcome in which the Ice Chunk releases no zombie.';
 
   @override
-  String get glacierModuleLevelTooltip => 'Zombie level from 0 to 10.';
+  String get glacierModuleLevel => 'Zombie level';
+
+  @override
+  String get glacierModuleLevelTooltip =>
+      'Sets the zombie\'s level, from 0 to 4. Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard.';
 
   @override
   String get moduleTitle_HeianWindModuleProperties => 'Heian Divine Wind';
@@ -7313,6 +7638,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooltipAboutModule => 'About this module';
 
   @override
+  String get tooltipAboutSection => 'About this section';
+
+  @override
   String get tooltipAboutEvent => 'About this event';
 
   @override
@@ -7412,7 +7740,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieSunDropHelpValuesBody =>
-      '10 integer values correspond to sun dropped at levels 1–10. For levels above 6, the value for level 1 will be used.';
+      'Six integer values correspond to sun dropped at levels 1–6. For levels above 6, the value for level 1 will be used.';
 
   @override
   String get zombieSunDropEmpty =>
@@ -7429,10 +7757,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieSunDropEditHint =>
-      'Configure the amount of sun dropped by this zombie at different levels; for levels above 6, the level 1 value will be used';
+      'Configure this zombie\'s sun drops for levels 1–6; for levels above 6, the level 1 value will be used';
 
   @override
   String get zombieSunDropTier => 'Level';
+
+  @override
+  String zombieSunDropTierLabel(int tier) {
+    return 'Level $tier';
+  }
 
   @override
   String get moduleTitle_PickupCollectableTutorialProperties =>
@@ -7533,23 +7866,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editCustomZombossMech => 'Edit';
 
   @override
-  String get customZombossMechProperties => 'Custom ZombossMech properties';
+  String get customZombossMechProperties => 'Custom Zomboss Mech properties';
 
   @override
-  String get customZombossMechScalars => 'General';
+  String get customZombossMechScalars => 'Movement Parameters';
 
   @override
-  String get customZombossMechStages => 'Battle phases';
+  String get customZombossMechStages => 'Mech Phases';
 
   @override
   String get customZombossMechEditHint =>
-      'Edit level-local property sheet for the memo (custom) mech variation.';
+      'Edit the properties of the custom mech variation (memo) used in the level. Custom Zomboss mechs are commonly found in Memory Lane levels.';
 
   @override
   String get zombossMechMinColumn => 'Min column';
 
   @override
   String get zombossMechMaxColumn => 'Max column';
+
+  @override
+  String get zombossMechSquashZombies => 'Can squash zombies';
+
+  @override
+  String get zombossMechSquashGridItems => 'Can squash grid items';
+
+  @override
+  String get zombossMultipleModuleSelectionHint =>
+      'Multiple Boss modules were found. Select the instance to edit from the module list in Level Settings.';
 
   @override
   String get zombossMechStageActions => 'Actions';
@@ -7576,6 +7919,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'This removes the phase and its action list. This cannot be undone.';
 
   @override
+  String get zombossMechDeleteEightiesPhaseMessage =>
+      'This removes the phase, its action list, and the corresponding music and Zomboss animation. This cannot be undone.';
+
+  @override
+  String get zombossMechStageJamOrder => 'Music playback order (StageJamOrder)';
+
+  @override
+  String get zombossMechZombossAnimOrder =>
+      'Zomboss animation order (ZombossAnimOrder)';
+
+  @override
+  String get zombossMechAddEightiesPhaseTitle =>
+      'Choose music and Zomboss animation for the new phase';
+
+  @override
+  String get zombossMechEightiesPhaseSelectionRequired =>
+      'Select both the music played during this phase and the Zomboss animation it uses before creating the phase.';
+
+  @override
+  String get zombossMechCreatePhase => 'Create phase';
+
+  @override
+  String get zombossAnimNewWave => 'New Wave';
+
+  @override
+  String get zombossAnimHipHop => 'Hip-Hop';
+
+  @override
   String get zombossMechOrphanActionDeleteTitle => 'Remove custom action data?';
 
   @override
@@ -7585,7 +7956,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechPhasesHelp =>
-      'Each phase has hit points, an ordered action list (executed top to bottom), and optionally a retreat action when the mech supports it.';
+      'Each phase can be configured independently with parameters such as the mech\'s health, available actions, and the retreat action performed when transitioning between phases. Actions in the list are executed based on the weights and repeat counts defined in their individual action properties; they are not executed sequentially in list order.';
+
+  @override
+  String get zombossMechPhasesHelpTitle => 'Phase contents';
 
   @override
   String get zombossMechAddAction => 'Add action';
@@ -7644,7 +8018,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechActionAliasHint =>
-      'Codename used in RTID(alias@CurrentLevel). You can change it later; references in this property sheet update automatically.';
+      'The reference name used for a custom action within the level. It is used to form RTID(Name@CurrentLevel) references for related entries in the mech properties. This name can be changed at any time, and any existing related RTID references in the properties will be updated automatically.';
 
   @override
   String get zombossMechActionBaseObjclass => 'Action Type (objclass)';
@@ -7677,10 +8051,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionFields => 'Action Fields';
 
   @override
-  String get zombossMechPropertiesViewTitle => 'ZombossMech Properties';
+  String get zombossMechPropertiesViewTitle => 'Zomboss Mech Properties';
 
   @override
-  String get viewZombossMechProperties => 'View Properties';
+  String get viewZombossMechProperties => 'View properties';
 
   @override
   String get zombossMechEditRetreatAction => 'Choose retreat action';
@@ -7718,7 +8092,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechRetreatDisabled => 'Disabled';
 
   @override
-  String get zombossMechOpenGlacierModule => 'Open glacier module settings';
+  String get zombossMechOpenGlacierModule => 'Go to Ice Chunk Module settings';
+
+  @override
+  String get zombossMechConfigureInitialGridItems =>
+      'Configure preset grid items';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPromptTitle =>
+      'Pre-place the Zomboss\' speakers?';
+
+  @override
+  String get zombossMechEightiesSpeakerPresetPrompt =>
+      'The first phase of the Neon Mixtape Tour Zomboss usually relies on dedicated speakers on the lawn to support its abilities, so official levels pre-place speakers at specific positions on the lawn.\nYou are about to switch to the Neon Mixtape Tour Zomboss. Would you like to place these speakers at the same positions used in the official levels?';
+
+  @override
+  String get zombossMechSwitchBaseOnly => 'Switch mech only';
+
+  @override
+  String get zombossMechPreplaceSpeakers => 'Pre-place speakers';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePromptTitle =>
+      'Remove the Zomboss\' speakers?';
+
+  @override
+  String get zombossMechEightiesSpeakerRemovePrompt =>
+      'You are about to switch from the Neon Mixtape Tour Zomboss to another base mech. Would you like to remove the dedicated speakers that were previously placed at the official positions? \nOnly speakers that are still Zomboss speakers at those positions will be removed; anything you later replaced them with will be left unchanged.';
+
+  @override
+  String get zombossMechKeepSpeakers => 'Keep speakers';
+
+  @override
+  String get zombossMechRemoveSpeakers => 'Remove speakers';
 
   @override
   String get zombossMechRobotSpawnRow => 'Row';
@@ -7733,7 +8139,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechRobotSpawnWeight => 'Weight';
 
   @override
-  String get zombossMechRobotSpawnPlantfood => 'Plant food';
+  String get zombossMechRobotSpawnPlantfood => 'Carries Plant Food';
 
   @override
   String get zombossMechRetreatAction => 'Retreat action';
@@ -7750,7 +8156,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechRemovePhase => 'Remove phase';
 
   @override
-  String get zombossMechHitPoints => 'Hit points';
+  String get zombossMechHitPoints => 'Health (HitPoints)';
 
   @override
   String get continueAnyway => 'Continue anyway';
@@ -7766,35 +8172,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get armrackModuleHelpOverviewBody =>
-      'Places weapon stands on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.';
+      'Places weapon stands from Kongfu World at specified positions on the lawn. Kongfu Zombies and Monk Zombies that pass by a Weapon Stand will pick up the weapon on it, transform into the corresponding special zombie, and fully restore their health. The weapon stand will break and disappear either when its own health is depleted or when the weapon on it is picked up.\nThis module also ensures that Weapon Stands display correctly in both the editor and the game, preventing them from incorrectly appearing with a sun texture.';
 
   @override
   String get armrackModuleHelpPlacement => 'Placement';
 
   @override
   String get armrackModuleHelpPlacementBody =>
-      'Choose a stand type, then tap a tile to place it (one per tile). Right-click or long-press a tile to remove its stand.';
+      'Select a weapon stand type, then click an empty tile to place the selected Weapon Stand. Only one can be placed on each tile. Right-click on desktop or long-press on mobile to remove the weapon stand from that tile.';
 
   @override
-  String get armrackModuleHelpWaveLimit => 'Wave limit';
+  String get armrackModuleHelpWaveLimit => 'Wave Limitations';
 
   @override
   String get armrackModuleHelpWaveLimitBody =>
-      'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.';
+      'In levels that use the Wave Manager, only the first group\'s configuration takes effect in-game, and only the first group is shown on the editor\'s Wave Timeline. When using the Wave Generator, weapon stands can be added to other wave groups normally and will spawn with their corresponding waves in the level.';
 
   @override
-  String get armrackModuleTypePalette => 'Stand type';
+  String get armrackModuleTypePalette => 'Weapon Stand Type';
 
   @override
-  String get armrackModuleExpectationLabel => 'Weapon stands';
+  String get armrackModuleExpectationLabel => 'Weapon Stands';
 
   @override
   String get armrackModuleIgnoredWaveOverridesWarning =>
-      'This level contains weapon stand overrides for waves other than wave 1. They are saved but not shown in the wave timeline because the game only applies wave 1.';
+      'The level contains weapon stand configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because the Wave Manager only reads the first group\'s configuration.';
 
   @override
   String armrackModuleRequiredMessage(String moduleName) {
     return 'For weapon stands to display properly without showing sun textures, $moduleName needs to be added.';
+  }
+
+  @override
+  String renaiGridItemModuleRequiredMessage(String moduleName) {
+    return 'The Vitruvian Wheel requires the \"$moduleName\" to work correctly. Add it?';
   }
 
   @override
@@ -7808,36 +8219,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      'Places Taiji Tiles on the lawn. Wave 1 is the initial preset (before the level starts); later wave groups spawn during wave-generator waves using the N−1 rule.';
+      'Generates Taiji Tiles at specified positions on the lawn, commonly used in Kongfu World. When a plant is placed on a Taiji Tile, the Taiji emblem begins to flash and generates one Plant Food after 1000 ÷ the plant\'s sun cost seconds, then disappears. If the plant\'s sun cost is 0, no Plant Food will be generated.';
 
   @override
   String get energyGridModuleHelpPlacement => 'Placement';
 
   @override
   String get energyGridModuleHelpPlacementBody =>
-      'Tap an empty tile to place a Taiji Tile (one per tile). Right-click or long-press a tile to remove it.';
+      'Click an empty tile to place a Taiji Tile. Only one can be placed on each tile. Right-click on desktop or long-press on mobile to remove the Taiji Tile from that tile.';
 
   @override
-  String get energyGridModuleHelpWaveLimit => 'Wave limit';
+  String get energyGridModuleHelpWaveLimit => 'Wave Limitations';
 
   @override
   String get energyGridModuleHelpWaveLimitBody =>
-      'Due to a game limitation, only wave 1 entries take effect in-game. Other wave groups can still be edited here and are saved to the level file, but only wave 1 appears in the wave timeline tab.';
+      'In levels that use the Wave Manager, only the first group\'s configuration takes effect in-game, and only the first group is shown on the editor\'s Wave Timeline. When using the Wave Generator, Taiji Tiles can be added to other wave groups normally and will spawn with their corresponding waves in the level.';
 
   @override
   String get energyGridModuleTapToPlace =>
-      'Tap an empty tile to place a Taiji Tile.';
+      'Click an empty tile to place a Taiji Tile.';
 
   @override
-  String get energyGridModuleExpectationLabel => 'Taiji tiles';
+  String get energyGridModuleExpectationLabel => 'Taiji Tiles';
 
   @override
   String get energyGridModuleIgnoredWaveOverridesWarning =>
-      'This level contains Taiji Tile overrides for waves other than wave 1. They are saved but not shown in the wave timeline because the game only applies wave 1.';
+      'The level contains Taiji Tile configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because Wave Manager only reads the first group\'s configuration.';
 
   @override
   String get energyGridModuleWarningMessage =>
-      'Due to a game-side issue, generated Taiji Tiles may appear as purple X markers. This does not affect their actual functionality. If you want them to display properly, restarting the game is recommended.';
+      'Due to a game-side issue, generated Taiji Tiles may appear as purple X markers, but this does not affect their actual functionality.';
 
   @override
   String get gridOverrideModuleAppearances => 'Wave groups';
@@ -7847,15 +8258,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gridOverrideModuleTimelineNote =>
-      'Only wave 1 entries appear in the wave timeline tab.';
+      'Only the first group\'s configuration is shown on the Wave Manager timeline.';
 
   @override
   String get gridOverrideModuleInitialWaveNote =>
-      'This wave is used for preset grid items. Added grid items will appear on the lawn before the level starts.';
+      'This group is used for preset grid items. Added grid items will appear on the lawn before the level starts.';
 
   @override
   String gridOverrideModuleWaveSpawnNote(int waveGeneratorWave) {
-    return 'Grid items in this wave will spawn when Wave Generator wave $waveGeneratorWave begins.';
+    return 'Grid items in this group will spawn when Wave Generator wave $waveGeneratorWave begins.';
   }
 
   @override
@@ -7877,7 +8288,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorInitialGridOverridesTitle =>
-      'Initial Kongfu World Grid Items Management';
+      'Manage Initial Kongfu World Grid Items';
 
   @override
   String get waveGeneratorPreviewInitialArmrack => 'Initial Weapon Stands';
@@ -7889,14 +8300,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label) {
     return 'Wave $wave - $label';
   }
-
-  @override
-  String get waveGeneratorInitialPoolWarningTitle =>
-      'Add to initial zombie pool?';
-
-  @override
-  String get waveGeneratorInitialPoolWarningContent =>
-      'Zombies added here are not included in the editor random spawn expectation preview and will not take effect in-game. Continue?';
 
   @override
   String get mechanismPlankSettings => 'Connected Minecart settings';
@@ -8081,7 +8484,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get portalTypeEliteMirrorQueen => 'Elite Mirror Queen';
 
   @override
-  String get waveGeneratorTabLabel => 'Waves';
+  String get waveGeneratorTabLabel => 'Generator Timeline';
 
   @override
   String get waveGeneratorModuleTitle => 'Wave Generator';
@@ -8094,60 +8497,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpOverviewBody =>
-      'Legacy embedded wave system used in campaign-style levels such as Kongfu. Waves are stored inside this module — there are no separate wave events. Edit individual waves on the Waves tab.';
+      'Wave Generator is an early wave system used by Kongfu World, Daily Challenge, and other older levels. Each wave is stored directly in the module instead of using separate wave events.\nGroups in the Weapon Stands and Taiji Tiles modules can correspond one-to-one with Wave Generator waves to produce effects similar to wave events. The Wave Timeline shows where these Kongfu World grid items appear.';
 
   @override
-  String get waveGeneratorModuleHelpSpending => 'Spending points';
+  String get waveGeneratorModuleHelpSpending => 'Point-based spawning';
 
   @override
   String get waveGeneratorModuleHelpSpendingBody =>
-      'WaveSpendingPoints must be less than or equal to WaveSpendingPointIncrement. If WaveSpendingPoints is higher, the level crashes on load.';
+      'Random spawns use the points available to the current wave. The game selects by weight from zombies affordable with the remaining points, deducts the selected cost, and filters the candidates again until none are eligible. Unused points do not carry over to the next wave, and fixed spawns consume none of these points.';
+
+  @override
+  String get waveGeneratorModuleHelpPointTrajectory => 'Parameters';
+
+  @override
+  String get waveGeneratorModuleHelpPointTrajectoryBody =>
+      'Wave 1 uses Initial random-spawn points (WaveSpendingPoints). Points then increase by Points added per wave (WaveSpendingPointIncrement) by default, even across waves where random spawning is disabled.\nThe current-wave random spawn points (WavePointStart) setting changes the points for the current wave, current-wave point increment (WavePointIncrement) changes the increment used by later waves, and Reset point trajectory (WavePointOverride) determines whether the next wave returns to the points calculated from its original position or continues from the current wave\'s current-wave points as a new starting point.';
 
   @override
   String get waveGeneratorModuleHelpPool => 'Zombie pool';
 
   @override
   String get waveGeneratorModuleHelpPoolBody =>
-      'AddToZombiePool extends the random-spawn zombie pool from the given wave onward. Only built-in zombie types (ZombieTypes RTIDs) are supported — custom zombies crash the game.';
+      'The random-spawn zombie pool expands as waves progress. The initial pool is used when the level starts, and zombies added on each wave remain available to that wave and every later wave. Zombies added on a wave still enter the pool even if random spawning is disabled for that wave.';
 
   @override
-  String get waveGeneratorModuleHelpIncompat => 'Incompatibilities';
+  String get waveGeneratorModuleHelpIncompat => 'Module compatibility';
 
   @override
   String get waveGeneratorModuleHelpIncompatBody =>
-      'Cannot coexist with Wave Manager modules, Renai module, or Witch module.';
+      'Wave Generator cannot coexist with the Wave Manager, Renaissance, or Fright Witch modules; doing so will cause the level to crash.';
 
   @override
-  String get waveGeneratorModuleHelpRow => 'Row';
+  String get waveGeneratorModuleHelpRow => 'Row numbers';
 
   @override
   String get waveGeneratorModuleHelpRowBody =>
-      'Row values are 1-based strings in JSON (\"?\" = random).';
+      'Fixed-spawn rows are numbered from 1: enter \"1\" for Row 1, \"2\" for Row 2, and so on. Enter \"?\" to let the game choose a row at random.';
 
   @override
   String get waveGeneratorModuleGlobalParams => 'Global parameters';
 
   @override
-  String get waveGeneratorGlobalParams => 'Wave Generator Parameters';
+  String get waveGeneratorGlobalParams => 'Wave Generator parameters';
 
   @override
   String get waveGeneratorFlagIntervalHint =>
-      'Final wave is always a flag wave.';
+      'Marks every Nth wave as a flag wave. This does not change its random-spawn points.';
 
   @override
   String get flagWaveInterval => 'Flag wave interval (FlagWaveInterval)';
 
   @override
   String get waveGeneratorSpendingPoints =>
-      'Spending points (WaveSpendingPoints)';
+      'Initial random-spawn points (WaveSpendingPoints)';
 
   @override
   String get waveGeneratorSpendingPointIncrement =>
-      'Point increment (WaveSpendingPointIncrement)';
+      'Points added per wave (WaveSpendingPointIncrement)';
+
+  @override
+  String get waveGeneratorSpendingCompatibilityWarning =>
+      'The initial random-spawn points exceed the current-wave increment and may cause the level to crash while loading.';
 
   @override
   String waveGeneratorWaveCountSummary(int count) {
-    return 'Waves: $count (edit on Waves tab)';
+    return 'Total waves: $count';
   }
 
   @override
@@ -8155,36 +8569,51 @@ class AppLocalizationsEn extends AppLocalizations {
       'Initial zombie pool (AddToZombiePool)';
 
   @override
-  String get waveGeneratorEmptyPool => 'No zombies in the initial pool.';
+  String get waveGeneratorEmptyPool => 'The initial zombie pool is empty.';
 
   @override
   String get waveGeneratorCustomZombieBlocked =>
-      'Custom zombies are not supported in wave generator levels.';
+      'Custom zombies cannot be added here';
 
   @override
   String get waveGeneratorTabMissingModule =>
-      'Add Wave Generator module to edit waves.';
+      'Add a Wave Generator module to configure additional groups here.';
 
   @override
   String waveGeneratorTabSummary(int interval, int points, int increment) {
-    return 'Flag interval: $interval, Spending: $points + $increment/wave';
+    return 'Flag every $interval waves · Initial points $points · Increase by $increment per wave';
   }
 
   @override
-  String get waveGeneratorNoWaves => 'No waves defined.';
+  String get waveGeneratorNoWaves => 'No waves have been configured.';
 
   @override
-  String get waveGeneratorEmptyWaveRow => 'No scripted zombies (tap to edit)';
+  String waveGeneratorDeleteWaveConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'This will remove the wave and its $count fixed spawns.',
+      one: 'This will remove the wave and its 1 fixed spawn.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get waveGeneratorEmptyWaveRow => 'No fixed spawns';
 
   @override
   String get waveGeneratorRandomSpawnsEnabled => 'Random spawns enabled';
 
   @override
-  String get waveGeneratorRandomZombiesLabel => 'Random zombies:';
+  String get waveGeneratorRandomSpawnsDisabled =>
+      'Random spawns disabled for this wave';
+
+  @override
+  String get waveGeneratorRandomZombiesLabel => 'Current random-spawn pool';
 
   @override
   String get waveGeneratorWavePoolDisabled =>
-      'Random spawns are disabled — you cannot add zombies to the pool on this wave.';
+      'This wave does not perform random spawns, but zombie-pool changes still take effect from this wave.';
 
   @override
   String get waveGeneratorDisableRandomSpawns =>
@@ -8192,61 +8621,301 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorDisableRandomSpawnsHint =>
-      'When enabled, only scripted zombies spawn on this wave.';
+      'Skips point-based random spawning on this wave only. Points still increase with wave progress, and zombie-pool changes are preserved for later waves.';
 
   @override
   String get waveGeneratorWaitUntilAllDie =>
-      'Spawn this wave only after all zombies from the previous wave have been defeated (WaitUntilAllZombiesDie)';
+      'Wait until all zombies from the previous wave are defeated before spawning this wave (WaitUntilAllZombiesDie)';
 
   @override
-  String get waveGeneratorNoScriptedZombies =>
-      'No scripted zombies on this wave.';
+  String get waveGeneratorNoScriptedZombies => 'This wave has no fixed spawns.';
 
   @override
   String get waveGeneratorSpawnPlantFood =>
-      'Plant food drops (SpawnPlantFoodCount)';
+      'Number of zombies carrying Plant Food (SpawnPlantFoodCount)';
 
   @override
-  String get waveGeneratorWavePointStart => 'Wave point start (WavePointStart)';
+  String get waveGeneratorWavePointStart =>
+      'Current-wave random spawn points (WavePointStart)';
+
+  @override
+  String get waveGeneratorWavePointStartHint =>
+      'Sets the random-spawn points used by this wave only. Leave empty to use the points calculated by default.';
 
   @override
   String get waveGeneratorWavePointIncrement =>
-      'Wave point increment (WavePointIncrement)';
+      'New point increment (WavePointIncrement)';
 
   @override
-  String get waveGeneratorBlackHoleFieldHint =>
-      'Enter the number of columns to summon a black hole at the end of this wave, pulling all plants to the right.\nNote: Black hole can only be summoned if this wave is not the final wave of the level and \"Spawn this wave only after all zombies from the previous wave have been defeated\" is enabled.';
+  String get waveGeneratorWavePointIncrementHint =>
+      'Changes the point increment used by later waves. It only takes effect when current-wave random spawn points (WavePointStart) is set.';
 
   @override
-  String waveGeneratorBlackHoleWaveHint(int cols) {
-    return 'A black hole appears at the end of this wave and pulls plants $cols columns to the right';
+  String get waveGeneratorWavePointIncrementInactiveHint =>
+      'This setting has no effect without current-wave random spawn points (WavePointStart), but its existing value is preserved.';
+
+  @override
+  String get waveGeneratorWavePointOverride =>
+      'Reset point trajectory (WavePointOverride)';
+
+  @override
+  String get waveGeneratorWavePointOverrideHint =>
+      'When disabled, current-wave random spawn points (WavePointStart) affects only the current wave, and the next wave returns to the points calculated from its original wave position. When enabled, the current wave\'s spawn points become the new starting point for later waves. In both cases, later waves continue with the effective point increment.';
+
+  @override
+  String get waveGeneratorPointTrajectory => 'Point trajectory preview';
+
+  @override
+  String get waveGeneratorPointTrajectoryTemporary =>
+      'Current-wave random spawn points affect only this wave. The next wave returns to the points calculated from its original position and continues with the effective increment.';
+
+  @override
+  String get waveGeneratorPointTrajectoryReset =>
+      'The current wave\'s random spawn points become the new starting point for later waves, which continue with the effective increment.';
+
+  @override
+  String waveGeneratorPointTrajectoryWaveValue(int wave, int points) {
+    return 'W$wave · $points pts.';
   }
 
   @override
+  String get waveGeneratorBlackHoleFieldHint =>
+      'Enter a column count to summon a spacetime black hole at the end of this wave and pull all plants to the right.\nThe black hole appears only when this is not the level\'s final wave and Wait until all zombies from the previous wave are defeated before spawning this wave (WaitUntilAllZombiesDie) is enabled.';
+
+  @override
+  String waveGeneratorBlackHoleWaveHint(int cols) {
+    return 'A spacetime black hole appears at the end of this wave and pulls plants $cols columns to the right';
+  }
+
+  @override
+  String get waveGeneratorCurrentPool => 'Current effective zombie pool';
+
+  @override
+  String get waveGeneratorCurrentPoolEmpty =>
+      'The effective zombie pool is empty.';
+
+  @override
   String get waveGeneratorWavePoolAdd =>
-      'Add to pool this wave (AddToZombiePool)';
+      'Added to the pool on this wave (AddToZombiePool)';
 
   @override
-  String get waveGeneratorWaveScreenSubtitle => 'Wave generator wave';
+  String get waveGeneratorWavePoolNoChanges =>
+      'This wave does not extend the zombie pool.';
 
   @override
-  String get waveGeneratorWaveScreenHelpTitle => 'Wave Editor';
+  String get waveGeneratorWaveScreenSubtitle => 'Wave Generator module';
+
+  @override
+  String get waveGeneratorWaveScreenHelpTitle => 'Wave Generator module';
 
   @override
   String get waveGeneratorWaveScreenHelpBody =>
-      'Edit scripted spawns and wave-specific options. Random spawns use the cumulative zombie pool and spending points.';
+      'During random spawning, the game selects by weight from zombies affordable with the remaining points, deducts the selected cost, and filters the candidates again until no zombies are eligible. Unused points do not carry over to the next wave. Fixed spawns are added directly to this wave and consume no random-spawn points.';
+
+  @override
+  String get waveGeneratorRandomSpawnsSectionTitle => 'Random Spawns';
+
+  @override
+  String get waveGeneratorZombiePoolSectionTitle => 'Zombie Pool';
+
+  @override
+  String get waveGeneratorWaveSettingsTitle => 'Wave Settings';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpTitle => 'Fixed Spawns section';
+
+  @override
+  String get waveGeneratorRandomSpawnsHelpTitle => 'Random Spawns section';
+
+  @override
+  String get waveGeneratorZombiePoolHelpTitle => 'Zombie Pool section';
+
+  @override
+  String get waveGeneratorWaveSettingsHelpTitle => 'Wave Settings section';
+
+  @override
+  String get waveGeneratorFixedSpawnsHelpBody =>
+      'Fixed spawns are added directly to the current wave, consume no random-spawn points, and can be used together with random spawns.';
+
+  @override
+  String get waveGeneratorPointTrajectoryHelpBody =>
+      'The point trajectory preview shows the effective random-spawn points calculated by the editor for each wave. It does not represent the number of fixed spawns.';
+
+  @override
+  String get waveGeneratorWavePoolAddHelpBody =>
+      'Zombies added on this wave enter the effective pool immediately and continue to affect later waves. The additions still take effect when random spawning is disabled for this wave.';
+
+  @override
+  String get waveGeneratorPoolCompatibilityTitle => 'Type restrictions';
+
+  @override
+  String get waveGeneratorPoolCompatibilityHelpBody =>
+      'Wave Generator zombie pools support only standard in-game zombie types, not custom zombies defined in the level.';
+
+  @override
+  String get waveGeneratorWaitUntilAllDieHelpBody =>
+      'Controls whether this wave waits for every zombie from the previous wave to be defeated before it begins spawning.';
+
+  @override
+  String get waveGeneratorSpawnPlantFoodHelpBody =>
+      'Sets the number of zombies in this wave that carry and drop Plant Food.';
+
+  @override
+  String waveGeneratorFixedSummary(int count, int rows) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fixed spawns',
+      one: '1 fixed spawn',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      rows,
+      locale: localeName,
+      other: '$rows rows',
+      one: '1 row',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String get waveGeneratorFixedSummaryEmpty => 'No fixed spawns';
+
+  @override
+  String waveGeneratorRandomSummary(int points) {
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: 'Enabled · $points points',
+      one: 'Enabled · 1 point',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String waveGeneratorRandomLocalSummary(int points) {
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: 'Enabled · $points points · Current-wave points',
+      one: 'Enabled · 1 point · Current-wave points',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get waveGeneratorRandomSummaryDisabled =>
+      'No random spawns on this wave';
+
+  @override
+  String waveGeneratorPoolSummary(int current, int added) {
+    String _temp0 = intl.Intl.pluralLogic(
+      current,
+      locale: localeName,
+      other: '$current current types',
+      one: '1 current type',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      added,
+      locale: localeName,
+      other: '$added added on this wave',
+      one: '1 added on this wave',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String waveGeneratorPoolSummaryNoAdditions(int current) {
+    String _temp0 = intl.Intl.pluralLogic(
+      current,
+      locale: localeName,
+      other: '$current current types · No additions on this wave',
+      one: '1 current type · No additions on this wave',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get waveGeneratorWaveSettingsDefaultSummary => 'Default settings';
+
+  @override
+  String waveGeneratorWaveSettingsPlantFoodSummary(int count) {
+    return 'Plant Food ×$count';
+  }
+
+  @override
+  String waveGeneratorWaveSettingsBlackHoleSummary(int cols) {
+    return 'Spacetime black hole · $cols columns';
+  }
 
   @override
   String get waveGeneratorExpectationTapHint =>
-      'Tap to view random spawn expectation';
+      'View the random spawn estimate for this wave';
+
+  @override
+  String get waveGeneratorStatisticalPreview => 'Random-spawn preview';
 
   @override
   String get waveGeneratorExpectationEmpty =>
-      'No eligible pool zombies for random spawns on this wave.';
+      'This wave\'s zombie pool has no zombies eligible for random spawning.';
 
   @override
   String get waveGeneratorExpectationPoolNote =>
-      'Expectations are based on the cumulative AddToZombiePool. Other zombies may still appear if points are high enough.';
+      'The preview estimates spawn counts by repeatedly simulating weighted selections. Results can vary with selection order even when the point budget is unchanged, so it cannot precisely predict the game\'s actual spawns.';
+
+  @override
+  String waveGeneratorExpectationTitle(int wave) {
+    return 'Wave $wave random-spawn preview';
+  }
+
+  @override
+  String waveGeneratorEffectiveRandomPoints(int points) {
+    return 'Random-spawn points: $points';
+  }
+
+  @override
+  String waveGeneratorFixedSpawnCount(int count) {
+    return 'Fixed spawns: $count';
+  }
+
+  @override
+  String get waveGeneratorFixedSpawns => 'Fixed Spawns';
+
+  @override
+  String waveGeneratorPoolAddedCount(int count) {
+    return 'Pool additions this wave: $count';
+  }
+
+  @override
+  String get waveGeneratorWaitStatus => 'Waits for the previous wave';
+
+  @override
+  String get waveGeneratorExpectationDisabled =>
+      'Random spawning is disabled on this wave.';
+
+  @override
+  String waveGeneratorExpectationMissingData(String types) {
+    return 'Random-spawn preview unavailable because these zombies are missing reliable WavePointCost or Weight data: $types';
+  }
+
+  @override
+  String waveGeneratorExpectationEstimatedTotal(String count) {
+    return 'Average random spawns: about $count';
+  }
+
+  @override
+  String waveGeneratorExpectationCommonRange(int minimum, int maximum) {
+    return 'Estimated count range: $minimum–$maximum';
+  }
+
+  @override
+  String waveGeneratorExpectationCostWeight(int cost, String weight) {
+    return 'Cost $cost · Weight $weight';
+  }
+
+  @override
+  String waveGeneratorExpectationAverageCount(String count) {
+    return 'Average $count';
+  }
 
   @override
   String get protectItems => 'Save Our Items';
@@ -8464,7 +9133,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startupLoadingLocalization => 'Localization';
 
   @override
-  String get startupLoadingStages => 'Stages';
+  String get startupLoadingStages => 'Lawns';
 
   @override
   String get startupLoadingAudio => 'Audio';
@@ -8485,7 +9154,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startupLoadingPlants => 'Plants';
 
   @override
-  String get startupLoadingFish => 'Fish';
+  String get startupLoadingFish => 'Sea Creatures';
 
   @override
   String get startupLoadingImages => 'Images';
@@ -8685,4 +9354,247 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get customPortalSpawnIntervalSubtitle =>
       'Optionally set the minimum and maximum time between zombie spawns.';
+
+  @override
+  String get moduleTitle_MoonLifeSupportSystemProperties =>
+      'Life Support System';
+
+  @override
+  String get moduleDesc_MoonLifeSupportSystemProperties =>
+      'Configures the Moon BaseZ power capacity and overload protocols';
+
+  @override
+  String get moduleTitle_LunarTerminalModuleProperties => 'Lunar Terminal';
+
+  @override
+  String get moduleDesc_LunarTerminalModuleProperties =>
+      'Deploys mining robots to collect crystal energy and increase the power capacity limit';
+
+  @override
+  String get moduleTitle_LunarMineVeinModuleProperties => 'Lunar Veins';
+
+  @override
+  String get moduleDesc_LunarMineVeinModuleProperties =>
+      'Places Lunar Energy Crystal veins and sets their growth waves';
+
+  @override
+  String get moduleTitle_RadiationMeteorModuleProperties =>
+      'Radioactive Meteorite';
+
+  @override
+  String get moduleDesc_RadiationMeteorModuleProperties =>
+      'Drops meteorites that destroy plants and contaminate surrounding tiles';
+
+  @override
+  String get eventTitle_SpawnRocketLandingWaveActionProps => 'Rocket Landing';
+
+  @override
+  String get eventDesc_SpawnRocketLandingWaveActionProps =>
+      'Spawns capturable Moon rockets at set positions';
+
+  @override
+  String get moonLifeSupportHelpTitle => 'Life Support System';
+
+  @override
+  String get moonLifeSupportHelpOverview =>
+      'An economy system commonly used in Moon BaseZ levels. After this module is added, planting does not cost Sun. Instead, plants occupy a portion of the Life Support System\'s power capacity in real time. When a plant is shoveled, destroyed by zombies, or removed by a special mechanic, all capacity it occupied is immediately restored.\nNote that this module also prevents Level 4 and higher plants from automatically using their Plant Food ability when planted.';
+
+  @override
+  String get moonLifeSupportHelpProtocolsTitle => 'Overload protocols';
+
+  @override
+  String get moonLifeSupportHelpProtocols =>
+      'When the Life Support System\'s power usage exceeds its initial power capacity, the system enters an overloaded state and activates the Power-Saving Protocol, reducing the attack speed of plants on the lawn and the recharge speed of seed slots.\nWhen power usage exceeds (initial power capacity × required hibernation ratio), the system forcibly activates the Hibernation Protocol after the configured countdown, putting every plant on the lawn into hibernation. Seed slots and the Cosmic Plant Food meter are also locked and cannot be used.';
+
+  @override
+  String get moonLifeSupportHelpPlantFoodTitle => 'Independent cooldowns';
+
+  @override
+  String get moonLifeSupportHelpPlantFood =>
+      'The module defines a dedicated list of plants with independent cooldowns. The cooldowns of plants in this list are not affected by the Power-Saving Protocol, but those plants still cannot be planted under the Hibernation Protocol.';
+
+  @override
+  String get moonLifeSupportPowerSettings => 'Power settings';
+
+  @override
+  String get moonInitialCapacity => 'Initial power capacity (InitialCapacity)';
+
+  @override
+  String get moonBufferOverloadRatio =>
+      'Required hibernation ratio (BufferOverloadRatio)';
+
+  @override
+  String get moonPenaltyCountdown =>
+      'Hibernation countdown (PenaltyCountdown, unit: seconds)';
+
+  @override
+  String get moonPlantImmunityList =>
+      'Plants with independent cooldowns (PlantImmunityList)';
+
+  @override
+  String get moonPlantImmunityListHint =>
+      'The cooldowns of plants in this list are not affected by the Power-Saving Protocol, but those plants still cannot be planted under the Hibernation Protocol.';
+
+  @override
+  String get moonSelectImmunePlants => 'Select plants to add to the list';
+
+  @override
+  String get lunarTerminalHelpTitle => 'Lunar Terminal';
+
+  @override
+  String get lunarTerminalHelpOverview =>
+      'An Artifact commonly used in Moon BaseZ levels. It remains at a fixed position on the lawn, similar to the cannon in Sky City. After tapping the collection terminal, select one of three mining robots and drag it onto the lawn. Robots automatically collect energy from Lunar Energy Crystals and Radioactive Meteorites within range, permanently increasing the base Life Support System\'s available power capacity for the current level and allowing stronger lineups. Robots have health and can be attacked and destroyed by zombies, Radioactive Meteorites, and other targets.';
+
+  @override
+  String get lunarTerminalHelpFixedTitle => 'Deployment cooldown';
+
+  @override
+  String get lunarTerminalHelpFixed =>
+      'After deploying a robot, the Lunar Energy Collection Terminal enters a cooldown period. The cooldown duration can be customized in the level.';
+
+  @override
+  String get lunarTerminalCollectorCooldown =>
+      'Robot deployment cooldown (CollectorCooldown, unit: seconds)';
+
+  @override
+  String get lunarMineVeinHelpTitle => 'Lunar Veins';
+
+  @override
+  String get lunarMineVeinHelpOverview =>
+      'Places Lunar Energy Crystal veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a Lunar Energy Crystal grows at the same position and can then be harvested normally to supply power.';
+
+  @override
+  String get lunarMineVeinHelpWaveTitle => 'Wave numbering';
+
+  @override
+  String get lunarMineVeinHelpWave =>
+      'Growth wave (EmergenceWave) is numbered from 1. Enter 1 to grow on the first wave, 2 to grow on the second wave, and so on.';
+
+  @override
+  String get lunarMineVeinPlacements => 'Vein placements (VeinPlacements)';
+
+  @override
+  String get lunarMineEmergenceWave => 'Growth wave (EmergenceWave, 1-based)';
+
+  @override
+  String get moonPlacementGestureHint =>
+      'Tap an empty tile to add an entry. Right-click or long-press an occupied tile to remove it.';
+
+  @override
+  String get radiationMeteorHelpTitle => 'Radioactive Meteorite';
+
+  @override
+  String get radiationMeteorHelpOverview =>
+      'Drops special Radioactive Meteorites on specified waves, as commonly seen in Moon BaseZ. Before a meteorite lands, a red-text warning appears in the level and a crosshair marks its expected landing tile. After the configured warning duration, the meteorite falls straight down, instantly destroying units on its landing tile, then slowly contaminates surrounding tiles clockwise.\nZombies on contaminated tiles gain increased movement speed and health regeneration, while Cosmic plants continuously take damage.';
+
+  @override
+  String get radiationMeteorHelpWaveTitle => 'Wave numbering';
+
+  @override
+  String get radiationMeteorHelpWave =>
+      'Radioactive Meteorite landing waves use a 0-based index: enter 0 for the first wave, 1 for the second wave, and so on. When a landing schedule group is added in the editor, Group 1 defaults to 0, Group 2 to 1, and so forth.';
+
+  @override
+  String get radiationMeteorHelpMiningTitle => 'Mining to destroy';
+
+  @override
+  String get radiationMeteorHelpMining =>
+      'Lunar Energy Collection Units can mine Radioactive Meteorites and destroy them after a period of time. After a meteorite is destroyed, the terminal grants the player a permanent power-capacity increase for the current level and removes the contamination effects.';
+
+  @override
+  String get radiationMeteorParameters => 'Meteor parameters';
+
+  @override
+  String get radiationMeteorWarningDuration =>
+      'Warning duration (WarningDuration, unit: seconds)';
+
+  @override
+  String get radiationMeteorPollutionInterval =>
+      'Contamination interval (PollutionInterval, unit: seconds)';
+
+  @override
+  String get radiationMeteorMiningDuration =>
+      'Required mining duration (MiningDurationRequired, unit: seconds)';
+
+  @override
+  String get radiationMeteorPowerReward =>
+      'Power reward on destruction (PowerRewardOnDestroy)';
+
+  @override
+  String get radiationMeteorSpawnSchedule => 'Landing schedule (SpawnSchedule)';
+
+  @override
+  String get radiationMeteorWave => 'Wave (Wave, 0-based)';
+
+  @override
+  String get rocketLandingHelpTitle => 'Rocket Landing';
+
+  @override
+  String get rocketLandingHelpOverview =>
+      'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies.';
+
+  @override
+  String get rocketLandingHelpPlantsTitle => 'Plants take control';
+
+  @override
+  String get rocketLandingHelpPlants =>
+      'Plant a designated Cosmic plant inside a rocket. After a short time, the rocket launches, locks onto a high-threat zombie on the lawn, and bombards it for massive damage. Cosmic Pea releases ricocheting Cosmic projectiles; Cosmic Mushroom summons Mushroom Wormholes in the area; Cosmic Nut creates a short-lived small black hole that pulls and continuously damages nearby zombies.';
+
+  @override
+  String get rocketLandingHelpZombiesTitle => 'Zombies take control';
+
+  @override
+  String get rocketLandingHelpZombies =>
+      'When a zombie enters a rocket, it launches after a short delay and lands farther back on the lawn, transporting the zombie to that tile. Some zombies cannot enter rockets.';
+
+  @override
+  String get rocketLandingSettings => 'Rocket settings';
+
+  @override
+  String get rocketPoolCount => 'Rocket count (Count)';
+
+  @override
+  String get rocketSpawnCount => 'Total grid items to spawn (SpawnCount)';
+
+  @override
+  String get rocketSpawnInterval =>
+      'Spawn interval (SpawnInterval, unit: seconds)';
+
+  @override
+  String get moduleTitle_LevelPowerupModuleProperties => 'Power Ups';
+
+  @override
+  String get moduleDesc_LevelPowerupModuleProperties =>
+      'Enables the wonderfully interesting gesture system';
+
+  @override
+  String get powerUpsHelpTitle => 'Power Ups';
+
+  @override
+  String get powerUpsHelpOverview =>
+      'This wonderfully interesting mechanic makes a major return in the 13th Anniversary Secret Realm, allowing players to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.';
+
+  @override
+  String get powerUpsFreeUseCount => 'Free uses (FreeUseCount)';
+
+  @override
+  String get powerZap => 'Power Zap';
+
+  @override
+  String get powerZapInfo =>
+      'Tap or drag across zombies to unleash a powerful electric shock that continuously damages every zombie it touches.';
+
+  @override
+  String get powerToss => 'Power Toss';
+
+  @override
+  String get powerTossInfo =>
+      'Swipe quickly across a zombie to fling it into the air. Swipe again to throw it completely off the lawn.';
+
+  @override
+  String get powerPinch => 'Power Pinch';
+
+  @override
+  String get powerPinchInfo =>
+      'Pinch a zombie with two fingers like a pair of scissors to snip off its head and quickly remove the threat.';
 }

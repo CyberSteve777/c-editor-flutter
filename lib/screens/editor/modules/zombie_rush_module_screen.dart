@@ -116,6 +116,7 @@ class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.zombieRushTitle ?? 'Level timer',
                 themeColor: accentColor,
                 sections: [

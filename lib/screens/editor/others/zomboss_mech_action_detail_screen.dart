@@ -5,6 +5,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/zomboss_mech_action_fields.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
@@ -154,19 +155,17 @@ class _InfoLine extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$label: ',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+      child: EditorResponsiveLabelField(
+        breakpoint: 420,
+        labelWidth: 180,
+        spacing: 8,
+        label: Text(
+          '$label:',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-          Expanded(
-            child: SelectableText(value, style: theme.textTheme.bodySmall),
-          ),
-        ],
+        ),
+        field: SelectableText(value, style: theme.textTheme.bodySmall),
       ),
     );
   }

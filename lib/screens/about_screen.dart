@@ -120,6 +120,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       _Bullet(l10n.feature2),
                       _Bullet(l10n.feature3),
                       _Bullet(l10n.feature4),
+                      _Bullet(l10n.feature5),
                     ],
                   ),
                 ),

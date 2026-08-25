@@ -9,6 +9,7 @@ import 'package:c_editor/theme/app_theme.dart'
     show pvzPurpleDark, pvzPurpleLight;
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/widgets/rift_theme_widgets.dart';
 
 /// Custom rift theme list module (`RiftThemeDemoModuleProperties`).
 class RiftThemeModuleScreen extends StatefulWidget {
@@ -88,6 +89,8 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => RiftThemeSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:rift-theme',
           initialSelectedIds: _data.demoRiftThemeName,
           accentColor: accentColor,
           onThemesConfirmed: (ids) => Navigator.pop(context, ids),
@@ -101,7 +104,6 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
       _sync();
     }
   }
-
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -142,6 +144,7 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.riftThemeHelpTitle ?? 'Rift theme module',
               themeColor: accentColor,
               sections: [
@@ -178,68 +181,95 @@ class _RiftThemeModuleScreenState extends State<RiftThemeModuleScreen> {
           ),
           Expanded(
             child: _data.demoRiftThemeName.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  l10n?.riftThemeEmpty ??
-                      'No themes selected. Tap the button below to choose themes.',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _data.demoRiftThemeName.length,
-              itemBuilder: (context, index) {
-                final id = _data.demoRiftThemeName[index];
-                final nameKey = RiftThemeRepository.nameKey(id);
-                final name = ResourceNames.lookup(context, nameKey);
-                final displayName = name != nameKey ? name : id;
-                final isUnknown = !RiftThemeRepository.isKnown(id);
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: accentColor.withValues(alpha: 0.15),
-                      foregroundColor: accentColor,
-                      child: Text('${index + 1}'),
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        l10n?.riftThemeEmpty ??
+                            'No themes selected. Tap the button below to choose themes.',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    title: Text(
-                      displayName,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(id),
-                    trailing: isUnknown
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                editorWarningIcon,
-                                color: editorWarningBannerForeground(
-                                  theme.brightness,
-                                ),
-                                size: 20,
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _data.demoRiftThemeName.length,
+                    itemBuilder: (context, index) {
+                      final id = _data.demoRiftThemeName[index];
+                      final nameKey = RiftThemeRepository.nameKey(id);
+                      final name = ResourceNames.lookup(context, nameKey);
+                      final displayName = name != nameKey ? name : id;
+                      final isUnknown = !RiftThemeRepository.isKnown(id);
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onLongPress: () =>
+                              showRiftThemeDetailsDialog(context, id),
+                          onSecondaryTap: () =>
+                              showRiftThemeDetailsDialog(context, id),
+                          borderRadius: BorderRadius.circular(12),
+                          child: ListTile(
+                            leading: SizedBox(
+                              width: 76,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 24,
+                                    child: Text(
+                                      '${index + 1}.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  RiftThemeIcon(themeId: id, size: 42),
+                                ],
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline),
-                                tooltip: l10n?.delete ?? 'Delete',
-                                onPressed: () => _removeTheme(index),
+                            ),
+                            title: Text(
+                              displayName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          )
-                        : IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            tooltip: l10n?.delete ?? 'Delete',
-                            onPressed: () => _removeTheme(index),
+                            ),
+                            subtitle: Text(id),
+                            trailing: isUnknown
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        editorWarningIcon,
+                                        color: editorWarningBannerForeground(
+                                          theme.brightness,
+                                        ),
+                                        size: 20,
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outline),
+                                        tooltip: l10n?.delete ?? 'Delete',
+                                        onPressed: () => _removeTheme(index),
+                                      ),
+                                    ],
+                                  )
+                                : IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    tooltip: l10n?.delete ?? 'Delete',
+                                    onPressed: () => _removeTheme(index),
+                                  ),
                           ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),

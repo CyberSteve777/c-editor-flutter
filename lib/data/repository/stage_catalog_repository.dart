@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:c_editor/data/asset_loader.dart';
 import 'package:c_editor/data/models/stage_catalog.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 
 /// Loads `Stages.json`, `Stages_helper.json`, and `Stages_tags.json`.
 abstract final class StageCatalogRepository {
@@ -24,8 +25,10 @@ abstract final class StageCatalogRepository {
 
   static List<StageCatalogSection> get sections => List.unmodifiable(_sections);
 
-  static Set<String> get knownResourceGroups =>
-      Set.unmodifiable(_knownResourceGroups);
+  static Set<String> get knownResourceGroups => Set.unmodifiable({
+    ..._knownResourceGroups,
+    ...CustomStagePresetRepository.resourceGroups,
+  });
 
   @visibleForTesting
   static void resetForTest() {

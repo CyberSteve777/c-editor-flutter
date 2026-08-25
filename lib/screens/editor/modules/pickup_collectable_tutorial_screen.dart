@@ -103,9 +103,7 @@ class _PickupCollectableTutorialScreenState
     }
     if (_data.dropperZombieType.isEmpty) {
       _data = PickupCollectableTutorialData(
-        dropperZombieType: ZombieRepository().buildZombieAliases(
-          'zombie_tutorial',
-        ),
+        dropperZombieType: ZombieRepository().buildZombieAliases('mummy'),
         lootType: _data.lootType,
         pickupAdvice: _data.pickupAdvice,
         postPickupAdvice: _data.postPickupAdvice,
@@ -172,6 +170,7 @@ class _PickupCollectableTutorialScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title:
                   l10n?.pickupCollectableTutorialHelpTitle ?? 'Pickup tutorial',
               themeColor: appBarColor,

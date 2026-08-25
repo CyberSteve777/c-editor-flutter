@@ -49,6 +49,7 @@ class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
     'SteamMowers',
     'RenaiMowers',
     'HeianMowers',
+    'MoonMowers',
     'FairyTaleMowers',
     'ZCorpMowers',
     'RunningSubwayMowers',
@@ -146,6 +147,7 @@ class _LawnMowerPropertiesScreenState extends State<LawnMowerPropertiesScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.lawnMowerTitle ?? 'Lawn mower style',
                 themeColor: accentColor,
                 sections: [

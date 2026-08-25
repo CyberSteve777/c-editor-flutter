@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/escape_override.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
@@ -204,10 +202,23 @@ class _ZEditorAppState extends State<ZEditorApp> {
     switch (nav.screen) {
       case AppScreen.levelList:
         return LevelListScreen(
-          onLevelClick: (fileName, filePath) {
-            LevelRepository.setLastOpenedLevelDirectory(p.dirname(filePath));
-            context.read<AppNavigationCubit>().openLevel(fileName, filePath);
-          },
+          returnToLevelPath: nav.lastOpenedLevelPath,
+          returnToScrollOffset: nav.levelListScrollOffset,
+          returnToViewMode: nav.levelListFavoritesView
+              ? LevelViewMode.favorites
+              : LevelViewMode.all,
+          returnToSearchQuery: nav.levelListSearchQuery,
+          showUploadAfterLevelReturn: nav.showUploadAfterLevelReturn,
+          onLevelClick:
+              (fileName, filePath, scrollOffset, viewMode, searchQuery) {
+                context.read<AppNavigationCubit>().openLevel(
+                  fileName,
+                  filePath,
+                  levelListScrollOffset: scrollOffset,
+                  levelListFavoritesView: viewMode == LevelViewMode.favorites,
+                  levelListSearchQuery: searchQuery,
+                );
+              },
           onAboutClick: () => context.read<AppNavigationCubit>().openAbout(),
           onPluginsClick: () =>
               context.read<AppNavigationCubit>().openPlugins(),
@@ -299,10 +310,7 @@ class _ZEditorAppState extends State<ZEditorApp> {
 
 /// Binds [EditorCubit] to [ActiveEditorSession] for the plugin host API.
 class _BindActiveEditorSession extends StatefulWidget {
-  const _BindActiveEditorSession({
-    required this.cubit,
-    required this.child,
-  });
+  const _BindActiveEditorSession({required this.cubit, required this.child});
 
   final EditorCubit cubit;
   final Widget child;

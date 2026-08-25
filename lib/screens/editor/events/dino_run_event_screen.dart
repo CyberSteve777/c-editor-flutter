@@ -143,6 +143,7 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventDinoRun ?? 'Dino run event',
               sections: [
                 HelpSectionData(

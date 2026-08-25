@@ -18,6 +18,7 @@ import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 
 String _resolveZombieDisplayType(String typeName) {
   final alias = ZombiePropertiesRepository.getTypeNameByAlias(typeName);
@@ -235,6 +236,8 @@ class _ApplyZombieConditionsChallengeEditorState
       context,
       MaterialPageRoute(
         builder: (ctx) => ZombieConditionSelectionScreen(
+          stateBucketId:
+              'challenge:${identityHashCode(widget.object)}:zombie-condition',
           initialSelected: _conditions,
           onBack: () => Navigator.pop(ctx),
           onDone: (selected) {
@@ -726,10 +729,16 @@ class DestroyGridItemsChallengeEditor extends StatefulWidget {
     super.key,
     required this.object,
     required this.onChanged,
+    required this.levelFile,
+    this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final PvzObject object;
   final VoidCallback onChanged;
+  final PvzLevelFile? levelFile;
+  final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<DestroyGridItemsChallengeEditor> createState() =>
@@ -768,6 +777,9 @@ class _DestroyGridItemsChallengeEditorState
       MaterialPageRoute(
         builder: (ctx) => GridItemSelectionScreen(
           filterMode: GridItemFilterMode.all,
+          levelFile: widget.levelFile,
+          onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (id) {
             Navigator.pop(ctx);
             setState(() {
@@ -824,19 +836,10 @@ class _DestroyGridItemsChallengeEditorState
         const SizedBox(height: 12),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: SizedBox(
-              width: 44,
-              height: 44,
-              child: AssetImageWidget(
-                assetPath: GridItemRepository.getIconPath(displayType),
-                fit: BoxFit.contain,
-                altCandidates: imageAltCandidates(
-                  GridItemRepository.getIconPath(displayType),
-                ),
-              ),
-            ),
+          leading: PresetAwareGridItemIcon(
+            typeName: displayType,
+            size: 44,
+            fit: BoxFit.contain,
           ),
           title: Text(
             _gridLabel(displayType),

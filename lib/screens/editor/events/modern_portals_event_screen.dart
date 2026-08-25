@@ -137,6 +137,7 @@ class _ModernPortalsEventScreenState extends State<ModernPortalsEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventTimeRift ?? 'Time rift event',
               sections: [
                 HelpSectionData(

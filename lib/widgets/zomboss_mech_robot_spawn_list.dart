@@ -244,75 +244,78 @@ class _RobotSpawnEntryCard extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 2,
-                  child: TextFormField(
-                    initialValue: '${entry.weight}',
-                    readOnly: !editable,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: l10n?.zombossMechRobotSpawnWeight ?? 'Weight',
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: editable
-                        ? (v) {
-                            final parsed = int.tryParse(v);
-                            if (parsed != null && parsed >= 0) {
-                              entry.weight = parsed;
-                              onChanged(entry);
+                  child: EditorResponsiveInputField(
+                    label: l10n?.zombossMechRobotSpawnWeight ?? 'Weight',
+                    builder: (context, decoration) => TextFormField(
+                      initialValue: '${entry.weight}',
+                      readOnly: !editable,
+                      decoration: decoration,
+                      keyboardType: TextInputType.number,
+                      onChanged: editable
+                          ? (v) {
+                              final parsed = int.tryParse(v);
+                              if (parsed != null && parsed >= 0) {
+                                entry.weight = parsed;
+                                onChanged(entry);
+                              }
                             }
-                          }
-                        : null,
+                          : null,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   flex: 2,
-                  child: DropdownButtonFormField<int>(
-                    isExpanded: true,
-                    initialValue: rowValue,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: l10n?.zombossMechRobotSpawnRow ?? 'Row',
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                        value: -1,
-                        child: Text(
-                          l10n?.zombossMechRobotSpawnRowRandom ?? 'Random (-1)',
+                  child: EditorResponsiveInputField(
+                    label: l10n?.zombossMechRobotSpawnRow ?? 'Row',
+                    builder: (context, decoration) =>
+                        DropdownButtonFormField<int>(
+                          isExpanded: true,
+                          initialValue: rowValue,
+                          decoration: decoration,
+                          items: [
+                            DropdownMenuItem(
+                              value: -1,
+                              child: Text(
+                                l10n?.zombossMechRobotSpawnRowRandom ??
+                                    'Random (-1)',
+                              ),
+                            ),
+                            for (var r = 0; r <= maxRowIndex; r++)
+                              DropdownMenuItem(value: r, child: Text('$r')),
+                          ],
+                          onChanged: editable
+                              ? (v) {
+                                  if (v == null) return;
+                                  entry.row = v;
+                                  onChanged(entry);
+                                }
+                              : null,
                         ),
-                      ),
-                      for (var r = 0; r <= maxRowIndex; r++)
-                        DropdownMenuItem(value: r, child: Text('$r')),
-                    ],
-                    onChanged: editable
-                        ? (v) {
-                            if (v == null) return;
-                            entry.row = v;
-                            onChanged(entry);
-                          }
-                        : null,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   flex: 2,
-                  child: DropdownButtonFormField<int>(
-                    isExpanded: true,
-                    initialValue: levelValue,
-                    decoration: editorInputDecoration(
-                      context,
-                      labelText: l10n?.zombossMechRobotSpawnLevel ?? 'Level',
-                    ),
-                    items: [
-                      for (final lv in _levelOptions)
-                        DropdownMenuItem(value: lv, child: Text('$lv')),
-                    ],
-                    onChanged: editable
-                        ? (v) {
-                            if (v == null) return;
-                            entry.level = v;
-                            onChanged(entry);
-                          }
-                        : null,
+                  child: EditorResponsiveInputField(
+                    label: l10n?.zombossMechRobotSpawnLevel ?? 'Level',
+                    builder: (context, decoration) =>
+                        DropdownButtonFormField<int>(
+                          isExpanded: true,
+                          initialValue: levelValue,
+                          decoration: decoration,
+                          items: [
+                            for (final lv in _levelOptions)
+                              DropdownMenuItem(value: lv, child: Text('$lv')),
+                          ],
+                          onChanged: editable
+                              ? (v) {
+                                  if (v == null) return;
+                                  entry.level = v;
+                                  onChanged(entry);
+                                }
+                              : null,
+                        ),
                   ),
                 ),
               ],

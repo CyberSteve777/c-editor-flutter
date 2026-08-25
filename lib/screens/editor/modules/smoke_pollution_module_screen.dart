@@ -144,7 +144,6 @@ class _SmokePollutionModuleScreenState
       )
       .toList();
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -181,6 +180,7 @@ class _SmokePollutionModuleScreenState
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -205,14 +205,14 @@ class _SmokePollutionModuleScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                  ModuleAliasInputField(
+                    rtid: widget.rtid,
+                    alias: _alias,
+                    levelFile: widget.levelFile,
+                    onAliasChanged: _handleAliasChanged,
+                    onChanged: widget.onChanged,
+                  ),
+                  const SizedBox(height: 16),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -375,8 +375,7 @@ ModuleAliasInputField(
                                                   borderRadius:
                                                       BorderRadius.circular(4),
                                                   child: Image.asset(
-                                                    GridItemRepository
-                                                        .getIconPath(
+                                                    GridItemRepository.getIconPath(
                                                       _gridItemType,
                                                     ),
                                                     fit: BoxFit.contain,
@@ -554,22 +553,25 @@ class _SmokeManholeCardState extends State<_SmokeManholeCard> {
                       ),
                     ),
                   const SizedBox(height: 4),
-                  TextField(
-                    controller: _startTimeCtrl,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.smokePollutionModuleStartTimeLabel ??
-                          'Start time (s)',
-                      border: const OutlineInputBorder(),
+                  EditorResponsiveInputField(
+                    label:
+                        l10n?.smokePollutionModuleStartTimeLabel ??
+                        'Start time (s)',
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
                       isDense: true,
                     ),
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n != null && n >= 0) {
-                        widget.onStartTimeChanged(n);
-                      }
-                    },
+                    builder: (context, decoration) => TextField(
+                      controller: _startTimeCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: decoration,
+                      onChanged: (v) {
+                        final n = int.tryParse(v);
+                        if (n != null && n >= 0) {
+                          widget.onStartTimeChanged(n);
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

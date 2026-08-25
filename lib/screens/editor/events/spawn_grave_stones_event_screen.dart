@@ -7,6 +7,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Spawn gravestones event editor. Ported from Z-Editor-master SpawnGraveStonesEventEP.kt
@@ -168,6 +169,7 @@ class _SpawnGraveStonesEventScreenState
             tooltip: l10n?.tooltipAboutEvent ?? 'About this event',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventSpawnGravestones ?? 'Spawn gravestones event',
               sections: [
                 HelpSectionData(
@@ -262,8 +264,8 @@ class _SpawnGraveStonesEventScreenState
             const SizedBox(height: 16),
             scaleTableForDesktop(
               context: context,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
+              child: Builder(
+                builder: (context) {
                   final parsed = LevelParser.parseLevel(widget.levelFile);
                   final isDeepSea = LevelParser.isDeepSeaLawn(
                     parsed.levelDef,
@@ -271,50 +273,68 @@ class _SpawnGraveStonesEventScreenState
                   );
                   final cols = isDeepSea ? 10 : 9;
                   final rows = isDeepSea ? 6 : 5;
-                  final cellSize = (constraints.maxWidth / cols)
-                      .floorToDouble();
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: gridColor,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: borderColor),
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth:
+                          EditorItemCardLayout.gridPreviewMaxWidth(context) *
+                          0.7,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(rows, (row) {
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: List.generate(cols, (col) {
-                            final isSelected = _data.spawnPositionsPool.any(
-                              (p) => p.x == col && p.y == row,
-                            );
-                            return GestureDetector(
-                              onTap: () => _togglePosition(col, row),
-                              child: Container(
-                                width: cellSize,
-                                height: cellSize,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? const Color(0xFF2E7D32)
-                                      : Colors.transparent,
-                                  border: Border.all(
-                                    color: borderColor.withValues(alpha: 0.5),
-                                    width: 0.5,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: isSelected
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: (cellSize * 0.85).clamp(28, 56),
-                                      )
-                                    : null,
+                    child: AspectRatio(
+                      aspectRatio: cols / rows,
+                      child: Container(
+                        key: const ValueKey(
+                          'spawnGravestonesPositionPreviewGrid',
+                        ),
+                        decoration: BoxDecoration(
+                          color: gridColor,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Column(
+                          children: List.generate(rows, (row) {
+                            return Expanded(
+                              child: Row(
+                                children: List.generate(cols, (col) {
+                                  final isSelected = _data.spawnPositionsPool
+                                      .any((p) => p.x == col && p.y == row);
+                                  return Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => _togglePosition(col, row),
+                                      child: LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          final cellSize = constraints.maxWidth;
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              color: isSelected
+                                                  ? const Color(0xFF2E7D32)
+                                                  : Colors.transparent,
+                                              border: Border.all(
+                                                color: borderColor.withValues(
+                                                  alpha: 0.5,
+                                                ),
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: isSelected
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.white,
+                                                    size: (cellSize * 0.85)
+                                                        .clamp(16, 56),
+                                                  )
+                                                : null,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                }),
                               ),
                             );
                           }),
-                        );
-                      }),
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -416,12 +436,15 @@ class _SpawnGraveStonesEventScreenState
   ) {
     final parsed = RtidParser.parse(item.type);
     final alias = parsed?.alias ?? item.type;
+    final displayTypeName =
+        GridItemRepository.getByTypeName(alias)?.actualTypeName ?? alias;
     final source = parsed?.source ?? '';
     final isValid = source == 'CurrentLevel'
         ? internalAliases.contains(alias)
-        : GridItemRepository.isValid(alias);
-    final displayName = ResourceNames.lookup(context, 'griditem_$alias');
-    final name = displayName != 'griditem_$alias' ? displayName : alias;
+        : GridItemRepository.isValid(displayTypeName);
+    final resourceKey = 'griditem_$displayTypeName';
+    final displayName = ResourceNames.lookup(context, resourceKey);
+    final name = displayName != resourceKey ? displayName : displayTypeName;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -436,7 +459,11 @@ class _SpawnGraveStonesEventScreenState
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            GridItemIcon(typeName: alias, size: 48, fit: BoxFit.contain),
+            PresetAwareGridItemIcon(
+              typeName: displayTypeName,
+              size: 48,
+              fit: BoxFit.contain,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -449,7 +476,7 @@ class _SpawnGraveStonesEventScreenState
                     ),
                   ),
                   Text(
-                    alias,
+                    displayTypeName,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isValid
                           ? theme.colorScheme.onSurfaceVariant
@@ -462,19 +489,23 @@ class _SpawnGraveStonesEventScreenState
               ),
             ),
             SizedBox(
-              width: 80,
-              child: TextFormField(
-                initialValue: '${item.count}',
+              width: 104,
+              child: EditorResponsiveInputField(
+                label: l10n?.count ?? 'Count',
                 decoration: const InputDecoration(
-                  labelText: 'Count',
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),
-                keyboardType: TextInputType.number,
-                onChanged: (s) {
-                  final v = int.tryParse(s) ?? 1;
-                  _updateCount(index, v.clamp(1, 999));
-                },
+                builder: (context, decoration) => TextFormField(
+                  initialValue: '${item.count}',
+                  decoration: decoration,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: const [PositiveIntegerInputFormatter()],
+                  onChanged: (s) {
+                    final v = int.tryParse(s) ?? 1;
+                    _updateCount(index, v.clamp(1, 999));
+                  },
+                ),
               ),
             ),
             const SizedBox(width: 8),

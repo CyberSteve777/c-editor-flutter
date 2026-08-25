@@ -178,6 +178,7 @@ class _SunDropperPropertiesScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.sunDropperHelpTitle ?? 'Sun dropper module',
               themeColor: themeColor,
               sections: [

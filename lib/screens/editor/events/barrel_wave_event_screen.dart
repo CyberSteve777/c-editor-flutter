@@ -36,6 +36,8 @@ class BarrelWaveEventScreen extends StatefulWidget {
 
 class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
   static const _objClass = 'BarrelWaveActionProps';
+  static const _levelMin = 0;
+  static const _levelMax = 10;
 
   late PvzObject _moduleObj;
   late BarrelWaveEventData _data;
@@ -233,6 +235,29 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
     );
   }
 
+  void _duplicateBarrelZombie(int barrelIndex, int zombieIndex) {
+    final entry = _data.barrels[barrelIndex];
+    final params = entry.params!;
+    final source = params.zombies[zombieIndex];
+    final zombies = List<BarrelZombieData>.from(params.zombies)
+      ..insert(
+        zombieIndex + 1,
+        BarrelZombieData(typeName: source.typeName, level: source.level),
+      );
+    _updateBarrel(
+      barrelIndex,
+      BarrelEntryData(
+        row: entry.row,
+        type: entry.type,
+        params: BarrelParamsData(
+          barrelHitPoints: params.barrelHitPoints,
+          barrelSpeed: params.barrelSpeed,
+          zombies: zombies,
+        ),
+      ),
+    );
+  }
+
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -266,6 +291,7 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventBarrelWave ?? 'Barrel wave event',
               sections: [
                 HelpSectionData(
@@ -358,20 +384,17 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
             ),
             const SizedBox(height: 12),
             EditorResponsiveLabelField(
-              labelWidth: 100,
+              labelWidth: 200,
+              breakpoint: 640,
               label: Text(
                 l10n?.barrelWaveRow ?? 'Row',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               field: DropdownButtonFormField<int>(
                 isExpanded: true,
                 initialValue: entry.row.clamp(1, _maxRow),
                 items: List.generate(_maxRow, (i) => i + 1)
-                    .map(
-                      (r) => DropdownMenuItem(value: r, child: Text('$r')),
-                    )
+                    .map((r) => DropdownMenuItem(value: r, child: Text('$r')))
                     .toList(),
                 onChanged: (v) {
                   if (v != null) {
@@ -393,11 +416,10 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
             ),
             const SizedBox(height: 12),
             EditorResponsiveLabelField(
-              labelWidth: 100,
+              labelWidth: 200,
+              breakpoint: 640,
               label: Text(
                 l10n?.barrelWaveType ?? 'Type',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               field: DropdownButtonFormField<String>(
@@ -444,11 +466,7 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
                     );
                     _updateBarrel(
                       index,
-                      BarrelEntryData(
-                        row: entry.row,
-                        type: v,
-                        params: params,
-                      ),
+                      BarrelEntryData(row: entry.row, type: v, params: params),
                     );
                   }
                 },
@@ -479,53 +497,19 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
                     ?.iconAssetPath;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      if (iconPath != null)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: AssetImageWidget(
-                            assetPath: iconPath,
-                            altCandidates: imageAltCandidates(iconPath),
-                            width: 32,
-                            height: 32,
-                          ),
-                        ),
-                      Expanded(
-                        child: Text(name, overflow: TextOverflow.ellipsis),
-                      ),
-                      SizedBox(
-                        width: 56,
-                        child: TextFormField(
-                          key: ValueKey('zombie_lv_${index}_$zi'),
-                          initialValue: z.level.toString(),
-                          decoration: InputDecoration(
-                            labelText:
-                                l10n?.barrelWaveZombieLevel ?? 'Zombie level',
-                            border: const OutlineInputBorder(),
-                            isDense: true,
-                          ),
-                          keyboardType: TextInputType.number,
-                          onChanged: (v) {
-                            final lv = int.tryParse(v);
-                            if (lv != null && lv >= 1 && lv <= 10) {
-                              _updateBarrelZombie(
-                                index,
-                                zi,
-                                BarrelZombieData(
-                                  typeName: z.typeName,
-                                  level: lv,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, size: 20),
-                        onPressed: () => _removeZombieFromBarrel(index, zi),
-                      ),
-                    ],
+                  child: _BarrelZombieRow(
+                    name: name,
+                    typeName: z.typeName,
+                    iconPath: iconPath,
+                    level: z.level.clamp(_levelMin, _levelMax),
+                    levelLabel: l10n?.barrelWaveZombieLevel ?? 'Zombie level',
+                    onLevelChanged: (level) => _updateBarrelZombie(
+                      index,
+                      zi,
+                      BarrelZombieData(typeName: z.typeName, level: level),
+                    ),
+                    onDuplicate: () => _duplicateBarrelZombie(index, zi),
+                    onDelete: () => _removeZombieFromBarrel(index, zi),
                   ),
                 );
               }),
@@ -551,13 +535,9 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
     final isExplosive = entry.type == _barrelTypeExplosive;
     Widget labeledField(String label, Widget field) {
       return EditorResponsiveLabelField(
-        labelWidth: 100,
-        label: Text(
-          label,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
+        labelWidth: 200,
+        breakpoint: 640,
+        label: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
         field: field,
       );
     }
@@ -648,6 +628,137 @@ class _BarrelWaveEventScreenState extends State<BarrelWaveEventScreen> {
           zombies: params.zombies,
         ),
       ),
+    );
+  }
+}
+
+class _BarrelZombieRow extends StatelessWidget {
+  const _BarrelZombieRow({
+    required this.name,
+    required this.typeName,
+    required this.iconPath,
+    required this.level,
+    required this.levelLabel,
+    required this.onLevelChanged,
+    required this.onDuplicate,
+    required this.onDelete,
+  });
+
+  final String name;
+  final String typeName;
+  final String? iconPath;
+  final int level;
+  final String levelLabel;
+  final ValueChanged<int> onLevelChanged;
+  final VoidCallback onDuplicate;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final summary = Row(
+      children: [
+        if (iconPath != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: AssetImageWidget(
+              assetPath: iconPath!,
+              altCandidates: imageAltCandidates(iconPath!),
+              width: 32,
+              height: 32,
+            ),
+          )
+        else
+          const SizedBox(width: 40),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                typeName,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+    final levelField = EditorResponsiveInputField(
+      label: levelLabel,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        isDense: true,
+      ),
+      builder: (context, decoration) => DropdownButtonFormField<int>(
+        key: ValueKey('barrelZombieLevel_$typeName'),
+        isExpanded: true,
+        initialValue: level,
+        items: List.generate(11, (value) {
+          return DropdownMenuItem(value: value, child: Text('$value'));
+        }),
+        onChanged: (value) {
+          if (value != null) onLevelChanged(value);
+        },
+        decoration: decoration,
+      ),
+    );
+    final actions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          key: ValueKey('barrelZombieCopy_$typeName'),
+          icon: const Icon(Icons.copy_outlined, size: 20),
+          tooltip: l10n?.copy ?? 'Copy',
+          onPressed: onDuplicate,
+        ),
+        IconButton(
+          key: ValueKey('barrelZombieDelete_$typeName'),
+          icon: const Icon(Icons.delete_outline, size: 20),
+          tooltip: l10n?.delete ?? 'Delete',
+          onPressed: onDelete,
+        ),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 620) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: summary),
+                  actions,
+                ],
+              ),
+              const SizedBox(height: 8),
+              levelField,
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: summary),
+            const SizedBox(width: 8),
+            SizedBox(width: 200, child: levelField),
+            actions,
+          ],
+        );
+      },
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 /// Picks a base Zomboss family; returns base id string.
@@ -22,6 +23,23 @@ class ZombossBattleBaseSelectionScreen extends StatelessWidget {
         title: Text(
           l10n?.zombossBattleSelectBaseTitle ?? 'Select base Zomboss',
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: l10n?.tooltipAboutSection ?? 'About this section',
+            onPressed: () => showEditorHelpDialog(
+              context,
+              title:
+                  l10n?.zombossBattleSelectBaseTitle ?? 'Select base Zomboss',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body: l10n?.zombossBattleBaseHint ?? '',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

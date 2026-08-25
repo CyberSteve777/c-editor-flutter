@@ -172,6 +172,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -246,7 +247,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.airDropShipGroupLabel ?? "Group"} ${idx + 1}',
+                                l10n?.groupN(idx + 1) ?? 'Group ${idx + 1}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -294,7 +295,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedIndex + 1} - ${l10n?.airDropShipModuleDropArea ?? "Drop area"}',
+                            '${l10n?.groupN(_selectedIndex + 1) ?? "Group ${_selectedIndex + 1}"} - ${l10n?.airDropShipModuleDropArea ?? "Drop area"}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -332,58 +333,60 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: TextFormField(
-                                  initialValue: '${selectedWave.imp}',
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.airDropShipModuleExtraImpCount ??
-                                        'Extra imp count',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 0) {
-                                      _updateWave(
-                                        _selectedIndex,
-                                        DropShipAppearWaveData(
-                                          wave: selectedWave.wave,
-                                          imp: n,
-                                          impLv: selectedWave.impLv,
-                                          rowRange: selectedWave.rowRange,
-                                          colRange: selectedWave.colRange,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.airDropShipModuleExtraImpCount ??
+                                      'Extra imp count',
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue: '${selectedWave.imp}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 0) {
+                                            _updateWave(
+                                              _selectedIndex,
+                                              DropShipAppearWaveData(
+                                                wave: selectedWave.wave,
+                                                imp: n,
+                                                impLv: selectedWave.impLv,
+                                                rowRange: selectedWave.rowRange,
+                                                colRange: selectedWave.colRange,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: TextFormField(
-                                  initialValue: '${selectedWave.impLv}',
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.airDropShipModuleImpLevel ??
-                                        'Imp level',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 0) {
-                                      _updateWave(
-                                        _selectedIndex,
-                                        DropShipAppearWaveData(
-                                          wave: selectedWave.wave,
-                                          imp: selectedWave.imp,
-                                          impLv: n,
-                                          rowRange: selectedWave.rowRange,
-                                          colRange: selectedWave.colRange,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.airDropShipModuleImpLevel ??
+                                      'Imp level',
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue: '${selectedWave.impLv}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 0) {
+                                            _updateWave(
+                                              _selectedIndex,
+                                              DropShipAppearWaveData(
+                                                wave: selectedWave.wave,
+                                                imp: selectedWave.imp,
+                                                impLv: n,
+                                                rowRange: selectedWave.rowRange,
+                                                colRange: selectedWave.colRange,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                             ],
@@ -392,66 +395,70 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                           EditorResponsiveFieldRow(
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  initialValue:
-                                      '${selectedWave.rowRange.min + 1}',
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.airDropShipModuleRowMin ??
-                                        'Minimal row',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 1) {
-                                      _updateWave(
-                                        _selectedIndex,
-                                        DropShipAppearWaveData(
-                                          wave: selectedWave.wave,
-                                          imp: selectedWave.imp,
-                                          impLv: selectedWave.impLv,
-                                          rowRange: MinMaxRange(
-                                            min: n - 1,
-                                            max: selectedWave.rowRange.max,
-                                          ),
-                                          colRange: selectedWave.colRange,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.airDropShipModuleRowMin ??
+                                      'Minimal row',
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue:
+                                            '${selectedWave.rowRange.min + 1}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 1) {
+                                            _updateWave(
+                                              _selectedIndex,
+                                              DropShipAppearWaveData(
+                                                wave: selectedWave.wave,
+                                                imp: selectedWave.imp,
+                                                impLv: selectedWave.impLv,
+                                                rowRange: MinMaxRange(
+                                                  min: n - 1,
+                                                  max:
+                                                      selectedWave.rowRange.max,
+                                                ),
+                                                colRange: selectedWave.colRange,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: TextFormField(
-                                  initialValue:
-                                      '${selectedWave.rowRange.max + 1}',
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.airDropShipModuleRowMax ??
-                                        'Maximal row',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 1) {
-                                      _updateWave(
-                                        _selectedIndex,
-                                        DropShipAppearWaveData(
-                                          wave: selectedWave.wave,
-                                          imp: selectedWave.imp,
-                                          impLv: selectedWave.impLv,
-                                          rowRange: MinMaxRange(
-                                            min: selectedWave.rowRange.min,
-                                            max: n - 1,
-                                          ),
-                                          colRange: selectedWave.colRange,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.airDropShipModuleRowMax ??
+                                      'Maximal row',
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue:
+                                            '${selectedWave.rowRange.max + 1}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 1) {
+                                            _updateWave(
+                                              _selectedIndex,
+                                              DropShipAppearWaveData(
+                                                wave: selectedWave.wave,
+                                                imp: selectedWave.imp,
+                                                impLv: selectedWave.impLv,
+                                                rowRange: MinMaxRange(
+                                                  min:
+                                                      selectedWave.rowRange.min,
+                                                  max: n - 1,
+                                                ),
+                                                colRange: selectedWave.colRange,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                             ],
@@ -460,66 +467,70 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
                           EditorResponsiveFieldRow(
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  initialValue:
-                                      '${selectedWave.colRange.min + 1}',
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.airDropShipModuleColMin ??
-                                        'Minimal column',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 1) {
-                                      _updateWave(
-                                        _selectedIndex,
-                                        DropShipAppearWaveData(
-                                          wave: selectedWave.wave,
-                                          imp: selectedWave.imp,
-                                          impLv: selectedWave.impLv,
-                                          rowRange: selectedWave.rowRange,
-                                          colRange: MinMaxRange(
-                                            min: n - 1,
-                                            max: selectedWave.colRange.max,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.airDropShipModuleColMin ??
+                                      'Minimal column',
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue:
+                                            '${selectedWave.colRange.min + 1}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 1) {
+                                            _updateWave(
+                                              _selectedIndex,
+                                              DropShipAppearWaveData(
+                                                wave: selectedWave.wave,
+                                                imp: selectedWave.imp,
+                                                impLv: selectedWave.impLv,
+                                                rowRange: selectedWave.rowRange,
+                                                colRange: MinMaxRange(
+                                                  min: n - 1,
+                                                  max:
+                                                      selectedWave.colRange.max,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: TextFormField(
-                                  initialValue:
-                                      '${selectedWave.colRange.max + 1}',
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.airDropShipModuleColMax ??
-                                        'Maximal column',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 1) {
-                                      _updateWave(
-                                        _selectedIndex,
-                                        DropShipAppearWaveData(
-                                          wave: selectedWave.wave,
-                                          imp: selectedWave.imp,
-                                          impLv: selectedWave.impLv,
-                                          rowRange: selectedWave.rowRange,
-                                          colRange: MinMaxRange(
-                                            min: selectedWave.colRange.min,
-                                            max: n - 1,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.airDropShipModuleColMax ??
+                                      'Maximal column',
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue:
+                                            '${selectedWave.colRange.max + 1}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 1) {
+                                            _updateWave(
+                                              _selectedIndex,
+                                              DropShipAppearWaveData(
+                                                wave: selectedWave.wave,
+                                                imp: selectedWave.imp,
+                                                impLv: selectedWave.impLv,
+                                                rowRange: selectedWave.rowRange,
+                                                colRange: MinMaxRange(
+                                                  min:
+                                                      selectedWave.colRange.min,
+                                                  max: n - 1,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                             ],
@@ -596,7 +607,7 @@ class _AirDropShipModuleScreenState extends State<AirDropShipModuleScreen> {
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
         l10n?.removeItemConfirm(
-              '${l10n.airDropShipGroupLabel} ${_data.appearWaves.indexOf(item) + 1}',
+              l10n.groupN(_data.appearWaves.indexOf(item) + 1),
             ) ??
             'Remove group ${_data.appearWaves.indexOf(item) + 1}?',
       ),

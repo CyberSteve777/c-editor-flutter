@@ -6,6 +6,7 @@ import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Atlantis shell event editor. Based on ZombiePotionActionProps.
@@ -154,6 +155,7 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
             tooltip: l10n?.tooltipAboutEvent ?? 'About this event',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventShellSpawn ?? 'Shell spawn event',
               sections: [
                 HelpSectionData(
@@ -193,28 +195,32 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
                         children: [
                           Row(
                             children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                  Text(
-                                    l10n?.selectedPosition ??
-                                        'Selected position',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      l10n?.selectedPosition ??
+                                          'Selected position',
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                     ),
-                                  ),
-                                  Text(
-                                    'R${_selectedY + 1} : C${_selectedX + 1}',
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.colorScheme.primary,
+                                    Text(
+                                      'R${_selectedY + 1} : C${_selectedX + 1}',
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.primary,
+                                          ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
                           ),
                           const SizedBox(height: 16),
                           _buildGrid(),
@@ -245,7 +251,10 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
                           deleteTooltip: l10n?.delete ?? 'Delete',
                         ),
                       ),
-                      AddItemCard(onPressed: _addShell, minHeight: 130),
+                      AddItemCard(
+                        onPressed: _addShell,
+                        minHeight: EditorItemCardLayout.gridItemCardHeight,
+                      ),
                     ],
                   ),
                   if (itemsOutsideLawn.isNotEmpty) ...[
@@ -354,8 +363,7 @@ class _ShellEventScreenState extends State<ShellEventScreen> {
                                                   borderRadius:
                                                       BorderRadius.circular(4),
                                                   child: Image.asset(
-                                                    GridItemRepository
-                                                        .getIconPath(
+                                                    GridItemRepository.getIconPath(
                                                       firstItem.type,
                                                     ),
                                                     fit: BoxFit.contain,
@@ -454,6 +462,7 @@ class _ShellItemCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
         width: EditorItemCardLayout.cardWidth(context),
+        height: EditorItemCardLayout.gridItemCardHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -461,7 +470,7 @@ class _ShellItemCard extends StatelessWidget {
             EditorDeletableIconHeader(
               onDelete: onDelete,
               deleteTooltip: deleteTooltip,
-              icon: GridItemIcon(
+              icon: PresetAwareGridItemIcon(
                 typeName: item.type,
                 size: 64,
                 fit: BoxFit.contain,

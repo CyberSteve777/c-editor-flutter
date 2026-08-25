@@ -307,6 +307,7 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventConveyorModify ?? 'Conveyor modify event',
               sections: [
                 HelpSectionData(

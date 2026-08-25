@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
 import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
@@ -115,8 +116,9 @@ class _PluginsScreenState extends State<PluginsScreen> {
         onProgress: (received, total) {
           if (!mounted) return;
           setState(() {
-            _downloadProgress =
-                total != null && total > 0 ? received / total : null;
+            _downloadProgress = total != null && total > 0
+                ? received / total
+                : null;
             _statusMessage = total != null && total > 0
                 ? l10n.pluginDownloadProgress(
                     _formatBytes(received),
@@ -144,9 +146,9 @@ class _PluginsScreenState extends State<PluginsScreen> {
       setState(() => _selectedPluginId = record.id);
       AppMessage.show(
         context,
-        l10n.pluginInstallSuccess(record.localizedName(
-          Localizations.localeOf(context).languageCode,
-        )),
+        l10n.pluginInstallSuccess(
+          record.localizedName(Localizations.localeOf(context).languageCode),
+        ),
         icon: Icons.check_circle,
       );
     } on CPluginValidationException catch (e) {
@@ -195,9 +197,11 @@ class _PluginsScreenState extends State<PluginsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.pluginUninstallTitle),
-        content: Text(l10n.pluginUninstallConfirm(plugin.localizedName(
-          Localizations.localeOf(context).languageCode,
-        ))),
+        content: Text(
+          l10n.pluginUninstallConfirm(
+            plugin.localizedName(Localizations.localeOf(context).languageCode),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -225,25 +229,25 @@ class _PluginsScreenState extends State<PluginsScreen> {
 
   void _openScreen(PluginRegisteredScreen screen) {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => screen.builder(context),
-      ),
+      MaterialPageRoute<void>(builder: (context) => screen.builder(context)),
     );
   }
 
   List<InstalledPluginRecord> _filtered(List<InstalledPluginRecord> plugins) {
     final lang = Localizations.localeOf(context).languageCode;
-    return plugins.where((p) {
-      final m = p.manifest;
-      return matchesSelectionSearch(_searchQuery, [
-        p.localizedName(lang),
-        m.id,
-        p.localizedDescription(lang),
-        m.authorsDisplay,
-        ...m.contributors,
-        m.version,
-      ]);
-    }).toList(growable: false);
+    return plugins
+        .where((p) {
+          final m = p.manifest;
+          return matchesSelectionSearch(_searchQuery, [
+            p.localizedName(lang),
+            m.id,
+            p.localizedDescription(lang),
+            m.authorsDisplay,
+            ...m.contributors,
+            m.version,
+          ]);
+        })
+        .toList(growable: false);
   }
 
   @override
@@ -261,8 +265,8 @@ class _PluginsScreenState extends State<PluginsScreen> {
         final selected = _selectedPluginId == null
             ? null
             : _manager.installed
-                .where((p) => p.id == _selectedPluginId)
-                .firstOrNull;
+                  .where((p) => p.id == _selectedPluginId)
+                  .firstOrNull;
 
         return Scaffold(
           appBar: AppBar(
@@ -287,9 +291,67 @@ class _PluginsScreenState extends State<PluginsScreen> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      child: EditorWarningBanner(
-                        title: l10n.pluginTrustWarningTitle,
-                        message: l10n.pluginTrustWarningBody,
+                      child: Card(
+                        child: ExpansionTile(
+                          key: const ValueKey('pluginInstallSection'),
+                          initiallyExpanded: false,
+                          leading: const Icon(Icons.add_circle_outline),
+                          title: Text(
+                            l10n.pluginInstallNew,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                          ),
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  EditorWarningBanner(
+                                    title: l10n.pluginTrustWarningTitle,
+                                    message: l10n.pluginTrustWarningBody,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      FilledButton.icon(
+                                        onPressed: _busy ? null : _installLocal,
+                                        icon: const Icon(Icons.folder_open),
+                                        label: Text(
+                                          l10n.pluginInstallFromDevice,
+                                        ),
+                                      ),
+                                      FilledButton.icon(
+                                        onPressed: _busy
+                                            ? null
+                                            : _installFromUrl,
+                                        icon: const Icon(Icons.link),
+                                        label: Text(l10n.pluginInstallFromUrl),
+                                      ),
+                                      if (!kIsWeb)
+                                        FilledButton.icon(
+                                          onPressed: _busy
+                                              ? null
+                                              : _installFromFolder,
+                                          icon: const Icon(
+                                            Icons.folder_special_outlined,
+                                          ),
+                                          label: Text(
+                                            l10n.pluginInstallFromFolder,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -302,52 +364,12 @@ class _PluginsScreenState extends State<PluginsScreen> {
                           AppBarSearchField(
                             hintText: l10n.pluginSearchHint,
                             query: _searchQuery,
-                            onChanged: (v) =>
-                                setState(() => _searchQuery = v),
+                            onChanged: (v) => setState(() => _searchQuery = v),
                             onClear: () => setState(() => _searchQuery = ''),
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onSurface,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.onSurface,
                           ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              FilledButton.icon(
-                                onPressed: _busy ? null : _installLocal,
-                                icon: const Icon(Icons.folder_open),
-                                label: Text(l10n.pluginInstallFromDevice),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: _busy ? null : _installFromUrl,
-                                icon: const Icon(Icons.link),
-                                label: Text(l10n.pluginInstallFromUrl),
-                              ),
-                              if (!kIsWeb)
-                                OutlinedButton.icon(
-                                  onPressed:
-                                      _busy ? null : _installFromFolder,
-                                  icon: const Icon(
-                                    Icons.folder_special_outlined,
-                                  ),
-                                  label: Text(l10n.pluginInstallFromFolder),
-                                ),
-                            ],
-                          ),
-                          if (!kIsWeb) ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              l10n.pluginFolderHint,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                            ),
-                          ],
                         ],
                       ),
                     ),
@@ -397,9 +419,8 @@ class _PluginsScreenState extends State<PluginsScreen> {
                                   plugins: plugins,
                                   selectedId: _selectedPluginId,
                                   busy: _busy,
-                                  onSelect: (id) => setState(
-                                    () => _selectedPluginId = id,
-                                  ),
+                                  onSelect: (id) =>
+                                      setState(() => _selectedPluginId = id),
                                 ),
                               ),
                               const VerticalDivider(width: 1),
@@ -425,17 +446,14 @@ class _PluginsScreenState extends State<PluginsScreen> {
                                     : _PluginDetailPane(
                                         plugin: selected,
                                         busy: _busy,
-                                        screens: _manager
-                                            .screenRegistry.screens
+                                        screens: _manager.screenRegistry.screens
                                             .where(
-                                              (s) =>
-                                                  s.pluginId == selected.id,
+                                              (s) => s.pluginId == selected.id,
                                             )
                                             .toList(growable: false),
                                         onToggle: (v) =>
                                             _toggleEnabled(selected, v),
-                                        onUninstall: () =>
-                                            _uninstall(selected),
+                                        onUninstall: () => _uninstall(selected),
                                         onOpenScreen: _openScreen,
                                       ),
                               ),
@@ -453,13 +471,9 @@ class _PluginsScreenState extends State<PluginsScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (detailContext) => _PluginDetailPage(
-                                    plugin: plugin,
+                                    pluginId: plugin.id,
                                     busy: _busy,
-                                    screens: _manager.screenRegistry.screens
-                                        .where((s) => s.pluginId == plugin.id)
-                                        .toList(growable: false),
-                                    onToggle: (v) =>
-                                        _toggleEnabled(plugin, v),
+                                    onToggle: (v) => _toggleEnabled(plugin, v),
                                     onUninstall: () async {
                                       final removed = await _uninstall(plugin);
                                       if (removed && detailContext.mounted) {
@@ -476,19 +490,6 @@ class _PluginsScreenState extends State<PluginsScreen> {
                 ],
               );
             },
-          ),
-          bottomNavigationBar: Material(
-            elevation: 1,
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: Text(
-                  l10n.pluginDropHint,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-            ),
           ),
         );
       },
@@ -625,8 +626,8 @@ class _PluginListTile extends StatelessWidget {
                       plugin.loadError != null
                           ? l10n.pluginLoadError
                           : (plugin.enabled
-                              ? l10n.pluginEnabled
-                              : l10n.pluginDisabled),
+                                ? l10n.pluginEnabled
+                                : l10n.pluginDisabled),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: plugin.loadError != null || !plugin.enabled
                             ? scheme.error
@@ -646,36 +647,47 @@ class _PluginListTile extends StatelessWidget {
 
 class _PluginDetailPage extends StatelessWidget {
   const _PluginDetailPage({
-    required this.plugin,
+    required this.pluginId,
     required this.busy,
-    required this.screens,
     required this.onToggle,
     required this.onUninstall,
     required this.onOpenScreen,
   });
 
-  final InstalledPluginRecord plugin;
+  final String pluginId;
   final bool busy;
-  final List<PluginRegisteredScreen> screens;
   final ValueChanged<bool> onToggle;
   final Future<void> Function() onUninstall;
   final ValueChanged<PluginRegisteredScreen> onOpenScreen;
 
   @override
   Widget build(BuildContext context) {
-    final name = plugin.localizedName(
-      Localizations.localeOf(context).languageCode,
-    );
-    return Scaffold(
-      appBar: AppBar(title: Text(name)),
-      body: _PluginDetailPane(
-        plugin: plugin,
-        busy: busy,
-        screens: screens,
-        onToggle: onToggle,
-        onUninstall: onUninstall,
-        onOpenScreen: onOpenScreen,
-      ),
+    final manager = PluginManager.instance;
+    return ListenableBuilder(
+      listenable: Listenable.merge([manager, manager.screenRegistry]),
+      builder: (context, _) {
+        final plugin = manager.installed
+            .where((candidate) => candidate.id == pluginId)
+            .firstOrNull;
+        if (plugin == null) return const SizedBox.shrink();
+        final name = plugin.localizedName(
+          Localizations.localeOf(context).languageCode,
+        );
+        final screens = manager.screenRegistry.screens
+            .where((screen) => screen.pluginId == pluginId)
+            .toList(growable: false);
+        return Scaffold(
+          appBar: AppBar(title: Text(name)),
+          body: _PluginDetailPane(
+            plugin: plugin,
+            busy: busy,
+            screens: screens,
+            onToggle: onToggle,
+            onUninstall: onUninstall,
+            onOpenScreen: onOpenScreen,
+          ),
+        );
+      },
     );
   }
 }
@@ -842,10 +854,7 @@ class _PluginDetailPane extends StatelessWidget {
           ),
         if (m.incompatibleWith.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text(
-            l10n.pluginIncompatibleWith,
-            style: theme.textTheme.titleSmall,
-          ),
+          Text(l10n.pluginIncompatibleWith, style: theme.textTheme.titleSmall),
           const SizedBox(height: 4),
           ...m.incompatibleWith.map(
             (rule) => Text(
@@ -875,7 +884,7 @@ class _PluginDetailPane extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
                 leading: const Icon(Icons.extension),
-                title: Text(screen.title),
+                title: Text(screen.resolvedTitle(context)),
                 trailing: TextButton(
                   onPressed: () => onOpenScreen(screen),
                   child: Text(l10n.pluginOpenScreen),
@@ -922,14 +931,24 @@ class _PluginIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = plugin.iconImageProvider();
+    final bundledIcon = plugin.isBundled ? bundledPluginIcon(plugin.id) : null;
+    final image = bundledIcon == null ? plugin.iconImageProvider() : null;
     final scheme = Theme.of(context).colorScheme;
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: SizedBox(
         width: size,
         height: size,
-        child: image != null
+        child: bundledIcon != null
+            ? ColoredBox(
+                color: scheme.primaryContainer,
+                child: Icon(
+                  bundledIcon,
+                  size: size * 0.55,
+                  color: scheme.primary,
+                ),
+              )
+            : image != null
             ? Image(image: image, fit: BoxFit.cover)
             : ColoredBox(
                 color: scheme.surfaceContainerHighest,
@@ -965,9 +984,9 @@ class _Badge extends StatelessWidget {
         softWrap: false,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

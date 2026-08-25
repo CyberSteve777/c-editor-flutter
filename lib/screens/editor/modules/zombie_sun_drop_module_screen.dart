@@ -12,7 +12,8 @@ import 'package:c_editor/theme/app_theme.dart'
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
-/// Zombie Sun Drop module: zombie sun drop values per tier (1–10). Ported from Z-Editor-master LevelMutatorRiftTimedSunEP.kt
+/// Zombie Sun Drop module: editable sun drop values for tiers 1–6.
+/// The serialized list retains ten values for game-format compatibility.
 class ZombieSunDropModuleScreen extends StatefulWidget {
   const ZombieSunDropModuleScreen({
     super.key,
@@ -131,7 +132,6 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -169,6 +169,7 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.zombieSunDropHelpTitle ?? 'Zombie sun drop',
               themeColor: appBarColor,
               sections: [
@@ -182,7 +183,7 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
                   title: l10n?.zombieSunDropHelpValues ?? 'Values',
                   body:
                       l10n?.zombieSunDropHelpValuesBody ??
-                      'Ten integers correspond to tiers 1–10. If tier exceeds 10, tier 1 value is used.',
+                      'Six integers correspond to tiers 1–6. If the tier exceeds 6, the tier 1 value is used.',
                 ),
               ],
             ),
@@ -205,27 +206,27 @@ class _ZombieSunDropModuleScreenState extends State<ZombieSunDropModuleScreen> {
           ),
           Expanded(
             child: _data.sunDrops.isEmpty
-          ? Center(
-              child: Text(
-                l10n?.zombieSunDropEmpty ?? 'No entries. Tap + to add.',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _data.sunDrops.length,
-              itemBuilder: (context, index) {
-                final item = _data.sunDrops[index];
-                return _ZombieSunDropItemCard(
-                  item: item,
-                  themeColor: appBarColor,
-                  onEdit: () => _openEditDialog(item),
-                  onDelete: () => _deleteItem(item),
-                );
-              },
-            ),
+                ? Center(
+                    child: Text(
+                      l10n?.zombieSunDropEmpty ?? 'No entries. Tap + to add.',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _data.sunDrops.length,
+                    itemBuilder: (context, index) {
+                      final item = _data.sunDrops[index];
+                      return _ZombieSunDropItemCard(
+                        item: item,
+                        themeColor: appBarColor,
+                        onEdit: () => _openEditDialog(item),
+                        onDelete: () => _deleteItem(item),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -346,6 +347,8 @@ class _SunValuesEditDialog extends StatefulWidget {
 }
 
 class _SunValuesEditDialogState extends State<_SunValuesEditDialog> {
+  static const _editableTierCount = 6;
+
   late List<int> _values;
   late List<TextEditingController> _controllers;
   late List<FocusNode> _focusNodes;
@@ -359,9 +362,10 @@ class _SunValuesEditDialogState extends State<_SunValuesEditDialog> {
     }
     _values = _values.take(10).toList();
     _controllers = _values
+        .take(_editableTierCount)
         .map((v) => TextEditingController(text: '$v'))
         .toList();
-    _focusNodes = List.generate(10, (_) => FocusNode());
+    _focusNodes = List.generate(_editableTierCount, (_) => FocusNode());
     for (final fn in _focusNodes) {
       fn.addListener(() => setState(() {}));
     }
@@ -388,67 +392,72 @@ class _SunValuesEditDialogState extends State<_SunValuesEditDialog> {
         l10n?.zombieSunDropEditTitle ?? 'Edit values',
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n?.zombieSunDropEditHint ??
-                  'Sun dropped per tier (1–10). Tiers above 10 use tier 1 value.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...List.generate(5, (row) {
-              final i = row * 2;
-              final j = i + 1;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: EditorResponsiveFieldRow(
-                  children: [
-                    TextField(
-                      focusNode: _focusNodes[i],
-                      controller: _controllers[i],
-                      decoration: editorInputDecoration(
-                        context,
-                        labelText:
-                            '${l10n?.zombieSunDropTier ?? 'Tier'} ${i + 1}',
-                        focusColor: widget.themeColor,
-                        isFocused: _focusNodes[i].hasFocus,
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          setState(() => _values[i] = n);
-                        }
-                      },
-                    ),
-                    TextField(
-                      focusNode: _focusNodes[j],
-                      controller: _controllers[j],
-                      decoration: editorInputDecoration(
-                        context,
-                        labelText:
-                            '${l10n?.zombieSunDropTier ?? 'Tier'} ${j + 1}',
-                        focusColor: widget.themeColor,
-                        isFocused: _focusNodes[j].hasFocus,
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          setState(() => _values[j] = n);
-                        }
-                      },
-                    ),
-                  ],
+      content: SizedBox(
+        width: 560,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n?.zombieSunDropEditHint ??
+                    'Configure sun drops for tiers 1–6. Tiers above 6 use the tier 1 value.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-              );
-            }),
-          ],
+              ),
+              const SizedBox(height: 16),
+              ...List.generate(_editableTierCount ~/ 2, (row) {
+                final i = row * 2;
+                final j = i + 1;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: EditorResponsiveFieldRow(
+                    children: [
+                      TextField(
+                        focusNode: _focusNodes[i],
+                        controller: _controllers[i],
+                        decoration: editorInputDecoration(
+                          context,
+                          labelText:
+                              l10n?.zombieSunDropTierLabel(i + 1) ??
+                              'Tier ${i + 1}',
+                          focusColor: widget.themeColor,
+                          isFocused: _focusNodes[i].hasFocus,
+                        ),
+                        keyboardType: TextInputType.number,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            setState(() => _values[i] = n);
+                          }
+                        },
+                      ),
+                      TextField(
+                        focusNode: _focusNodes[j],
+                        controller: _controllers[j],
+                        decoration: editorInputDecoration(
+                          context,
+                          labelText:
+                              l10n?.zombieSunDropTierLabel(j + 1) ??
+                              'Tier ${j + 1}',
+                          focusColor: widget.themeColor,
+                          isFocused: _focusNodes[j].hasFocus,
+                        ),
+                        keyboardType: TextInputType.number,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            setState(() => _values[j] = n);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
         ),
       ),
       actions: [

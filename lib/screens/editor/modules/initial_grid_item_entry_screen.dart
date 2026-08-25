@@ -7,6 +7,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/select/grid_item_selection_screen.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Initial grid item entry. Ported from Z-Editor-master InitialGridItemEntryEP.kt
@@ -18,6 +19,7 @@ class InitialGridItemEntryScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
@@ -25,6 +27,7 @@ class InitialGridItemEntryScreen extends StatefulWidget {
   final VoidCallback onChanged;
   final VoidCallback onBack;
   final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<InitialGridItemEntryScreen> createState() =>
@@ -83,6 +86,7 @@ class _InitialGridItemEntryScreenState
           filterMode: GridItemFilterMode.all,
           levelFile: widget.levelFile,
           onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (typeName) {
             Navigator.pop(context);
             final newList = List<InitialGridItemData>.from(_data.placements);
@@ -161,41 +165,32 @@ class _InitialGridItemEntryScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                EditorPlacementGridCard(
+                  header: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                Text(
-                                  l10n?.selectedPosition ?? 'Selected position',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                                ],
+                            Text(
+                              l10n?.selectedPosition ?? 'Selected position',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'R${_selectedY + 1} : C${_selectedX + 1}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildGrid(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  grid: _buildGrid(),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -213,6 +208,11 @@ class _InitialGridItemEntryScreenState
                     ...itemsAtPosition.map(
                       (item) => _GridItemCard(
                         item: item,
+                        displayTypeName:
+                            GridItemRepository.displayTypeNameForLevel(
+                              item.typeName,
+                              widget.levelFile,
+                            ),
                         gridRows: _gridRows,
                         gridCols: _gridCols,
                         showCoordinates: false,
@@ -220,7 +220,10 @@ class _InitialGridItemEntryScreenState
                         deleteTooltip: l10n?.delete ?? 'Delete',
                       ),
                     ),
-                    AddItemCard(onPressed: _handleSelectItem, minHeight: 130),
+                    AddItemCard(
+                      onPressed: _handleSelectItem,
+                      minHeight: EditorItemCardLayout.gridItemCardHeight,
+                    ),
                   ],
                 ),
                 if (itemsOutsideLawn.isNotEmpty) ...[
@@ -240,6 +243,11 @@ class _InitialGridItemEntryScreenState
                         .map(
                           (item) => _GridItemCard(
                             item: item,
+                            displayTypeName:
+                                GridItemRepository.displayTypeNameForLevel(
+                                  item.typeName,
+                                  widget.levelFile,
+                                ),
                             gridRows: _gridRows,
                             gridCols: _gridCols,
                             showCoordinates: true,
@@ -265,8 +273,8 @@ class _InitialGridItemEntryScreenState
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: BoxConstraints(
-          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(context),
+        constraints: const BoxConstraints(
+          maxWidth: EditorItemCardLayout.placementGridMaxWidth,
         ),
         child: AspectRatio(
           aspectRatio: _gridCols / _gridRows,
@@ -322,7 +330,12 @@ class _InitialGridItemEntryScreenState
                                               child: FittedBox(
                                                 fit: BoxFit.contain,
                                                 child: GridItemIcon(
-                                                  typeName: firstItem.typeName,
+                                                  typeName:
+                                                      GridItemRepository.displayTypeNameForLevel(
+                                                        firstItem.typeName,
+                                                        widget.levelFile,
+                                                      ) ??
+                                                      '__unknown__',
                                                   size: 32,
                                                   fit: BoxFit.contain,
                                                   borderRadius: 4,
@@ -357,13 +370,19 @@ class _InitialGridItemEntryScreenState
   Widget _buildDeleteDialog() {
     final l10n = AppLocalizations.of(context);
     final item = _itemToDelete!;
+    final displayTypeName =
+        GridItemRepository.displayTypeNameForLevel(
+          item.typeName,
+          widget.levelFile,
+        ) ??
+        item.typeName;
     final displayName = ResourceNames.lookup(
       context,
-      'griditem_${item.typeName}',
+      'griditem_$displayTypeName',
     );
-    final name = displayName != 'griditem_${item.typeName}'
+    final name = displayName != 'griditem_$displayTypeName'
         ? displayName
-        : item.typeName;
+        : displayTypeName;
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
@@ -395,6 +414,7 @@ class _InitialGridItemEntryScreenState
 class _GridItemCard extends StatelessWidget {
   const _GridItemCard({
     required this.item,
+    required this.displayTypeName,
     required this.gridRows,
     required this.gridCols,
     required this.showCoordinates,
@@ -403,6 +423,7 @@ class _GridItemCard extends StatelessWidget {
   });
 
   final InitialGridItemData item;
+  final String? displayTypeName;
   final int gridRows;
   final int gridCols;
   final bool showCoordinates;
@@ -412,18 +433,21 @@ class _GridItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final displayName = ResourceNames.lookup(
-      context,
-      'griditem_${item.typeName}',
-    );
-    final name = displayName != 'griditem_${item.typeName}'
+    final isKnown = displayTypeName != null;
+    final displayName = isKnown
+        ? ResourceNames.lookup(context, 'griditem_$displayTypeName')
+        : '';
+    final name = !isKnown
+        ? item.typeName
+        : displayName != 'griditem_$displayTypeName'
         ? displayName
-        : item.typeName;
+        : displayTypeName!;
 
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
         width: EditorItemCardLayout.cardWidth(context),
+        height: EditorItemCardLayout.gridItemCardHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -431,8 +455,8 @@ class _GridItemCard extends StatelessWidget {
             EditorDeletableIconHeader(
               onDelete: onDelete,
               deleteTooltip: deleteTooltip,
-              icon: GridItemIcon(
-                typeName: item.typeName,
+              icon: PresetAwareGridItemIcon(
+                typeName: displayTypeName ?? '__unknown__',
                 size: 64,
                 fit: BoxFit.contain,
               ),

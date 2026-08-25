@@ -26,15 +26,16 @@ enum _ZombieBlockedReason {
 }
 
 class _ZombieSelectionViewState {
-  _ZombieSelectionViewState({
-    required this.category,
-    required this.tag,
-    this.scrollOffset = 0,
-  });
+  _ZombieSelectionViewState({required this.category, required this.tag})
+    : searchQuery = '',
+      scrollOffset = 0,
+      tagScrollOffset = 0;
 
   ZombieCategory category;
   ZombieTag tag;
+  String searchQuery;
   double scrollOffset;
+  double tagScrollOffset;
 }
 
 final Map<String, _ZombieSelectionViewState> _zombieSelectionViewStates = {};
@@ -95,14 +96,13 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     return 'global';
   }
 
-  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
     final rememberedState = _zombieSelectionViewStates[_viewStateKey];
     _selectedCategory = rememberedState?.category ?? ZombieCategory.main;
     _selectedTag = rememberedState?.tag ?? ZombieTag.all;
+    _searchQuery = rememberedState?.searchQuery ?? '';
     _normalizeSelectedTag();
     _scrollController = ScrollController(
       initialScrollOffset: rememberedState?.scrollOffset ?? 0,
@@ -143,6 +143,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         ZombieTag.all,
         ZombieTag.evildave,
         ZombieTag.custom,
+        ZombieTag.pvp,
         ZombieTag.expedition,
         ZombieTag.chinese,
         ZombieTag.international,
@@ -164,7 +165,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       _selectedTag = tags.isNotEmpty ? tags.first : ZombieTag.all;
     });
     _resetRememberedScrollOffset();
-    _rememberViewState(scrollOffset: 0);
+    _rememberViewState(scrollOffset: 0, tagScrollOffset: 0);
   }
 
   void _setTag(ZombieTag tag) {
@@ -177,7 +178,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
   void _setSearchQuery(String query) {
     if (_searchQuery == query) return;
     setState(() => _searchQuery = query);
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _resetRememberedScrollOffset();
   }
 
   void _normalizeSelectedTag() {
@@ -191,7 +192,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     }
   }
 
-  void _rememberViewState({double? scrollOffset}) {
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
     final state = _zombieSelectionViewStates.putIfAbsent(
       _viewStateKey,
       () => _ZombieSelectionViewState(
@@ -201,11 +202,19 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     );
     state.category = _selectedCategory;
     state.tag = _selectedTag;
+    state.searchQuery = _searchQuery;
     if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) {
+      state.tagScrollOffset = tagScrollOffset;
+    }
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_scrollController.hasClients) return;
+    if (!_scrollController.hasClients) return;
     _rememberViewState(scrollOffset: _scrollController.offset);
   }
 
@@ -477,6 +486,11 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                       if (_selectedCategory != ZombieCategory.collection)
                         AccentBarFilterTabRow(
                           key: ValueKey('${_selectedCategory.name}_tags'),
+                          initialScrollOffset:
+                              _zombieSelectionViewStates[_viewStateKey]
+                                  ?.tagScrollOffset ??
+                              0,
+                          onScrollOffsetChanged: _rememberTagScrollOffset,
                           selectedIndex: safeTagIndex,
                           onSelected: (index) => _setTag(visibleTags[index]),
                           tabs: visibleTags.map((tag) {

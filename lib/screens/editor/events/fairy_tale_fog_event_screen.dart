@@ -125,6 +125,7 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventFairyFog ?? 'Fairy fog event',
               sections: [
                 HelpSectionData(

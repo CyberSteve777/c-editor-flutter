@@ -300,6 +300,7 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.waveManagerModule ?? 'Wave manager module',
                 themeColor: sectionTitleColor,
                 sections: [

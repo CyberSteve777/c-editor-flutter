@@ -159,6 +159,7 @@ class _InitialPlantPropertiesScreenState
   void _showHelp(AppLocalizations l10n) {
     showEditorHelpDialog(
       context,
+      isEvent: false,
       title: l10n.frozenPlantPlacementHelpTitle,
       themeColor: Theme.of(context).brightness == Brightness.dark
           ? pvzGreenDark
@@ -179,7 +180,6 @@ class _InitialPlantPropertiesScreenState
       ],
     );
   }
-
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -247,15 +247,15 @@ class _InitialPlantPropertiesScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: barColor,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                  accentColor: barColor,
+                ),
+                const SizedBox(height: 16),
                 Card(
                   child: SwitchListTile(
                     title: Text(
@@ -279,41 +279,32 @@ ModuleAliasInputField(
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                EditorPlacementGridCard(
+                  header: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                Text(
-                                  l10n.frozenPlantPlacementSelectedPosition,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                                ],
+                            Text(
+                              l10n.frozenPlantPlacementSelectedPosition,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'R${_selectedY + 1} : C${_selectedX + 1}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildGrid(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  grid: _buildGrid(),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -394,7 +385,9 @@ ModuleAliasInputField(
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: const BoxConstraints(
+          maxWidth: EditorItemCardLayout.placementGridMaxWidth,
+        ),
         child: AspectRatio(
           aspectRatio: cols / rows,
           child: Container(
@@ -711,9 +704,7 @@ class _PlacementEditDialogState extends State<_PlacementEditDialog> {
               for (final id in PlantConditions.ids)
                 DropdownMenuItem<String?>(
                   value: id,
-                  child: Text(
-                    ConditionL10n.plantLabel(context, id),
-                  ),
+                  child: Text(ConditionL10n.plantLabel(context, id)),
                 ),
             ],
             onChanged: (v) => setState(() => _condition = v),

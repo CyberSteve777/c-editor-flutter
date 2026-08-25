@@ -43,7 +43,7 @@ class LawnGrid extends StatelessWidget {
 
     return Center(
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
+        constraints: BoxConstraints(maxWidth: style.maxWidth ?? maxWidth),
         child: AspectRatio(
           aspectRatio: (cols / rows) * style.cellAspectRatio,
           child: Container(

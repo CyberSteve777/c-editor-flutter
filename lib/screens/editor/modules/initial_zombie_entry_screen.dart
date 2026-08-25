@@ -193,44 +193,33 @@ class _InitialZombieEntryScreenState extends State<InitialZombieEntryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                EditorPlacementGridCard(
+                  header: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                Text(
-                                  AppLocalizations.of(
-                                        context,
-                                      )?.selectedPosition ??
-                                      'Selected position',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                                ],
+                            Text(
+                              AppLocalizations.of(context)?.selectedPosition ??
+                                  'Selected position',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'R${_selectedY + 1} : C${_selectedX + 1}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildGrid(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  grid: _buildGrid(),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -311,7 +300,9 @@ class _InitialZombieEntryScreenState extends State<InitialZombieEntryScreen> {
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: const BoxConstraints(
+          maxWidth: EditorItemCardLayout.placementGridMaxWidth,
+        ),
         child: AspectRatio(
           aspectRatio: _gridCols / _gridRows,
           child: Container(
@@ -512,10 +503,7 @@ class _InitialZombieCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      ConditionL10n.zombieLabel(
-                        context,
-                        item.condition,
-                      ),
+                      ConditionL10n.zombieLabel(context, item.condition),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -656,9 +644,7 @@ class _InitialZombieEditDialogState extends State<_InitialZombieEditDialog> {
                   for (final id in InitialZombieEntryScreen.presetConditionIds)
                     DropdownMenuItem(
                       value: id,
-                      child: Text(
-                        ConditionL10n.zombieLabel(context, id),
-                      ),
+                      child: Text(ConditionL10n.zombieLabel(context, id)),
                     ),
                 ],
                 onChanged: (v) {

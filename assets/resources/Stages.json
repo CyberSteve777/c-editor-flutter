@@ -12282,6 +12282,569 @@
     ]
   },
   {
+    "objclass": "MoonStageProperties",
+    "fields": [
+      {
+        "name": "Armor1ZombieTypeName",
+        "type": "zombieType",
+        "default": "moon_armor1"
+      },
+      {
+        "name": "Armor2ZombieTypeName",
+        "type": "zombieType",
+        "default": "moon_armor2"
+      },
+      {
+        "name": "BackgroundImageLeft",
+        "type": "string",
+        "default": "MOON_LEFT"
+      },
+      {
+        "name": "BackgroundImageMiddle",
+        "type": "string",
+        "default": "MOON"
+      },
+      {
+        "name": "BackgroundImagePrefix",
+        "type": "string",
+        "default": "IMAGE_BACKGROUNDS_MOON"
+      },
+      {
+        "name": "BackgroundImageRight",
+        "type": "string",
+        "default": "MOON_RIGHT"
+      },
+      {
+        "name": "BackgroundResourceGroup",
+        "type": "string",
+        "default": "DelayLoad_Background_Moon_Compressed"
+      },
+      {
+        "name": "BasicZombieTypeName",
+        "type": "zombieType",
+        "default": "moon"
+      },
+      {
+        "name": "BelongsToWorld",
+        "type": "string",
+        "default": "moon"
+      },
+      {
+        "name": "CosmicPlantfoodFillSeconds",
+        "type": "float",
+        "default": 50.0
+      },
+      {
+        "name": "DirtSpawnEffectName",
+        "type": "string",
+        "default": "POPANIM_EFFECTS_DIRT_SPAWN_MOON"
+      },
+      {
+        "name": "DisabledStreetCells",
+        "type": "List<dynamic>",
+        "default": [
+          {
+            "mX": 0,
+            "mY": 0
+          },
+          {
+            "mX": 0,
+            "mY": 1
+          },
+          {
+            "mX": 0,
+            "mY": 2
+          },
+          {
+            "mX": 0,
+            "mY": 3
+          },
+          {
+            "mX": 0,
+            "mY": 4
+          },
+          {
+            "mX": 0,
+            "mY": 5
+          },
+          {
+            "mX": 0,
+            "mY": 6
+          },
+          {
+            "mX": 0,
+            "mY": 7
+          },
+          {
+            "mX": 0,
+            "mY": 8
+          },
+          {
+            "mX": 0,
+            "mY": 9
+          },
+          {
+            "mX": 1,
+            "mY": 0
+          },
+          {
+            "mX": 1,
+            "mY": 1
+          },
+          {
+            "mX": 1,
+            "mY": 2
+          },
+          {
+            "mX": 1,
+            "mY": 3
+          },
+          {
+            "mX": 1,
+            "mY": 4
+          },
+          {
+            "mX": 1,
+            "mY": 5
+          },
+          {
+            "mX": 1,
+            "mY": 6
+          },
+          {
+            "mX": 1,
+            "mY": 7
+          },
+          {
+            "mX": 1,
+            "mY": 8
+          },
+          {
+            "mX": 1,
+            "mY": 9
+          },
+          {
+            "mX": 2,
+            "mY": 0
+          },
+          {
+            "mX": 2,
+            "mY": 1
+          },
+          {
+            "mX": 2,
+            "mY": 2
+          },
+          {
+            "mX": 2,
+            "mY": 3
+          },
+          {
+            "mX": 2,
+            "mY": 4
+          },
+          {
+            "mX": 2,
+            "mY": 5
+          },
+          {
+            "mX": 2,
+            "mY": 6
+          },
+          {
+            "mX": 2,
+            "mY": 7
+          },
+          {
+            "mX": 2,
+            "mY": 8
+          },
+          {
+            "mX": 2,
+            "mY": 9
+          },
+          {
+            "mX": 5,
+            "mY": 9
+          },
+          {
+            "mX": 6,
+            "mY": 0
+          },
+          {
+            "mX": 6,
+            "mY": 1
+          },
+          {
+            "mX": 6,
+            "mY": 2
+          },
+          {
+            "mX": 6,
+            "mY": 3
+          },
+          {
+            "mX": 6,
+            "mY": 4
+          },
+          {
+            "mX": 6,
+            "mY": 5
+          },
+          {
+            "mX": 6,
+            "mY": 6
+          },
+          {
+            "mX": 6,
+            "mY": 7
+          },
+          {
+            "mX": 6,
+            "mY": 8
+          },
+          {
+            "mX": 6,
+            "mY": 9
+          },
+          {
+            "mX": 7,
+            "mY": 0
+          },
+          {
+            "mX": 7,
+            "mY": 6
+          },
+          {
+            "mX": 7,
+            "mY": 7
+          },
+          {
+            "mX": 7,
+            "mY": 8
+          },
+          {
+            "mX": 7,
+            "mY": 9
+          },
+          {
+            "mX": 8,
+            "mY": 0
+          },
+          {
+            "mX": 8,
+            "mY": 6
+          },
+          {
+            "mX": 8,
+            "mY": 7
+          },
+          {
+            "mX": 8,
+            "mY": 8
+          },
+          {
+            "mX": 8,
+            "mY": 9
+          }
+        ]
+      },
+      {
+        "name": "FlagZombieTypeName",
+        "type": "zombieType",
+        "default": "moon_flag"
+      },
+      {
+        "name": "GravestoneDefaultTypeName",
+        "type": "string",
+        "default": "gravestone_moon"
+      },
+      {
+        "name": "GroupsToUnloadForAds",
+        "type": "List<string>",
+        "default": [
+          "DelayLoad_Background_Moon_Compressed"
+        ]
+      },
+      {
+        "name": "LevelPowerupSet",
+        "type": "string",
+        "default": "LevelPowerupsDefault"
+      },
+      {
+        "name": "MusicSuffix",
+        "type": "string",
+        "default": "Moon"
+      },
+      {
+        "name": "ResourceGroupNames",
+        "type": "List<string>",
+        "default": [
+          "Moon_Gravestone",
+          "Game_Tombstones_Dynamic",
+          "DelayLoad_Background_Moon_Compressed",
+          "Dirt_Spawn_Moon",
+          "PlantCosmoss",
+          "AudioMoon",
+          "Energy_Bean_effects"
+        ]
+      },
+      {
+        "name": "StagePrefix",
+        "type": "string",
+        "default": "moon"
+      },
+      {
+        "name": "AmbientAudioSuffix",
+        "type": "string",
+        "default": ""
+      }
+    ],
+    "implementations": [
+      {
+        "alias": "MoonStage",
+        "objdata": {
+          "ResourceGroupNames": [
+            "Moon_Gravestone",
+            "Game_Tombstones_Dynamic",
+            "DelayLoad_Background_Moon_Compressed",
+            "Dirt_Spawn_Moon",
+            "PlantCosmoss",
+            "AudioMoon",
+            "Energy_Bean_effects"
+          ],
+          "GroupsToUnloadForAds": [
+            "DelayLoad_Background_Moon_Compressed"
+          ],
+          "BelongsToWorld": "moon",
+          "StagePrefix": "moon",
+          "BackgroundResourceGroup": "DelayLoad_Background_Moon_Compressed",
+          "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_MOON",
+          "BackgroundImageLeft": "MOON_LEFT",
+          "BackgroundImageMiddle": "MOON",
+          "BackgroundImageRight": "MOON_RIGHT",
+          "LevelPowerupSet": "LevelPowerupsDefault",
+          "BasicZombieTypeName": "moon",
+          "FlagZombieTypeName": "moon_flag",
+          "Armor1ZombieTypeName": "moon_armor1",
+          "Armor2ZombieTypeName": "moon_armor2",
+          "GravestoneDefaultTypeName": "gravestone_moon",
+          "DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_MOON",
+          "MusicSuffix": "Moon",
+          "DisabledStreetCells": [
+            {
+              "mX": 0,
+              "mY": 0
+            },
+            {
+              "mX": 0,
+              "mY": 1
+            },
+            {
+              "mX": 0,
+              "mY": 2
+            },
+            {
+              "mX": 0,
+              "mY": 3
+            },
+            {
+              "mX": 0,
+              "mY": 4
+            },
+            {
+              "mX": 0,
+              "mY": 5
+            },
+            {
+              "mX": 0,
+              "mY": 6
+            },
+            {
+              "mX": 0,
+              "mY": 7
+            },
+            {
+              "mX": 0,
+              "mY": 8
+            },
+            {
+              "mX": 0,
+              "mY": 9
+            },
+            {
+              "mX": 1,
+              "mY": 0
+            },
+            {
+              "mX": 1,
+              "mY": 1
+            },
+            {
+              "mX": 1,
+              "mY": 2
+            },
+            {
+              "mX": 1,
+              "mY": 3
+            },
+            {
+              "mX": 1,
+              "mY": 4
+            },
+            {
+              "mX": 1,
+              "mY": 5
+            },
+            {
+              "mX": 1,
+              "mY": 6
+            },
+            {
+              "mX": 1,
+              "mY": 7
+            },
+            {
+              "mX": 1,
+              "mY": 8
+            },
+            {
+              "mX": 1,
+              "mY": 9
+            },
+            {
+              "mX": 2,
+              "mY": 0
+            },
+            {
+              "mX": 2,
+              "mY": 1
+            },
+            {
+              "mX": 2,
+              "mY": 2
+            },
+            {
+              "mX": 2,
+              "mY": 3
+            },
+            {
+              "mX": 2,
+              "mY": 4
+            },
+            {
+              "mX": 2,
+              "mY": 5
+            },
+            {
+              "mX": 2,
+              "mY": 6
+            },
+            {
+              "mX": 2,
+              "mY": 7
+            },
+            {
+              "mX": 2,
+              "mY": 8
+            },
+            {
+              "mX": 2,
+              "mY": 9
+            },
+            {
+              "mX": 5,
+              "mY": 9
+            },
+            {
+              "mX": 6,
+              "mY": 0
+            },
+            {
+              "mX": 6,
+              "mY": 1
+            },
+            {
+              "mX": 6,
+              "mY": 2
+            },
+            {
+              "mX": 6,
+              "mY": 3
+            },
+            {
+              "mX": 6,
+              "mY": 4
+            },
+            {
+              "mX": 6,
+              "mY": 5
+            },
+            {
+              "mX": 6,
+              "mY": 6
+            },
+            {
+              "mX": 6,
+              "mY": 7
+            },
+            {
+              "mX": 6,
+              "mY": 8
+            },
+            {
+              "mX": 6,
+              "mY": 9
+            },
+            {
+              "mX": 7,
+              "mY": 0
+            },
+            {
+              "mX": 7,
+              "mY": 6
+            },
+            {
+              "mX": 7,
+              "mY": 7
+            },
+            {
+              "mX": 7,
+              "mY": 8
+            },
+            {
+              "mX": 7,
+              "mY": 9
+            },
+            {
+              "mX": 8,
+              "mY": 0
+            },
+            {
+              "mX": 8,
+              "mY": 6
+            },
+            {
+              "mX": 8,
+              "mY": 7
+            },
+            {
+              "mX": 8,
+              "mY": 8
+            },
+            {
+              "mX": 8,
+              "mY": 9
+            }
+          ],
+          "CosmicPlantfoodFillSeconds": 50.0
+        },
+        "image": "Stage_Moon.webp",
+        "tag": "main"
+      }
+    ]
+  },
+  {
     "objclass": "NewPVPStageProperties",
     "fields": [
       {

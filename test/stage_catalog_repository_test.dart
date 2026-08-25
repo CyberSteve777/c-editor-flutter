@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
 import 'package:c_editor/data/repository/stage_catalog_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -72,4 +73,63 @@ void main() {
       );
     });
   });
+
+  group('MoonStage catalog entry', () {
+    setUpAll(() async {
+      await StageCatalogRepository.init();
+      await StageRepository.init();
+    });
+
+    test('appears after Heian Ages in the main stage list', () {
+      final options = StageCatalogRepository.stageBaseOptions();
+      final aliases = options.map((option) => option.alias).toList();
+      final moon = options.firstWhere((option) => option.alias == 'MoonStage');
+
+      expect(
+        aliases.indexOf('HeianStage'),
+        lessThan(aliases.indexOf('MoonStage')),
+      );
+      expect(
+        aliases.indexOf('MoonStage'),
+        lessThan(aliases.indexOf('FairyTaleStage')),
+      );
+      expect(moon.type, 'main');
+      expect(moon.iconName, 'Stage_Moon.webp');
+    });
+
+    test('keeps the Moon-specific custom-stage setting', () {
+      final impl = StageCatalogRepository.catalogImplementation('MoonStage');
+      final moonBase = StageCatalogRepository.stageBaseOptions().firstWhere(
+        (option) => option.alias == 'MoonStage',
+      );
+      final resourceGroupField = StageCatalogRepository.sectionForObjclass(
+        'MoonStageProperties',
+      )!.fields.firstWhere((field) => field.name == 'ResourceGroupNames');
+
+      expect(impl, isNotNull);
+      expect(impl!.objclass, 'MoonStageProperties');
+      expect(impl.objdata['MusicSuffix'], 'Moon');
+      expect(impl.objdata['CosmicPlantfoodFillSeconds'], 50.0);
+      expect(impl.objdata['ResourceGroupNames'], contains('AudioMoon'));
+      expect(moonBase.objdata['ResourceGroupNames'], contains('AudioMoon'));
+      expect(resourceGroupField.defaultValue, contains('AudioMoon'));
+    });
+  });
+
+  test(
+    'global resource-group list includes every custom lawn preset',
+    () async {
+      await StageCatalogRepository.init();
+      await CustomStagePresetRepository.init();
+
+      expect(
+        StageCatalogRepository.knownResourceGroups,
+        containsAll(CustomStagePresetRepository.resourceGroups),
+      );
+      expect(
+        StageCatalogRepository.knownResourceGroups,
+        contains('Modern_Gravestone'),
+      );
+    },
+  );
 }

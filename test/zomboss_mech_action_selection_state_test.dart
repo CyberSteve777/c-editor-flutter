@@ -83,6 +83,11 @@ void main() {
 
     await tester.tap(find.widgetWithText(ChoiceChip, 'Attack'));
     await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byType(TextField).first,
+      'SelectionStateAction',
+    );
+    await tester.pumpAndSettle();
     await tester.drag(find.byType(ListView), const Offset(0, -350));
     await tester.pumpAndSettle();
     final offsetBefore = tester
@@ -100,6 +105,13 @@ void main() {
       find.widgetWithText(ChoiceChip, 'Attack'),
     );
     expect(attackChip.selected, isTrue);
+    expect(
+      tester
+          .widget<EditableText>(find.byType(EditableText).first)
+          .controller
+          .text,
+      'SelectionStateAction',
+    );
     final offsetAfter = tester
         .state<ScrollableState>(find.byType(Scrollable).last)
         .position

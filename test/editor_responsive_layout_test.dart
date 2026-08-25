@@ -1,3 +1,6 @@
+import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
+import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/screens/editor/others/zomboss_mech_action_detail_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -90,6 +93,12 @@ void main() {
     final field = tester.widget<TextField>(find.byKey(fieldKey));
     expect(field.decoration?.labelText, isNull);
     expect(find.text(label), findsOneWidget);
+    final externalLabel = tester.widget<Text>(find.text(label));
+    final theme = Theme.of(tester.element(find.text(label)));
+    expect(
+      externalLabel.style?.fontSize,
+      theme.textTheme.bodySmall?.fontSize,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -148,6 +157,59 @@ void main() {
       ),
     );
 
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('action details stack labels and values on narrow screens', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    const actionAlias = 'ZombossLostCityTriggerTrapTier3';
+    const longField = 'AnExtremelyLongActionFieldNameThatMustStayReadable';
+    const catalog = ZombossMechCatalogEntry(
+      id: 'ResponsiveMech',
+      icon: 'unknown.webp',
+      defaultPhaseCount: 1,
+      variations: [],
+      editableInstance: 'responsive_mech',
+      editableInstancePropsName: 'ResponsiveMechProps',
+      actions: [
+        ZombossMechObjclassGroup(
+          objclass: 'ZombossDropSandbagActionDefinition',
+          tag: 'attack',
+          fields: [ZombossMechFieldSpec(name: longField, type: 'string')],
+          implementations: {
+            actionAlias: {longField: 'Readable value'},
+          },
+        ),
+      ],
+      properties: [],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ZombossMechActionDetailScreen(
+          catalog: catalog,
+          levelFile: PvzLevelFile(objects: []),
+          rtid: 'RTID($actionAlias@ZombieActions)',
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final aliasLabel = find.text('Alias:');
+    final aliasValue = find.text(actionAlias).last;
+    expect(
+      tester.getTopLeft(aliasValue).dy,
+      greaterThan(tester.getBottomLeft(aliasLabel).dy),
+    );
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.decoration?.labelText, isNull);
+    expect(find.text(longField), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

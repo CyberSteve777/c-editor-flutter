@@ -72,7 +72,9 @@ class _ConveyorSeedBankPropertiesScreenState
         Map<String, dynamic>.from(_moduleObj.objData as Map),
       );
       if (_data.dropDelayConditions.isEmpty && _data.speedConditions.isEmpty) {
-        _data = _createDefaultConveyorData();
+        final manualPacketSpawning = _data.manualPacketSpawning;
+        _data = _createDefaultConveyorData()
+          ..manualPacketSpawning = manualPacketSpawning;
       }
     } catch (_) {
       _data = _createDefaultConveyorData();
@@ -81,6 +83,7 @@ class _ConveyorSeedBankPropertiesScreenState
       initialPlantList: List.from(_data.initialPlantList),
       dropDelayConditions: List.from(_data.dropDelayConditions),
       speedConditions: List.from(_data.speedConditions),
+      manualPacketSpawning: _data.manualPacketSpawning,
     );
   }
 
@@ -362,44 +365,36 @@ class _ConveyorSeedBankPropertiesScreenState
   }
 
   void _showHelp(AppLocalizations? l10n) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.conveyorBeltHelp ?? 'Conveyor belt help'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n?.conveyorBeltHelpIntro ??
-                    'Conveyor mode randomly generates cards by weight. Configure plant pool and refresh delay.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.conveyorBeltHelpPool ??
-                    'Plant pool & weight: Probability = weight / total weight. Use thresholds to adjust dynamically.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.conveyorBeltHelpDropDelay ??
-                    'Drop delay: Controls card spawn interval. More plants = slower.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.conveyorBeltHelpSpeed ??
-                    'Speed: Physical belt speed. Standard = 100.',
-              ),
-            ],
-          ),
+    showEditorHelpDialog(
+      context,
+      isEvent: false,
+      title: l10n?.conveyorBeltHelp ?? 'Conveyor Belt',
+      sections: [
+        HelpSectionData(
+          title: l10n?.overview ?? 'Overview',
+          body:
+              l10n?.conveyorBeltHelpIntro ??
+              'Conveyor mode randomly generates cards by weight. Configure plant pool and refresh delay.',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.ok ?? 'OK'),
-          ),
-        ],
-      ),
+        HelpSectionData(
+          title: l10n?.conveyorCardPool ?? 'Conveyor Pool',
+          body:
+              l10n?.conveyorBeltHelpPool ??
+              'Plant pool & weight: Probability = weight / total weight. Use thresholds to adjust dynamically.',
+        ),
+        HelpSectionData(
+          title: l10n?.dropDelayConditions ?? 'Seed packet delay',
+          body:
+              l10n?.conveyorBeltHelpDropDelay ??
+              'Drop delay controls the card spawn interval.',
+        ),
+        HelpSectionData(
+          title: l10n?.speedConditions ?? 'Conveyor speed',
+          body:
+              l10n?.conveyorBeltHelpSpeed ??
+              'Speed controls the physical belt speed.',
+        ),
+      ],
     );
   }
 }
@@ -739,7 +734,8 @@ class _PlantDetailDialogState extends State<_PlantDetailDialog> {
               ),
               const SizedBox(height: 8),
               Text(
-                '0 = follow account level',
+                l10n?.followAccountLevel ??
+                    'Level 0 plants use their corresponding tier from the player\'s account.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

@@ -17,7 +17,6 @@ import 'package:c_editor/widgets/zombie_selection_flow.dart';
 
 /// Storm zombie spawner event editor. Ported from Z-Editor-master StormSpawnerEventEP.kt.
 /// Uses jittered-style zombie icon cards, bottom sheet editing, and button handling.
-/// Supports zombie levels (game supports this even though original editor did not).
 class StormEventScreen extends StatefulWidget {
   const StormEventScreen({
     super.key,
@@ -80,13 +79,6 @@ class _StormEventScreenState extends State<StormEventScreen> {
     } catch (_) {
       _data = StormZombieSpawnerPropsData();
     }
-    for (final z in _data.zombies) {
-      if (_isElite(z)) {
-        z.level = null;
-      } else if ((z.level ?? 1) < 1) {
-        z.level = 1;
-      }
-    }
   }
 
   void _sync() {
@@ -122,7 +114,6 @@ class _StormEventScreenState extends State<StormEventScreen> {
     widget.onRequestZombieSelection((id) {
       final aliases = ZombieRepository().buildZombieAliases(id);
       final rtid = RtidParser.build(aliases, 'ZombieTypes');
-      final isElite = ZombieRepository().isElite(id);
       _data = StormZombieSpawnerPropsData(
         columnStart: _data.columnStart,
         columnEnd: _data.columnEnd,
@@ -131,7 +122,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
         type: _data.type,
         zombies: [
           ..._data.zombies,
-          StormZombieData(type: rtid, level: isElite ? null : 1),
+          StormZombieData(type: rtid, level: 0),
         ],
       );
       _sync();
@@ -176,29 +167,10 @@ class _StormEventScreenState extends State<StormEventScreen> {
   void _replaceZombieType(int index, String newRtid, [int? preserveLevel]) {
     final zombies = List<StormZombieData>.from(_data.zombies);
     final current = zombies[index];
-    final isEliteNew = ZombieRepository().isElite(
-      ZombiePropertiesRepository.getTypeNameByAlias(
-        RtidParser.parse(newRtid)?.alias ?? newRtid,
-      ),
-    );
     zombies[index] = StormZombieData(
       type: newRtid,
-      level: isEliteNew ? null : (preserveLevel ?? current.level ?? 1),
+      level: preserveLevel ?? current.level ?? 0,
     );
-    _data = StormZombieSpawnerPropsData(
-      columnStart: _data.columnStart,
-      columnEnd: _data.columnEnd,
-      groupSize: _data.groupSize,
-      timeBetweenGroups: _data.timeBetweenGroups,
-      type: _data.type,
-      zombies: zombies,
-    );
-    _sync();
-  }
-
-  void _updateZombieLevel(int index, int? level) {
-    final zombies = List<StormZombieData>.from(_data.zombies);
-    zombies[index] = StormZombieData(type: zombies[index].type, level: level);
     _data = StormZombieSpawnerPropsData(
       columnStart: _data.columnStart,
       columnEnd: _data.columnEnd,
@@ -241,7 +213,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
       context: context,
       options: const ZombieSpawnEditSheetOptions(
         showRow: false,
-        showLevel: true,
+        showLevel: false,
       ),
       iconPath: iconPath,
       displayName: displayName,
@@ -250,24 +222,18 @@ class _StormEventScreenState extends State<StormEventScreen> {
       levelValue: z.level ?? 0,
       onChangeType: () {
         Future.microtask(() async {
-          final selected = await pushZombieSelection(context);
+          if (!mounted) return;
+          final selected = await pushZombieSelection(this.context);
           if (!mounted || selected == null) return;
           final aliases = ZombieRepository().buildZombieAliases(selected);
           final rtid = RtidParser.build(aliases, 'ZombieTypes');
-          final isEliteNew = ZombieRepository().isElite(selected);
-          _replaceZombieType(
-            index,
-            rtid,
-            isEliteNew ? null : (z.level == null ? null : z.level),
-          );
+          _replaceZombieType(index, rtid, z.level);
         });
       },
-      onLevelChanged: (level) =>
-          _updateZombieLevel(index, level == 0 ? null : level),
       onCopy: () {
         final copy = StormZombieData(
           type: z.type,
-          level: isElite ? null : z.level,
+          level: z.level ?? 0,
         );
         _data = StormZombieSpawnerPropsData(
           columnStart: _data.columnStart,
@@ -339,6 +305,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.stormEvent ?? 'Storm event',
               sections: [
                 HelpSectionData(
@@ -357,7 +324,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
                   title: l10n?.zombieLevels ?? 'Zombie levels',
                   body:
                       l10n?.zombieLevelsBody ??
-                      'Storm zombies support level 1-10. Elite zombies use default level.',
+                      'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect.',
                 ),
               ],
             ),
@@ -524,13 +491,16 @@ class _StormEventScreenState extends State<StormEventScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                l10n?.zombiesCount(_data.zombies.length) ??
-                    'Zombies (${_data.zombies.length})',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  l10n?.stormCarriedZombiesCount(_data.zombies.length) ??
+                      'Carried zombies (${_data.zombies.length} total)',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),

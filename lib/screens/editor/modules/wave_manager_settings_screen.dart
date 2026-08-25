@@ -148,6 +148,7 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.waveManagerHelpTitle ?? 'Wave manager',
               themeColor: themeColor,
               sections: [

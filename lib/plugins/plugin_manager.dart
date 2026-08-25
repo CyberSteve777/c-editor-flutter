@@ -92,15 +92,18 @@ class PluginManager extends ChangeNotifier {
     for (final bundled in bundledPlugins) {
       final enabled = !disabled.contains(bundled.id);
       try {
-        final manifest = await loadPluginManifestAsset(bundled.manifestAssetPath);
+        final manifest = await loadPluginManifestAsset(
+          bundled.manifestAssetPath,
+        );
         if (manifest.id != bundled.id) {
           throw StateError(
             'Bundled plugin id mismatch: catalog=${bundled.id} '
             'manifest=${manifest.id}',
           );
         }
-        final assets =
-            await loadPluginAssetsFromFlutter(bundled.assetsFlutterRoot);
+        final assets = await loadPluginAssetsFromFlutter(
+          bundled.assetsFlutterRoot,
+        );
         records.add(
           bundledPluginRecord(
             manifest: manifest,
@@ -170,19 +173,20 @@ class PluginManager extends ChangeNotifier {
         );
         bundled.initialize(host);
       } catch (e, st) {
-        debugPrint('Failed to initialize bundled plugin ${bundled.id}: $e\n$st');
+        debugPrint(
+          'Failed to initialize bundled plugin ${bundled.id}: $e\n$st',
+        );
         final index = _installed.indexWhere((p) => p.id == bundled.id);
         if (index >= 0) {
-          _installed[index] = _installed[index].copyWith(loadError: e.toString());
+          _installed[index] = _installed[index].copyWith(
+            loadError: e.toString(),
+          );
         }
       }
     }
 
     for (final record in _installed.where(
-      (p) =>
-          p.kind == PluginKind.imported &&
-          p.enabled &&
-          p.loadError == null,
+      (p) => p.kind == PluginKind.imported && p.enabled && p.loadError == null,
     )) {
       await _loadImported(record);
     }
@@ -257,19 +261,39 @@ class PluginManager extends ChangeNotifier {
   }
 
   Future<void> setEnabled(String pluginId, bool enabled) async {
-    final disabled = _disabledIds();
-    if (enabled) {
-      disabled.remove(pluginId);
-    } else {
-      disabled.add(pluginId);
+    final recordIndex = _installed.indexWhere(
+      (record) => record.id == pluginId,
+    );
+    final previousRecord = recordIndex >= 0 ? _installed[recordIndex] : null;
+    if (previousRecord != null && previousRecord.enabled != enabled) {
+      _installed[recordIndex] = previousRecord.copyWith(enabled: enabled);
+      notifyListeners();
     }
-    await _setDisabledIds(disabled);
 
-    final record = _installed.where((p) => p.id == pluginId).firstOrNull;
-    if (record != null && record.kind == PluginKind.imported) {
-      await _storage.setEnabled(pluginId, enabled);
+    try {
+      final disabled = _disabledIds();
+      if (enabled) {
+        disabled.remove(pluginId);
+      } else {
+        disabled.add(pluginId);
+      }
+      await _setDisabledIds(disabled);
+
+      final record = _installed.where((p) => p.id == pluginId).firstOrNull;
+      if (record != null && record.kind == PluginKind.imported) {
+        await _storage.setEnabled(pluginId, enabled);
+      }
+      await reload();
+    } catch (_) {
+      final currentIndex = _installed.indexWhere(
+        (record) => record.id == pluginId,
+      );
+      if (previousRecord != null && currentIndex >= 0) {
+        _installed[currentIndex] = previousRecord;
+        notifyListeners();
+      }
+      rethrow;
     }
-    await reload();
   }
 
   Future<void> uninstall(String pluginId) async {

@@ -40,6 +40,26 @@ abstract final class CustomStagePresetRepository {
 
   static List<CustomStagePreset> get presets => List.unmodifiable(_presets);
 
+  /// Resource groups contributed by every bundled custom-lawn preset.
+  ///
+  /// This is derived from the preset data so new presets automatically become
+  /// available from the custom lawn editor's global import list.
+  static Set<String> get resourceGroups {
+    final groups = <String>{};
+    for (final preset in _presets) {
+      _collectGroups(groups, preset.objdata['ResourceGroupNames']);
+      _collectGroups(groups, preset.objdata['GroupsToUnloadForAds']);
+    }
+    return Set.unmodifiable(groups);
+  }
+
+  static void _collectGroups(Set<String> target, dynamic raw) {
+    if (raw is! List) return;
+    for (final item in raw) {
+      if (item is String && item.isNotEmpty) target.add(item);
+    }
+  }
+
   @visibleForTesting
   static void resetForTest() {
     _isLoaded = false;

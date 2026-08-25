@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/registry/conflict_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/module_instance_display_name.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -50,6 +51,7 @@ class ModuleUIInfo {
   final String? assetIconPath;
   final bool isCore;
   final bool isExpeditionTiles;
+  final bool canEdit;
 
   const ModuleUIInfo({
     required this.rtid,
@@ -61,7 +63,21 @@ class ModuleUIInfo {
     this.assetIconPath,
     required this.isCore,
     this.isExpeditionTiles = false,
+    required this.canEdit,
   });
+
+  ModuleUIInfo copyWith({String? friendlyName}) => ModuleUIInfo(
+    rtid: rtid,
+    alias: alias,
+    objClass: objClass,
+    friendlyName: friendlyName ?? this.friendlyName,
+    description: description,
+    icon: icon,
+    assetIconPath: assetIconPath,
+    isCore: isCore,
+    isExpeditionTiles: isExpeditionTiles,
+    canEdit: canEdit,
+  );
 }
 
 class LevelSettingsTab extends StatefulWidget {
@@ -72,6 +88,8 @@ class LevelSettingsTab extends StatefulWidget {
     required this.missingModules,
     this.missingModuleWarnings,
     this.showGlacierModuleCompatibilityWarning = false,
+    this.showGlacierModuleUnderwaterWarning = false,
+    this.showIceAgePlantPuzzleWarning = false,
     required this.onEditBasicInfo,
     required this.onEditModule,
     required this.onRemoveModule,
@@ -86,6 +104,8 @@ class LevelSettingsTab extends StatefulWidget {
   /// Module objClass -> list of plant IDs that need this module but it's missing (parallel plants warning).
   final Map<String, List<String>>? missingModuleWarnings;
   final bool showGlacierModuleCompatibilityWarning;
+  final bool showGlacierModuleUnderwaterWarning;
+  final bool showIceAgePlantPuzzleWarning;
   final VoidCallback onEditBasicInfo;
   final ValueChanged<String> onEditModule;
   final ValueChanged<String> onRemoveModule;
@@ -102,7 +122,22 @@ class LevelSettingsTab extends StatefulWidget {
 }
 
 class _LevelSettingsTabState extends State<LevelSettingsTab> {
+  static const _tabEditorModuleClasses = {
+    'VaseBreakerPresetProperties',
+    'VaseBreakerArcadeModuleProperties',
+    'VaseBreakerFlowModuleProperties',
+    'ZombossBattleModuleProperties',
+    'ZombossBattleIntroProperties',
+    'ZombossLastStandMinigameProperties',
+  };
+
   String? pendingDeleteRtid;
+
+  static bool _hasEditor(ModuleMetadata metadata, String objClass) {
+    return (metadata.routeId != 'Unknown' &&
+            metadata.routeId != 'UnknownDetail') ||
+        _tabEditorModuleClasses.contains(objClass);
+  }
 
   /// Returns localized plant name for display; falls back to a readable form of id if no translation.
   static String _plantDisplayName(
@@ -160,7 +195,7 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
       );
     }
 
-    final currentModulesList = levelDef.modules.map((rtid) {
+    final unnumberedModules = levelDef.modules.map((rtid) {
       final info = RtidParser.parse(rtid);
       final alias = info?.alias ?? 'Unknown';
       String? objClass;
@@ -192,6 +227,33 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
         assetIconPath: metadata.assetIconPath,
         isCore: metadata.isCore,
         isExpeditionTiles: isExpeditionTiles,
+        canEdit: _hasEditor(metadata, objClass),
+      );
+    }).toList();
+
+    final instanceCounts = <String, int>{};
+    for (final module in unnumberedModules) {
+      if (repeatableBossModuleObjClasses.contains(module.objClass)) {
+        instanceCounts.update(
+          module.objClass,
+          (count) => count + 1,
+          ifAbsent: () => 1,
+        );
+      }
+    }
+    final seenInstances = <String, int>{};
+    final currentModulesList = unnumberedModules.map((module) {
+      final instanceIndex = seenInstances[module.objClass] ?? 0;
+      if (repeatableBossModuleObjClasses.contains(module.objClass)) {
+        seenInstances[module.objClass] = instanceIndex + 1;
+      }
+      return module.copyWith(
+        friendlyName: moduleInstanceDisplayName(
+          baseName: module.friendlyName,
+          objClass: module.objClass,
+          instanceCount: instanceCounts[module.objClass] ?? 1,
+          instanceIndex: instanceIndex,
+        ),
       );
     }).toList();
 
@@ -201,17 +263,24 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     final existingObjClasses = currentModulesList
         .map((m) => m.objClass)
         .toSet();
+    final showLifeSupportLastStandConflict =
+        existingObjClasses.contains('MoonLifeSupportSystemProperties') &&
+        existingObjClasses.contains('LastStandMinigameProperties');
+    final showCowboyWithoutConveyorWarning =
+        existingObjClasses.contains('CowboyMinigameProperties') &&
+        !existingObjClasses.contains('ConveyorSeedBankProperties');
     final activeConflicts = ConflictRegistry.getActiveConflicts(
       context,
       existingObjClasses,
     );
     final hasTunnelDefendModule = currentModulesList.any(
       (m) =>
-          m.objClass == 'TunnelDefendModuleProperties' &&
-          !m.isExpeditionTiles,
+          m.objClass == 'TunnelDefendModuleProperties' && !m.isExpeditionTiles,
     );
-    final showTunnelDefendRecommendation =
-        _shouldRecommendTunnelDefendModule(levelDef, hasTunnelDefendModule);
+    final showTunnelDefendRecommendation = _shouldRecommendTunnelDefendModule(
+      levelDef,
+      hasTunnelDefendModule,
+    );
     final hasExpeditionTilesModule = currentModulesList.any(
       (m) => m.isExpeditionTiles,
     );
@@ -375,6 +444,69 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
               ),
             ),
 
+            if (showLifeSupportLastStandConflict) ...[
+              const SizedBox(height: 12),
+              Card(
+                key: const ValueKey('lifeSupportLastStandConflictWarning'),
+                color: Theme.of(context).colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.error,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onErrorContainer,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n?.conflictTitle_ModuleLogic ??
+                                  'Module logic conflict',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n?.lifeSupportLastStandConflictWarning ??
+                            'The Life Support System and Last Stand modules '
+                                'cannot coexist; otherwise, the level will '
+                                'fail to start correctly.',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onErrorContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+
+            if (showCowboyWithoutConveyorWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                key: const ValueKey('cowboyMinigameConveyorWarning'),
+                title:
+                    l10n?.cowboyMinigameDependencyWarningTitle ??
+                    'Required module missing',
+                message:
+                    l10n?.cowboyMinigameConveyorWarning ??
+                    'The Not OK Corral module must be used with the Conveyor '
+                        'Belt module, or the level will crash.',
+              ),
+            ],
+
             // Missing module for parallel plants (same style as conflicts)
             if (widget.missingModuleWarnings != null &&
                 widget.missingModuleWarnings!.isNotEmpty)
@@ -459,14 +591,39 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
             if (widget.showGlacierModuleCompatibilityWarning) ...[
               const SizedBox(height: 12),
               EditorWarningBanner(
-                title: ModuleRegistry.getMetadata(
-                  'GlacierModuleProperties',
-                ).getTitle(context),
+                title:
+                    l10n?.glacierModuleCompatibilityWarningTitle ??
+                    'Ice Chunk Module requirements',
                 message:
                     l10n?.glacierModuleCompatibilityWarning ??
                     'This module only works with the Zomboss Battle module '
                         'and an Ice Age Zomboss Mech (zombossmech_iceage). '
                         'Add or fix those settings so glacier blocks can spawn zombies.',
+              ),
+            ],
+
+            if (widget.showGlacierModuleUnderwaterWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                title:
+                    l10n?.glacierModuleUnderwaterWarningTitle ??
+                    'Underwater World appearance incompatibility',
+                message:
+                    l10n?.glacierModuleUnderwaterWarning ??
+                    'Avoid using the Frostbite Caves Zomboss and the Ice Chunk Module on an Underwater World lawn. This combination can harm the level appearance and may cause crashes.',
+              ),
+            ],
+
+            if (widget.showIceAgePlantPuzzleWarning) ...[
+              const SizedBox(height: 12),
+              EditorWarningBanner(
+                key: const ValueKey('iceAgePlantPuzzleWarning'),
+                title:
+                    l10n?.iceAgePlantPuzzleVariationWarningTitle ??
+                    'Beplanted does not need Ice Chunks',
+                message:
+                    l10n?.iceAgePlantPuzzleVariationWarning ??
+                    'The Beplanted variation was designed specifically for the Frostbite Caves Beplanted minigame. Its abilities do not require the Ice Chunk Module.',
               ),
             ],
 
@@ -550,7 +707,8 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     BuildContext context,
     AppLocalizations? l10n,
   ) {
-    final desktop = Theme.of(context).platform == TargetPlatform.windows ||
+    final desktop =
+        Theme.of(context).platform == TargetPlatform.windows ||
         Theme.of(context).platform == TargetPlatform.macOS ||
         Theme.of(context).platform == TargetPlatform.linux;
     return desktop
@@ -652,7 +810,7 @@ class _ReorderableModuleList extends StatelessWidget {
               isCore: isCore,
               reorderIndex: index,
               removeTooltip: removeTooltip,
-              onClick: () => onEditModule(item.rtid),
+              onClick: item.canEdit ? () => onEditModule(item.rtid) : null,
               onDelete: () => onDelete(item.rtid),
             );
           },
@@ -669,7 +827,7 @@ class _ReorderableModuleTile extends StatelessWidget {
     required this.isCore,
     required this.reorderIndex,
     required this.removeTooltip,
-    required this.onClick,
+    this.onClick,
     required this.onDelete,
   });
 
@@ -677,7 +835,7 @@ class _ReorderableModuleTile extends StatelessWidget {
   final bool isCore;
   final int reorderIndex;
   final String removeTooltip;
-  final VoidCallback onClick;
+  final VoidCallback? onClick;
   final VoidCallback onDelete;
 
   @override
@@ -746,7 +904,11 @@ class _ReorderableModuleTile extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.close, size: isCore ? 24 : 16, color: iconColor),
+                icon: Icon(
+                  Icons.close,
+                  size: isCore ? 24 : 16,
+                  color: iconColor,
+                ),
                 tooltip: removeTooltip,
                 onPressed: onDelete,
               ),

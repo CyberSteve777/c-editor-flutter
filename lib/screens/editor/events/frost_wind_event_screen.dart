@@ -129,6 +129,7 @@ class _FrostWindEventScreenState extends State<FrostWindEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventFrostWind ?? 'Frost wind event',
               sections: [
                 HelpSectionData(
@@ -192,78 +193,105 @@ class _FrostWindEventScreenState extends State<FrostWindEventScreen> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 8,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Text(
-                              l10n?.rowNShort(wind.row + 1) ??
-                                  'Row: ${wind.row + 1}',
-                            ),
-                            Wrap(
-                              spacing: 8,
-                              children: [
-                                ChoiceChip(
-                                  label: Text(l10n?.left ?? 'Left'),
-                                  selected: wind.direction == 'left',
-                                  onSelected: (_) => _updateWind(
-                                    idx,
-                                    FrostWindData(
-                                      row: wind.row,
-                                      direction: 'left',
-                                    ),
-                                  ),
+                        Container(
+                          key: ValueKey('frostWindRowStepper-$idx'),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  l10n?.row ?? 'Row',
+                                  style: theme.textTheme.bodyLarge,
                                 ),
-                                ChoiceChip(
-                                  label: Text(l10n?.right ?? 'Right'),
-                                  selected:
-                                      wind.direction == 'right' ||
-                                      wind.direction.isEmpty,
-                                  onSelected: (_) => _updateWind(
-                                    idx,
-                                    FrostWindData(
-                                      row: wind.row,
-                                      direction: 'right',
-                                    ),
-                                  ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: wind.row > 0
+                                    ? () => _updateWind(
+                                        idx,
+                                        FrostWindData(
+                                          row: wind.row - 1,
+                                          direction: wind.direction,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              Text(
+                                l10n?.rowNShort(wind.row + 1) ??
+                                    'Row ${wind.row + 1}',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: wind.row < _maxRowIndex
+                                    ? () => _updateWind(
+                                        idx,
+                                        FrostWindData(
+                                          row: wind.row + 1,
+                                          direction: wind.direction,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: wind.row > 0
-                                  ? () => _updateWind(
+                        const SizedBox(height: 12),
+                        Container(
+                          key: ValueKey('frostWindDirection-$idx'),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                l10n?.windDirectionLabel ?? 'Direction',
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: SegmentedButton<String>(
+                                  showSelectedIcon: false,
+                                  expandedInsets: EdgeInsets.zero,
+                                  segments: [
+                                    ButtonSegment<String>(
+                                      value: 'left',
+                                      icon: const Icon(Icons.arrow_forward),
+                                      label: Text(l10n?.left ?? 'Left'),
+                                    ),
+                                    ButtonSegment<String>(
+                                      value: 'right',
+                                      icon: const Icon(Icons.arrow_back),
+                                      label: Text(l10n?.right ?? 'Right'),
+                                    ),
+                                  ],
+                                  selected: {
+                                    wind.direction == 'left' ? 'left' : 'right',
+                                  },
+                                  onSelectionChanged: (selection) {
+                                    _updateWind(
                                       idx,
                                       FrostWindData(
-                                        row: wind.row - 1,
-                                        direction: wind.direction,
+                                        row: wind.row,
+                                        direction: selection.first,
                                       ),
-                                    )
-                                  : null,
-                            ),
-                            Text(
-                              l10n?.rowNShort(wind.row + 1) ??
-                                  'Row ${wind.row + 1}',
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: wind.row < _maxRowIndex
-                                  ? () => _updateWind(
-                                      idx,
-                                      FrostWindData(
-                                        row: wind.row + 1,
-                                        direction: wind.direction,
-                                      ),
-                                    )
-                                  : null,
-                            ),
-                          ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

@@ -178,8 +178,8 @@ class _VaseBreakerTabState extends State<VaseBreakerTab> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            EditorResponsiveFieldRow(
+              breakpoint: 420,
               children: [
                 _buildStepper(
                   l10n?.startColumnLabel ?? 'Start Col (Min)',
@@ -379,37 +379,96 @@ class _VaseBreakerTabState extends State<VaseBreakerTab> {
           itemCount: _data.vases.length,
           itemBuilder: (context, index) {
             final vase = _data.vases[index];
-            return Card(
-              child: ListTile(
-                leading: _buildVaseIcon(vase),
-                title: Text(_getVaseTitle(context, vase, l10n)),
-                subtitle: Text(_getVaseSubtitle(vase, l10n)),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: vase.count > 1
-                          ? () => _updateData((_) => vase.count--)
-                          : null,
-                    ),
-                    Text('${vase.count}'),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () => _updateData((_) => vase.count++),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () =>
-                          _updateData((d) => d.vases.removeAt(index)),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return _buildVaseListItem(vase, index, l10n);
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildVaseListItem(
+    VaseDefinition vase,
+    int index,
+    AppLocalizations? l10n,
+  ) {
+    final theme = Theme.of(context);
+    final title = Text(
+      _getVaseTitle(context, vase, l10n),
+      key: ValueKey('vaseListItemTitle_$index'),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.titleMedium,
+    );
+    final subtitle = Text(
+      _getVaseSubtitle(vase, l10n),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+    );
+    final controls = Row(
+      key: ValueKey('vaseListItemActions_$index'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.remove),
+          onPressed: vase.count > 1
+              ? () => _updateData((_) => vase.count--)
+              : null,
+        ),
+        Text('${vase.count}'),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () => _updateData((_) => vase.count++),
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () => _updateData((d) => d.vases.removeAt(index)),
+        ),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 560;
+        return Card(
+          key: ValueKey('vaseListItem_$index'),
+          child: compact
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 4, 8),
+                  child: Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildVaseIcon(vase),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                title,
+                                const SizedBox(height: 2),
+                                subtitle,
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Align(alignment: Alignment.centerRight, child: controls),
+                    ],
+                  ),
+                )
+              : ListTile(
+                  leading: _buildVaseIcon(vase),
+                  title: title,
+                  subtitle: subtitle,
+                  trailing: controls,
+                ),
+        );
+      },
     );
   }
 
@@ -518,40 +577,41 @@ class _VaseBreakerTabState extends State<VaseBreakerTab> {
     return parts.isEmpty ? '${vase.count} vase(s)' : parts.join(', ');
   }
 
-  void _showAddVaseDialog() {
+  Future<void> _showAddVaseDialog() async {
     final l10n = AppLocalizations.of(context);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.addVaseTitle ?? 'Add Vase'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(l10n?.plantVaseOption ?? 'Plant Vase'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showPlantPicker();
-              },
-            ),
-            ListTile(
-              title: Text(l10n?.zombieVaseOption ?? 'Zombie Vase'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showZombiePicker();
-              },
-            ),
-            ListTile(
-              title: Text(l10n?.itemLabel ?? 'Item'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showCollectablePicker();
-              },
-            ),
-          ],
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.addVaseTitle ?? 'Add Vase',
+      options: [
+        EditorChoiceDialogOption(
+          value: 'plant',
+          icon: Icons.eco_outlined,
+          title: l10n?.plantVaseOption ?? 'Plant Vase',
         ),
-      ),
+        EditorChoiceDialogOption(
+          value: 'zombie',
+          icon: Icons.pest_control_outlined,
+          title: l10n?.zombieVaseOption ?? 'Zombie Vase',
+        ),
+        EditorChoiceDialogOption(
+          value: 'collectable',
+          icon: Icons.card_giftcard_outlined,
+          title: l10n?.itemLabel ?? 'Item',
+        ),
+      ],
     );
+    if (!mounted || choice == null) return;
+    switch (choice) {
+      case 'plant':
+        _showPlantPicker();
+        break;
+      case 'zombie':
+        _showZombiePicker();
+        break;
+      case 'collectable':
+        _showCollectablePicker();
+        break;
+    }
   }
 
   void _showPlantPicker() {

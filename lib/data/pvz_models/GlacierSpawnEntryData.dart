@@ -5,17 +5,18 @@ class GlacierSpawnEntryData extends PvzModel {
   GlacierSpawnEntryData({this.typeName = '', this.weight = 1, this.level = 0});
 
   String typeName;
-  int weight;
+  num weight;
   int level;
 
   factory GlacierSpawnEntryData.fromJson(Map<String, dynamic> json) {
     return GlacierSpawnEntryData(
       typeName: json['TypeName'] as String? ?? '',
-      weight: json['Weight'] as int? ?? 1,
+      weight: json['Weight'] as num? ?? 1,
       level: json['Level'] as int? ?? 0,
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
     'TypeName': typeName,
     'Weight': weight,

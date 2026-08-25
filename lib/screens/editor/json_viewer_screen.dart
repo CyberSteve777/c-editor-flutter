@@ -30,6 +30,89 @@ double? _cachedFontSize;
 
 enum _JsonViewMode { rawText, structured }
 
+class _JsonEditController extends TextEditingController {
+  List<JsonViewerTextMatch> _searchMatches = const [];
+  int _activeMatchIndex = 0;
+  Color _highlightColor = const Color(0xFFFFF59D);
+  Color _highlightTextColor = const Color(0xFF1B1B1B);
+  Color _activeHighlightColor = const Color(0xFFFFC107);
+  Color _activeHighlightTextColor = const Color(0xFF1B1B1B);
+
+  void setHighlightColors({
+    required Color highlightColor,
+    required Color highlightTextColor,
+    required Color activeHighlightColor,
+    required Color activeHighlightTextColor,
+  }) {
+    _highlightColor = highlightColor;
+    _highlightTextColor = highlightTextColor;
+    _activeHighlightColor = activeHighlightColor;
+    _activeHighlightTextColor = activeHighlightTextColor;
+  }
+
+  void showSearchMatches(
+    List<JsonViewerTextMatch> matches,
+    int activeMatchIndex,
+  ) {
+    _searchMatches = List.unmodifiable(matches);
+    _activeMatchIndex = activeMatchIndex;
+    notifyListeners();
+  }
+
+  void clearSearchMatches() {
+    if (_searchMatches.isEmpty) return;
+    _searchMatches = const [];
+    _activeMatchIndex = 0;
+    notifyListeners();
+  }
+
+  @override
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
+    if (_searchMatches.isEmpty ||
+        text.isEmpty ||
+        (withComposing &&
+            value.composing.isValid &&
+            !value.composing.isCollapsed)) {
+      return super.buildTextSpan(
+        context: context,
+        style: style,
+        withComposing: withComposing,
+      );
+    }
+
+    final baseStyle = style ?? const TextStyle();
+    final activeMatch =
+        _activeMatchIndex >= 0 && _activeMatchIndex < _searchMatches.length
+        ? _searchMatches[_activeMatchIndex]
+        : null;
+    return TextSpan(
+      style: baseStyle,
+      children: buildHighlightedTextSpans(
+        text: text,
+        segmentStartInLine: 0,
+        segmentEndInLine: text.length,
+        baseStyle: baseStyle,
+        highlightStyle: baseStyle.copyWith(
+          color: _highlightTextColor,
+          backgroundColor: _highlightColor,
+        ),
+        activeHighlightStyle: baseStyle.copyWith(
+          color: _activeHighlightTextColor,
+          backgroundColor: _activeHighlightColor,
+          fontWeight: FontWeight.w600,
+        ),
+        lineMatches: _searchMatches,
+        activeMatch: activeMatch,
+        lineStartOffset: 0,
+      ),
+    );
+  }
+}
+
 /// JSON code viewer. Ported from Z-Editor-master JsonCodeViewerScreen.kt
 /// Includes font size slider, edit/save, and scrollbar.
 class JsonViewerScreen extends StatefulWidget {
@@ -40,6 +123,7 @@ class JsonViewerScreen extends StatefulWidget {
     required this.levelFile,
     required this.onBack,
     this.onSaved,
+    this.saveLevel,
   });
 
   final String fileName;
@@ -47,6 +131,8 @@ class JsonViewerScreen extends StatefulWidget {
   final PvzLevelFile levelFile;
   final VoidCallback onBack;
   final VoidCallback? onSaved;
+  final Future<void> Function(String filePath, PvzLevelFile levelFile)?
+  saveLevel;
 
   @override
   State<JsonViewerScreen> createState() => _JsonViewerScreenState();
@@ -56,7 +142,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   double _fontSize = _cachedFontSize ?? 12;
   final _verticalController = ScrollController();
   bool _isEditing = false;
-  final _editController = TextEditingController();
+  final _editController = _JsonEditController();
   final _searchController = TextEditingController();
   final _replaceController = TextEditingController();
   String? _syntaxError;
@@ -184,6 +270,13 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
 
   String _rawPrettyText() => _jsonEncoder.convert(widget.levelFile.toJson());
 
+  void _invalidateRenderedJson() {
+    _cachedRows = null;
+    _lastWidth = 0;
+    _lastFontSize = 0;
+    _jsonStringCache.clear();
+  }
+
   Future<void> _copyTextToClipboard(
     String text, {
     required String successMessage,
@@ -219,6 +312,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         _currentMatchIndex = 0;
         _regexError = false;
       });
+      _editController.clearSearchMatches();
       return;
     }
 
@@ -231,6 +325,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         _currentMatchIndex = 0;
         _regexError = true;
       });
+      _editController.clearSearchMatches();
       return;
     }
 
@@ -266,6 +361,8 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     });
     if (matches.isNotEmpty) {
       _goToMatch(0);
+    } else {
+      _editController.clearSearchMatches();
     }
   }
 
@@ -276,6 +373,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     final match = _matches[safeIndex];
 
     if (_isEditing) {
+      _editController.showSearchMatches(_matches, safeIndex);
       _editController.selection = TextSelection(
         baseOffset: match.start,
         extentOffset: match.end,
@@ -331,7 +429,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       match,
       replacement,
     );
-    _editController.text = next;
+    _applyReplacementText(
+      next,
+      preferredCaretOffset: match.start + replacement.length,
+    );
     _pushHistory(_replaceHistoryKey, replacement, _replaceHistory);
     _runSearch();
   }
@@ -345,9 +446,23 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       replacement,
       _searchOptions,
     );
-    _editController.text = next;
+    final previousSelection = _editController.selection;
+    _applyReplacementText(
+      next,
+      preferredCaretOffset: previousSelection.isValid
+          ? previousSelection.extentOffset
+          : 0,
+    );
     _pushHistory(_replaceHistoryKey, replacement, _replaceHistory);
     _runSearch();
+  }
+
+  void _applyReplacementText(String text, {required int preferredCaretOffset}) {
+    final caretOffset = preferredCaretOffset.clamp(0, text.length);
+    _editController.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: caretOffset),
+    );
   }
 
   void _onSearchChanged(String value) {
@@ -424,6 +539,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       _isEditing = false;
       _syntaxError = null;
     });
+    _editController.clearSearchMatches();
   }
 
   Future<void> _saveEdit() async {
@@ -433,13 +549,18 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       widget.levelFile.objects.clear();
       widget.levelFile.objects.addAll(newLevel.objects);
       widget.levelFile.version = newLevel.version;
-      await LevelRepository.saveAndExport(widget.filePath, widget.levelFile);
+      await (widget.saveLevel ?? LevelRepository.saveAndExport)(
+        widget.filePath,
+        widget.levelFile,
+      );
       if (mounted) {
         _popEscapeHandler();
         setState(() {
           _isEditing = false;
           _syntaxError = null;
+          _invalidateRenderedJson();
         });
+        _editController.clearSearchMatches();
         widget.onSaved?.call();
         final l10n = AppLocalizations.of(context);
         AppMessage.show(
@@ -721,6 +842,13 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   static const _codeFontFamily = 'monospace';
 
   Widget _buildEditView() {
+    final colorScheme = Theme.of(context).colorScheme;
+    _editController.setHighlightColors(
+      highlightColor: colorScheme.tertiaryContainer,
+      highlightTextColor: colorScheme.onTertiaryContainer,
+      activeHighlightColor: colorScheme.primary,
+      activeHighlightTextColor: colorScheme.onPrimary,
+    );
     final baseStyle = TextStyle(
       fontFamily: _codeFontFamily,
       fontSize: _fontSize,

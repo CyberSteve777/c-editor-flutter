@@ -5,6 +5,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/screens/select/grid_item_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Zombie potion module editor. Ported from PotionPropertiesEP.kt
@@ -15,12 +16,16 @@ class ZombiePotionModuleScreen extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     required this.onBack,
+    this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback onBack;
+  final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<ZombiePotionModuleScreen> createState() =>
@@ -88,6 +93,9 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
       MaterialPageRoute(
         builder: (_) => GridItemSelectionScreen(
           filterMode: GridItemFilterMode.all,
+          levelFile: widget.levelFile,
+          onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (id) {
             Navigator.pop(context);
             final list = List<String>.from(_data.potionTypes);
@@ -161,6 +169,7 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.zombiePotionHelpTitle,
               sections: [
                 HelpSectionData(
@@ -348,7 +357,7 @@ class _ZombiePotionModuleScreenState extends State<ZombiePotionModuleScreen> {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
-                          leading: GridItemIcon(
+                          leading: PresetAwareGridItemIcon(
                             typeName: id,
                             size: 40,
                             fit: BoxFit.contain,

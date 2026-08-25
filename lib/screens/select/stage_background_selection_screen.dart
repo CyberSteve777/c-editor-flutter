@@ -3,13 +3,12 @@ import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/animated_extended_fab.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/selection_grid_layout.dart';
-
-final Map<String, double> _stageBackgroundSelectionScrollOffsets = {};
 
 /// Picker for [BackgroundImagePrefix] based on imported DelayLoad groups.
 class StageBackgroundSelectionScreen extends StatefulWidget {
@@ -38,6 +37,7 @@ class StageBackgroundSelectionScreen extends StatefulWidget {
 class _StageBackgroundSelectionScreenState
     extends State<StageBackgroundSelectionScreen> {
   String _searchQuery = '';
+  late final SelectionViewMemory _memory;
   late final ScrollController _listScrollController;
   late bool _listScrollAtTop;
 
@@ -45,13 +45,14 @@ class _StageBackgroundSelectionScreenState
       ? widget.stateBucketId!
       : 'global';
 
-  bool get _canRememberScroll => _searchQuery.trim().isEmpty;
-
   @override
   void initState() {
     super.initState();
-    final initialOffset =
-        _stageBackgroundSelectionScrollOffsets[_viewStateKey] ?? 0;
+    _memory = SelectionViewMemoryStore.forKey(
+      '$_viewStateKey:stage-background',
+    );
+    _searchQuery = _memory.query;
+    final initialOffset = _memory.scrollOffset;
     _listScrollAtTop = initialOffset <= 0;
     _listScrollController = ScrollController(initialScrollOffset: initialOffset)
       ..addListener(_onListScroll);
@@ -83,17 +84,17 @@ class _StageBackgroundSelectionScreenState
       _searchQuery = query;
       _listScrollAtTop = true;
     });
-    _resetRememberedScrollOffset(persist: query.trim().isEmpty);
+    _memory.query = query;
+    _resetRememberedScrollOffset();
   }
 
   void _rememberScrollOffset() {
-    if (!_canRememberScroll || !_listScrollController.hasClients) return;
-    _stageBackgroundSelectionScrollOffsets[_viewStateKey] =
-        _listScrollController.offset;
+    if (!_listScrollController.hasClients) return;
+    _memory.scrollOffset = _listScrollController.offset;
   }
 
-  void _resetRememberedScrollOffset({bool persist = true}) {
-    if (persist) _stageBackgroundSelectionScrollOffsets[_viewStateKey] = 0;
+  void _resetRememberedScrollOffset() {
+    _memory.scrollOffset = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_listScrollController.hasClients) return;
       _listScrollController.jumpTo(0);
@@ -102,7 +103,7 @@ class _StageBackgroundSelectionScreenState
 
   void _restoreRememberedScrollOffset() {
     if (!mounted || !_listScrollController.hasClients) return;
-    final offset = _stageBackgroundSelectionScrollOffsets[_viewStateKey] ?? 0;
+    final offset = _memory.scrollOffset;
     final position = _listScrollController.position;
     final target = offset
         .clamp(position.minScrollExtent, position.maxScrollExtent)

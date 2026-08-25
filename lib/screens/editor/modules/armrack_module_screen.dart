@@ -110,7 +110,28 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
     _sync();
   }
 
-  void _addOverride() {
+  Future<void> _addOverride() async {
+    if (_data.overrides.isNotEmpty &&
+        !levelUsesWaveGenerator(widget.levelFile)) {
+      final l10n = AppLocalizations.of(context);
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n?.warning ?? 'Warning'),
+          content: Text(
+            l10n?.gridOverrideModuleWaveSpawnTimelineNote ??
+                'Wave Manager cannot spawn grid items by wave using this module.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n?.ok ?? 'OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     final newOverride = ArmrackOverrideWaveData(
       wave: _data.overrides.isEmpty
           ? gridOverrideFirstWave
@@ -183,7 +204,6 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
     _placeAt(col, row);
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -200,6 +220,8 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
     final l10n = AppLocalizations.of(context);
     final helpTitle = l10n?.armrackModuleHelpTitle ?? 'Weapon Stands module';
     final selected = _selectedOverride;
+    final hasWaveGenerator = levelUsesWaveGenerator(widget.levelFile);
+    final hasWaveManager = levelUsesWaveManager(widget.levelFile);
 
     return Scaffold(
       appBar: AppBar(
@@ -220,6 +242,7 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -260,14 +283,14 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 Text(
                   l10n?.gridOverrideModuleAppearances ?? 'Wave groups',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -283,7 +306,7 @@ ModuleAliasInputField(
                       setState(() => _overrideToDelete = _data.overrides[idx]),
                   onAdd: _addOverride,
                   groupLabel: (idx) =>
-                      '${l10n?.airDropShipGroupLabel ?? "Group"} ${idx + 1}',
+                      l10n?.groupN(idx + 1) ?? 'Group ${idx + 1}',
                 ),
                 if (selected != null) ...[
                   const SizedBox(height: 24),
@@ -296,7 +319,8 @@ ModuleAliasInputField(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedIndex + 1}',
+                            l10n?.groupN(_selectedIndex + 1) ??
+                                'Group ${_selectedIndex + 1}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -335,28 +359,31 @@ ModuleAliasInputField(
                             ),
                           ] else ...[
                             const SizedBox(height: 8),
-                            Text(
-                              l10n?.gridOverrideModuleWaveSpawnNote(
-                                    waveGeneratorWaveForModuleWave(
-                                          selected.wave,
-                                        ) ??
-                                        selected.wave - 1,
-                                  ) ??
-                                  'This group spawns when wave-generator wave '
-                                      '${waveGeneratorWaveForModuleWave(selected.wave) ?? selected.wave - 1} begins.',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.tertiary,
+                            if (hasWaveGenerator)
+                              Text(
+                                l10n?.gridOverrideModuleWaveSpawnNote(
+                                      waveGeneratorWaveForModuleWave(
+                                            selected.wave,
+                                          ) ??
+                                          selected.wave - 1,
+                                    ) ??
+                                    'This group spawns when wave-generator wave '
+                                        '${waveGeneratorWaveForModuleWave(selected.wave) ?? selected.wave - 1} begins.',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.tertiary,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              l10n?.gridOverrideModuleWaveSpawnTimelineNote ??
-                                  'These entries do not take effect in the '
-                                      'wave manager tab.',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.tertiary,
+                            if (!hasWaveGenerator || hasWaveManager) ...[
+                              if (hasWaveGenerator) const SizedBox(height: 4),
+                              Text(
+                                l10n?.gridOverrideModuleWaveSpawnTimelineNote ??
+                                    'These entries do not take effect in the '
+                                        'wave manager tab.',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.tertiary,
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                           const SizedBox(height: 16),
                           Text(
@@ -486,9 +513,7 @@ ModuleAliasInputField(
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
-        l10n?.removeItemConfirm(
-              '${l10n.airDropShipGroupLabel} ${index + 1}',
-            ) ??
+        l10n?.removeItemConfirm(l10n.groupN(index + 1)) ??
             'Remove group ${index + 1}?',
       ),
       actions: [

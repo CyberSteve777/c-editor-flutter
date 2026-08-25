@@ -64,6 +64,7 @@ abstract final class CustomStageLevelUtils {
     'MusicSuffix',
     'AmbientAudioSuffix',
     'DisabledStreetCells',
+    'CosmicPlantfoodFillSeconds',
     'LinkedTilePropagationAlpha',
     'BackgroundImageMiddle',
     'InitSubmarineInfo',
@@ -328,8 +329,22 @@ abstract final class CustomStageLevelUtils {
     required String sourceStageAlias,
     required Iterable<String> importedGroups,
   }) {
-    final toAlsoUnload = sourceUnloadGroupsForImport(
-      sourceStageAlias: sourceStageAlias,
+    final impl = StageCatalogRepository.catalogImplementation(sourceStageAlias);
+    if (impl == null) return;
+    syncUnloadGroupsFromSourceObjdata(
+      objdata: objdata,
+      sourceObjdata: impl.objdata,
+      importedGroups: importedGroups,
+    );
+  }
+
+  static void syncUnloadGroupsFromSourceObjdata({
+    required Map<String, dynamic> objdata,
+    required Map<String, dynamic> sourceObjdata,
+    required Iterable<String> importedGroups,
+  }) {
+    final toAlsoUnload = sourceUnloadGroupsForObjdata(
+      sourceObjdata: sourceObjdata,
       importedGroups: importedGroups,
     );
     if (toAlsoUnload.isEmpty) return;
@@ -345,8 +360,18 @@ abstract final class CustomStageLevelUtils {
   }) {
     final impl = StageCatalogRepository.catalogImplementation(sourceStageAlias);
     if (impl == null) return const [];
+    return sourceUnloadGroupsForObjdata(
+      sourceObjdata: impl.objdata,
+      importedGroups: importedGroups,
+    );
+  }
+
+  static List<String> sourceUnloadGroupsForObjdata({
+    required Map<String, dynamic> sourceObjdata,
+    required Iterable<String> importedGroups,
+  }) {
     final sourceUnload = stringList(
-      impl.objdata['GroupsToUnloadForAds'],
+      sourceObjdata['GroupsToUnloadForAds'],
     ).toSet();
     if (sourceUnload.isEmpty) return const [];
     return uniqueStrings(importedGroups.where(sourceUnload.contains));
@@ -393,6 +418,9 @@ abstract final class CustomStageLevelUtils {
 
   static bool supportsBeachMinigame(Map<String, dynamic> objdata) =>
       objdata['BackgroundImagePrefix'] == 'IMAGE_BACKGROUNDS_BEACH';
+
+  static bool supportsCosmicPlantfoodFill(String objclass) =>
+      objclass == 'MoonStageProperties';
 
   static bool isBeachMinigameEnabled(Map<String, dynamic> objdata) =>
       objdata['BackgroundImageMiddle'] == 'TEXTURE_01';

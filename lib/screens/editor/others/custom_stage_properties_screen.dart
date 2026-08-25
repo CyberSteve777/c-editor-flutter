@@ -51,6 +51,7 @@ class _CustomStagePropertiesScreenState
   StageBaseOption? _stageBaseOption;
   late TextEditingController _aliasCtrl;
   late TextEditingController _linkedAlphaCtrl;
+  late TextEditingController _cosmicPlantfoodFillSecondsCtrl;
   late TextEditingController _submarineHpCtrl;
   final Map<String, TextEditingController> _skycityCtrls = {};
 
@@ -60,6 +61,7 @@ class _CustomStagePropertiesScreenState
     _alias = widget.alias;
     _aliasCtrl = TextEditingController(text: _alias);
     _linkedAlphaCtrl = TextEditingController();
+    _cosmicPlantfoodFillSecondsCtrl = TextEditingController();
     _submarineHpCtrl = TextEditingController();
     _loadData();
   }
@@ -68,6 +70,7 @@ class _CustomStagePropertiesScreenState
   void dispose() {
     _aliasCtrl.dispose();
     _linkedAlphaCtrl.dispose();
+    _cosmicPlantfoodFillSecondsCtrl.dispose();
     _submarineHpCtrl.dispose();
     for (final ctrl in _skycityCtrls.values) {
       ctrl.dispose();
@@ -88,6 +91,8 @@ class _CustomStagePropertiesScreenState
       objdata: _objdata,
     );
     _linkedAlphaCtrl.text = '${_objdata['LinkedTilePropagationAlpha'] ?? ''}';
+    _cosmicPlantfoodFillSecondsCtrl.text =
+        '${_objdata['CosmicPlantfoodFillSeconds'] ?? 50.0}';
     _submarineHpCtrl.text =
         '${CustomStageLevelUtils.readSubmarineHitpoints(_objdata)}';
     for (final key in CustomStageLevelUtils.skycityCannonFieldNames) {
@@ -130,6 +135,7 @@ class _CustomStagePropertiesScreenState
 
   bool get _hasAdvancedSettings =>
       _objclass == 'FutureStageProperties' ||
+      CustomStageLevelUtils.supportsCosmicPlantfoodFill(_objclass) ||
       CustomStageLevelUtils.supportsBeachMinigame(_objdata) ||
       CustomStageLevelUtils.supportsSubmarine(_objclass) ||
       CustomStageLevelUtils.supportsSkyCityAirship(_objclass);
@@ -219,14 +225,21 @@ class _CustomStagePropertiesScreenState
               ({
                 required groups,
                 sourceStageAlias,
+                sourceStageObjdata,
                 applySourceLawnAppearance = false,
               }) {
+                Map<String, dynamic>? sourceObjdata = sourceStageObjdata;
+                if (sourceObjdata == null && sourceStageAlias != null) {
+                  sourceObjdata = StageCatalogRepository.catalogImplementation(
+                    sourceStageAlias,
+                  )?.objdata;
+                }
                 if (targetUnloadList) {
                   final toUnload =
                       mode == StageResourceGroupImportMode.fromStage &&
-                          sourceStageAlias != null
-                      ? CustomStageLevelUtils.sourceUnloadGroupsForImport(
-                          sourceStageAlias: sourceStageAlias,
+                          sourceObjdata != null
+                      ? CustomStageLevelUtils.sourceUnloadGroupsForObjdata(
+                          sourceObjdata: sourceObjdata,
                           importedGroups: groups,
                         )
                       : groups;
@@ -240,27 +253,17 @@ class _CustomStagePropertiesScreenState
                     [..._resourceGroups, ...groups],
                   );
                   if (mode == StageResourceGroupImportMode.fromStage &&
-                      sourceStageAlias != null) {
-                    final impl = StageCatalogRepository.catalogImplementation(
-                      sourceStageAlias,
+                      sourceObjdata != null) {
+                    CustomStageLevelUtils.syncUnloadGroupsFromSourceObjdata(
+                      objdata: _objdata,
+                      sourceObjdata: sourceObjdata,
+                      importedGroups: groups,
                     );
-                    if (impl != null) {
-                      CustomStageLevelUtils.syncUnloadGroupsFromSourceStage(
-                        objdata: _objdata,
-                        sourceStageAlias: sourceStageAlias,
-                        importedGroups: groups,
+                    if (applySourceLawnAppearance) {
+                      CustomStageLevelUtils.applyLawnAppearanceFromSource(
+                        _objdata,
+                        sourceObjdata,
                       );
-                      if (applySourceLawnAppearance) {
-                        CustomStageLevelUtils.applyLawnAppearanceFromSource(
-                          _objdata,
-                          Map<String, dynamic>.from(impl.objdata),
-                        );
-                      } else {
-                        CustomStageLevelUtils.restoreLawnAppearance(
-                          _objdata,
-                          appearanceSnapshot,
-                        );
-                      }
                     } else {
                       CustomStageLevelUtils.restoreLawnAppearance(
                         _objdata,
@@ -332,6 +335,8 @@ class _CustomStagePropertiesScreenState
       context,
       MaterialPageRoute(
         builder: (ctx) => MusicSuffixSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:music-suffix',
           currentCodename: current,
           onCodenameSelected: (code) {
             _objdata['MusicSuffix'] = code;
@@ -858,6 +863,38 @@ class _CustomStagePropertiesScreenState
                             final parsed = double.tryParse(value);
                             if (parsed != null) {
                               _objdata['LinkedTilePropagationAlpha'] = parsed;
+                              _sync();
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                if (CustomStageLevelUtils.supportsCosmicPlantfoodFill(
+                  _objclass,
+                ))
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: EditorResponsiveInputField(
+                        label: _fieldLabel(
+                          context,
+                          'CosmicPlantfoodFillSeconds',
+                        ),
+                        decoration: customStageInputDecoration(context),
+                        builder: (context, decoration) => TextField(
+                          key: const ValueKey(
+                            'cosmicPlantfoodFillSecondsField',
+                          ),
+                          controller: _cosmicPlantfoodFillSecondsCtrl,
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (value) {
+                            final parsed = double.tryParse(value);
+                            if (parsed != null) {
+                              _objdata['CosmicPlantfoodFillSeconds'] = parsed;
                               _sync();
                             }
                           },

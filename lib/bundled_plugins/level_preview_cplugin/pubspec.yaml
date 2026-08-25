@@ -3,7 +3,7 @@
 # in-process load. Do NOT add it as a path dependency of the root app (would
 # create a circular dep with c_editor). Host imports use package:c_editor/... .
 name: level_preview_cplugin
-description: Bundled C-Editor Level Preview plugin (in-process; packable via eval_src)
+description: Bundled C-Editor Level Overview plugin (in-process; packable via eval_src)
 publish_to: "none"
 version: 1.0.0
 

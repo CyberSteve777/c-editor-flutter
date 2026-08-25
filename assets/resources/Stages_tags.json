@@ -18,6 +18,7 @@
   { "alias": "HeianStage", "type": "main", "iconName": "Stage_Heian.webp" },
   { "alias": "DeepseaStage", "type": "main", "iconName": "Stage_Atlantis.webp" },
   { "alias": "DeepseaLandStage", "type": "main", "iconName": "Stage_Atlantis.webp" },
+  { "alias": "MoonStage", "type": "main", "iconName": "Stage_Moon.webp" },
   { "alias": "FairyTaleStage", "type": "extra", "iconName": "Stage_Fairytale.webp" },
   { "alias": "ZCorpStage", "type": "extra", "iconName": "Stage_ZCorp.webp" },
   { "alias": "UnchartedMausoleumStage", "type": "extra", "iconName": "Stage_Underground.webp" },

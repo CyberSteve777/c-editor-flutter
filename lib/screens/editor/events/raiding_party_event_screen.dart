@@ -102,6 +102,7 @@ class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventRaidingParty ?? 'Raiding party event',
               sections: [
                 HelpSectionData(

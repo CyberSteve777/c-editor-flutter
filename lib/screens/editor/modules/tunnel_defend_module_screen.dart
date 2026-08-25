@@ -722,6 +722,7 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: _isExpedition
                     ? (l10n?.expeditionTilesHelpTitle ??
                           'Expedition Tiles Module')
@@ -840,11 +841,12 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
             ] else ...[
               _buildSettingsWidth(
                 InputDecorator(
+                  key: const ValueKey('tunnelTileStylePresetField'),
                   decoration: InputDecoration(
                     labelText:
                         l10n?.tunnelDefendTileStylePreset ??
                         'Tile style preset',
-                    filled: true,
+                    filled: false,
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
@@ -883,10 +885,11 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
                       l10n?.tunnelDefendSequenceInterval ??
                       'Tunnel sequence interval (TunnelSequenceInterval, seconds)',
                   decoration: const InputDecoration(
-                    filled: true,
+                    filled: false,
                     border: OutlineInputBorder(),
                   ),
                   builder: (context, decoration) => TextField(
+                    key: const ValueKey('tunnelSequenceIntervalField'),
                     controller: _sequenceIntervalCtrl,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -909,51 +912,54 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
               ),
             ],
             const SizedBox(height: 16),
-            scaleTableForDesktop(
-              context: context,
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 560),
-                child: AspectRatio(
-                  aspectRatio: _gridAspectRatio,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: gridBg,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: gridBorder, width: 1),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Column(
-                        children: List.generate(_gridRows, (row) {
-                          return Expanded(
-                            child: Row(
-                              children: List.generate(_gridCols, (col) {
-                                final imgName = _gridState[col][row];
-                                return Expanded(
-                                  child: GestureDetector(
-                                    onTap: () => _handleGridClick(col, row),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: gridBorder.withValues(
-                                            alpha: 0.5,
+            Center(
+              key: const ValueKey('tunnelLayoutPreviewCenter'),
+              child: scaleTableForDesktop(
+                context: context,
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 560),
+                  child: AspectRatio(
+                    aspectRatio: _gridAspectRatio,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: gridBg,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: gridBorder, width: 1),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Column(
+                          children: List.generate(_gridRows, (row) {
+                            return Expanded(
+                              child: Row(
+                                children: List.generate(_gridCols, (col) {
+                                  final imgName = _gridState[col][row];
+                                  return Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => _handleGridClick(col, row),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: gridBorder.withValues(
+                                              alpha: 0.5,
+                                            ),
+                                            width: 0.5,
                                           ),
-                                          width: 0.5,
+                                        ),
+                                        clipBehavior: Clip.hardEdge,
+                                        child: _buildGridCellContent(
+                                          col,
+                                          row,
+                                          imgName,
                                         ),
                                       ),
-                                      clipBehavior: Clip.hardEdge,
-                                      child: _buildGridCellContent(
-                                        col,
-                                        row,
-                                        imgName,
-                                      ),
                                     ),
-                                  ),
-                                );
-                              }),
-                            ),
-                          );
-                        }),
+                                  );
+                                }),
+                              ),
+                            );
+                          }),
+                        ),
                       ),
                     ),
                   ),

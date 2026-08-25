@@ -14,6 +14,8 @@ import 'package:c_editor/widgets/zombie_row_lane_drag_drop_editor.dart';
 import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
 import 'package:c_editor/widgets/zombie_selection_flow.dart';
 
+enum _WaveGeneratorWaveSection { fixedSpawns, randomSpawns, pool, settings }
+
 /// Full-screen editor for a single wave inside [WaveGeneratorProperties].
 class WaveGeneratorWaveScreen extends StatefulWidget {
   const WaveGeneratorWaveScreen({
@@ -47,18 +49,11 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   late TextEditingController _blackHoleCtrl;
   Map<int, int?> _zombieLevels = {};
   bool _zombieDragging = false;
+  _WaveGeneratorWaveSection? _activeSection;
 
   int get _rowCount {
     final (rows, _) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
     return rows;
-  }
-
-  bool get _isFlagWave {
-    final interval = _generatorData.flagWaveInterval <= 0
-        ? 10
-        : _generatorData.flagWaveInterval;
-    return widget.waveIndex % interval == 0 ||
-        widget.waveIndex == _generatorData.waves.length;
   }
 
   int? _readJsonInt(dynamic value) {
@@ -124,15 +119,11 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return result;
   }
 
-  void _handleZombieDragDropMove(
-      int fromIndex,
-      int toRow,
-      int rowInsertIndex,
-      ) {
+  void _handleZombieDragDropMove(int fromIndex, int toRow, int rowInsertIndex) {
     final zombies = List<WaveGeneratorZombieEntryData>.from(_wave.zombies);
     final parallelLevels = List<int?>.generate(
       zombies.length,
-          (i) => _zombieLevels[i],
+      (i) => _zombieLevels[i],
     );
     moveWaveGeneratorZombieInListByRowSlot(
       zombies: zombies,
@@ -172,7 +163,12 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     if (RtidParser.parse(rtid)?.source == 'CurrentLevel') {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n?.waveGeneratorCustomZombieBlocked ?? 'Custom zombies not supported')),
+          SnackBar(
+            content: Text(
+              l10n?.waveGeneratorCustomZombieBlocked ??
+                  'Custom zombies not supported',
+            ),
+          ),
         );
       }
       return;
@@ -261,41 +257,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     return result;
   }
 
-  WaveGeneratorPropertiesData _expectationData() {
-    final scriptedTypes = <String>{};
-    for (final wave in _generatorData.waves) {
-      for (final zombie in wave.zombies) {
-        scriptedTypes.add(zombie.type);
-      }
-    }
-
-    final expectationWaves = _generatorData.waves.map((wave) {
-      return WaveGeneratorWaveData(
-        disableRandomSpawns: wave.disableRandomSpawns,
-        zombies: wave.zombies,
-        spawnPlantFoodCount: wave.spawnPlantFoodCount,
-        addToZombiePool: wave.addToZombiePool
-            .where((entry) => !scriptedTypes.contains(entry.type))
-            .toList(),
-        wavePointStart: wave.wavePointStart,
-        wavePointIncrement: wave.wavePointIncrement,
-        colNumPlantIsDragged: wave.colNumPlantIsDragged,
-        waitUntilAllZombiesDie: wave.waitUntilAllZombiesDie,
-      );
-    }).toList();
-
-    return WaveGeneratorPropertiesData(
-      addToZombiePool: scriptedTypes
-          .map((type) => WaveGeneratorPoolEntryData(type: type))
-          .toList(),
-      flagWaveInterval: _generatorData.flagWaveInterval,
-      waveCount: _generatorData.waveCount,
-      waveSpendingPoints: _generatorData.waveSpendingPoints,
-      waveSpendingPointIncrement: _generatorData.waveSpendingPointIncrement,
-      waves: expectationWaves,
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -343,6 +304,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     required String label,
     String? helperText,
     int? helperMaxLines,
+    bool enabled = true,
     required ValueChanged<String> onChanged,
   }) {
     final theme = Theme.of(context);
@@ -359,6 +321,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
+          enabled: enabled,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             helperText: helperText,
@@ -442,6 +405,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     List<WaveGeneratorPoolEntryData>? addToZombiePool,
     int? wavePointStart,
     int? wavePointIncrement,
+    bool? wavePointOverride,
     int? colNumPlantIsDragged,
     bool? waitUntilAllZombiesDie,
     bool clearSpawnPlantFood = false,
@@ -462,6 +426,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       wavePointIncrement: clearWavePointIncrement
           ? null
           : (wavePointIncrement ?? _wave.wavePointIncrement),
+      wavePointOverride: wavePointOverride ?? _wave.wavePointOverride,
       colNumPlantIsDragged: clearColNumPlantIsDragged
           ? null
           : (colNumPlantIsDragged ?? _wave.colNumPlantIsDragged),
@@ -561,13 +526,10 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       final rowStr = rowValue == 0 ? '?' : '$rowValue';
       final newIndex = _wave.zombies.length;
       _setZombieLevelInMemory(newIndex, rtid, null);
-      _assignWaveZombies(
-        [
-          ..._wave.zombies,
-          WaveGeneratorZombieEntryData(type: rtid, row: rowStr),
-        ],
-        sortRows: true,
-      );
+      _assignWaveZombies([
+        ..._wave.zombies,
+        WaveGeneratorZombieEntryData(type: rtid, row: rowStr),
+      ], sortRows: true);
     });
   }
 
@@ -579,7 +541,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   }
 
   void _addPoolEntry() {
-    if (_wave.disableRandomSpawns) return;
     final l10n = AppLocalizations.of(context);
     widget.onRequestZombieSelection((selectedId) {
       if (_isYetiZombie(selectedId)) {
@@ -625,9 +586,602 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   void _showExpectation() {
     showWaveGeneratorExpectationDialog(
       context,
-      data: _expectationData(),
+      data: _generatorData,
       waveIndex: widget.waveIndex,
-      isFlagWave: _isFlagWave,
+    );
+  }
+
+  Widget _buildPointTrajectoryPreview(AppLocalizations? l10n) {
+    final theme = Theme.of(context);
+    final firstWave = widget.waveIndex > 1 ? widget.waveIndex - 1 : 1;
+    final lastWave = (_generatorData.waves.length < widget.waveIndex + 2)
+        ? _generatorData.waves.length
+        : widget.waveIndex + 2;
+    final statusText = _wave.wavePointStart == null
+        ? null
+        : (_wave.wavePointOverride ?? false)
+        ? (l10n?.waveGeneratorPointTrajectoryReset ??
+              'The point trajectory is reset from this wave.')
+        : (l10n?.waveGeneratorPointTrajectoryTemporary ??
+              'Only this wave uses the current-wave point value.');
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n?.waveGeneratorPointTrajectory ?? 'Point trajectory',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (var wave = firstWave; wave <= lastWave; wave++)
+                  Chip(
+                    avatar: wave == widget.waveIndex
+                        ? Icon(
+                            Icons.my_location,
+                            size: 16,
+                            color: theme.colorScheme.primary,
+                          )
+                        : null,
+                    label: Text(
+                      l10n?.waveGeneratorPointTrajectoryWaveValue(
+                            wave,
+                            WaveGeneratorPointAnalysis.pointsAtWave(
+                              _generatorData,
+                              wave,
+                            ),
+                          ) ??
+                          'W$wave · ${WaveGeneratorPointAnalysis.pointsAtWave(_generatorData, wave)}',
+                    ),
+                  ),
+              ],
+            ),
+            if (statusText != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                statusText,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _sectionTitle(
+    AppLocalizations? l10n,
+    _WaveGeneratorWaveSection section,
+  ) {
+    return switch (section) {
+      _WaveGeneratorWaveSection.fixedSpawns =>
+        l10n?.waveGeneratorFixedSpawns ?? 'Fixed spawns',
+      _WaveGeneratorWaveSection.randomSpawns =>
+        l10n?.waveGeneratorRandomSpawnsSectionTitle ?? 'Random spawns',
+      _WaveGeneratorWaveSection.pool =>
+        l10n?.waveGeneratorZombiePoolSectionTitle ?? 'Zombie pool',
+      _WaveGeneratorWaveSection.settings =>
+        l10n?.waveGeneratorWaveSettingsTitle ?? 'Wave settings',
+    };
+  }
+
+  void _showSectionHelp(
+    AppLocalizations? l10n,
+    _WaveGeneratorWaveSection section,
+  ) {
+    final sections = switch (section) {
+      _WaveGeneratorWaveSection.fixedSpawns => [
+        HelpSectionData(
+          title: l10n?.waveGeneratorFixedSpawns ?? 'Fixed spawns',
+          body:
+              l10n?.waveGeneratorFixedSpawnsHelpBody ??
+              'Fixed spawns are added directly to the wave and do not consume random-spawn points.',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorModuleHelpRow ?? 'Rows',
+          body:
+              l10n?.waveGeneratorModuleHelpRowBody ??
+              'Rows are numbered from 1. Use “?” for a random row.',
+        ),
+      ],
+      _WaveGeneratorWaveSection.randomSpawns => [
+        HelpSectionData(
+          title: l10n?.waveGeneratorModuleHelpSpending ?? 'Random spawning',
+          body:
+              l10n?.waveGeneratorModuleHelpSpendingBody ??
+              'Random spawns buy zombies from the effective pool with the points available to this wave.',
+        ),
+        HelpSectionData(
+          title:
+              l10n?.waveGeneratorDisableRandomSpawns ?? 'Disable random spawns',
+          body: l10n?.waveGeneratorDisableRandomSpawnsHint ?? '',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorWavePointStart ?? 'WavePointStart',
+          body: l10n?.waveGeneratorWavePointStartHint ?? '',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorWavePointIncrement ?? 'WavePointIncrement',
+          body: l10n?.waveGeneratorWavePointIncrementHint ?? '',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorWavePointOverride ?? 'WavePointOverride',
+          body: l10n?.waveGeneratorWavePointOverrideHint ?? '',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorPointTrajectory ?? 'Point trajectory',
+          body:
+              l10n?.waveGeneratorPointTrajectoryHelpBody ??
+              'The preview shows the effective random-spawn points calculated from the current configuration.',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorStatisticalPreview ?? 'Preview',
+          body: l10n?.waveGeneratorExpectationPoolNote ?? '',
+        ),
+      ],
+      _WaveGeneratorWaveSection.pool => [
+        HelpSectionData(
+          title:
+              l10n?.waveGeneratorCurrentPool ?? 'Current effective zombie pool',
+          body: l10n?.waveGeneratorModuleHelpPoolBody ?? '',
+        ),
+        HelpSectionData(
+          title:
+              l10n?.waveGeneratorWavePoolAdd ??
+              'Added to the pool on this wave',
+          body:
+              l10n?.waveGeneratorWavePoolAddHelpBody ??
+              'Zombies added here become available from this wave onward.',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorPoolCompatibilityTitle ?? 'Compatibility',
+          body:
+              l10n?.waveGeneratorPoolCompatibilityHelpBody ??
+              'Only standard zombie types are supported in this pool.',
+        ),
+      ],
+      _WaveGeneratorWaveSection.settings => [
+        HelpSectionData(
+          title:
+              l10n?.waveGeneratorWaitUntilAllDie ??
+              'Wait until all zombies die',
+          body:
+              l10n?.waveGeneratorWaitUntilAllDieHelpBody ??
+              'Controls whether this wave waits for all zombies from the previous wave to be defeated.',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorSpawnPlantFood ?? 'Plant Food count',
+          body:
+              l10n?.waveGeneratorSpawnPlantFoodHelpBody ??
+              'Sets how many zombies in this wave carry Plant Food.',
+        ),
+        HelpSectionData(
+          title: l10n?.columnsDragged ?? 'Columns dragged',
+          body: l10n?.waveGeneratorBlackHoleFieldHint ?? '',
+        ),
+      ],
+    };
+
+    showEditorHelpDialog(
+      context,
+      title: switch (section) {
+        _WaveGeneratorWaveSection.fixedSpawns =>
+          l10n?.waveGeneratorFixedSpawnsHelpTitle ?? 'Fixed spawns',
+        _WaveGeneratorWaveSection.randomSpawns =>
+          l10n?.waveGeneratorRandomSpawnsHelpTitle ?? 'Random spawns',
+        _WaveGeneratorWaveSection.pool =>
+          l10n?.waveGeneratorZombiePoolHelpTitle ?? 'Zombie pool',
+        _WaveGeneratorWaveSection.settings =>
+          l10n?.waveGeneratorWaveSettingsHelpTitle ?? 'Wave settings',
+      },
+      sections: sections,
+    );
+  }
+
+  String _fixedSpawnsSummary(AppLocalizations? l10n) {
+    if (_wave.zombies.isEmpty) {
+      return l10n?.waveGeneratorFixedSummaryEmpty ?? 'No fixed spawns';
+    }
+    final rowCount = _wave.zombies.map((z) => _rowValue(z.row)).toSet().length;
+    final spawnLabel = _wave.zombies.length == 1
+        ? '1 fixed spawn'
+        : '${_wave.zombies.length} fixed spawns';
+    final rowLabel = rowCount == 1 ? '1 row' : '$rowCount rows';
+    return l10n?.waveGeneratorFixedSummary(_wave.zombies.length, rowCount) ??
+        '$spawnLabel · $rowLabel';
+  }
+
+  String _randomSpawnsSummary(AppLocalizations? l10n, int points) {
+    if (_wave.disableRandomSpawns) {
+      return l10n?.waveGeneratorRandomSummaryDisabled ??
+          'No random spawns on this wave';
+    }
+    if (_wave.wavePointStart != null) {
+      return l10n?.waveGeneratorRandomLocalSummary(points) ??
+          'Enabled · $points ${points == 1 ? 'point' : 'points'} · '
+              'Current-wave points';
+    }
+    return l10n?.waveGeneratorRandomSummary(points) ??
+        'Enabled · $points ${points == 1 ? 'point' : 'points'}';
+  }
+
+  String _poolSummary(AppLocalizations? l10n, List<String> effectivePool) {
+    final currentCount = effectivePool.toSet().length;
+    final addedCount = _wave.addToZombiePool.map((e) => e.type).toSet().length;
+    if (addedCount == 0) {
+      return l10n?.waveGeneratorPoolSummaryNoAdditions(currentCount) ??
+          'Current: $currentCount ${currentCount == 1 ? 'type' : 'types'} · '
+              'No additions on this wave';
+    }
+    return l10n?.waveGeneratorPoolSummary(currentCount, addedCount) ??
+        'Current: $currentCount ${currentCount == 1 ? 'type' : 'types'} · '
+            'Added $addedCount on this wave';
+  }
+
+  String _settingsSummary(AppLocalizations? l10n) {
+    final parts = <String>[];
+    if (_wave.waitUntilAllZombiesDie == true) {
+      parts.add(l10n?.waveGeneratorWaitStatus ?? 'Wait for previous wave');
+    }
+    final plantFood = _wave.spawnPlantFoodCount;
+    if (plantFood != null && plantFood > 0) {
+      parts.add(
+        l10n?.waveGeneratorWaveSettingsPlantFoodSummary(plantFood) ??
+            'Plant Food ×$plantFood',
+      );
+    }
+    final blackHole = _wave.colNumPlantIsDragged;
+    if (blackHole != null && blackHole > 0) {
+      parts.add(
+        l10n?.waveGeneratorWaveSettingsBlackHoleSummary(blackHole) ??
+            'Spacetime black hole: $blackHole columns',
+      );
+    }
+    return parts.isEmpty
+        ? (l10n?.waveGeneratorWaveSettingsDefaultSummary ?? 'Default settings')
+        : parts.join(' · ');
+  }
+
+  Widget _buildOverviewCard({
+    required IconData icon,
+    required String title,
+    required String summary,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(summary, maxLines: 2, overflow: TextOverflow.ellipsis),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildOverviewPage(
+    AppLocalizations? l10n,
+    int points,
+    List<String> effectivePool,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildOverviewCard(
+          icon: Icons.format_list_numbered,
+          title: _sectionTitle(l10n, _WaveGeneratorWaveSection.fixedSpawns),
+          summary: _fixedSpawnsSummary(l10n),
+          onTap: () => setState(
+            () => _activeSection = _WaveGeneratorWaveSection.fixedSpawns,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildOverviewCard(
+          icon: Icons.casino_outlined,
+          title: _sectionTitle(l10n, _WaveGeneratorWaveSection.randomSpawns),
+          summary: _randomSpawnsSummary(l10n, points),
+          onTap: () => setState(
+            () => _activeSection = _WaveGeneratorWaveSection.randomSpawns,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildOverviewCard(
+          icon: Icons.groups_outlined,
+          title: _sectionTitle(l10n, _WaveGeneratorWaveSection.pool),
+          summary: _poolSummary(l10n, effectivePool),
+          onTap: () =>
+              setState(() => _activeSection = _WaveGeneratorWaveSection.pool),
+        ),
+        const SizedBox(height: 8),
+        _buildOverviewCard(
+          icon: Icons.tune,
+          title: _sectionTitle(l10n, _WaveGeneratorWaveSection.settings),
+          summary: _settingsSummary(l10n),
+          onTap: () => setState(
+            () => _activeSection = _WaveGeneratorWaveSection.settings,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFixedSpawnsPage(ThemeData theme, AppLocalizations? l10n) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: _buildLaneRows(context, theme, l10n),
+      ),
+    );
+  }
+
+  Widget _buildRandomSpawnsPage(
+    ThemeData theme,
+    AppLocalizations? l10n,
+    int points,
+    bool showExpectation,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Card(
+          child: SwitchListTile(
+            title: Text(
+              l10n?.waveGeneratorDisableRandomSpawns ??
+                  'Disable random spawns (DisableRandomSpawns)',
+            ),
+            value: _wave.disableRandomSpawns,
+            onChanged: (value) {
+              _wave = _copyWave(disableRandomSpawns: value);
+              _sync();
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: ListTile(
+            leading: Icon(
+              Icons.paid_outlined,
+              color: theme.colorScheme.primary,
+            ),
+            title: Text(
+              l10n?.waveGeneratorEffectiveRandomPoints(points) ??
+                  'Random-spawn points: $points',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildLabeledNumberField(
+                  controller: _pointStartCtrl,
+                  label:
+                      l10n?.waveGeneratorWavePointStart ??
+                      'Wave point start (WavePointStart)',
+                  onChanged: (value) {
+                    final trimmed = value.trim();
+                    _wave = trimmed.isEmpty
+                        ? _copyWave(clearWavePointStart: true)
+                        : _copyWave(wavePointStart: int.tryParse(trimmed));
+                    _sync();
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildLabeledNumberField(
+                  controller: _pointIncrementCtrl,
+                  label:
+                      l10n?.waveGeneratorWavePointIncrement ??
+                      'Wave point increment (WavePointIncrement)',
+                  enabled: _wave.wavePointStart != null,
+                  onChanged: (value) {
+                    final trimmed = value.trim();
+                    _wave = trimmed.isEmpty
+                        ? _copyWave(clearWavePointIncrement: true)
+                        : _copyWave(wavePointIncrement: int.tryParse(trimmed));
+                    _sync();
+                  },
+                ),
+                const SizedBox(height: 4),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    l10n?.waveGeneratorWavePointOverride ??
+                        'Reset point trajectory (WavePointOverride)',
+                  ),
+                  value: _wave.wavePointOverride ?? false,
+                  onChanged: _wave.wavePointStart == null
+                      ? null
+                      : (value) {
+                          _wave = _copyWave(wavePointOverride: value);
+                          _sync();
+                        },
+                ),
+                const SizedBox(height: 8),
+                _buildPointTrajectoryPreview(l10n),
+              ],
+            ),
+          ),
+        ),
+        if (showExpectation) ...[
+          const SizedBox(height: 12),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: ListTile(
+              leading: Icon(
+                Icons.analytics_outlined,
+                color: theme.colorScheme.primary,
+              ),
+              title: Text(
+                l10n?.waveGeneratorStatisticalPreview ?? 'Statistical preview',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                l10n?.waveGeneratorExpectationTapHint ??
+                    'View random-spawn preview',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: _showExpectation,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildPoolPage(
+    ThemeData theme,
+    AppLocalizations? l10n,
+    List<String> effectivePool,
+  ) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n?.waveGeneratorCurrentPool ?? 'Current effective zombie pool',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (effectivePool.isEmpty)
+              Text(
+                l10n?.waveGeneratorCurrentPoolEmpty ??
+                    'The effective zombie pool is empty.',
+              )
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final type in effectivePool)
+                    WaveGeneratorZombieTile(
+                      style: WaveGeneratorZombieTileStyle.poolCompact,
+                      localizedName: _zombieDisplayName(type),
+                      codename: _zombieCodename(type),
+                      iconPath: _zombieIcon(type),
+                    ),
+                ],
+              ),
+            const Divider(height: 28),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n?.waveGeneratorWavePoolAdd ??
+                        'Added to the pool on this wave',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  tooltip: l10n?.addType ?? 'Add',
+                  onPressed: _addPoolEntry,
+                ),
+              ],
+            ),
+            if (_wave.addToZombiePool.isEmpty)
+              Text(
+                l10n?.waveGeneratorWavePoolNoChanges ??
+                    'This wave does not add zombies to the pool.',
+              )
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (var i = 0; i < _wave.addToZombiePool.length; i++)
+                    WaveGeneratorZombieTile(
+                      style: WaveGeneratorZombieTileStyle.poolCompact,
+                      localizedName: _zombieDisplayName(
+                        _wave.addToZombiePool[i].type,
+                      ),
+                      codename: _zombieCodename(_wave.addToZombiePool[i].type),
+                      iconPath: _zombieIcon(_wave.addToZombiePool[i].type),
+                      onDelete: () => _removePoolEntry(i),
+                    ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsPage(AppLocalizations? l10n) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                l10n?.waveGeneratorWaitUntilAllDie ??
+                    'Wait until all zombies die (WaitUntilAllZombiesDie)',
+              ),
+              value: _wave.waitUntilAllZombiesDie ?? false,
+              onChanged: (value) {
+                _wave = _copyWave(waitUntilAllZombiesDie: value);
+                _sync();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildLabeledNumberField(
+              controller: _plantFoodCtrl,
+              label:
+                  l10n?.waveGeneratorSpawnPlantFood ??
+                  'Plant Food count (SpawnPlantFoodCount)',
+              onChanged: (value) {
+                final trimmed = value.trim();
+                _wave = trimmed.isEmpty
+                    ? _copyWave(clearSpawnPlantFood: true)
+                    : _copyWave(spawnPlantFoodCount: int.tryParse(trimmed));
+                _sync();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildLabeledNumberField(
+              controller: _blackHoleCtrl,
+              label:
+                  l10n?.columnsDragged ??
+                  'Columns dragged (ColNumPlantIsDragged)',
+              onChanged: (value) {
+                final trimmed = value.trim();
+                _wave = trimmed.isEmpty
+                    ? _copyWave(clearColNumPlantIsDragged: true)
+                    : _copyWave(colNumPlantIsDragged: int.tryParse(trimmed));
+                _sync();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -635,322 +1189,94 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final expectationData = _expectationData();
     final points = WaveGeneratorPointAnalysis.pointsAtWave(
-      expectationData,
+      _generatorData,
       widget.waveIndex,
-      isFlagWave: _isFlagWave,
     );
     final showExpectation = WaveGeneratorPointAnalysis.showExpectationForWave(
-      expectationData,
+      _generatorData,
       widget.waveIndex,
     );
+    final effectivePool = WaveGeneratorPointAnalysis.poolAtWave(
+      _generatorData,
+      widget.waveIndex,
+    );
+    final activeSection = _activeSection;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l10n?.back ?? 'Back',
-          onPressed: widget.onBack,
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${l10n?.waveLabel ?? 'Wave'} ${widget.waveIndex}'),
-            Text(
-              l10n?.waveGeneratorWaveScreenSubtitle ?? 'Wave generator wave',
-              style: theme.textTheme.bodySmall,
-            ),
+    final body = switch (activeSection) {
+      null => _buildOverviewPage(l10n, points, effectivePool),
+      _WaveGeneratorWaveSection.fixedSpawns => _buildFixedSpawnsPage(
+        theme,
+        l10n,
+      ),
+      _WaveGeneratorWaveSection.randomSpawns => _buildRandomSpawnsPage(
+        theme,
+        l10n,
+        points,
+        showExpectation,
+      ),
+      _WaveGeneratorWaveSection.pool => _buildPoolPage(
+        theme,
+        l10n,
+        effectivePool,
+      ),
+      _WaveGeneratorWaveSection.settings => _buildSettingsPage(l10n),
+    };
+
+    return PopScope(
+      canPop: activeSection == null,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _activeSection != null) {
+          setState(() => _activeSection = null);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            tooltip: l10n?.back ?? 'Back',
+            onPressed: activeSection == null
+                ? widget.onBack
+                : () => setState(() => _activeSection = null),
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                activeSection == null
+                    ? (l10n?.customZombieWaveItem(widget.waveIndex) ??
+                          'Wave ${widget.waveIndex}')
+                    : _sectionTitle(l10n, activeSection),
+              ),
+              Text(
+                activeSection == null
+                    ? (l10n?.waveGeneratorWaveScreenSubtitle ??
+                          'Wave Generator module')
+                    : (l10n?.customZombieWaveItem(widget.waveIndex) ??
+                          'Wave ${widget.waveIndex}'),
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
+          ),
+          actions: [
+            if (activeSection != null)
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                tooltip: l10n?.tooltipAboutSection ?? 'About this section',
+                onPressed: () => _showSectionHelp(l10n, activeSection),
+              ),
           ],
         ),
-        actions: [
-          if (showExpectation)
-            IconButton(
-              icon: const Icon(Icons.analytics_outlined),
-              tooltip: l10n?.expectation ?? 'Expectation',
-              onPressed: _showExpectation,
-            ),
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            tooltip: l10n?.tooltipAboutModule ?? 'Help',
-            onPressed: () => showEditorHelpDialog(
-              context,
-              title: l10n?.waveGeneratorWaveScreenHelpTitle ?? 'Wave editor',
-              sections: [
-                HelpSectionData(
-                  title: l10n?.waveGeneratorModuleHelpOverview ?? 'Overview',
-                  body:
-                      l10n?.waveGeneratorWaveScreenHelpBody ??
-                      'Edit scripted spawns and wave-specific options. Random spawns use the cumulative zombie pool and spending points.',
-                ),
-                HelpSectionData(
-                  title: l10n?.expectation ?? 'Expectation',
-                  body:
-                      l10n?.waveGeneratorExpectationPoolNote ??
-                      'Pool expectation shows likely random spawns from AddToZombiePool. Other zombies may still appear when points are high enough.',
-                ),
-                HelpSectionData(
-                  title: l10n?.waveGeneratorModuleHelpRow ?? 'Row',
-                  body:
-                      l10n?.waveGeneratorModuleHelpRowBody ??
-                      'Row values are 1-based strings in JSON ("?" = random).',
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
-          physics: _zombieDragging
-              ? const NeverScrollableScrollPhysics()
-              : null,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (showExpectation)
-                Card(
-                  child: InkWell(
-                    onTap: _showExpectation,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.analytics_outlined,
-                            color: theme.colorScheme.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n?.wavePointsShort(points) ??
-                                      '$points pts.',
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  l10n?.waveGeneratorExpectationTapHint ??
-                                      'Tap to view random spawn expectation',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.chevron_right),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              if (showExpectation) const SizedBox(height: 12),
-              Card(
-                child: Column(
-                  children: [
-                    SwitchListTile(
-                      title: Text(
-                        l10n?.waveGeneratorDisableRandomSpawns ??
-                            'Disable random spawns (DisableRandomSpawns)',
-                      ),
-                      subtitle: Text(
-                        l10n?.waveGeneratorDisableRandomSpawnsHint ?? '',
-                      ),
-                      value: _wave.disableRandomSpawns,
-                      onChanged: (v) {
-                        _wave = _copyWave(disableRandomSpawns: v);
-                        _sync();
-                      },
-                    ),
-                    SwitchListTile(
-                      title: Text(
-                        l10n?.waveGeneratorWaitUntilAllDie ??
-                            'Wait until all zombies die (WaitUntilAllZombiesDie)',
-                      ),
-                      value: _wave.waitUntilAllZombiesDie ?? false,
-                      onChanged: (v) {
-                        _wave = _copyWave(waitUntilAllZombiesDie: v);
-                        _sync();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n?.zombieList ?? 'Zombie list',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildLaneRows(context, theme, l10n),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildLabeledNumberField(
-                        controller: _plantFoodCtrl,
-                        label:
-                            l10n?.waveGeneratorSpawnPlantFood ??
-                            'Plant food drops (SpawnPlantFoodCount)',
-                        onChanged: (v) {
-                          final trimmed = v.trim();
-                          if (trimmed.isEmpty) {
-                            _wave = _copyWave(clearSpawnPlantFood: true);
-                          } else {
-                            final n = int.tryParse(trimmed);
-                            if (n != null) {
-                              _wave = _copyWave(spawnPlantFoodCount: n);
-                            }
-                          }
-                          _sync();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _buildLabeledNumberField(
-                        controller: _pointStartCtrl,
-                        label:
-                            l10n?.waveGeneratorWavePointStart ??
-                            'Wave point start (WavePointStart)',
-                        onChanged: (v) {
-                          final trimmed = v.trim();
-                          if (trimmed.isEmpty) {
-                            _wave = _copyWave(clearWavePointStart: true);
-                          } else {
-                            final n = int.tryParse(trimmed);
-                            if (n != null) {
-                              _wave = _copyWave(wavePointStart: n);
-                            }
-                          }
-                          _sync();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _buildLabeledNumberField(
-                        controller: _pointIncrementCtrl,
-                        label:
-                            l10n?.waveGeneratorWavePointIncrement ??
-                            'Wave point increment (WavePointIncrement)',
-                        onChanged: (v) {
-                          final trimmed = v.trim();
-                          if (trimmed.isEmpty) {
-                            _wave = _copyWave(clearWavePointIncrement: true);
-                          } else {
-                            final n = int.tryParse(trimmed);
-                            if (n != null) {
-                              _wave = _copyWave(wavePointIncrement: n);
-                            }
-                          }
-                          _sync();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _buildLabeledNumberField(
-                        controller: _blackHoleCtrl,
-                        label:
-                            l10n?.columnsDragged ??
-                            'Columns dragged (ColNumPlantIsDragged)',
-                        helperText: l10n?.waveGeneratorBlackHoleFieldHint,
-                        helperMaxLines: 10,
-                        onChanged: (v) {
-                          final trimmed = v.trim();
-                          if (trimmed.isEmpty) {
-                            _wave = _copyWave(clearColNumPlantIsDragged: true);
-                          } else {
-                            final n = int.tryParse(trimmed);
-                            if (n != null) {
-                              _wave = _copyWave(colNumPlantIsDragged: n);
-                            }
-                          }
-                          _sync();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (!_wave.disableRandomSpawns)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                l10n?.waveGeneratorWavePoolAdd ??
-                                    'Add to pool this wave (AddToZombiePool)',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              tooltip: l10n?.addType ?? 'Add',
-                              onPressed: _addPoolEntry,
-                            ),
-                          ],
-                        ),
-                        if (_wave.addToZombiePool.isEmpty)
-                          Text(
-                            l10n?.waveGeneratorEmptyPool ??
-                                'No zombies in the initial pool.',
-                            style: theme.textTheme.bodySmall,
-                          )
-                        else
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              for (
-                                var i = 0;
-                                i < _wave.addToZombiePool.length;
-                                i++
-                              )
-                                WaveGeneratorZombieTile(
-                                  style:
-                                      WaveGeneratorZombieTileStyle.poolCompact,
-                                  localizedName: _zombieDisplayName(
-                                    _wave.addToZombiePool[i].type,
-                                  ),
-                                  codename: _zombieCodename(
-                                    _wave.addToZombiePool[i].type,
-                                  ),
-                                  iconPath: _zombieIcon(
-                                    _wave.addToZombiePool[i].type,
-                                  ),
-                                  onDelete: () => _removePoolEntry(i),
-                                ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SingleChildScrollView(
+            physics:
+                activeSection == _WaveGeneratorWaveSection.fixedSpawns &&
+                    _zombieDragging
+                ? const NeverScrollableScrollPhysics()
+                : null,
+            padding: const EdgeInsets.all(16),
+            child: body,
           ),
         ),
       ),

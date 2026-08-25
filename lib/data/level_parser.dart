@@ -13,6 +13,7 @@ class LevelParser {
   };
 
   static const pirateStageObjclasses = {'PirateStageProperties'};
+  static const roofStageObjclasses = {'RoofStageProperties'};
 
   static const underwaterWorldSixRowStageAliases = {
     'DeepseaStage',
@@ -149,6 +150,11 @@ class LevelParser {
     return pirateStageObjclasses.contains(objclass);
   }
 
+  static bool isRoofStageObjclass(String? objclass) {
+    if (objclass == null) return false;
+    return roofStageObjclasses.contains(objclass);
+  }
+
   /// Returns true if the stage is a Pirate Seas lawn.
   static bool isPirateLawn(
     LevelDefinitionData? levelDef,
@@ -165,6 +171,21 @@ class LevelParser {
   static bool isPirateLawnFromFile(PvzLevelFile levelFile) {
     final parsed = parseLevel(levelFile);
     return isPirateLawn(parsed.levelDef, levelFile);
+  }
+
+  /// Returns true if the stage uses the roof lawn implementation.
+  static bool isRoofLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    return isRoofStageObjclass(
+      resolveStagePropertiesObjclass(levelDef, levelFile),
+    );
+  }
+
+  static bool isRoofLawnFromFile(PvzLevelFile levelFile) {
+    final parsed = parseLevel(levelFile);
+    return isRoofLawn(parsed.levelDef, levelFile);
   }
 
   /// Returns true if the lawn uses DeepSea or DeepSeaLand grid (6x10).
@@ -187,8 +208,11 @@ class LevelParser {
     LevelDefinitionData? levelDef,
     PvzLevelFile levelFile,
   ) {
-    final info = levelDef == null ? null : RtidParser.parse(levelDef.stageModule);
-    if (info != null && underwaterWorldSixRowStageAliases.contains(info.alias)) {
+    final info = levelDef == null
+        ? null
+        : RtidParser.parse(levelDef.stageModule);
+    if (info != null &&
+        underwaterWorldSixRowStageAliases.contains(info.alias)) {
       return true;
     }
     return isDeepSeaLawn(levelDef, levelFile);
@@ -198,7 +222,9 @@ class LevelParser {
     LevelDefinitionData? levelDef,
     PvzLevelFile levelFile,
   ) {
-    final info = levelDef == null ? null : RtidParser.parse(levelDef.stageModule);
+    final info = levelDef == null
+        ? null
+        : RtidParser.parse(levelDef.stageModule);
     if (info != null && info.alias == soudacheStageAlias) return true;
     final objdata = resolveStageObjdata(levelDef, levelFile);
     if (objdata == null) return false;

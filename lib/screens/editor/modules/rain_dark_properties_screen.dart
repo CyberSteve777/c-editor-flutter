@@ -108,6 +108,7 @@ class _RainDarkPropertiesScreenState extends State<RainDarkPropertiesScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.weatherModule ?? 'Weather module',
               sections: [
                 HelpSectionData(

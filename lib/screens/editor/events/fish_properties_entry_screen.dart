@@ -86,6 +86,8 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => FishSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:fish-selection',
           onFishSelected: (alias) {
             Navigator.pop(context);
             final rtid = FishTypeRepository().buildFishRtid(alias);
@@ -436,6 +438,7 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.fishPropertiesGrid ?? 'Fish placement',
               sections: [
                 HelpSectionData(
@@ -538,10 +541,7 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                                                 cellFishes.isNotEmpty &&
                                                     first != null
                                                 ? LayoutBuilder(
-                                                    builder: (
-                                                      context,
-                                                      constraints,
-                                                    ) {
+                                                    builder: (context, constraints) {
                                                       return Stack(
                                                         fit: StackFit.expand,
                                                         children: [

@@ -18,12 +18,16 @@ class StarChallengeModuleScreen extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     required this.onBack,
+    this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback onBack;
+  final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<StarChallengeModuleScreen> createState() =>
@@ -151,6 +155,8 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       object: obj,
       accentColor: themeColor,
       levelFile: widget.levelFile,
+      onAddModule: widget.onAddModule,
+      onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
       onChanged: () {
         setState(() {
           _saveData();
@@ -196,6 +202,8 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => ChallengeSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:challenge',
           onChallengeSelected: (i) => Navigator.pop(context, i),
           onBack: () => Navigator.pop(context),
         ),
@@ -296,6 +304,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.starChallengeHelpTitle ?? 'Star Challenge Module',
                 themeColor: themeColor,
                 sections: [
@@ -323,7 +332,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           ModuleAliasInputField(
-              rtid: widget.rtid,
+            rtid: widget.rtid,
             alias: _alias,
             levelFile: widget.levelFile,
             onAliasChanged: _handleAliasChanged,

@@ -245,6 +245,47 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
     setState(() => _alias = newAlias);
   }
 
+  Future<void> _switchToChooserMode() async {
+    if (_data.selectionMethod == 'chooser') return;
+
+    if (_data.gridItemMode == true) {
+      final l10n = AppLocalizations.of(context)!;
+      final shouldSwitch = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          content: Text(l10n.seedBankGridItemsPresetOnlySwitchWarning),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(
+                l10n.cancel,
+                style: TextStyle(
+                  color: Theme.of(dialogContext).colorScheme.error,
+                ),
+              ),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.continueAnyway),
+            ),
+          ],
+        ),
+      );
+      if (shouldSwitch != true || !mounted) return;
+    }
+
+    _data.selectionMethod = 'chooser';
+    _data.gridItemMode = false;
+    _removeGridItemsFromPreset();
+    _stripChooserOnlyBlockedPlantsFromPreset();
+    _sync();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -350,8 +391,10 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
                   onAdd: _addToBlackList,
                   onRemove: (i) => _removeFromList(_data.plantBlackList, i),
                 ),
-                const SizedBox(height: 16),
-                _buildGridItemsCard(context, l10n),
+                if (_data.selectionMethod == 'preset') ...[
+                  const SizedBox(height: 16),
+                  _buildGridItemsCard(context, l10n),
+                ],
               ],
               if (isZombieMode)
                 Card(
@@ -436,23 +479,20 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
+              runSpacing: 8,
               children: [
                 FilterChip(
+                  key: const ValueKey('seedBankChooserModeChip'),
                   label: Text(
                     AppLocalizations.of(context)?.chooser ?? 'Chooser',
                   ),
                   selected: _data.selectionMethod == 'chooser' && !isZombieMode,
                   onSelected: isZombieMode
                       ? null
-                      : (v) {
-                          setState(() {
-                            _data.selectionMethod = 'chooser';
-                            _stripChooserOnlyBlockedPlantsFromPreset();
-                            _sync();
-                          });
-                        },
+                      : (_) => _switchToChooserMode(),
                 ),
                 FilterChip(
+                  key: const ValueKey('seedBankPresetModeChip'),
                   label: Text(AppLocalizations.of(context)?.preset ?? 'Preset'),
                   selected: _data.selectionMethod == 'preset' || isZombieMode,
                   onSelected: isZombieMode
@@ -679,44 +719,48 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
 
   void _showHelp(BuildContext context, bool isZombieMode) {
     final l10n = AppLocalizations.of(context);
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.seedBankHelp ?? 'Seed bank help'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n?.seedBankLetsPlayersChoose ??
-                    'Seed bank lets players choose plants. In courtyard mode you can set global level and all plants.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.whiteListBlackListHint ??
-                    'White list: empty = no limit. Black list overrides white list.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.iZombieModePresetHint ??
-                    'I, Zombie mode: preset zombies for player. Selection locked to preset.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.invalidIdsHint ??
-                    'Invalid IDs leave empty slots. Zombie IDs in plant mode and vice versa. Put zombie slots first.',
-              ),
-            ],
-          ),
+    final theme = Theme.of(context);
+    final helpColor = isZombieMode
+        ? (theme.brightness == Brightness.dark ? pvzPurpleDark : pvzPurpleLight)
+        : theme.colorScheme.primary;
+    showEditorHelpDialog(
+      context,
+      isEvent: false,
+      title: l10n?.seedBankHelp ?? 'Seed Bank',
+      themeColor: helpColor,
+      sections: [
+        HelpSectionData(
+          title: l10n?.overview ?? 'Overview',
+          body:
+              l10n?.seedBankLetsPlayersChoose ??
+              'Seed Bank lets players choose from available plants.',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.ok ?? 'OK'),
-          ),
-        ],
-      ),
+        HelpSectionData(
+          title:
+              l10n?.seedBankWhiteAndBlacklistTitle ?? 'Whitelist and blacklist',
+          body:
+              l10n?.whiteListBlackListHint ??
+              'An empty whitelist applies no restriction. The blacklist takes priority.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankIZombieHelpTitle ?? 'I, Zombie mode',
+          body:
+              l10n?.iZombieModePresetHint ??
+              'I, Zombie mode uses a preset list of available zombies.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankSlotOccupancyTitle ?? 'Slot occupancy',
+          body:
+              l10n?.invalidIdsHint ??
+              'Invalid IDs leave empty slots in the Seed Bank.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankAdvancedGameplayTitle ?? 'Advanced gameplay',
+          body:
+              l10n?.seedBankAdvancedGameplayBody ??
+              'The relative order of Seed Bank and Conveyor Belt modules changes sun costs in Preset mode.',
+        ),
+      ],
     );
   }
 }
@@ -965,9 +1009,7 @@ class _ResourceListEditor extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        onReorder != null
-                            ? '$description $reorderHint'
-                            : description,
+                        description,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -983,6 +1025,16 @@ class _ResourceListEditor extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            if (items.isNotEmpty && onReorder != null) ...[
+              Text(
+                reorderHint,
+                key: const ValueKey('presetPlantListReorderHint'),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
             if (items.isEmpty)
               Container(
                 width: double.infinity,

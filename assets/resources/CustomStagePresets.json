@@ -358,6 +358,43 @@
     }
   },
   {
+    "id": "pvz1_s30_2_h_modern_graveyard",
+    "alias": "ModernGraveyardCustom",
+    "nameKey": "customStagePreset_modernGraveyard",
+    "sourceKey": "customStagePresetSource_memoryLaneS30HardLevel2",
+    "iconName": "Stage_Modern.webp",
+    "objclass": "ModernStageProperties",
+    "objdata": {
+      "ResourceGroupNames": [
+        "Modern_Gravestone",
+        "ZombieEgyptTombRaiserGroup",
+        "Game_Tombstones_Dynamic",
+        "DelayLoad_Background_Modern_Compressed",
+        "Dirt_Spawn_Modern",
+        "AudioModern",
+        "ModernLootPinatas"
+      ],
+      "GroupsToUnloadForAds": [
+        "DelayLoad_Background_Modern_Compressed"
+      ],
+      "StagePrefix": "modern",
+      "BackgroundResourceGroup": "DelayLoad_Background_Modern_Compressed",
+      "BackgroundImagePrefix": "IMAGE_BACKGROUNDS_MODERN",
+      "LevelPowerupSet": "LevelPowerupsDefault",
+      "BasicZombieTypeName": "tutorial",
+      "FlagZombieTypeName": "tutorial_flag",
+      "FlagVeteranZombieTypeNames": [
+        "tutorial_flag_veteran"
+      ],
+      "Armor1ZombieTypeName": "tutorial_armor1",
+      "Armor2ZombieTypeName": "tutorial_armor2",
+      "RailcartDefaultTypeName": "railcart_egypt",
+      "GravestoneDefaultTypeName": "gravestone_tutorial",
+      "DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_MODERN",
+      "MusicSuffix": "Modern"
+    }
+  },
+  {
     "id": "pvz1_s30_boss_volcano",
     "alias": "LostVolcanoCustom",
     "nameKey": "customStagePreset_lostVolcano",

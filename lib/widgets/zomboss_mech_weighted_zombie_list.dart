@@ -126,6 +126,15 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
                         onChanged(nextIds, nextWeights);
                       }
                     : null,
+                onDuplicate: editable
+                    ? () {
+                        final nextIds = List<String>.from(zombieIds)
+                          ..insert(i + 1, zombieIds[i]);
+                        final nextWeights = _normalizedWeights
+                          ..insert(i + 1, _weightAt(i));
+                        onChanged(nextIds, nextWeights);
+                      }
+                    : null,
               ),
             ),
       ],
@@ -142,6 +151,7 @@ class _WeightedZombieRow extends StatefulWidget {
     this.onTap,
     this.onWeightChanged,
     this.onRemove,
+    this.onDuplicate,
   });
 
   final String zombieId;
@@ -151,6 +161,7 @@ class _WeightedZombieRow extends StatefulWidget {
   final VoidCallback? onTap;
   final ValueChanged<int>? onWeightChanged;
   final VoidCallback? onRemove;
+  final VoidCallback? onDuplicate;
 
   @override
   State<_WeightedZombieRow> createState() => _WeightedZombieRowState();
@@ -212,7 +223,7 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
               context,
               displayName: displayName,
               iconPath: iconPath,
-              showRemove: compact,
+              showActions: compact,
             );
             final weightField = _buildWeightField(context);
             return Padding(
@@ -231,13 +242,21 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
                         Expanded(child: summary),
                         const SizedBox(width: 10),
                         SizedBox(width: 168, child: weightField),
+                        if (widget.onDuplicate != null)
+                          IconButton(
+                            visualDensity: VisualDensity.compact,
+                            icon: const Icon(Icons.copy_outlined, size: 18),
+                            tooltip:
+                                AppLocalizations.of(context)?.copy ?? 'Copy',
+                            onPressed: widget.onDuplicate,
+                          ),
                         if (widget.onRemove != null)
                           IconButton(
                             visualDensity: VisualDensity.compact,
-                            icon: const Icon(Icons.close, size: 18),
+                            icon: const Icon(Icons.delete_outline, size: 18),
                             tooltip:
-                                AppLocalizations.of(context)?.remove ??
-                                'Remove',
+                                AppLocalizations.of(context)?.delete ??
+                                'Delete',
                             onPressed: widget.onRemove,
                           ),
                       ],
@@ -253,7 +272,7 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
     BuildContext context, {
     required String displayName,
     required String iconPath,
-    required bool showRemove,
+    required bool showActions,
   }) {
     final theme = Theme.of(context);
     return Row(
@@ -294,32 +313,45 @@ class _WeightedZombieRowState extends State<_WeightedZombieRow> {
             ],
           ),
         ),
-        if (showRemove && widget.onRemove != null)
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.close, size: 18),
-            tooltip: AppLocalizations.of(context)?.remove ?? 'Remove',
-            onPressed: widget.onRemove,
-          ),
+        if (showActions) ...[
+          if (widget.onDuplicate != null)
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.copy_outlined, size: 18),
+              tooltip: AppLocalizations.of(context)?.copy ?? 'Copy',
+              onPressed: widget.onDuplicate,
+            ),
+          if (widget.onRemove != null)
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.delete_outline, size: 18),
+              tooltip: AppLocalizations.of(context)?.delete ?? 'Delete',
+              onPressed: widget.onRemove,
+            ),
+        ],
       ],
     );
   }
 
   Widget _buildWeightField(BuildContext context) {
-    return TextFormField(
-      controller: _controller,
-      focusNode: _focusNode,
-      readOnly: !widget.editable,
-      decoration: editorInputDecoration(context, labelText: widget.weightLabel),
-      keyboardType: TextInputType.number,
-      onChanged: widget.editable
-          ? (value) {
-              final parsed = int.tryParse(value);
-              if (parsed != null) {
-                widget.onWeightChanged?.call(parsed);
+    return EditorResponsiveInputField(
+      label: widget.weightLabel,
+      decoration: editorInputDecoration(context),
+      builder: (context, decoration) => TextFormField(
+        controller: _controller,
+        focusNode: _focusNode,
+        readOnly: !widget.editable,
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: widget.editable
+            ? (value) {
+                final parsed = int.tryParse(value);
+                if (parsed != null) {
+                  widget.onWeightChanged?.call(parsed);
+                }
               }
-            }
-          : null,
+            : null,
+      ),
     );
   }
 }

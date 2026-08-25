@@ -2,7 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/glacier_module_presets.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
+import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
@@ -36,10 +38,11 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
   static const _objClass = 'GlacierModuleProperties';
   late String _alias;
   static const _levelMin = 0;
-  static const _levelMax = 10;
+  static const _levelMax = 4;
 
   late PvzObject _moduleObj;
   late GlacierModulePropertiesData _data;
+  String? _selectedPresetId;
 
   @override
   void initState() {
@@ -70,6 +73,18 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     } catch (_) {
       _data = GlacierModulePropertiesData.createDefault();
     }
+    final battle = widget.levelFile.objects.firstWhereOrNull(
+      (object) => object.objClass == 'ZombossBattleModuleProperties',
+    );
+    final variation = battle?.objData is Map
+        ? (battle!.objData as Map)['ZombossMechType'] as String?
+        : null;
+    final variationPreset = GlacierModulePresets.forVariation(variation);
+    _selectedPresetId =
+        variationPreset != null &&
+            GlacierModulePresets.matches(_data, variationPreset)
+        ? variationPreset.id
+        : GlacierModulePresets.matchingPreset(_data)?.id;
   }
 
   void _sync() {
@@ -87,10 +102,46 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     final cols = List<GlacierColumnSpawnData>.from(_data.zombieSpawnData);
     cols[columnIndex] = column;
     _data = GlacierModulePropertiesData(zombieSpawnData: cols);
+    _selectedPresetId = null;
     _sync();
   }
 
-  void _addEntry(int columnIndex) {
+  Future<void> _addEntry(int columnIndex) async {
+    final l10n = AppLocalizations.of(context);
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.glacierModuleAddContentTitle ?? 'Add Ice Chunk content',
+      options: [
+        EditorChoiceDialogOption(
+          value: 'zombie',
+          icon: Icons.pest_control_outlined,
+          title: l10n?.glacierModuleAddZombieContent ?? 'Add zombie',
+        ),
+        EditorChoiceDialogOption(
+          value: 'empty',
+          icon: Icons.block,
+          title:
+              l10n?.glacierModuleEmptyType ??
+              'No zombie appears when the Ice Chunk breaks',
+        ),
+      ],
+    );
+    if (!mounted || choice == null) return;
+
+    if (choice == 'empty') {
+      final column = _data.zombieSpawnData[columnIndex];
+      _updateColumn(
+        columnIndex,
+        GlacierColumnSpawnData(
+          entries: [
+            ...column.entries,
+            GlacierSpawnEntryData(typeName: ''),
+          ],
+        ),
+      );
+      return;
+    }
+
     widget.onRequestZombieSelection((id) {
       if (!mounted) return;
       final column = _data.zombieSpawnData[columnIndex];
@@ -140,6 +191,137 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
     });
   }
 
+  String _presetTitle(
+    BuildContext context,
+    AppLocalizations? l10n,
+    GlacierModulePreset preset,
+  ) {
+    if (preset.isBlank) {
+      return l10n?.glacierModulePresetBlankCustom ?? 'Blank custom preset';
+    }
+    return ZombossMechL10n.variationLabel(
+      context,
+      GlacierModulePresets.iceAgeBaseId,
+      preset.variation,
+      fallback: preset.variation,
+    );
+  }
+
+  GlacierModulePreset? _currentPreset() {
+    final selected = GlacierModulePresets.byId(_selectedPresetId);
+    if (selected != null && GlacierModulePresets.matches(_data, selected)) {
+      return selected;
+    }
+    return GlacierModulePresets.matchingPreset(_data);
+  }
+
+  Future<void> _applyPreset(GlacierModulePreset preset) async {
+    final current = _currentPreset();
+    if (current?.id == preset.id) return;
+    final l10n = AppLocalizations.of(context);
+    final from = current == null
+        ? (l10n?.glacierModulePresetCustomConfiguration ??
+              'Custom configuration')
+        : _presetTitle(context, l10n, current);
+    final to = _presetTitle(context, l10n, preset);
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(
+              l10n?.glacierModuleSwitchPresetTitle ?? 'Switch preset',
+            ),
+            content: Text(
+              l10n?.glacierModuleSwitchPresetMessage(from, to) ??
+                  'Switch from "$from" to "$to"? The current Ice Chunk configuration will be replaced.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n?.cancel ?? 'Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(l10n?.switchAction ?? 'Switch'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!confirmed || !mounted) return;
+    _data = preset.createData();
+    _selectedPresetId = preset.id;
+    _sync();
+  }
+
+  Widget _buildPresetSelector(AppLocalizations? l10n) {
+    final theme = Theme.of(context);
+    final current = _currentPreset();
+    final currentTitle = current == null
+        ? (l10n?.glacierModulePresetCustomConfiguration ??
+              'Custom configuration')
+        : _presetTitle(context, l10n, current);
+
+    return Card(
+      child: ExpansionTile(
+        key: const ValueKey('glacierPresetSelector'),
+        initiallyExpanded: false,
+        leading: const Icon(Icons.tune),
+        title: Text(
+          l10n?.glacierModulePresetSectionTitle ?? 'Preset configurations',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        subtitle: Text(currentTitle),
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 720
+                    ? 3
+                    : constraints.maxWidth >= 460
+                    ? 2
+                    : 1;
+                final chipWidth =
+                    (constraints.maxWidth - 8 * (columns - 1)) / columns;
+                final chipLabelWidth = (chipWidth - 32)
+                    .clamp(0.0, chipWidth)
+                    .toDouble();
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final preset in GlacierModulePresets.all)
+                      SizedBox(
+                        width: chipWidth,
+                        child: ChoiceChip(
+                          key: ValueKey('glacierPresetChip_${preset.id}'),
+                          showCheckmark: false,
+                          label: SizedBox(
+                            width: chipLabelWidth,
+                            child: Text(
+                              _presetTitle(context, l10n, preset),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          selected: current?.id == preset.id,
+                          onSelected: (_) => _applyPreset(preset),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -175,6 +357,7 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.glacierModuleHelpTitle ?? title,
               sections: [
                 HelpSectionData(
@@ -191,6 +374,12 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
                       'Requirements',
                   body: l10n?.glacierModuleHelpRequirementsBody ?? '',
                 ),
+                HelpSectionData(
+                  title:
+                      l10n?.glacierModuleHelpPresetsTitle ??
+                      'Preset configurations',
+                  body: l10n?.glacierModuleHelpPresetsBody ?? '',
+                ),
               ],
             ),
           ),
@@ -199,14 +388,16 @@ class _GlacierModuleScreenState extends State<GlacierModuleScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-          alias: _alias,
-          levelFile: widget.levelFile,
-          onAliasChanged: _handleAliasChanged,
-          onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+          ModuleAliasInputField(
+            rtid: widget.rtid,
+            alias: _alias,
+            levelFile: widget.levelFile,
+            onAliasChanged: _handleAliasChanged,
+            onChanged: widget.onChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildPresetSelector(l10n),
+          const SizedBox(height: 16),
           ...List.generate(GlacierModulePropertiesData.columnCount, (col) {
             return _ColumnCard(
               columnIndex: col,
@@ -282,6 +473,7 @@ class _ColumnCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                if (column.entries.isNotEmpty) const SizedBox(height: 8),
                 ...column.entries.asMap().entries.map((e) {
                   return _EntryRow(
                     key: ValueKey(
@@ -335,12 +527,11 @@ class _EntryRow extends StatelessWidget {
   final void Function(GlacierSpawnEntryData entry) onUpdate;
   final VoidCallback onPickZombie;
 
-  InputDecoration _fieldDecoration(String label) => InputDecoration(
-    labelText: label,
-    border: const OutlineInputBorder(),
+  InputDecoration _fieldDecoration() => const InputDecoration(
+    border: OutlineInputBorder(),
     isDense: true,
     contentPadding: _fieldPadding,
-    constraints: const BoxConstraints(minHeight: _fieldMinHeight),
+    constraints: BoxConstraints(minHeight: _fieldMinHeight),
   );
 
   @override
@@ -348,6 +539,7 @@ class _EntryRow extends StatelessWidget {
     final theme = Theme.of(context);
     final repo = ZombieRepository();
     final typeName = entry.typeName;
+    final isEmptyOutcome = typeName.isEmpty;
     final zombie = typeName.isNotEmpty ? repo.getZombieById(typeName) : null;
     final displayName = typeName.isEmpty
         ? (l10n?.glacierModuleEmptyType ?? 'No zombie selected')
@@ -356,171 +548,216 @@ class _EntryRow extends StatelessWidget {
     final switchLabel =
         l10n?.switchZombie ?? l10n?.switchCustomZombie ?? 'Switch zombie';
     final weightLabel = l10n?.glacierModuleWeight ?? 'Weight';
-    final levelLabel = l10n?.glacierModuleLevel ?? 'Level (0–10)';
+    final levelLabel = l10n?.glacierModuleLevel ?? 'Zombie level';
+
+    Widget buildIcon() => SizedBox(
+      width: _iconSize,
+      height: _iconSize,
+      child: iconPath != null
+          ? AssetImageWidget(
+              assetPath: iconPath,
+              altCandidates: imageAltCandidates(iconPath),
+              width: _iconSize,
+              height: _iconSize,
+            )
+          : Icon(
+              Icons.ac_unit,
+              size: _iconSize * 0.65,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+    );
+
+    Widget buildNameBlock() => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          displayName,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (typeName.isNotEmpty)
+          Text(
+            typeName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+      ],
+    );
+
+    Widget buildSwitchButton() => TextButton.icon(
+      onPressed: onPickZombie,
+      icon: const Icon(Icons.swap_horiz, size: 20),
+      label: Text(switchLabel, overflow: TextOverflow.ellipsis),
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        visualDensity: VisualDensity.compact,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+    );
+
+    Widget buildWeightField() => Tooltip(
+      message: isEmptyOutcome
+          ? (l10n?.glacierModuleEmptyWeightTooltip ??
+                'Weight for the outcome in which the Ice Chunk releases no zombie.')
+          : (l10n?.glacierModuleWeightTooltip ??
+                'Spawn weight for this zombie in this column.'),
+      child: EditorResponsiveInputField(
+        label: weightLabel,
+        decoration: _fieldDecoration(),
+        builder: (context, decoration) => TextFormField(
+          key: ValueKey('w_${entry.typeName}_${entry.weight}'),
+          initialValue: '${entry.weight}',
+          style: theme.textTheme.bodyLarge,
+          decoration: decoration,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          onChanged: (v) {
+            final w = num.tryParse(v);
+            if (w != null && w >= 0) {
+              onUpdate(
+                GlacierSpawnEntryData(
+                  typeName: entry.typeName,
+                  weight: w,
+                  level: entry.level,
+                ),
+              );
+            }
+          },
+        ),
+      ),
+    );
+
+    Widget buildLevelField() => Tooltip(
+      message: l10n?.glacierModuleLevelTooltip ?? 'Zombie level from 0 to 4.',
+      child: EditorResponsiveInputField(
+        label: levelLabel,
+        decoration: _fieldDecoration(),
+        builder: (context, decoration) => DropdownButtonFormField<int>(
+          key: ValueKey('lv_${entry.typeName}_${entry.level}'),
+          initialValue: entry.level.clamp(
+            _GlacierModuleScreenState._levelMin,
+            _GlacierModuleScreenState._levelMax,
+          ),
+          isExpanded: true,
+          isDense: true,
+          padding: EdgeInsets.zero,
+          style: theme.textTheme.bodyLarge,
+          iconSize: 22,
+          items: List.generate(
+            _GlacierModuleScreenState._levelMax -
+                _GlacierModuleScreenState._levelMin +
+                1,
+            (i) {
+              final lv = i + _GlacierModuleScreenState._levelMin;
+              return DropdownMenuItem(value: lv, child: Text('$lv'));
+            },
+          ),
+          onChanged: (lv) {
+            if (lv != null) {
+              onUpdate(
+                GlacierSpawnEntryData(
+                  typeName: entry.typeName,
+                  weight: entry.weight,
+                  level: lv,
+                ),
+              );
+            }
+          },
+          decoration: decoration,
+        ),
+      ),
+    );
+
+    Widget buildDeleteButton() => IconButton(
+      icon: const Icon(Icons.delete_outline),
+      tooltip: l10n?.delete ?? 'Delete',
+      visualDensity: VisualDensity.compact,
+      padding: const EdgeInsets.all(8),
+      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+      onPressed: onRemove,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final row = Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: _iconSize,
-              height: _iconSize,
-              child: iconPath != null
-                  ? AssetImageWidget(
-                      assetPath: iconPath,
-                      altCandidates: imageAltCandidates(iconPath),
-                      width: _iconSize,
-                      height: _iconSize,
-                    )
-                  : Icon(
-                      Icons.pest_control_outlined,
-                      size: _iconSize * 0.65,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-            ),
-            const SizedBox(width: 6),
-            Expanded(
-              flex: 5,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          displayName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (typeName.isNotEmpty)
-                          Text(
-                            typeName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: onPickZombie,
-                    icon: const Icon(Icons.swap_horiz, size: 20),
-                    label: Text(switchLabel, overflow: TextOverflow.ellipsis),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 4,
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Tooltip(
-                  message:
-                      l10n?.glacierModuleWeightTooltip ??
-                      'Spawn weight for this zombie in this column.',
-                  child: TextFormField(
-                    key: ValueKey('w_${entry.typeName}_${entry.weight}'),
-                    initialValue: '${entry.weight}',
-                    style: theme.textTheme.bodyLarge,
-                    decoration: _fieldDecoration(weightLabel),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (v) {
-                      final w = int.tryParse(v);
-                      if (w != null && w > 0) {
-                        onUpdate(
-                          GlacierSpawnEntryData(
-                            typeName: entry.typeName,
-                            weight: w,
-                            level: entry.level,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Tooltip(
-                  message:
-                      l10n?.glacierModuleLevelTooltip ?? 'Zombie level (0–10).',
-                  child: DropdownButtonFormField<int>(
-                    key: ValueKey('lv_${entry.typeName}_${entry.level}'),
-                    initialValue: entry.level.clamp(
-                      _GlacierModuleScreenState._levelMin,
-                      _GlacierModuleScreenState._levelMax,
-                    ),
-                    isExpanded: true,
-                    isDense: true,
-                    padding: EdgeInsets.zero,
-                    style: theme.textTheme.bodyLarge,
-                    iconSize: 22,
-                    items: List.generate(
-                      _GlacierModuleScreenState._levelMax -
-                          _GlacierModuleScreenState._levelMin +
-                          1,
-                      (i) {
-                        final lv = i + _GlacierModuleScreenState._levelMin;
-                        return DropdownMenuItem(value: lv, child: Text('$lv'));
-                      },
-                    ),
-                    onChanged: (lv) {
-                      if (lv != null) {
-                        onUpdate(
-                          GlacierSpawnEntryData(
-                            typeName: entry.typeName,
-                            weight: entry.weight,
-                            level: lv,
-                          ),
-                        );
-                      }
-                    },
-                    decoration: _fieldDecoration(levelLabel),
-                  ),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              tooltip: l10n?.delete ?? 'Delete',
-              visualDensity: VisualDensity.compact,
-              padding: const EdgeInsets.all(8),
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-              onPressed: onRemove,
-            ),
-            ],
-          );
           if (constraints.maxWidth < 720) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(width: 720, child: row),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildIcon(),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildNameBlock(),
+                          if (!isEmptyOutcome) buildSwitchButton(),
+                        ],
+                      ),
+                    ),
+                    buildDeleteButton(),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                if (isEmptyOutcome)
+                  buildWeightField()
+                else
+                  Row(
+                    children: [
+                      Expanded(child: buildWeightField()),
+                      const SizedBox(width: 8),
+                      Expanded(child: buildLevelField()),
+                    ],
+                  ),
+              ],
             );
           }
-          return row;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              buildIcon(),
+              const SizedBox(width: 6),
+              Expanded(
+                flex: 5,
+                child: Row(
+                  children: [
+                    Flexible(fit: FlexFit.loose, child: buildNameBlock()),
+                    if (!isEmptyOutcome) buildSwitchButton(),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: isEmptyOutcome ? 6 : 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: buildWeightField(),
+                ),
+              ),
+              if (!isEmptyOutcome)
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: buildLevelField(),
+                  ),
+                ),
+              buildDeleteButton(),
+            ],
+          );
         },
       ),
     );

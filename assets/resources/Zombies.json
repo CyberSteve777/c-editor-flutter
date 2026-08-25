@@ -81,6 +81,17 @@
     "icon": "zombie_explorer.webp"
   },
   {
+    "id": "new_pvp_explorer",
+    "name": "zombie_new_pvp_explorer",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_explorer.webp"
+  },
+  {
     "id": "explorer_veteran",
     "name": "zombie_explorer_veteran",
     "tags": [
@@ -109,6 +120,27 @@
       "International"
     ],
     "icon": "zombie_tomb_raiser.webp"
+  },
+  {
+    "id": "new_pvp_tomb_raiser",
+    "name": "zombie_new_pvp_tomb_raiser",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_tomb_raiser.webp"
+  },
+  {
+    "id": "camel_segment",
+    "name": "zombie_camel_segment",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_camel_onehump.webp"
   },
   {
     "id": "camel_onehump",
@@ -148,6 +180,17 @@
       "Egypt_Pirate",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_pharaoh.webp"
+  },
+  {
+    "id": "new_pvp_pharaoh",
+    "name": "zombie_new_pvp_pharaoh",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_pharaoh.webp"
   },
@@ -278,6 +321,17 @@
     "icon": "zombie_barrelroller.webp"
   },
   {
+    "id": "new_pvp_barrelroller",
+    "name": "zombie_new_pvp_barrelroller",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_barrelroller.webp"
+  },
+  {
     "id": "pirate_captain",
     "name": "zombie_pirate_captain",
     "tags": [
@@ -286,6 +340,18 @@
       "Basic",
       "Pet",
       "International"
+    ],
+    "icon": "zombie_pirate_captain.webp"
+  },
+  {
+    "id": "new_pvp_pirate_captain",
+    "name": "zombie_new_pvp_pirate_captain",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "Pet",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_pirate_captain.webp"
   },
@@ -384,6 +450,17 @@
     "icon": "zombie_west_bull.webp"
   },
   {
+    "id": "new_pvp_west_bull",
+    "name": "zombie_new_pvp_west_bull",
+    "tags": [
+      "West_Future",
+      "Pet",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_west_bull.webp"
+  },
+  {
     "id": "west_bull_veteran",
     "name": "zombie_west_bull_veteran",
     "tags": [
@@ -404,6 +481,17 @@
     "icon": "zombie_west_bullrider.webp"
   },
   {
+    "id": "new_pvp_west_bullrider",
+    "name": "zombie_new_pvp_west_bullrider",
+    "tags": [
+      "West_Future",
+      "Imp",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_west_bullrider.webp"
+  },
+  {
     "id": "prospector",
     "name": "zombie_prospector",
     "tags": [
@@ -411,6 +499,17 @@
       "Evildave",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_prospector.webp"
+  },
+  {
+    "id": "new_pvp_prospector",
+    "name": "zombie_new_pvp_prospector",
+    "tags": [
+      "West_Future",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_prospector.webp"
   },
@@ -427,12 +526,35 @@
     "icon": "zombie_chicken_farmer.webp"
   },
   {
+    "id": "new_pvp_chicken_farmer",
+    "name": "zombie_new_pvp_chicken_farmer",
+    "tags": [
+      "West_Future",
+      "Basic",
+      "Pet",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_chicken_farmer.webp"
+  },
+  {
     "id": "chicken",
     "name": "zombie_chicken",
     "tags": [
       "West_Future",
       "Pet",
       "International"
+    ],
+    "icon": "zombie_chicken.webp"
+  },
+  {
+    "id": "new_pvp_chicken",
+    "name": "zombie_new_pvp_chicken",
+    "tags": [
+      "West_Future",
+      "Pet",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_chicken.webp"
   },
@@ -550,12 +672,34 @@
     "icon": "zombie_kongfu_hammer.webp"
   },
   {
+    "id": "new_pvp_kongfu_hammer",
+    "name": "zombie_new_pvp_kongfu_hammer",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_hammer.webp"
+  },
+  {
     "id": "kongfu_selfexplode",
     "name": "zombie_kongfu_selfexplode",
     "tags": [
       "Kongfu_Skycity",
       "Evildave",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_selfexplode.webp"
+  },
+  {
+    "id": "new_pvp_kongfu_selfexplode",
+    "name": "zombie_new_pvp_kongfu_selfexplode",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_kongfu_selfexplode.webp"
@@ -581,11 +725,33 @@
     "icon": "zombie_kongfu_gong.webp"
   },
   {
+    "id": "new_pvp_kongfu_gong",
+    "name": "zombie_new_pvp_kongfu_gong",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_gong.webp"
+  },
+  {
     "id": "kongfu_drink",
     "name": "zombie_kongfu_drink",
     "tags": [
       "Kongfu_Skycity",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_drink.webp"
+  },
+  {
+    "id": "new_pvp_kongfu_drink",
+    "name": "zombie_new_pvp_kongfu_drink",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_kongfu_drink.webp"
@@ -597,6 +763,17 @@
       "Kongfu_Skycity",
       "Evildave",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_qigong.webp"
+  },
+  {
+    "id": "new_pvp_kongfu_qigong",
+    "name": "zombie_new_pvp_kongfu_qigong",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_kongfu_qigong.webp"
@@ -682,11 +859,33 @@
     "icon": "zombie_kongfu_monk_torch.webp"
   },
   {
+    "id": "new_pvp_kongfu_monk_torch",
+    "name": "zombie_new_pvp_kongfu_monk_torch",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_monk_torch.webp"
+  },
+  {
     "id": "kongfu_monk_blade",
     "name": "zombie_kongfu_monk_blade",
     "tags": [
       "Kongfu_Skycity",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_monk_blade.webp"
+  },
+  {
+    "id": "new_pvp_kongfu_monk_blade",
+    "name": "zombie_new_pvp_kongfu_monk_blade",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_kongfu_monk_blade.webp"
@@ -714,12 +913,34 @@
     "icon": "zombie_kongfu_monk_nunchaku.webp"
   },
   {
+    "id": "new_pvp_kongfu_monk_nunchaku",
+    "name": "zombie_new_pvp_kongfu_monk_nunchaku",
+    "tags": [
+      "Kongfu_Skycity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_monk_nunchaku.webp"
+  },
+  {
     "id": "kongfu_strong_bronze",
     "name": "zombie_kongfu_strong_bronze",
     "tags": [
       "Kongfu_Skycity",
       "Evildave",
       "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_kongfu_strong_bronze.webp"
+  },
+  {
+    "id": "new_pvp_kongfu_strong_bronze",
+    "name": "zombie_new_pvp_kongfu_strong_bronze",
+    "tags": [
+      "Kongfu_Skycity",
+      "Gargantuar",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_kongfu_strong_bronze.webp"
@@ -809,6 +1030,17 @@
     "icon": "zombie_future_gargantuar.webp"
   },
   {
+    "id": "new_pvp_future_gargantuar",
+    "name": "zombie_new_pvp_future_gargantuar",
+    "tags": [
+      "West_Future",
+      "Gargantuar",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_future_gargantuar.webp"
+  },
+  {
     "id": "future_imp",
     "name": "zombie_future_imp",
     "tags": [
@@ -852,6 +1084,17 @@
     "icon": "zombie_future_protector.webp"
   },
   {
+    "id": "new_pvp_future_protector",
+    "name": "zombie_new_pvp_future_protector",
+    "tags": [
+      "West_Future",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_future_protector.webp"
+  },
+  {
     "id": "wave_elecshieldgenerator",
     "name": "zombie_wave_elecshieldgenerator",
     "tags": [
@@ -869,6 +1112,16 @@
       "West_Future",
       "Evildave",
       "International"
+    ],
+    "icon": "zombie_mech_cone.webp"
+  },
+  {
+    "id": "new_pvp_mech_cone",
+    "name": "zombie_new_pvp_mech_cone",
+    "tags": [
+      "West_Future",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_mech_cone.webp"
   },
@@ -910,6 +1163,17 @@
       "Dark_Beach",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_dark.webp"
+  },
+  {
+    "id": "new_pvp_dark",
+    "name": "zombie_new_pvp_dark",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_dark.webp"
   },
@@ -996,6 +1260,17 @@
     "icon": "zombie_dark_juggler.webp"
   },
   {
+    "id": "new_pvp_dark_juggler",
+    "name": "zombie_new_pvp_dark_juggler",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_dark_juggler.webp"
+  },
+  {
     "id": "dark_rogue",
     "name": "zombie_dark_rogue",
     "tags": [
@@ -1018,11 +1293,33 @@
     "icon": "zombie_dark_rogue.webp"
   },
   {
+    "id": "new_pvp_dark_rogue",
+    "name": "zombie_new_pvp_dark_rogue",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_dark_rogue.webp"
+  },
+  {
     "id": "dark_cavalry",
     "name": "zombie_dark_cavalry",
     "tags": [
       "Dark_Beach",
       "Pet",
+      "Chinese"
+    ],
+    "icon": "zombie_dark_cavalry.webp"
+  },
+  {
+    "id": "new_pvp_dark_cavalry",
+    "name": "zombie_new_pvp_dark_cavalry",
+    "tags": [
+      "Dark_Beach",
+      "Pet",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_dark_cavalry.webp"
@@ -1067,6 +1364,18 @@
       "Basic",
       "Pet",
       "International"
+    ],
+    "icon": "zombie_dark_wizard.webp"
+  },
+  {
+    "id": "new_pvp_dark_wizard",
+    "name": "zombie_new_pvp_dark_wizard",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "Pet",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_dark_wizard.webp"
   },
@@ -1117,6 +1426,18 @@
       "Imp",
       "Pet",
       "International"
+    ],
+    "icon": "zombie_dark_imp_dragon.webp"
+  },
+  {
+    "id": "new_pvp_dark_imp_dragon",
+    "name": "zombie_new_pvp_dark_imp_dragon",
+    "tags": [
+      "Dark_Beach",
+      "Imp",
+      "Pet",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_dark_imp_dragon.webp"
   },
@@ -1282,6 +1603,18 @@
     "icon": "zombie_beach_octopus.webp"
   },
   {
+    "id": "new_pvp_beach_octopus",
+    "name": "zombie_new_pvp_beach_octopus",
+    "tags": [
+      "Dark_Beach",
+      "Pet",
+      "Strong",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_beach_octopus.webp"
+  },
+  {
     "id": "beach_fisherman",
     "name": "zombie_beach_fisherman",
     "tags": [
@@ -1304,6 +1637,17 @@
     "icon": "zombie_beach_surfer.webp"
   },
   {
+    "id": "new_pvp_beach_surfer",
+    "name": "zombie_new_pvp_beach_surfer",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_beach_surfer.webp"
+  },
+  {
     "id": "beach_snorkel",
     "name": "zombie_beach_snorkel",
     "tags": [
@@ -1321,6 +1665,17 @@
       "Dark_Beach",
       "Evildave",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_beach_shell.webp"
+  },
+  {
+    "id": "new_pvp_beach_shell",
+    "name": "zombie_new_pvp_beach_shell",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_beach_shell.webp"
@@ -1374,6 +1729,17 @@
       "Evildave",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_iceage_armor3.webp"
+  },
+  {
+    "id": "new_pvp_iceage_armor3",
+    "name": "zombie_new_pvp_iceage_armor3",
+    "tags": [
+      "Iceage_Lostcity",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_iceage_armor3.webp"
   },
@@ -1439,6 +1805,17 @@
     "icon": "zombie_iceage_hunter.webp"
   },
   {
+    "id": "new_pvp_iceage_hunter",
+    "name": "zombie_new_pvp_iceage_hunter",
+    "tags": [
+      "Iceage_Lostcity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_iceage_hunter.webp"
+  },
+  {
     "id": "iceage_hunter_elite",
     "name": "zombie_iceage_hunter_elite",
     "tags": [
@@ -1480,6 +1857,17 @@
       "Evildave",
       "Pet",
       "International"
+    ],
+    "icon": "zombie_iceage_dodo.webp"
+  },
+  {
+    "id": "new_pvp_iceage_dodo",
+    "name": "zombie_new_pvp_iceage_dodo",
+    "tags": [
+      "Iceage_Lostcity",
+      "Pet",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_iceage_dodo.webp"
   },
@@ -1556,6 +1944,17 @@
     "icon": "zombie_iceage_weasel.webp"
   },
   {
+    "id": "new_pvp_iceage_weasel",
+    "name": "zombie_new_pvp_iceage_weasel",
+    "tags": [
+      "Iceage_Lostcity",
+      "Pet",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_iceage_weasel.webp"
+  },
+  {
     "id": "iceage_weasel_elite",
     "name": "zombie_iceage_weasel_elite",
     "tags": [
@@ -1573,6 +1972,17 @@
       "Iceage_Lostcity",
       "Strong",
       "International"
+    ],
+    "icon": "zombie_iceage_troglobite.webp"
+  },
+  {
+    "id": "new_pvp_iceage_troglobite",
+    "name": "zombie_new_pvp_iceage_troglobite",
+    "tags": [
+      "Iceage_Lostcity",
+      "Strong",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_iceage_troglobite.webp"
   },
@@ -1604,6 +2014,17 @@
     "tags": [
       "Iceage_Lostcity",
       "Strong",
+      "Chinese"
+    ],
+    "icon": "zombie_iceage_chief.webp"
+  },
+  {
+    "id": "new_pvp_iceage_chief",
+    "name": "zombie_new_pvp_iceage_chief",
+    "tags": [
+      "Iceage_Lostcity",
+      "Strong",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_iceage_chief.webp"
@@ -1960,6 +2381,17 @@
     "icon": "zombie_lostcity_bug.webp"
   },
   {
+    "id": "new_pvp_lostcity_bug",
+    "name": "zombie_new_pvp_lostcity_bug",
+    "tags": [
+      "Iceage_Lostcity",
+      "Pet",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_lostcity_bug.webp"
+  },
+  {
     "id": "lostcity_flag",
     "name": "zombie_lostcity_flag",
     "tags": [
@@ -2001,6 +2433,17 @@
     "icon": "zombie_lostcity_jane.webp"
   },
   {
+    "id": "new_pvp_lostcity_jane",
+    "name": "zombie_new_pvp_lostcity_jane",
+    "tags": [
+      "Iceage_Lostcity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_lostcity_jane.webp"
+  },
+  {
     "id": "lostcity_excavator",
     "name": "zombie_lostcity_excavator",
     "tags": [
@@ -2008,6 +2451,17 @@
       "Evildave",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_lostcity_excavator.webp"
+  },
+  {
+    "id": "new_pvp_lostcity_excavator",
+    "name": "zombie_new_pvp_lostcity_excavator",
+    "tags": [
+      "Iceage_Lostcity",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_lostcity_excavator.webp"
   },
@@ -2042,6 +2496,17 @@
     "icon": "zombie_lostcity_relichunter.webp"
   },
   {
+    "id": "new_pvp_lostcity_relichunter",
+    "name": "zombie_new_pvp_lostcity_relichunter",
+    "tags": [
+      "Iceage_Lostcity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_lostcity_relichunter.webp"
+  },
+  {
     "id": "lostcity_crystalskull",
     "name": "zombie_lostcity_crystalskull",
     "tags": [
@@ -2053,11 +2518,33 @@
     "icon": "zombie_lostcity_crystalskull.webp"
   },
   {
+    "id": "new_pvp_lostcity_crystalskull",
+    "name": "zombie_new_pvp_lostcity_crystalskull",
+    "tags": [
+      "Iceage_Lostcity",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_lostcity_crystalskull.webp"
+  },
+  {
     "id": "lostcity_doctor",
     "name": "zombie_lostcity_doctor",
     "tags": [
       "Iceage_Lostcity",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_lostcity_doctor.webp"
+  },
+  {
+    "id": "new_pvp_lostcity_doctor",
+    "name": "zombie_new_pvp_lostcity_doctor",
+    "tags": [
+      "Iceage_Lostcity",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_lostcity_doctor.webp"
@@ -2156,6 +2643,17 @@
     "icon": "zombie_eighties_punk.webp"
   },
   {
+    "id": "new_pvp_eighties_punk",
+    "name": "zombie_new_pvp_eighties_punk",
+    "tags": [
+      "Eighties_Dino",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_eighties_punk.webp"
+  },
+  {
     "id": "eighties_mc",
     "name": "zombie_eighties_mc",
     "tags": [
@@ -2173,6 +2671,17 @@
       "Eighties_Dino",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_eighties_glitter.webp"
+  },
+  {
+    "id": "new_pvp_eighties_glitter",
+    "name": "zombie_new_pvp_eighties_glitter",
+    "tags": [
+      "Eighties_Dino",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_eighties_glitter.webp"
   },
@@ -2238,6 +2747,17 @@
     "icon": "zombie_eighties_breakdancer.webp"
   },
   {
+    "id": "new_pvp_eighties_breakdancer",
+    "name": "zombie_new_pvp_eighties_breakdancer",
+    "tags": [
+      "Eighties_Dino",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_eighties_breakdancer.webp"
+  },
+  {
     "id": "eighties_bass",
     "name": "zombie_eighties_bass",
     "tags": [
@@ -2299,6 +2819,17 @@
     "icon": "zombie_dino_armor3.webp"
   },
   {
+    "id": "new_pvp_dino_armor3",
+    "name": "zombie_new_pvp_dino_armor3",
+    "tags": [
+      "Eighties_Dino",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_dino_armor3.webp"
+  },
+  {
     "id": "dino_armor4",
     "name": "zombie_dino_armor4",
     "tags": [
@@ -2329,6 +2860,17 @@
     "icon": "zombie_dino_gargantuar.webp"
   },
   {
+    "id": "new_pvp_dino_gargantuar",
+    "name": "zombie_new_pvp_dino_gargantuar",
+    "tags": [
+      "Eighties_Dino",
+      "Gargantuar",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_dino_gargantuar.webp"
+  },
+  {
     "id": "dino_imp",
     "name": "zombie_dino_imp",
     "tags": [
@@ -2346,6 +2888,17 @@
       "Eighties_Dino",
       "Strong",
       "International"
+    ],
+    "icon": "zombie_dino_bully.webp"
+  },
+  {
+    "id": "new_pvp_dino_bully",
+    "name": "zombie_new_pvp_dino_bully",
+    "tags": [
+      "Eighties_Dino",
+      "Strong",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_dino_bully.webp"
   },
@@ -2491,6 +3044,17 @@
     "icon": "zombie_tutorial.webp"
   },
   {
+    "id": "new_pvp_tutorial",
+    "name": "zombie_new_pvp_tutorial",
+    "tags": [
+      "Modern_Pvz1",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_tutorial.webp"
+  },
+  {
     "id": "tutorial_armor1",
     "name": "zombie_tutorial_armor1",
     "tags": [
@@ -2502,6 +3066,17 @@
     "icon": "zombie_tutorial_armor1.webp"
   },
   {
+    "id": "new_pvp_tutorial_armor1",
+    "name": "zombie_new_pvp_tutorial_armor1",
+    "tags": [
+      "Modern_Pvz1",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_tutorial_armor1.webp"
+  },
+  {
     "id": "tutorial_armor2",
     "name": "zombie_tutorial_armor2",
     "tags": [
@@ -2509,6 +3084,17 @@
       "Evildave",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_tutorial_armor2.webp"
+  },
+  {
+    "id": "new_pvp_tutorial_armor2",
+    "name": "zombie_new_pvp_tutorial_armor2",
+    "tags": [
+      "Modern_Pvz1",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_tutorial_armor2.webp"
   },
@@ -2550,6 +3136,17 @@
       "Modern_Pvz1",
       "Gargantuar",
       "Custom",
+      "Chinese"
+    ],
+    "icon": "zombie_tutorial_gargantuar.webp"
+  },
+  {
+    "id": "new_pvp_tutorial_gargantuar",
+    "name": "zombie_new_pvp_tutorial_gargantuar",
+    "tags": [
+      "Modern_Pvz1",
+      "Gargantuar",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_tutorial_gargantuar.webp"
@@ -2607,12 +3204,34 @@
     "icon": "zombie_modern_newspaper.webp"
   },
   {
+    "id": "new_pvp_beghouled_newspaper",
+    "name": "zombie_new_pvp_beghouled_newspaper",
+    "tags": [
+      "Modern_Pvz1",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_modern_newspaper.webp"
+  },
+  {
     "id": "newspaper_veteran",
     "name": "zombie_newspaper_veteran",
     "tags": [
       "Modern_Pvz1",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_newspaper_veteran.webp"
+  },
+  {
+    "id": "new_pvp_newspaper_veteran",
+    "name": "zombie_new_pvp_newspaper_veteran",
+    "tags": [
+      "Modern_Pvz1",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_newspaper_veteran.webp"
   },
@@ -2628,6 +3247,17 @@
     "icon": "zombie_modern_balloon.webp"
   },
   {
+    "id": "new_pvp_modern_balloon",
+    "name": "zombie_new_pvp_modern_balloon",
+    "tags": [
+      "Modern_Pvz1",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_modern_balloon.webp"
+  },
+  {
     "id": "modern_allstar",
     "name": "zombie_modern_allstar",
     "tags": [
@@ -2635,6 +3265,17 @@
       "Evildave",
       "Strong",
       "International"
+    ],
+    "icon": "zombie_modern_allstar.webp"
+  },
+  {
+    "id": "new_pvp_modern_allstar",
+    "name": "zombie_new_pvp_modern_allstar",
+    "tags": [
+      "Modern_Pvz1",
+      "Strong",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_modern_allstar.webp"
   },
@@ -2659,6 +3300,17 @@
     "icon": "zombie_explosion_proof.webp"
   },
   {
+    "id": "new_pvp_explosion_proof",
+    "name": "zombie_new_pvp_explosion_proof",
+    "tags": [
+      "Modern_Pvz1",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_explosion_proof.webp"
+  },
+  {
     "id": "modern_solar_truck",
     "name": "zombie_modern_solar_truck",
     "tags": [
@@ -2674,6 +3326,17 @@
       "Modern_Pvz1",
       "Evildave",
       "Fat",
+      "Chinese"
+    ],
+    "icon": "zombie_modern_miner.webp"
+  },
+  {
+    "id": "new_pvp_modern_miner",
+    "name": "zombie_new_pvp_modern_miner",
+    "tags": [
+      "Modern_Pvz1",
+      "Fat",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_modern_miner.webp"
@@ -2975,6 +3638,17 @@
     "icon": "zombie_steam_gentleman.webp"
   },
   {
+    "id": "new_pvp_steam_gentleman",
+    "name": "zombie_new_pvp_steam_gentleman",
+    "tags": [
+      "Steam_Renai",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_steam_gentleman.webp"
+  },
+  {
     "id": "steam_stove",
     "name": "zombie_steam_stove",
     "tags": [
@@ -2985,11 +3659,33 @@
     "icon": "zombie_steam_stove.webp"
   },
   {
+    "id": "new_pvp_steam_stove",
+    "name": "zombie_new_pvp_steam_stove",
+    "tags": [
+      "Steam_Renai",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_steam_stove.webp"
+  },
+  {
     "id": "steam_coal_miner",
     "name": "zombie_steam_coal_miner",
     "tags": [
       "Steam_Renai",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_steam_coal_miner.webp"
+  },
+  {
+    "id": "new_pvp_steam_coal_miner",
+    "name": "zombie_new_pvp_steam_coal_miner",
+    "tags": [
+      "Steam_Renai",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_steam_coal_miner.webp"
@@ -3080,6 +3776,17 @@
     "tags": [
       "Steam_Renai",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_renai_gliding.webp"
+  },
+  {
+    "id": "new_pvp_renai_gliding",
+    "name": "zombie_new_pvp_renai_gliding",
+    "tags": [
+      "Steam_Renai",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_renai_gliding.webp"
@@ -3289,11 +3996,33 @@
     "icon": "zombie_heian_ninja.webp"
   },
   {
+    "id": "new_pvp_heian_ninja",
+    "name": "zombie_new_pvp_heian_ninja",
+    "tags": [
+      "Henai_Atlantis",
+      "Imp",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_heian_ninja.webp"
+  },
+  {
     "id": "heian_hanabi",
     "name": "zombie_heian_hanabi",
     "tags": [
       "Henai_Atlantis",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_heian_hanabi.webp"
+  },
+  {
+    "id": "new_pvp_heian_hanabi",
+    "name": "zombie_new_pvp_heian_hanabi",
+    "tags": [
+      "Henai_Atlantis",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_heian_hanabi.webp"
@@ -3324,6 +4053,17 @@
     "tags": [
       "Henai_Atlantis",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_heian_onmyoji.webp"
+  },
+  {
+    "id": "new_pvp_heian_onmyoji",
+    "name": "zombie_new_pvp_heian_onmyoji",
+    "tags": [
+      "Henai_Atlantis",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_heian_onmyoji.webp"
@@ -3374,16 +4114,6 @@
     "icon": "zombie_atlantis_basic.webp"
   },
   {
-    "id": "atlantis_flag",
-    "name": "zombie_atlantis_flag",
-    "tags": [
-      "Henai_Atlantis",
-      "Basic",
-      "Chinese"
-    ],
-    "icon": "zombie_atlantis_flag.webp"
-  },
-  {
     "id": "atlantis_armor1",
     "name": "zombie_atlantis_armor1",
     "tags": [
@@ -3412,6 +4142,16 @@
       "Chinese"
     ],
     "icon": "zombie_atlantis_armor4.webp"
+  },
+  {
+    "id": "atlantis_flag",
+    "name": "zombie_atlantis_flag",
+    "tags": [
+      "Henai_Atlantis",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_atlantis_flag.webp"
   },
   {
     "id": "atlantis_land_basic",
@@ -3547,6 +4287,228 @@
     "icon": "zombie_seaurchinpitcher.webp"
   },
   {
+    "id": "giant_hermit_crab",
+    "name": "zombie_giant_hermit_crab",
+    "tags": [
+      "Henai_Atlantis",
+      "Pet",
+      "Elite",
+      "Chinese"
+    ],
+    "icon": "zombie_giant_hermit_crab.webp"
+  },
+  {
+    "id": "cthulhu_jelly_fish",
+    "name": "zombie_cthulhu_jelly_fish",
+    "tags": [
+      "Henai_Atlantis",
+      "Pet",
+      "Elite",
+      "Chinese"
+    ],
+    "icon": "zombie_cthulhu_jelly_fish.webp"
+  },
+  {
+    "id": "moon",
+    "name": "zombie_moon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon.webp"
+  },
+  {
+    "id": "moon_armor1",
+    "name": "zombie_moon_armor1",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_armor1.webp"
+  },
+  {
+    "id": "moon_armor2",
+    "name": "zombie_moon_armor2",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_armor2.webp"
+  },
+  {
+    "id": "moon_armor3",
+    "name": "zombie_moon_armor3",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_armor3.webp"
+  },
+  {
+    "id": "moon_flag",
+    "name": "zombie_moon_flag",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_flag.webp"
+  },
+  {
+    "id": "moon_gargantuar",
+    "name": "zombie_moon_gargantuar",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_gargantuar.webp"
+  },
+  {
+    "id": "moon_walker",
+    "name": "zombie_moon_walker",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_walker.webp"
+  },
+  {
+    "id": "moon_walker_beacon",
+    "name": "zombie_moon_walker_beacon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moonwalker_beacon.webp"
+  },
+  {
+    "id": "teleport_left",
+    "name": "zombie_teleport_left",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_left.webp"
+  },
+  {
+    "id": "teleport_left_beacon",
+    "name": "zombie_teleport_left_beacon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_left_beacon.webp"
+  },
+  {
+    "id": "teleport_right",
+    "name": "zombie_teleport_right",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_right.webp"
+  },
+  {
+    "id": "teleport_right_beacon",
+    "name": "zombie_teleport_right_beacon",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_right_beacon.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp",
+    "name": "zombie_cosmic_imp",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_bubblegun",
+    "name": "zombie_cosmic_imp_bubblegun",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_bubblegun.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_bubble",
+    "name": "zombie_cosmic_imp_bubble",
+    "tags": [
+      "Moon",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_bubble.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_toycar",
+    "name": "zombie_cosmic_imp_toycar",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_toycar.webp"
+  },
+  {
+    "id": "zombie_cosmic_imp_corporate",
+    "name": "zombie_cosmic_imp_corporate",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_cosmic_imp_corporate.webp"
+  },
+  {
+    "id": "moon_ship5000",
+    "name": "zombie_moon_ship5000",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_ship5000.webp"
+  },
+  {
+    "id": "zombie_supernova_gargantuar",
+    "name": "zombie_supernova_gargantuar",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_supernova_gargantuar.webp"
+  },
+  {
+    "id": "zombie_supernova_gargantuar_beacon",
+    "name": "zombie_supernova_gargantuar_beacon",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_supernova_gargantuar_beacon.webp"
+  },
+  {
     "id": "fairy_tale",
     "name": "zombie_fairy_tale",
     "tags": [
@@ -3643,6 +4605,17 @@
     "tags": [
       "Tale_ZCorp",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_fairy_tale_witch.webp"
+  },
+  {
+    "id": "new_pvp_fairy_tale_witch",
+    "name": "zombie_new_pvp_fairy_tale_witch",
+    "tags": [
+      "Tale_ZCorp",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_fairy_tale_witch.webp"
@@ -3863,6 +4836,7 @@
     "name": "zombie_zcorp_gargantuar",
     "tags": [
       "Tale_ZCorp",
+      "Imp",
       "Gargantuar",
       "International"
     ],
@@ -4365,6 +5339,16 @@
     "icon": "zombie_lny_flag.webp"
   },
   {
+    "id": "lny_camel_segment",
+    "name": "zombie_lny_camel_segment",
+    "tags": [
+      "Festival1",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_lny_camel_onehump.webp"
+  },
+  {
     "id": "lny_camel_onehump",
     "name": "zombie_lny_camel_onehump",
     "tags": [
@@ -4673,6 +5657,17 @@
     "icon": "zombie_children_ballon.webp"
   },
   {
+    "id": "new_pvp_children_ballon",
+    "name": "zombie_new_pvp_children_ballon",
+    "tags": [
+      "Festival1",
+      "Imp",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_children_ballon.webp"
+  },
+  {
     "id": "children_schoolbag",
     "name": "zombie_children_schoolbag",
     "tags": [
@@ -4688,6 +5683,17 @@
     "tags": [
       "Festival1",
       "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_children_toycar.webp"
+  },
+  {
+    "id": "new_pvp_children_toycar",
+    "name": "zombie_new_pvp_children_toycar",
+    "tags": [
+      "Festival1",
+      "Imp",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_children_toycar.webp"
@@ -5293,6 +6299,16 @@
     "icon": "zombie_christmas_imp2.webp"
   },
   {
+    "id": "christmas_camel_segment",
+    "name": "zombie_christmas_camel_segment",
+    "tags": [
+      "Festival2",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_christmas_camel_onehump.webp"
+  },
+  {
     "id": "christmas_camel_onehump",
     "name": "zombie_christmas_camel_onehump",
     "tags": [
@@ -5528,6 +6544,18 @@
     "icon": "zombie_zombie_snowpea.webp"
   },
   {
+    "id": "new_pvp_zombie_snowpea",
+    "name": "zombie_new_pvp_zombie_snowpea",
+    "tags": [
+      "Modern_Pvz1",
+      "Memory",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_zombie_snowpea.webp"
+  },
+  {
     "id": "zombie_gatlingpea",
     "name": "zombie_zombie_gatlingpea",
     "tags": [
@@ -5576,6 +6604,18 @@
     "icon": "zombie_zombie_gatlingpea.webp"
   },
   {
+    "id": "new_pvp_zombie_gatlingpea",
+    "name": "zombie_new_pvp_zombie_gatlingpea",
+    "tags": [
+      "Modern_Pvz1",
+      "Memory",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_zombie_gatlingpea.webp"
+  },
+  {
     "id": "zombie_explodenut",
     "name": "zombie_zombie_explodenut",
     "tags": [
@@ -5587,12 +6627,35 @@
     "icon": "zombie_zombie_explodenut.webp"
   },
   {
+    "id": "new_pvp_zombie_explodenut",
+    "name": "zombie_new_pvp_zombie_explodenut",
+    "tags": [
+      "Memory",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_zombie_explodenut.webp"
+  },
+  {
     "id": "zombie_jalapeno",
     "name": "zombie_zombie_jalapeno",
     "tags": [
       "Modern_Pvz1",
       "Memory",
       "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_zombie_jalapeno.webp"
+  },
+  {
+    "id": "new_pvp_zombie_jalapeno",
+    "name": "zombie_new_pvp_zombie_jalapeno",
+    "tags": [
+      "Modern_Pvz1",
+      "Memory",
+      "Basic",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_zombie_jalapeno.webp"
@@ -6270,6 +7333,17 @@
     "icon": "zombie_roman_armor4.webp"
   },
   {
+    "id": "new_pvp_roman_armor4",
+    "name": "zombie_new_pvp_roman_armor4",
+    "tags": [
+      "Roman",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_roman_armor4.webp"
+  },
+  {
     "id": "roman_flag",
     "name": "zombie_roman_flag",
     "tags": [
@@ -6307,6 +7381,17 @@
       "Evildave",
       "Basic",
       "International"
+    ],
+    "icon": "zombie_roman_healer.webp"
+  },
+  {
+    "id": "new_pvp_roman_healer",
+    "name": "zombie_new_pvp_roman_healer",
+    "tags": [
+      "Roman",
+      "Basic",
+      "PvP",
+      "Chinese"
     ],
     "icon": "zombie_roman_healer.webp"
   },
@@ -6363,6 +7448,16 @@
   {
     "id": "roman_shield_top",
     "name": "zombie_roman_shield_top",
+    "tags": [
+      "Roman",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_roman_shield_top.webp"
+  },
+  {
+    "id": "roman_segment",
+    "name": "zombie_roman_segment",
     "tags": [
       "Roman",
       "Basic",
@@ -6428,6 +7523,17 @@
       "Roman",
       "Imp",
       "Custom",
+      "Chinese"
+    ],
+    "icon": "zombie_roman_ballista.webp"
+  },
+  {
+    "id": "new_pvp_roman_ballista",
+    "name": "zombie_new_pvp_roman_ballista",
+    "tags": [
+      "Roman",
+      "Imp",
+      "PvP",
       "Chinese"
     ],
     "icon": "zombie_roman_ballista.webp"

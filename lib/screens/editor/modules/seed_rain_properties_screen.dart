@@ -11,6 +11,12 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show
+        EditorChoiceDialogOption,
+        HelpSectionData,
+        showEditorChoiceDialog,
+        showEditorHelpDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Seed rain properties editor. Ported from Z-Editor-master SeedRainPropertiesEP.kt
@@ -147,28 +153,26 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
   }
 
   Future<void> _showAddDialog(AppLocalizations? l10n) async {
-    final choice = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.addItem ?? 'Add item'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(l10n?.plant ?? 'Plant'),
-              onTap: () => Navigator.pop(ctx, 'plant'),
-            ),
-            ListTile(
-              title: Text(l10n?.zombie ?? 'Zombie'),
-              onTap: () => Navigator.pop(ctx, 'zombie'),
-            ),
-            ListTile(
-              title: Text(l10n?.collectable ?? 'Collectable (Plant Food)'),
-              onTap: () => Navigator.pop(ctx, 'collectable'),
-            ),
-          ],
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.seedRainAddContentTitle ?? 'Add seed-rain content',
+      options: [
+        EditorChoiceDialogOption(
+          value: 'plant',
+          icon: Icons.eco_outlined,
+          title: l10n?.plant ?? 'Plant',
         ),
-      ),
+        EditorChoiceDialogOption(
+          value: 'zombie',
+          icon: Icons.pest_control_outlined,
+          title: l10n?.zombie ?? 'Zombie',
+        ),
+        EditorChoiceDialogOption(
+          value: 'collectable',
+          icon: Icons.local_florist_outlined,
+          title: l10n?.collectable ?? 'Collectible (Plant Food)',
+        ),
+      ],
     );
     if (choice == null || !mounted) return;
     if (choice == 'plant') {
@@ -337,7 +341,6 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -365,13 +368,45 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
           isEvent: false,
           objClass: _objClass,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title: l10n?.moduleTitle_SeedRainProperties ?? 'Seed Rain',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpSeedRainBody ??
+                      'At fixed intervals, this module causes item cards to fall from the sky.',
+                ),
+                HelpSectionData(
+                  title:
+                      l10n?.moduleHelpSeedRainParameters ??
+                      'Parameter settings',
+                  body:
+                      l10n?.moduleHelpSeedRainParametersBody ??
+                      'Weight determines an item\'s chance of dropping, while Max count limits how many copies may be present at once. Most zombies do not have matching zombie card icons.',
+                ),
+                HelpSectionData(
+                  title: l10n?.moduleHelpSeedRainPlantLevels ?? 'Plant tiers',
+                  body:
+                      l10n?.plantLevelsFollowGlobal ??
+                      'Plant cards dropped by this module use the tiers from the player\'s account. The Tier Definition module can override them uniformly.',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,

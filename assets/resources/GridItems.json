@@ -5,6 +5,39 @@
   { "typeName": "gravestonePlantfoodOnDestruction", "category": "scene", "icon": "gravestonePlantfoodOnDestruction.webp" },
   { "typeName": "gravestoneSunOnDestruction", "category": "scene", "icon": "gravestoneSunOnDestruction.webp" },
   { "typeName": "gravestone_battlez_sun", "category": "scene", "icon": "gravestoneSunOnDestruction.webp" },
+  { "typeName": "pvz1grid", "category": "scene", "icon": "pvz1grid.webp" },
+  {
+    "typeName": "gravestone_tutorial",
+    "gameTypeName": "gravestone_egypt_memo",
+    "gridItemTypeAlias": "gravestone_memo",
+    "exclusivePresetGroup": "gravestone_egypt_memo",
+    "category": "scene",
+    "icon": "gravestone_tutorial.webp",
+    "source": "custom",
+    "companionObjects": [
+      {
+        "objclass": "GridItemGravestonePropertySheet",
+        "aliases": ["GridItemGravestoneDefaultMemo"],
+        "objdata": {
+          "Hitpoints": 700,
+          "HitRectOffsetX": 15,
+          "HitRectOffsetWidth": -30,
+          "GridItemLevelStats": [
+            { "HitPointsLevel": 1 },
+            { "HitPointsLevel": 2 },
+            { "HitPointsLevel": 3 },
+            { "HitPointsLevel": 4 },
+            { "HitPointsLevel": 5 }
+          ],
+          "ArtCenter": { "x": 98, "y": 127 },
+          "PopAnim": "POPANIM_GRAVESTONES_TUTORIAL_GRAVESTONE",
+          "DamageStateCount": 5,
+          "BreakEffect": "POPANIM_EFFECTS_TOMBSTONE_TUTORIAL_DAMAGE",
+          "BreakEffectSound": "Play_Zomb_Egypt_Grave_Crumble"
+        }
+      }
+    ]
+  },
   {
     "typeName": "armrack",
     "category": "scene",
@@ -20,10 +53,12 @@
       }
     }
   },
+  { "typeName": "speaker_zomboss", "category": "scene", "icon": "speaker_zomboss.webp" },
   { "typeName": "heian_box_sun", "category": "scene", "icon": "heian_box_sun.webp" },
   { "typeName": "heian_box_plantfood", "category": "scene", "icon": "heian_box_plantfood.webp" },
   { "typeName": "heian_box_levelup", "category": "scene", "icon": "heian_box_levelup.webp" },
   { "typeName": "heian_box_seedpacket", "category": "scene", "icon": "heian_box_seedpacket.webp" },
+  { "typeName": "lunar_mine_ore", "category": "scene", "icon": "lunar_mine_ore.webp" },
   {
     "typeName": "energyGrid",
     "category": "scene",
@@ -40,9 +75,10 @@
     }
   },
   { "typeName": "goldtile", "category": "scene", "icon": "goldtile.webp", "tag": "special" },
+  { "typeName": "cosmoss", "category": "scene", "icon": "cosmoss.webp", "tag": "special" },
+  { "typeName": "rocket_landing", "category": "spawnableObjects", "icon": "rocket_landing.webp", "tag": "special" },
   { "typeName": "fake_mold", "category": "scene", "icon": "fake_mold.webp", "tag": "special" },
   { "typeName": "printer_small_paper", "category": "scene", "icon": "printer_small_paper.webp" },
-  { "typeName": "pvz1grid", "category": "scene", "icon": "pvz1grid.webp" },
   { "typeName": "BesiegeBox", "category": "scene", "icon": "BesiegeBox.webp", "tag": "special" },
   { "typeName": "score_2x_tile", "category": "scene", "icon": "score_2x_tile.webp" },
   { "typeName": "score_3x_tile", "category": "scene", "icon": "score_3x_file.webp" },
@@ -69,7 +105,6 @@
   { "typeName": "tangyuan", "category": "trap", "icon": "tangyuan.webp" },
   { "typeName": "sportzball", "category": "trap", "icon": "sportzball.webp" },
   { "typeName": "atlantis_shell", "category": "spawnableObjects", "icon": "atlantis_shell.webp" },
-  { "typeName": "SmokeManhole", "category": "trap", "icon": "SmokeManhole.webp" },
   { "typeName": "lilypad", "category": "spawnableObjects", "icon": "lilypad.webp" },
   { "typeName": "flowerpot", "category": "spawnableObjects", "icon": "flowerpot.webp" },
   { "typeName": "FrozenIcebloom", "category": "spawnableObjects", "icon": "FrozenIcebloom.webp", "tag": "special" },

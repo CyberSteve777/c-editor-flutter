@@ -433,7 +433,7 @@ class _PerkPickerTile extends StatelessWidget {
       'DamageTakenInterval' =>
         l10n?.ztPerkPropDamageTakenInterval ?? 'Damage taken interval',
       'DamageTotalTaken' =>
-        l10n?.ztPerkPropDamageTotalTaken ?? 'Damage total taken',
+        l10n?.ztPerkPropDamageTotalTaken ?? 'Cumulative damage instances taken',
       'DamageTakenPerTime' =>
         l10n?.ztPerkPropDamageTakenPerTime ?? 'Damage taken per time',
       'HPReduced' => l10n?.ztPerkPropHpReduced ?? 'HP reduced',

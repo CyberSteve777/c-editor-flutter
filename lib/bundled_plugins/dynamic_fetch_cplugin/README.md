@@ -1,4 +1,4 @@
-# External Dynamic (bundled)
+# Data Package Download (bundled)
 
 Offers downloading `dynamic.rsb.smf` from
 [Archiver2c/pvz2c-dynamic releases](https://github.com/Archiver2c/pvz2c-dynamic/releases)

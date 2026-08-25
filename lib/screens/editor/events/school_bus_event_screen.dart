@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -161,6 +162,23 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
     );
   }
 
+  void _duplicateZombie(int index) {
+    final params = _data.des.params;
+    final source = params.zombies[index];
+    final zombies = List<SchoolBusZombieData>.from(params.zombies)
+      ..insert(
+        index + 1,
+        SchoolBusZombieData(typeName: source.typeName, level: source.level),
+      );
+    _updateParams(
+      SchoolBusParamsData(
+        schoolBusHitPoints: params.schoolBusHitPoints,
+        schoolBusSpeed: params.schoolBusSpeed,
+        zombies: zombies,
+      ),
+    );
+  }
+
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -199,6 +217,7 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title:
                   l10n?.eventTitle_SchoolBusWaveActionProps ??
                   'Ice cream truck spawn',
@@ -313,10 +332,13 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                           isDense: true,
                         ),
                         builder: (context, decoration) => TextFormField(
-                          key: ValueKey('hp_${params.schoolBusHitPoints}'),
+                          key: const ValueKey('schoolBusHitPointsField'),
                           initialValue: params.schoolBusHitPoints.toString(),
                           decoration: decoration,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           onChanged: (v) {
                             final hp = int.tryParse(v);
                             if (hp != null && hp > 0) {
@@ -341,12 +363,24 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                           isDense: true,
                         ),
                         builder: (context, decoration) => TextFormField(
-                          key: ValueKey('sp_${params.schoolBusSpeed}'),
+                          key: const ValueKey('schoolBusSpeedField'),
                           initialValue: params.schoolBusSpeed.toString(),
                           decoration: decoration,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
+                          inputFormatters: [
+                            TextInputFormatter.withFunction((
+                              oldValue,
+                              newValue,
+                            ) {
+                              return RegExp(
+                                    r'^\d*\.?\d*$',
+                                  ).hasMatch(newValue.text)
+                                  ? newValue
+                                  : oldValue;
+                            }),
+                          ],
                           onChanged: (v) {
                             final sp = double.tryParse(v);
                             if (sp != null && sp >= 0) {
@@ -379,91 +413,21 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                             ?.iconAssetPath;
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (iconPath != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: AssetImageWidget(
-                                    assetPath: iconPath,
-                                    altCandidates: imageAltCandidates(iconPath),
-                                    width: 32,
-                                    height: 32,
-                                  ),
-                                )
-                              else
-                                const SizedBox(width: 40),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      name.isNotEmpty ? name : z.typeName,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    if (z.typeName.isNotEmpty)
-                                      Text(
-                                        z.typeName,
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                            ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                  ],
-                                ),
+                          child: _SchoolBusZombieRow(
+                            name: name.isNotEmpty ? name : z.typeName,
+                            typeName: z.typeName,
+                            iconPath: iconPath,
+                            level: z.level.clamp(_levelMin, _levelMax),
+                            levelLabel: l10n?.schoolBusZombieLevel ?? 'Level',
+                            onLevelChanged: (level) => _updateZombie(
+                              zi,
+                              SchoolBusZombieData(
+                                typeName: z.typeName,
+                                level: level,
                               ),
-                              SizedBox(
-                                width: 200,
-                                child: DropdownButtonFormField<int>(
-                                  isExpanded: true,
-                                  initialValue: z.level.clamp(
-                                    _levelMin,
-                                    _levelMax,
-                                  ),
-                                  items:
-                                      List.generate(
-                                            _levelMax - _levelMin + 1,
-                                            (i) => _levelMin + i,
-                                          )
-                                          .map(
-                                            (lv) => DropdownMenuItem(
-                                              value: lv,
-                                              child: Text('$lv'),
-                                            ),
-                                          )
-                                          .toList(),
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      _updateZombie(
-                                        zi,
-                                        SchoolBusZombieData(
-                                          typeName: z.typeName,
-                                          level: v,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.schoolBusZombieLevel ?? 'Level',
-                                    border: const OutlineInputBorder(),
-                                    isDense: true,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close, size: 20),
-                                onPressed: () => _removeZombie(zi),
-                              ),
-                            ],
+                            ),
+                            onDuplicate: () => _duplicateZombie(zi),
+                            onDelete: () => _removeZombie(zi),
                           ),
                         );
                       }),
@@ -481,6 +445,137 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SchoolBusZombieRow extends StatelessWidget {
+  const _SchoolBusZombieRow({
+    required this.name,
+    required this.typeName,
+    required this.iconPath,
+    required this.level,
+    required this.levelLabel,
+    required this.onLevelChanged,
+    required this.onDuplicate,
+    required this.onDelete,
+  });
+
+  final String name;
+  final String typeName;
+  final String? iconPath;
+  final int level;
+  final String levelLabel;
+  final ValueChanged<int> onLevelChanged;
+  final VoidCallback onDuplicate;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final summary = Row(
+      children: [
+        if (iconPath != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: AssetImageWidget(
+              assetPath: iconPath!,
+              altCandidates: imageAltCandidates(iconPath!),
+              width: 32,
+              height: 32,
+            ),
+          )
+        else
+          const SizedBox(width: 40),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (typeName.isNotEmpty)
+                Text(
+                  typeName,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+    final levelField = EditorResponsiveInputField(
+      label: levelLabel,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        isDense: true,
+      ),
+      builder: (context, decoration) => DropdownButtonFormField<int>(
+        key: ValueKey('schoolBusZombieLevel_$typeName'),
+        isExpanded: true,
+        initialValue: level,
+        items: List.generate(11, (value) {
+          return DropdownMenuItem(value: value, child: Text('$value'));
+        }),
+        onChanged: (value) {
+          if (value != null) onLevelChanged(value);
+        },
+        decoration: decoration,
+      ),
+    );
+    final actions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          key: ValueKey('schoolBusZombieCopy_$typeName'),
+          icon: const Icon(Icons.copy_outlined, size: 20),
+          tooltip: l10n?.copy ?? 'Copy',
+          onPressed: onDuplicate,
+        ),
+        IconButton(
+          key: ValueKey('schoolBusZombieDelete_$typeName'),
+          icon: const Icon(Icons.delete_outline, size: 20),
+          tooltip: l10n?.delete ?? 'Delete',
+          onPressed: onDelete,
+        ),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 620) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: summary),
+                  actions,
+                ],
+              ),
+              const SizedBox(height: 8),
+              levelField,
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: summary),
+            const SizedBox(width: 8),
+            SizedBox(width: 200, child: levelField),
+            actions,
+          ],
+        );
+      },
     );
   }
 }

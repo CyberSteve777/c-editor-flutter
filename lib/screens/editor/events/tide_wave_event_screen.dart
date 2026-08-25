@@ -115,6 +115,7 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventTideWave ?? 'Tide wave event',
               sections: [
                 HelpSectionData(

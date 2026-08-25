@@ -205,6 +205,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -285,7 +286,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.appearanceLabel ?? "Appearance"} ${idx + 1}',
+                                l10n?.groupN(idx + 1) ?? 'Group ${idx + 1}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -333,7 +334,8 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedWaveIndex + 1}',
+                            l10n?.groupN(_selectedWaveIndex + 1) ??
+                                'Group ${_selectedWaveIndex + 1}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -526,7 +528,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                                   (i) => DropdownMenuItem(
                                     value: i,
                                     child: Text(
-                                      '${l10n?.row ?? "Row"} ${i + 1}',
+                                      l10n?.rowN(i + 1) ?? 'Row ${i + 1}',
                                     ),
                                   ),
                                 ),
@@ -669,7 +671,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
         (l10n?.removeItemConfirm(
-              '${l10n.appearanceLabel} ${_data.waveWindInfos.indexOf(wave) + 1}',
+              l10n.groupN(_data.waveWindInfos.indexOf(wave) + 1),
             )) ??
             'Remove appearance ${_data.waveWindInfos.indexOf(wave) + 1}?',
       ),

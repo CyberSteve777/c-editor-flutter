@@ -98,16 +98,20 @@ class EditorCubit extends Cubit<EditorState> {
     PvzLevelFile levelFile,
     ParsedLevelData parsedData,
   ) {
+    final referencedModuleClasses = <String>[];
+    for (final rtid in parsedData.levelDef?.modules ?? const <String>[]) {
+      final info = RtidParser.parse(rtid);
+      if (info == null) continue;
+      final objClass = info.source == 'CurrentLevel'
+          ? parsedData.objectMap[info.alias]?.objClass
+          : ReferenceRepository.instance.getObjClass(info.alias);
+      if (objClass != null && objClass.isNotEmpty) {
+        referencedModuleClasses.add(objClass);
+      }
+    }
     final classes = <String>{
       ...levelFile.objects.map((o) => o.objClass),
-      ...?parsedData.levelDef?.modules.map((rtid) {
-        final info = RtidParser.parse(rtid);
-        if (info == null) return '';
-        if (info.source == 'CurrentLevel') {
-          return parsedData.objectMap[info.alias]?.objClass ?? '';
-        }
-        return ReferenceRepository.instance.getObjClass(info.alias) ?? '';
-      }),
+      ...referencedModuleClasses,
     };
     final tabs = <EditorTabType>[EditorTabType.settings];
     if (classes.contains('WaveManagerModuleProperties')) {
@@ -121,12 +125,21 @@ class EditorCubit extends Cubit<EditorState> {
         classes.contains('VaseBreakerArcadeModuleProperties')) {
       tabs.add(EditorTabType.vaseBreaker);
     }
-    if (classes.contains('ZombossBattleModuleProperties')) {
-      tabs.add(EditorTabType.zombossMech);
-    }
-    if (classes.contains('ZombossLastStandMinigameProperties')) {
-      tabs.add(EditorTabType.zombossBattle);
-    }
+    final zombossMechCount = referencedModuleClasses
+        .where((objClass) => objClass == 'ZombossBattleModuleProperties')
+        .length;
+    tabs.addAll(
+      List<EditorTabType>.filled(zombossMechCount, EditorTabType.zombossMech),
+    );
+    final zombossLastStandCount = referencedModuleClasses
+        .where((objClass) => objClass == 'ZombossLastStandMinigameProperties')
+        .length;
+    tabs.addAll(
+      List<EditorTabType>.filled(
+        zombossLastStandCount,
+        EditorTabType.zombossBattle,
+      ),
+    );
     return tabs;
   }
 
@@ -142,6 +155,12 @@ class EditorCubit extends Cubit<EditorState> {
     if (lf == null) return;
     final parsed = LevelParser.parseLevel(lf);
     emit(state.copyWith(hasChanges: true, parsedData: parsed));
+  }
+
+  /// Rebuilds parsed indexes after derived editor data is synchronized without
+  /// turning that synchronization into a user-visible unsaved change.
+  void refreshParsedData() {
+    _refreshLevelState(hasChanges: state.hasChanges);
   }
 
   Future<void> save() async {

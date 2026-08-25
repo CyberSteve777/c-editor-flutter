@@ -115,6 +115,7 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.moduleTitle_TideProperties ?? 'Tide',
               sections: [
                 HelpSectionData(
@@ -242,6 +243,50 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 24,
+                      runSpacing: 8,
+                      children: [
+                        _TideLegendItem(
+                          color: Colors.blue.withValues(alpha: 0.4),
+                          label: l10n?.water ?? 'Water',
+                        ),
+                        _TideLegendItem(
+                          color: Colors.transparent,
+                          label: l10n?.land ?? 'Land',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              key: const ValueKey('tidePositionOrderHint'),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: theme.colorScheme.primary,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        l10n?.tidePositionOrderHint ??
+                            'The rightmost lawn coordinate is 0 and the leftmost is 9. The Tide System module must be added last, or the level may crash.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -249,6 +294,33 @@ class _TidePropertiesScreenState extends State<TidePropertiesScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TideLegendItem extends StatelessWidget {
+  const _TideLegendItem({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: color,
+            border: Border.all(color: theme.dividerColor),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(label),
+      ],
     );
   }
 }

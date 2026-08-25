@@ -24,6 +24,13 @@ void main() {
     expect(levelFile.objects, isEmpty);
   });
 
+  test('uses the WebP icon for pumpkin houses', () {
+    expect(
+      GridItemRepository.getIconPath('pumpkin_house'),
+      'assets/images/griditems/pumpkin_house.webp',
+    );
+  });
+
   test('builds custom grid item references against CurrentLevel once', () {
     GridItemRepository.staticItems.add(
       GridItemInfo(

@@ -118,6 +118,7 @@ class _SunBombChallengeScreenState extends State<SunBombChallengeScreen> {
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.sunBomb,
               sections: [
                 HelpSectionData(
