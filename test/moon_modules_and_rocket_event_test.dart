@@ -54,6 +54,8 @@ void main() {
       });
 
       final defaults = MoonLifeSupportSystemPropertiesData();
+      expect(defaults.plantImmunityList.plants, contains('cherry_bomb'));
+      expect(defaults.plantImmunityList.plants, isNot(contains('cherrybomb')));
       expect(
         () => defaults.plantImmunityList.plants.remove('cosmoss'),
         returnsNormally,

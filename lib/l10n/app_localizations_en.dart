@@ -801,7 +801,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String exportSuccessMessage(String file) {
-    return 'The level testing mod has been successfully built at $file.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced. \nNote: If the game crashes immediately on startup after the replacement, the level itself is most likely the cause.';
+    return 'The level testing mod has been successfully built at $file.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced.\nNote: 1. Before replacing the file, fully close the game process.\n2. After the replacement and before entering the game, fully close the editor and any file manager currently accessing the target directory.';
   }
 
   @override
@@ -2020,6 +2020,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Not OK Corral conflicts with the Intro Animation module. Using them together will cause the zombie preview and transition effect at the start of the level to behave incorrectly.';
 
   @override
+  String get conflictDesc_SingleHandedIntro =>
+      'All by Oneself conflicts with the Intro Animation module. Using them together will cause the transition effect at the start of the level to behave incorrectly.';
+
+  @override
+  String get conflictDesc_SingleHandedTutorialIntro =>
+      'The All by Oneself Tutorial conflicts with the Intro Animation module. Using them together will cause the transition effect at the start of the level to behave incorrectly.';
+
+  @override
   String get conflictDesc_EvilDaveZombieDrop =>
       'I, Zombie mode cannot have Zombie Drop module.';
 
@@ -2589,6 +2597,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Starts each zombie wave only after a plant from the conveyor belt is planted';
 
   @override
+  String get moduleTitle_SingleHandedProperties => 'All by Oneself';
+
+  @override
+  String get moduleDesc_SingleHandedProperties =>
+      'Configures the basic properties of the All by Oneself minigame';
+
+  @override
+  String get moduleTitle_IntroSingleHandedProperties =>
+      'All by Oneself Tutorial';
+
+  @override
+  String get moduleDesc_IntroSingleHandedProperties =>
+      'Configures tutorial prompts for the All by Oneself minigame';
+
+  @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
       'Column Like You See \'Em';
 
@@ -3121,6 +3144,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventDesc_SchoolBusWaveActionProps =>
       'Spawns an ice cream van in a lane and configures the zombies inside';
+
+  @override
+  String get eventTitle_HamsterZombieSpawnerProps => 'Zombie Hamsterball';
+
+  @override
+  String get eventDesc_HamsterZombieSpawnerProps =>
+      'Rolls hamsterballs that carry zombies onto the lawn';
 
   @override
   String get eventTitle_BungeeWaveActionProps => 'Bungee Drop';
@@ -4823,11 +4853,231 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cowboyMinigameHelpBeginStringBody =>
-      'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be hidden or replaced with custom text.';
+      'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be replaced with custom text.';
 
   @override
   String get cowboyMinigameHelpTutorialBody =>
       'When Show Tutorial Dialogue is enabled, Crazy Dave and Penny appear before the level and explain the minigame through dialogue based on the first-play conversation from Wild West - Day 4.';
+
+  @override
+  String get singleHandedTabLabel => 'All by Oneself';
+
+  @override
+  String get singleHandedBasicParameters => 'Basic Parameters';
+
+  @override
+  String get singleHandedMissileCount => 'Missiles per launch';
+
+  @override
+  String get singleHandedMissileInterval => 'Missile launch interval';
+
+  @override
+  String get singleHandedWarningTime => 'Warning time';
+
+  @override
+  String get singleHandedRocketSpeed => 'Missile speed';
+
+  @override
+  String get singleHandedZombieSpeedMultiplier => 'Zombie speed multiplier';
+
+  @override
+  String get singleHandedZombieHealthMultiplier => 'Zombie health multiplier';
+
+  @override
+  String get singleHandedSpecialMultiplierHint =>
+      'Speed and health in special waves are multiplied again from these base values.';
+
+  @override
+  String get singleHandedPlantConfiguration => 'Plant Configuration';
+
+  @override
+  String get singleHandedPlantConfigurationInfo =>
+      'The initial plant is the starting weapon and upgrades automatically after the required number of kills.\nThe initial plant appears in the upper-left tile. A minecart must be placed there, or the game immediately counts the level as failed.';
+
+  @override
+  String singleHandedInitialPlantSubtitle(String interval) {
+    return 'Initial plant · Attack interval: $interval';
+  }
+
+  @override
+  String get singleHandedAttackInterval => 'Attack interval';
+
+  @override
+  String get singleHandedAttackIntervalHint =>
+      'A smaller attack interval means a faster attack speed.';
+
+  @override
+  String get singleHandedAddUpgradePlant => 'Add Upgrade Plant';
+
+  @override
+  String get singleHandedNoUpgradePlants =>
+      'No upgrade plants yet. Add one to begin.';
+
+  @override
+  String get singleHandedRequiredKills => 'Required kills';
+
+  @override
+  String singleHandedEditUpgradePlant(String plantName) {
+    return 'Edit: $plantName';
+  }
+
+  @override
+  String singleHandedUpgradePlantSubtitle(int kills, String interval) {
+    return 'Kills: $kills · Attack interval: $interval';
+  }
+
+  @override
+  String get singleHandedSpecialWaves => 'Special Waves';
+
+  @override
+  String get singleHandedSpecialWavesInfo =>
+      'Use these for Boss waves. Speed and health multipliers are applied on top of the base values above.';
+
+  @override
+  String get singleHandedAddSpecialWave => 'Add Special Wave';
+
+  @override
+  String get singleHandedNoSpecialWaves =>
+      'No special waves yet. Add one to begin.';
+
+  @override
+  String get singleHandedSpecialWave => 'Special Wave';
+
+  @override
+  String get singleHandedWave => 'Wave';
+
+  @override
+  String get singleHandedSpeedMultiplier => 'Speed multiplier';
+
+  @override
+  String get singleHandedHealthMultiplier => 'Health multiplier';
+
+  @override
+  String get singleHandedShowHealthBar => 'Show health bar';
+
+  @override
+  String singleHandedWaveNumber(int wave) {
+    return 'Wave $wave';
+  }
+
+  @override
+  String get singleHandedHealthBarEnabled => 'Health bar on';
+
+  @override
+  String get singleHandedHealthBarDisabled => 'Health bar off';
+
+  @override
+  String singleHandedSpecialWaveSubtitle(String speed, String health) {
+    return 'Speed x$speed · Health x$health';
+  }
+
+  @override
+  String get singleHandedAddTutorial => 'Add All by Oneself Tutorial';
+
+  @override
+  String get singleHandedConfigureTutorial =>
+      'Configure All by Oneself Tutorial';
+
+  @override
+  String get singleHandedTutorialSettings => 'All by Oneself Tutorial Settings';
+
+  @override
+  String get singleHandedTutorialWaveForStartRocket =>
+      'Missiles start from wave';
+
+  @override
+  String get singleHandedTutorialHelpTitle => 'All by Oneself Tutorial';
+
+  @override
+  String get singleHandedTutorialHelpPromptsTitle => 'Tutorial Prompts';
+
+  @override
+  String get singleHandedTutorialHelpPromptsBody =>
+      'After this module is added, matching tutorial prompts appear at the start of the level, when a plant is upgraded for the first time, and when the first missile warning occurs.';
+
+  @override
+  String get singleHandedTutorialHelpWaveTitle => 'Missile Starting Wave';
+
+  @override
+  String get singleHandedTutorialHelpWaveBody =>
+      'You can choose the wave from which missiles begin appearing; the launch interval is counted starting from that wave. For example, with a 30-second missile interval and a starting wave of 7, the first missiles launch 30 seconds after wave 7 begins.\nNote that adding this module by itself does not make missiles fall on the configured wave. The missile starting-wave setting only takes effect together with the All by Oneself module.';
+
+  @override
+  String get hamsterballGeneration => 'Spawn Logic';
+
+  @override
+  String get hamsterballTimeBeforeFullSpawn =>
+      'Time to full spawn (TimeBeforeFullSpawn)';
+
+  @override
+  String get hamsterballZombies => 'Zombies inside hamsterballs (Zombies)';
+
+  @override
+  String get hamsterballAddZombie => 'Add zombie';
+
+  @override
+  String get hamsterballEmptyZombies => 'No zombies in the list';
+
+  @override
+  String get hamsterballZombieLevel => 'Zombie level';
+
+  @override
+  String get hamsterballInitialSpeed => 'Initial speed';
+
+  @override
+  String get hamsterballBehavior => 'Behavior';
+
+  @override
+  String get hamsterballBehaviorUniform => 'Constant speed';
+
+  @override
+  String get hamsterballBehaviorSlowdown => 'Fast, then slow';
+
+  @override
+  String get hamsterballBehaviorChangeLane => 'Change lane on impact';
+
+  @override
+  String get hamsterballBehaviorDetailUniform => 'moves at a constant speed';
+
+  @override
+  String get hamsterballBehaviorDetailSlowdown =>
+      'starts fast, then slows down after hitting a plant';
+
+  @override
+  String get hamsterballBehaviorDetailChangeLane =>
+      'changes lane after hitting a plant';
+
+  @override
+  String hamsterballBehaviorSummary(String value) {
+    return 'Behavior (Behavior): $value';
+  }
+
+  @override
+  String get hamsterballHasPlantfood => 'Carries Plant Food (HasPlantfood)';
+
+  @override
+  String get hamsterballHelpTitle => 'Hamsterball Event Help';
+
+  @override
+  String get hamsterballHelpOverviewTitle => 'Overview';
+
+  @override
+  String get hamsterballHelpOverviewBody =>
+      'Introduced to the Chinese version in the 12th Anniversary Secret Realm, this ambush event summons rolling hamsterballs that carry zombies onto the lawn. Hamsterballs have three behavior modes, and plants run over along the way are destroyed immediately.\nHamsterballs have their own health. When broken, they release the zombies inside so they can continue advancing. Spikeweed, Spikerock, and similar plants can puncture hamsterballs and release their passengers.';
+
+  @override
+  String get hamsterballHelpRangeTitle => 'Rolling Range';
+
+  @override
+  String get hamsterballHelpRangeBody =>
+      'The hamsterball rolling range is fixed from column 0 through column 8. These fields do not affect the editable content and are written silently by the editor.';
+
+  @override
+  String get hamsterballHelpGenerationTitle => 'Spawn Logic';
+
+  @override
+  String get hamsterballHelpGenerationBody =>
+      'Group size controls how many hamsterballs appear in each group, while the group interval controls the delay between adjacent groups. Once the full-spawn time is reached, no extra groups are formed and all remaining hamsterballs spawn immediately.';
 
   @override
   String get cowboyMinigameDependencyWarningTitle => 'Required module missing';
@@ -8761,20 +9011,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sets the number of zombies in this wave that carry and drop Plant Food.';
 
   @override
-  String waveGeneratorFixedSummary(int count, int rows) {
+  String waveGeneratorFixedSummary(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count fixed spawns',
       one: '1 fixed spawn',
     );
-    String _temp1 = intl.Intl.pluralLogic(
-      rows,
-      locale: localeName,
-      other: '$rows rows',
-      one: '1 row',
-    );
-    return '$_temp0 · $_temp1';
+    return '$_temp0';
   }
 
   @override
@@ -9383,7 +9627,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_RadiationMeteorModuleProperties =>
-      'Drops meteorites that destroy plants and contaminate surrounding tiles';
+      'Drops meteorites that destroy units and contaminate surrounding tiles';
 
   @override
   String get eventTitle_SpawnRocketLandingWaveActionProps => 'Rocket Landing';
@@ -9573,6 +9817,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get powerUpsHelpOverview =>
       'This wonderfully interesting mechanic makes a major return in the 13th Anniversary Secret Realm, allowing players to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.';
+
+  @override
+  String get powerUpsAddTitle => 'Add Power Up';
+
+  @override
+  String get powerUpsOrder => 'Order';
+
+  @override
+  String get powerUpsOrderInfo =>
+      'Power Ups appear in the game in the order shown here. Drag the ⋮⋮ handles to reorder them. Removing a Power Up from the list prevents it from appearing in the game; it can be added back in this module whenever needed.';
 
   @override
   String get powerUpsFreeUseCount => 'Free uses (FreeUseCount)';

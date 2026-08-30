@@ -192,6 +192,10 @@ class EventSelectionScreen extends StatefulWidget {
           return isTitle
               ? l10n.eventTitle_SchoolBusWaveActionProps
               : l10n.eventDesc_SchoolBusWaveActionProps;
+        case 'HamsterZombieSpawnerProps':
+          return isTitle
+              ? l10n.eventTitle_HamsterZombieSpawnerProps
+              : l10n.eventDesc_HamsterZombieSpawnerProps;
         case 'BungeeWaveActionProps':
           return isTitle
               ? l10n.eventTitle_BungeeWaveActionProps

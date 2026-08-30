@@ -8,7 +8,7 @@ void main() {
   test('updated localization is consistent in every locale', () {
     expect(
       lookupAppLocalizations(const Locale('zh')).failedToLoadLevel,
-      '加载关卡失败。\n建议检查关卡文件是否为加密格式（如热更新使用的JSON文件）。',
+      '关卡加载失败。\n建议检查关卡文件是否为加密格式 (如热更新使用的JSON文件)。',
     );
     expect(
       lookupAppLocalizations(const Locale('en')).failedToLoadLevel,
@@ -39,7 +39,7 @@ void main() {
       'Статистический предпросмотр',
     );
     final english = lookupAppLocalizations(const Locale('en'));
-    expect(english.waveGeneratorFixedSummary(1, 1), '1 fixed spawn · 1 row');
+    expect(english.waveGeneratorFixedSummary(1), '1 fixed spawn');
     expect(english.waveGeneratorRandomSummary(1), 'Enabled · 1 point');
     expect(
       english.waveGeneratorPoolSummaryNoAdditions(1),

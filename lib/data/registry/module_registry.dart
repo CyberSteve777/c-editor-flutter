@@ -168,6 +168,10 @@ class ModuleRegistry {
         return l10n.moduleTitle_LastStandMinigameProperties;
       case 'moduleTitle_CowboyMinigameProperties':
         return l10n.moduleTitle_CowboyMinigameProperties;
+      case 'moduleTitle_SingleHandedProperties':
+        return l10n.moduleTitle_SingleHandedProperties;
+      case 'moduleTitle_IntroSingleHandedProperties':
+        return l10n.moduleTitle_IntroSingleHandedProperties;
       case 'moduleTitle_PVZ1OverwhelmModuleProperties':
         return l10n.moduleTitle_PVZ1OverwhelmModuleProperties;
       case 'moduleTitle_SunBombChallengeProperties':
@@ -332,6 +336,10 @@ class ModuleRegistry {
         return l10n.moduleDesc_LastStandMinigameProperties;
       case 'moduleDesc_CowboyMinigameProperties':
         return l10n.moduleDesc_CowboyMinigameProperties;
+      case 'moduleDesc_SingleHandedProperties':
+        return l10n.moduleDesc_SingleHandedProperties;
+      case 'moduleDesc_IntroSingleHandedProperties':
+        return l10n.moduleDesc_IntroSingleHandedProperties;
       case 'moduleDesc_PVZ1OverwhelmModuleProperties':
         return l10n.moduleDesc_PVZ1OverwhelmModuleProperties;
       case 'moduleDesc_SunBombChallengeProperties':
@@ -685,6 +693,26 @@ class ModuleRegistry {
       defaultAlias: 'SunBombs',
       initialDataFactory: () => SunBombChallengeData(),
       routeId: 'SunBombChallenge',
+    ),
+    'SingleHandedProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_SingleHandedProperties',
+      descriptionKey: 'moduleDesc_SingleHandedProperties',
+      icon: Icons.sledding,
+      isCore: true,
+      category: ModuleCategory.mode,
+      defaultAlias: 'SingleHanded',
+      initialDataFactory: () => SingleHandedPropertiesData(),
+      routeId: 'SingleHanded',
+    ),
+    'IntroSingleHandedProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_IntroSingleHandedProperties',
+      descriptionKey: 'moduleDesc_IntroSingleHandedProperties',
+      icon: Icons.sledding,
+      isCore: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'SingleHandedTutorial',
+      initialDataFactory: () => IntroSingleHandedPropertiesData(),
+      routeId: 'SingleHandedTutorial',
     ),
     'EvilDaveProperties': ModuleMetadata(
       titleKey: 'moduleTitle_EvilDaveProperties',

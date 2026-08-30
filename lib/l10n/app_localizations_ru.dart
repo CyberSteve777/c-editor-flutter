@@ -810,7 +810,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String exportSuccessMessage(String file) {
-    return 'Уровни были успешно экспортированы в $file.';
+    return 'Мод для тестирования уровня успешно создан: $file.\nЗамените соответствующий файл игры созданным пакетом данных, затем откройте свой уровень через слот исходного уровня, который был заменён.\nПримечание: 1. Перед заменой полностью завершите процесс игры.\n2. После замены, но до запуска игры, полностью закройте редактор и все файловые менеджеры, использующие целевую папку.';
   }
 
   @override
@@ -2036,6 +2036,14 @@ class AppLocalizationsRu extends AppLocalizations {
       '«Неудачный загон» конфликтует с модулем вступительной заставки. Их совместное использование нарушает предпросмотр зомби и эффект перехода в начале уровня.';
 
   @override
+  String get conflictDesc_SingleHandedIntro =>
+      '«В одиночку» конфликтует с модулем вступительной заставки. Их совместное использование нарушает эффект перехода в начале уровня.';
+
+  @override
+  String get conflictDesc_SingleHandedTutorialIntro =>
+      'Обучение «В одиночку» конфликтует с модулем вступительной заставки. Их совместное использование нарушает эффект перехода в начале уровня.';
+
+  @override
   String get conflictDesc_EvilDaveZombieDrop =>
       'В режиме I, Zombie нельзя использовать модуль Zombie Drop.';
 
@@ -2591,6 +2599,20 @@ class AppLocalizationsRu extends AppLocalizations {
       'Запускает волну зомби после посадки растения с конвейера';
 
   @override
+  String get moduleTitle_SingleHandedProperties => 'В одиночку';
+
+  @override
+  String get moduleDesc_SingleHandedProperties =>
+      'Настраивает основные параметры мини-игры «В одиночку»';
+
+  @override
+  String get moduleTitle_IntroSingleHandedProperties => 'Обучение «В одиночку»';
+
+  @override
+  String get moduleDesc_IntroSingleHandedProperties =>
+      'Настраивает обучающие подсказки мини-игры «В одиночку»';
+
+  @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
       'Высадка по 5-ти линиям';
 
@@ -3115,6 +3137,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get eventDesc_SchoolBusWaveActionProps =>
       'Фургон с мороженым в ряду с настраиваемыми зомби внутри';
+
+  @override
+  String get eventTitle_HamsterZombieSpawnerProps => 'Зомби в хомячьем шаре';
+
+  @override
+  String get eventDesc_HamsterZombieSpawnerProps =>
+      'Выкатывает на поле шары с зомби внутри';
 
   @override
   String get eventTitle_BungeeWaveActionProps => 'Прыжок с парашютом';
@@ -4786,11 +4815,228 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cowboyMinigameHelpBeginStringBody =>
-      'Текст подсказки появляется вместе с предпросмотром зомби перед каждой посадкой. Стандартный текст в игре: «Посадите растение с конвейера, чтобы начать уровень!». Текст можно скрыть или заменить своим.';
+      'Текст подсказки появляется вместе с предпросмотром зомби перед каждой посадкой. Стандартный текст в игре: «Посадите растение с конвейера, чтобы начать уровень!». Текст можно заменить своим.';
 
   @override
   String get cowboyMinigameHelpTutorialBody =>
       'Если включить обучающий диалог, Безумный Дейв и Пенни появятся перед началом уровня и объяснят сюжет мини-игры. Диалог основан на первом прохождении 4-го дня Дикого Запада.';
+
+  @override
+  String get singleHandedTabLabel => 'В одиночку';
+
+  @override
+  String get singleHandedBasicParameters => 'Основные параметры';
+
+  @override
+  String get singleHandedMissileCount => 'Ракет за запуск';
+
+  @override
+  String get singleHandedMissileInterval => 'Интервал запуска ракет';
+
+  @override
+  String get singleHandedWarningTime => 'Время предупреждения';
+
+  @override
+  String get singleHandedRocketSpeed => 'Скорость ракеты';
+
+  @override
+  String get singleHandedZombieSpeedMultiplier => 'Множитель скорости зомби';
+
+  @override
+  String get singleHandedZombieHealthMultiplier => 'Множитель здоровья зомби';
+
+  @override
+  String get singleHandedSpecialMultiplierHint =>
+      'В особых волнах скорость и здоровье дополнительно умножаются от этих базовых значений.';
+
+  @override
+  String get singleHandedPlantConfiguration => 'Настройка растений';
+
+  @override
+  String get singleHandedPlantConfigurationInfo =>
+      'Начальное растение служит стартовым оружием и улучшается после нужного числа убийств.\nОно появляется в верхней левой клетке. Там должна стоять вагонетка, иначе уровень сразу считается проигранным.';
+
+  @override
+  String singleHandedInitialPlantSubtitle(String interval) {
+    return 'Начальное растение · Интервал атаки: $interval';
+  }
+
+  @override
+  String get singleHandedAttackInterval => 'Интервал атаки';
+
+  @override
+  String get singleHandedAttackIntervalHint =>
+      'Чем меньше интервал, тем выше скорость атаки.';
+
+  @override
+  String get singleHandedAddUpgradePlant => 'Добавить улучшенное растение';
+
+  @override
+  String get singleHandedNoUpgradePlants => 'Улучшенных растений пока нет.';
+
+  @override
+  String get singleHandedRequiredKills => 'Требуется убийств';
+
+  @override
+  String singleHandedEditUpgradePlant(String plantName) {
+    return 'Изменить: $plantName';
+  }
+
+  @override
+  String singleHandedUpgradePlantSubtitle(int kills, String interval) {
+    return 'Убийств: $kills · Интервал атаки: $interval';
+  }
+
+  @override
+  String get singleHandedSpecialWaves => 'Особые волны';
+
+  @override
+  String get singleHandedSpecialWavesInfo =>
+      'Используются для волн с боссами. Множители скорости и здоровья применяются поверх базовых значений выше.';
+
+  @override
+  String get singleHandedAddSpecialWave => 'Добавить особую волну';
+
+  @override
+  String get singleHandedNoSpecialWaves => 'Особых волн пока нет.';
+
+  @override
+  String get singleHandedSpecialWave => 'Особая волна';
+
+  @override
+  String get singleHandedWave => 'Волна';
+
+  @override
+  String get singleHandedSpeedMultiplier => 'Множитель скорости';
+
+  @override
+  String get singleHandedHealthMultiplier => 'Множитель здоровья';
+
+  @override
+  String get singleHandedShowHealthBar => 'Показывать шкалу здоровья';
+
+  @override
+  String singleHandedWaveNumber(int wave) {
+    return 'Волна $wave';
+  }
+
+  @override
+  String get singleHandedHealthBarEnabled => 'Шкала здоровья включена';
+
+  @override
+  String get singleHandedHealthBarDisabled => 'Шкала здоровья выключена';
+
+  @override
+  String singleHandedSpecialWaveSubtitle(String speed, String health) {
+    return 'Скорость x$speed · Здоровье x$health';
+  }
+
+  @override
+  String get singleHandedAddTutorial => 'Добавить обучение «В одиночку»';
+
+  @override
+  String get singleHandedConfigureTutorial => 'Настроить обучение «В одиночку»';
+
+  @override
+  String get singleHandedTutorialSettings => 'Настройки обучения «В одиночку»';
+
+  @override
+  String get singleHandedTutorialWaveForStartRocket => 'Волна появления ракет';
+
+  @override
+  String get singleHandedTutorialHelpTitle => 'Обучение «В одиночку»';
+
+  @override
+  String get singleHandedTutorialHelpPromptsTitle => 'Обучающие подсказки';
+
+  @override
+  String get singleHandedTutorialHelpPromptsBody =>
+      'После добавления этого модуля соответствующие обучающие подсказки появляются в начале уровня, при первом улучшении растения и при первом предупреждении о ракетах.';
+
+  @override
+  String get singleHandedTutorialHelpWaveTitle => 'Волна появления ракет';
+
+  @override
+  String get singleHandedTutorialHelpWaveBody =>
+      'Можно указать волну, с которой начинают появляться ракеты; отсчёт интервала запуска начинается с этой волны. Например, при интервале 30 секунд и начальной волне 7 первая группа ракет будет запущена через 30 секунд после начала волны 7.\nСам по себе этот модуль не вызывает падение ракет на заданной волне. Настройка начальной волны действует только вместе с модулем «В одиночку».';
+
+  @override
+  String get hamsterballGeneration => 'Логика появления';
+
+  @override
+  String get hamsterballTimeBeforeFullSpawn =>
+      'Время до полного появления (TimeBeforeFullSpawn)';
+
+  @override
+  String get hamsterballZombies => 'Зомби внутри шаров (Zombies)';
+
+  @override
+  String get hamsterballAddZombie => 'Добавить зомби';
+
+  @override
+  String get hamsterballEmptyZombies => 'В списке нет зомби';
+
+  @override
+  String get hamsterballZombieLevel => 'Уровень зомби';
+
+  @override
+  String get hamsterballInitialSpeed => 'Начальная скорость';
+
+  @override
+  String get hamsterballBehavior => 'Поведение';
+
+  @override
+  String get hamsterballBehaviorUniform => 'Постоянная скорость';
+
+  @override
+  String get hamsterballBehaviorSlowdown => 'Сначала быстро, затем медленно';
+
+  @override
+  String get hamsterballBehaviorChangeLane => 'Смена ряда при столкновении';
+
+  @override
+  String get hamsterballBehaviorDetailUniform =>
+      'движется с постоянной скоростью';
+
+  @override
+  String get hamsterballBehaviorDetailSlowdown =>
+      'сначала движется быстро, а после столкновения с растением замедляется';
+
+  @override
+  String get hamsterballBehaviorDetailChangeLane =>
+      'после столкновения с растением меняет ряд';
+
+  @override
+  String hamsterballBehaviorSummary(String value) {
+    return 'Поведение (Behavior): $value';
+  }
+
+  @override
+  String get hamsterballHasPlantfood => 'Несёт подкормку (HasPlantfood)';
+
+  @override
+  String get hamsterballHelpTitle => 'Описание события с хомячьими шарами';
+
+  @override
+  String get hamsterballHelpOverviewTitle => 'Краткое описание';
+
+  @override
+  String get hamsterballHelpOverviewBody =>
+      'Это событие-засада появилось в китайской версии в Тайном мире 12-летия. Оно вызывает катящиеся хомячьи шары, которые доставляют зомби на поле. У шаров есть три режима поведения, а растения на пути мгновенно уничтожаются.\nУ хомячьих шаров есть собственный запас здоровья. После разрушения они выпускают находившихся внутри зомби, и те продолжают движение. Шип-трава, Каменный шип и похожие растения могут проколоть шар и освободить зомби.';
+
+  @override
+  String get hamsterballHelpRangeTitle => 'Диапазон движения';
+
+  @override
+  String get hamsterballHelpRangeBody =>
+      'Диапазон движения шаров фиксирован: от столбца 0 до столбца 8. Эти поля не влияют на редактируемое содержимое и записываются редактором автоматически.';
+
+  @override
+  String get hamsterballHelpGenerationTitle => 'Логика появления';
+
+  @override
+  String get hamsterballHelpGenerationBody =>
+      'Размер группы задаёт число шаров в группе, а интервал — задержку между соседними группами. После достижения времени полного появления дополнительные группы не создаются, и все оставшиеся шары появляются сразу.';
 
   @override
   String get cowboyMinigameDependencyWarningTitle =>
@@ -8720,8 +8966,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Задаёт количество зомби на этой волне, которые несут и оставляют подкормку.';
 
   @override
-  String waveGeneratorFixedSummary(int count, int rows) {
-    return 'Фиксированный спавн: $count · Рядов: $rows';
+  String waveGeneratorFixedSummary(int count) {
+    return 'Фиксированный спавн: $count';
   }
 
   @override
@@ -9308,7 +9554,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_RadiationMeteorModuleProperties =>
-      'Обрушивает метеориты, уничтожающие растения и заражающие соседние клетки';
+      'Обрушивает метеориты, уничтожающие боевые единицы и заражающие соседние клетки';
 
   @override
   String get eventTitle_SpawnRocketLandingWaveActionProps => 'Посадка ракеты';
@@ -9501,6 +9747,16 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get powerUpsHelpOverview =>
       'Эта увлекательная механика триумфально вернулась в Тайном мире 13-й годовщины и позволяет уничтожать зомби особыми жестами, пока действует усилитель. После включения модуля можно задать точное число бесплатных применений каждого усилителя на уровне. Обратите внимание: Power Snow и Power Flame из международной версии отсутствуют в китайской версии.';
+
+  @override
+  String get powerUpsAddTitle => 'Добавить усилитель';
+
+  @override
+  String get powerUpsOrder => 'Порядок';
+
+  @override
+  String get powerUpsOrderInfo =>
+      'Усилители появляются в игре в указанном здесь порядке. Перетаскивайте маркеры ⋮⋮, чтобы изменить порядок. Удалённый из списка усилитель не появится в игре; при необходимости его можно снова добавить в этом модуле.';
 
   @override
   String get powerUpsFreeUseCount => 'Бесплатные применения (FreeUseCount)';

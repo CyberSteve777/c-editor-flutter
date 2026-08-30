@@ -38,7 +38,7 @@ class MoonLifeSupportSystemPropertiesData extends PvzModel {
     'lilypad',
     'blover',
     'buduhboom',
-    'cherrybomb',
+    'cherry_bomb',
     'coffeebean',
     'cosmoss',
     'doublesamara',

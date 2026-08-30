@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -31,7 +32,7 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
   late String _alias;
   late PvzObject _moduleObject;
   late LevelPowerupModulePropertiesData _data;
-  final Map<String, TextEditingController> _controllers = {};
+  final Map<LevelPowerupEntryData, TextEditingController> _controllers = {};
 
   @override
   void initState() {
@@ -56,10 +57,9 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
     } catch (_) {
       _data = LevelPowerupModulePropertiesData();
     }
-    for (final typeName
-        in LevelPowerupModulePropertiesData.supportedTypeNames) {
-      _controllers[typeName] = TextEditingController(
-        text: '${_data.entryFor(typeName).freeUseCount}',
+    for (final entry in _data.powerups) {
+      _controllers[entry] = TextEditingController(
+        text: '${entry.freeUseCount}',
       );
     }
   }
@@ -86,6 +86,84 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
       onChanged: widget.onChanged,
     );
     setState(() => _alias = value);
+  }
+
+  List<String> get _availablePowerupTypes => LevelPowerupModulePropertiesData
+      .supportedTypeNames
+      .where(
+        (typeName) =>
+            !_data.powerups.any((entry) => entry.typeName == typeName),
+      )
+      .toList();
+
+  IconData _iconForPowerup(String typeName) {
+    return switch (typeName) {
+      'powerupflickzombie' => Icons.swipe_vertical,
+      'powerupwizardfinger' => Icons.bolt,
+      'poweruppinchzombie' => Icons.content_cut,
+      _ => Icons.touch_app,
+    };
+  }
+
+  String _titleForPowerup(AppLocalizations l10n, String typeName) {
+    return switch (typeName) {
+      'powerupflickzombie' => l10n.powerToss,
+      'powerupwizardfinger' => l10n.powerZap,
+      'poweruppinchzombie' => l10n.powerPinch,
+      _ => typeName,
+    };
+  }
+
+  void _reorderPowerup(int oldIndex, int newIndex) {
+    final entry = _data.powerups.removeAt(oldIndex);
+    _data.powerups.insert(newIndex, entry);
+    _sync();
+  }
+
+  void _removePowerup(LevelPowerupEntryData entry) {
+    if (!_data.powerups.remove(entry)) return;
+    _controllers.remove(entry)?.dispose();
+    _sync();
+  }
+
+  Future<void> _addPowerup() async {
+    final availableTypes = _availablePowerupTypes;
+    if (availableTypes.isEmpty) return;
+    final l10n = AppLocalizations.of(context)!;
+    final selectedType = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        key: const ValueKey('powerupAddDialog'),
+        title: Text(l10n.powerUpsAddTitle),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final typeName in availableTypes)
+                ListTile(
+                  key: ValueKey('powerupAddOption_$typeName'),
+                  leading: Icon(_iconForPowerup(typeName)),
+                  title: Text(_titleForPowerup(l10n, typeName)),
+                  subtitle: Text(typeName),
+                  onTap: () => Navigator.pop(dialogContext, typeName),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || selectedType == null) return;
+    final entry = LevelPowerupEntryData(typeName: selectedType);
+    _data.powerups.add(entry);
+    _controllers[entry] = TextEditingController(text: '${entry.freeUseCount}');
+    _sync();
   }
 
   @override
@@ -118,6 +196,10 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
                   body: l10n.powerUpsHelpOverview,
                 ),
                 HelpSectionData(
+                  title: l10n.powerUpsOrder,
+                  body: l10n.powerUpsOrderInfo,
+                ),
+                HelpSectionData(
                   title: l10n.powerToss,
                   body: l10n.powerTossInfo,
                 ),
@@ -144,23 +226,62 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
               onChanged: widget.onChanged,
             ),
             const SizedBox(height: 16),
-            _buildPowerupCard(
-              typeName: 'powerupflickzombie',
-              icon: Icons.swipe_vertical,
-              title: l10n.powerToss,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.powerUpsHelpTitle,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                IconButton.filledTonal(
+                  key: const ValueKey('powerupAddButton'),
+                  tooltip: l10n.powerUpsAddTitle,
+                  onPressed: _availablePowerupTypes.isEmpty
+                      ? null
+                      : _addPowerup,
+                  icon: const Icon(Icons.add),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            _buildPowerupCard(
-              typeName: 'powerupwizardfinger',
-              icon: Icons.bolt,
-              title: l10n.powerZap,
-            ),
-            const SizedBox(height: 12),
-            _buildPowerupCard(
-              typeName: 'poweruppinchzombie',
-              icon: Icons.content_cut,
-              title: l10n.powerPinch,
-            ),
+            if (_data.powerups.length > 1) ...[
+              const SizedBox(height: 4),
+              Text(
+                defaultTargetPlatform == TargetPlatform.android ||
+                        defaultTargetPlatform == TargetPlatform.iOS
+                    ? l10n.presetPlantListReorderHint
+                    : l10n.presetPlantListReorderHintDesktop,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+            const SizedBox(height: 8),
+            if (_data.powerups.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Text(
+                  l10n.emptyList,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              )
+            else
+              ReorderableListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                buildDefaultDragHandles: false,
+                itemCount: _data.powerups.length,
+                onReorderItem: _reorderPowerup,
+                itemBuilder: (context, index) {
+                  final entry = _data.powerups[index];
+                  return _buildPowerupCard(entry: entry, index: index);
+                },
+              ),
           ],
         ),
       ),
@@ -168,13 +289,17 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
   }
 
   Widget _buildPowerupCard({
-    required String typeName,
-    required IconData icon,
-    required String title,
+    required LevelPowerupEntryData entry,
+    required int index,
   }) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final typeName = entry.typeName;
+    final icon = _iconForPowerup(typeName);
+    final title = _titleForPowerup(l10n, typeName);
     return Card(
+      key: ObjectKey(entry),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: LayoutBuilder(
@@ -182,6 +307,20 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
             final identity = Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ReorderableDragStartListener(
+                  key: ValueKey('powerupDragHandle_$typeName'),
+                  index: index,
+                  child: SizedBox(
+                    width: 40,
+                    height: 44,
+                    child: Center(
+                      child: Icon(
+                        Icons.drag_indicator,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
                 Icon(icon, size: 36, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Expanded(
@@ -204,6 +343,12 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
                     ],
                   ),
                 ),
+                IconButton(
+                  key: ValueKey('powerupDelete_$typeName'),
+                  tooltip: l10n.delete,
+                  onPressed: () => _removePowerup(entry),
+                  icon: const Icon(Icons.delete_outline),
+                ),
               ],
             );
             final countField = SizedBox(
@@ -212,14 +357,14 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
                 label: l10n.powerUpsFreeUseCount,
                 builder: (context, decoration) => TextField(
                   key: ValueKey('powerupFreeUseCount_$typeName'),
-                  controller: _controllers[typeName],
+                  controller: _controllers[entry],
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: decoration,
                   onChanged: (value) {
                     final parsed = int.tryParse(value);
                     if (parsed == null || parsed < 0) return;
-                    _data.entryFor(typeName).freeUseCount = parsed;
+                    entry.freeUseCount = parsed;
                     _sync();
                   },
                 ),

@@ -125,6 +125,9 @@ class EditorCubit extends Cubit<EditorState> {
         classes.contains('VaseBreakerArcadeModuleProperties')) {
       tabs.add(EditorTabType.vaseBreaker);
     }
+    if (classes.contains('SingleHandedProperties')) {
+      tabs.add(EditorTabType.singleHanded);
+    }
     final zombossMechCount = referencedModuleClasses
         .where((objClass) => objClass == 'ZombossBattleModuleProperties')
         .length;

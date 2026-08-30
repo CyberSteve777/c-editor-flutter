@@ -110,6 +110,10 @@ void main() {
       arb['cowboyMinigameBeginStringHint'],
       '添加围栏之战模块后，会自动在传送带模块中启用“手动生成卡片”开关。',
     );
+    expect(
+      arb['cowboyMinigameHelpBeginStringBody'] as String,
+      isNot(contains('不显示文本')),
+    );
   });
 
   testWidgets('Not OK Corral does not require the standard intro module', (
