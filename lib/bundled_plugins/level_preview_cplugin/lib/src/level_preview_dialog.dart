@@ -325,6 +325,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   _buildSeedBankCard(context, theme, l10n),
                   _buildConveyorCard(context, theme, l10n),
                   _buildCopycatCard(context, theme, l10n),
+                  _buildSingleHandedCard(context, theme, l10n),
                   _buildSeedRainCard(context, theme, l10n),
                   _buildHeianWindCard(context, theme, l10n),
                   _buildPrePlacedCard(context, theme, l10n),
@@ -3365,6 +3366,250 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         ),
       ),
     );
+  }
+
+  Widget _buildSingleHandedCard(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final moduleObject = widget.levelFile.objects.firstWhereOrNull(
+      (object) => object.objClass == 'SingleHandedProperties',
+    );
+    final tutorialObject = widget.levelFile.objects.firstWhereOrNull(
+      (object) => object.objClass == 'IntroSingleHandedProperties',
+    );
+    if (moduleObject == null && tutorialObject == null) {
+      return const SizedBox.shrink();
+    }
+
+    SingleHandedPropertiesData? data;
+    IntroSingleHandedPropertiesData? tutorialData;
+    try {
+      if (moduleObject?.objData is Map) {
+        data = SingleHandedPropertiesData.fromJson(
+          Map<String, dynamic>.from(moduleObject!.objData as Map),
+        );
+      }
+    } catch (_) {}
+    try {
+      if (tutorialObject?.objData is Map) {
+        tutorialData = IntroSingleHandedPropertiesData.fromJson(
+          Map<String, dynamic>.from(tutorialObject!.objData as Map),
+        );
+      }
+    } catch (_) {}
+    if (data == null && tutorialData == null) {
+      return const SizedBox.shrink();
+    }
+
+    const accent = Color(0xFF29B6F6);
+    final title = data != null
+        ? l10n.moduleTitle_SingleHandedProperties
+        : l10n.moduleTitle_IntroSingleHandedProperties;
+
+    return Container(
+      key: const ValueKey('singleHandedOverviewCard'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                children: [
+                  const Icon(Icons.sledding, size: 20, color: accent),
+                  _buildSectionTitle(title, theme, color: accent),
+                ],
+              ),
+            ),
+            if (data != null) ...[
+              _buildSubSectionTitle(l10n.singleHandedPlantConfiguration, theme),
+              const SizedBox(height: 10),
+              _buildSingleHandedPlantPath(context, data, theme, l10n),
+              const SizedBox(height: 18),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _buildInfoChip(
+                    icon: Icons.rocket_launch,
+                    label:
+                        '${l10n.singleHandedMissileCount}: ${data.missileCount}',
+                    color: Colors.deepOrangeAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.schedule,
+                    label:
+                        '${l10n.singleHandedMissileInterval}: ${_formatSingleHandedNumber(data.missileInterval)}',
+                    color: Colors.orangeAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.notification_important_outlined,
+                    label:
+                        '${l10n.singleHandedWarningTime}: ${_formatSingleHandedNumber(data.rocketHitTime)}',
+                    color: Colors.amber,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.speed,
+                    label:
+                        '${l10n.singleHandedRocketSpeed}: ${_formatSingleHandedNumber(data.rocketSpeed)}',
+                    color: Colors.lightBlueAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.directions_run,
+                    label:
+                        '${l10n.singleHandedZombieSpeedMultiplier}: x${_formatSingleHandedNumber(data.zombiesWalkSpeed)}',
+                    color: Colors.purpleAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.favorite_outline,
+                    label:
+                        '${l10n.singleHandedZombieHealthMultiplier}: x${_formatSingleHandedNumber(data.zombiesHitpointsPercent)}',
+                    color: Colors.redAccent,
+                    theme: theme,
+                  ),
+                ],
+              ),
+              if (data.specialWaveDatas.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                _buildSubSectionTitle(l10n.singleHandedSpecialWaves, theme),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: data.specialWaveDatas.map((wave) {
+                    final subtitle = l10n.singleHandedSpecialWaveSubtitle(
+                      _formatSingleHandedNumber(wave.zombiesWalkSpeed),
+                      _formatSingleHandedNumber(wave.zombiesHitpointsPercent),
+                    );
+                    final healthBar = wave.showHealthBar
+                        ? l10n.singleHandedHealthBarEnabled
+                        : l10n.singleHandedHealthBarDisabled;
+                    return Tooltip(
+                      message: '$subtitle\n$healthBar',
+                      child: Chip(
+                        avatar: Icon(
+                          wave.showHealthBar
+                              ? Icons.monitor_heart_outlined
+                              : Icons.favorite_border,
+                          size: 17,
+                          color: accent,
+                        ),
+                        label: Text(
+                          '${l10n.singleHandedWaveNumber(wave.wave)} · $subtitle',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ],
+            if (tutorialData != null) ...[
+              if (data != null) ...[
+                const SizedBox(height: 20),
+                const Divider(height: 1),
+                const SizedBox(height: 16),
+                _buildSubSectionTitle(
+                  l10n.moduleTitle_IntroSingleHandedProperties,
+                  theme,
+                ),
+                const SizedBox(height: 10),
+              ],
+              _buildInfoChip(
+                icon: Icons.school_outlined,
+                label:
+                    '${l10n.singleHandedTutorialWaveForStartRocket}: ${tutorialData.waveForStartRocket}',
+                color: Colors.greenAccent,
+                theme: theme,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSingleHandedPlantPath(
+    BuildContext context,
+    SingleHandedPropertiesData data,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final stages = <({String id, String detail})>[
+      (
+        id: data.initWeapon,
+        detail: l10n.singleHandedInitialPlantSubtitle(
+          _formatSingleHandedNumber(data.initWeaponLaunchTimePercent),
+        ),
+      ),
+      ...data.dropWeaponDatas.map(
+        (entry) => (
+          id: entry.weaponName,
+          detail: l10n.singleHandedUpgradePlantSubtitle(
+            entry.killCount,
+            _formatSingleHandedNumber(entry.launchTimePercent),
+          ),
+        ),
+      ),
+    ].where((stage) => stage.id.isNotEmpty).toList(growable: false);
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        key: const ValueKey('singleHandedPlantUpgradePath'),
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var index = 0; index < stages.length; index++) ...[
+            Tooltip(
+              message: stages[index].detail,
+              child: PlantIcon(
+                key: ValueKey(
+                  'singleHandedPlantStage_${stages[index].id}_$index',
+                ),
+                id: stages[index].id,
+                size: 48,
+              ),
+            ),
+            if (index != stages.length - 1)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.arrow_forward,
+                  key: ValueKey('singleHandedUpgradeArrow_$index'),
+                  size: 22,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
+                ),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _formatSingleHandedNumber(num value) {
+    final number = value.toDouble();
+    return number == number.roundToDouble()
+        ? number.toInt().toString()
+        : number.toString();
   }
 
   Widget _buildSeedRainCard(
