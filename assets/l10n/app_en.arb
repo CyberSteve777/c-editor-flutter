@@ -2160,8 +2160,8 @@
   "waveDropPlantSelectionLabel": "Specified seed packet drops (SpawnPlantName)",
   "waveDropTotalLabel": "Total drops (AdditionalPlantfood)",
   "waveDropAddZombiesFirst": "Add zombies to this wave before configuring drops.",
-  "waveDropIncreaseTotalBeforePlants": "Increase total drops before adding plants.",
-  "waveDropPlantFoodOnlyCount": "{count, plural, =1{1 plant food} other{{count} plant food}}",
+  "waveDropIncreaseTotalBeforePlants": "Increase total drops before adding seed packets.",
+  "waveDropPlantFoodOnlyCount": "{count, plural, =1{1 Plant Food} other{{count} Plant Foods}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
       "count": {
@@ -2169,7 +2169,7 @@
       }
     }
   },
-  "waveDropPlantsCount": "{count, plural, =1{1 plant} other{{count} plants}}",
+  "waveDropPlantsCount": "{count, plural, =1{1 seed packet} other{{count} seed packets}}",
   "@waveDropPlantsCount": {
     "placeholders": {
       "count": {

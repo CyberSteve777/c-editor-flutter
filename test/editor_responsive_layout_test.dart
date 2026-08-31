@@ -277,6 +277,58 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('responsive switch moves below a long label on narrow screens', (
+    tester,
+  ) async {
+    const labelKey = Key('responsive-switch-label');
+    const switchKey = Key('responsive-switch-control');
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 320,
+        child: EditorResponsiveSwitchRow(
+          label: 'Can die immediately at the end if no other zombies remain',
+          value: false,
+          onChanged: (_) {},
+          labelKey: labelKey,
+          switchKey: switchKey,
+        ),
+      ),
+    );
+
+    final labelRect = tester.getRect(find.byKey(labelKey));
+    final switchRect = tester.getRect(find.byKey(switchKey));
+    expect(labelRect.width, greaterThan(250));
+    expect(switchRect.top, greaterThan(labelRect.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('responsive switch stays horizontal when space is available', (
+    tester,
+  ) async {
+    const labelKey = Key('wide-responsive-switch-label');
+    const switchKey = Key('wide-responsive-switch-control');
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 700,
+        child: EditorResponsiveSwitchRow(
+          label: 'Can spawn Plant Food',
+          value: true,
+          onChanged: (_) {},
+          labelKey: labelKey,
+          switchKey: switchKey,
+        ),
+      ),
+    );
+
+    final labelRect = tester.getRect(find.byKey(labelKey));
+    final switchRect = tester.getRect(find.byKey(switchKey));
+    expect(labelRect.right, lessThan(switchRect.left));
+    expect(labelRect.center.dy, closeTo(switchRect.center.dy, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('labeled add button bounds long localized text', (tester) async {
     await tester.pumpWidget(
       _testApp(

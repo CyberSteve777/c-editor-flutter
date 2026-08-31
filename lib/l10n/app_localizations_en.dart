@@ -6366,15 +6366,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveDropIncreaseTotalBeforePlants =>
-      'Increase total drops before adding plants.';
+      'Increase total drops before adding seed packets.';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count plant food',
-      one: '1 plant food',
+      other: '$count Plant Foods',
+      one: '1 Plant Food',
     );
     return '$_temp0';
   }
@@ -6384,8 +6384,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count plants',
-      one: '1 plant',
+      other: '$count seed packets',
+      one: '1 seed packet',
     );
     return '$_temp0';
   }

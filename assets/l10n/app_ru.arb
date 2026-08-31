@@ -2191,7 +2191,7 @@
   "waveDropPlantSelectionLabel": "Указанные пакеты семян для выпадения (SpawnPlantName)",
   "waveDropTotalLabel": "Всего зомби с дропом (AdditionalPlantfood)",
   "waveDropAddZombiesFirst": "Добавьте зомби в эту волну перед настройкой дропа.",
-  "waveDropIncreaseTotalBeforePlants": "Увеличьте общее число дропов перед добавлением растений.",
+  "waveDropIncreaseTotalBeforePlants": "Увеличьте общее число дропов перед добавлением пакетов семян.",
   "waveDropPlantFoodOnlyCount": "{count, plural, one{1 подкормка} few{{count} подкормки} many{{count} подкормок} other{{count} подкормок}}",
   "@waveDropPlantFoodOnlyCount": {
     "placeholders": {
@@ -2200,7 +2200,7 @@
       }
     }
   },
-  "waveDropPlantsCount": "{count, plural, one{1 растение} few{{count} растения} many{{count} растений} other{{count} растений}}",
+  "waveDropPlantsCount": "{count, plural, one{1 пакет семян} few{{count} пакета семян} many{{count} пакетов семян} other{{count} пакета семян}}",
   "@waveDropPlantsCount": {
     "placeholders": {
       "count": {
@@ -2208,7 +2208,7 @@
       }
     }
   },
-  "zombiesCarryingPlants": "Зомби с растениями",
+  "zombiesCarryingPlants": "Зомби с пакетами семян",
   "zombiesCarryingPlantFood": "Зомби с подкормкой",
   "description": "Описание",
   "descriptiveName": "Описательное имя",

@@ -78,6 +78,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Drop configuration'), findsOneWidget);
+    expect(find.text('1 Plant Food'), findsOneWidget);
+    expect(find.text('1 seed packet'), findsOneWidget);
     expect(find.text('Drop configuration (seed packet)'), findsNothing);
     expect(find.text('Drop configuration (Plant Food)'), findsNothing);
     expect(

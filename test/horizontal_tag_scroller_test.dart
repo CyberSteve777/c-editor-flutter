@@ -44,6 +44,10 @@ void main() {
       find.byKey(const ValueKey('horizontalTagScrollerScrollbar')),
     );
     expect(scrollbar.thumbVisibility, isTrue);
+    final scrollView = tester.widget<SingleChildScrollView>(
+      find.byKey(const ValueKey('horizontalTagScrollerScrollView')),
+    );
+    expect(scrollView.padding, const EdgeInsets.fromLTRB(12, 8, 12, 16));
   });
 
   testWidgets('tag row does not force a thumb when all tags fit', (
@@ -68,6 +72,13 @@ void main() {
       find.byKey(const ValueKey('horizontalTagScrollerScrollbar')),
     );
     expect(scrollbar.thumbVisibility, isFalse);
+    final scrollView = tester.widget<SingleChildScrollView>(
+      find.byKey(const ValueKey('horizontalTagScrollerScrollView')),
+    );
+    expect(
+      scrollView.padding,
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    );
   });
 
   testWidgets('wide overflowing tag row also keeps its scrollbar visible', (

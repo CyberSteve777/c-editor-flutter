@@ -11298,19 +11298,19 @@ abstract class AppLocalizations {
   /// No description provided for @waveDropIncreaseTotalBeforePlants.
   ///
   /// In en, this message translates to:
-  /// **'Increase total drops before adding plants.'**
+  /// **'Increase total drops before adding seed packets.'**
   String get waveDropIncreaseTotalBeforePlants;
 
   /// No description provided for @waveDropPlantFoodOnlyCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 plant food} other{{count} plant food}}'**
+  /// **'{count, plural, =1{1 Plant Food} other{{count} Plant Foods}}'**
   String waveDropPlantFoodOnlyCount(int count);
 
   /// No description provided for @waveDropPlantsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 plant} other{{count} plants}}'**
+  /// **'{count, plural, =1{1 seed packet} other{{count} seed packets}}'**
   String waveDropPlantsCount(int count);
 
   /// No description provided for @zombiesCarryingPlants.

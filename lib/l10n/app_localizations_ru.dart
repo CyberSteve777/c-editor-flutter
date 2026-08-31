@@ -6318,7 +6318,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveDropIncreaseTotalBeforePlants =>
-      'Увеличьте общее число дропов перед добавлением растений.';
+      'Увеличьте общее число дропов перед добавлением пакетов семян.';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
@@ -6338,16 +6338,16 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count растений',
-      many: '$count растений',
-      few: '$count растения',
-      one: '1 растение',
+      other: '$count пакета семян',
+      many: '$count пакетов семян',
+      few: '$count пакета семян',
+      one: '1 пакет семян',
     );
     return '$_temp0';
   }
 
   @override
-  String get zombiesCarryingPlants => 'Зомби с растениями';
+  String get zombiesCarryingPlants => 'Зомби с пакетами семян';
 
   @override
   String get zombiesCarryingPlantFood => 'Зомби с подкормкой';

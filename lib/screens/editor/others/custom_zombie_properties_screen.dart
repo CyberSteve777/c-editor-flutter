@@ -1438,8 +1438,8 @@ class _CustomZombiePropertiesScreenState
     required bool checked,
     required ValueChanged<bool> onChanged,
   }) {
-    return SwitchListTile(
-      title: Text(title),
+    return EditorResponsiveSwitchRow(
+      label: title,
       value: checked,
       onChanged: onChanged,
     );

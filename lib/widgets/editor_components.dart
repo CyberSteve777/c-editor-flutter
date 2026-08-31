@@ -678,6 +678,57 @@ class EditorResponsiveActionRow extends StatelessWidget {
   }
 }
 
+/// A switch row that gives long localized labels the full available width on
+/// compact surfaces. The switch moves below the label instead of squeezing it
+/// into character-by-character wrapping.
+class EditorResponsiveSwitchRow extends StatelessWidget {
+  const EditorResponsiveSwitchRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.breakpoint = 520,
+    this.labelKey,
+    this.switchKey,
+  });
+
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final double breakpoint;
+  final Key? labelKey;
+  final Key? switchKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      toggled: value,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => onChanged(!value),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: EditorResponsiveActionRow(
+            breakpoint: breakpoint,
+            spacing: 8,
+            content: Text(
+              key: labelKey,
+              label,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            action: Switch.adaptive(
+              key: switchKey,
+              value: value,
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// A numeric stepper that keeps localized labels readable at large text scales.
 ///
 /// The label and controls stay on one line while there is enough room. On a
@@ -1020,8 +1071,8 @@ abstract class AccentBarTabBarStyle {
 ///
 /// The scrollbar thumb remains visible whenever the tags do not fit, so users
 /// can discover the remaining options before they try to drag. The caller's
-/// bottom padding is used as the scrollbar lane, keeping the thumb clear of
-/// chip contents.
+/// bottom padding is expanded while the scrollbar is visible, keeping the
+/// thumb clear of chip contents without adding empty space to rows that fit.
 class HorizontalTagScroller extends StatefulWidget {
   const HorizontalTagScroller({
     super.key,
@@ -1128,6 +1179,12 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
   Widget build(BuildContext context) {
     _scheduleOverflowCheck();
     final keepThumbVisible = _hasOverflow;
+    final requestedPadding = widget.padding.resolve(Directionality.of(context));
+    final effectivePadding = requestedPadding.copyWith(
+      bottom: keepThumbVisible
+          ? math.max(requestedPadding.bottom, 16)
+          : requestedPadding.bottom,
+    );
 
     return ScrollbarTheme(
       data: _scrollbarTheme(context),
@@ -1143,9 +1200,10 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
           },
           child: ScrollableWithMouseDrag(
             child: SingleChildScrollView(
+              key: const ValueKey('horizontalTagScrollerScrollView'),
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              padding: widget.padding,
+              padding: effectivePadding,
               child: Row(children: widget.children),
             ),
           ),
