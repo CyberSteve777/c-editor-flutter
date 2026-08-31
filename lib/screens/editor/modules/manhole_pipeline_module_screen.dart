@@ -267,32 +267,34 @@ class _ManholePipelineModuleScreenState
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 40,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _data.pipelineList.length + 1,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  if (index == _data.pipelineList.length) {
-                    return OutlinedButton.icon(
+            HorizontalTagScroller(
+              key: const ValueKey('manholePipelineScroller'),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+              children: [
+                for (
+                  var index = 0;
+                  index <= _data.pipelineList.length;
+                  index++
+                ) ...[
+                  if (index > 0) const SizedBox(width: 8),
+                  if (index == _data.pipelineList.length)
+                    OutlinedButton.icon(
                       onPressed: _addPipeline,
                       icon: const Icon(Icons.add),
                       label: Text(l10n.add),
-                    );
-                  }
-                  final selected = index == _selectedIndex;
-                  return FilterChip(
-                    label: Text(l10n.pipeN(index + 1)),
-                    selected: selected,
-                    onSelected: (_) => setState(() => _selectedIndex = index),
-                    deleteIcon: const Icon(Icons.close),
-                    onDeleted: _data.pipelineList.length > 1
-                        ? () => _removePipeline(index)
-                        : null,
-                  );
-                },
-              ),
+                    )
+                  else
+                    FilterChip(
+                      label: Text(l10n.pipeN(index + 1)),
+                      selected: index == _selectedIndex,
+                      onSelected: (_) => setState(() => _selectedIndex = index),
+                      deleteIcon: const Icon(Icons.close),
+                      onDeleted: _data.pipelineList.length > 1
+                          ? () => _removePipeline(index)
+                          : null,
+                    ),
+                ],
+              ],
             ),
             const SizedBox(height: 16),
             SegmentedButton<bool>(

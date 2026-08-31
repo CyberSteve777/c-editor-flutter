@@ -273,64 +273,40 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final fields = [
-                              _numberField(
-                                key: const ValueKey('hamsterGroupSize'),
-                                label: l10n.groupSize,
-                                value: _data.groupSize,
-                                integer: true,
-                                onChanged: (value) {
-                                  _data.groupSize = value.toInt();
-                                  _sync();
-                                },
-                              ),
-                              _numberField(
-                                key: const ValueKey('hamsterTimeBetweenGroups'),
-                                label: l10n.timeBetweenGroups,
-                                value: _data.timeBetweenGroups,
-                                integer: false,
-                                onChanged: (value) {
-                                  _data.timeBetweenGroups = value.toDouble();
-                                  _sync();
-                                },
-                              ),
-                              _numberField(
-                                key: const ValueKey(
-                                  'hamsterTimeBeforeFullSpawn',
-                                ),
-                                label: l10n.hamsterballTimeBeforeFullSpawn,
-                                value: _data.timeBeforeFullSpawn,
-                                integer: false,
-                                onChanged: (value) {
-                                  _data.timeBeforeFullSpawn = value.toDouble();
-                                  _sync();
-                                },
-                              ),
-                            ];
-                            if (constraints.maxWidth < 720) {
-                              return Column(
-                                children: [
-                                  for (var i = 0; i < fields.length; i++) ...[
-                                    fields[i],
-                                    if (i != fields.length - 1)
-                                      const SizedBox(height: 12),
-                                  ],
-                                ],
-                              );
-                            }
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                for (var i = 0; i < fields.length; i++) ...[
-                                  Expanded(child: fields[i]),
-                                  if (i != fields.length - 1)
-                                    const SizedBox(width: 12),
-                                ],
-                              ],
-                            );
-                          },
+                        EditorResponsiveFieldRow(
+                          breakpoint: 720,
+                          children: [
+                            _numberField(
+                              key: const ValueKey('hamsterGroupSize'),
+                              label: l10n.groupSize,
+                              value: _data.groupSize,
+                              integer: true,
+                              onChanged: (value) {
+                                _data.groupSize = value.toInt();
+                                _sync();
+                              },
+                            ),
+                            _numberField(
+                              key: const ValueKey('hamsterTimeBetweenGroups'),
+                              label: l10n.timeBetweenGroups,
+                              value: _data.timeBetweenGroups,
+                              integer: false,
+                              onChanged: (value) {
+                                _data.timeBetweenGroups = value.toDouble();
+                                _sync();
+                              },
+                            ),
+                            _numberField(
+                              key: const ValueKey('hamsterTimeBeforeFullSpawn'),
+                              label: l10n.hamsterballTimeBeforeFullSpawn,
+                              value: _data.timeBeforeFullSpawn,
+                              integer: false,
+                              onChanged: (value) {
+                                _data.timeBeforeFullSpawn = value.toDouble();
+                                _sync();
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -339,6 +315,7 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                 const SizedBox(height: 20),
                 EditorResponsiveActionRow(
                   breakpoint: 620,
+                  compactActionAlignment: Alignment.centerLeft,
                   content: Text(
                     l10n.hamsterballZombies,
                     key: const ValueKey('hamsterballZombiesHeading'),
@@ -438,6 +415,7 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                 final icon = iconPath == null
                     ? null
                     : AssetImageWidget(
+                        key: ValueKey('hamsterZombieIcon$index'),
                         assetPath: iconPath,
                         altCandidates: imageAltCandidates(iconPath),
                         width: 64,
@@ -451,13 +429,12 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (icon != null) ...[
-                        Align(alignment: Alignment.centerLeft, child: icon),
-                        const SizedBox(height: 12),
-                      ],
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [?icon, const Spacer(), actions],
+                      ),
+                      const SizedBox(height: 12),
                       title,
-                      const SizedBox(height: 8),
-                      Align(alignment: Alignment.centerRight, child: actions),
                     ],
                   );
                 }
@@ -571,7 +548,7 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                   },
                   child: Wrap(
                     spacing: spacing,
-                    runSpacing: 0,
+                    runSpacing: 4,
                     children: [
                       for (final option in options)
                         SizedBox(
@@ -582,18 +559,14 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                               index,
                               zombie.copyWith(behavior: option.$1),
                             ),
-                            child: SizedBox(
-                              height: 56,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(minHeight: 56),
                               child: Row(
                                 children: [
                                   Radio<int>(value: option.$1),
                                   const SizedBox(width: 4),
                                   Expanded(
-                                    child: Text(
-                                      option.$2,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    child: Text(option.$2, softWrap: true),
                                   ),
                                 ],
                               ),

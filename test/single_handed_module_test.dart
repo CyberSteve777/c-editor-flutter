@@ -187,6 +187,7 @@ void main() {
       final identity = find.byKey(
         const ValueKey('singleHandedPlantIdentity_repeater'),
       );
+      final icon = find.byKey(const ValueKey('singleHandedPlantIcon_repeater'));
       final action = find.byKey(
         const ValueKey('singleHandedPlantAction_repeater'),
       );
@@ -194,10 +195,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(identity, findsOneWidget);
+      expect(icon, findsOneWidget);
       expect(action, findsOneWidget);
       expect(
-        tester.getRect(action).top,
-        greaterThanOrEqualTo(tester.getRect(identity).bottom),
+        (tester.getRect(action).center.dy - tester.getRect(icon).center.dy)
+            .abs(),
+        lessThan(1),
+      );
+      expect(
+        tester.getRect(identity).top,
+        greaterThanOrEqualTo(tester.getRect(icon).bottom),
       );
       expect(tester.takeException(), isNull);
     },

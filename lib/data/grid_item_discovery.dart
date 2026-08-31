@@ -1,12 +1,45 @@
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
-import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
+import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
+
+class DiscoveredGridItem {
+  const DiscoveredGridItem({
+    required this.id,
+    this.isDedicatedModuleItem = false,
+  });
+
+  final String id;
+
+  /// Whether this entry comes from a dedicated grid-item module. These entries
+  /// are part of the module's normal configuration rather than custom grid-item
+  /// placements, so the overview must not badge them with C.
+  final bool isDedicatedModuleItem;
+}
 
 class GridItemDiscovery {
   static Set<String> discoverGridItems(PvzLevelFile levelFile) {
-    final items = <String>{};
+    return discoverGridItemEntries(levelFile).map((entry) => entry.id).toSet();
+  }
+
+  static List<DiscoveredGridItem> discoverGridItemEntries(
+    PvzLevelFile levelFile,
+  ) {
+    final items = <String, DiscoveredGridItem>{};
+
+    void addItem(String id, {bool isDedicatedModuleItem = false}) {
+      if (id.isEmpty) return;
+      final clean = _cleanId(id);
+      final key = '$clean|$isDedicatedModuleItem';
+      items.putIfAbsent(
+        key,
+        () => DiscoveredGridItem(
+          id: clean,
+          isDedicatedModuleItem: isDedicatedModuleItem,
+        ),
+      );
+    }
 
     void scan(dynamic d) {
       if (d is Map) {
@@ -22,7 +55,7 @@ class GridItemDiscovery {
             levelFile,
           );
           if (clean != 'flowerpot' && displayTypeName != null) {
-            items.add(displayTypeName);
+            addItem(displayTypeName);
           }
         }
         for (final v in d.values) {
@@ -57,7 +90,7 @@ class GridItemDiscovery {
               levelFile,
             );
             if (displayTypeName != null) {
-              items.add(displayTypeName);
+              addItem(displayTypeName);
             }
           }
         }
@@ -68,51 +101,50 @@ class GridItemDiscovery {
     if (smokeData != null &&
         smokeData.smokeManholeList.isNotEmpty &&
         smokeData.gridItem.isNotEmpty) {
-      items.add(_cleanId(smokeData.gridItem));
+      addItem(smokeData.gridItem);
     }
 
     final pipeData = readManholePipelineData(levelFile);
     if (pipeData != null && pipeData.pipelineList.isNotEmpty) {
-      items
-        ..add('steam_down')
-        ..add('steam_up');
+      addItem('steam_down');
+      addItem('steam_up');
     }
 
     final armrackData = readArmrackModuleData(levelFile);
     if (armrackData != null) {
       for (final override in armrackData.overrides) {
         for (final item in override.itemList) {
-          if (item.type.isNotEmpty) items.add(_cleanId(item.type));
+          addItem(item.type, isDedicatedModuleItem: true);
         }
       }
     }
 
     final lunarMineData = readLunarMineVeinModuleData(levelFile);
     if (lunarMineData != null && lunarMineData.placements.isNotEmpty) {
-      items.add('lunar_mine_vein');
+      addItem('lunar_mine_vein');
     }
 
     final radiationMeteorData = readRadiationMeteorModuleData(levelFile);
     if (radiationMeteorData != null &&
         radiationMeteorData.spawnSchedule.isNotEmpty) {
-      items.add('radiation_meteor_ore');
+      addItem('radiation_meteor_ore');
     }
 
     final gulliverData = readGulliverTunnelData(levelFile);
     if (gulliverData != null && gulliverData.tunnelPlacements.isNotEmpty) {
-      items.add('gulliver_tunnel');
+      addItem('gulliver_tunnel');
     }
 
     final moldLayout = readMoldColonyLayoutData(levelFile);
     if (moldLayout != null &&
         moldLayout.values.any((row) => row.any((value) => value != 0))) {
-      items.add('fake_mold');
+      addItem('fake_mold');
     }
 
     final ptData = readPowerTileModuleData(levelFile);
     if (ptData != null) {
       for (final tile in ptData.linkedTiles) {
-        items.add('tool_powertile_${tile.group}');
+        addItem('tool_powertile_${tile.group}');
       }
     }
 
@@ -120,8 +152,7 @@ class GridItemDiscovery {
     if (energyData != null) {
       for (final over in energyData.overrides) {
         if (over.itemList.isNotEmpty) {
-          items.add('energyGrid');
-          break;
+          addItem('energyGrid', isDedicatedModuleItem: true);
         }
       }
     }
@@ -129,10 +160,10 @@ class GridItemDiscovery {
     final renaiData = readRenaiModuleData(levelFile);
     if (renaiData != null) {
       for (final s in renaiData.statueInfos) {
-        if (s.typeName.isNotEmpty) items.add(_cleanId(s.typeName));
+        addItem(s.typeName);
       }
       for (final s in renaiData.statueNightInfos) {
-        if (s.typeName.isNotEmpty) items.add(_cleanId(s.typeName));
+        addItem(s.typeName);
       }
     }
 
@@ -142,7 +173,7 @@ class GridItemDiscovery {
         Map<String, dynamic>.from(potObj.objData as Map),
       );
       for (final type in potData.potionTypes) {
-        if (type.isNotEmpty) items.add(_cleanId(type));
+        addItem(type);
       }
     }
 
@@ -154,14 +185,14 @@ class GridItemDiscovery {
         scan(obj.objData);
       }
       if (obj.objClass == 'ZombieAtlantisShellActionProps') {
-        items.add('atlantis_shell');
+        addItem('atlantis_shell');
       }
       if (obj.objClass == 'PumpkinHouseActionProps') {
-        items.add('pumpkin_house');
+        addItem('pumpkin_house');
       }
     }
 
-    return items;
+    return items.values.toList(growable: false);
   }
 
   static String _cleanId(String id) {

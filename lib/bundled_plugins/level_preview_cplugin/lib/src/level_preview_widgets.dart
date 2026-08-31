@@ -315,12 +315,14 @@ class GridItemIcon extends StatelessWidget {
   final String id;
   final double size;
   final bool isGrid;
+  final bool suppressCustomBadge;
 
   const GridItemIcon({
     super.key,
     required this.id,
     this.size = 42,
     this.isGrid = false,
+    this.suppressCustomBadge = false,
   });
 
   @override
@@ -331,6 +333,7 @@ class GridItemIcon extends StatelessWidget {
         : 'griditem_$id';
     final tooltip = ResourceNames.lookup(context, resourceKey);
     final isPreset =
+        !suppressCustomBadge &&
         !isGrid &&
         GridItemRepository.getByTypeName(id)?.source == GridItemSource.custom;
 

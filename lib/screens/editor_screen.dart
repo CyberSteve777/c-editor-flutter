@@ -4045,79 +4045,103 @@ class _EditorScreenState extends State<EditorScreen> {
                         _tabController = DefaultTabController.of(context);
                         return LayoutBuilder(
                           builder: (context, constraints) {
-                            final bool shouldScroll =
-                                constraints.maxWidth < 600;
+                            final topTabLabels = <String>[];
+                            final topTabWidgets = editorTopTabs.map((entry) {
+                              final t = entry.type;
+                              IconData icon;
+                              String label;
+                              switch (t) {
+                                case EditorTabType.settings:
+                                  icon = Icons.settings;
+                                  label = l10n?.settings ?? 'Settings';
+                                  break;
+                                case EditorTabType.timeline:
+                                  icon = Icons.timeline;
+                                  label = l10n?.timeline ?? 'Timeline';
+                                  break;
+                                case EditorTabType.waveGenerator:
+                                  icon = Icons.waves;
+                                  label =
+                                      l10n?.waveGeneratorTabLabel ?? 'Waves';
+                                  break;
+                                case EditorTabType.iZombie:
+                                  icon = Icons.groups;
+                                  label = l10n?.iZombie ?? 'I, Zombie';
+                                  break;
+                                case EditorTabType.vaseBreaker:
+                                  icon = Icons.inventory_2;
+                                  label = l10n?.vaseBreaker ?? 'Vase breaker';
+                                  break;
+                                case EditorTabType.singleHanded:
+                                  icon = Icons.sledding;
+                                  label =
+                                      l10n?.singleHandedTabLabel ??
+                                      'All by Oneself';
+                                  break;
+                                case EditorTabType.zombossMech:
+                                  icon = Icons.smart_toy_outlined;
+                                  label = moduleInstanceDisplayName(
+                                    baseName:
+                                        l10n?.zombossMech ??
+                                        'ZombossMech Battle',
+                                    objClass: 'ZombossBattleModuleProperties',
+                                    instanceCount: entry.instanceCount,
+                                    instanceIndex: entry.instanceIndex,
+                                  );
+                                  break;
+                                case EditorTabType.zombossBattle:
+                                  icon = Icons.castle;
+                                  label = moduleInstanceDisplayName(
+                                    baseName:
+                                        l10n?.zombossBattle ?? 'Zomboss Battle',
+                                    objClass:
+                                        'ZombossLastStandMinigameProperties',
+                                    instanceCount: entry.instanceCount,
+                                    instanceIndex: entry.instanceIndex,
+                                  );
+                                  break;
+                              }
+                              topTabLabels.add(label);
+                              return Tab(text: label, icon: Icon(icon));
+                            }).toList();
+                            final tabLabelStyle =
+                                Theme.of(context).tabBarTheme.labelStyle ??
+                                Theme.of(context).textTheme.titleSmall ??
+                                const TextStyle(fontSize: 14);
+                            final textScaler = MediaQuery.textScalerOf(context);
+                            final requiredTabWidth = topTabLabels.fold<double>(
+                              0,
+                              (width, label) {
+                                final painter = TextPainter(
+                                  text: TextSpan(
+                                    text: label,
+                                    style: tabLabelStyle,
+                                  ),
+                                  textDirection: Directionality.of(context),
+                                  textScaler: textScaler,
+                                  maxLines: 1,
+                                )..layout();
+                                return width + painter.width + 48;
+                              },
+                            );
+                            final shouldScroll =
+                                constraints.maxWidth < 600 ||
+                                requiredTabWidth > constraints.maxWidth;
                             return Column(
                               children: [
-                                TabBar(
-                                  isScrollable: shouldScroll,
-                                  tabAlignment: shouldScroll
-                                      ? TabAlignment.start
-                                      : TabAlignment.fill,
-                                  dividerHeight: 0,
-                                  indicatorSize: TabBarIndicatorSize.tab,
-                                  tabs: editorTopTabs.map((entry) {
-                                    final t = entry.type;
-                                    IconData icon;
-                                    String label;
-                                    switch (t) {
-                                      case EditorTabType.settings:
-                                        icon = Icons.settings;
-                                        label = l10n?.settings ?? 'Settings';
-                                        break;
-                                      case EditorTabType.timeline:
-                                        icon = Icons.timeline;
-                                        label = l10n?.timeline ?? 'Timeline';
-                                        break;
-                                      case EditorTabType.waveGenerator:
-                                        icon = Icons.waves;
-                                        label =
-                                            l10n?.waveGeneratorTabLabel ??
-                                            'Waves';
-                                        break;
-                                      case EditorTabType.iZombie:
-                                        icon = Icons.groups;
-                                        label = l10n?.iZombie ?? 'I, Zombie';
-                                        break;
-                                      case EditorTabType.vaseBreaker:
-                                        icon = Icons.inventory_2;
-                                        label =
-                                            l10n?.vaseBreaker ?? 'Vase breaker';
-                                        break;
-                                      case EditorTabType.singleHanded:
-                                        icon = Icons.sledding;
-                                        label =
-                                            l10n?.singleHandedTabLabel ??
-                                            'All by Oneself';
-                                        break;
-                                      case EditorTabType.zombossMech:
-                                        icon = Icons.smart_toy_outlined;
-                                        label = moduleInstanceDisplayName(
-                                          baseName:
-                                              l10n?.zombossMech ??
-                                              'ZombossMech Battle',
-                                          objClass:
-                                              'ZombossBattleModuleProperties',
-                                          instanceCount: entry.instanceCount,
-                                          instanceIndex: entry.instanceIndex,
-                                        );
-                                        break;
-                                      case EditorTabType.zombossBattle:
-                                        icon = Icons.castle;
-                                        label = moduleInstanceDisplayName(
-                                          baseName:
-                                              l10n?.zombossBattle ??
-                                              'Zomboss Battle',
-                                          objClass:
-                                              'ZombossLastStandMinigameProperties',
-                                          instanceCount: entry.instanceCount,
-                                          instanceIndex: entry.instanceIndex,
-                                        );
-                                        break;
-                                    }
-                                    return Tab(text: label, icon: Icon(icon));
-                                  }).toList(),
-                                ),
+                                if (shouldScroll)
+                                  PersistentScrollableTabBar(
+                                    controller: _tabController!,
+                                    tabs: topTabWidgets,
+                                  )
+                                else
+                                  TabBar(
+                                    isScrollable: false,
+                                    tabAlignment: TabAlignment.fill,
+                                    dividerHeight: 0,
+                                    indicatorSize: TabBarIndicatorSize.tab,
+                                    tabs: topTabWidgets,
+                                  ),
                                 Expanded(
                                   child: TabBarView(
                                     children: editorTopTabs.map<Widget>((

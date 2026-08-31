@@ -1,4 +1,5 @@
-import 'package:c_editor/widgets/editor_components.dart' show isDesktopPlatform;
+import 'package:c_editor/widgets/editor_components.dart'
+    show HorizontalTagScroller, isDesktopPlatform;
 import 'package:c_editor/data/zombie_conditions.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -63,7 +64,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   bool _isLoadingRepos = true;
 
   List<String> _cachedZombies = [];
-  List<String> _cachedGridItems = [];
+  List<DiscoveredGridItem> _cachedGridItems = [];
   List<String> _cachedEvents = [];
   int _cachedTotalPfCount = 0;
   List<GridPreviewCategoryOption> _cachedGridCategories = [];
@@ -121,9 +122,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       widget.levelFile,
       widget.parsed,
     ).toList();
-    _cachedGridItems = GridItemDiscovery.discoverGridItems(
+    _cachedGridItems = GridItemDiscovery.discoverGridItemEntries(
       widget.levelFile,
-    ).toList();
+    );
     _cachedEvents = ZombieDiscovery.discoverEvents(widget.parsed).toList();
     _cachedTotalPfCount = PlantFoodDiscovery.calculateTotalPlantFood(
       widget.levelFile,
@@ -1411,6 +1412,64 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
+  Widget _buildGridItemListSection(
+    String title,
+    List<DiscoveredGridItem> items,
+    bool expanded, {
+    VoidCallback? onToggle,
+  }) {
+    final canExpand = items.length > 8;
+    final displayItems = (canExpand && !expanded)
+        ? items.take(3).toList()
+        : items;
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSubSectionTitle(title, theme),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            ...displayItems
+                .where((entry) => entry.id.isNotEmpty)
+                .map(
+                  (entry) => GridItemIcon(
+                    key: ValueKey(
+                      'levelOverviewGridItem_${entry.id}_${entry.isDedicatedModuleItem ? 'dedicatedModule' : 'standard'}',
+                    ),
+                    id: entry.id,
+                    size: 40,
+                    suppressCustomBadge: entry.isDedicatedModuleItem,
+                  ),
+                ),
+            if (canExpand && onToggle != null)
+              IconButton(
+                onPressed: onToggle,
+                icon: Icon(
+                  expanded ? Icons.chevron_left : Icons.chevron_right,
+                  color: Colors.blueAccent,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.05,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(40, 40),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildPrePlacedCard(
     BuildContext context,
     ThemeData theme,
@@ -1737,8 +1796,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
     final theme = Theme.of(context);
 
-    final isDesktop = isDesktopPlatform(context);
-
     Widget content = SingleChildScrollView(
       controller: _prePlacedTabScrollController,
       scrollDirection: Axis.horizontal,
@@ -1809,26 +1866,19 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               ],
             ),
           ),
-          if (isDesktop) const SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
 
-    if (isDesktop) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Scrollbar(
-            controller: _prePlacedTabScrollController,
-            thumbVisibility: true,
-            child: content,
-          ),
-        ],
-      );
-    }
-
-    return content;
+    return Scrollbar(
+      key: const ValueKey('prePlacedTabScrollbar'),
+      controller: _prePlacedTabScrollController,
+      thumbVisibility: true,
+      interactive: true,
+      scrollbarOrientation: ScrollbarOrientation.bottom,
+      child: content,
+    );
   }
 
   Widget _tabItem(
@@ -1880,8 +1930,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
   Widget _buildPlantTypeTabSwitcher(AppLocalizations l10n) {
     final theme = Theme.of(context);
-    final isDesktop = isDesktopPlatform(context);
-
     Widget content = SingleChildScrollView(
       controller: _plantTypeTabScrollController,
       scrollDirection: Axis.horizontal,
@@ -1914,26 +1962,19 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               ],
             ),
           ),
-          if (isDesktop) const SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
 
-    if (isDesktop) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Scrollbar(
-            controller: _plantTypeTabScrollController,
-            thumbVisibility: true,
-            child: content,
-          ),
-        ],
-      );
-    }
-
-    return content;
+    return Scrollbar(
+      key: const ValueKey('plantTypeTabScrollbar'),
+      controller: _plantTypeTabScrollController,
+      thumbVisibility: true,
+      interactive: true,
+      scrollbarOrientation: ScrollbarOrientation.bottom,
+      child: content,
+    );
   }
 
   Widget _subTabItem(int index, String label, ThemeData theme) {
@@ -2096,8 +2137,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         .toList();
     if (optionsForKind.length <= 1) return const SizedBox.shrink();
 
-    final isDesktop = isDesktopPlatform(context);
-
     Widget content = SingleChildScrollView(
       controller: _subCategoryScrollController,
       scrollDirection: Axis.horizontal,
@@ -2158,7 +2197,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               }).toList(),
             ),
           ),
-          if (isDesktop) const SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -2169,14 +2208,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isDesktop)
-            Scrollbar(
-              controller: _subCategoryScrollController,
-              thumbVisibility: true,
-              child: content,
-            )
-          else
-            content,
+          Scrollbar(
+            key: const ValueKey('gridSubCategoryScrollbar'),
+            controller: _subCategoryScrollController,
+            thumbVisibility: true,
+            interactive: true,
+            scrollbarOrientation: ScrollbarOrientation.bottom,
+            child: content,
+          ),
         ],
       ),
     );
@@ -2226,6 +2265,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       cols: cols,
       style: style,
       moduleData: result,
+      activeTabIndex: 1,
       cellBuilder: (col, row) => null,
     );
   }
@@ -3247,7 +3287,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             ],
             if (gridItems.isNotEmpty) ...[
               const SizedBox(height: 20),
-              _buildPlantListSection(
+              _buildGridItemListSection(
                 l10n.allObjectsInLevel,
                 gridItems,
                 _encounterGridItemsExpanded,
@@ -3255,8 +3295,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   () => _encounterGridItemsExpanded =
                       !_encounterGridItemsExpanded,
                 ),
-                levelFile: widget.levelFile,
-                showGridItemIcons: true,
               ),
             ],
             if (events.isNotEmpty) ...[
@@ -3575,36 +3613,39 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       ),
     ].where((stage) => stage.id.isNotEmpty).toList(growable: false);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        key: const ValueKey('singleHandedPlantUpgradePath'),
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var index = 0; index < stages.length; index++) ...[
-            Tooltip(
-              message: stages[index].detail,
-              child: PlantIcon(
-                key: ValueKey(
-                  'singleHandedPlantStage_${stages[index].id}_$index',
-                ),
-                id: stages[index].id,
-                size: 48,
-              ),
-            ),
-            if (index != stages.length - 1)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(
-                  Icons.arrow_forward,
-                  key: ValueKey('singleHandedUpgradeArrow_$index'),
-                  size: 22,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
+    return HorizontalTagScroller(
+      key: const ValueKey('singleHandedPlantPathScroller'),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+      children: [
+        Row(
+          key: const ValueKey('singleHandedPlantUpgradePath'),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var index = 0; index < stages.length; index++) ...[
+              Tooltip(
+                message: stages[index].detail,
+                child: PlantIcon(
+                  key: ValueKey(
+                    'singleHandedPlantStage_${stages[index].id}_$index',
+                  ),
+                  id: stages[index].id,
+                  size: 48,
                 ),
               ),
+              if (index != stages.length - 1)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    key: ValueKey('singleHandedUpgradeArrow_$index'),
+                    size: 22,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
+                  ),
+                ),
+            ],
           ],
-        ],
-      ),
+        ),
+      ],
     );
   }
 

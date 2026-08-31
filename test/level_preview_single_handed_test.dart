@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 PvzLevelFile _level({
   required bool includeMain,
   required bool includeTutorial,
+  List<String>? upgradePlants,
 }) {
   final modules = <String>[];
   final objects = <PvzObject>[];
@@ -32,13 +33,15 @@ PvzLevelFile _level({
         objClass: 'SingleHandedProperties',
         objData: SingleHandedPropertiesData(
           missileCount: 2,
-          dropWeaponDatas: [
-            SingleHandedDropWeaponData(weaponName: 'repeater', killCount: 20),
-            SingleHandedDropWeaponData(
-              weaponName: 'threepeater',
-              killCount: 40,
-            ),
-          ],
+          dropWeaponDatas: (upgradePlants ?? const ['repeater', 'threepeater'])
+              .indexed
+              .map(
+                (item) => SingleHandedDropWeaponData(
+                  weaponName: item.$2,
+                  killCount: (item.$1 + 1) * 20,
+                ),
+              )
+              .toList(),
           specialWaveDatas: [
             SingleHandedSpecialWaveData(
               wave: 5,
@@ -212,6 +215,45 @@ void main() {
       find.byKey(const ValueKey('singleHandedPlantUpgradePath')),
       findsNothing,
     );
+  });
+
+  testWidgets('long Single Handed upgrade path shows a horizontal scrollbar', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 900);
+    addTearDown(tester.view.reset);
+
+    final level = _level(
+      includeMain: true,
+      includeTutorial: false,
+      upgradePlants: const [
+        'repeater',
+        'threepeater',
+        'snow_pea',
+        'sunflower',
+        'wallnut',
+        'potato_mine',
+      ],
+    );
+    await tester.pumpWidget(_preview(level));
+    await tester.pumpAndSettle();
+
+    final pathScroller = find.byKey(
+      const ValueKey('singleHandedPlantPathScroller'),
+    );
+    expect(pathScroller, findsOneWidget);
+    final scrollable = tester.state<ScrollableState>(
+      find.descendant(of: pathScroller, matching: find.byType(Scrollable)),
+    );
+    expect(scrollable.position.maxScrollExtent, greaterThan(0));
+    final scrollbar = tester.widget<Scrollbar>(
+      find.descendant(
+        of: pathScroller,
+        matching: find.byKey(const ValueKey('horizontalTagScrollerScrollbar')),
+      ),
+    );
+    expect(scrollbar.thumbVisibility, isTrue);
   });
 
   testWidgets('seed bank account level uses the concise conveyor label', (

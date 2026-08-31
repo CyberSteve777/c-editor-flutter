@@ -440,48 +440,41 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                           onClear: () => _setSearchQuery(''),
                         ),
                       ),
-                      DefaultTabController(
-                        key: ValueKey(_selectedCategory),
-                        length: ZombieCategory.values.length,
-                        initialIndex: ZombieCategory.values.indexOf(
+                      AccentBarFilterTabRow(
+                        key: ValueKey(
+                          'zombieCategory_${_selectedCategory.name}',
+                        ),
+                        selectedIndex: ZombieCategory.values.indexOf(
                           _selectedCategory,
                         ),
-                        child: TabBar(
-                          isScrollable: true,
-                          indicatorColor: tabColors.indicator,
-                          labelColor: tabColors.label,
-                          unselectedLabelColor: tabColors.unselectedLabel,
-                          onTap: (index) =>
-                              _setCategory(ZombieCategory.values[index]),
-                          tabs: ZombieCategory.values.map((category) {
-                            final isSelected = _selectedCategory == category;
-                            return Tab(
-                              child: Row(
-                                children: [
-                                  if (category ==
-                                      ZombieCategory.collection) ...[
-                                    Icon(
-                                      Icons.star,
-                                      size: 16,
-                                      color: isSelected
-                                          ? tabColors.label
-                                          : tabColors.unselectedLabel,
-                                    ),
-                                    const SizedBox(width: 4),
-                                  ],
-                                  Text(
-                                    category.getLabel(context),
-                                    style: TextStyle(
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                ],
+                        onSelected: (index) =>
+                            _setCategory(ZombieCategory.values[index]),
+                        tabs: ZombieCategory.values.map((category) {
+                          final isSelected = _selectedCategory == category;
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (category == ZombieCategory.collection) ...[
+                                Icon(
+                                  Icons.star,
+                                  size: 16,
+                                  color: isSelected
+                                      ? tabColors.label
+                                      : tabColors.unselectedLabel,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              Text(
+                                category.getLabel(context),
+                                style: TextStyle(
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                            ],
+                          );
+                        }).toList(),
                       ),
                       if (_selectedCategory != ZombieCategory.collection)
                         AccentBarFilterTabRow(

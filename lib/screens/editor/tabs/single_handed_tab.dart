@@ -678,8 +678,9 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
     final theme = Theme.of(context);
     final iconPath = _plantIcon(plantId);
 
-    Widget plantIdentity({required bool stackIcon}) {
-      final icon = ClipRRect(
+    Widget plantIcon() => SizedBox(
+      key: ValueKey('singleHandedPlantIcon_$plantId'),
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: AssetImageWidget(
           assetPath: iconPath,
@@ -688,8 +689,12 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
           height: 56,
           fit: BoxFit.cover,
         ),
-      );
-      final text = Column(
+      ),
+    );
+
+    Widget plantIdentity() => SizedBox(
+      key: ValueKey('singleHandedPlantIdentity_$plantId'),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -706,25 +711,8 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
             ),
           ),
         ],
-      );
-
-      return SizedBox(
-        key: ValueKey('singleHandedPlantIdentity_$plantId'),
-        child: stackIcon
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [icon, const SizedBox(height: 12), text],
-              )
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  icon,
-                  const SizedBox(width: 12),
-                  Expanded(child: text),
-                ],
-              ),
-      );
-    }
+      ),
+    );
 
     Widget plantAction() => SizedBox(
       key: ValueKey('singleHandedPlantAction_$plantId'),
@@ -748,19 +736,21 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    plantIdentity(stackIcon: constraints.maxWidth < 280),
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: plantAction(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [plantIcon(), const Spacer(), plantAction()],
                     ),
+                    const SizedBox(height: 12),
+                    plantIdentity(),
                   ],
                 );
               }
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(child: plantIdentity(stackIcon: false)),
+                  plantIcon(),
+                  const SizedBox(width: 12),
+                  Expanded(child: plantIdentity()),
                   const SizedBox(width: 8),
                   plantAction(),
                 ],

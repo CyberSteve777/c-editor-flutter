@@ -70,6 +70,33 @@ void main() {
     expect(scrollbar.thumbVisibility, isFalse);
   });
 
+  testWidgets('wide overflowing tag row also keeps its scrollbar visible', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(900, 240);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: HorizontalTagScroller(
+            children: List.generate(
+              8,
+              (index) => SizedBox(width: 160, child: Text('Tag $index')),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final scrollbar = tester.widget<Scrollbar>(
+      find.byKey(const ValueKey('horizontalTagScrollerScrollbar')),
+    );
+    expect(scrollbar.thumbVisibility, isTrue);
+  });
+
   testWidgets('horizontal tag rows restore an explicit scroll offset', (
     tester,
   ) async {
@@ -159,6 +186,59 @@ void main() {
     // are the visual gap requested between it and the active underline.
     expect(rowBottom - indicatorBottom, greaterThanOrEqualTo(10));
   });
+
+  testWidgets(
+    'top tab strip keeps a visible scrollbar and follows controller',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(320, 260);
+      addTearDown(tester.view.reset);
+
+      TabController? controller;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: DefaultTabController(
+            length: 4,
+            child: Builder(
+              builder: (context) {
+                controller = DefaultTabController.of(context);
+                return Scaffold(
+                  body: PersistentScrollableTabBar(
+                    controller: controller!,
+                    tabs: const [
+                      Tab(icon: Icon(Icons.settings), text: 'Settings'),
+                      Tab(icon: Icon(Icons.timeline), text: 'Timeline'),
+                      Tab(icon: Icon(Icons.waves), text: 'Wave generator'),
+                      Tab(icon: Icon(Icons.sledding), text: 'All by Oneself'),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final tabStrip = find.byType(PersistentScrollableTabBar);
+      final scrollable = tester.state<ScrollableState>(
+        find.descendant(of: tabStrip, matching: find.byType(Scrollable)),
+      );
+      expect(scrollable.position.maxScrollExtent, greaterThan(0));
+      final scrollbar = tester.widget<Scrollbar>(
+        find.descendant(
+          of: tabStrip,
+          matching: find.byKey(const ValueKey('accentBarFilterScrollbar')),
+        ),
+      );
+      expect(scrollbar.thumbVisibility, isTrue);
+
+      controller!.animateTo(3);
+      await tester.pumpAndSettle();
+      expect(controller!.index, 3);
+      expect(scrollable.position.pixels, greaterThan(0));
+    },
+  );
 
   testWidgets('module and event category tags leave a clear scrollbar lane', (
     tester,

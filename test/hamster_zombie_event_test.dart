@@ -4,12 +4,14 @@ import 'package:c_editor/data/registry/conflict_registry.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/zombie_discovery.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_widgets.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/events/hamster_zombie_event_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) {
   return MaterialApp(
@@ -24,7 +26,12 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
-    await Future.wait([ReferenceRepository.init(), GridItemRepository.init()]);
+    SharedPreferences.setMockInitialValues({});
+    await Future.wait([
+      ReferenceRepository.init(),
+      GridItemRepository.init(),
+      ZombieRepository().init(),
+    ]);
   });
 
   test(
@@ -192,6 +199,72 @@ void main() {
     },
   );
 
+  testWidgets(
+    'hamsterball generation fields align mixed-height external labels',
+    (tester) async {
+      tester.view.physicalSize = const Size(1100, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final event = PvzObject(
+        aliases: const ['HamsterBallEvent'],
+        objClass: 'HamsterZombieSpawnerProps',
+        objData: HamsterZombieSpawnerPropsData().toJson(),
+      );
+      await tester.pumpWidget(
+        _localizedApp(
+          Builder(
+            builder: (context) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(textScaler: const TextScaler.linear(1.4)),
+                child: HamsterZombieEventScreen(
+                  rtid: 'RTID(HamsterBallEvent@CurrentLevel)',
+                  levelFile: PvzLevelFile(objects: [event]),
+                  onChanged: () {},
+                  onBack: () {},
+                  onRequestZombieSelection: (_) {},
+                ),
+              );
+            },
+          ),
+          locale: const Locale('ru'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final groupSize = find.byKey(const ValueKey('hamsterGroupSize'));
+      final groupInterval = find.byKey(
+        const ValueKey('hamsterTimeBetweenGroups'),
+      );
+      final fullSpawn = find.byKey(
+        const ValueKey('hamsterTimeBeforeFullSpawn'),
+      );
+      expect(
+        tester.getRect(groupSize).top,
+        closeTo(tester.getRect(fullSpawn).top, 1),
+      );
+      expect(
+        tester.getRect(groupInterval).top,
+        closeTo(tester.getRect(fullSpawn).top, 1),
+      );
+      expect(
+        tester.getRect(find.text('Размер группы')).center.dy,
+        closeTo(
+          tester
+              .getRect(
+                find.text('Время до полного появления (TimeBeforeFullSpawn)'),
+              )
+              .center
+              .dy,
+          1,
+        ),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('hamsterball heading and zombie card reflow on narrow screens', (
     tester,
   ) async {
@@ -231,6 +304,7 @@ void main() {
             );
           },
         ),
+        locale: const Locale('ru'),
       ),
     );
     await tester.pumpAndSettle();
@@ -238,6 +312,7 @@ void main() {
     final heading = find.byKey(const ValueKey('hamsterballZombiesHeading'));
     final addButton = find.byKey(const ValueKey('hamsterballAddZombieButton'));
     final identity = find.byKey(const ValueKey('hamsterZombieIdentity0'));
+    final icon = find.byKey(const ValueKey('hamsterZombieIcon0'));
     final actions = find.byKey(const ValueKey('hamsterZombieActions0'));
     await tester.ensureVisible(identity);
     await tester.pumpAndSettle();
@@ -247,9 +322,23 @@ void main() {
       greaterThanOrEqualTo(tester.getRect(heading).bottom),
     );
     expect(
-      tester.getRect(actions).top,
-      greaterThanOrEqualTo(tester.getRect(identity).bottom),
+      tester.getRect(addButton).left,
+      closeTo(tester.getRect(heading).left, 1),
     );
+    expect(
+      (tester.getRect(actions).center.dy - tester.getRect(icon).center.dy)
+          .abs(),
+      lessThan(1),
+    );
+    expect(
+      tester.getRect(identity).top,
+      greaterThanOrEqualTo(tester.getRect(icon).bottom),
+    );
+    final wrappingBehavior = tester.widget<Text>(
+      find.text('Смена ряда при столкновении'),
+    );
+    expect(wrappingBehavior.maxLines, isNull);
+    expect(wrappingBehavior.overflow, isNull);
     expect(tester.takeException(), isNull);
   });
 

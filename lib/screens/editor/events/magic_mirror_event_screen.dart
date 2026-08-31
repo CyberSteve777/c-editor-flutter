@@ -222,34 +222,37 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
                 onChanged: widget.onChanged,
               ),
               const SizedBox(height: 16),
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _data.arrays.length + 1,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    if (index == _data.arrays.length) {
-                      return OutlinedButton.icon(
+              HorizontalTagScroller(
+                key: const ValueKey('magicMirrorGroupScroller'),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+                children: [
+                  for (
+                    var index = 0;
+                    index <= _data.arrays.length;
+                    index++
+                  ) ...[
+                    if (index > 0) const SizedBox(width: 8),
+                    if (index == _data.arrays.length)
+                      OutlinedButton.icon(
                         onPressed: _addArray,
                         icon: const Icon(Icons.add),
                         label: Text(l10n?.add ?? 'Add'),
-                      );
-                    }
-                    final selected = index == _selectedIndex;
-                    return FilterChip(
-                      label: Text(
-                        l10n?.groupN(index + 1) ?? 'Group ${index + 1}',
+                      )
+                    else
+                      FilterChip(
+                        label: Text(
+                          l10n?.groupN(index + 1) ?? 'Group ${index + 1}',
+                        ),
+                        selected: index == _selectedIndex,
+                        onSelected: (_) =>
+                            setState(() => _selectedIndex = index),
+                        deleteIcon: const Icon(Icons.close),
+                        onDeleted: _data.arrays.length > 1
+                            ? () => _removeArray(index)
+                            : null,
                       ),
-                      selected: selected,
-                      onSelected: (_) => setState(() => _selectedIndex = index),
-                      deleteIcon: const Icon(Icons.close),
-                      onDeleted: _data.arrays.length > 1
-                          ? () => _removeArray(index)
-                          : null,
-                    );
-                  },
-                ),
+                  ],
+                ],
               ),
               const SizedBox(height: 16),
               if (currentArray != null) ...[

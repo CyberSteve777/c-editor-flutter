@@ -159,6 +159,49 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'external labels share height and center shorter labels in a field row',
+    (tester) async {
+      const shortFieldKey = Key('aligned-short-input');
+      const longFieldKey = Key('aligned-long-input');
+      const shortLabel = 'Group size';
+      const longLabel =
+          'A longer localized label that wraps onto multiple lines';
+
+      await tester.pumpWidget(
+        _testApp(
+          width: 600,
+          child: EditorResponsiveFieldRow(
+            breakpoint: 500,
+            children: [
+              EditorResponsiveInputField(
+                label: shortLabel,
+                builder: (context, decoration) =>
+                    TextField(key: shortFieldKey, decoration: decoration),
+              ),
+              EditorResponsiveInputField(
+                label: longLabel,
+                builder: (context, decoration) =>
+                    TextField(key: longFieldKey, decoration: decoration),
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final shortFieldRect = tester.getRect(find.byKey(shortFieldKey));
+      final longFieldRect = tester.getRect(find.byKey(longFieldKey));
+      final shortLabelRect = tester.getRect(find.text(shortLabel));
+      final longLabelRect = tester.getRect(find.text(longLabel));
+
+      expect(shortFieldRect.top, closeTo(longFieldRect.top, 1));
+      expect(shortLabelRect.center.dy, closeTo(longLabelRect.center.dy, 1));
+      expect(shortLabelRect.top, greaterThan(longLabelRect.top));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('responsive action row moves the action below long content', (
     tester,
   ) async {
