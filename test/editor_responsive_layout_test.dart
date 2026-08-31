@@ -95,10 +95,7 @@ void main() {
     expect(find.text(label), findsOneWidget);
     final externalLabel = tester.widget<Text>(find.text(label));
     final theme = Theme.of(tester.element(find.text(label)));
-    expect(
-      externalLabel.style?.fontSize,
-      theme.textTheme.bodySmall?.fontSize,
-    );
+    expect(externalLabel.style?.fontSize, theme.textTheme.bodySmall?.fontSize);
     expect(tester.takeException(), isNull);
   });
 
@@ -120,6 +117,45 @@ void main() {
 
     final field = tester.widget<TextField>(find.byKey(fieldKey));
     expect(field.decoration?.labelText, 'Value');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('one oversized label moves every field on the page above', (
+    tester,
+  ) async {
+    const shortFieldKey = Key('grouped-short-input');
+    const longFieldKey = Key('grouped-long-input');
+    const longLabel =
+        'A very long localized label that cannot fit inside this input';
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 250,
+        child: Column(
+          children: [
+            EditorResponsiveInputField(
+              label: 'Value',
+              builder: (context, decoration) =>
+                  TextField(key: shortFieldKey, decoration: decoration),
+            ),
+            const SizedBox(height: 12),
+            EditorResponsiveInputField(
+              label: longLabel,
+              builder: (context, decoration) =>
+                  TextField(key: longFieldKey, decoration: decoration),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final shortField = tester.widget<TextField>(find.byKey(shortFieldKey));
+    final longField = tester.widget<TextField>(find.byKey(longFieldKey));
+    expect(shortField.decoration?.labelText, isNull);
+    expect(longField.decoration?.labelText, isNull);
+    expect(find.text('Value'), findsOneWidget);
+    expect(find.text(longLabel), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

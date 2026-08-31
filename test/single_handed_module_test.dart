@@ -158,6 +158,51 @@ void main() {
     expect((module.objData as Map)['MissileCount'], 3);
   });
 
+  testWidgets(
+    'Single Handed plant cards move actions below text on narrow screens',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final level = _singleHandedLevel(_sampleData());
+      await tester.pumpWidget(
+        _localizedApp(
+          Builder(
+            builder: (context) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+                child: Scaffold(
+                  body: SingleHandedTab(levelFile: level, onChanged: () {}),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final identity = find.byKey(
+        const ValueKey('singleHandedPlantIdentity_repeater'),
+      );
+      final action = find.byKey(
+        const ValueKey('singleHandedPlantAction_repeater'),
+      );
+      await tester.ensureVisible(identity);
+      await tester.pumpAndSettle();
+
+      expect(identity, findsOneWidget);
+      expect(action, findsOneWidget);
+      expect(
+        tester.getRect(action).top,
+        greaterThanOrEqualTo(tester.getRect(identity).bottom),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('Not OK Corral preserves an old empty prompt as custom text', (
     tester,
   ) async {

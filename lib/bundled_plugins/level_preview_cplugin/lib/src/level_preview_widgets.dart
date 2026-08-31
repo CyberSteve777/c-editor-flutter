@@ -4,6 +4,7 @@ import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
+import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart'
     show CustomResourceBadge, presetCustomResourceBadgeColor;
 import 'package:c_editor/data/repository/tool_repository.dart';
@@ -15,7 +16,10 @@ import 'package:collection/collection.dart';
 
 String _normalizeId(String id) {
   var normalized = id.replaceAll(RegExp(r'^(Zombie|Plant)'), '');
-  normalized = normalized.replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (Match m) => '${m[1]}_${m[2]}');
+  normalized = normalized.replaceAllMapped(
+    RegExp(r'([a-z])([A-Z])'),
+    (Match m) => '${m[1]}_${m[2]}',
+  );
   return normalized.toLowerCase();
 }
 
@@ -87,7 +91,10 @@ class UniversalIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final clean = id.replaceAll(RegExp(r'^RTID\(|@CurrentLevel\)$|@LevelModules\)$'), '');
+    final clean = id.replaceAll(
+      RegExp(r'^RTID\(|@CurrentLevel\)$|@LevelModules\)$'),
+      '',
+    );
 
     if (clean == 'plantfood' || clean == 'tool_plantfood') {
       return _IconWrapper(
@@ -122,16 +129,46 @@ class UniversalIcon extends StatelessWidget {
       return ToolIcon(id: clean, size: size, isGrid: isGrid);
     }
 
-    final isCustomZombie = levelFile != null && CustomZombieLevelUtils.resolveCustomZombieAlias(levelFile!, clean) != null;
+    final isCustomZombie =
+        levelFile != null &&
+        CustomZombieLevelUtils.resolveCustomZombieAlias(levelFile!, clean) !=
+            null;
 
-    if (isCustomZombie || ZombieRepository().getZombieById(clean) != null || ZombieRepository().getZombieById(_normalizeId(clean)) != null) {
-      return ZombieIcon(id: clean, size: size, isGrid: isGrid, levelFile: levelFile);
+    if (isCustomZombie ||
+        ZombieRepository().getZombieById(clean) != null ||
+        ZombieRepository().getZombieById(_normalizeId(clean)) != null) {
+      return ZombieIcon(
+        id: clean,
+        size: size,
+        isGrid: isGrid,
+        levelFile: levelFile,
+      );
     }
-    if (PlantRepository().getPlantInfoById(clean) != null || PlantRepository().getPlantInfoById(_normalizeId(clean)) != null) {
+    if (PlantRepository().getPlantInfoById(clean) != null ||
+        PlantRepository().getPlantInfoById(_normalizeId(clean)) != null) {
       return PlantIcon(id: clean, size: size, isGrid: isGrid);
     }
 
-    return GridItemIcon(id: clean, size: size, isGrid: isGrid);
+    final isKnownGridItem =
+        GridItemRepository.getByTypeName(clean) != null ||
+        (ReferenceRepository.instance.isLoaded &&
+            ReferenceRepository.instance.isValidGridItem(clean));
+    if (isKnownGridItem) {
+      return GridItemIcon(id: clean, size: size, isGrid: isGrid);
+    }
+
+    // A resource that is not recognized as a plant, zombie, tool, boss, or
+    // grid item should keep its original code name. Treating every unknown
+    // resource as a grid item incorrectly adds a `griditem_` prefix to its
+    // tooltip and obscures what is actually stored in the level.
+    return _IconWrapper(
+      id: clean,
+      tooltip: clean,
+      asset: 'assets/images/others/unknown.webp',
+      size: size,
+      isGrid: isGrid,
+      fallbackIcon: Icons.help_outline,
+    );
   }
 }
 
@@ -151,7 +188,7 @@ class ToolIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final info = ToolRepository.get(id);
     final tooltip = ToolRepository.localizedName(context, id);
-    
+
     String? asset;
     if (info?.icon != null) {
       if (info!.icon!.startsWith('assets/')) {
@@ -186,7 +223,8 @@ class PlantIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final info = PlantRepository().getPlantInfoById(id) ??
+    final info =
+        PlantRepository().getPlantInfoById(id) ??
         PlantRepository().getPlantInfoById(_normalizeId(id));
     final asset = info?.iconAssetPath;
     final tooltip = ResourceNames.lookup(context, info?.name ?? id);
@@ -222,11 +260,16 @@ class ZombieIcon extends StatelessWidget {
     bool isCustom = false;
 
     if (levelFile != null) {
-      final customAlias = CustomZombieLevelUtils.resolveCustomZombieAlias(levelFile!, id);
+      final customAlias = CustomZombieLevelUtils.resolveCustomZombieAlias(
+        levelFile!,
+        id,
+      );
       if (customAlias != null) {
         isCustom = true;
         final obj = levelFile!.objects.firstWhereOrNull(
-          (o) => o.objClass == 'ZombieType' && o.aliases?.contains(customAlias) == true
+          (o) =>
+              o.objClass == 'ZombieType' &&
+              o.aliases?.contains(customAlias) == true,
         );
         baseId = (obj?.objData as Map?)?['TypeName'];
       }
@@ -234,12 +277,15 @@ class ZombieIcon extends StatelessWidget {
 
     final targetId = baseId ?? id;
     final repo = ZombieRepository();
-    final info = repo.getZombieById(targetId) ??
+    final info =
+        repo.getZombieById(targetId) ??
         repo.getZombieById(_normalizeId(targetId));
-    
-    final nameKey = isCustom ? id : (info != null ? repo.getName(info.id) : repo.getName(targetId));
+
+    final nameKey = isCustom
+        ? id
+        : (info != null ? repo.getName(info.id) : repo.getName(targetId));
     final tooltip = ResourceNames.lookup(context, nameKey);
-    
+
     String? asset;
     if (info?.icon != null) {
       asset = 'assets/images/zombies/${info!.icon}';
@@ -280,7 +326,9 @@ class GridItemIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path = GridItemRepository.getIconPath(id);
-    final resourceKey = id.startsWith('Armrack') ? 'armrack_$id' : 'griditem_$id';
+    final resourceKey = id.startsWith('Armrack')
+        ? 'armrack_$id'
+        : 'griditem_$id';
     final tooltip = ResourceNames.lookup(context, resourceKey);
     final isPreset =
         !isGrid &&
@@ -406,7 +454,9 @@ class _IconWrapper extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.07),
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(8),
         ),
         child: asset != null
@@ -414,7 +464,13 @@ class _IconWrapper extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 child: AssetImageWidget(assetPath: asset!, fit: BoxFit.contain),
               )
-            : Center(child: Icon(fallbackIcon, size: size / 2, color: Colors.white24)),
+            : Center(
+                child: Icon(
+                  fallbackIcon,
+                  size: size / 2,
+                  color: Colors.white24,
+                ),
+              ),
       );
     }
 
@@ -423,19 +479,12 @@ class _IconWrapper extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           main,
-          Positioned(
-            top: -2,
-            left: -2,
-            child: _CustomBadge(size: size),
-          ),
+          Positioned(top: -2, left: -2, child: _CustomBadge(size: size)),
         ],
       );
     }
 
-    return Tooltip(
-      message: tooltip,
-      child: main,
-    );
+    return Tooltip(message: tooltip, child: main);
   }
 }
 

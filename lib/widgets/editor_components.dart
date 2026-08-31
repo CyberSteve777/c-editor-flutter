@@ -379,9 +379,48 @@ class EditorResponsiveLabelField extends StatelessWidget {
 typedef EditorInputFieldBuilder =
     Widget Function(BuildContext context, InputDecoration decoration);
 
+final Expando<_EditorResponsiveLabelGroup> _editorResponsiveLabelGroups =
+    Expando<_EditorResponsiveLabelGroup>('editorResponsiveLabelGroups');
+
+class _EditorResponsiveLabelGroup extends ChangeNotifier {
+  final Map<Object, bool> _overflowByOwner = Map<Object, bool>.identity();
+  bool _forceExternal = false;
+  bool _notifyScheduled = false;
+
+  bool get forceExternal => _forceExternal;
+
+  void report(Object owner, bool overflows) {
+    if (_overflowByOwner[owner] == overflows) return;
+    _overflowByOwner[owner] = overflows;
+    _recompute();
+  }
+
+  void remove(Object owner) {
+    if (_overflowByOwner.remove(owner) == null) return;
+    _recompute();
+  }
+
+  void _recompute() {
+    final next = _overflowByOwner.values.any((overflows) => overflows);
+    if (next == _forceExternal) return;
+    _forceExternal = next;
+    if (_notifyScheduled) return;
+    _notifyScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _notifyScheduled = false;
+      notifyListeners();
+    });
+  }
+}
+
+_EditorResponsiveLabelGroup _responsiveLabelGroupFor(Object key) {
+  return _editorResponsiveLabelGroups[key] ??= _EditorResponsiveLabelGroup();
+}
+
 /// Keeps an outlined input label readable at large text scales. Short labels
-/// stay in the field; labels that cannot fit move above it and wrap fully.
-class EditorResponsiveInputField extends StatelessWidget {
+/// stay in the field; if any label on the same page cannot fit, every field on
+/// that page moves its label above so the form remains visually consistent.
+class EditorResponsiveInputField extends StatefulWidget {
   const EditorResponsiveInputField({
     super.key,
     required this.label,
@@ -398,49 +437,88 @@ class EditorResponsiveInputField extends StatelessWidget {
   final TextStyle? externalLabelStyle;
 
   @override
+  State<EditorResponsiveInputField> createState() =>
+      _EditorResponsiveInputFieldState();
+}
+
+class _EditorResponsiveInputFieldState
+    extends State<EditorResponsiveInputField> {
+  Object? _groupKey;
+  late _EditorResponsiveLabelGroup _group;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final nextKey = Scaffold.maybeOf(context) ?? ModalRoute.of(context) ?? this;
+    if (identical(nextKey, _groupKey)) return;
+    if (_groupKey != null) {
+      _group.removeListener(_handleGroupChanged);
+      _group.remove(this);
+    }
+    _groupKey = nextKey;
+    _group = _responsiveLabelGroupFor(nextKey);
+    _group.addListener(_handleGroupChanged);
+  }
+
+  void _handleGroupChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    if (_groupKey != null) {
+      _group.removeListener(_handleGroupChanged);
+      _group.remove(this);
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final theme = Theme.of(context);
         final labelStyle =
-            decoration.floatingLabelStyle ??
-            decoration.labelStyle ??
+            widget.decoration.floatingLabelStyle ??
+            widget.decoration.labelStyle ??
             theme.inputDecorationTheme.floatingLabelStyle ??
             theme.inputDecorationTheme.labelStyle ??
             theme.textTheme.bodyLarge ??
             const TextStyle(fontSize: 16);
         final reservedWidth =
             48.0 +
-            (decoration.prefixIcon == null ? 0 : 48) +
-            (decoration.suffixIcon == null ? 0 : 48);
+            (widget.decoration.prefixIcon == null ? 0 : 48) +
+            (widget.decoration.suffixIcon == null ? 0 : 48);
         final availableLabelWidth = constraints.hasBoundedWidth
             ? constraints.maxWidth - reservedWidth
             : double.infinity;
         final labelPainter = TextPainter(
-          text: TextSpan(text: label, style: labelStyle),
+          text: TextSpan(text: widget.label, style: labelStyle),
           textDirection: Directionality.of(context),
           textScaler: MediaQuery.textScalerOf(context),
           maxLines: 1,
         )..layout(maxWidth: availableLabelWidth > 0 ? availableLabelWidth : 0);
-        final showExternalLabel = labelPainter.didExceedMaxLines;
+        final labelOverflows = labelPainter.didExceedMaxLines;
+        _group.report(this, labelOverflows);
+        final showExternalLabel = labelOverflows || _group.forceExternal;
         final effectiveDecoration = showExternalLabel
-            ? decoration
-            : decoration.copyWith(labelText: label);
-        final field = builder(context, effectiveDecoration);
+            ? widget.decoration
+            : widget.decoration.copyWith(labelText: widget.label);
+        final field = widget.builder(context, effectiveDecoration);
 
         if (!showExternalLabel) return field;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              label,
+              widget.label,
               style:
-                  externalLabelStyle ??
+                  widget.externalLabelStyle ??
                   theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
             ),
-            SizedBox(height: labelSpacing),
+            SizedBox(height: widget.labelSpacing),
             field,
           ],
         );
@@ -1280,12 +1358,14 @@ class EditorChoiceDialogOption<T> {
     required this.icon,
     required this.title,
     this.subtitle,
+    this.key,
   });
 
   final T value;
   final IconData icon;
   final String title;
   final String? subtitle;
+  final Key? key;
 }
 
 /// Shows add-content choices as descriptive cards instead of plain text rows.
@@ -1293,6 +1373,7 @@ Future<T?> showEditorChoiceDialog<T>(
   BuildContext context, {
   required String title,
   required List<EditorChoiceDialogOption<T>> options,
+  Key? dialogKey,
 }) {
   return showDialog<T>(
     context: context,
@@ -1302,6 +1383,8 @@ Future<T?> showEditorChoiceDialog<T>(
       final l10n = AppLocalizations.of(ctx);
       final compact = MediaQuery.sizeOf(ctx).width < 400;
       return AlertDialog(
+        key: dialogKey,
+        scrollable: true,
         insetPadding: EdgeInsets.symmetric(
           horizontal: compact ? 16 : 40,
           vertical: 24,
@@ -1321,87 +1404,92 @@ Future<T?> showEditorChoiceDialog<T>(
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 440),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final option in options)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Material(
-                      key: ValueKey('editorChoiceOption_${option.value}'),
-                      color: colors.surfaceContainerHighest.withValues(
-                        alpha: 0.65,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in options)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Material(
+                    key:
+                        option.key ??
+                        ValueKey('editorChoiceOption_${option.value}'),
+                    color: colors.surfaceContainerHighest.withValues(
+                      alpha: 0.65,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(
+                        color: colors.outlineVariant.withValues(alpha: 0.7),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: colors.outlineVariant.withValues(alpha: 0.7),
-                        ),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(ctx, option.value),
-                        child: Padding(
-                          padding: EdgeInsets.all(compact ? 12 : 14),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: compact ? 44 : 48,
-                                height: compact ? 44 : 48,
-                                decoration: BoxDecoration(
-                                  color: colors.primaryContainer,
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Icon(
-                                  option.icon,
-                                  color: colors.onPrimaryContainer,
-                                  size: 27,
-                                ),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () => Navigator.pop(ctx, option.value),
+                      child: Padding(
+                        padding: EdgeInsets.all(compact ? 12 : 14),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: compact ? 44 : 48,
+                              height: compact ? 44 : 48,
+                              decoration: BoxDecoration(
+                                color: colors.primaryContainer,
+                                borderRadius: BorderRadius.circular(14),
                               ),
-                              SizedBox(width: compact ? 12 : 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
+                              child: Icon(
+                                option.icon,
+                                color: colors.onPrimaryContainer,
+                                size: 27,
+                              ),
+                            ),
+                            SizedBox(width: compact ? 12 : 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    option.title,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (option.subtitle?.trim().isNotEmpty ==
+                                      true) ...[
+                                    const SizedBox(height: 4),
                                     Text(
-                                      option.title,
-                                      style: theme.textTheme.titleSmall
+                                      option.subtitle!,
+                                      style: theme.textTheme.bodySmall
                                           ?.copyWith(
-                                            fontWeight: FontWeight.bold,
+                                            color: colors.onSurfaceVariant,
+                                            height: 1.3,
                                           ),
                                     ),
-                                    if (option.subtitle?.trim().isNotEmpty ==
-                                        true) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        option.subtitle!,
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: colors.onSurfaceVariant,
-                                              height: 1.3,
-                                            ),
-                                      ),
-                                    ],
                                   ],
-                                ),
+                                ],
                               ),
-                              SizedBox(width: compact ? 4 : 8),
-                              Icon(
-                                Icons.chevron_right,
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(width: compact ? 4 : 8),
+                            Icon(
+                              Icons.chevron_right,
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
+        ),
+        actionsPadding: EdgeInsets.fromLTRB(
+          compact ? 16 : 24,
+          8,
+          compact ? 16 : 24,
+          16,
         ),
         actions: [
           TextButton(

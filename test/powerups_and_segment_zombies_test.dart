@@ -278,6 +278,60 @@ void main() {
     });
   });
 
+  testWidgets('Power Ups add choices stay clear of Cancel on narrow screens', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final object = PvzObject(
+      aliases: const ['LevelPowerups'],
+      objClass: 'LevelPowerupModuleProperties',
+      objData: LevelPowerupModulePropertiesData(powerups: const []).toJson(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) {
+          final media = MediaQuery.of(context);
+          return MediaQuery(
+            data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+            child: child!,
+          );
+        },
+        home: LevelPowerupModuleScreen(
+          rtid: 'RTID(LevelPowerups@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [object]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('powerupAddButton')));
+    await tester.pumpAndSettle();
+    final pinchOption = find.byKey(
+      const ValueKey('powerupAddOption_poweruppinchzombie'),
+    );
+    final cancelButton = find.widgetWithText(TextButton, 'Cancel');
+    await tester.ensureVisible(pinchOption);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getRect(pinchOption).bottom,
+      lessThanOrEqualTo(tester.getRect(cancelButton).top),
+    );
+    await tester.tap(cancelButton);
+    await tester.pumpAndSettle();
+    expect((object.objData as Map<String, dynamic>)['Powerups'], isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Power Ups help explains that list order controls game order', (
     tester,
   ) async {

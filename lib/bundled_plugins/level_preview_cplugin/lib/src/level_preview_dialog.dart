@@ -949,8 +949,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final bool isDataEmpty =
         presetPlants.isEmpty && blackList.isEmpty && whiteList.isEmpty;
     final String levelText = plantLevel == 0
-        ? l10n.followAccountLevel
-        : "$plantLevel";
+        ? l10n.levelAccount
+        : "${l10n.plantLevelLabel}: $plantLevel";
 
     return Container(
       decoration: BoxDecoration(
@@ -1073,7 +1073,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     color: Colors.blueAccent,
                   ),
                   Text(
-                    "${l10n.plantLevelLabel}: $levelText",
+                    levelText,
                     style: const TextStyle(
                       fontSize: 15,
                       color: Colors.blueAccent,
@@ -3434,7 +3434,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               ),
             ),
             if (data != null) ...[
-              _buildSubSectionTitle(l10n.singleHandedPlantConfiguration, theme),
+              _buildSubSectionTitle(
+                l10n.singleHandedOverviewBasicConfiguration,
+                theme,
+              ),
               const SizedBox(height: 10),
               _buildSingleHandedPlantPath(context, data, theme, l10n),
               const SizedBox(height: 18),

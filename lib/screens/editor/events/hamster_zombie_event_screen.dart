@@ -337,23 +337,22 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l10n.hamsterballZombies,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                EditorResponsiveActionRow(
+                  breakpoint: 620,
+                  content: Text(
+                    l10n.hamsterballZombies,
+                    key: const ValueKey('hamsterballZombiesHeading'),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
                     ),
-                    PvzAddButton(
-                      onPressed: _addZombie,
-                      size: 40,
-                      label: l10n.hamsterballAddZombie,
-                    ),
-                  ],
+                  ),
+                  action: PvzAddButton(
+                    key: const ValueKey('hamsterballAddZombieButton'),
+                    onPressed: _addZombie,
+                    size: 40,
+                    label: l10n.hamsterballAddZombie,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 if (_data.zombies.isEmpty)
@@ -397,48 +396,80 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                if (iconPath != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: AssetImageWidget(
-                      assetPath: iconPath,
-                      altCandidates: imageAltCandidates(iconPath),
-                      width: 64,
-                      height: 64,
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final title = Column(
+                  key: ValueKey('hamsterZombieIdentity$index'),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayName.isEmpty ? baseType : displayName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    Text(
+                      baseType,
+                      key: ValueKey('hamsterZombieCode$index'),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                );
+                final actions = Row(
+                  key: ValueKey('hamsterZombieActions$index'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      key: ValueKey('hamsterZombieCopy$index'),
+                      icon: const Icon(Icons.copy_outlined),
+                      tooltip: l10n.copy,
+                      onPressed: () => _duplicateZombie(index),
+                    ),
+                    IconButton(
+                      key: ValueKey('hamsterZombieDelete$index'),
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: l10n.delete,
+                      onPressed: () => _removeZombie(index),
+                    ),
+                  ],
+                );
+                final icon = iconPath == null
+                    ? null
+                    : AssetImageWidget(
+                        assetPath: iconPath,
+                        altCandidates: imageAltCandidates(iconPath),
+                        width: 64,
+                        height: 64,
+                      );
+                final textScale =
+                    MediaQuery.textScalerOf(context).scale(16) / 16;
+                final compact = constraints.maxWidth < 520 || textScale > 1.3;
+
+                if (compact) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        displayName.isEmpty ? baseType : displayName,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        baseType,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
+                      if (icon != null) ...[
+                        Align(alignment: Alignment.centerLeft, child: icon),
+                        const SizedBox(height: 12),
+                      ],
+                      title,
+                      const SizedBox(height: 8),
+                      Align(alignment: Alignment.centerRight, child: actions),
                     ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.copy_outlined),
-                  tooltip: l10n.copy,
-                  onPressed: () => _duplicateZombie(index),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  tooltip: l10n.delete,
-                  onPressed: () => _removeZombie(index),
-                ),
-              ],
+                  );
+                }
+                return Row(
+                  children: [
+                    if (icon != null) ...[icon, const SizedBox(width: 12)],
+                    Expanded(child: title),
+                    const SizedBox(width: 8),
+                    actions,
+                  ],
+                );
+              },
             ),
             const Divider(height: 28),
             LayoutBuilder(
@@ -501,43 +532,78 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            RadioGroup<int>(
-              groupValue: zombie.behavior.clamp(0, 2),
-              onChanged: (value) {
-                if (value != null) {
-                  _updateZombie(index, zombie.copyWith(behavior: value));
-                }
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const spacing = 8.0;
+                final options = [
+                  (0, l10n.hamsterballBehaviorUniform),
+                  (1, l10n.hamsterballBehaviorSlowdown),
+                  (2, l10n.hamsterballBehaviorChangeLane),
+                ];
+                final optionTextStyle = theme.textTheme.bodyLarge;
+                final requiredOptionWidth = options
+                    .map((option) {
+                      final painter = TextPainter(
+                        text: TextSpan(text: option.$2, style: optionTextStyle),
+                        textDirection: Directionality.of(context),
+                        textScaler: MediaQuery.textScalerOf(context),
+                        maxLines: 1,
+                      )..layout();
+                      return painter.width + 52;
+                    })
+                    .reduce((left, right) => left > right ? left : right);
+                final columnCount =
+                    constraints.maxWidth >=
+                        requiredOptionWidth * 3 + spacing * 2
+                    ? 3
+                    : constraints.maxWidth >= requiredOptionWidth * 2 + spacing
+                    ? 2
+                    : 1;
+                final optionWidth =
+                    (constraints.maxWidth - spacing * (columnCount - 1)) /
+                    columnCount;
+                return RadioGroup<int>(
+                  groupValue: zombie.behavior.clamp(0, 2),
+                  onChanged: (value) {
+                    if (value != null) {
+                      _updateZombie(index, zombie.copyWith(behavior: value));
+                    }
+                  },
+                  child: Wrap(
+                    spacing: spacing,
+                    runSpacing: 0,
+                    children: [
+                      for (final option in options)
+                        SizedBox(
+                          width: optionWidth,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            onTap: () => _updateZombie(
+                              index,
+                              zombie.copyWith(behavior: option.$1),
+                            ),
+                            child: SizedBox(
+                              height: 56,
+                              child: Row(
+                                children: [
+                                  Radio<int>(value: option.$1),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      option.$2,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
               },
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 0,
-                children: [
-                  SizedBox(
-                    width: 190,
-                    child: RadioListTile<int>(
-                      contentPadding: EdgeInsets.zero,
-                      value: 0,
-                      title: Text(l10n.hamsterballBehaviorUniform),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 190,
-                    child: RadioListTile<int>(
-                      contentPadding: EdgeInsets.zero,
-                      value: 1,
-                      title: Text(l10n.hamsterballBehaviorSlowdown),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 190,
-                    child: RadioListTile<int>(
-                      contentPadding: EdgeInsets.zero,
-                      value: 2,
-                      title: Text(l10n.hamsterballBehaviorChangeLane),
-                    ),
-                  ),
-                ],
-              ),
             ),
             Text(
               l10n.hamsterballBehaviorSummary(

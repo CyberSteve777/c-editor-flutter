@@ -33,6 +33,9 @@ class ZombieDiscovery {
     'barrelpowder',
     'schoolbus_normal',
     'schoolbus_special',
+    // Event transport/container types. The actual passengers are discovered
+    // from their nested zombie fields instead.
+    'hamster_ball',
     'krill',
     'hermitcrab',
     'inkfish',
@@ -230,15 +233,23 @@ class ZombieDiscovery {
 
   static void _scanForZombies(dynamic d, Set<String> out) {
     if (d is Map) {
-      final t =
-          d['TypeName'] ??
-          d['ZombieType'] ??
-          d['Type'] ??
-          d['ZombieName'] ??
-          d['ZombieTypeName'] ??
-          d['SpiderZombieName'];
-      if (t is String && t.isNotEmpty) {
-        _addZombie(t, out);
+      // A single entry can contain both a transport/container `Type` and the
+      // zombie carried inside it (for example a hamsterball). Inspect every
+      // zombie-bearing field rather than stopping at the first match.
+      const zombieTypeKeys = [
+        'TypeName',
+        'ZombieType',
+        'Type',
+        'ZombieName',
+        'ZombieTypeName',
+        'SpiderZombieName',
+        'ZombieInsideBallType',
+      ];
+      for (final key in zombieTypeKeys) {
+        final value = d[key];
+        if (value is String && value.isNotEmpty) {
+          _addZombie(value, out);
+        }
       }
       for (final v in d.values) {
         _scanForZombies(v, out);
@@ -252,7 +263,13 @@ class ZombieDiscovery {
 
   static void _addZombie(String id, Set<String> out) {
     final clean = _cleanId(id);
-    if (!ignoredIds.contains(clean) && !GridItemRepository.isValid(clean)) {
+    // Some wave actions use the generic `Type` field for obstacles. Never let
+    // an explicitly named grid item leak into the level's zombie summary,
+    // even when it has not been added to the editor's grid-item catalog yet.
+    final isGridItem =
+        clean.toLowerCase().startsWith('griditem_') ||
+        GridItemRepository.isValid(clean);
+    if (!ignoredIds.contains(clean) && !isGridItem) {
       out.add(clean);
     }
   }

@@ -4625,6 +4625,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get singleHandedBasicParameters => '基础参数';
 
   @override
+  String get singleHandedOverviewBasicConfiguration => '基础配置';
+
+  @override
   String get singleHandedMissileCount => '单次导弹数量';
 
   @override
@@ -8419,7 +8422,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String waveGeneratorDeleteWaveConfirm(int count) {
-    return '将删除该波及其中的$count个固定出怪。';
+    return '将删除该波及其中的$count只固定出怪。';
   }
 
   @override
@@ -8575,7 +8578,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String waveGeneratorFixedSummary(int count) {
-    return '$count个固定出怪';
+    return '必定出现$count只僵尸';
   }
 
   @override

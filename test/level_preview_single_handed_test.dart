@@ -154,7 +154,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.descendant(of: card, matching: find.text('Plant Configuration')),
+        find.descendant(of: card, matching: find.text('Basic Configuration')),
         findsOneWidget,
       );
       expect(
@@ -210,6 +210,41 @@ void main() {
     );
     expect(
       find.byKey(const ValueKey('singleHandedPlantUpgradePath')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('seed bank account level uses the concise conveyor label', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['LevelDefinition'],
+          objClass: 'LevelDefinition',
+          objData: LevelDefinitionData(
+            modules: const ['RTID(SeedBank@CurrentLevel)'],
+          ).toJson(),
+        ),
+        PvzObject(
+          aliases: const ['SeedBank'],
+          objClass: 'SeedBankProperties',
+          objData: const {
+            'SelectionMethod': 'preset',
+            'GlobalLevel': 0,
+            'PresetPlantList': ['peashooter'],
+          },
+        ),
+      ],
+    );
+    await tester.pumpWidget(_preview(level));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Level: follows account'), findsOneWidget);
+    expect(
+      find.textContaining(
+        'Level 0 plants use their corresponding tier from the player',
+      ),
       findsNothing,
     );
   });

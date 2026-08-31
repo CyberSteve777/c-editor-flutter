@@ -2383,7 +2383,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowInterval =>
-      'Swallow Interval (SwallowInterval, unit: seconds)';
+      'Swallow Interval (SwallowInterval, seconds)';
 
   @override
   String get spermWhaleModuleHelpSwallowInterval =>
@@ -2391,7 +2391,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModulePoisonSwallowInterval =>
-      'Rotenone Swallow Interval (PoisonSwallowInterval, unit: seconds)';
+      'Rotenone Swallow Interval (PoisonSwallowInterval, seconds)';
 
   @override
   String get spermWhaleModuleHelpPoisonSwallowInterval =>
@@ -2399,7 +2399,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowDuration =>
-      'Swallow Duration (SwallowDuration, unit: seconds)';
+      'Swallow Duration (SwallowDuration, seconds)';
 
   @override
   String get spermWhaleModuleHelpSwallowDuration =>
@@ -4211,7 +4211,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'GridY is the stomp center row; GridXMin and GridXMax bound the possible center columns (all 0-based). Each stomp covers a 3×3 area around its center. The preview highlights every cell that can be stomped across those positions. Underwater World: rows 0–5, columns 0–9.';
 
   @override
-  String get dinoTreadPreview => 'Stomp area preview';
+  String get dinoTreadPreview => 'Possible stomp area preview';
 
   @override
   String get dinoTreadRowLabel => 'Row (GridY)';
@@ -4751,8 +4751,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select a tile, then tap \"+\" to place a sewer manhole. Each manhole can have its eruption time (StartTime) configured independently, determining how long after the level begins its cover is blasted off and toxic steam is released.';
 
   @override
-  String get smokePollutionModuleStartTimeLabel =>
-      'Eruption time (unit: seconds)';
+  String get smokePollutionModuleStartTimeLabel => 'Eruption time (seconds)';
 
   @override
   String manholePipelineStartEndFormat(int sx, int sy, int ex, int ey) {
@@ -4864,6 +4863,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get singleHandedBasicParameters => 'Basic Parameters';
+
+  @override
+  String get singleHandedOverviewBasicConfiguration => 'Basic Configuration';
 
   @override
   String get singleHandedMissileCount => 'Missiles per launch';
@@ -5049,7 +5051,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hamsterballBehaviorSummary(String value) {
-    return 'Behavior (Behavior): $value';
+    return 'Behavior: $value';
   }
 
   @override
@@ -6957,7 +6959,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tunnelDefendSequenceInterval =>
-      'Pathway Generation Interval (TunnelSequenceInterval, unit: seconds)';
+      'Pathway Generation Interval (TunnelSequenceInterval, seconds)';
 
   @override
   String get tunnelDefendHelpSequenceInterval => 'Pathway Generation Interval';
@@ -7098,7 +7100,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finalStageTimeLimitedChallengeTimeLimit =>
-      'Sword Swing Countdown (ZombossTimeLimit, unit: seconds)';
+      'Sword Swing Countdown (ZombossTimeLimit, seconds)';
 
   @override
   String get moduleTitle_LawnMowerProperties => 'Lawn Mowers';
@@ -7156,7 +7158,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get witchModuleSpawnInterval =>
-      'Witch spawn interval (WitchSpawnInterval, unit: seconds)';
+      'Witch spawn interval (WitchSpawnInterval, seconds)';
 
   @override
   String get gulliverTunnelTitle => 'Gulliver Tunnels';
@@ -7410,7 +7412,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldTransferCooldown =>
-      'Same-zombie teleport cooldown (transferCooldown, unit: seconds)';
+      'Same-zombie teleport cooldown (transferCooldown, seconds)';
 
   @override
   String get pvz1PassageHelpTransferCooldown =>
@@ -7418,7 +7420,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldRefreshTime =>
-      'Portal reposition interval (refreshTime, unit: seconds)';
+      'Portal reposition interval (refreshTime, seconds)';
 
   @override
   String get pvz1PassageHelpRefreshTime =>
@@ -7798,7 +7800,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleWindDelay => 'Time between wind spawns (WindDelay)';
 
   @override
-  String get heianWindModuleWindDelayHint => 'unit: seconds';
+  String get heianWindModuleWindDelayHint => 'seconds';
 
   @override
   String get heianWindModuleWindEntries => 'Wind configurations';
@@ -7826,7 +7828,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleMoveTime => 'Move Duration (MoveTime)';
 
   @override
-  String get heianWindModuleMoveTimeHint => 'unit: seconds';
+  String get heianWindModuleMoveTimeHint => 'seconds';
 
   @override
   String get heianWindModuleExpectationLabel => 'Divine Wind Settings';
@@ -9015,8 +9017,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count fixed spawns',
-      one: '1 fixed spawn',
+      other: '$count zombies are guaranteed to appear',
+      one: '1 zombie is guaranteed to appear',
     );
     return '$_temp0';
   }
@@ -9669,7 +9671,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moonPenaltyCountdown =>
-      'Hibernation countdown (PenaltyCountdown, unit: seconds)';
+      'Hibernation countdown (PenaltyCountdown, seconds)';
 
   @override
   String get moonPlantImmunityList =>
@@ -9698,7 +9700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lunarTerminalCollectorCooldown =>
-      'Robot deployment cooldown (CollectorCooldown, unit: seconds)';
+      'Robot deployment cooldown (CollectorCooldown, seconds)';
 
   @override
   String get lunarMineVeinHelpTitle => 'Lunar Veins';
@@ -9750,15 +9752,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get radiationMeteorWarningDuration =>
-      'Warning duration (WarningDuration, unit: seconds)';
+      'Warning duration (WarningDuration, seconds)';
 
   @override
   String get radiationMeteorPollutionInterval =>
-      'Contamination interval (PollutionInterval, unit: seconds)';
+      'Contamination interval (PollutionInterval, seconds)';
 
   @override
   String get radiationMeteorMiningDuration =>
-      'Required mining duration (MiningDurationRequired, unit: seconds)';
+      'Required mining duration (MiningDurationRequired, seconds)';
 
   @override
   String get radiationMeteorPowerReward =>
@@ -9801,8 +9803,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rocketSpawnCount => 'Total grid items to spawn (SpawnCount)';
 
   @override
-  String get rocketSpawnInterval =>
-      'Spawn interval (SpawnInterval, unit: seconds)';
+  String get rocketSpawnInterval => 'Spawn interval (SpawnInterval, seconds)';
 
   @override
   String get moduleTitle_LevelPowerupModuleProperties => 'Power Ups';

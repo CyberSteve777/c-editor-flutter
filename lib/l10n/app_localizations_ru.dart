@@ -4181,7 +4181,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'GridY — ряд центра удара; GridXMin и GridXMax задают диапазон возможных центральных столбцов (с 0). Каждый удар покрывает область 3×3 вокруг центра. На предпросмотре выделены все клетки, которые могут быть затронуты. Глубокое море: ряды 0–5, столбцы 0–9.';
 
   @override
-  String get dinoTreadPreview => 'Предпросмотр области удара';
+  String get dinoTreadPreview => 'Предпросмотр возможной области удара';
 
   @override
   String get dinoTreadRowLabel => 'Ряд [GridY]';
@@ -4826,6 +4826,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get singleHandedBasicParameters => 'Основные параметры';
+
+  @override
+  String get singleHandedOverviewBasicConfiguration => 'Базовая конфигурация';
 
   @override
   String get singleHandedMissileCount => 'Ракет за запуск';
@@ -8967,7 +8970,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String waveGeneratorFixedSummary(int count) {
-    return 'Фиксированный спавн: $count';
+    return 'Гарантированное появление зомби: $count';
   }
 
   @override

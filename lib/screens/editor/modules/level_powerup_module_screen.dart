@@ -130,34 +130,20 @@ class _LevelPowerupModuleScreenState extends State<LevelPowerupModuleScreen> {
     final availableTypes = _availablePowerupTypes;
     if (availableTypes.isEmpty) return;
     final l10n = AppLocalizations.of(context)!;
-    final selectedType = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        key: const ValueKey('powerupAddDialog'),
-        title: Text(l10n.powerUpsAddTitle),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final typeName in availableTypes)
-                ListTile(
-                  key: ValueKey('powerupAddOption_$typeName'),
-                  leading: Icon(_iconForPowerup(typeName)),
-                  title: Text(_titleForPowerup(l10n, typeName)),
-                  subtitle: Text(typeName),
-                  onTap: () => Navigator.pop(dialogContext, typeName),
-                ),
-            ],
+    final selectedType = await showEditorChoiceDialog<String>(
+      context,
+      dialogKey: const ValueKey('powerupAddDialog'),
+      title: l10n.powerUpsAddTitle,
+      options: [
+        for (final typeName in availableTypes)
+          EditorChoiceDialogOption(
+            key: ValueKey('powerupAddOption_$typeName'),
+            value: typeName,
+            icon: _iconForPowerup(typeName),
+            title: _titleForPowerup(l10n, typeName),
+            subtitle: typeName,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-        ],
-      ),
+      ],
     );
     if (!mounted || selectedType == null) return;
     final entry = LevelPowerupEntryData(typeName: selectedType);

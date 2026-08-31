@@ -39,7 +39,14 @@ void main() {
       'Статистический предпросмотр',
     );
     final english = lookupAppLocalizations(const Locale('en'));
-    expect(english.waveGeneratorFixedSummary(1), '1 fixed spawn');
+    expect(
+      english.waveGeneratorFixedSummary(1),
+      '1 zombie is guaranteed to appear',
+    );
+    expect(
+      lookupAppLocalizations(const Locale('zh')).waveGeneratorFixedSummary(3),
+      '必定出现3只僵尸',
+    );
     expect(english.waveGeneratorRandomSummary(1), 'Enabled · 1 point');
     expect(
       english.waveGeneratorPoolSummaryNoAdditions(1),

@@ -677,7 +677,62 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
   }) {
     final theme = Theme.of(context);
     final iconPath = _plantIcon(plantId);
+
+    Widget plantIdentity({required bool stackIcon}) {
+      final icon = ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: AssetImageWidget(
+          assetPath: iconPath,
+          altCandidates: imageAltCandidates(iconPath),
+          width: 56,
+          height: 56,
+          fit: BoxFit.cover,
+        ),
+      );
+      final text = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _plantName(context, plantId),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      );
+
+      return SizedBox(
+        key: ValueKey('singleHandedPlantIdentity_$plantId'),
+        child: stackIcon
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [icon, const SizedBox(height: 12), text],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  icon,
+                  const SizedBox(width: 12),
+                  Expanded(child: text),
+                ],
+              ),
+      );
+    }
+
+    Widget plantAction() => SizedBox(
+      key: ValueKey('singleHandedPlantAction_$plantId'),
+      child: trailing,
+    );
+
     return Material(
+      key: ValueKey('singleHandedPlantTile_$plantId'),
       color: theme.colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
@@ -685,41 +740,32 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: AssetImageWidget(
-                  assetPath: iconPath,
-                  altCandidates: imageAltCandidates(iconPath),
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+              final compact = constraints.maxWidth < 420 || textScale > 1.3;
+              if (compact) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      _plantName(context, plantId),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                    plantIdentity(stackIcon: constraints.maxWidth < 280),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: plantAction(),
                     ),
                   ],
-                ),
-              ),
-              trailing,
-            ],
+                );
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: plantIdentity(stackIcon: false)),
+                  const SizedBox(width: 8),
+                  plantAction(),
+                ],
+              );
+            },
           ),
         ),
       ),

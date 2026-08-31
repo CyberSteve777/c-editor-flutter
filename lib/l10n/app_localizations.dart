@@ -4351,7 +4351,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Swallow Interval (SwallowInterval, unit: seconds)'**
+  /// **'Swallow Interval (SwallowInterval, seconds)'**
   String get spermWhaleModuleSwallowInterval;
 
   /// No description provided for @spermWhaleModuleHelpSwallowInterval.
@@ -4363,7 +4363,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModulePoisonSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Rotenone Swallow Interval (PoisonSwallowInterval, unit: seconds)'**
+  /// **'Rotenone Swallow Interval (PoisonSwallowInterval, seconds)'**
   String get spermWhaleModulePoisonSwallowInterval;
 
   /// No description provided for @spermWhaleModuleHelpPoisonSwallowInterval.
@@ -4375,7 +4375,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleSwallowDuration.
   ///
   /// In en, this message translates to:
-  /// **'Swallow Duration (SwallowDuration, unit: seconds)'**
+  /// **'Swallow Duration (SwallowDuration, seconds)'**
   String get spermWhaleModuleSwallowDuration;
 
   /// No description provided for @spermWhaleModuleHelpSwallowDuration.
@@ -7537,7 +7537,7 @@ abstract class AppLocalizations {
   /// No description provided for @dinoTreadPreview.
   ///
   /// In en, this message translates to:
-  /// **'Stomp area preview'**
+  /// **'Possible stomp area preview'**
   String get dinoTreadPreview;
 
   /// No description provided for @dinoTreadRowLabel.
@@ -8485,7 +8485,7 @@ abstract class AppLocalizations {
   /// No description provided for @smokePollutionModuleStartTimeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Eruption time (unit: seconds)'**
+  /// **'Eruption time (seconds)'**
   String get smokePollutionModuleStartTimeLabel;
 
   /// No description provided for @manholePipelineStartEndFormat.
@@ -8685,6 +8685,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Basic Parameters'**
   String get singleHandedBasicParameters;
+
+  /// No description provided for @singleHandedOverviewBasicConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Configuration'**
+  String get singleHandedOverviewBasicConfiguration;
 
   /// No description provided for @singleHandedMissileCount.
   ///
@@ -9007,7 +9013,7 @@ abstract class AppLocalizations {
   /// No description provided for @hamsterballBehaviorSummary.
   ///
   /// In en, this message translates to:
-  /// **'Behavior (Behavior): {value}'**
+  /// **'Behavior: {value}'**
   String hamsterballBehaviorSummary(String value);
 
   /// No description provided for @hamsterballHasPlantfood.
@@ -12324,7 +12330,7 @@ abstract class AppLocalizations {
   /// No description provided for @tunnelDefendSequenceInterval.
   ///
   /// In en, this message translates to:
-  /// **'Pathway Generation Interval (TunnelSequenceInterval, unit: seconds)'**
+  /// **'Pathway Generation Interval (TunnelSequenceInterval, seconds)'**
   String get tunnelDefendSequenceInterval;
 
   /// No description provided for @tunnelDefendHelpSequenceInterval.
@@ -12558,7 +12564,7 @@ abstract class AppLocalizations {
   /// No description provided for @finalStageTimeLimitedChallengeTimeLimit.
   ///
   /// In en, this message translates to:
-  /// **'Sword Swing Countdown (ZombossTimeLimit, unit: seconds)'**
+  /// **'Sword Swing Countdown (ZombossTimeLimit, seconds)'**
   String get finalStageTimeLimitedChallengeTimeLimit;
 
   /// No description provided for @moduleTitle_LawnMowerProperties.
@@ -12654,7 +12660,7 @@ abstract class AppLocalizations {
   /// No description provided for @witchModuleSpawnInterval.
   ///
   /// In en, this message translates to:
-  /// **'Witch spawn interval (WitchSpawnInterval, unit: seconds)'**
+  /// **'Witch spawn interval (WitchSpawnInterval, seconds)'**
   String get witchModuleSpawnInterval;
 
   /// No description provided for @gulliverTunnelTitle.
@@ -13086,7 +13092,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageFieldTransferCooldown.
   ///
   /// In en, this message translates to:
-  /// **'Same-zombie teleport cooldown (transferCooldown, unit: seconds)'**
+  /// **'Same-zombie teleport cooldown (transferCooldown, seconds)'**
   String get pvz1PassageFieldTransferCooldown;
 
   /// No description provided for @pvz1PassageHelpTransferCooldown.
@@ -13098,7 +13104,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageFieldRefreshTime.
   ///
   /// In en, this message translates to:
-  /// **'Portal reposition interval (refreshTime, unit: seconds)'**
+  /// **'Portal reposition interval (refreshTime, seconds)'**
   String get pvz1PassageFieldRefreshTime;
 
   /// No description provided for @pvz1PassageHelpRefreshTime.
@@ -13752,7 +13758,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleWindDelayHint.
   ///
   /// In en, this message translates to:
-  /// **'unit: seconds'**
+  /// **'seconds'**
   String get heianWindModuleWindDelayHint;
 
   /// No description provided for @heianWindModuleWindEntries.
@@ -13806,7 +13812,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleMoveTimeHint.
   ///
   /// In en, this message translates to:
-  /// **'unit: seconds'**
+  /// **'seconds'**
   String get heianWindModuleMoveTimeHint;
 
   /// No description provided for @heianWindModuleExpectationLabel.
@@ -15912,7 +15918,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorFixedSummary.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 fixed spawn} other{{count} fixed spawns}}'**
+  /// **'{count, plural, =1{1 zombie is guaranteed to appear} other{{count} zombies are guaranteed to appear}}'**
   String waveGeneratorFixedSummary(int count);
 
   /// No description provided for @waveGeneratorFixedSummaryEmpty.
@@ -16968,7 +16974,7 @@ abstract class AppLocalizations {
   /// No description provided for @moonPenaltyCountdown.
   ///
   /// In en, this message translates to:
-  /// **'Hibernation countdown (PenaltyCountdown, unit: seconds)'**
+  /// **'Hibernation countdown (PenaltyCountdown, seconds)'**
   String get moonPenaltyCountdown;
 
   /// No description provided for @moonPlantImmunityList.
@@ -17016,7 +17022,7 @@ abstract class AppLocalizations {
   /// No description provided for @lunarTerminalCollectorCooldown.
   ///
   /// In en, this message translates to:
-  /// **'Robot deployment cooldown (CollectorCooldown, unit: seconds)'**
+  /// **'Robot deployment cooldown (CollectorCooldown, seconds)'**
   String get lunarTerminalCollectorCooldown;
 
   /// No description provided for @lunarMineVeinHelpTitle.
@@ -17106,19 +17112,19 @@ abstract class AppLocalizations {
   /// No description provided for @radiationMeteorWarningDuration.
   ///
   /// In en, this message translates to:
-  /// **'Warning duration (WarningDuration, unit: seconds)'**
+  /// **'Warning duration (WarningDuration, seconds)'**
   String get radiationMeteorWarningDuration;
 
   /// No description provided for @radiationMeteorPollutionInterval.
   ///
   /// In en, this message translates to:
-  /// **'Contamination interval (PollutionInterval, unit: seconds)'**
+  /// **'Contamination interval (PollutionInterval, seconds)'**
   String get radiationMeteorPollutionInterval;
 
   /// No description provided for @radiationMeteorMiningDuration.
   ///
   /// In en, this message translates to:
-  /// **'Required mining duration (MiningDurationRequired, unit: seconds)'**
+  /// **'Required mining duration (MiningDurationRequired, seconds)'**
   String get radiationMeteorMiningDuration;
 
   /// No description provided for @radiationMeteorPowerReward.
@@ -17196,7 +17202,7 @@ abstract class AppLocalizations {
   /// No description provided for @rocketSpawnInterval.
   ///
   /// In en, this message translates to:
-  /// **'Spawn interval (SpawnInterval, unit: seconds)'**
+  /// **'Spawn interval (SpawnInterval, seconds)'**
   String get rocketSpawnInterval;
 
   /// No description provided for @moduleTitle_LevelPowerupModuleProperties.

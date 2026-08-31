@@ -1,6 +1,11 @@
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/registry/conflict_registry.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
+import 'package:c_editor/data/repository/grid_item_repository.dart';
+import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/zombie_discovery.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_widgets.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/events/hamster_zombie_event_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +21,12 @@ Widget _localizedApp(Widget home, {Locale locale = const Locale('en')}) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    await Future.wait([ReferenceRepository.init(), GridItemRepository.init()]);
+  });
+
   test(
     'hamsterball data round-trips the reference schema and future fields',
     () {
@@ -69,6 +80,63 @@ void main() {
     },
   );
 
+  test(
+    'level overview includes hamsterball passengers but not containers or grid items',
+    () {
+      final event = PvzObject(
+        aliases: const ['HamsterBallEvent'],
+        objClass: 'HamsterZombieSpawnerProps',
+        objData: const <String, dynamic>{
+          'Zombies': [
+            {
+              'Type': 'RTID(hamster_ball@ZombieTypes)',
+              'ZombieInsideBallType': 'RTID(birthday_pharaoh@ZombieTypes)',
+            },
+            {'Type': 'RTID(griditem_future_obstacle@GridItemTypes)'},
+            {'ZombieType': 'RTID(future_zombie@ZombieTypes)'},
+          ],
+        },
+      );
+      final waveManager = PvzObject(
+        aliases: const ['WaveManager'],
+        objClass: 'WaveManagerProperties',
+        objData: WaveManagerData(
+          waves: const [
+            ['RTID(HamsterBallEvent@CurrentLevel)'],
+          ],
+        ).toJson(),
+      );
+      final level = PvzLevelFile(objects: [event, waveManager]);
+
+      final zombies = ZombieDiscovery.discoverZombies(
+        level,
+        LevelParser.parseLevel(level),
+      );
+
+      expect(zombies, containsAll(['birthday_pharaoh', 'future_zombie']));
+      expect(zombies, isNot(contains('hamster_ball')));
+      expect(
+        zombies.where((id) => id.toLowerCase().startsWith('griditem_')),
+        isEmpty,
+      );
+    },
+  );
+
+  testWidgets('unknown overview resources keep their original code name', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: UniversalIcon(id: 'future_zombie')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
+    expect(tooltip.message, 'future_zombie');
+    expect(tooltip.message, isNot(startsWith('griditem_')));
+  });
+
   testWidgets(
     'hamsterball editor updates entry fields and reuses properties switch',
     (tester) async {
@@ -111,16 +179,79 @@ void main() {
       await tester.pump();
       expect(((event.objData as Map)['Zombies'] as List).single['Behavior'], 2);
       expect(
-        find.text(
-          'Behavior (Behavior): 2 = changes lane after hitting a plant',
-        ),
+        find.text('Behavior: 2 = changes lane after hitting a plant'),
         findsOneWidget,
+      );
+      expect(
+        tester.getSize(find.text('Change lane on impact')).height,
+        lessThan(30),
       );
 
       await tester.ensureVisible(find.text('Switch properties'));
       expect(find.text('Switch properties'), findsOneWidget);
     },
   );
+
+  testWidgets('hamsterball heading and zombie card reflow on narrow screens', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 1100);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final event = PvzObject(
+      aliases: const ['HamsterBallEvent'],
+      objClass: 'HamsterZombieSpawnerProps',
+      objData: HamsterZombieSpawnerPropsData(
+        zombies: [
+          HamsterZombieData(
+            zombieInsideBallType: 'RTID(birthday_pharaoh@ZombieTypes)',
+          ),
+        ],
+      ).toJson(),
+    );
+    final level = PvzLevelFile(objects: [event]);
+    await tester.pumpWidget(
+      _localizedApp(
+        Builder(
+          builder: (context) {
+            final media = MediaQuery.of(context);
+            return MediaQuery(
+              data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+              child: HamsterZombieEventScreen(
+                rtid: 'RTID(HamsterBallEvent@CurrentLevel)',
+                levelFile: level,
+                onChanged: () {},
+                onBack: () {},
+                onRequestZombieSelection: (_) {},
+                onEditCustomZombie: (_) {},
+                onInjectCustomZombie: (_) => null,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final heading = find.byKey(const ValueKey('hamsterballZombiesHeading'));
+    final addButton = find.byKey(const ValueKey('hamsterballAddZombieButton'));
+    final identity = find.byKey(const ValueKey('hamsterZombieIdentity0'));
+    final actions = find.byKey(const ValueKey('hamsterZombieActions0'));
+    await tester.ensureVisible(identity);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getRect(addButton).top,
+      greaterThanOrEqualTo(tester.getRect(heading).bottom),
+    );
+    expect(
+      tester.getRect(actions).top,
+      greaterThanOrEqualTo(tester.getRect(identity).bottom),
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('tutorial intro conflict and help sections are localized', (
     tester,
@@ -146,6 +277,20 @@ void main() {
     expect(conflicts, hasLength(1));
     expect(conflicts.single.second, '单枪匹马教程与转场模块存在冲突，同时使用会导致开局时的转场效果异常。');
     expect(zh.dinoTreadPreview, '可能践踏区域预览');
+    expect(
+      lookupAppLocalizations(const Locale('en')).dinoTreadPreview,
+      'Possible stomp area preview',
+    );
+    expect(
+      lookupAppLocalizations(const Locale('ru')).dinoTreadPreview,
+      'Предпросмотр возможной области удара',
+    );
+    expect(
+      lookupAppLocalizations(
+        const Locale('en'),
+      ).hamsterballBehaviorSummary('2 = changes lane after hitting a plant'),
+      'Behavior: 2 = changes lane after hitting a plant',
+    );
     expect(zh.singleHandedTutorialHelpPromptsTitle, '教程提示');
     expect(zh.singleHandedTutorialHelpWaveTitle, '导弹出现波次');
     expect(zh.hamsterballBehaviorDetailUniform, '保持匀速运动');
