@@ -1498,6 +1498,12 @@ abstract class AppLocalizations {
   /// **'Level Distribution'**
   String get exportAssignmentProposalTitle;
 
+  /// No description provided for @exportDifficultyReplacementNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'If the Normal Mode and Hard/Expert Mode in the target level slot are actually different levels, the editor replaces only the Normal Mode level.'**
+  String get exportDifficultyReplacementNotice;
+
   /// No description provided for @exportWorld.
   ///
   /// In en, this message translates to:

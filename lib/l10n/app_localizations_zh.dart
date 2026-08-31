@@ -766,6 +766,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportAssignmentProposalTitle => '关卡分配';
 
   @override
+  String get exportDifficultyReplacementNotice =>
+      '如果目标关卡槽位中的普通模式与困难/专家模式实际为两个不同的关卡，编辑器只会替换其中的普通模式关卡。';
+
+  @override
   String get exportWorld => '世界';
 
   @override

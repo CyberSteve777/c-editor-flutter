@@ -783,6 +783,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportAssignmentProposalTitle => 'Level Distribution';
 
   @override
+  String get exportDifficultyReplacementNotice =>
+      'If the Normal Mode and Hard/Expert Mode in the target level slot are actually different levels, the editor replaces only the Normal Mode level.';
+
+  @override
   String get exportWorld => 'World';
 
   @override

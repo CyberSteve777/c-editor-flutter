@@ -106,6 +106,12 @@ class WorldRepository {
       iconAsset: "Stage_Atlantis.webp",
       nameGetter: (l10n) => l10n.plantTagWorldAtlantis,
     ),
+    WorldInfo(
+      codename: "moon",
+      levelCount: 12,
+      iconAsset: "Stage_Moon.webp",
+      nameGetter: (l10n) => l10n.plantTagWorldMoon,
+    ),
   ];
 
   static List<WorldInfo> get allWorlds => _worlds;

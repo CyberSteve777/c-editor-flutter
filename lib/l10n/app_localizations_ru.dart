@@ -792,6 +792,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportAssignmentProposalTitle => 'Распределение уровней';
 
   @override
+  String get exportDifficultyReplacementNotice =>
+      'Если в целевом слоте обычный режим и сложный/экспертный режим фактически используют разные уровни, редактор заменит только уровень обычного режима.';
+
+  @override
   String get exportWorld => 'Мир';
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:c_editor/data/repository/world_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/export/export_screen.dart';
 import 'package:c_editor/screens/export/export_engine.dart';
@@ -47,6 +48,13 @@ class _FakeExportEngine implements ExportEngine {
 }
 
 void main() {
+  test('Moon Base is available for twelve level slots', () {
+    final moon = WorldRepository.findByCodename('moon');
+    expect(moon, isNotNull);
+    expect(moon!.levelCount, 12);
+    expect(moon.iconAsset, 'Stage_Moon.webp');
+  });
+
   Future<void> pumpAsyncFrames(WidgetTester tester) async {
     for (var i = 0; i < 12; i++) {
       await tester.pump(const Duration(milliseconds: 100));
@@ -183,12 +191,38 @@ void main() {
     await tester.tap(find.text('Begin'));
     await tester.pumpAndSettle();
 
+    expect(
+      find.text(
+        'If the Normal mode and Hard/Expert mode in the target level slot are actually different levels, the editor replaces only the Normal mode level.',
+      ),
+      findsOneWidget,
+    );
     final worldField = find.byKey(const ValueKey('exportWorldField'));
+    final worldIcon = find.byKey(const ValueKey('exportWorldIcon'));
     final levelField = find.byKey(const ValueKey('exportLevelNumberField'));
     final levelStepper = find.byKey(const ValueKey('exportLevelStepper'));
+    final worldLabel = find.text('World');
+    final levelLabel = find.text('Level Number');
+    final distributionFileName = find.text('example.txt');
     expect(worldField, findsOneWidget);
+    expect(worldIcon, findsOneWidget);
     expect(levelField, findsOneWidget);
     expect(levelStepper, findsOneWidget);
+    expect(worldLabel, findsOneWidget);
+    expect(levelLabel, findsOneWidget);
+    expect(tester.widget<Text>(distributionFileName).maxLines, 2);
+    expect(
+      tester.getCenter(worldIcon).dx,
+      closeTo(tester.getCenter(worldField).dx, 1),
+    );
+    expect(
+      tester.getBottomLeft(worldLabel).dy,
+      lessThan(tester.getTopLeft(worldField).dy),
+    );
+    expect(
+      tester.getBottomLeft(levelLabel).dy,
+      lessThan(tester.getTopLeft(levelField).dy),
+    );
     expect(
       tester.getBottomLeft(worldField).dy,
       lessThan(tester.getTopLeft(levelField).dy),
