@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/challenge_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -305,17 +307,74 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'fresh JSON-loaded challenge module can add its first challenge',
+    (tester) async {
+      final module = PvzObject(
+        aliases: const ['ChallengeModule'],
+        objClass: 'StarChallengeModuleProperties',
+        objData: jsonDecode(
+          '{"ChallengesAlwaysAvailable":true,"Challenges":[[]]}',
+        ),
+      );
+      final level = PvzLevelFile(objects: [module]);
+
+      await tester.pumpWidget(
+        _localizedApp(
+          StarChallengeModuleScreen(
+            rtid: 'RTID(ChallengeModule@CurrentLevel)',
+            levelFile: level,
+            onChanged: () {},
+            onBack: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Add challenge'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Level Hint Text').first);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is TextField && widget.controller?.text == 'BeatTheLevel',
+        ),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Add'));
+      await tester.pumpAndSettle();
+
+      final saved = StarChallengeModuleData.fromJson(
+        module.objData as Map<String, dynamic>,
+      );
+      expect(
+        saved.challenges.single,
+        contains('RTID(BeatTheLevel@CurrentLevel)'),
+      );
+      expect(
+        level.objects.any(
+          (object) => object.aliases?.contains('BeatTheLevel') == true,
+        ),
+        isTrue,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('duplicate plant survival challenge uses PlantsSurvive1', (
     tester,
   ) async {
     final module = PvzObject(
       aliases: const ['ChallengeModule'],
       objClass: 'StarChallengeModuleProperties',
-      objData: StarChallengeModuleData(
-        challenges: [
-          ['RTID(PlantsSurvive@CurrentLevel)'],
-        ],
-      ).toJson(),
+      // jsonDecode deliberately preserves the real List<dynamic> nesting
+      // produced when a level file is loaded from disk.
+      objData: jsonDecode(
+        '{"ChallengesAlwaysAvailable":true,'
+        '"Challenges":[["RTID(PlantsSurvive@CurrentLevel)"]]}',
+      ),
     );
     final existing = PvzObject(
       aliases: const ['PlantsSurvive'],

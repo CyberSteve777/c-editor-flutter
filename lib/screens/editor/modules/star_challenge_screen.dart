@@ -197,6 +197,15 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
     );
   }
 
+  Iterable<String> _referencedChallengeRtids() sync* {
+    for (final group in _data.challenges) {
+      if (group is! Iterable) continue;
+      for (final value in group) {
+        if (value is String) yield value;
+      }
+    }
+  }
+
   Future<void> _addChallenge() async {
     final info = await Navigator.push<ChallengeTypeInfo>(
       context,
@@ -216,7 +225,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
     final suggestedAlias = ChallengeRepository.suggestUniqueAlias(
       challenge: info,
       levelFile: widget.levelFile,
-      referencedRtids: _data.challenges.expand((group) => group),
+      referencedRtids: _referencedChallengeRtids(),
     );
 
     final alias = await showPvzAliasInputDialog(
