@@ -283,6 +283,51 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('no-config challenge dialog does not duplicate description', (
+    tester,
+  ) async {
+    final module = PvzObject(
+      aliases: const ['ChallengeModule'],
+      objClass: 'StarChallengeModuleProperties',
+      objData: StarChallengeModuleData(
+        challenges: [
+          ['RTID(SaveMowers@CurrentLevel)'],
+        ],
+      ).toJson(),
+    );
+    final challenge = PvzObject(
+      aliases: const ['SaveMowers'],
+      objClass: 'StarChallengeSaveMowersProps',
+      objData: StarChallengeSaveMowerData().toJson(),
+    );
+
+    await tester.pumpWidget(
+      _localizedApp(
+        StarChallengeModuleScreen(
+          rtid: 'RTID(ChallengeModule@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [module, challenge]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Edit'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        'Do not lose any lawn mowers. This challenge causes a crash when used with the Creative Courtyard module',
+      ),
+      findsNothing,
+    );
+    expect(
+      find.textContaining('This challenge has no configurable parameters.'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'selected plant and zombie status controls stay readable narrow',
     (tester) async {

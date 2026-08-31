@@ -30,6 +30,17 @@ void main() {
     await ResourceNames.ensureLoaded();
   });
 
+  test('moon rocket follows the Atlantis seashell in the common list', () {
+    final items = GridItemRepository.getAll()
+        .map((item) => item.typeName)
+        .toList();
+    final shellIndex = items.indexOf('atlantis_shell');
+    final rocketIndex = items.indexOf('rocket_landing');
+
+    expect(shellIndex, greaterThanOrEqualTo(0));
+    expect(rocketIndex, shellIndex + 1);
+  });
+
   group('Moon Base module models', () {
     test('reads the LevelModules life support definition', () {
       final data = MoonLifeSupportSystemPropertiesData.fromJson({

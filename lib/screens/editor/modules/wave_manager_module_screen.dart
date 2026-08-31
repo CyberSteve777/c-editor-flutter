@@ -276,6 +276,68 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
       context,
       _data.waveManagerProps ?? 'null',
     );
+    final showPropsFixButton = !isPropsValid && actualWaveMgrAlias != null;
+
+    Widget buildPropsDetails() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            waveManagerPropsTitle,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: isPropsValid ? propsTextColor : theme.colorScheme.onError,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            currentWaveManagerPropsText,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: isPropsValid
+                  ? propsSubtextColor
+                  : theme.colorScheme.onError,
+            ),
+          ),
+          if (actualWaveMgrAlias == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                l10n?.noWaveManagerPropsFound ??
+                    'No WaveManagerProperties object found.',
+                style: TextStyle(
+                  color: theme.colorScheme.onError,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+        ],
+      );
+    }
+
+    Widget buildPropsFixButton() {
+      return FilledButton(
+        key: const ValueKey('waveManagerPropsFixButton'),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          backgroundColor: theme.colorScheme.onError,
+          foregroundColor: theme.colorScheme.error,
+        ),
+        onPressed: () {
+          _data.waveManagerProps = RtidParser.build(
+            actualWaveMgrAlias!,
+            'CurrentLevel',
+          );
+          _sync();
+        },
+        child: Text(
+          l10n?.fixToAlias(actualWaveMgrAlias!) ?? 'Fix to $actualWaveMgrAlias',
+          maxLines: 2,
+          softWrap: true,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -342,82 +404,81 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                 onTap: widget.onOpenWaveTimeline,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textScale =
+                          MediaQuery.textScalerOf(context).scale(16) / 16;
+                      final compact =
+                          constraints.maxWidth < 520 || textScale > 1.3;
+                      final statusIcon = Icon(
                         isPropsValid ? Icons.check_circle : editorWarningIcon,
                         color: isPropsValid
                             ? (isDark ? Colors.white : const Color(0xFF2E7D32))
                             : theme.colorScheme.onError,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              waveManagerPropsTitle,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: isPropsValid
-                                    ? propsTextColor
-                                    : theme.colorScheme.onError,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              currentWaveManagerPropsText,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: isPropsValid
-                                    ? propsSubtextColor
-                                    : theme.colorScheme.onError,
-                              ),
-                            ),
-                            if (actualWaveMgrAlias == null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  l10n?.noWaveManagerPropsFound ??
-                                      'No WaveManagerProperties object found.',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.onError,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            if (!isPropsValid && actualWaveMgrAlias != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: theme.colorScheme.onError,
-                                    foregroundColor:
-                                        theme.colorScheme.onPrimary,
-                                  ),
-                                  onPressed: () {
-                                    _data.waveManagerProps = RtidParser.build(
-                                      actualWaveMgrAlias,
-                                      'CurrentLevel',
-                                    );
-                                    _sync();
-                                  },
-                                  child: Text(
-                                    l10n?.fixToAlias(actualWaveMgrAlias) ??
-                                        'Fix to $actualWaveMgrAlias',
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      Icon(
+                      );
+                      final chevron = Icon(
                         Icons.chevron_right,
                         color: isPropsValid
                             ? propsSubtextColor
                             : theme.colorScheme.onError,
-                      ),
-                    ],
+                      );
+                      if (compact) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                statusIcon,
+                                const SizedBox(width: 8),
+                                Expanded(child: buildPropsDetails()),
+                                const SizedBox(width: 4),
+                                chevron,
+                              ],
+                            ),
+                            if (showPropsFixButton) ...[
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: buildPropsFixButton(),
+                              ),
+                            ],
+                          ],
+                        );
+                      }
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          statusIcon,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildPropsDetails(),
+                                if (showPropsFixButton) ...[
+                                  const SizedBox(height: 8),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 440,
+                                      ),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        child: buildPropsFixButton(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          chevron,
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),

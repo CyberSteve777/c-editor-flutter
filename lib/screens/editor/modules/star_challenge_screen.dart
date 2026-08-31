@@ -167,10 +167,6 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
 
   void _showNoConfigDialog(String objClass) {
     final l10n = AppLocalizations.of(context)!;
-    final description = ChallengeRepository.localizedDescription(
-      context,
-      objClass,
-    );
     String title;
     String message;
     switch (objClass) {
@@ -190,22 +186,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (description.trim().isNotEmpty) ...[
-              Text(
-                description,
-                style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-            Text(message),
-          ],
-        ),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

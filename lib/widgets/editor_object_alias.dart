@@ -7,6 +7,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 /// Resolves a localized event title from its [objClass].
 String resolveEventTitleByObjClass(
@@ -224,32 +225,49 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
       appBarColor: widget.accentColor,
     );
     final isDirty = _controller.text.trim() != widget.alias;
+    final aliasLabel = l10n?.aliasLabel ?? 'Alias';
+    final labelStyle =
+        (theme.inputDecorationTheme.labelStyle ??
+                theme.textTheme.bodyLarge ??
+                const TextStyle(fontSize: 16))
+            .copyWith(
+              color: isDirty ? accent : null,
+              height: 1.25,
+              leadingDistribution: TextLeadingDistribution.even,
+            );
 
-    final field = TextField(
-      controller: _controller,
-      focusNode: _focusNode,
-      textInputAction: TextInputAction.done,
-      onSubmitted: (_) => _commit(),
-      decoration: InputDecoration(
-        labelText: l10n?.aliasLabel ?? 'Alias',
-        isDense: true,
-        border: const OutlineInputBorder(),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: isDirty
-                ? accent
-                : theme.colorScheme.outline.withValues(alpha: 0.5),
-            width: isDirty ? 1.5 : 1,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: accent, width: 2),
-        ),
-        labelStyle: TextStyle(
-          color: isDirty ? accent : null,
+    final decoration = InputDecoration(
+      isDense: false,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      border: const OutlineInputBorder(),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: isDirty
+              ? accent
+              : theme.colorScheme.outline.withValues(alpha: 0.5),
+          width: isDirty ? 1.5 : 1,
         ),
       ),
-      onChanged: (_) => setState(() {}),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: accent, width: 2),
+      ),
+      labelStyle: labelStyle,
+      floatingLabelStyle: labelStyle,
+    );
+    final field = EditorResponsiveInputField(
+      label: aliasLabel,
+      decoration: decoration,
+      externalLabelStyle: labelStyle.copyWith(
+        color: isDirty ? accent : theme.colorScheme.onSurfaceVariant,
+      ),
+      builder: (context, responsiveDecoration) => TextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _commit(),
+        decoration: responsiveDecoration,
+        onChanged: (_) => setState(() {}),
+      ),
     );
 
     if (!widget.wrapInCard) {

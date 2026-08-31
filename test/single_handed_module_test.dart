@@ -328,7 +328,17 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('All by Oneself Tutorial Settings'), findsOneWidget);
+    expect(find.text('All by Oneself Tutorial Settings'), findsNothing);
+    expect(find.byIcon(Icons.sledding), findsNothing);
+    final aliasField = tester.widget<TextField>(find.byType(TextField).first);
+    final aliasDecoration = aliasField.decoration!;
+    expect(aliasDecoration.isDense, isFalse);
+    expect(aliasDecoration.labelStyle?.height, greaterThan(1));
+    expect(aliasDecoration.floatingLabelStyle?.height, greaterThan(1));
+    expect(
+      (aliasDecoration.contentPadding! as EdgeInsets).vertical,
+      greaterThanOrEqualTo(32),
+    );
     await tester.enterText(
       find.byKey(const ValueKey('singleHandedTutorialWaveForStartRocket')),
       '7',
@@ -341,6 +351,49 @@ void main() {
       find.textContaining('30 seconds after wave 7 begins'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('Alias label moves above the field when scaled text cannot fit', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(320, 800);
+    addTearDown(tester.view.reset);
+
+    final tutorialObject = PvzObject(
+      aliases: const ['SingleHandedTutorial'],
+      objClass: 'IntroSingleHandedProperties',
+      objData: {'WaveForStartRocket': 1},
+    );
+    await tester.pumpWidget(
+      _localizedApp(
+        Builder(
+          builder: (context) {
+            final media = MediaQuery.of(context);
+            return MediaQuery(
+              data: media.copyWith(textScaler: const TextScaler.linear(1.8)),
+              child: IntroSingleHandedPropertiesScreen(
+                rtid: 'RTID(SingleHandedTutorial@CurrentLevel)',
+                levelFile: PvzLevelFile(objects: [tutorialObject]),
+                onChanged: () {},
+                onBack: () {},
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final label = find.text('Alias (English letters only)');
+    final aliasField = find.byType(TextField).first;
+    expect(label, findsOneWidget);
+    expect(tester.widget<TextField>(aliasField).decoration?.labelText, isNull);
+    expect(
+      tester.getBottomLeft(label).dy,
+      lessThan(tester.getTopLeft(aliasField).dy),
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Single Handed and Intro Animation report a logic conflict', (
