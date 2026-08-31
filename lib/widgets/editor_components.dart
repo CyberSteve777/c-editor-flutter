@@ -678,6 +678,90 @@ class EditorResponsiveActionRow extends StatelessWidget {
   }
 }
 
+/// A numeric stepper that keeps localized labels readable at large text scales.
+///
+/// The label and controls stay on one line while there is enough room. On a
+/// narrow surface only the controls move below the label, preventing the label
+/// from being squeezed into one-character-wide lines.
+class EditorResponsiveStepperRow extends StatelessWidget {
+  const EditorResponsiveStepperRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.tooltip = '',
+    this.min = 0,
+    this.max = 100,
+    this.breakpoint = 420,
+    this.labelStyle,
+    this.valueStyle,
+    this.labelKey,
+    this.controlsKey,
+    this.decreaseKey,
+    this.increaseKey,
+    this.decreaseIcon = Icons.remove_circle_outline,
+    this.increaseIcon = Icons.add_circle_outline,
+  });
+
+  final String label;
+  final String tooltip;
+  final int value;
+  final ValueChanged<int> onChanged;
+  final int min;
+  final int max;
+  final double breakpoint;
+  final TextStyle? labelStyle;
+  final TextStyle? valueStyle;
+  final Key? labelKey;
+  final Key? controlsKey;
+  final Key? decreaseKey;
+  final Key? increaseKey;
+  final IconData decreaseIcon;
+  final IconData increaseIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final controls = Row(
+      key: controlsKey,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          key: decreaseKey,
+          onPressed: value > min ? () => onChanged(value - 1) : null,
+          icon: Icon(decreaseIcon),
+        ),
+        SizedBox(
+          width: 40,
+          child: Text(
+            '$value',
+            textAlign: TextAlign.center,
+            style: valueStyle ?? theme.textTheme.titleMedium,
+          ),
+        ),
+        IconButton(
+          key: increaseKey,
+          onPressed: value < max ? () => onChanged(value + 1) : null,
+          icon: Icon(increaseIcon),
+        ),
+      ],
+    );
+
+    return Tooltip(
+      message: tooltip.isNotEmpty ? tooltip : label,
+      child: EditorResponsiveActionRow(
+        breakpoint: breakpoint,
+        content: Text(
+          key: labelKey,
+          label,
+          style: labelStyle ?? theme.textTheme.bodyLarge,
+        ),
+        action: controls,
+      ),
+    );
+  }
+}
+
 /// +N overlay badge for interactive lawn grid cells.
 /// Tight "borderless" pill: background hugs the label with minimal padding.
 class GridCellCountBadge extends StatelessWidget {
@@ -1017,14 +1101,23 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
   }
 
   ScrollbarThemeData _scrollbarTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final color = widget.onAccentBar
-        ? Colors.white.withValues(alpha: 0.78)
-        : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7);
+        ? (isDark
+              ? Colors.white.withValues(alpha: 0.82)
+              : theme.colorScheme.onSurface.withValues(alpha: 0.62))
+        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.72);
+    final trackColor = widget.onAccentBar
+        ? (isDark
+              ? Colors.white.withValues(alpha: 0.14)
+              : theme.colorScheme.onSurface.withValues(alpha: 0.12))
+        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.10);
     return ScrollbarThemeData(
       thumbColor: WidgetStateProperty.all(color),
-      trackColor: WidgetStateProperty.all(Colors.transparent),
+      trackColor: WidgetStateProperty.all(trackColor),
       trackBorderColor: WidgetStateProperty.all(Colors.transparent),
-      thickness: WidgetStateProperty.all(4),
+      thickness: WidgetStateProperty.all(6),
       radius: const Radius.circular(4),
       crossAxisMargin: 2,
       mainAxisMargin: 8,
@@ -2049,8 +2142,9 @@ class WaveDropConfigCard extends StatelessWidget {
     final theme = Theme.of(context);
     final AppLocalizations l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
-    final leafColor = isDark ? pvzGreenLight : pvzGreenDark;
+    final plantColor = isDark ? pvzGreenLight : pvzGreenDark;
     final plantCount = plants.length;
+    final hasSeedPacketDrops = plantCount > 0;
     final plantFoodOnlyCount = (totalDropCount - plantCount).clamp(
       0,
       totalDropCount,
@@ -2072,14 +2166,18 @@ class WaveDropConfigCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.eco,
+                  key: const ValueKey('waveDropConfigTitleIcon'),
+                  Icons.local_florist,
                   size: _kWaveDropConfigTitleIconSize,
-                  color: leafColor,
+                  color: plantColor,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    l10n.waveDropConfigTitle,
+                    key: const ValueKey('waveDropConfigTitle'),
+                    hasSeedPacketDrops
+                        ? l10n.dropConfigPlants
+                        : l10n.dropConfigPlantFood,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -2188,30 +2286,14 @@ class WaveDropConfigCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: AssetImageWidget(
-                    assetPath: _kPlantDropTagIconPath,
-                    altCandidates: imageAltCandidates(_kPlantDropTagIconPath),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.dropConfigPlants,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+            Text(
+              key: const ValueKey('waveDropPlantSelectionLabel'),
+              l10n.waveDropPlantSelectionLabel,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
             Wrap(

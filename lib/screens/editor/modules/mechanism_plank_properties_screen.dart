@@ -224,7 +224,6 @@ class _MechanismPlankPropertiesScreenState
     return false;
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -264,7 +263,7 @@ class _MechanismPlankPropertiesScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -411,24 +410,14 @@ class _StepperField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final canDecrease = value > min;
-    final canIncrease = value < max;
-
-    return Row(
-      children: [
-        Expanded(
-          child: Text('$label: $value', style: theme.textTheme.bodyLarge),
-        ),
-        IconButton(
-          onPressed: canDecrease ? () => onChanged(value - 1) : null,
-          icon: const Icon(Icons.remove),
-        ),
-        IconButton(
-          onPressed: canIncrease ? () => onChanged(value + 1) : null,
-          icon: const Icon(Icons.add),
-        ),
-      ],
+    return EditorResponsiveStepperRow(
+      label: label,
+      value: value,
+      min: min,
+      max: max,
+      onChanged: onChanged,
+      decreaseIcon: Icons.remove,
+      increaseIcon: Icons.add,
     );
   }
 }

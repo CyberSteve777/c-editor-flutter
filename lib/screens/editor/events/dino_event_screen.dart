@@ -220,44 +220,21 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              l10n?.dinoRow(_data.dinoRow + 1) ??
-                                  'Row: ${_data.dinoRow + 1}',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: _data.dinoRow > 0
-                                ? () {
-                                    _data = DinoWaveActionPropsData(
-                                      dinoRow: _data.dinoRow - 1,
-                                      dinoType: _data.dinoType,
-                                      dinoWaveDuration: _data.dinoWaveDuration,
-                                    );
-                                    _sync();
-                                  }
-                                : null,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: _data.dinoRow < _maxRowIndex
-                                ? () {
-                                    _data = DinoWaveActionPropsData(
-                                      dinoRow: _data.dinoRow + 1,
-                                      dinoType: _data.dinoType,
-                                      dinoWaveDuration: _data.dinoWaveDuration,
-                                    );
-                                    _sync();
-                                  }
-                                : null,
-                          ),
-                        ],
+                      EditorResponsiveStepperRow(
+                        label: l10n?.dinoRowTitle ?? 'Row',
+                        value: _data.dinoRow + 1,
+                        min: 1,
+                        max: _maxRowIndex + 1,
+                        decreaseIcon: Icons.remove,
+                        increaseIcon: Icons.add,
+                        onChanged: (value) {
+                          _data = DinoWaveActionPropsData(
+                            dinoRow: value - 1,
+                            dinoType: _data.dinoType,
+                            dinoWaveDuration: _data.dinoWaveDuration,
+                          );
+                          _sync();
+                        },
                       ),
                       const SizedBox(height: 12),
                       TextFormField(

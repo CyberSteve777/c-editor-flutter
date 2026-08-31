@@ -74,4 +74,55 @@ void main() {
       expect(tester.takeException(), isNull);
     }
   });
+
+  testWidgets('wave manager zombie pool keeps text separate from actions', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 900);
+    addTearDown(tester.view.reset);
+
+    final module = PvzObject(
+      aliases: const ['NewWaves'],
+      objClass: 'WaveManagerModuleProperties',
+      objData: WaveManagerModuleData(
+        waveManagerProps: 'RTID(WaveManagerPropsWeek1@CurrentLevel)',
+        dynamicZombies: [
+          DynamicZombieGroup(
+            zombiePool: const ['RTID(tutorial@ZombieTypes)'],
+            zombieLevel: const [1],
+          ),
+        ],
+      ).toJson(),
+    );
+    final props = PvzObject(
+      aliases: const ['WaveManagerPropsWeek1'],
+      objClass: 'WaveManagerProperties',
+      objData: const <String, dynamic>{},
+    );
+
+    await tester.pumpWidget(
+      _app(
+        level: PvzLevelFile(objects: [module, props]),
+        themeMode: ThemeMode.light,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final details = find.byKey(
+      const ValueKey('waveManagerZombiePoolDetails-0'),
+    );
+    final actions = find.byKey(
+      const ValueKey('waveManagerZombiePoolActions-0'),
+    );
+    await tester.ensureVisible(details);
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(details).width, greaterThan(300));
+    expect(
+      tester.getRect(actions).top,
+      greaterThanOrEqualTo(tester.getRect(details).bottom),
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -6345,13 +6345,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level).';
 
   @override
-  String get dropConfigPlants => 'Drop Configuration (seed packets)';
+  String get dropConfigPlants => 'Drop configuration (seed packet)';
 
   @override
-  String get dropConfigPlantFood => 'Drop config (Plant Food)';
+  String get dropConfigPlantFood => 'Drop configuration (Plant Food)';
 
   @override
   String get waveDropConfigTitle => 'Drop configuration';
+
+  @override
+  String get waveDropPlantSelectionLabel =>
+      'Specified seed packet drops (SpawnPlantName)';
 
   @override
   String get waveDropTotalLabel => 'Total drops (AdditionalPlantfood)';

@@ -329,16 +329,16 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                         children: [
                           Icon(Icons.water, color: theme.colorScheme.secondary),
                           const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            l10n?.fishPropertiesButton ?? 'Fish properties',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              l10n?.fishPropertiesButton ?? 'Fish properties',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -417,11 +417,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
     _sync();
   }
 
-  void _handleZombieDragDropMove(
-      int fromIndex,
-      int toRow,
-      int rowInsertIndex,
-      ) {
+  void _handleZombieDragDropMove(int fromIndex, int toRow, int rowInsertIndex) {
     final zombies = List<ZombieSpawnData>.from(_data.zombies);
     moveZombieSpawnInListByRowSlot(
       zombies: zombies,
@@ -488,20 +484,17 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Slider(
-                    value: _batchLevel,
-                    min: 1,
-                    max: 10,
-                    divisions: 9,
-                    label: _batchLevel.round().toString(),
-                    onChanged: (v) => setState(() => _batchLevel = v),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                FilledButton(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final slider = Slider(
+                  value: _batchLevel,
+                  min: 1,
+                  max: 10,
+                  divisions: 9,
+                  label: _batchLevel.round().toString(),
+                  onChanged: (v) => setState(() => _batchLevel = v),
+                );
+                final applyButton = FilledButton(
                   onPressed: () async {
                     final ok = await showDialog<bool>(
                       context: context,
@@ -528,9 +521,32 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                     if (ok == true) _applyBatchLevel();
                   },
                   child: Text(l10n?.apply ?? 'Apply'),
-                ),
-              ],
+                );
+
+                if (constraints.maxWidth < 420) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      slider,
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: applyButton,
+                      ),
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    Expanded(child: slider),
+                    const SizedBox(width: 12),
+                    applyButton,
+                  ],
+                );
+              },
             ),
+            const SizedBox(height: 12),
             Text(
               l10n?.appliesToAllNonElite ??
                   'Applies to all non-elite zombies in this wave.',
@@ -660,13 +676,12 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
           parentContext: context,
           levelFile: widget.levelFile,
           zombieTypeRtid: zombie.type,
-          onRemove: (eraseOrphan) => _removeZombie(
-            index,
-            eraseOrphanProperties: eraseOrphan,
-          ),
+          onRemove: (eraseOrphan) =>
+              _removeZombie(index, eraseOrphanProperties: eraseOrphan),
         );
       },
-      customPropertiesActions: widget.onEditCustomZombie != null ||
+      customPropertiesActions:
+          widget.onEditCustomZombie != null ||
               widget.onInjectCustomZombie != null
           ? CustomZombiePropertiesSheetActions(
               levelFile: widget.levelFile,

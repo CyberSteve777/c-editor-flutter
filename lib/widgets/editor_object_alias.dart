@@ -35,7 +35,6 @@ Widget buildEditorObjectAppBarTitle({
   required String objClass,
   Color? foregroundColor,
 }) {
-  final l10n = AppLocalizations.of(context);
   final theme = Theme.of(context);
   final fg =
       foregroundColor ??
@@ -70,14 +69,14 @@ String _editorObjectTitleText({
   final l10n = AppLocalizations.of(context);
   if (_nameAlreadyIncludesObjectKind(localizedName, isEvent: isEvent)) {
     final edit = l10n?.edit ?? 'Edit';
-    final separator =
-        Localizations.localeOf(context).languageCode == 'zh' ? '' : ' ';
+    final separator = Localizations.localeOf(context).languageCode == 'zh'
+        ? ''
+        : ' ';
     return '$edit$separator$localizedName';
   }
   return isEvent
       ? (l10n?.editNamedEvent(localizedName) ?? 'Edit $localizedName event')
-      : (l10n?.editNamedModule(localizedName) ??
-            'Edit $localizedName module');
+      : (l10n?.editNamedModule(localizedName) ?? 'Edit $localizedName module');
 }
 
 bool _nameAlreadyIncludesObjectKind(
@@ -235,6 +234,12 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
               height: 1.25,
               leadingDistribution: TextLeadingDistribution.even,
             );
+    final externalLabelStyle =
+        (theme.textTheme.bodySmall ?? const TextStyle(fontSize: 12)).copyWith(
+          color: isDirty ? accent : theme.colorScheme.onSurfaceVariant,
+          height: 1.25,
+          leadingDistribution: TextLeadingDistribution.even,
+        );
 
     final decoration = InputDecoration(
       isDense: false,
@@ -257,9 +262,7 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
     final field = EditorResponsiveInputField(
       label: aliasLabel,
       decoration: decoration,
-      externalLabelStyle: labelStyle.copyWith(
-        color: isDirty ? accent : theme.colorScheme.onSurfaceVariant,
-      ),
+      externalLabelStyle: externalLabelStyle,
       builder: (context, responsiveDecoration) => TextField(
         controller: _controller,
         focusNode: _focusNode,
@@ -278,10 +281,7 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
       width: double.infinity,
       child: Card(
         margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: field,
-        ),
+        child: Padding(padding: const EdgeInsets.all(16), child: field),
       ),
     );
   }
@@ -346,8 +346,7 @@ class _PvzAliasInputDialogState extends State<_PvzAliasInputDialog> {
         !PvzAliasUtils.isAliasAvailable(widget.levelFile, alias)) {
       setState(
         () => _errorText =
-            l10n?.aliasAlreadyExists ??
-            'Alias already exists in this level.',
+            l10n?.aliasAlreadyExists ?? 'Alias already exists in this level.',
       );
       return;
     }
@@ -388,10 +387,7 @@ class _PvzAliasInputDialogState extends State<_PvzAliasInputDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(l10n?.cancel ?? 'Cancel'),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: Text(l10n?.add ?? 'Add'),
-        ),
+        FilledButton(onPressed: _submit, child: Text(l10n?.add ?? 'Add')),
       ],
     );
   }

@@ -1779,11 +1779,32 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                   const SizedBox(height: 8),
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      final scheme = Theme.of(ctx).colorScheme;
-                      final textScale =
-                          MediaQuery.textScalerOf(ctx).scale(16) / 16;
-                      final compact =
-                          constraints.maxWidth < 640 || textScale > 1.2;
+                      final theme = Theme.of(ctx);
+                      final scheme = theme.colorScheme;
+                      final actionLabels = <String>[
+                        l10n?.rename ?? 'Rename',
+                        l10n?.copy ?? 'Copy',
+                        l10n?.move ?? 'Move',
+                      ];
+                      final buttonTextStyle =
+                          theme.textTheme.labelLarge ??
+                          const TextStyle(fontSize: 14);
+                      double measuredButtonWidth(String label) {
+                        final painter = TextPainter(
+                          text: TextSpan(text: label, style: buttonTextStyle),
+                          textDirection: Directionality.of(ctx),
+                          textScaler: MediaQuery.textScalerOf(ctx),
+                          maxLines: 1,
+                        )..layout();
+                        return painter.width + 72;
+                      }
+
+                      final requiredRowWidth =
+                          actionLabels
+                              .map(measuredButtonWidth)
+                              .fold<double>(0, (sum, width) => sum + width) +
+                          16;
+                      final compact = constraints.maxWidth < requiredRowWidth;
 
                       Widget actionButton({
                         required Key key,
@@ -1817,7 +1838,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                         actionButton(
                           key: const ValueKey('waveEventRenameButton'),
                           icon: Icons.drive_file_rename_outline,
-                          label: l10n?.rename ?? 'Rename',
+                          label: actionLabels[0],
                           onPressed: () => _showRenameDialog(
                             context,
                             rtid,
@@ -1828,7 +1849,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                         actionButton(
                           key: const ValueKey('waveEventCopyButton'),
                           icon: Icons.copy,
-                          label: l10n?.copy ?? 'Copy',
+                          label: actionLabels[1],
                           onPressed: () => _showCopyChoiceDialog(
                             context,
                             rtid,
@@ -1840,7 +1861,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                         actionButton(
                           key: const ValueKey('waveEventMoveButton'),
                           icon: Icons.drive_file_move,
-                          label: l10n?.move ?? 'Move',
+                          label: actionLabels[2],
                           onPressed: () => _showMoveDialog(
                             context,
                             rtid,

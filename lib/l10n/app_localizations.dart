@@ -11262,13 +11262,13 @@ abstract class AppLocalizations {
   /// No description provided for @dropConfigPlants.
   ///
   /// In en, this message translates to:
-  /// **'Drop Configuration (seed packets)'**
+  /// **'Drop configuration (seed packet)'**
   String get dropConfigPlants;
 
   /// No description provided for @dropConfigPlantFood.
   ///
   /// In en, this message translates to:
-  /// **'Drop config (Plant Food)'**
+  /// **'Drop configuration (Plant Food)'**
   String get dropConfigPlantFood;
 
   /// No description provided for @waveDropConfigTitle.
@@ -11276,6 +11276,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drop configuration'**
   String get waveDropConfigTitle;
+
+  /// No description provided for @waveDropPlantSelectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Specified seed packet drops (SpawnPlantName)'**
+  String get waveDropPlantSelectionLabel;
 
   /// No description provided for @waveDropTotalLabel.
   ///

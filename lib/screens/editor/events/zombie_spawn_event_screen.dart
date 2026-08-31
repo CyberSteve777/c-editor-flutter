@@ -1021,6 +1021,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                 child: Text(l10n?.apply ?? 'Apply'),
               ),
             ),
+            const SizedBox(height: 12),
             Text(
               l10n?.appliesToAllNonElite ??
                   'Applies to all non-elite zombies in this wave.',

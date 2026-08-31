@@ -434,24 +434,13 @@ class _StepperControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip.isNotEmpty ? tooltip : label,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-          ),
-          IconButton(
-            onPressed: value > min ? () => onChanged(value - 1) : null,
-            icon: const Icon(Icons.remove_circle_outline),
-          ),
-          Text('$value', style: Theme.of(context).textTheme.titleMedium),
-          IconButton(
-            onPressed: value < max ? () => onChanged(value + 1) : null,
-            icon: const Icon(Icons.add_circle_outline),
-          ),
-        ],
-      ),
+    return EditorResponsiveStepperRow(
+      label: label,
+      tooltip: tooltip,
+      value: value,
+      min: min,
+      max: max,
+      onChanged: onChanged,
     );
   }
 }

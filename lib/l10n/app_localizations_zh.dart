@@ -6038,13 +6038,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appliesToAllNonElite => '将本波次所有僵尸设为指定等级（精英僵尸不受影响，保持默认等级）。';
 
   @override
-  String get dropConfigPlants => '掉落物配置（植物卡片）';
+  String get dropConfigPlants => '掉落物（植物卡片）配置';
 
   @override
-  String get dropConfigPlantFood => '掉落物配置（能量豆）';
+  String get dropConfigPlantFood => '掉落物（能量豆）配置';
 
   @override
   String get waveDropConfigTitle => '掉落物配置';
+
+  @override
+  String get waveDropPlantSelectionLabel => '指定掉落植物 (SpawnPlantName)';
 
   @override
   String get waveDropTotalLabel => '携带掉落物的僵尸总数 (AdditionalPlantfood)';

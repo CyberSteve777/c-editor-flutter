@@ -389,6 +389,12 @@ void main() {
     final aliasField = find.byType(TextField).first;
     expect(label, findsOneWidget);
     expect(tester.widget<TextField>(aliasField).decoration?.labelText, isNull);
+    final labelWidget = tester.widget<Text>(label);
+    final labelTheme = Theme.of(tester.element(label));
+    expect(
+      labelWidget.style?.fontSize,
+      labelTheme.textTheme.bodySmall?.fontSize,
+    );
     expect(
       tester.getBottomLeft(label).dy,
       lessThan(tester.getTopLeft(aliasField).dy),

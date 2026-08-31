@@ -225,6 +225,58 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('responsive stepper gives a long label the full narrow width', (
+    tester,
+  ) async {
+    const labelKey = Key('stepper-label');
+    const controlsKey = Key('stepper-controls');
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 320,
+        child: EditorResponsiveStepperRow(
+          label: 'A very long localized setting name that must stay readable',
+          value: 5,
+          onChanged: (_) {},
+          labelKey: labelKey,
+          controlsKey: controlsKey,
+        ),
+      ),
+    );
+
+    final labelRect = tester.getRect(find.byKey(labelKey));
+    final controlsRect = tester.getRect(find.byKey(controlsKey));
+    expect(labelRect.width, greaterThan(250));
+    expect(controlsRect.top, greaterThan(labelRect.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('responsive stepper remains horizontal when it fits', (
+    tester,
+  ) async {
+    const labelKey = Key('wide-stepper-label');
+    const controlsKey = Key('wide-stepper-controls');
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 700,
+        child: EditorResponsiveStepperRow(
+          label: 'Localized setting',
+          value: 5,
+          onChanged: (_) {},
+          labelKey: labelKey,
+          controlsKey: controlsKey,
+        ),
+      ),
+    );
+
+    final labelRect = tester.getRect(find.byKey(labelKey));
+    final controlsRect = tester.getRect(find.byKey(controlsKey));
+    expect(labelRect.right, lessThan(controlsRect.left));
+    expect(labelRect.center.dy, closeTo(controlsRect.center.dy, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('labeled add button bounds long localized text', (tester) async {
     await tester.pumpWidget(
       _testApp(

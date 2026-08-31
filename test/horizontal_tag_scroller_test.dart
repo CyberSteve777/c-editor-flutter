@@ -97,6 +97,41 @@ void main() {
     expect(scrollbar.thumbVisibility, isTrue);
   });
 
+  testWidgets('light accent bars use a dark, six-pixel scrollbar', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(320, 240);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(brightness: Brightness.light),
+        home: Scaffold(
+          body: HorizontalTagScroller(
+            onAccentBar: true,
+            children: List.generate(
+              6,
+              (index) => SizedBox(width: 100, child: Text('Tag $index')),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final scrollbarTheme = tester.widget<ScrollbarTheme>(
+      find.byType(ScrollbarTheme),
+    );
+    final thumbColor = scrollbarTheme.data.thumbColor?.resolve({});
+    final trackColor = scrollbarTheme.data.trackColor?.resolve({});
+    expect(scrollbarTheme.data.thickness?.resolve({}), 6);
+    expect(thumbColor, isNotNull);
+    expect(trackColor, isNotNull);
+    expect(thumbColor!.computeLuminance(), lessThan(0.3));
+    expect(trackColor!.a, greaterThan(0));
+  });
+
   testWidgets('horizontal tag rows restore an explicit scroll offset', (
     tester,
   ) async {

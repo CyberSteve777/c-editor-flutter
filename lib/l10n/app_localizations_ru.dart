@@ -6297,13 +6297,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Применяется ко всем неэлитным зомби в этой волне.';
 
   @override
-  String get dropConfigPlants => 'Настройка дропа (растения)';
+  String get dropConfigPlants => 'Настройка дропа (пакеты семян)';
 
   @override
   String get dropConfigPlantFood => 'Настройка дропа (подкормка)';
 
   @override
   String get waveDropConfigTitle => 'Настройка дропа';
+
+  @override
+  String get waveDropPlantSelectionLabel =>
+      'Указанные пакеты семян для выпадения (SpawnPlantName)';
 
   @override
   String get waveDropTotalLabel => 'Всего зомби с дропом (AdditionalPlantfood)';
