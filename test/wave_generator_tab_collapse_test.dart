@@ -158,4 +158,64 @@ void main() {
     expect(tester.widget<Text>(name).maxLines, 2);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('zombie pool tile keeps delete action at the trailing edge', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: WaveGeneratorZombieTile(
+              key: const ValueKey('shortNameZombiePoolTile'),
+              style: WaveGeneratorZombieTileStyle.poolCompact,
+              localizedName: 'Future zombie',
+              codename: 'future',
+              iconPath: null,
+              onDelete: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tileRect = tester.getRect(
+      find.byKey(const ValueKey('shortNameZombiePoolTile')),
+    );
+    final deleteCenter = tester.getCenter(find.byIcon(Icons.close));
+    expect(tileRect.right - deleteCenter.dx, lessThan(28));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'horizontal zombie tile keeps delete action at the trailing edge',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: WaveGeneratorZombieTile(
+                key: const ValueKey('horizontalShortNameZombieTile'),
+                localizedName: 'Future zombie',
+                codename: 'future',
+                iconPath: null,
+                onDelete: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final tileRect = tester.getRect(
+        find.byKey(const ValueKey('horizontalShortNameZombieTile')),
+      );
+      final deleteCenter = tester.getCenter(find.byIcon(Icons.close));
+      expect(tileRect.right - deleteCenter.dx, lessThan(32));
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

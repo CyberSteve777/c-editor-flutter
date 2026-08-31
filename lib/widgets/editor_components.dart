@@ -2149,6 +2149,12 @@ class WaveDropConfigCard extends StatelessWidget {
       0,
       totalDropCount,
     );
+    final hasMixedDrops = hasSeedPacketDrops && plantFoodOnlyCount > 0;
+    final dropConfigTitle = hasMixedDrops
+        ? l10n.waveDropConfigTitle
+        : hasSeedPacketDrops
+        ? l10n.dropConfigPlants
+        : l10n.dropConfigPlantFood;
     final canIncreaseTotal = totalDropCount < zombieCount;
     final canAddPlant =
         onAddPlant != null &&
@@ -2167,7 +2173,7 @@ class WaveDropConfigCard extends StatelessWidget {
               children: [
                 Icon(
                   key: const ValueKey('waveDropConfigTitleIcon'),
-                  Icons.local_florist,
+                  hasSeedPacketDrops ? Icons.local_florist : Icons.eco,
                   size: _kWaveDropConfigTitleIconSize,
                   color: plantColor,
                 ),
@@ -2175,9 +2181,7 @@ class WaveDropConfigCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     key: const ValueKey('waveDropConfigTitle'),
-                    hasSeedPacketDrops
-                        ? l10n.dropConfigPlants
-                        : l10n.dropConfigPlantFood,
+                    dropConfigTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

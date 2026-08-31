@@ -3,7 +3,7 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Widget _testApp({required List<String> plants}) {
+Widget _testApp({required List<String> plants, int? totalDropCount}) {
   return MaterialApp(
     locale: const Locale('en'),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -13,7 +13,8 @@ Widget _testApp({required List<String> plants}) {
         width: 320,
         child: SingleChildScrollView(
           child: WaveDropConfigCard(
-            totalDropCount: plants.isEmpty ? 1 : plants.length,
+            totalDropCount:
+                totalDropCount ?? (plants.isEmpty ? 1 : plants.length),
             plants: plants,
             zombieCount: 3,
             onTotalDropCountChanged: (_) {},
@@ -42,7 +43,7 @@ void main() {
       tester
           .widget<Icon>(find.byKey(const ValueKey('waveDropConfigTitleIcon')))
           .icon,
-      Icons.local_florist,
+      Icons.eco,
     );
     expect(tester.takeException(), isNull);
   });
@@ -53,11 +54,37 @@ void main() {
     await tester.pumpWidget(_testApp(plants: const ['peashooter']));
     await tester.pumpAndSettle();
 
-    expect(find.text('Drop configuration (seed packets)'), findsOneWidget);
+    expect(find.text('Drop configuration (seed packet)'), findsOneWidget);
     expect(find.text('Drop configuration (Plant Food)'), findsNothing);
+    expect(
+      tester
+          .widget<Icon>(find.byKey(const ValueKey('waveDropConfigTitleIcon')))
+          .icon,
+      Icons.local_florist,
+    );
     expect(
       find.byKey(const ValueKey('waveDropPlantSelectionLabel')),
       findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('mixed drops use the generic configuration title', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _testApp(plants: const ['peashooter'], totalDropCount: 2),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Drop configuration'), findsOneWidget);
+    expect(find.text('Drop configuration (seed packet)'), findsNothing);
+    expect(find.text('Drop configuration (Plant Food)'), findsNothing);
+    expect(
+      tester
+          .widget<Icon>(find.byKey(const ValueKey('waveDropConfigTitleIcon')))
+          .icon,
+      Icons.local_florist,
     );
     expect(tester.takeException(), isNull);
   });

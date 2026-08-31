@@ -225,7 +225,7 @@ class WaveGeneratorZombieTile extends StatelessWidget {
                   ),
                 )
               else
-                Flexible(
+                Expanded(
                   child: _NameColumn(
                     localizedName: localizedName,
                     codename: codename,
@@ -360,7 +360,7 @@ class WaveGeneratorZombieTile extends StatelessWidget {
                     badgeForeground: badgeForeground,
                   ),
                   const SizedBox(width: 8),
-                  Flexible(
+                  Expanded(
                     child: _NameColumn(
                       localizedName: localizedName,
                       codename: codename,
