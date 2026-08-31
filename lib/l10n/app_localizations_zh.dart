@@ -1759,13 +1759,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveManagerTimeControl => '时间控制';
 
   @override
-  String get waveManagerFirstWaveDelayConveyor => '首波延迟（传送带）';
+  String get waveManagerFirstWaveDelayConveyor => '首波延迟（传送带，单位：秒）';
 
   @override
-  String get waveManagerFirstWaveDelayNormal => '首波延迟（常规）';
+  String get waveManagerFirstWaveDelayNormal => '首波延迟（常规，单位：秒）';
 
   @override
-  String get waveManagerFlagWaveDelay => '旗帜波延迟';
+  String get waveManagerFlagWaveDelay => '旗帜波延迟（秒）';
 
   @override
   String get waveManagerConveyorDetected => '检测到传送带模块，已自动使用传送带延迟';
@@ -3215,7 +3215,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showHealthBarOnDamage => '受伤显示血条 (EnableShowHealthBar)';
 
   @override
-  String get drawHealthBarTime => '血条显示时长 (DrawHealthBarTime)';
+  String get drawHealthBarTime => '血条显示时长 (DrawHealthBarTime，单位：秒)';
 
   @override
   String get enableEliteScale => '启用精英缩放 (EnableEliteScale)';
@@ -3741,20 +3741,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tideWaveTypeRight => '右方 (right)';
 
   @override
-  String get tideWaveDuration => '洋流持续时间 (Duration)';
+  String get tideWaveDuration => '洋流持续时间 (Duration，单位：秒)';
 
   @override
   String get tideWaveSubmarineMovingDistance =>
       '潜艇被推动列数 (SubmarineMovingDistance)';
 
   @override
-  String get tideWaveSpeedUpDuration => '僵尸加速持续时间 (秒)';
+  String get tideWaveSpeedUpDuration => '僵尸加速持续时间 (单位：秒)';
 
   @override
   String get tideWaveSpeedUpIncreased => '僵尸移动速度加成 (SpeedUpIncreased)';
 
   @override
-  String get tideWaveSubmarineMovingTime => '潜艇被推动时间 (秒)';
+  String get tideWaveSubmarineMovingTime => '潜艇被推动时间 (单位：秒)';
 
   @override
   String get tideWaveZombieMovingSpeed =>
@@ -4003,7 +4003,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dinoTreadColMaxLabel => '最右列 (GridXMax)';
 
   @override
-  String get dinoTreadTimeIntervalLabel => '登场间隔 (秒)';
+  String get dinoTreadTimeIntervalLabel => '登场间隔 (TimeInterval，单位：秒)';
 
   @override
   String get columnStartLabel => '起始列 (ColumnStart)';
@@ -4761,7 +4761,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hamsterballGeneration => '生成逻辑';
 
   @override
-  String get hamsterballTimeBeforeFullSpawn => '全部生成所需时间 (TimeBeforeFullSpawn)';
+  String get hamsterballTimeBeforeFullSpawn =>
+      '全部生成所需时间 (TimeBeforeFullSpawn，单位：秒)';
 
   @override
   String get hamsterballZombies => '仓鼠球内僵尸 (Zombies)';
@@ -5109,6 +5110,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get unitSeconds => '单位：秒';
+
+  @override
+  String propertyLabelSeconds(String name, String code) {
+    return '$name ($code，单位：秒)';
+  }
 
   @override
   String get speedConditions => '传输速度 (SpeedConditions)';
@@ -5517,7 +5523,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get groupSize => '每批数量 (GroupSize)';
 
   @override
-  String get timeBetweenGroups => '批次间隔 (TimeBetweenGroups)';
+  String get timeBetweenGroups => '批次间隔 (TimeBetweenGroups，单位：秒)';
 
   @override
   String applyBatchLevelContent(int level) {
@@ -5603,7 +5609,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ztPerksViewStats => '查看数值';
 
   @override
-  String get ztPerkPropDamageTakenInterval => '受伤间隔';
+  String get ztPerkPropDamageTakenInterval => '受伤间隔（秒）';
 
   @override
   String get ztPerkPropDamageTotalTaken => '累计承受伤害次数';
@@ -6087,8 +6093,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get count => '数量 (Count)';
 
   @override
-  String get targetDistance =>
-      '花坛距离 (TargetDistance)，数值代表从左边线起的列数，数值越大离房屋越远，可输入小数';
+  String get targetDistance => '花坛距离 (TargetDistance)';
+
+  @override
+  String get starChallengeTargetDistanceHint => '数值表示从左边线起的列数，数值越大离房屋越远，可输入小数。';
 
   @override
   String get targetSun => '目标阳光 (TargetSun)';
@@ -6106,10 +6114,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get timeSeconds => '时间限制（秒）';
 
   @override
-  String get speedModifier => '增幅倍率 (SpeedModifier)，填入0.5则代表僵尸移速获得50%的增幅';
+  String get speedModifier => '增幅倍率 (SpeedModifier)';
 
   @override
-  String get sunModifier => '降低倍率 (SunModifier)，填入0.2则代表阳光获取降低20%';
+  String get starChallengeSpeedModifierHint => '填入 0.5 表示僵尸移动速度提升 50%。';
+
+  @override
+  String get sunModifier => '降低倍率 (SunModifier)';
+
+  @override
+  String get starChallengeSunModifierHint => '填入 0.2 表示阳光获取量降低 20%。';
+
+  @override
+  String get starChallengeChineseUnsupportedHint => '不支持显示中文。';
 
   @override
   String get maximumPlantsLost => '植物损失上限 (MaximumPlantsLost)';
@@ -6166,7 +6183,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sunDropParameters => '阳光掉落参数';
 
   @override
-  String get initialDropDelay => '首次掉落延迟 (InitialSunDropDelay)';
+  String get initialDropDelay => '首次掉落延迟 (InitialSunDropDelay，单位：秒)';
 
   @override
   String get baseCountdown => '初始掉落间隔 (SunCountdownBase)';
@@ -6426,16 +6443,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paramAdjust => '参数调节';
 
   @override
-  String get firstDropDelay => '首次掉落延迟 (InitialSunDropDelay)';
+  String get firstDropDelay => '首次掉落延迟 (InitialSunDropDelay，单位：秒)';
 
   @override
-  String get initialDropInterval => '初始掉落间隔 (SunCountdownBase)';
+  String get initialDropInterval => '初始掉落间隔 (SunCountdownBase，单位：秒)';
 
   @override
-  String get maxDropInterval => '最大掉落间隔 (SunCountdownMax)';
+  String get maxDropInterval => '最大掉落间隔 (SunCountdownMax，单位：秒)';
 
   @override
-  String get intervalFloatRange => '间隔浮动范围 (SunCountdownRange)';
+  String get intervalFloatRange => '间隔浮动范围 (SunCountdownRange，单位：秒)';
 
   @override
   String get sunDropperHelpTitle => '阳光掉落模块说明';
@@ -7408,7 +7425,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heianWindModuleAppearances => '召唤组';
 
   @override
-  String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay)';
+  String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay，单位：秒)';
 
   @override
   String get heianWindModuleWindDelayHint => '单位：秒';
@@ -7435,7 +7452,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heianWindModuleDistanceHint => '1格=50距离';
 
   @override
-  String get heianWindModuleMoveTime => '僵尸平移时间 (MoveTime)';
+  String get heianWindModuleMoveTime => '僵尸平移时间 (MoveTime，单位：秒)';
 
   @override
   String get heianWindModuleMoveTimeHint => '单位：秒';

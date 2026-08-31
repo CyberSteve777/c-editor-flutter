@@ -137,43 +137,46 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
             _plantName(dialogContext, entry.weaponName),
           ),
         ),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              EditorResponsiveInputField(
-                label: localizedPropertyLabel(
-                  dialogContext,
-                  l10n.singleHandedRequiredKills,
-                  'killnum',
-                ),
-                builder: (context, decoration) => TextField(
-                  key: const ValueKey('singleHandedUpgradeKillCount'),
-                  controller: killController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [_integerFormatter],
-                  decoration: decoration,
-                ),
-              ),
-              const SizedBox(height: 16),
-              EditorResponsiveInputField(
-                label: localizedPropertyLabel(
-                  dialogContext,
-                  l10n.singleHandedAttackInterval,
-                  'launchtimepercent',
-                ),
-                builder: (context, decoration) => TextField(
-                  key: const ValueKey('singleHandedUpgradeAttackInterval'),
-                  controller: intervalController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+        content: SizedBox(
+          width: 520,
+          child: SingleChildScrollView(
+            key: const ValueKey('singleHandedUpgradeDialogScroll'),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                EditorResponsiveInputField(
+                  label: localizedPropertyLabel(
+                    dialogContext,
+                    l10n.singleHandedRequiredKills,
+                    'killnum',
                   ),
-                  inputFormatters: [_decimalFormatter],
-                  decoration: decoration,
+                  builder: (context, decoration) => TextField(
+                    key: const ValueKey('singleHandedUpgradeKillCount'),
+                    controller: killController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [_integerFormatter],
+                    decoration: decoration,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                EditorResponsiveInputField(
+                  label: localizedPropertyLabel(
+                    dialogContext,
+                    l10n.singleHandedAttackInterval,
+                    'launchtimepercent',
+                  ),
+                  builder: (context, decoration) => TextField(
+                    key: const ValueKey('singleHandedUpgradeAttackInterval'),
+                    controller: intervalController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [_decimalFormatter],
+                    decoration: decoration,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -235,55 +238,61 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: Text(l10n.singleHandedSpecialWave),
-          content: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _dialogNumberField(
-                  context: dialogContext,
-                  key: const ValueKey('singleHandedSpecialWaveNumber'),
-                  label: l10n.singleHandedWave,
-                  propertyName: 'wave',
-                  controller: waveController,
-                  integer: true,
-                ),
-                const SizedBox(height: 16),
-                EditorResponsiveFieldRow(
-                  children: [
-                    _dialogNumberField(
-                      context: dialogContext,
-                      key: const ValueKey('singleHandedSpecialWaveSpeed'),
-                      label: l10n.singleHandedSpeedMultiplier,
-                      propertyName: 'ZombiesWalkSpeed',
-                      controller: speedController,
-                    ),
-                    _dialogNumberField(
-                      context: dialogContext,
-                      key: const ValueKey('singleHandedSpecialWaveHealth'),
-                      label: l10n.singleHandedHealthMultiplier,
-                      propertyName: 'ZombiesHitpointsPercent',
-                      controller: healthController,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.singleHandedShowHealthBar),
-                  value: showHealthBar,
-                  onChanged: (value) =>
-                      setDialogState(() => showHealthBar = value),
-                ),
-              ],
+          content: SizedBox(
+            width: 560,
+            child: SingleChildScrollView(
+              key: const ValueKey('singleHandedSpecialWaveDialogScroll'),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _dialogNumberField(
+                    context: dialogContext,
+                    key: const ValueKey('singleHandedSpecialWaveNumber'),
+                    label: l10n.singleHandedWave,
+                    propertyName: 'wave',
+                    controller: waveController,
+                    integer: true,
+                  ),
+                  const SizedBox(height: 16),
+                  EditorResponsiveFieldRow(
+                    children: [
+                      _dialogNumberField(
+                        context: dialogContext,
+                        key: const ValueKey('singleHandedSpecialWaveSpeed'),
+                        label: l10n.singleHandedSpeedMultiplier,
+                        propertyName: 'ZombiesWalkSpeed',
+                        controller: speedController,
+                      ),
+                      _dialogNumberField(
+                        context: dialogContext,
+                        key: const ValueKey('singleHandedSpecialWaveHealth'),
+                        label: l10n.singleHandedHealthMultiplier,
+                        propertyName: 'ZombiesHitpointsPercent',
+                        controller: healthController,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    key: const ValueKey('singleHandedSpecialWaveHealthBar'),
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.singleHandedShowHealthBar),
+                    value: showHealthBar,
+                    onChanged: (value) =>
+                        setDialogState(() => showHealthBar = value),
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [
             TextButton(
+              key: const ValueKey('singleHandedSpecialWaveCancel'),
               onPressed: () => Navigator.pop(dialogContext, false),
               child: Text(l10n.cancel),
             ),
             FilledButton(
+              key: const ValueKey('singleHandedSpecialWaveConfirm'),
               onPressed: () {
                 final wave = int.tryParse(waveController.text);
                 final speed = double.tryParse(speedController.text);
@@ -397,6 +406,7 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
               key: const ValueKey('singleHandedMissileInterval'),
               label: l10n.singleHandedMissileInterval,
               propertyName: 'MissileInterval',
+              seconds: true,
               value: _data.missileInterval,
               onChanged: (value) => _data.missileInterval = value,
             ),
@@ -409,6 +419,7 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
               key: const ValueKey('singleHandedRocketHitTime'),
               label: l10n.singleHandedWarningTime,
               propertyName: 'RocketHitTime',
+              seconds: true,
               value: _data.rocketHitTime,
               onChanged: (value) => _data.rocketHitTime = value,
             ),
@@ -455,9 +466,12 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
     required num value,
     required ValueChanged<double> onChanged,
     bool integer = false,
+    bool seconds = false,
   }) {
     return EditorResponsiveInputField(
-      label: localizedPropertyLabel(context, label, propertyName),
+      label: seconds
+          ? localizedSecondsPropertyLabel(context, label, propertyName)
+          : localizedPropertyLabel(context, label, propertyName),
       builder: (context, decoration) => TextFormField(
         key: key,
         initialValue: _formatNumber(value),
@@ -653,7 +667,7 @@ class _SingleHandedTabState extends State<SingleHandedTab> {
                 Expanded(
                   child: Text(
                     title,
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),

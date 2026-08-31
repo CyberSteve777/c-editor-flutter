@@ -148,6 +148,21 @@ void main() {
     expect(find.text('Special Waves'), findsOneWidget);
     expect(find.text('Wave 5'), findsOneWidget);
     expect(find.text('Add All by Oneself Tutorial'), findsOneWidget);
+    expect(
+      find.text('Missile launch interval (MissileInterval; seconds)'),
+      findsOneWidget,
+    );
+    expect(find.text('Warning time (RocketHitTime; seconds)'), findsOneWidget);
+
+    final basicHeading = tester.widget<Text>(find.text('Basic Parameters'));
+    final headingTheme = Theme.of(
+      tester.element(find.text('Basic Parameters')),
+    );
+    expect(
+      basicHeading.style?.fontSize,
+      headingTheme.textTheme.titleMedium?.fontSize,
+    );
+    expect(basicHeading.style?.color, headingTheme.colorScheme.primary);
 
     final missileField = find.byKey(const ValueKey('singleHandedMissileCount'));
     await tester.enterText(missileField, '3');
@@ -206,6 +221,59 @@ void main() {
         tester.getRect(identity).top,
         greaterThanOrEqualTo(tester.getRect(icon).bottom),
       );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'Single Handed special-wave dialog separates scrollable content and actions',
+    (tester) async {
+      tester.view.physicalSize = const Size(1024, 560);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final level = _singleHandedLevel(_sampleData());
+      await tester.pumpWidget(
+        _localizedApp(
+          Builder(
+            builder: (context) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(textScaler: const TextScaler.linear(1.3)),
+                child: Scaffold(
+                  body: SingleHandedTab(levelFile: level, onChanged: () {}),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final waveCard = find.text('Wave 5');
+      await tester.ensureVisible(waveCard);
+      await tester.tap(waveCard);
+      await tester.pumpAndSettle();
+
+      final scrollArea = find.byKey(
+        const ValueKey('singleHandedSpecialWaveDialogScroll'),
+      );
+      expect(scrollArea, findsOneWidget);
+      final cancel = find.byKey(
+        const ValueKey('singleHandedSpecialWaveCancel'),
+      );
+      final confirm = find.byKey(
+        const ValueKey('singleHandedSpecialWaveConfirm'),
+      );
+      expect(cancel, findsOneWidget);
+      expect(confirm, findsOneWidget);
+      expect(
+        tester.getRect(scrollArea).bottom,
+        lessThanOrEqualTo(tester.getRect(cancel).top),
+      );
+      expect(tester.getRect(cancel).overlaps(tester.getRect(confirm)), isFalse);
+      expect(tester.getRect(confirm).bottom, lessThanOrEqualTo(560));
       expect(tester.takeException(), isNull);
     },
   );

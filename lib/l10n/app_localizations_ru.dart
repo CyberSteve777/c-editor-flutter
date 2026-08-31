@@ -1813,14 +1813,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveManagerFirstWaveDelayConveyor =>
-      'Задержка первой волны (конвейер)';
+      'Задержка первой волны (конвейер; секунды)';
 
   @override
   String get waveManagerFirstWaveDelayNormal =>
-      'Задержка первой волны (обычно)';
+      'Задержка первой волны (обычно; секунды)';
 
   @override
-  String get waveManagerFlagWaveDelay => 'Задержка флаговой волны';
+  String get waveManagerFlagWaveDelay => 'Задержка флаговой волны (секунды)';
 
   @override
   String get waveManagerConveyorDetected =>
@@ -2393,7 +2393,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowInterval =>
-      'Интервал глотания (SwallowInterval)';
+      'Интервал глотания (SwallowInterval; секунды)';
 
   @override
   String get spermWhaleModuleHelpSwallowInterval =>
@@ -2401,7 +2401,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get spermWhaleModulePoisonSwallowInterval =>
-      'Интервал при яде (PoisonSwallowInterval)';
+      'Интервал при яде (PoisonSwallowInterval; секунды)';
 
   @override
   String get spermWhaleModuleHelpPoisonSwallowInterval =>
@@ -2409,7 +2409,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowDuration =>
-      'Длительность глотания (SwallowDuration)';
+      'Длительность глотания (SwallowDuration; секунды)';
 
   @override
   String get spermWhaleModuleHelpSwallowDuration =>
@@ -3393,7 +3393,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get showHealthBarOnDamage => 'Показывать полоску здоровья при уроне';
 
   @override
-  String get drawHealthBarTime => 'Время отображения полоски';
+  String get drawHealthBarTime =>
+      'Время отображения полоски (DrawHealthBarTime; секунды)';
 
   @override
   String get enableEliteScale => 'Включить масштаб для элитных зомби';
@@ -3926,19 +3927,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tideWaveTypeRight => 'Вправо';
 
   @override
-  String get tideWaveDuration => 'Длительность';
+  String get tideWaveDuration => 'Длительность (секунды)';
 
   @override
   String get tideWaveSubmarineMovingDistance => 'Расстояние подлодки';
 
   @override
-  String get tideWaveSpeedUpDuration => 'Ускорение длит.';
+  String get tideWaveSpeedUpDuration => 'Длительность ускорения (секунды)';
 
   @override
   String get tideWaveSpeedUpIncreased => 'Ускорение увел.';
 
   @override
-  String get tideWaveSubmarineMovingTime => 'Время подлодки';
+  String get tideWaveSubmarineMovingTime => 'Время движения подлодки (секунды)';
 
   @override
   String get tideWaveZombieMovingSpeed => 'Скорость зомби';
@@ -4193,7 +4194,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dinoTreadColMaxLabel => 'Столбец макс [GridXMax]';
 
   @override
-  String get dinoTreadTimeIntervalLabel => 'Интервал [TimeInterval]';
+  String get dinoTreadTimeIntervalLabel =>
+      'Интервал появления (TimeInterval; секунды)';
 
   @override
   String get columnStartLabel => 'Начало [ColumnStart]';
@@ -4968,7 +4970,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hamsterballTimeBeforeFullSpawn =>
-      'Время до полного появления (TimeBeforeFullSpawn)';
+      'Время до полного появления (TimeBeforeFullSpawn; секунды)';
 
   @override
   String get hamsterballZombies => 'Зомби внутри шаров (Zombies)';
@@ -5324,6 +5326,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unitSeconds => 'Ед.: секунды';
 
   @override
+  String propertyLabelSeconds(String name, String code) {
+    return '$name ($code; секунды)';
+  }
+
+  @override
   String get speedConditions => 'Скорость (SpeedConditions)';
 
   @override
@@ -5441,7 +5448,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get globalParameters => 'Глобальные параметры';
 
   @override
-  String get timePerGrid => 'Время на клетку';
+  String get timePerGrid => 'Время на клетку (секунды)';
 
   @override
   String get damagePerSecond => 'Урон в секунду';
@@ -5741,7 +5748,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groupSize => 'Размер группы';
 
   @override
-  String get timeBetweenGroups => 'Время между группами';
+  String get timeBetweenGroups =>
+      'Время между группами (TimeBetweenGroups; секунды)';
 
   @override
   String applyBatchLevelContent(int level) {
@@ -5829,7 +5837,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ztPerksViewStats => 'Показать параметры';
 
   @override
-  String get ztPerkPropDamageTakenInterval => 'Интервал получения урона';
+  String get ztPerkPropDamageTakenInterval =>
+      'Интервал получения урона (секунды)';
 
   @override
   String get ztPerkPropDamageTotalTaken => 'Суммарное число получений урона';
@@ -6349,7 +6358,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get count => 'Количество';
 
   @override
-  String get targetDistance => 'Целевая дистанция';
+  String get targetDistance => 'Расстояние до цветника (TargetDistance)';
+
+  @override
+  String get starChallengeTargetDistanceHint =>
+      'Значение задаёт число столбцов от левого края; чем оно больше, тем дальше от дома. Поддерживаются дробные числа.';
 
   @override
   String get targetSun => 'Целевое солнце';
@@ -6367,10 +6380,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get timeSeconds => 'Время (секунды)';
 
   @override
-  String get speedModifier => 'Модификатор скорости';
+  String get speedModifier => 'Множитель скорости (SpeedModifier)';
 
   @override
-  String get sunModifier => 'Модификатор солнца';
+  String get starChallengeSpeedModifierHint =>
+      'Значение 0,5 увеличивает скорость передвижения зомби на 50 %.';
+
+  @override
+  String get sunModifier => 'Снижение солнца (SunModifier)';
+
+  @override
+  String get starChallengeSunModifierHint =>
+      'Значение 0,2 уменьшает получение солнца на 20 %.';
+
+  @override
+  String get starChallengeChineseUnsupportedHint =>
+      'Китайские символы не поддерживаются.';
 
   @override
   String get maximumPlantsLost => 'Макс. потерянных растений';
@@ -6416,7 +6441,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get initialPotionCount => 'Начальное кол-во зелий';
 
   @override
-  String get operationTimePerGrid => 'Время на ячейку';
+  String get operationTimePerGrid => 'Время на ячейку (секунды)';
 
   @override
   String get levelLabel => 'Уровень: ';
@@ -6428,7 +6453,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sunDropParameters => 'Параметры падения солнца';
 
   @override
-  String get initialDropDelay => 'Начальная задержка падения';
+  String get initialDropDelay =>
+      'Начальная задержка падения (InitialSunDropDelay; секунды)';
 
   @override
   String get baseCountdown => 'Базовый обратный отсчёт';
@@ -6702,16 +6728,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paramAdjust => 'Настройка параметров';
 
   @override
-  String get firstDropDelay => 'Задержка первого падения';
+  String get firstDropDelay =>
+      'Задержка первого падения (InitialSunDropDelay; секунды)';
 
   @override
-  String get initialDropInterval => 'Начальный интервал падения';
+  String get initialDropInterval =>
+      'Начальный интервал падения (SunCountdownBase; секунды)';
 
   @override
-  String get maxDropInterval => 'Макс. интервал падения';
+  String get maxDropInterval =>
+      'Макс. интервал падения (SunCountdownMax; секунды)';
 
   @override
-  String get intervalFloatRange => 'Диапазон интервала';
+  String get intervalFloatRange =>
+      'Диапазон интервала (SunCountdownRange; секунды)';
 
   @override
   String get sunDropperHelpTitle => 'Модуль падающего солнца';
@@ -7363,7 +7393,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldTransferCooldown =>
-      'Перезарядка телепорта на зомби (transferCooldown)';
+      'Перезарядка телепорта на зомби (transferCooldown; секунды)';
 
   @override
   String get pvz1PassageHelpTransferCooldown =>
@@ -7371,7 +7401,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldRefreshTime =>
-      'Интервал смены позиций порталов (refreshTime)';
+      'Интервал смены позиций порталов (refreshTime; секунды)';
 
   @override
   String get pvz1PassageHelpRefreshTime =>
@@ -7752,7 +7782,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get heianWindModuleAppearances => 'Появления';
 
   @override
-  String get heianWindModuleWindDelay => 'Задержка ветра';
+  String get heianWindModuleWindDelay => 'Задержка ветра (WindDelay; секунды)';
 
   @override
   String get heianWindModuleWindDelayHint => 'unit: seconds';
@@ -7779,7 +7809,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get heianWindModuleDistanceHint => '1 tile = 50 units';
 
   @override
-  String get heianWindModuleMoveTime => 'Время движения';
+  String get heianWindModuleMoveTime => 'Время движения (MoveTime; секунды)';
 
   @override
   String get heianWindModuleMoveTimeHint => 'unit: seconds';

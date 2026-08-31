@@ -267,8 +267,8 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                       children: [
                         Text(
                           l10n.hamsterballGeneration,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.primary,
+                          key: const ValueKey('hamsterballGenerationHeading'),
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -319,8 +319,7 @@ class _HamsterZombieEventScreenState extends State<HamsterZombieEventScreen> {
                   content: Text(
                     l10n.hamsterballZombies,
                     key: const ValueKey('hamsterballZombiesHeading'),
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.primary,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),

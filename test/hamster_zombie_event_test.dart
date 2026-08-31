@@ -254,7 +254,10 @@ void main() {
         closeTo(
           tester
               .getRect(
-                find.text('Время до полного появления (TimeBeforeFullSpawn)'),
+                find.text(
+                  'Время до полного появления '
+                  '(TimeBeforeFullSpawn; секунды)',
+                ),
               )
               .center
               .dy,
@@ -309,6 +312,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final generationHeading = find.byKey(
+      const ValueKey('hamsterballGenerationHeading'),
+    );
     final heading = find.byKey(const ValueKey('hamsterballZombiesHeading'));
     final addButton = find.byKey(const ValueKey('hamsterballAddZombieButton'));
     final identity = find.byKey(const ValueKey('hamsterZombieIdentity0'));
@@ -316,6 +322,13 @@ void main() {
     final actions = find.byKey(const ValueKey('hamsterZombieActions0'));
     await tester.ensureVisible(identity);
     await tester.pumpAndSettle();
+
+    final theme = Theme.of(tester.element(heading));
+    for (final titleFinder in [generationHeading, heading]) {
+      final title = tester.widget<Text>(titleFinder);
+      expect(title.style?.fontSize, theme.textTheme.titleMedium?.fontSize);
+      expect(title.style?.color, isNot(theme.colorScheme.primary));
+    }
 
     expect(
       tester.getRect(addButton).top,

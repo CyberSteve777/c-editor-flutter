@@ -1800,13 +1800,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waveManagerTimeControl => 'Time control';
 
   @override
-  String get waveManagerFirstWaveDelayConveyor => 'First wave delay (conveyor)';
+  String get waveManagerFirstWaveDelayConveyor =>
+      'First wave delay (conveyor; seconds)';
 
   @override
-  String get waveManagerFirstWaveDelayNormal => 'First wave delay (normal)';
+  String get waveManagerFirstWaveDelayNormal =>
+      'First wave delay (normal; seconds)';
 
   @override
-  String get waveManagerFlagWaveDelay => 'Flag wave delay';
+  String get waveManagerFlagWaveDelay => 'Flag wave delay (seconds)';
 
   @override
   String get waveManagerConveyorDetected =>
@@ -3406,7 +3408,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show health bar on damage (EnableShowHealthBar)';
 
   @override
-  String get drawHealthBarTime => 'Health bar duration (DrawHealthBarTime)';
+  String get drawHealthBarTime =>
+      'Health bar duration (DrawHealthBarTime; seconds)';
 
   @override
   String get enableEliteScale => 'Enable elite scaling (EnableEliteScale)';
@@ -3950,7 +3953,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tideWaveTypeRight => 'Right';
 
   @override
-  String get tideWaveDuration => 'Duration';
+  String get tideWaveDuration => 'Duration (seconds)';
 
   @override
   String get tideWaveSubmarineMovingDistance =>
@@ -4223,7 +4226,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dinoTreadColMaxLabel => 'Rightmost Column (GridXMax)';
 
   @override
-  String get dinoTreadTimeIntervalLabel => 'Entry Delay (TimeInterval)';
+  String get dinoTreadTimeIntervalLabel =>
+      'Entry delay (TimeInterval; seconds)';
 
   @override
   String get columnStartLabel => 'Start Column (ColumnStart)';
@@ -5009,7 +5013,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hamsterballTimeBeforeFullSpawn =>
-      'Time to full spawn (TimeBeforeFullSpawn)';
+      'Time to full spawn (TimeBeforeFullSpawn; seconds)';
 
   @override
   String get hamsterballZombies => 'Zombies inside hamsterballs (Zombies)';
@@ -5363,6 +5367,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitSeconds => 'Unit: seconds';
+
+  @override
+  String propertyLabelSeconds(String name, String code) {
+    return '$name ($code; seconds)';
+  }
 
   @override
   String get speedConditions => 'Conveyor speed (SpeedConditions)';
@@ -5874,7 +5883,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ztPerksViewStats => 'View Stats';
 
   @override
-  String get ztPerkPropDamageTakenInterval => 'Damage interval';
+  String get ztPerkPropDamageTakenInterval => 'Damage interval (seconds)';
 
   @override
   String get ztPerkPropDamageTotalTaken => 'Cumulative damage instances taken';
@@ -6393,8 +6402,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get count => 'Count';
 
   @override
-  String get targetDistance =>
-      'Flowerbed Distance (TargetDistance) — Distance from the left edge (in columns); higher values are closer to the house; supports decimals';
+  String get targetDistance => 'Flowerbed Distance (TargetDistance)';
+
+  @override
+  String get starChallengeTargetDistanceHint =>
+      'The value is the number of columns from the left edge; larger values are farther from the house. Decimals are supported.';
 
   @override
   String get targetSun => 'Target Sun';
@@ -6412,12 +6424,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeSeconds => 'Time Limit (seconds)';
 
   @override
-  String get speedModifier =>
-      'Speed Multiplier (SpeedModifier) — e.g. 0.5 = +50% zombie speed';
+  String get speedModifier => 'Speed Multiplier (SpeedModifier)';
 
   @override
-  String get sunModifier =>
-      'Sun Reduction (SunModifier) — e.g. 0.2 = −20% sun gain';
+  String get starChallengeSpeedModifierHint =>
+      'Entering 0.5 increases zombie movement speed by 50%.';
+
+  @override
+  String get sunModifier => 'Sun Reduction (SunModifier)';
+
+  @override
+  String get starChallengeSunModifierHint =>
+      'Entering 0.2 reduces Sun gained by 20%.';
+
+  @override
+  String get starChallengeChineseUnsupportedHint =>
+      'Chinese characters are not supported.';
 
   @override
   String get maximumPlantsLost => 'Maximum Plants Lost';
@@ -6475,7 +6497,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sunDropParameters => 'Sun drop parameters';
 
   @override
-  String get initialDropDelay => 'Initial drop delay (InitialSunDropDelay)';
+  String get initialDropDelay =>
+      'Initial drop delay (InitialSunDropDelay; seconds)';
 
   @override
   String get baseCountdown => 'Base drop interval (SunCountdownBase)';
@@ -6749,17 +6772,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paramAdjust => 'Parameter adjustment';
 
   @override
-  String get firstDropDelay => 'Initial drop delay (InitialSunDropDelay)';
+  String get firstDropDelay =>
+      'Initial drop delay (InitialSunDropDelay; seconds)';
 
   @override
-  String get initialDropInterval => 'Initial drop interval (SunCountdownBase)';
+  String get initialDropInterval =>
+      'Initial drop interval (SunCountdownBase; seconds)';
 
   @override
-  String get maxDropInterval => 'Max drop interval (SunCountdownMax)';
+  String get maxDropInterval => 'Max drop interval (SunCountdownMax; seconds)';
 
   @override
   String get intervalFloatRange =>
-      'Interval variation range (SunCountdownRange)';
+      'Interval variation range (SunCountdownRange; seconds)';
 
   @override
   String get sunDropperHelpTitle => 'Sun Dropper module';
@@ -7797,7 +7822,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleAppearances => 'Summon Batches';
 
   @override
-  String get heianWindModuleWindDelay => 'Time between wind spawns (WindDelay)';
+  String get heianWindModuleWindDelay =>
+      'Time between wind spawns (WindDelay; seconds)';
 
   @override
   String get heianWindModuleWindDelayHint => 'seconds';
@@ -7825,7 +7851,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleDistanceHint => '1 tile = 50 units';
 
   @override
-  String get heianWindModuleMoveTime => 'Move Duration (MoveTime)';
+  String get heianWindModuleMoveTime => 'Move duration (MoveTime; seconds)';
 
   @override
   String get heianWindModuleMoveTimeHint => 'seconds';

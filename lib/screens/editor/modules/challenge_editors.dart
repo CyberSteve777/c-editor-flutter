@@ -23,6 +23,10 @@ Future<void> showChallengeEditorDialog(
   final accent = accentColor ?? (isDark ? pvzOrangeDark : pvzOrangeLight);
   final onAccent = theme.colorScheme.onPrimary;
   final title = _friendlyTitleFor(context, object.objClass, l10n);
+  final description = ChallengeRepository.localizedDescription(
+    context,
+    object.objClass,
+  );
   final dialogTheme = theme.copyWith(
     colorScheme: theme.colorScheme.copyWith(primary: accent),
     inputDecorationTheme: theme.inputDecorationTheme.copyWith(
@@ -40,40 +44,137 @@ Future<void> showChallengeEditorDialog(
   );
   await showDialog<void>(
     context: context,
-    builder: (ctx) => Theme(
-      data: dialogTheme,
-      child: AlertDialog(
-        title: Text(title),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: ChallengeEditorContent(
-              object: object,
-              onChanged: onChanged,
-              l10n: l10n,
-              levelFile: levelFile,
-              onAddModule: onAddModule,
-              onOpenCustomStageSelection: onOpenCustomStageSelection,
+    builder: (ctx) {
+      final compact = MediaQuery.sizeOf(ctx).width < 480;
+      final horizontalInset = compact ? 12.0 : 40.0;
+      final contentInset = compact ? 20.0 : 24.0;
+      return Theme(
+        data: dialogTheme,
+        child: AlertDialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: horizontalInset,
+            vertical: compact ? 16 : 24,
+          ),
+          titlePadding: EdgeInsets.fromLTRB(
+            contentInset,
+            contentInset,
+            contentInset,
+            12,
+          ),
+          contentPadding: EdgeInsets.fromLTRB(contentInset, 0, contentInset, 8),
+          actionsPadding: EdgeInsets.fromLTRB(
+            contentInset,
+            8,
+            contentInset,
+            16,
+          ),
+          title: Text(
+            title,
+            style: compact
+                ? theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  )
+                : theme.textTheme.titleLarge,
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (description.trim().isNotEmpty) ...[
+                    Text(
+                      description,
+                      key: const ValueKey('starChallengeDialogDescription'),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  ChallengeEditorContent(
+                    object: object,
+                    onChanged: onChanged,
+                    l10n: l10n,
+                    levelFile: levelFile,
+                    onAddModule: onAddModule,
+                    onOpenCustomStageSelection: onOpenCustomStageSelection,
+                  ),
+                ],
+              ),
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: TextButton.styleFrom(foregroundColor: accent),
+              child: Text(l10n?.cancel ?? 'Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: FilledButton.styleFrom(
+                backgroundColor: accent,
+                foregroundColor: onAccent,
+              ),
+              child: Text(l10n?.save ?? 'Save'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(foregroundColor: accent),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: FilledButton.styleFrom(
-              backgroundColor: accent,
-              foregroundColor: onAccent,
-            ),
-            child: Text(l10n?.save ?? 'Save'),
-          ),
-        ],
-      ),
+      );
+    },
+  );
+}
+
+Widget _challengeTextFormField({
+  Key? key,
+  required String label,
+  required String initialValue,
+  required ValueChanged<String> onChanged,
+  TextInputType? keyboardType,
+  int maxLines = 1,
+}) {
+  return EditorResponsiveInputField(
+    label: label,
+    builder: (context, decoration) => TextFormField(
+      key: key,
+      initialValue: initialValue,
+      decoration: decoration,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      onChanged: onChanged,
     ),
+  );
+}
+
+Widget _challengeEditableEntityField({
+  required Widget field,
+  required VoidCallback onRemove,
+}) {
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+      final compact = constraints.maxWidth < 360 || textScale > 1.3;
+      final removeButton = IconButton(
+        icon: const Icon(Icons.delete),
+        onPressed: onRemove,
+      );
+      if (compact) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(alignment: Alignment.centerRight, child: removeButton),
+            field,
+          ],
+        );
+      }
+      return Row(
+        children: [
+          Expanded(child: field),
+          removeButton,
+        ],
+      );
+    },
   );
 }
 
@@ -156,6 +257,7 @@ class ChallengeEditorContent extends StatelessWidget {
             'TargetDistance',
             l10n?.targetDistance,
           ),
+          hint: l10n?.starChallengeTargetDistanceHint,
           onChanged: onChanged,
         );
       case 'StarChallengeSunProducedProps':
@@ -192,6 +294,7 @@ class ChallengeEditorContent extends StatelessWidget {
             'SpeedModifier',
             l10n?.speedModifier,
           ),
+          hint: l10n?.starChallengeSpeedModifierHint,
           onChanged: onChanged,
         );
       case 'StarChallengeSunReducedProps':
@@ -204,6 +307,7 @@ class ChallengeEditorContent extends StatelessWidget {
             'sunModifier',
             l10n?.sunModifier,
           ),
+          hint: l10n?.starChallengeSunModifierHint,
           onChanged: onChanged,
         );
       case 'StarChallengePlantsLostProps':
@@ -461,6 +565,7 @@ class _BeatTheLevelEditorState extends State<_BeatTheLevelEditor> {
             _objClass,
             'Description',
           ),
+          hint: l10n?.beatTheLevelDialogHint,
           value: _data['Description'] as String? ?? '',
           onChanged: (v) {
             setState(() {
@@ -525,28 +630,46 @@ class _SimpleDoubleEditor extends StatelessWidget {
     required this.object,
     required this.field,
     required this.label,
+    this.hint,
     required this.onChanged,
   });
 
   final PvzObject object;
   final String field;
   final String label;
+  final String? hint;
   final VoidCallback onChanged;
 
   @override
   Widget build(BuildContext context) {
     final data = object.objData as Map<String, dynamic>;
-    return EditorResponsiveInputField(
-      label: label,
-      builder: (context, decoration) => TextFormField(
-        initialValue: (data[field] ?? 0.0).toString(),
-        decoration: decoration,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        onChanged: (val) {
-          data[field] = double.tryParse(val) ?? 0.0;
-          onChanged();
-        },
-      ),
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        EditorResponsiveInputField(
+          label: label,
+          builder: (context, decoration) => TextFormField(
+            initialValue: (data[field] ?? 0.0).toString(),
+            decoration: decoration,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            onChanged: (val) {
+              data[field] = double.tryParse(val) ?? 0.0;
+              onChanged();
+            },
+          ),
+        ),
+        if (hint?.trim().isNotEmpty == true) ...[
+          const SizedBox(height: 6),
+          Text(
+            hint!,
+            key: ValueKey('starChallengeHint_$field'),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -579,12 +702,10 @@ class _KillZombiesInTimeEditor extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        TextFormField(
+        _challengeTextFormField(
+          key: const ValueKey('starChallengeKillTime'),
+          label: l10n?.timeSeconds ?? 'Time (Seconds)',
           initialValue: (data['Time'] ?? 10).toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.timeSeconds ?? 'Time (Seconds)',
-            border: const OutlineInputBorder(),
-          ),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             data['Time'] = int.tryParse(val) ?? 10;
@@ -673,47 +794,31 @@ class _ProtectThePlantEditorState extends State<_ProtectThePlantEditor> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.plantType,
-                            decoration: InputDecoration(
-                              labelText: l10n?.plantType ?? 'Plant Type',
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (val) {
-                              item.plantType = val;
-                              _save();
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _removePlant(idx),
-                        ),
-                      ],
+                    _challengeEditableEntityField(
+                      field: _challengeTextFormField(
+                        label: l10n?.plantType ?? 'Plant Type',
+                        initialValue: item.plantType,
+                        onChanged: (val) {
+                          item.plantType = val;
+                          _save();
+                        },
+                      ),
+                      onRemove: () => _removePlant(idx),
                     ),
                     EditorResponsiveFieldRow(
                       children: [
-                        TextFormField(
+                        _challengeTextFormField(
+                          label: l10n?.gridX ?? 'Grid X',
                           initialValue: item.gridX.toString(),
-                          decoration: InputDecoration(
-                            labelText: l10n?.gridX ?? 'Grid X',
-                            border: const OutlineInputBorder(),
-                          ),
                           keyboardType: TextInputType.number,
                           onChanged: (val) {
                             item.gridX = int.tryParse(val) ?? 0;
                             _save();
                           },
                         ),
-                        TextFormField(
+                        _challengeTextFormField(
+                          label: l10n?.gridY ?? 'Grid Y',
                           initialValue: item.gridY.toString(),
-                          decoration: InputDecoration(
-                            labelText: l10n?.gridY ?? 'Grid Y',
-                            border: const OutlineInputBorder(),
-                          ),
                           keyboardType: TextInputType.number,
                           onChanged: (val) {
                             item.gridY = int.tryParse(val) ?? 0;
@@ -788,12 +893,9 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
     final l10n = widget.l10n ?? AppLocalizations.of(context);
     return Column(
       children: [
-        TextFormField(
+        _challengeTextFormField(
+          label: l10n?.description ?? 'Description',
           initialValue: _data.description,
-          decoration: InputDecoration(
-            labelText: l10n?.description ?? 'Description',
-            border: const OutlineInputBorder(),
-          ),
           maxLines: 3,
           onChanged: (val) {
             _data.description = val;
@@ -830,47 +932,31 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: item.gridItemType,
-                            decoration: InputDecoration(
-                              labelText: l10n?.gridItemType ?? 'Grid Item Type',
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (val) {
-                              item.gridItemType = val;
-                              _save();
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _removeItem(idx),
-                        ),
-                      ],
+                    _challengeEditableEntityField(
+                      field: _challengeTextFormField(
+                        label: l10n?.gridItemType ?? 'Grid Item Type',
+                        initialValue: item.gridItemType,
+                        onChanged: (val) {
+                          item.gridItemType = val;
+                          _save();
+                        },
+                      ),
+                      onRemove: () => _removeItem(idx),
                     ),
                     EditorResponsiveFieldRow(
                       children: [
-                        TextFormField(
+                        _challengeTextFormField(
+                          label: l10n?.gridX ?? 'Grid X',
                           initialValue: item.gridX.toString(),
-                          decoration: InputDecoration(
-                            labelText: l10n?.gridX ?? 'Grid X',
-                            border: const OutlineInputBorder(),
-                          ),
                           keyboardType: TextInputType.number,
                           onChanged: (val) {
                             item.gridX = int.tryParse(val) ?? 0;
                             _save();
                           },
                         ),
-                        TextFormField(
+                        _challengeTextFormField(
+                          label: l10n?.gridY ?? 'Grid Y',
                           initialValue: item.gridY.toString(),
-                          decoration: InputDecoration(
-                            labelText: l10n?.gridY ?? 'Grid Y',
-                            border: const OutlineInputBorder(),
-                          ),
                           keyboardType: TextInputType.number,
                           onChanged: (val) {
                             item.gridY = int.tryParse(val) ?? 0;
@@ -930,12 +1016,9 @@ class _SunBombEditorState extends State<_SunBombEditor> {
     final l10n = widget.l10n ?? AppLocalizations.of(context);
     return Column(
       children: [
-        TextFormField(
+        _challengeTextFormField(
+          label: l10n?.plantBombRadius ?? 'Plant Bomb Radius',
           initialValue: _data.plantBombExplosionRadius.toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.plantBombRadius ?? 'Plant Bomb Radius',
-            border: const OutlineInputBorder(),
-          ),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.plantBombExplosionRadius = int.tryParse(val) ?? 25;
@@ -943,12 +1026,9 @@ class _SunBombEditorState extends State<_SunBombEditor> {
           },
         ),
         const SizedBox(height: 12),
-        TextFormField(
+        _challengeTextFormField(
+          label: l10n?.zombieBombRadius ?? 'Zombie Bomb Radius',
           initialValue: _data.zombieBombExplosionRadius.toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.zombieBombRadius ?? 'Zombie Bomb Radius',
-            border: const OutlineInputBorder(),
-          ),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.zombieBombExplosionRadius = int.tryParse(val) ?? 80;
@@ -956,12 +1036,9 @@ class _SunBombEditorState extends State<_SunBombEditor> {
           },
         ),
         const SizedBox(height: 12),
-        TextFormField(
+        _challengeTextFormField(
+          label: l10n?.plantDamage ?? 'Plant Damage',
           initialValue: _data.plantDamage.toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.plantDamage ?? 'Plant Damage',
-            border: const OutlineInputBorder(),
-          ),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.plantDamage = int.tryParse(val) ?? 1000;
@@ -969,12 +1046,9 @@ class _SunBombEditorState extends State<_SunBombEditor> {
           },
         ),
         const SizedBox(height: 12),
-        TextFormField(
+        _challengeTextFormField(
+          label: l10n?.zombieDamage ?? 'Zombie Damage',
           initialValue: _data.zombieDamage.toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.zombieDamage ?? 'Zombie Damage',
-            border: const OutlineInputBorder(),
-          ),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.zombieDamage = int.tryParse(val) ?? 500;
@@ -1027,16 +1101,13 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextFormField(
-          initialValue: _data.initialPotionCount.toString(),
-          decoration: InputDecoration(
-            labelText: localizedPropertyLabel(
-              context,
-              l10n.initialCount,
-              _initialField,
-            ),
-            border: const OutlineInputBorder(),
+        _challengeTextFormField(
+          label: localizedPropertyLabel(
+            context,
+            l10n.initialCount,
+            _initialField,
           ),
+          initialValue: _data.initialPotionCount.toString(),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.initialPotionCount = int.tryParse(val) ?? 10;
@@ -1044,16 +1115,13 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
           },
         ),
         const SizedBox(height: 12),
-        TextFormField(
-          initialValue: _data.maxPotionCount.toString(),
-          decoration: InputDecoration(
-            labelText: localizedPropertyLabel(
-              context,
-              l10n.maximumCount,
-              _maxCountField,
-            ),
-            border: const OutlineInputBorder(),
+        _challengeTextFormField(
+          label: localizedPropertyLabel(
+            context,
+            l10n.maximumCount,
+            _maxCountField,
           ),
+          initialValue: _data.maxPotionCount.toString(),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.maxPotionCount = int.tryParse(val) ?? 60;
@@ -1071,24 +1139,18 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
         ),
         EditorResponsiveFieldRow(
           children: [
-            TextFormField(
+            _challengeTextFormField(
+              label: l10n.minimumIntervalSeconds,
               initialValue: _data.potionSpawnTimer.min.toString(),
-              decoration: InputDecoration(
-                labelText: l10n.minimumIntervalSeconds,
-                border: const OutlineInputBorder(),
-              ),
               keyboardType: TextInputType.number,
               onChanged: (val) {
                 _data.potionSpawnTimer.min = int.tryParse(val) ?? 12;
                 _save();
               },
             ),
-            TextFormField(
+            _challengeTextFormField(
+              label: l10n.maximumIntervalSeconds,
               initialValue: _data.potionSpawnTimer.max.toString(),
-              decoration: InputDecoration(
-                labelText: l10n.maximumIntervalSeconds,
-                border: const OutlineInputBorder(),
-              ),
               keyboardType: TextInputType.number,
               onChanged: (val) {
                 _data.potionSpawnTimer.max = int.tryParse(val) ?? 16;
@@ -1201,12 +1263,9 @@ class _ManholePipelineEditorState extends State<_ManholePipelineEditor> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextFormField(
+        _challengeTextFormField(
+          label: l10n?.operationTimePerGrid ?? 'Operation Time Per Grid',
           initialValue: _data.operationTimePerGrid.toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.operationTimePerGrid ?? 'Operation Time Per Grid',
-            border: const OutlineInputBorder(),
-          ),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.operationTimePerGrid = int.tryParse(val) ?? 1;
@@ -1214,12 +1273,9 @@ class _ManholePipelineEditorState extends State<_ManholePipelineEditor> {
           },
         ),
         const SizedBox(height: 12),
-        TextFormField(
+        _challengeTextFormField(
+          label: l10n?.damagePerSecond ?? 'Damage Per Second',
           initialValue: _data.damagePerSecond.toString(),
-          decoration: InputDecoration(
-            labelText: l10n?.damagePerSecond ?? 'Damage Per Second',
-            border: const OutlineInputBorder(),
-          ),
           keyboardType: TextInputType.number,
           onChanged: (val) {
             _data.damagePerSecond = int.tryParse(val) ?? 30;

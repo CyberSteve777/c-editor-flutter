@@ -3349,19 +3349,19 @@ abstract class AppLocalizations {
   /// No description provided for @waveManagerFirstWaveDelayConveyor.
   ///
   /// In en, this message translates to:
-  /// **'First wave delay (conveyor)'**
+  /// **'First wave delay (conveyor; seconds)'**
   String get waveManagerFirstWaveDelayConveyor;
 
   /// No description provided for @waveManagerFirstWaveDelayNormal.
   ///
   /// In en, this message translates to:
-  /// **'First wave delay (normal)'**
+  /// **'First wave delay (normal; seconds)'**
   String get waveManagerFirstWaveDelayNormal;
 
   /// No description provided for @waveManagerFlagWaveDelay.
   ///
   /// In en, this message translates to:
-  /// **'Flag wave delay'**
+  /// **'Flag wave delay (seconds)'**
   String get waveManagerFlagWaveDelay;
 
   /// No description provided for @waveManagerConveyorDetected.
@@ -6127,7 +6127,7 @@ abstract class AppLocalizations {
   /// No description provided for @drawHealthBarTime.
   ///
   /// In en, this message translates to:
-  /// **'Health bar duration (DrawHealthBarTime)'**
+  /// **'Health bar duration (DrawHealthBarTime; seconds)'**
   String get drawHealthBarTime;
 
   /// No description provided for @enableEliteScale.
@@ -7087,7 +7087,7 @@ abstract class AppLocalizations {
   /// No description provided for @tideWaveDuration.
   ///
   /// In en, this message translates to:
-  /// **'Duration'**
+  /// **'Duration (seconds)'**
   String get tideWaveDuration;
 
   /// No description provided for @tideWaveSubmarineMovingDistance.
@@ -7561,7 +7561,7 @@ abstract class AppLocalizations {
   /// No description provided for @dinoTreadTimeIntervalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Entry Delay (TimeInterval)'**
+  /// **'Entry delay (TimeInterval; seconds)'**
   String get dinoTreadTimeIntervalLabel;
 
   /// No description provided for @columnStartLabel.
@@ -8935,7 +8935,7 @@ abstract class AppLocalizations {
   /// No description provided for @hamsterballTimeBeforeFullSpawn.
   ///
   /// In en, this message translates to:
-  /// **'Time to full spawn (TimeBeforeFullSpawn)'**
+  /// **'Time to full spawn (TimeBeforeFullSpawn; seconds)'**
   String get hamsterballTimeBeforeFullSpawn;
 
   /// No description provided for @hamsterballZombies.
@@ -9603,6 +9603,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unit: seconds'**
   String get unitSeconds;
+
+  /// No description provided for @propertyLabelSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({code}; seconds)'**
+  String propertyLabelSeconds(String name, String code);
 
   /// No description provided for @speedConditions.
   ///
@@ -10483,7 +10489,7 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkPropDamageTakenInterval.
   ///
   /// In en, this message translates to:
-  /// **'Damage interval'**
+  /// **'Damage interval (seconds)'**
   String get ztPerkPropDamageTakenInterval;
 
   /// No description provided for @ztPerkPropDamageTotalTaken.
@@ -11334,8 +11340,14 @@ abstract class AppLocalizations {
   /// No description provided for @targetDistance.
   ///
   /// In en, this message translates to:
-  /// **'Flowerbed Distance (TargetDistance) — Distance from the left edge (in columns); higher values are closer to the house; supports decimals'**
+  /// **'Flowerbed Distance (TargetDistance)'**
   String get targetDistance;
+
+  /// No description provided for @starChallengeTargetDistanceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The value is the number of columns from the left edge; larger values are farther from the house. Decimals are supported.'**
+  String get starChallengeTargetDistanceHint;
 
   /// No description provided for @targetSun.
   ///
@@ -11370,14 +11382,32 @@ abstract class AppLocalizations {
   /// No description provided for @speedModifier.
   ///
   /// In en, this message translates to:
-  /// **'Speed Multiplier (SpeedModifier) — e.g. 0.5 = +50% zombie speed'**
+  /// **'Speed Multiplier (SpeedModifier)'**
   String get speedModifier;
+
+  /// No description provided for @starChallengeSpeedModifierHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Entering 0.5 increases zombie movement speed by 50%.'**
+  String get starChallengeSpeedModifierHint;
 
   /// No description provided for @sunModifier.
   ///
   /// In en, this message translates to:
-  /// **'Sun Reduction (SunModifier) — e.g. 0.2 = −20% sun gain'**
+  /// **'Sun Reduction (SunModifier)'**
   String get sunModifier;
+
+  /// No description provided for @starChallengeSunModifierHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Entering 0.2 reduces Sun gained by 20%.'**
+  String get starChallengeSunModifierHint;
+
+  /// No description provided for @starChallengeChineseUnsupportedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese characters are not supported.'**
+  String get starChallengeChineseUnsupportedHint;
 
   /// No description provided for @maximumPlantsLost.
   ///
@@ -11490,7 +11520,7 @@ abstract class AppLocalizations {
   /// No description provided for @initialDropDelay.
   ///
   /// In en, this message translates to:
-  /// **'Initial drop delay (InitialSunDropDelay)'**
+  /// **'Initial drop delay (InitialSunDropDelay; seconds)'**
   String get initialDropDelay;
 
   /// No description provided for @baseCountdown.
@@ -11982,25 +12012,25 @@ abstract class AppLocalizations {
   /// No description provided for @firstDropDelay.
   ///
   /// In en, this message translates to:
-  /// **'Initial drop delay (InitialSunDropDelay)'**
+  /// **'Initial drop delay (InitialSunDropDelay; seconds)'**
   String get firstDropDelay;
 
   /// No description provided for @initialDropInterval.
   ///
   /// In en, this message translates to:
-  /// **'Initial drop interval (SunCountdownBase)'**
+  /// **'Initial drop interval (SunCountdownBase; seconds)'**
   String get initialDropInterval;
 
   /// No description provided for @maxDropInterval.
   ///
   /// In en, this message translates to:
-  /// **'Max drop interval (SunCountdownMax)'**
+  /// **'Max drop interval (SunCountdownMax; seconds)'**
   String get maxDropInterval;
 
   /// No description provided for @intervalFloatRange.
   ///
   /// In en, this message translates to:
-  /// **'Interval variation range (SunCountdownRange)'**
+  /// **'Interval variation range (SunCountdownRange; seconds)'**
   String get intervalFloatRange;
 
   /// No description provided for @sunDropperHelpTitle.
@@ -13752,7 +13782,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleWindDelay.
   ///
   /// In en, this message translates to:
-  /// **'Time between wind spawns (WindDelay)'**
+  /// **'Time between wind spawns (WindDelay; seconds)'**
   String get heianWindModuleWindDelay;
 
   /// No description provided for @heianWindModuleWindDelayHint.
@@ -13806,7 +13836,7 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleMoveTime.
   ///
   /// In en, this message translates to:
-  /// **'Move Duration (MoveTime)'**
+  /// **'Move duration (MoveTime; seconds)'**
   String get heianWindModuleMoveTime;
 
   /// No description provided for @heianWindModuleMoveTimeHint.

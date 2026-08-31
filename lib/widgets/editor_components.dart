@@ -138,6 +138,16 @@ String localizedPropertyLabel(
   return '$localizedName ($codeName)';
 }
 
+String localizedSecondsPropertyLabel(
+  BuildContext context,
+  String localizedName,
+  String codeName,
+) {
+  final l10n = AppLocalizations.of(context);
+  return l10n?.propertyLabelSeconds(localizedName, codeName) ??
+      '$localizedName ($codeName; seconds)';
+}
+
 /// Shared editor UI components. Ported from Z-Editor-master EditorComponents.kt
 
 /// Square add button with rounded corners and + symbol.

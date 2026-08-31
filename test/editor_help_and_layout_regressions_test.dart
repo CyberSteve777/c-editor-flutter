@@ -253,6 +253,68 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'Seed Bank preset rows grow instead of overlapping the next list',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(320, 1000);
+      addTearDown(tester.view.reset);
+
+      const longPlantId =
+          'a_very_long_preset_plant_identifier_that_needs_multiple_lines';
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: ['SeedBank'],
+            objClass: 'SeedBankProperties',
+            objData: SeedBankData(presetPlantList: [longPlantId]).toJson(),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        _localizedApp(
+          Builder(
+            builder: (context) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+                child: SeedBankPropertiesScreen(
+                  rtid: 'RTID(SeedBank@CurrentLevel)',
+                  levelFile: level,
+                  onChanged: () {},
+                  onBack: () {},
+                  onRequestPlantSelection:
+                      (
+                        _, {
+                        excludeIds,
+                        initialSelectedIds,
+                        blockRealmExclusiveInChooser = false,
+                        blockHiddenPlantsInChooser = false,
+                        allowDuplicateSelection = false,
+                      }) {},
+                  onRequestZombieSelection: (_) {},
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final presetRow = find.byKey(
+        const ValueKey('preset-resource-0-$longPlantId'),
+      );
+      final whiteListHeading = find.text('White list (WhiteList)');
+      expect(presetRow, findsOneWidget);
+      expect(whiteListHeading, findsOneWidget);
+      expect(
+        tester.getRect(presetRow).bottom,
+        lessThanOrEqualTo(tester.getRect(whiteListHeading).top),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('Dino summon help omits the dinosaur type section', (
     tester,
   ) async {

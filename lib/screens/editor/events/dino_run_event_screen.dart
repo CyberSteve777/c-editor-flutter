@@ -258,8 +258,11 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                       TextFormField(
                         initialValue: _data.timeInterval.toString(),
                         decoration: InputDecoration(
-                          labelText:
-                              'TimeInterval (${l10n?.timeInterval ?? 'Time interval'})',
+                          labelText: localizedSecondsPropertyLabel(
+                            context,
+                            l10n?.timeInterval ?? 'Time interval',
+                            'TimeInterval',
+                          ),
                           border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
