@@ -330,6 +330,7 @@
   "exportStatusRepackingRsb": "Запаковка RSB...",
   "exportStatusFinalizing": "Завершение...",
   "exportAssignmentProposalTitle": "Распределение уровней",
+  "exportDifficultyReplacementNotice": "Если в целевом слоте обычный режим и сложный/экспертный режим фактически используют разные уровни, редактор заменит только уровень обычного режима.",
   "exportWorld": "Мир",
   "exportLevelNumber": "Номер уровня",
   "exportLevelShort": "ур. {level}",

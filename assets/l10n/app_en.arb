@@ -323,6 +323,7 @@
   "exportStatusRepackingRsb": "Repacking RSB...",
   "exportStatusFinalizing": "Finalizing...",
   "exportAssignmentProposalTitle": "Level Distribution",
+  "exportDifficultyReplacementNotice": "If the Normal Mode and Hard/Expert Mode in the target level slot are actually different levels, the editor replaces only the Normal Mode level.",
   "exportWorld": "World",
   "exportLevelNumber": "Level Number",
   "exportLevelShort": "Lvl. {level}",
