@@ -197,30 +197,6 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
     );
   }
 
-  String _suggestUniqueChallengeAlias(String defaultAlias) {
-    final usedAliases = <String>{};
-    for (final object in widget.levelFile.objects) {
-      usedAliases.addAll(object.aliases ?? const <String>[]);
-    }
-    for (final challengeGroup in _data.challenges) {
-      for (final rtid in challengeGroup) {
-        final info = RtidParser.parse(rtid);
-        if (info != null) usedAliases.add(info.alias);
-      }
-    }
-
-    final base = defaultAlias.trim().isEmpty
-        ? 'Challenge'
-        : defaultAlias.trim();
-    if (!usedAliases.contains(base)) return base;
-
-    var suffix = 1;
-    while (usedAliases.contains('$base$suffix')) {
-      suffix++;
-    }
-    return '$base$suffix';
-  }
-
   Future<void> _addChallenge() async {
     final info = await Navigator.push<ChallengeTypeInfo>(
       context,
@@ -237,7 +213,11 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
     if (info == null || !mounted) return;
 
     final l10n = AppLocalizations.of(context);
-    final suggestedAlias = _suggestUniqueChallengeAlias(info.defaultAlias);
+    final suggestedAlias = ChallengeRepository.suggestUniqueAlias(
+      challenge: info,
+      levelFile: widget.levelFile,
+      referencedRtids: _data.challenges.expand((group) => group),
+    );
 
     final alias = await showPvzAliasInputDialog(
       context,

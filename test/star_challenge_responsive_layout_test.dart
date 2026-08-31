@@ -1,4 +1,5 @@
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/challenge_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/modules/challenge_editors.dart';
@@ -28,6 +29,72 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(ResourceNames.ensureLoaded);
+
+  test('every challenge type receives an unseparated numeric alias suffix', () {
+    for (final challenge in ChallengeRepository.allChallenges) {
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: [challenge.defaultAlias],
+            objClass: challenge.objClass,
+            objData: const <String, dynamic>{},
+          ),
+        ],
+      );
+
+      expect(
+        ChallengeRepository.suggestUniqueAlias(
+          challenge: challenge,
+          levelFile: level,
+        ),
+        '${challenge.defaultAlias}1',
+        reason: challenge.objClass,
+      );
+
+      level.objects.add(
+        PvzObject(
+          aliases: ['${challenge.defaultAlias}1'],
+          objClass: challenge.objClass,
+          objData: const <String, dynamic>{},
+        ),
+      );
+      expect(
+        ChallengeRepository.suggestUniqueAlias(
+          challenge: challenge,
+          levelFile: level,
+        ),
+        '${challenge.defaultAlias}2',
+        reason: challenge.objClass,
+      );
+    }
+  });
+
+  test(
+    'plant survival uses its canonical alias and handles legacy spelling',
+    () {
+      final challenge = ChallengeRepository.getInfo(
+        'StarChallengePlantsSurviveProps',
+      )!;
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: const ['PlantsSurive'],
+            objClass: challenge.objClass,
+            objData: const <String, dynamic>{},
+          ),
+        ],
+      );
+
+      expect(challenge.defaultAlias, 'PlantsSurvive');
+      expect(
+        ChallengeRepository.suggestUniqueAlias(
+          challenge: challenge,
+          levelFile: level,
+        ),
+        'PlantsSurvive1',
+      );
+    },
+  );
 
   testWidgets('challenge cards keep readable text width on narrow screens', (
     tester,
@@ -232,6 +299,69 @@ void main() {
     expect(
       level.objects.any(
         (object) => object.aliases?.contains('BeatTheLevel1') == true,
+      ),
+      isTrue,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('duplicate plant survival challenge uses PlantsSurvive1', (
+    tester,
+  ) async {
+    final module = PvzObject(
+      aliases: const ['ChallengeModule'],
+      objClass: 'StarChallengeModuleProperties',
+      objData: StarChallengeModuleData(
+        challenges: [
+          ['RTID(PlantsSurvive@CurrentLevel)'],
+        ],
+      ).toJson(),
+    );
+    final existing = PvzObject(
+      aliases: const ['PlantsSurvive'],
+      objClass: 'StarChallengePlantsSurviveProps',
+      objData: StarChallengePlantSurviveData().toJson(),
+    );
+    final level = PvzLevelFile(objects: [module, existing]);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        StarChallengeModuleScreen(
+          rtid: 'RTID(ChallengeModule@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add challenge'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Plant Survival Challenge').first);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TextField && widget.controller?.text == 'PlantsSurvive1',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    final saved = StarChallengeModuleData.fromJson(
+      module.objData as Map<String, dynamic>,
+    );
+    expect(
+      saved.challenges.single,
+      contains('RTID(PlantsSurvive1@CurrentLevel)'),
+    );
+    expect(
+      level.objects.any(
+        (object) => object.aliases?.contains('PlantsSurvive1') == true,
       ),
       isTrue,
     );
