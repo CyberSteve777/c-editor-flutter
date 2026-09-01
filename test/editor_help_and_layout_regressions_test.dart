@@ -7,6 +7,7 @@ import 'package:c_editor/screens/editor/events/frost_wind_event_screen.dart';
 import 'package:c_editor/screens/editor/events/spawn_grave_stones_event_screen.dart';
 import 'package:c_editor/screens/editor/events/storm_event_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/bomb_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/increased_cost_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/roof_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
@@ -370,6 +371,72 @@ void main() {
     await tester.pump();
 
     expect((level.objects.single.objData as Map)['BowlingFoulLine'], 3);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Powder-keg rows use steppers and share the overview preview', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final level = PvzLevelFile(objects: []);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        BombPropertiesScreen(
+          rtid: 'RTID(Bombs@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final flameSpeedField = tester.widget<TextField>(
+      find.byKey(const ValueKey('bombFlameSpeedField')),
+    );
+    expect(flameSpeedField.decoration?.labelText, isNull);
+    expect(find.text('Fuse Burn Speed (FlameSpeed)'), findsOneWidget);
+    expect(find.text('Fuse Lengths (FuseLengths)'), findsOneWidget);
+    expect(find.text('Fuse Length'), findsNothing);
+
+    final firstStepper = find.byKey(const ValueKey('bombFuseLengthStepper-0'));
+    expect(firstStepper, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('bombFuseLengthPreviewGrid')),
+      findsOneWidget,
+    );
+    final previewGrid = find.descendant(
+      of: find.byKey(const ValueKey('bombFuseLengthPreviewGrid')),
+      matching: find.byType(GridView),
+    );
+    expect(previewGrid, findsOneWidget);
+    expect(
+      tester.getSize(previewGrid).width,
+      lessThanOrEqualTo(
+        EditorItemCardLayout.gridPreviewMaxWidth(tester.element(firstStepper)),
+      ),
+    );
+    expect(
+      find.byKey(const ValueKey('explosiveBarrelFuse-0-7')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('explosiveBarrelFuse-0-8')), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('bombFuseLengthIncrease-0')));
+    await tester.pump();
+
+    final module = level.objects.firstWhere(
+      (object) => object.objClass == 'BombProperties',
+    );
+    expect((module.objData as Map)['FuseLengths'].first, '9');
+    expect(
+      find.byKey(const ValueKey('explosiveBarrelFuse-0-8')),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 

@@ -152,6 +152,49 @@ void main() {
     expect(tester.widget<Text>(find.text('Roman Zombie')).maxLines, 2);
   });
 
+  testWidgets('theme target cards share row height and center short content', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1000, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _localizedApp(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showRiftThemeDetailsDialog(context, 'nuke'),
+            child: const Text('open-health-debuff'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open-health-debuff'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
+    await tester.pumpAndSettle();
+
+    final shortCard = find.byKey(const ValueKey('riftThemeTarget-wallnut'));
+    final tallCard = find.byKey(
+      const ValueKey('riftThemeTarget-primalwallnut'),
+    );
+    final shortRect = tester.getRect(shortCard);
+    final tallRect = tester.getRect(tallCard);
+
+    expect(shortRect.top, closeTo(tallRect.top, 0.1));
+    expect(shortRect.height, closeTo(tallRect.height, 0.1));
+
+    final shortContentCenter =
+        (tester.getTopLeft(find.text('Wall-nut')).dy +
+            tester.getBottomLeft(find.text('wallnut')).dy) /
+        2;
+    expect(shortContentCenter, closeTo(shortRect.center.dy, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('selected themes use a neutral list number and support details', (
     tester,
   ) async {

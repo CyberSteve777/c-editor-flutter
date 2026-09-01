@@ -407,7 +407,7 @@ class _ExportScreenState extends State<ExportScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(l10n.exportProgressTitle),
+        title: Text(l10n.exportPackageProgressTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1075,7 +1075,7 @@ class _ExportScreenState extends State<ExportScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              l10n.exportProgressTitle,
+              l10n.exportPackageProgressTitle,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -1685,7 +1685,7 @@ class _ExportScreenState extends State<ExportScreen> {
     setState(() {
       _isExporting = true;
       _exportProgress = 0;
-      _exportStatus = l10n.exportProgressTitle;
+      _exportStatus = l10n.exportPackageProgressTitle;
     });
 
     final String archivePath = _selectedArchivePath!;

@@ -33,6 +33,7 @@ import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/widgets/rift_theme_widgets.dart';
+import 'package:c_editor/widgets/explosive_barrels_preview_grid.dart';
 
 class LevelPreviewDialog extends StatefulWidget {
   final CPluginHost host;
@@ -3075,36 +3076,24 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     LevelPreviewGridStyle style,
   ) {
     final data = readBombPropertiesData(widget.levelFile);
-    return _buildCompositeLawnGrid(
+    return ExplosiveBarrelsPreviewGrid(
       rows: rows,
       cols: cols,
       style: style,
-      cellBuilder: (col, row) {
-        if (data == null) return null;
-        if (row < data.fuseLengths.length) {
-          final fuseLen = int.tryParse(data.fuseLengths[row]) ?? 0;
-          if (fuseLen > 0 && col < fuseLen) {
-            return Container(
-              margin: EdgeInsets.zero,
-              alignment: Alignment.center,
-              child: Container(
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF57C00),
-                  borderRadius: BorderRadius.circular(2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFFA726).withValues(alpha: 0.8),
-                      blurRadius: 3,
-                      spreadRadius: 0.5,
-                    ),
-                  ],
-                ),
-              ),
-            );
+      fuseLengths: data?.fuseLengths ?? const [],
+      selectedX: _selectedX,
+      selectedY: _selectedY,
+      onCellTap: (col, row) {
+        setState(() {
+          if (_selectedX == col && _selectedY == row) {
+            _selectedX = null;
+            _selectedY = null;
+          } else {
+            _selectedX = col;
+            _selectedY = row;
           }
-        }
-        return null;
+          _selectedIds = [];
+        });
       },
     );
   }

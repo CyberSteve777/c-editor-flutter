@@ -244,6 +244,7 @@
   "exportDisclaimerDoNotShowAgain": "Больше не показывать по умолчанию",
   "importProgressTitle": "Импорт файлов…",
   "exportProgressTitle": "Подготовка экспорта…",
+  "exportPackageProgressTitle": "Экспорт пакета данных…",
   "backupProgressTitle": "Создание резервной копии…",
   "transferProgressCount": "{completed} / {total}",
   "@transferProgressCount": {

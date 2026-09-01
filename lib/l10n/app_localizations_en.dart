@@ -658,7 +658,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importProgressTitle => 'Importing files…';
 
   @override
-  String get exportProgressTitle => 'Building data package…';
+  String get exportProgressTitle => 'Exporting files…';
+
+  @override
+  String get exportPackageProgressTitle => 'Exporting data package…';
 
   @override
   String get backupProgressTitle => 'Creating backup…';
@@ -7627,7 +7630,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_GlacierModuleProperties =>
-      'Configure the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss';
+      'Configures the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss';
 
   @override
   String get glacierModuleTitle => 'Ice Chunk module';

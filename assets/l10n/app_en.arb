@@ -272,7 +272,8 @@
   "exportDisclaimerBody": "This feature generates level testing mods by injecting level files into the game's data packages (SMF/RSB container files). This process directly modifies the game data of Plants vs. Zombies 2.\n\n• Using this feature to modify game data may violate the game's terms of service.\n• It may result in temporary or permanent suspension of your game account.\n• It may lead to game save corruption or data loss.\n• All operations are chosen by the user at their own risk.\n\nThe developes hereby explicitly state:\n\n1. This feature is for learning and research purposes only; any form of game cheating is discouraged.\n2. All consequences resulting from the use of this feature, including but not limited to account bans, data loss, and impaired game experience, are solely the responsibility of the user. The developers assume no direct or indirect liability.\n3. Users should fully understand the associated risks before using this feature and decide for themselves whether to assume these risks.\n4. Continued use indicates that you have read, understood, and agreed to all terms of this disclaimer.",
   "exportDisclaimerDoNotShowAgain": "Do not show by default",
   "importProgressTitle": "Importing files…",
-  "exportProgressTitle": "Building data package…",
+  "exportProgressTitle": "Exporting files…",
+  "exportPackageProgressTitle": "Exporting data package…",
   "backupProgressTitle": "Creating backup…",
   "transferProgressCount": "{completed} / {total}",
   "@transferProgressCount": {
@@ -2569,7 +2570,7 @@
   "airDropShipModuleColMax": "End column",
   "openModuleSettings": "Open Module Settings",
   "moduleTitle_GlacierModuleProperties": "Ice Chunk Module",
-  "moduleDesc_GlacierModuleProperties": "Configure the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss",
+  "moduleDesc_GlacierModuleProperties": "Configures the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss",
   "glacierModuleTitle": "Ice Chunk module",
   "glacierModuleHelpTitle": "Ice Chunk module",
   "glacierModuleHelpOverviewBody": "The Frostbite Caves Zomboss summons zombies differently from other Zomboss mechs: it spits out blasts of ice from bottom to top to create Ice Chunks, which release the zombies hidden inside when they break. This module is used to configure which zombies may appear inside the Ice Chunks.",

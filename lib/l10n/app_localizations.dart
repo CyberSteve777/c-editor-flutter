@@ -1267,8 +1267,14 @@ abstract class AppLocalizations {
   /// No description provided for @exportProgressTitle.
   ///
   /// In en, this message translates to:
-  /// **'Building data package…'**
+  /// **'Exporting files…'**
   String get exportProgressTitle;
+
+  /// No description provided for @exportPackageProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting data package…'**
+  String get exportPackageProgressTitle;
 
   /// No description provided for @backupProgressTitle.
   ///
@@ -13464,7 +13470,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_GlacierModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configure the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss'**
+  /// **'Configures the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss'**
   String get moduleDesc_GlacierModuleProperties;
 
   /// No description provided for @glacierModuleTitle.

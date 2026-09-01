@@ -48,6 +48,16 @@ class _FakeExportEngine implements ExportEngine {
 }
 
 void main() {
+  test('testing package progress has a dedicated localized title', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final zh = lookupAppLocalizations(const Locale('zh'));
+
+    expect(en.exportProgressTitle, 'Exporting files…');
+    expect(en.exportPackageProgressTitle, 'Exporting data package…');
+    expect(zh.exportProgressTitle, '正在导出关卡…');
+    expect(zh.exportPackageProgressTitle, '正在导出数据包…');
+  });
+
   test('Moon Base is available for twelve level slots', () {
     final moon = WorldRepository.findByCodename('moon');
     expect(moon, isNotNull);
@@ -193,7 +203,9 @@ void main() {
 
     expect(
       find.text(
-        'If the Normal mode and Hard/Expert mode in the target level slot are actually different levels, the editor replaces only the Normal mode level.',
+        lookupAppLocalizations(
+          const Locale('en'),
+        ).exportDifficultyReplacementNotice,
       ),
       findsOneWidget,
     );

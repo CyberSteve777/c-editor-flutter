@@ -669,6 +669,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportProgressTitle => 'Подготовка экспорта…';
 
   @override
+  String get exportPackageProgressTitle => 'Экспорт пакета данных…';
+
+  @override
   String get backupProgressTitle => 'Создание резервной копии…';
 
   @override
