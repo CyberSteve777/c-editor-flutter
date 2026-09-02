@@ -407,7 +407,7 @@ class _ExportScreenState extends State<ExportScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(l10n.exportProgressTitle),
+        title: Text(l10n.exportPackageProgressTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1075,7 +1075,7 @@ class _ExportScreenState extends State<ExportScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              l10n.exportProgressTitle,
+              l10n.exportPackageProgressTitle,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -1224,7 +1224,19 @@ class _ExportScreenState extends State<ExportScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 12),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 720),
+                        child: Text(
+                          l10n.exportDifficultyReplacementNotice,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
                       ..._selectedLevelPaths.map((path) {
                         final assignment = _levelAssignments[path];
                         return _WorldDistributionRow(
@@ -1673,7 +1685,7 @@ class _ExportScreenState extends State<ExportScreen> {
     setState(() {
       _isExporting = true;
       _exportProgress = 0;
-      _exportStatus = l10n.exportProgressTitle;
+      _exportStatus = l10n.exportPackageProgressTitle;
     });
 
     final String archivePath = _selectedArchivePath!;
@@ -1950,53 +1962,61 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
         .where((w) => w.codename == widget.assignment?.world)
         .firstOrNull;
 
-    final worldIcon = ClipOval(
-      child: Container(
-        width: 48,
-        height: 48,
-        color: theme.colorScheme.surfaceContainerHighest,
-        child: currentWorld != null
-            ? AssetImageWidget(
-                assetPath: currentWorld.getIconPath(),
-                width: 48,
-                height: 48,
-              )
-            : const Icon(Icons.help_outline),
+    final worldIcon = KeyedSubtree(
+      key: const ValueKey('exportWorldIcon'),
+      child: ClipOval(
+        child: Container(
+          width: 48,
+          height: 48,
+          color: theme.colorScheme.surfaceContainerHighest,
+          child: currentWorld != null
+              ? AssetImageWidget(
+                  assetPath: currentWorld.getIconPath(),
+                  width: 48,
+                  height: 48,
+                )
+              : const Icon(Icons.help_outline),
+        ),
       ),
     );
-    final worldField = DropdownButtonFormField<String>(
-      isExpanded: true,
-      decoration: InputDecoration(
-        labelText: l10n.exportWorld,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        border: const OutlineInputBorder(),
-      ),
-      initialValue: widget.assignment?.world,
-      items: worlds.map((w) {
-        return DropdownMenuItem(
-          value: w.codename,
-          child: Text(w.nameGetter(l10n), overflow: TextOverflow.ellipsis),
-        );
-      }).toList(),
-      onChanged: (val) {
-        if (val != null) {
-          final newAssignment = (
-            world: val,
-            level: widget.assignment?.level ?? 1,
-          );
-          if (widget.onCheckDuplicate(newAssignment)) {
-            AppMessage.show(
-              context,
-              l10n.exportDuplicateAssignment(
-                WorldRepository.findByCodename(val)?.nameGetter(l10n) ?? val,
-                newAssignment.level,
-              ),
+    Widget buildWorldField(InputDecoration decoration) =>
+        DropdownButtonFormField<String>(
+          isExpanded: true,
+          decoration: decoration,
+          initialValue: widget.assignment?.world,
+          items: worlds.map((w) {
+            return DropdownMenuItem(
+              value: w.codename,
+              child: Text(w.nameGetter(l10n), overflow: TextOverflow.ellipsis),
             );
-          } else {
-            widget.onChanged(newAssignment);
-          }
-        }
-      },
+          }).toList(),
+          onChanged: (val) {
+            if (val != null) {
+              final newAssignment = (
+                world: val,
+                level: widget.assignment?.level ?? 1,
+              );
+              if (widget.onCheckDuplicate(newAssignment)) {
+                AppMessage.show(
+                  context,
+                  l10n.exportDuplicateAssignment(
+                    WorldRepository.findByCodename(val)?.nameGetter(l10n) ??
+                        val,
+                    newAssignment.level,
+                  ),
+                );
+              } else {
+                widget.onChanged(newAssignment);
+              }
+            }
+          },
+        );
+    final worldDecoration = editorInputDecoration(context).copyWith(
+      labelText: l10n.exportWorld,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+    );
+    final narrowWorldDecoration = editorInputDecoration(context).copyWith(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
     );
     void handleLevelChanged(String val) {
       final num = int.tryParse(val) ?? 1;
@@ -2116,7 +2136,7 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 16),
@@ -2124,54 +2144,46 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
               builder: (context, constraints) {
                 if (constraints.maxWidth < 520) {
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      Center(child: worldIcon),
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n.exportWorld,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      KeyedSubtree(
+                        key: const ValueKey('exportWorldField'),
+                        child: buildWorldField(narrowWorldDecoration),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.exportLevelNumber,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          worldIcon,
-                          const SizedBox(width: 12),
                           Expanded(
-                            child: KeyedSubtree(
-                              key: const ValueKey('exportWorldField'),
-                              child: worldField,
+                            child: SizedBox(
+                              key: const ValueKey('exportLevelNumberField'),
+                              height: 56,
+                              child: buildLevelTextField(levelDecoration),
                             ),
                           ),
+                          const SizedBox(width: 4),
+                          SizedBox(
+                            key: const ValueKey('exportLevelStepper'),
+                            height: 56,
+                            child: levelStepper,
+                          ),
                         ],
-                      ),
-                      const SizedBox(height: 12),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 60),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              l10n.exportLevelNumber,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: SizedBox(
-                                    key: const ValueKey(
-                                      'exportLevelNumberField',
-                                    ),
-                                    height: 56,
-                                    child: buildLevelTextField(levelDecoration),
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                SizedBox(
-                                  key: const ValueKey('exportLevelStepper'),
-                                  height: 56,
-                                  child: levelStepper,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
                       ),
                     ],
                   );
@@ -2184,7 +2196,7 @@ class _WorldDistributionRowState extends State<_WorldDistributionRow> {
                     Expanded(
                       child: KeyedSubtree(
                         key: const ValueKey('exportWorldField'),
-                        child: worldField,
+                        child: buildWorldField(worldDecoration),
                       ),
                     ),
                     const SizedBox(width: 8),

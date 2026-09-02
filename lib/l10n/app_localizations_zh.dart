@@ -634,7 +634,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get exportDisclaimerBody =>
-      '本功能通过向游戏数据包 (SMF/RSB 容器文件)中注入关卡文件来生成关卡测试包，该过程会直接修改《植物大战僵尸2》的游戏数据。\n\n• 使用本功能修改游戏数据可能违反游戏服务条款\n• 可能导致游戏账号被临时或永久封禁\n• 可能导致游戏存档损坏或数据丢失\n• 所有操作均为用户自行选择，风险自负\n\n开发者在此明确声明：\n\n1. 本功能仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n2. 用户使用本功能所产生的一切后果，包括但不限于账号封禁、数据丢失、游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n3. 用户在使用本功能前应充分了解相关风险，并自行决定是否承担这些风险。\n4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。';
+      '本功能通过向游戏数据包 (SMF/RSB 容器文件) 中注入关卡文件来生成关卡测试包，该过程会直接修改《植物大战僵尸2》的游戏数据。\n\n• 使用本功能修改游戏数据可能违反游戏服务条款\n• 可能导致游戏账号被临时或永久封禁\n• 可能导致游戏存档损坏或数据丢失\n• 所有操作均为用户自行选择，风险自负\n\n开发者在此明确声明：\n\n1. 本功能仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n2. 用户使用本功能所产生的一切后果，包括但不限于账号封禁、数据丢失、游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n3. 用户在使用本功能前应充分了解相关风险，并自行决定是否承担这些风险。\n4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。';
 
   @override
   String get exportDisclaimerDoNotShowAgain => '不再默认显示';
@@ -643,7 +643,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importProgressTitle => '正在导入文件…';
 
   @override
-  String get exportProgressTitle => '正在生成数据包…';
+  String get exportProgressTitle => '正在导出关卡…';
+
+  @override
+  String get exportPackageProgressTitle => '正在导出数据包…';
 
   @override
   String get backupProgressTitle => '正在创建备份…';
@@ -766,6 +769,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportAssignmentProposalTitle => '关卡分配';
 
   @override
+  String get exportDifficultyReplacementNotice =>
+      '如果目标关卡槽位中的普通模式与困难/专家模式实际为两个不同的关卡，编辑器只会替换其中的普通模式关卡。';
+
+  @override
   String get exportWorld => '世界';
 
   @override
@@ -784,7 +791,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String exportSuccessMessage(String file) {
-    return '关卡测试包已成功生成至 $file。\n用生成的游戏数据包替换游戏的对应文件后，即可从被替换的原关卡入口进入并测试自己的关卡。\n注意：如果替换后启动游戏便立即闪退，通常说明关卡本身存在问题。';
+    return '关卡测试包已成功生成至 $file。\n用生成的游戏数据包替换游戏的对应文件后，即可从被替换的原关卡入口进入并测试自己的关卡。\n注意：1. 替换前，请彻底关闭游戏进程。\n2. 替换完成后、进入游戏前，请彻底关闭编辑器以及正在占用目标目录的文件管理器。';
   }
 
   @override
@@ -1060,15 +1067,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get usageText =>
-      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json)或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json) 或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageTextDesktop =>
-      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json)或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json) 或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageTextMobile =>
-      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json)或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
+      '1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用下方按钮基于模板新建。\n3. 模块管理：在编辑器中，可以通过“添加新模块”扩展关卡功能。\n4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n5. 转换关卡文件：可将 JSON 转换为热更新可读的 HUJSON (导入前需手动将扩展名从 .hujson 改回 .json) 或加密后的 RTON (用于替换 dynamic.rsb.smf 中的关卡数据)。\n6. 插件：插件可以通过运行额外代码提供新的功能与界面，丰富编辑器的使用体验。除内置插件外，还可以通过安装本地 .cplugin 文件或输入 URL 链接获取新的插件。插件内的功能可以自主选择开启或禁用。\n7. 位于关卡列表顶部时，可点击右下角的“上传至创意庭院”按钮，前往官方的植物大战僵尸2高级创作庭院作者中心。\n8. 可以在「创意庭院·推荐关卡展示」网页中查看往期官方推荐的关卡ID及推荐理由。游玩这些关卡不仅能够支持优秀的关卡创作者，也有助于提升自己的关卡设计水平。';
 
   @override
   String get usageRecommendedLevelsLabel => '创意庭院·推荐关卡展示：';
@@ -1759,13 +1766,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveManagerTimeControl => '时间控制';
 
   @override
-  String get waveManagerFirstWaveDelayConveyor => '首波延迟（传送带）';
+  String get waveManagerFirstWaveDelayConveyor => '首波延迟（传送带，单位：秒）';
 
   @override
-  String get waveManagerFirstWaveDelayNormal => '首波延迟（常规）';
+  String get waveManagerFirstWaveDelayNormal => '首波延迟（常规，单位：秒）';
 
   @override
-  String get waveManagerFlagWaveDelay => '旗帜波延迟';
+  String get waveManagerFlagWaveDelay => '旗帜波延迟（秒）';
 
   @override
   String get waveManagerConveyorDetected => '检测到传送带模块，已自动使用传送带延迟';
@@ -1966,6 +1973,14 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get conflictDesc_CowboyIntro =>
       '围栏之战与转场模块存在冲突，同时使用会导致开局时的僵尸预览和转场效果异常。';
+
+  @override
+  String get conflictDesc_SingleHandedIntro =>
+      '单枪匹马与转场模块存在冲突，同时使用会导致开局时的转场效果异常。';
+
+  @override
+  String get conflictDesc_SingleHandedTutorialIntro =>
+      '单枪匹马教程与转场模块存在冲突，同时使用会导致开局时的转场效果异常。';
 
   @override
   String get conflictDesc_EvilDaveZombieDrop => '我是僵尸模式不能使用僵尸掉落模块。';
@@ -2475,6 +2490,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_CowboyMinigameProperties => '每种植一个传送带植物，才开始一波僵尸进攻';
 
   @override
+  String get moduleTitle_SingleHandedProperties => '单枪匹马';
+
+  @override
+  String get moduleDesc_SingleHandedProperties => '配置单枪匹马小游戏基础属性';
+
+  @override
+  String get moduleTitle_IntroSingleHandedProperties => '单枪匹马教程';
+
+  @override
+  String get moduleDesc_IntroSingleHandedProperties => '配置单枪匹马小游戏的教程提示';
+
+  @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties => '排山倒海';
 
   @override
@@ -2952,6 +2979,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventDesc_SchoolBusWaveActionProps => '在指定行生成冰淇淋车，并配置车内僵尸';
 
   @override
+  String get eventTitle_HamsterZombieSpawnerProps => '僵尸仓鼠球';
+
+  @override
+  String get eventDesc_HamsterZombieSpawnerProps => '滚动仓鼠球将僵尸带入场地';
+
+  @override
   String get eventTitle_BungeeWaveActionProps => '蹦极投放';
 
   @override
@@ -3189,7 +3222,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showHealthBarOnDamage => '受伤显示血条 (EnableShowHealthBar)';
 
   @override
-  String get drawHealthBarTime => '血条显示时长 (DrawHealthBarTime)';
+  String get drawHealthBarTime => '血条显示时长 (DrawHealthBarTime，单位：秒)';
 
   @override
   String get enableEliteScale => '启用精英缩放 (EnableEliteScale)';
@@ -3494,6 +3527,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get collectable => '道具（能量豆）';
 
   @override
+  String get plantFood => '能量豆';
+
+  @override
   String get selectGridItem => '选择障碍物';
 
   @override
@@ -3715,20 +3751,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tideWaveTypeRight => '右方 (right)';
 
   @override
-  String get tideWaveDuration => '洋流持续时间 (Duration)';
+  String get tideWaveDuration => '洋流持续时间 (Duration，单位：秒)';
 
   @override
   String get tideWaveSubmarineMovingDistance =>
       '潜艇被推动列数 (SubmarineMovingDistance)';
 
   @override
-  String get tideWaveSpeedUpDuration => '僵尸加速持续时间 (秒)';
+  String get tideWaveSpeedUpDuration => '僵尸加速持续时间 (单位：秒)';
 
   @override
   String get tideWaveSpeedUpIncreased => '僵尸移动速度加成 (SpeedUpIncreased)';
 
   @override
-  String get tideWaveSubmarineMovingTime => '潜艇被推动时间 (秒)';
+  String get tideWaveSubmarineMovingTime => '潜艇被推动时间 (单位：秒)';
 
   @override
   String get tideWaveZombieMovingSpeed =>
@@ -3965,7 +4001,7 @@ class AppLocalizationsZh extends AppLocalizations {
       'GridY表示践踏中心的行；GridXMin/GridXMax表示可能的中心列范围（均从 0 开始）。每次践踏覆盖中心周围 3×3 的区域。预览中高亮显示这些中心位置可能波及的所有格子。海底世界地图：行 0–5，列 0–9。';
 
   @override
-  String get dinoTreadPreview => '践踏范围预览';
+  String get dinoTreadPreview => '可能践踏区域预览';
 
   @override
   String get dinoTreadRowLabel => '行 (GridY)';
@@ -3977,7 +4013,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dinoTreadColMaxLabel => '最右列 (GridXMax)';
 
   @override
-  String get dinoTreadTimeIntervalLabel => '登场间隔 (秒)';
+  String get dinoTreadTimeIntervalLabel => '登场间隔 (TimeInterval，单位：秒)';
 
   @override
   String get columnStartLabel => '起始列 (ColumnStart)';
@@ -4586,11 +4622,224 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cowboyMinigameHelpBeginStringBody =>
-      '提示文本会在每次种植植物前与僵尸预览一同显示。选择“默认文本”时，关卡内对话框会显示“种植传送带上的植物以开始关卡！”。也可以选择不显示文本，或自由输入自定义内容。';
+      '提示文本会在每次种植植物前与僵尸预览一同显示。选择“默认文本”时，关卡内对话框会显示“种植传送带上的植物以开始关卡！”。也可以自由输入自定义内容。';
 
   @override
   String get cowboyMinigameHelpTutorialBody =>
       '开启“显示教程对话”后，戴夫和潘妮会在关卡开始前出现，以对话形式交代小游戏的背景。对话内容固定为首次游玩狂野西部-第4天时的剧情。';
+
+  @override
+  String get singleHandedTabLabel => '单枪匹马';
+
+  @override
+  String get singleHandedBasicParameters => '基础参数';
+
+  @override
+  String get singleHandedOverviewBasicConfiguration => '基础配置';
+
+  @override
+  String get singleHandedMissileCount => '单次导弹数量';
+
+  @override
+  String get singleHandedMissileInterval => '导弹发射间隔';
+
+  @override
+  String get singleHandedWarningTime => '预警时间';
+
+  @override
+  String get singleHandedRocketSpeed => '导弹速度';
+
+  @override
+  String get singleHandedZombieSpeedMultiplier => '僵尸速度倍率';
+
+  @override
+  String get singleHandedZombieHealthMultiplier => '僵尸血量倍率';
+
+  @override
+  String get singleHandedSpecialMultiplierHint => '特殊波次中的速度/血量会在该值基础上再乘系数';
+
+  @override
+  String get singleHandedPlantConfiguration => '植物配置';
+
+  @override
+  String get singleHandedPlantConfigurationInfo =>
+      '初始植物为开局武器，达到击杀数后自动升级植物。\n初始植物会出现在场地左上角第一格，需要把矿车放置于此处，否则会直接判定游戏失败。';
+
+  @override
+  String singleHandedInitialPlantSubtitle(String interval) {
+    return '初始植物 · 攻击间隔：$interval';
+  }
+
+  @override
+  String get singleHandedAttackInterval => '攻击间隔';
+
+  @override
+  String get singleHandedAttackIntervalHint => '攻击间隔越小，攻速越快';
+
+  @override
+  String get singleHandedAddUpgradePlant => '添加升级植物';
+
+  @override
+  String get singleHandedNoUpgradePlants => '暂无升级植物，请添加';
+
+  @override
+  String get singleHandedRequiredKills => '所需击杀数';
+
+  @override
+  String singleHandedEditUpgradePlant(String plantName) {
+    return '编辑：$plantName';
+  }
+
+  @override
+  String singleHandedUpgradePlantSubtitle(int kills, String interval) {
+    return '击杀：$kills · 攻击间隔：$interval';
+  }
+
+  @override
+  String get singleHandedSpecialWaves => '特殊波次';
+
+  @override
+  String get singleHandedSpecialWavesInfo => '用于放置 Boss 波次，速度/血量系数在此前基础值上再相乘。';
+
+  @override
+  String get singleHandedAddSpecialWave => '添加特殊波次';
+
+  @override
+  String get singleHandedNoSpecialWaves => '暂无特殊波次，请添加';
+
+  @override
+  String get singleHandedSpecialWave => '特殊波次';
+
+  @override
+  String get singleHandedWave => '波次';
+
+  @override
+  String get singleHandedSpeedMultiplier => '速度系数';
+
+  @override
+  String get singleHandedHealthMultiplier => '血量系数';
+
+  @override
+  String get singleHandedShowHealthBar => '显示血条';
+
+  @override
+  String singleHandedWaveNumber(int wave) {
+    return '波次 $wave';
+  }
+
+  @override
+  String get singleHandedHealthBarEnabled => '血条开启';
+
+  @override
+  String get singleHandedHealthBarDisabled => '血条关闭';
+
+  @override
+  String singleHandedSpecialWaveSubtitle(String speed, String health) {
+    return '速度 x$speed · 血量 x$health';
+  }
+
+  @override
+  String get singleHandedAddTutorial => '添加单枪匹马教程';
+
+  @override
+  String get singleHandedConfigureTutorial => '配置单枪匹马教程';
+
+  @override
+  String get singleHandedTutorialSettings => '单枪匹马教程设置';
+
+  @override
+  String get singleHandedTutorialWaveForStartRocket => '导弹出现波次';
+
+  @override
+  String get singleHandedTutorialHelpTitle => '单枪匹马教程说明';
+
+  @override
+  String get singleHandedTutorialHelpPromptsTitle => '教程提示';
+
+  @override
+  String get singleHandedTutorialHelpPromptsBody =>
+      '添加该模块后，关卡开始时、植物首次升级时、首次导弹预警时都会出现相应的教程提示。';
+
+  @override
+  String get singleHandedTutorialHelpWaveTitle => '导弹出现波次';
+
+  @override
+  String get singleHandedTutorialHelpWaveBody =>
+      '该模块还可设置导弹从第几波开始出现，并从该波开始计算发射间隔。例如，若导弹发射间隔为 30 秒、出现波次为第 7 波，则第一批导弹会在第 7 波开始 30 秒后发射。\n注意单独添加此模块并不会使关卡在设定波次天降导弹，对导弹出现波次的配置必须要搭配「单枪匹马」模块才会生效。';
+
+  @override
+  String get hamsterballGeneration => '生成逻辑';
+
+  @override
+  String get hamsterballTimeBeforeFullSpawn =>
+      '全部生成所需时间 (TimeBeforeFullSpawn，单位：秒)';
+
+  @override
+  String get hamsterballZombies => '仓鼠球内僵尸 (Zombies)';
+
+  @override
+  String get hamsterballAddZombie => '添加僵尸';
+
+  @override
+  String get hamsterballEmptyZombies => '列表中没有僵尸';
+
+  @override
+  String get hamsterballZombieLevel => '僵尸等级';
+
+  @override
+  String get hamsterballInitialSpeed => '初始速度';
+
+  @override
+  String get hamsterballBehavior => '行为';
+
+  @override
+  String get hamsterballBehaviorUniform => '匀速运动';
+
+  @override
+  String get hamsterballBehaviorSlowdown => '先快后慢';
+
+  @override
+  String get hamsterballBehaviorChangeLane => '碰撞换行';
+
+  @override
+  String get hamsterballBehaviorDetailUniform => '保持匀速运动';
+
+  @override
+  String get hamsterballBehaviorDetailSlowdown => '初始快，碰到植物后变慢';
+
+  @override
+  String get hamsterballBehaviorDetailChangeLane => '碰到植物会换行';
+
+  @override
+  String hamsterballBehaviorSummary(String value) {
+    return '行为 (Behavior)：$value';
+  }
+
+  @override
+  String get hamsterballHasPlantfood => '携带能量豆 (HasPlantfood)';
+
+  @override
+  String get hamsterballHelpTitle => '仓鼠球事件说明';
+
+  @override
+  String get hamsterballHelpOverviewTitle => '简要介绍';
+
+  @override
+  String get hamsterballHelpOverviewBody =>
+      '在十二周年秘境中引入中文版的突袭事件，会召唤滚动的仓鼠球将僵尸带入场地。仓鼠球有三种不同的行为模式，滚动途中碾到的植物会被直接摧毁。\n仓鼠球拥有一定生命值，被击破后会释放球中的僵尸，使其继续前进。地刺、钢地刺等植物可以将仓鼠球扎破并释放其中的僵尸。';
+
+  @override
+  String get hamsterballHelpRangeTitle => '滚动范围';
+
+  @override
+  String get hamsterballHelpRangeBody => '仓鼠球滚动范围固定为从0列到8列，该字段不影响内容，由编辑器静默写入。';
+
+  @override
+  String get hamsterballHelpGenerationTitle => '生成逻辑';
+
+  @override
+  String get hamsterballHelpGenerationBody =>
+      '每组数量描述一组里出现几个仓鼠球，组间间隔为相邻组的间隔时间，达到全部生成所需时间后不会进行额外分组，剩余仓鼠球将直接全部生成。';
 
   @override
   String get cowboyMinigameDependencyWarningTitle => '缺少必需模块';
@@ -4871,6 +5120,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get unitSeconds => '单位：秒';
+
+  @override
+  String propertyLabelSeconds(String name, String code) {
+    return '$name ($code，单位：秒)';
+  }
 
   @override
   String get speedConditions => '传输速度 (SpeedConditions)';
@@ -5279,7 +5533,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get groupSize => '每批数量 (GroupSize)';
 
   @override
-  String get timeBetweenGroups => '批次间隔 (TimeBetweenGroups)';
+  String get timeBetweenGroups => '批次间隔 (TimeBetweenGroups，单位：秒)';
 
   @override
   String applyBatchLevelContent(int level) {
@@ -5365,7 +5619,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ztPerksViewStats => '查看数值';
 
   @override
-  String get ztPerkPropDamageTakenInterval => '受伤间隔';
+  String get ztPerkPropDamageTakenInterval => '受伤间隔（秒）';
 
   @override
   String get ztPerkPropDamageTotalTaken => '累计承受伤害次数';
@@ -5794,13 +6048,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appliesToAllNonElite => '将本波次所有僵尸设为指定等级（精英僵尸不受影响，保持默认等级）。';
 
   @override
-  String get dropConfigPlants => '掉落物配置（植物卡片）';
+  String get dropConfigPlants => '掉落物（植物卡片）配置';
 
   @override
-  String get dropConfigPlantFood => '掉落物配置（能量豆）';
+  String get dropConfigPlantFood => '掉落物（能量豆）配置';
 
   @override
   String get waveDropConfigTitle => '掉落物配置';
+
+  @override
+  String get waveDropPlantSelectionLabel => '指定掉落植物 (SpawnPlantName)';
 
   @override
   String get waveDropTotalLabel => '携带掉落物的僵尸总数 (AdditionalPlantfood)';
@@ -5849,8 +6106,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get count => '数量 (Count)';
 
   @override
-  String get targetDistance =>
-      '花坛距离 (TargetDistance)，数值代表从左边线起的列数，数值越大离房屋越远，可输入小数';
+  String get targetDistance => '花坛距离 (TargetDistance)';
+
+  @override
+  String get starChallengeTargetDistanceHint => '数值表示从左边线起的列数，数值越大离房屋越远，可输入小数。';
 
   @override
   String get targetSun => '目标阳光 (TargetSun)';
@@ -5868,10 +6127,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get timeSeconds => '时间限制（秒）';
 
   @override
-  String get speedModifier => '增幅倍率 (SpeedModifier)，填入0.5则代表僵尸移速获得50%的增幅';
+  String get speedModifier => '增幅倍率 (SpeedModifier)';
 
   @override
-  String get sunModifier => '降低倍率 (SunModifier)，填入0.2则代表阳光获取降低20%';
+  String get starChallengeSpeedModifierHint => '填入 0.5 表示僵尸移动速度提升 50%。';
+
+  @override
+  String get sunModifier => '降低倍率 (SunModifier)';
+
+  @override
+  String get starChallengeSunModifierHint => '填入 0.2 表示阳光获取量降低 20%。';
+
+  @override
+  String get starChallengeChineseUnsupportedHint => '不支持显示中文。';
 
   @override
   String get maximumPlantsLost => '植物损失上限 (MaximumPlantsLost)';
@@ -5928,7 +6196,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sunDropParameters => '阳光掉落参数';
 
   @override
-  String get initialDropDelay => '首次掉落延迟 (InitialSunDropDelay)';
+  String get initialDropDelay => '首次掉落延迟 (InitialSunDropDelay，单位：秒)';
 
   @override
   String get baseCountdown => '初始掉落间隔 (SunCountdownBase)';
@@ -6188,16 +6456,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paramAdjust => '参数调节';
 
   @override
-  String get firstDropDelay => '首次掉落延迟 (InitialSunDropDelay)';
+  String get firstDropDelay => '首次掉落延迟 (InitialSunDropDelay，单位：秒)';
 
   @override
-  String get initialDropInterval => '初始掉落间隔 (SunCountdownBase)';
+  String get initialDropInterval => '初始掉落间隔 (SunCountdownBase，单位：秒)';
 
   @override
-  String get maxDropInterval => '最大掉落间隔 (SunCountdownMax)';
+  String get maxDropInterval => '最大掉落间隔 (SunCountdownMax，单位：秒)';
 
   @override
-  String get intervalFloatRange => '间隔浮动范围 (SunCountdownRange)';
+  String get intervalFloatRange => '间隔浮动范围 (SunCountdownRange，单位：秒)';
 
   @override
   String get sunDropperHelpTitle => '阳光掉落模块说明';
@@ -7170,7 +7438,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heianWindModuleAppearances => '召唤组';
 
   @override
-  String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay)';
+  String get heianWindModuleWindDelay => '神风生成间隔 (WindDelay，单位：秒)';
 
   @override
   String get heianWindModuleWindDelayHint => '单位：秒';
@@ -7197,7 +7465,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heianWindModuleDistanceHint => '1格=50距离';
 
   @override
-  String get heianWindModuleMoveTime => '僵尸平移时间 (MoveTime)';
+  String get heianWindModuleMoveTime => '僵尸平移时间 (MoveTime，单位：秒)';
 
   @override
   String get heianWindModuleMoveTimeHint => '单位：秒';
@@ -8184,7 +8452,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String waveGeneratorDeleteWaveConfirm(int count) {
-    return '将删除该波及其中的$count个固定出怪。';
+    return '将删除该波及其中的$count只固定出怪。';
   }
 
   @override
@@ -8339,8 +8607,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorSpawnPlantFoodHelpBody => '固定设置本波中携带并掉落能量豆的僵尸数量。';
 
   @override
-  String waveGeneratorFixedSummary(int count, int rows) {
-    return '$count个固定出怪 · 分布在$rows行';
+  String waveGeneratorFixedSummary(int count) {
+    return '必定出现$count只僵尸';
   }
 
   @override
@@ -8891,7 +9159,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleTitle_RadiationMeteorModuleProperties => '辐射陨石';
 
   @override
-  String get moduleDesc_RadiationMeteorModuleProperties => '天降陨石，摧毁植物并侵蚀周围地块';
+  String get moduleDesc_RadiationMeteorModuleProperties => '天降陨石，摧毁单位并侵蚀周围地块';
 
   @override
   String get eventTitle_SpawnRocketLandingWaveActionProps => '火箭降落';
@@ -9072,6 +9340,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get powerUpsHelpOverview =>
       '于十三周年秘境重磅回归的“六脉神剑”，允许玩家在道具持续时间内使用特定手势操作击杀僵尸。开启本模块后可设置各个金手指在关卡中免费使用的具体次数。注意国际版中的冰雹指和火焰指在中文版并不存在。';
+
+  @override
+  String get powerUpsAddTitle => '添加金手指';
+
+  @override
+  String get powerUpsOrder => '排列顺序';
+
+  @override
+  String get powerUpsOrderInfo =>
+      '游戏中的金手指会按照此处的顺序排列。拖动 ⋮⋮ 可调整顺序。将金手指从列表中移除后，该金手指将不会在游戏中出现；需要时可在本模块中重新添加。';
 
   @override
   String get powerUpsFreeUseCount => '免费使用次数 (FreeUseCount)';

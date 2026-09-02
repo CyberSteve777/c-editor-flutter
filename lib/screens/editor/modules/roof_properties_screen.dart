@@ -341,37 +341,19 @@ class _RoofColumnStepper extends StatelessWidget {
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyLarge,
-            ),
-          ),
-          IconButton(
-            key: const ValueKey('decrease'),
-            icon: const Icon(Icons.remove),
-            onPressed: value > min ? () => onChanged(value - 1) : null,
-          ),
-          SizedBox(
-            width: 32,
-            child: Text(
-              '$value',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          IconButton(
-            key: const ValueKey('increase'),
-            icon: const Icon(Icons.add),
-            onPressed: value < max ? () => onChanged(value + 1) : null,
-          ),
-        ],
+      child: EditorResponsiveStepperRow(
+        label: label,
+        value: value,
+        min: min,
+        max: max,
+        onChanged: onChanged,
+        decreaseKey: const ValueKey('decrease'),
+        increaseKey: const ValueKey('increase'),
+        decreaseIcon: Icons.remove,
+        increaseIcon: Icons.add,
+        valueStyle: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

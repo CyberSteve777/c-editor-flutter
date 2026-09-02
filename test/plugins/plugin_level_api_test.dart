@@ -97,6 +97,25 @@ void main() {
     cubit.close();
   });
 
+  test('restoring the saved level clears semantic dirty state', () {
+    final cubit = EditorCubit(
+      fileName: 'demo.json',
+      filePath: '/lib/demo.json',
+    );
+    cubit.applyLevelFile(_sampleLevel(), markDirty: false);
+    final data = cubit.state.levelFile!.objects.first.objData as Map;
+
+    data['Description'] = 'temporarily edited';
+    cubit.markDirty();
+    expect(cubit.state.hasChanges, isTrue);
+
+    data['Description'] = 'test';
+    cubit.markDirty();
+    expect(cubit.state.hasChanges, isFalse);
+
+    cubit.close();
+  });
+
   test('applyOpenLevelJson throws when no editor is bound', () {
     final host = PluginHostImpl(
       pluginId: 'test.plugin',

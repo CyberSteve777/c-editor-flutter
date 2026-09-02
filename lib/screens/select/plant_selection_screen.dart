@@ -634,47 +634,41 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                           onClear: () => _setSearchQuery(''),
                         ),
                       ),
-                      DefaultTabController(
-                        key: ValueKey(_selectedCategory),
-                        length: PlantCategory.values.length,
-                        initialIndex: PlantCategory.values.indexOf(
+                      AccentBarFilterTabRow(
+                        key: ValueKey(
+                          'plantCategory_${_selectedCategory.name}',
+                        ),
+                        selectedIndex: PlantCategory.values.indexOf(
                           _selectedCategory,
                         ),
-                        child: TabBar(
-                          isScrollable: true,
-                          indicatorColor: tabColors.indicator,
-                          labelColor: tabColors.label,
-                          unselectedLabelColor: tabColors.unselectedLabel,
-                          onTap: (index) =>
-                              _setCategory(PlantCategory.values[index]),
-                          tabs: PlantCategory.values.map((category) {
-                            final isSelected = _selectedCategory == category;
-                            return Tab(
-                              child: Row(
-                                children: [
-                                  if (category == PlantCategory.collection) ...[
-                                    Icon(
-                                      Icons.star,
-                                      size: 16,
-                                      color: isSelected
-                                          ? tabColors.label
-                                          : tabColors.unselectedLabel,
-                                    ),
-                                    const SizedBox(width: 4),
-                                  ],
-                                  Text(
-                                    category.getLabel(context),
-                                    style: TextStyle(
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                ],
+                        onSelected: (index) =>
+                            _setCategory(PlantCategory.values[index]),
+                        tabs: PlantCategory.values.map((category) {
+                          final isSelected = _selectedCategory == category;
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (category == PlantCategory.collection) ...[
+                                Icon(
+                                  Icons.star,
+                                  size: 16,
+                                  color: isSelected
+                                      ? tabColors.label
+                                      : tabColors.unselectedLabel,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              Text(
+                                category.getLabel(context),
+                                style: TextStyle(
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                            ],
+                          );
+                        }).toList(),
                       ),
                       if (_selectedCategory != PlantCategory.collection)
                         AccentBarFilterTabRow(

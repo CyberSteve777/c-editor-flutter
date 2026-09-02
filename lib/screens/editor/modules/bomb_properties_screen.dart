@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
+import 'package:c_editor/widgets/explosive_barrels_preview_grid.dart';
 
 /// Bomb properties (barrel/cherry bomb fuze) editor.
 class BombPropertiesScreen extends StatefulWidget {
@@ -29,12 +34,34 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
   late String _alias;
   late PvzObject _moduleObj;
   late BombPropertiesData _data;
+  late BombPropertiesData _initialData;
+  late Map<String, dynamic> _initialObjData;
   late TextEditingController _flameSpeedCtrl;
 
-  int get _expectedRowCount {
+  static const _fuseLengthEquality = ListEquality<String>();
+
+  Map<String, dynamic> _copyJsonMap(Map<String, dynamic> value) =>
+      jsonDecode(jsonEncode(value)) as Map<String, dynamic>;
+
+  void _normalizeFuseLengthsForGrid() {
     final dims = LevelParser.getGridDimensionsFromFile(widget.levelFile);
-    return dims.$1;
+    final expectedRows = dims.$1;
+    final maxLength = dims.$2;
+    final current = _data.fuseLengths;
+    final adjusted = List<String>.generate(expectedRows, (index) {
+      final raw = index < current.length ? current[index] : '8';
+      final parsed = num.tryParse(raw)?.toInt() ?? 8;
+      return parsed.clamp(0, maxLength).toInt().toString();
+    });
+    _data = BombPropertiesData(
+      flameSpeed: _data.flameSpeed,
+      fuseLengths: adjusted,
+    );
   }
+
+  bool get _matchesInitialData =>
+      _data.flameSpeed == _initialData.flameSpeed &&
+      _fuseLengthEquality.equals(_data.fuseLengths, _initialData.fuseLengths);
 
   @override
   void initState() {
@@ -49,26 +76,9 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
     super.dispose();
   }
 
-  void _adjustFuseLengthsToRowCount() {
-    final expected = _expectedRowCount;
-    final current = _data.fuseLengths;
-    if (current.length == expected) return;
-    final adjusted = List<String>.from(current);
-    while (adjusted.length < expected) {
-      adjusted.add('8');
-    }
-    if (adjusted.length > expected) {
-      adjusted.length = expected;
-    }
-    _data = BombPropertiesData(
-      flameSpeed: _data.flameSpeed,
-      fuseLengths: adjusted,
-    );
-    _moduleObj.objData = _data.toJson();
-  }
-
   void _loadData() {
     final alias = _alias;
+    var addedModule = false;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -79,24 +89,34 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
     );
     if (!widget.levelFile.objects.contains(_moduleObj)) {
       widget.levelFile.objects.add(_moduleObj);
+      addedModule = true;
     }
+    final rawData = _moduleObj.objData is Map
+        ? Map<String, dynamic>.from(_moduleObj.objData as Map)
+        : <String, dynamic>{};
+    _initialObjData = _copyJsonMap(rawData);
     try {
-      _data = BombPropertiesData.fromJson(
-        Map<String, dynamic>.from(_moduleObj.objData as Map),
-      );
+      _data = BombPropertiesData.fromJson(rawData);
     } catch (_) {
       _data = BombPropertiesData();
     }
-    _adjustFuseLengthsToRowCount();
-    // Defer onChanged to avoid setState during build (triggers parent _markDirty)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) widget.onChanged();
-    });
+    _normalizeFuseLengthsForGrid();
+    _initialData = BombPropertiesData(
+      flameSpeed: _data.flameSpeed,
+      fuseLengths: List<String>.from(_data.fuseLengths),
+    );
+    if (addedModule) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) widget.onChanged();
+      });
+    }
     _flameSpeedCtrl = TextEditingController(text: _data.flameSpeed.toString());
   }
 
   void _sync() {
-    _moduleObj.objData = _data.toJson();
+    _moduleObj.objData = _matchesInitialData
+        ? _copyJsonMap(_initialObjData)
+        : _data.toJson();
     widget.onChanged();
     setState(() {});
   }
@@ -115,6 +135,9 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(
+      widget.levelFile,
+    );
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -178,12 +201,10 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
                       ),
                       const SizedBox(height: 12),
                       TextField(
+                        key: const ValueKey('bombFlameSpeedField'),
                         controller: _flameSpeedCtrl,
-                        decoration: InputDecoration(
-                          labelText:
-                              l10n?.bombPropertiesFlameSpeed ??
-                              'Fuse Burn Speed (FlameSpeed)',
-                          border: const OutlineInputBorder(),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                         ),
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
@@ -227,34 +248,38 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
                       ),
                       const SizedBox(height: 12),
                       ...List.generate(_data.fuseLengths.length, (i) {
+                        final parsed = int.tryParse(_data.fuseLengths[i]) ?? 8;
+                        final fuseLength = parsed.clamp(0, gridCols).toInt();
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: EditorResponsiveLabelField(
-                            labelWidth: 80,
-                            label: Text(
-                              l10n?.rowN(i + 1) ?? 'Row ${i + 1}',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
+                          child: Container(
+                            key: ValueKey('bombFuseLengthStepper-$i'),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
                             ),
-                            field: TextFormField(
-                              key: ValueKey(
-                                'fuse_${i}_${_data.fuseLengths[i]}',
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: EditorResponsiveStepperRow(
+                              label: l10n?.rowN(i + 1) ?? 'Row ${i + 1}',
+                              value: fuseLength,
+                              min: 0,
+                              max: gridCols,
+                              decreaseIcon: Icons.remove,
+                              increaseIcon: Icons.add,
+                              decreaseKey: ValueKey(
+                                'bombFuseLengthDecrease-$i',
                               ),
-                              initialValue: _data.fuseLengths[i],
-                              decoration: InputDecoration(
-                                labelText:
-                                    l10n?.bombPropertiesFuseLength ?? 'Length',
-                                border: const OutlineInputBorder(),
+                              increaseKey: ValueKey(
+                                'bombFuseLengthIncrease-$i',
                               ),
-                              keyboardType: TextInputType.text,
-                              onChanged: (v) {
+                              onChanged: (value) {
                                 final lengths = List<String>.from(
                                   _data.fuseLengths,
                                 );
-                                lengths[i] = v;
+                                lengths[i] = value.toString();
                                 _data = BombPropertiesData(
                                   flameSpeed: _data.flameSpeed,
                                   fuseLengths: lengths,
@@ -265,6 +290,23 @@ class _BombPropertiesScreenState extends State<BombPropertiesScreen> {
                           ),
                         );
                       }),
+                      const SizedBox(height: 4),
+                      scaleTableForDesktop(
+                        context: context,
+                        child: ExplosiveBarrelsPreviewGrid(
+                          key: const ValueKey('bombFuseLengthPreviewGrid'),
+                          rows: gridRows,
+                          cols: gridCols,
+                          fuseLengths: _data.fuseLengths,
+                          style: resolveGridStyle(
+                            context,
+                            GridPreviewModuleKind.explosiveBarrels,
+                          ),
+                          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(
+                            context,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

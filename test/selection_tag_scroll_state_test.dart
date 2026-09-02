@@ -14,13 +14,18 @@ Widget _localizedApp(Widget home) {
   );
 }
 
-Finder _tagScrollable() => find.descendant(
-  of: find.byType(AccentBarFilterTabRow),
-  matching: find.byType(Scrollable),
-);
+Finder _tagRow() => find.byWidgetPredicate((widget) {
+  final key = widget.key;
+  return widget is AccentBarFilterTabRow &&
+      key is ValueKey<String> &&
+      key.value.endsWith('_tags');
+});
+
+Finder _tagScrollable() =>
+    find.descendant(of: _tagRow(), matching: find.byType(Scrollable));
 
 Future<double> _scrollTagRow(WidgetTester tester) async {
-  await tester.drag(find.byType(AccentBarFilterTabRow), const Offset(-300, 0));
+  await tester.drag(_tagRow(), const Offset(-300, 0));
   await tester.pump(const Duration(milliseconds: 300));
   return tester.state<ScrollableState>(_tagScrollable()).position.pixels;
 }

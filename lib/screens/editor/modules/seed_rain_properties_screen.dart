@@ -159,7 +159,7 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
       options: [
         EditorChoiceDialogOption(
           value: 'plant',
-          icon: Icons.eco_outlined,
+          icon: Icons.local_florist_outlined,
           title: l10n?.plant ?? 'Plant',
         ),
         EditorChoiceDialogOption(
@@ -169,7 +169,7 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
         ),
         EditorChoiceDialogOption(
           value: 'collectable',
-          icon: Icons.local_florist_outlined,
+          icon: Icons.eco_outlined,
           title: l10n?.collectable ?? 'Collectible (Plant Food)',
         ),
       ],
@@ -233,7 +233,7 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
           ZombieRepository().getName(typeName),
         );
       case 2:
-        return 'Plant Food';
+        return AppLocalizations.of(context)?.plantFood ?? 'Plant Food';
       default:
         return 'Unknown';
     }

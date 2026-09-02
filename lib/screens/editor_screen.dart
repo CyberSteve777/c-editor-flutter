@@ -57,6 +57,7 @@ import 'package:c_editor/screens/editor/modules/zombie_move_fast_module_screen.d
 import 'package:c_editor/screens/editor/modules/wave_manager_settings_screen.dart';
 import 'package:c_editor/screens/editor/modules/last_stand_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/cowboy_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/intro_single_handed_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_plant_entry_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_plant_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_zombie_entry_screen.dart';
@@ -95,6 +96,7 @@ import 'package:c_editor/screens/editor/modules/pvz1_copycats_module_screen.dart
 import 'package:c_editor/screens/editor/modules/pvz1_passage_module_screen.dart';
 import 'package:c_editor/screens/editor/tabs/izombie_tab.dart';
 import 'package:c_editor/screens/editor/tabs/level_settings_tab.dart';
+import 'package:c_editor/screens/editor/tabs/single_handed_tab.dart';
 import 'package:c_editor/screens/editor/tabs/vase_breaker_tab.dart';
 import 'package:c_editor/screens/editor/tabs/zomboss_battle_tab.dart';
 import 'package:c_editor/screens/editor/tabs/zomboss_mech_battle_tab.dart';
@@ -119,6 +121,7 @@ import 'package:c_editor/screens/editor/events/parachute_rain_event_screen.dart'
 import 'package:c_editor/screens/editor/events/raiding_party_event_screen.dart';
 import 'package:c_editor/screens/editor/events/barrel_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/school_bus_event_screen.dart';
+import 'package:c_editor/screens/editor/events/hamster_zombie_event_screen.dart';
 import 'package:c_editor/screens/editor/events/bungee_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/thunder_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/tide_wave_event_screen.dart';
@@ -373,6 +376,10 @@ class _EditorScreenState extends State<EditorScreen> {
     final isCowboyMinigame = existingClasses.contains(
       'CowboyMinigameProperties',
     );
+    final isSingleHanded = existingClasses.contains('SingleHandedProperties');
+    final isSingleHandedTutorial = existingClasses.contains(
+      'IntroSingleHandedProperties',
+    );
     final isEvilDave = existingClasses.contains('EvilDaveProperties');
 
     final missingList = <String>[];
@@ -392,6 +399,8 @@ class _EditorScreenState extends State<EditorScreen> {
       if (!isVaseBreaker &&
           !isLastStand &&
           !isCowboyMinigame &&
+          !isSingleHanded &&
+          !isSingleHandedTutorial &&
           !isZombossMechBattle &&
           !isZombossBattle) {
         missingList.add('StandardLevelIntroProperties');
@@ -538,6 +547,51 @@ class _EditorScreenState extends State<EditorScreen> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  void _openSingleHandedTutorialSettings() {
+    final levelFile = _ec.state.levelFile;
+    final parsed = _ec.state.parsedData;
+    if (levelFile == null || parsed?.levelDef == null) return;
+
+    const objClass = 'IntroSingleHandedProperties';
+
+    String? findTutorialRtid() {
+      for (final moduleRtid in parsed!.levelDef!.modules) {
+        final info = RtidParser.parse(moduleRtid);
+        if (info == null || info.source != 'CurrentLevel') continue;
+        final object = levelFile.objects.firstWhereOrNull(
+          (candidate) => candidate.aliases?.contains(info.alias) == true,
+        );
+        if (object?.objClass == objClass) return moduleRtid;
+      }
+      return null;
+    }
+
+    var rtid = findTutorialRtid();
+    if (rtid == null) {
+      _addModule(ModuleRegistry.getMetadata(objClass));
+      _ec.recalculateTabs();
+      rtid = findTutorialRtid();
+    }
+    if (rtid == null || !mounted) return;
+    _pushSingleHandedTutorialScreen(rtid);
+  }
+
+  void _pushSingleHandedTutorialScreen(String rtid) {
+    final levelFile = _ec.state.levelFile;
+    if (levelFile == null || !mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => IntroSingleHandedPropertiesScreen(
+          rtid: rtid,
+          levelFile: levelFile,
+          onChanged: _markDirty,
+          onBack: () => Navigator.pop(context),
         ),
       ),
     );
@@ -1291,6 +1345,44 @@ class _EditorScreenState extends State<EditorScreen> {
               _setActiveTab(EditorTabType.timeline);
               Navigator.pop(context);
             },
+            onRequestZombieSelection: (onSelected) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
+                    editorCubit: _ec,
+                    multiSelect: false,
+                    onZombieSelected: (id) {
+                      Navigator.pop(context);
+                      onSelected(id);
+                    },
+                    onMultiZombieSelected: (_) {},
+                    onBack: () => Navigator.pop(context),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (objClass == 'HamsterZombieSpawnerProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HamsterZombieEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () {
+              _setActiveTab(EditorTabType.timeline);
+              Navigator.pop(context);
+            },
+            onEditCustomZombie: _handleEditCustomZombie,
+            onInjectCustomZombie: _injectCustomZombie,
             onRequestZombieSelection: (onSelected) {
               Navigator.push(
                 context,
@@ -3078,6 +3170,15 @@ class _EditorScreenState extends State<EditorScreen> {
       );
       return;
     }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'IntroSingleHandedProperties') {
+      _pushSingleHandedTutorialScreen(rtid);
+      return;
+    }
+    if (info.source == 'CurrentLevel' && objClass == 'SingleHandedProperties') {
+      _setActiveTab(EditorTabType.singleHanded);
+      return;
+    }
     if (info.source == 'CurrentLevel' && objClass == 'SeedBankProperties') {
       Navigator.push(
         context,
@@ -3944,73 +4045,103 @@ class _EditorScreenState extends State<EditorScreen> {
                         _tabController = DefaultTabController.of(context);
                         return LayoutBuilder(
                           builder: (context, constraints) {
-                            final bool shouldScroll =
-                                constraints.maxWidth < 600;
+                            final topTabLabels = <String>[];
+                            final topTabWidgets = editorTopTabs.map((entry) {
+                              final t = entry.type;
+                              IconData icon;
+                              String label;
+                              switch (t) {
+                                case EditorTabType.settings:
+                                  icon = Icons.settings;
+                                  label = l10n?.settings ?? 'Settings';
+                                  break;
+                                case EditorTabType.timeline:
+                                  icon = Icons.timeline;
+                                  label = l10n?.timeline ?? 'Timeline';
+                                  break;
+                                case EditorTabType.waveGenerator:
+                                  icon = Icons.waves;
+                                  label =
+                                      l10n?.waveGeneratorTabLabel ?? 'Waves';
+                                  break;
+                                case EditorTabType.iZombie:
+                                  icon = Icons.groups;
+                                  label = l10n?.iZombie ?? 'I, Zombie';
+                                  break;
+                                case EditorTabType.vaseBreaker:
+                                  icon = Icons.inventory_2;
+                                  label = l10n?.vaseBreaker ?? 'Vase breaker';
+                                  break;
+                                case EditorTabType.singleHanded:
+                                  icon = Icons.sledding;
+                                  label =
+                                      l10n?.singleHandedTabLabel ??
+                                      'All by Oneself';
+                                  break;
+                                case EditorTabType.zombossMech:
+                                  icon = Icons.smart_toy_outlined;
+                                  label = moduleInstanceDisplayName(
+                                    baseName:
+                                        l10n?.zombossMech ??
+                                        'ZombossMech Battle',
+                                    objClass: 'ZombossBattleModuleProperties',
+                                    instanceCount: entry.instanceCount,
+                                    instanceIndex: entry.instanceIndex,
+                                  );
+                                  break;
+                                case EditorTabType.zombossBattle:
+                                  icon = Icons.castle;
+                                  label = moduleInstanceDisplayName(
+                                    baseName:
+                                        l10n?.zombossBattle ?? 'Zomboss Battle',
+                                    objClass:
+                                        'ZombossLastStandMinigameProperties',
+                                    instanceCount: entry.instanceCount,
+                                    instanceIndex: entry.instanceIndex,
+                                  );
+                                  break;
+                              }
+                              topTabLabels.add(label);
+                              return Tab(text: label, icon: Icon(icon));
+                            }).toList();
+                            final tabLabelStyle =
+                                Theme.of(context).tabBarTheme.labelStyle ??
+                                Theme.of(context).textTheme.titleSmall ??
+                                const TextStyle(fontSize: 14);
+                            final textScaler = MediaQuery.textScalerOf(context);
+                            final requiredTabWidth = topTabLabels.fold<double>(
+                              0,
+                              (width, label) {
+                                final painter = TextPainter(
+                                  text: TextSpan(
+                                    text: label,
+                                    style: tabLabelStyle,
+                                  ),
+                                  textDirection: Directionality.of(context),
+                                  textScaler: textScaler,
+                                  maxLines: 1,
+                                )..layout();
+                                return width + painter.width + 48;
+                              },
+                            );
+                            final shouldScroll =
+                                constraints.maxWidth < 600 ||
+                                requiredTabWidth > constraints.maxWidth;
                             return Column(
                               children: [
-                                TabBar(
-                                  isScrollable: shouldScroll,
-                                  tabAlignment: shouldScroll
-                                      ? TabAlignment.start
-                                      : TabAlignment.fill,
-                                  dividerHeight: 0,
-                                  indicatorSize: TabBarIndicatorSize.tab,
-                                  tabs: editorTopTabs.map((entry) {
-                                    final t = entry.type;
-                                    IconData icon;
-                                    String label;
-                                    switch (t) {
-                                      case EditorTabType.settings:
-                                        icon = Icons.settings;
-                                        label = l10n?.settings ?? 'Settings';
-                                        break;
-                                      case EditorTabType.timeline:
-                                        icon = Icons.timeline;
-                                        label = l10n?.timeline ?? 'Timeline';
-                                        break;
-                                      case EditorTabType.waveGenerator:
-                                        icon = Icons.waves;
-                                        label =
-                                            l10n?.waveGeneratorTabLabel ??
-                                            'Waves';
-                                        break;
-                                      case EditorTabType.iZombie:
-                                        icon = Icons.groups;
-                                        label = l10n?.iZombie ?? 'I, Zombie';
-                                        break;
-                                      case EditorTabType.vaseBreaker:
-                                        icon = Icons.inventory_2;
-                                        label =
-                                            l10n?.vaseBreaker ?? 'Vase breaker';
-                                        break;
-                                      case EditorTabType.zombossMech:
-                                        icon = Icons.smart_toy_outlined;
-                                        label = moduleInstanceDisplayName(
-                                          baseName:
-                                              l10n?.zombossMech ??
-                                              'ZombossMech Battle',
-                                          objClass:
-                                              'ZombossBattleModuleProperties',
-                                          instanceCount: entry.instanceCount,
-                                          instanceIndex: entry.instanceIndex,
-                                        );
-                                        break;
-                                      case EditorTabType.zombossBattle:
-                                        icon = Icons.castle;
-                                        label = moduleInstanceDisplayName(
-                                          baseName:
-                                              l10n?.zombossBattle ??
-                                              'Zomboss Battle',
-                                          objClass:
-                                              'ZombossLastStandMinigameProperties',
-                                          instanceCount: entry.instanceCount,
-                                          instanceIndex: entry.instanceIndex,
-                                        );
-                                        break;
-                                    }
-                                    return Tab(text: label, icon: Icon(icon));
-                                  }).toList(),
-                                ),
+                                if (shouldScroll)
+                                  PersistentScrollableTabBar(
+                                    controller: _tabController!,
+                                    tabs: topTabWidgets,
+                                  )
+                                else
+                                  TabBar(
+                                    isScrollable: false,
+                                    tabAlignment: TabAlignment.fill,
+                                    dividerHeight: 0,
+                                    indicatorSize: TabBarIndicatorSize.tab,
+                                    tabs: topTabWidgets,
+                                  ),
                                 Expanded(
                                   child: TabBarView(
                                     children: editorTopTabs.map<Widget>((
@@ -4092,6 +4223,20 @@ class _EditorScreenState extends State<EditorScreen> {
                                                 ),
                                               );
                                             },
+                                          );
+                                        case EditorTabType.singleHanded:
+                                          return SingleHandedTab(
+                                            levelFile: _ec.state.levelFile!,
+                                            onChanged: _markDirty,
+                                            onAddModule: (objClass) {
+                                              _addModule(
+                                                ModuleRegistry.getMetadata(
+                                                  objClass,
+                                                ),
+                                              );
+                                            },
+                                            onOpenTutorialModule:
+                                                _openSingleHandedTutorialSettings,
                                           );
                                         case EditorTabType.zombossMech:
                                           return ZombossMechBattleTab(

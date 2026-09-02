@@ -1,5 +1,6 @@
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/json_viewer_screen.dart';
 import 'package:c_editor/screens/editor/events/dino_event_screen.dart';
@@ -7,7 +8,9 @@ import 'package:c_editor/screens/editor/events/frost_wind_event_screen.dart';
 import 'package:c_editor/screens/editor/events/spawn_grave_stones_event_screen.dart';
 import 'package:c_editor/screens/editor/events/storm_event_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/bomb_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/increased_cost_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/mechanism_plank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/roof_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/tunnel_defend_module_screen.dart';
@@ -253,6 +256,68 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets(
+    'Seed Bank preset rows grow instead of overlapping the next list',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(320, 1000);
+      addTearDown(tester.view.reset);
+
+      const longPlantId =
+          'a_very_long_preset_plant_identifier_that_needs_multiple_lines';
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: ['SeedBank'],
+            objClass: 'SeedBankProperties',
+            objData: SeedBankData(presetPlantList: [longPlantId]).toJson(),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        _localizedApp(
+          Builder(
+            builder: (context) {
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+                child: SeedBankPropertiesScreen(
+                  rtid: 'RTID(SeedBank@CurrentLevel)',
+                  levelFile: level,
+                  onChanged: () {},
+                  onBack: () {},
+                  onRequestPlantSelection:
+                      (
+                        _, {
+                        excludeIds,
+                        initialSelectedIds,
+                        blockRealmExclusiveInChooser = false,
+                        blockHiddenPlantsInChooser = false,
+                        allowDuplicateSelection = false,
+                      }) {},
+                  onRequestZombieSelection: (_) {},
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final presetRow = find.byKey(
+        const ValueKey('preset-resource-0-$longPlantId'),
+      );
+      final whiteListHeading = find.text('White list (WhiteList)');
+      expect(presetRow, findsOneWidget);
+      expect(whiteListHeading, findsOneWidget);
+      expect(
+        tester.getRect(presetRow).bottom,
+        lessThanOrEqualTo(tester.getRect(whiteListHeading).top),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('Dino summon help omits the dinosaur type section', (
     tester,
   ) async {
@@ -308,6 +373,181 @@ void main() {
     await tester.pump();
 
     expect((level.objects.single.objData as Map)['BowlingFoulLine'], 3);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Powder-keg rows use steppers and share the overview preview', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final initialObjData = <String, dynamic>{
+      'FlameSpeed': 0.25,
+      'FuseLengths': <dynamic>[8.0, 8.0, 8, 8, 8],
+    };
+    final cubit = EditorCubit(fileName: 'bomb.json', filePath: '')
+      ..applyLevelFile(
+        PvzLevelFile(
+          objects: [
+            PvzObject(
+              aliases: const ['Bombs'],
+              objClass: 'BombProperties',
+              objData: initialObjData,
+            ),
+          ],
+        ),
+        markDirty: false,
+      );
+    addTearDown(cubit.close);
+    final level = cubit.state.levelFile!;
+
+    await tester.pumpWidget(
+      _localizedApp(
+        BombPropertiesScreen(
+          rtid: 'RTID(Bombs@CurrentLevel)',
+          levelFile: level,
+          onChanged: cubit.markDirty,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final flameSpeedField = tester.widget<TextField>(
+      find.byKey(const ValueKey('bombFlameSpeedField')),
+    );
+    expect(flameSpeedField.decoration?.labelText, isNull);
+    expect(find.text('Fuse Burn Speed (FlameSpeed)'), findsOneWidget);
+    expect(find.text('Fuse Lengths (FuseLengths)'), findsOneWidget);
+    expect(find.text('Fuse Length'), findsNothing);
+
+    final firstStepper = find.byKey(const ValueKey('bombFuseLengthStepper-0'));
+    expect(firstStepper, findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('bombFuseLengthPreviewGrid')),
+      findsOneWidget,
+    );
+    final previewGrid = find.descendant(
+      of: find.byKey(const ValueKey('bombFuseLengthPreviewGrid')),
+      matching: find.byType(GridView),
+    );
+    expect(previewGrid, findsOneWidget);
+    expect(
+      tester.getSize(previewGrid).width,
+      lessThanOrEqualTo(
+        EditorItemCardLayout.gridPreviewMaxWidth(tester.element(firstStepper)),
+      ),
+    );
+    expect(
+      find.byKey(const ValueKey('explosiveBarrelFuse-0-7')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('explosiveBarrelFuse-1-7')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('explosiveBarrelFuse-0-8')), findsNothing);
+
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('bombFuseLengthPreviewGrid')),
+    );
+    await tester.pumpAndSettle();
+    for (var row = 0; row < 5; row++) {
+      expect(
+        find.byKey(ValueKey('explosiveBarrelFuse-$row-0')),
+        findsOneWidget,
+      );
+    }
+    expect(cubit.state.hasChanges, isFalse);
+
+    await tester.ensureVisible(firstStepper);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('bombFuseLengthIncrease-0')));
+    await tester.pump();
+
+    final module = level.objects.firstWhere(
+      (object) => object.objClass == 'BombProperties',
+    );
+    expect((module.objData as Map)['FuseLengths'].first, '9');
+    expect(cubit.state.hasChanges, isTrue);
+    expect(
+      find.byKey(const ValueKey('explosiveBarrelFuse-0-8')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const ValueKey('bombFuseLengthDecrease-0')));
+    await tester.pump();
+    expect(
+      (module.objData as Map)['FuseLengths'],
+      initialObjData['FuseLengths'],
+    );
+    expect(cubit.state.hasChanges, isFalse);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Connected minecart uses gray steppers above its notice', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['MechanismPlank'],
+          objClass: 'MechanismPlankProperties',
+          objData: {
+            'MechanismGearsRect': {'mHeight': 5, 'mWidth': 4, 'mX': 0, 'mY': 0},
+            'MechanismPlankRows': ['0', '4'],
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _localizedApp(
+        MechanismPlankPropertiesScreen(
+          rtid: 'RTID(MechanismPlank@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    for (final key in const [
+      ValueKey('mechanismPlankStartColumnStepper'),
+      ValueKey('mechanismPlankTrackLengthStepper'),
+    ]) {
+      final stepper = find.byKey(key);
+      expect(stepper, findsOneWidget);
+      final expectedColor = Theme.of(
+        tester.element(stepper),
+      ).colorScheme.surfaceContainerHighest;
+      final grayContainers = tester
+          .widgetList<Container>(
+            find.descendant(of: stepper, matching: find.byType(Container)),
+          )
+          .where(
+            (container) =>
+                container.decoration is BoxDecoration &&
+                (container.decoration! as BoxDecoration).color == expectedColor,
+          );
+      expect(grayContainers, isNotEmpty);
+    }
+
+    final preview = find.byKey(const ValueKey('mechanismPlankPreviewGrid'));
+    final notice = find.byKey(const ValueKey('mechanismPlankEditNoticeCard'));
+    expect(preview, findsOneWidget);
+    expect(notice, findsOneWidget);
+    expect(
+      tester.getTopLeft(preview).dy,
+      lessThan(tester.getTopLeft(notice).dy),
+    );
     expect(tester.takeException(), isNull);
   });
 

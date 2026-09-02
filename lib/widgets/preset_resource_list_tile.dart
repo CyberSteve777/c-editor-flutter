@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 
-/// Estimated row height for [ReorderableListView] in a bounded [SizedBox].
-const double kPresetResourceRowHeight = 62;
-
 /// One entry in a reorderable preset plant / zombie / grid-item list.
 class PresetResourceListTile extends StatelessWidget {
   const PresetResourceListTile({

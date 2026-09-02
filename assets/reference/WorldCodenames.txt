@@ -15,3 +15,4 @@ codename: "steam" | level_count: 25
 codename: "renai" | level_count: 25
 codename: "heian" | level_count: 24
 codename: "atlantis" | level_count: 24
+codename: "moon" | level_count: 12

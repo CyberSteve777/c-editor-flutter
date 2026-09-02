@@ -197,6 +197,15 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
     );
   }
 
+  Iterable<String> _referencedChallengeRtids() sync* {
+    for (final group in _data.challenges) {
+      if (group is! Iterable) continue;
+      for (final value in group) {
+        if (value is String) yield value;
+      }
+    }
+  }
+
   Future<void> _addChallenge() async {
     final info = await Navigator.push<ChallengeTypeInfo>(
       context,
@@ -210,22 +219,14 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
       ),
     );
 
-    if (info == null) return;
+    if (info == null || !mounted) return;
 
     final l10n = AppLocalizations.of(context);
-    final defaultAlias = info.defaultAlias;
-    bool aliasTaken(String a) =>
-        widget.levelFile.objects.any((o) => o.aliases?.contains(a) == true);
-    String suggestedAlias;
-    if (!aliasTaken(defaultAlias)) {
-      suggestedAlias = defaultAlias;
-    } else {
-      int n = 1;
-      while (aliasTaken('${defaultAlias}_$n')) {
-        n++;
-      }
-      suggestedAlias = '${defaultAlias}_$n';
-    }
+    final suggestedAlias = ChallengeRepository.suggestUniqueAlias(
+      challenge: info,
+      levelFile: widget.levelFile,
+      referencedRtids: _referencedChallengeRtids(),
+    );
 
     final alias = await showPvzAliasInputDialog(
       context,
@@ -371,65 +372,96 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
               final title = objClass != null && objClass.isNotEmpty
                   ? ChallengeRepository.localizedTitle(context, objClass)
                   : (l10n?.unknownChallengeType ?? 'Unknown Challenge');
-              final description = objClass != null && objClass.isNotEmpty
-                  ? ChallengeRepository.localizedDescription(context, objClass)
-                  : '';
               final icon = meta?.icon ?? Icons.star_border;
 
-              return Card(
-                child: ListTile(
-                  leading: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: themeColor.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: themeColor.withValues(alpha: 0.5),
-                      ),
-                    ),
-                    child: Icon(icon, color: themeColor),
-                  ),
-                  title: Text(
+              final challengeIcon = Container(
+                key: ValueKey('starChallengeIcon$index'),
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: themeColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: themeColor.withValues(alpha: 0.5)),
+                ),
+                child: Icon(icon, color: themeColor),
+              );
+              final identity = Column(
+                key: ValueKey('starChallengeIdentity$index'),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
                     title,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (description.isNotEmpty)
-                        Text(
-                          description,
-                          style: theme.textTheme.bodySmall,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      Text(
-                        alias,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    alias,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isLocal)
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          tooltip: l10n?.tooltipEdit ?? 'Edit',
-                          onPressed: () => _editChallenge(rtid),
-                        ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        tooltip: l10n?.delete ?? 'Delete',
-                        color: Colors.red,
-                        onPressed: () =>
-                            _confirmRemoveChallenge(index, rtid, title),
-                      ),
-                    ],
+                ],
+              );
+              final actions = Row(
+                key: ValueKey('starChallengeActions$index'),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isLocal)
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      tooltip: l10n?.tooltipEdit ?? 'Edit',
+                      onPressed: () => _editChallenge(rtid),
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    tooltip: l10n?.delete ?? 'Delete',
+                    color: Colors.red,
+                    onPressed: () =>
+                        _confirmRemoveChallenge(index, rtid, title),
+                  ),
+                ],
+              );
+
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textScale =
+                          MediaQuery.textScalerOf(context).scale(16) / 16;
+                      final compact =
+                          constraints.maxWidth < 460 || textScale > 1.3;
+                      if (compact) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                challengeIcon,
+                                const SizedBox(width: 12),
+                                Expanded(child: identity),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: actions,
+                            ),
+                          ],
+                        );
+                      }
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          challengeIcon,
+                          const SizedBox(width: 12),
+                          Expanded(child: identity),
+                          const SizedBox(width: 8),
+                          actions,
+                        ],
+                      );
+                    },
                   ),
                 ),
               );

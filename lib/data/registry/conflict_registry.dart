@@ -42,6 +42,20 @@ class ConflictRegistry {
       descriptionKey: 'conflictDesc_CowboyIntro',
     ),
     ModuleConflictRule(
+      conflictingClasses: {
+        'SingleHandedProperties',
+        'StandardLevelIntroProperties',
+      },
+      descriptionKey: 'conflictDesc_SingleHandedIntro',
+    ),
+    ModuleConflictRule(
+      conflictingClasses: {
+        'IntroSingleHandedProperties',
+        'StandardLevelIntroProperties',
+      },
+      descriptionKey: 'conflictDesc_SingleHandedTutorialIntro',
+    ),
+    ModuleConflictRule(
       conflictingClasses: {'EvilDaveProperties', 'ZombiesDeadWinConProperties'},
       descriptionKey: 'conflictDesc_EvilDaveZombieDrop',
     ),
@@ -155,6 +169,10 @@ class ConflictRegistry {
         return l10n.conflictDesc_LastStandIntro;
       case 'conflictDesc_CowboyIntro':
         return l10n.conflictDesc_CowboyIntro;
+      case 'conflictDesc_SingleHandedIntro':
+        return l10n.conflictDesc_SingleHandedIntro;
+      case 'conflictDesc_SingleHandedTutorialIntro':
+        return l10n.conflictDesc_SingleHandedTutorialIntro;
       case 'conflictDesc_EvilDaveZombieDrop':
         return l10n.conflictDesc_EvilDaveZombieDrop;
       case 'conflictDesc_EvilDaveVictory':

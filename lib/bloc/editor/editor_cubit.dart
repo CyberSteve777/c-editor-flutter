@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +32,9 @@ class EditorCubit extends Cubit<EditorState> {
 
   final String fileName;
   final String filePath;
+  Map<String, dynamic>? _savedLevelSnapshot;
+
+  static const _levelEquality = DeepCollectionEquality();
 
   final ValueNotifier<({int waveIndex, String? rtid})?> openWaveSheetNotifier =
       ValueNotifier<({int waveIndex, String? rtid})?>(null);
@@ -70,6 +76,7 @@ class EditorCubit extends Cubit<EditorState> {
     if (isClosed) return;
     if (level != null) {
       FinalStageTimeLimitedModuleUtils.normalizeForLevelModulesOnly(level);
+      _savedLevelSnapshot = _snapshotLevel(level);
       final parsed = LevelParser.parseLevel(level);
       final tabs = _computeAvailableTabs(level, parsed);
       if (isClosed) return;
@@ -83,6 +90,7 @@ class EditorCubit extends Cubit<EditorState> {
         ),
       );
     } else {
+      _savedLevelSnapshot = null;
       if (isClosed) return;
       emit(
         EditorState(
@@ -125,6 +133,9 @@ class EditorCubit extends Cubit<EditorState> {
         classes.contains('VaseBreakerArcadeModuleProperties')) {
       tabs.add(EditorTabType.vaseBreaker);
     }
+    if (classes.contains('SingleHandedProperties')) {
+      tabs.add(EditorTabType.singleHanded);
+    }
     final zombossMechCount = referencedModuleClasses
         .where((objClass) => objClass == 'ZombossBattleModuleProperties')
         .length;
@@ -154,12 +165,21 @@ class EditorCubit extends Cubit<EditorState> {
     final lf = state.levelFile;
     if (lf == null) return;
     final parsed = LevelParser.parseLevel(lf);
-    emit(state.copyWith(hasChanges: true, parsedData: parsed));
+    emit(
+      state.copyWith(
+        hasChanges: _levelDiffersFromSaved(lf),
+        parsedData: parsed,
+      ),
+    );
   }
 
   /// Rebuilds parsed indexes after derived editor data is synchronized without
   /// turning that synchronization into a user-visible unsaved change.
   void refreshParsedData() {
+    final lf = state.levelFile;
+    if (lf != null && !state.hasChanges) {
+      _savedLevelSnapshot = _snapshotLevel(lf);
+    }
     _refreshLevelState(hasChanges: state.hasChanges);
   }
 
@@ -167,12 +187,25 @@ class EditorCubit extends Cubit<EditorState> {
     final lf = state.levelFile;
     if (lf == null) return;
     await LevelRepository.saveAndExport(filePath, lf);
+    _savedLevelSnapshot = _snapshotLevel(lf);
     emit(state.copyWith(hasChanges: false));
   }
 
   /// Refreshes editor state after the JSON viewer has already saved to disk.
   void onJsonViewerSaved() {
+    final lf = state.levelFile;
+    if (lf != null) {
+      _savedLevelSnapshot = _snapshotLevel(lf);
+    }
     _refreshLevelState(hasChanges: false);
+  }
+
+  static Map<String, dynamic> _snapshotLevel(PvzLevelFile level) =>
+      jsonDecode(jsonEncode(level.toJson())) as Map<String, dynamic>;
+
+  bool _levelDiffersFromSaved(PvzLevelFile level) {
+    final saved = _savedLevelSnapshot;
+    return saved == null || !_levelEquality.equals(level.toJson(), saved);
   }
 
   void _refreshLevelState({required bool hasChanges}) {
@@ -197,6 +230,9 @@ class EditorCubit extends Cubit<EditorState> {
     final lf = state.levelFile;
     if (lf == null) {
       final parsed = LevelParser.parseLevel(newLevel);
+      if (!markDirty) {
+        _savedLevelSnapshot = _snapshotLevel(newLevel);
+      }
       emit(
         EditorState(
           levelFile: newLevel,
@@ -213,8 +249,9 @@ class EditorCubit extends Cubit<EditorState> {
       ..addAll(newLevel.objects);
     lf.version = newLevel.version;
     if (markDirty) {
-      _refreshLevelState(hasChanges: true);
+      _refreshLevelState(hasChanges: _levelDiffersFromSaved(lf));
     } else {
+      _savedLevelSnapshot = _snapshotLevel(lf);
       _refreshLevelState(hasChanges: false);
     }
   }

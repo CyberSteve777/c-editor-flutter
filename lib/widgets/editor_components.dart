@@ -138,6 +138,16 @@ String localizedPropertyLabel(
   return '$localizedName ($codeName)';
 }
 
+String localizedSecondsPropertyLabel(
+  BuildContext context,
+  String localizedName,
+  String codeName,
+) {
+  final l10n = AppLocalizations.of(context);
+  return l10n?.propertyLabelSeconds(localizedName, codeName) ??
+      '$localizedName ($codeName; seconds)';
+}
+
 /// Shared editor UI components. Ported from Z-Editor-master EditorComponents.kt
 
 /// Square add button with rounded corners and + symbol.
@@ -280,7 +290,7 @@ class EditorPlacementGridCard extends StatelessWidget {
 
 /// Keeps related form controls side by side when there is enough room and
 /// stacks them when UI scaling leaves the editor with a narrow layout.
-class EditorResponsiveFieldRow extends StatelessWidget {
+class EditorResponsiveFieldRow extends StatefulWidget {
   const EditorResponsiveFieldRow({
     super.key,
     required this.children,
@@ -293,10 +303,24 @@ class EditorResponsiveFieldRow extends StatelessWidget {
   final double spacing;
 
   @override
+  State<EditorResponsiveFieldRow> createState() =>
+      _EditorResponsiveFieldRowState();
+}
+
+class _EditorResponsiveFieldRowState extends State<EditorResponsiveFieldRow> {
+  final _labelHeightGroup = _EditorResponsiveLabelHeightGroup();
+
+  @override
+  void dispose() {
+    _labelHeightGroup.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final fields = children
+        final fields = widget.children
             .where(
               (child) =>
                   child is! SizedBox ||
@@ -306,26 +330,29 @@ class EditorResponsiveFieldRow extends StatelessWidget {
             )
             .map((child) => child is Flexible ? child.child : child)
             .toList(growable: false);
-        final stack = constraints.maxWidth < breakpoint;
+        final stack = constraints.maxWidth < widget.breakpoint;
         if (stack) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (var i = 0; i < fields.length; i++) ...[
-                if (i > 0) SizedBox(height: spacing),
+                if (i > 0) SizedBox(height: widget.spacing),
                 fields[i],
               ],
             ],
           );
         }
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (var i = 0; i < fields.length; i++) ...[
-              if (i > 0) SizedBox(width: spacing),
-              Expanded(child: fields[i]),
+        return _EditorResponsiveLabelHeightScope(
+          notifier: _labelHeightGroup,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 0; i < fields.length; i++) ...[
+                if (i > 0) SizedBox(width: widget.spacing),
+                Expanded(child: fields[i]),
+              ],
             ],
-          ],
+          ),
         );
       },
     );
@@ -379,9 +406,131 @@ class EditorResponsiveLabelField extends StatelessWidget {
 typedef EditorInputFieldBuilder =
     Widget Function(BuildContext context, InputDecoration decoration);
 
+final Expando<_EditorResponsiveLabelGroup> _editorResponsiveLabelGroups =
+    Expando<_EditorResponsiveLabelGroup>('editorResponsiveLabelGroups');
+final Expando<_EditorResponsiveLabelHeightGroup>
+_editorResponsiveAutomaticLabelHeightGroups =
+    Expando<_EditorResponsiveLabelHeightGroup>(
+      'editorResponsiveAutomaticLabelHeightGroups',
+    );
+
+class _EditorResponsiveLabelGroup extends ChangeNotifier {
+  final Map<Object, bool> _overflowByOwner = Map<Object, bool>.identity();
+  bool _forceExternal = false;
+  bool _notifyScheduled = false;
+
+  bool get forceExternal => _forceExternal;
+
+  void report(Object owner, bool overflows) {
+    if (_overflowByOwner[owner] == overflows) return;
+    _overflowByOwner[owner] = overflows;
+    _recompute();
+  }
+
+  void remove(Object owner) {
+    if (_overflowByOwner.remove(owner) == null) return;
+    _recompute();
+  }
+
+  void _recompute() {
+    final next = _overflowByOwner.values.any((overflows) => overflows);
+    if (next == _forceExternal) return;
+    _forceExternal = next;
+    if (_notifyScheduled) return;
+    _notifyScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _notifyScheduled = false;
+      notifyListeners();
+    });
+  }
+}
+
+class _EditorResponsiveLabelHeightGroup extends ChangeNotifier {
+  final Map<Object, double> _heightByOwner = Map<Object, double>.identity();
+  double _maxHeight = 0;
+  bool _notifyScheduled = false;
+  bool _disposed = false;
+
+  double get maxHeight => _maxHeight;
+
+  void report(Object owner, double height) {
+    if (_heightByOwner[owner] == height) return;
+    _heightByOwner[owner] = height;
+    _recompute();
+  }
+
+  void remove(Object owner) {
+    if (_heightByOwner.remove(owner) == null) return;
+    _recompute();
+  }
+
+  void _recompute() {
+    final next = _heightByOwner.values.fold<double>(0, math.max);
+    if (next == _maxHeight) return;
+    _maxHeight = next;
+    if (_notifyScheduled) return;
+    _notifyScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_disposed) return;
+      _notifyScheduled = false;
+      notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+}
+
+class _EditorResponsiveLabelHeightScope
+    extends InheritedNotifier<_EditorResponsiveLabelHeightGroup> {
+  const _EditorResponsiveLabelHeightScope({
+    required super.notifier,
+    required super.child,
+  });
+
+  static _EditorResponsiveLabelHeightGroup? maybeOf(
+    BuildContext context,
+  ) => context
+      .dependOnInheritedWidgetOfExactType<_EditorResponsiveLabelHeightScope>()
+      ?.notifier;
+}
+
+_EditorResponsiveLabelGroup _responsiveLabelGroupFor(Object key) {
+  return _editorResponsiveLabelGroups[key] ??= _EditorResponsiveLabelGroup();
+}
+
+Element? _nearestHorizontalFieldRow(BuildContext context) {
+  Element? result;
+  context.visitAncestorElements((ancestor) {
+    final widget = ancestor.widget;
+    if (widget is Row) {
+      result = ancestor;
+      return false;
+    }
+    // Do not group fields across a vertical form boundary. This keeps the
+    // automatic alignment local to controls that actually share one row.
+    if (widget is Column) return false;
+    return true;
+  });
+  return result;
+}
+
+_EditorResponsiveLabelHeightGroup? _automaticLabelHeightGroupFor(
+  BuildContext context,
+) {
+  final row = _nearestHorizontalFieldRow(context);
+  if (row == null) return null;
+  return _editorResponsiveAutomaticLabelHeightGroups[row] ??=
+      _EditorResponsiveLabelHeightGroup();
+}
+
 /// Keeps an outlined input label readable at large text scales. Short labels
-/// stay in the field; labels that cannot fit move above it and wrap fully.
-class EditorResponsiveInputField extends StatelessWidget {
+/// stay in the field; if any label on the same page cannot fit, every field on
+/// that page moves its label above so the form remains visually consistent.
+class EditorResponsiveInputField extends StatefulWidget {
   const EditorResponsiveInputField({
     super.key,
     required this.label,
@@ -398,49 +547,135 @@ class EditorResponsiveInputField extends StatelessWidget {
   final TextStyle? externalLabelStyle;
 
   @override
+  State<EditorResponsiveInputField> createState() =>
+      _EditorResponsiveInputFieldState();
+}
+
+class _EditorResponsiveInputFieldState
+    extends State<EditorResponsiveInputField> {
+  Object? _groupKey;
+  late _EditorResponsiveLabelGroup _group;
+  _EditorResponsiveLabelHeightGroup? _heightGroup;
+  bool _usesAutomaticHeightGroup = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final scopedHeightGroup = _EditorResponsiveLabelHeightScope.maybeOf(
+      context,
+    );
+    final nextUsesAutomaticHeightGroup = scopedHeightGroup == null;
+    final nextHeightGroup =
+        scopedHeightGroup ?? _automaticLabelHeightGroupFor(context);
+    if (!identical(nextHeightGroup, _heightGroup)) {
+      if (_usesAutomaticHeightGroup) {
+        _heightGroup?.removeListener(_handleHeightGroupChanged);
+      }
+      _heightGroup?.remove(this);
+      _heightGroup = nextHeightGroup;
+      _usesAutomaticHeightGroup = nextUsesAutomaticHeightGroup;
+      if (_usesAutomaticHeightGroup) {
+        _heightGroup?.addListener(_handleHeightGroupChanged);
+      }
+    }
+    final nextKey = Scaffold.maybeOf(context) ?? ModalRoute.of(context) ?? this;
+    if (identical(nextKey, _groupKey)) return;
+    if (_groupKey != null) {
+      _group.removeListener(_handleGroupChanged);
+      _group.remove(this);
+    }
+    _heightGroup?.remove(this);
+    _groupKey = nextKey;
+    _group = _responsiveLabelGroupFor(nextKey);
+    _group.addListener(_handleGroupChanged);
+  }
+
+  void _handleGroupChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _handleHeightGroupChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    if (_groupKey != null) {
+      _group.removeListener(_handleGroupChanged);
+      _group.remove(this);
+    }
+    if (_usesAutomaticHeightGroup) {
+      _heightGroup?.removeListener(_handleHeightGroupChanged);
+    }
+    _heightGroup?.remove(this);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final theme = Theme.of(context);
         final labelStyle =
-            decoration.floatingLabelStyle ??
-            decoration.labelStyle ??
+            widget.decoration.floatingLabelStyle ??
+            widget.decoration.labelStyle ??
             theme.inputDecorationTheme.floatingLabelStyle ??
             theme.inputDecorationTheme.labelStyle ??
             theme.textTheme.bodyLarge ??
             const TextStyle(fontSize: 16);
         final reservedWidth =
             48.0 +
-            (decoration.prefixIcon == null ? 0 : 48) +
-            (decoration.suffixIcon == null ? 0 : 48);
+            (widget.decoration.prefixIcon == null ? 0 : 48) +
+            (widget.decoration.suffixIcon == null ? 0 : 48);
         final availableLabelWidth = constraints.hasBoundedWidth
             ? constraints.maxWidth - reservedWidth
             : double.infinity;
         final labelPainter = TextPainter(
-          text: TextSpan(text: label, style: labelStyle),
+          text: TextSpan(text: widget.label, style: labelStyle),
           textDirection: Directionality.of(context),
           textScaler: MediaQuery.textScalerOf(context),
           maxLines: 1,
         )..layout(maxWidth: availableLabelWidth > 0 ? availableLabelWidth : 0);
-        final showExternalLabel = labelPainter.didExceedMaxLines;
+        final labelOverflows = labelPainter.didExceedMaxLines;
+        final externalLabelStyle =
+            widget.externalLabelStyle ??
+            theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ) ??
+            labelStyle;
+        final externalLabelPainter =
+            TextPainter(
+              text: TextSpan(text: widget.label, style: externalLabelStyle),
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+            )..layout(
+              maxWidth: constraints.hasBoundedWidth
+                  ? constraints.maxWidth
+                  : double.infinity,
+            );
+        _group.report(this, labelOverflows);
+        _heightGroup?.report(this, externalLabelPainter.height);
+        final showExternalLabel = labelOverflows || _group.forceExternal;
         final effectiveDecoration = showExternalLabel
-            ? decoration
-            : decoration.copyWith(labelText: label);
-        final field = builder(context, effectiveDecoration);
+            ? widget.decoration
+            : widget.decoration.copyWith(labelText: widget.label);
+        final field = widget.builder(context, effectiveDecoration);
 
         if (!showExternalLabel) return field;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              label,
-              style:
-                  externalLabelStyle ??
-                  theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+            SizedBox(
+              height: math.max(
+                _heightGroup?.maxHeight ?? 0,
+                externalLabelPainter.height,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(widget.label, style: externalLabelStyle),
+              ),
             ),
-            SizedBox(height: labelSpacing),
+            SizedBox(height: widget.labelSpacing),
             field,
           ],
         );
@@ -458,12 +693,14 @@ class EditorResponsiveActionRow extends StatelessWidget {
     required this.action,
     this.breakpoint = 520,
     this.spacing = 12,
+    this.compactActionAlignment = Alignment.centerRight,
   });
 
   final Widget content;
   final Widget action;
   final double breakpoint;
   final double spacing;
+  final AlignmentGeometry compactActionAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -475,7 +712,7 @@ class EditorResponsiveActionRow extends StatelessWidget {
             children: [
               content,
               SizedBox(height: spacing / 2),
-              Align(alignment: Alignment.centerRight, child: action),
+              Align(alignment: compactActionAlignment, child: action),
             ],
           );
         }
@@ -488,6 +725,141 @@ class EditorResponsiveActionRow extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// A switch row that gives long localized labels the full available width on
+/// compact surfaces. The switch moves below the label instead of squeezing it
+/// into character-by-character wrapping.
+class EditorResponsiveSwitchRow extends StatelessWidget {
+  const EditorResponsiveSwitchRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.breakpoint = 520,
+    this.labelKey,
+    this.switchKey,
+  });
+
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final double breakpoint;
+  final Key? labelKey;
+  final Key? switchKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      toggled: value,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => onChanged(!value),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: EditorResponsiveActionRow(
+            breakpoint: breakpoint,
+            spacing: 8,
+            content: Text(
+              key: labelKey,
+              label,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            action: Switch.adaptive(
+              key: switchKey,
+              value: value,
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A numeric stepper that keeps localized labels readable at large text scales.
+///
+/// The label and controls stay on one line while there is enough room. On a
+/// narrow surface only the controls move below the label, preventing the label
+/// from being squeezed into one-character-wide lines.
+class EditorResponsiveStepperRow extends StatelessWidget {
+  const EditorResponsiveStepperRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.tooltip = '',
+    this.min = 0,
+    this.max = 100,
+    this.breakpoint = 420,
+    this.labelStyle,
+    this.valueStyle,
+    this.labelKey,
+    this.controlsKey,
+    this.decreaseKey,
+    this.increaseKey,
+    this.decreaseIcon = Icons.remove_circle_outline,
+    this.increaseIcon = Icons.add_circle_outline,
+  });
+
+  final String label;
+  final String tooltip;
+  final int value;
+  final ValueChanged<int> onChanged;
+  final int min;
+  final int max;
+  final double breakpoint;
+  final TextStyle? labelStyle;
+  final TextStyle? valueStyle;
+  final Key? labelKey;
+  final Key? controlsKey;
+  final Key? decreaseKey;
+  final Key? increaseKey;
+  final IconData decreaseIcon;
+  final IconData increaseIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final controls = Row(
+      key: controlsKey,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          key: decreaseKey,
+          onPressed: value > min ? () => onChanged(value - 1) : null,
+          icon: Icon(decreaseIcon),
+        ),
+        SizedBox(
+          width: 40,
+          child: Text(
+            '$value',
+            textAlign: TextAlign.center,
+            style: valueStyle ?? theme.textTheme.titleMedium,
+          ),
+        ),
+        IconButton(
+          key: increaseKey,
+          onPressed: value < max ? () => onChanged(value + 1) : null,
+          icon: Icon(increaseIcon),
+        ),
+      ],
+    );
+
+    return Tooltip(
+      message: tooltip.isNotEmpty ? tooltip : label,
+      child: EditorResponsiveActionRow(
+        breakpoint: breakpoint,
+        content: Text(
+          key: labelKey,
+          label,
+          style: labelStyle ?? theme.textTheme.bodyLarge,
+        ),
+        action: controls,
+      ),
     );
   }
 }
@@ -748,17 +1120,16 @@ abstract class AccentBarTabBarStyle {
 
 /// Horizontally scrollable tag/filter row with an overflow affordance.
 ///
-/// On narrow layouts the scrollbar thumb remains visible whenever the tags do
-/// not fit, so touch users can discover the remaining options. The caller's
-/// bottom padding is used as the scrollbar lane, keeping the thumb clear of
-/// chip contents.
+/// The scrollbar thumb remains visible whenever the tags do not fit, so users
+/// can discover the remaining options before they try to drag. The caller's
+/// bottom padding is expanded while the scrollbar is visible, keeping the
+/// thumb clear of chip contents without adding empty space to rows that fit.
 class HorizontalTagScroller extends StatefulWidget {
   const HorizontalTagScroller({
     super.key,
     required this.children,
     this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     this.onAccentBar = false,
-    this.narrowWidth = 720,
     this.initialScrollOffset = 0,
     this.onScrollOffsetChanged,
   });
@@ -766,7 +1137,6 @@ class HorizontalTagScroller extends StatefulWidget {
   final List<Widget> children;
   final EdgeInsetsGeometry padding;
   final bool onAccentBar;
-  final double narrowWidth;
   final double initialScrollOffset;
   final ValueChanged<double>? onScrollOffsetChanged;
 
@@ -833,14 +1203,23 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
   }
 
   ScrollbarThemeData _scrollbarTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final color = widget.onAccentBar
-        ? Colors.white.withValues(alpha: 0.78)
-        : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7);
+        ? (isDark
+              ? Colors.white.withValues(alpha: 0.82)
+              : theme.colorScheme.onSurface.withValues(alpha: 0.62))
+        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.72);
+    final trackColor = widget.onAccentBar
+        ? (isDark
+              ? Colors.white.withValues(alpha: 0.14)
+              : theme.colorScheme.onSurface.withValues(alpha: 0.12))
+        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.10);
     return ScrollbarThemeData(
       thumbColor: WidgetStateProperty.all(color),
-      trackColor: WidgetStateProperty.all(Colors.transparent),
+      trackColor: WidgetStateProperty.all(trackColor),
       trackBorderColor: WidgetStateProperty.all(Colors.transparent),
-      thickness: WidgetStateProperty.all(4),
+      thickness: WidgetStateProperty.all(6),
       radius: const Radius.circular(4),
       crossAxisMargin: 2,
       mainAxisMargin: 8,
@@ -850,8 +1229,13 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
   @override
   Widget build(BuildContext context) {
     _scheduleOverflowCheck();
-    final keepThumbVisible =
-        _hasOverflow && MediaQuery.sizeOf(context).width < widget.narrowWidth;
+    final keepThumbVisible = _hasOverflow;
+    final requestedPadding = widget.padding.resolve(Directionality.of(context));
+    final effectivePadding = requestedPadding.copyWith(
+      bottom: keepThumbVisible
+          ? math.max(requestedPadding.bottom, 16)
+          : requestedPadding.bottom,
+    );
 
     return ScrollbarTheme(
       data: _scrollbarTheme(context),
@@ -867,9 +1251,10 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
           },
           child: ScrollableWithMouseDrag(
             child: SingleChildScrollView(
+              key: const ValueKey('horizontalTagScrollerScrollView'),
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              padding: widget.padding,
+              padding: effectivePadding,
               child: Row(children: widget.children),
             ),
           ),
@@ -880,8 +1265,9 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
 }
 
 /// Scrollable filter tab row for saturated accent headers.
-/// Matches accent [TabBar] underline selection. On desktop, shows a horizontal
-/// scrollbar below. Vertical wheel / trackpad scroll moves the row horizontally.
+/// Matches [TabBar] underline selection and keeps a horizontal scrollbar below
+/// whenever labels overflow. Vertical wheel / trackpad scroll moves the row
+/// horizontally.
 class AccentBarFilterTabRow extends StatefulWidget {
   const AccentBarFilterTabRow({
     super.key,
@@ -892,6 +1278,10 @@ class AccentBarFilterTabRow extends StatefulWidget {
     this.scrollbarSlotHeight = 16,
     this.initialScrollOffset = 0,
     this.onScrollOffsetChanged,
+    this.onAccentBar = true,
+    this.labelColor,
+    this.unselectedLabelColor,
+    this.indicatorColor,
   });
 
   final List<Widget> tabs;
@@ -901,6 +1291,10 @@ class AccentBarFilterTabRow extends StatefulWidget {
   final double scrollbarSlotHeight;
   final double initialScrollOffset;
   final ValueChanged<double>? onScrollOffsetChanged;
+  final bool onAccentBar;
+  final Color? labelColor;
+  final Color? unselectedLabelColor;
+  final Color? indicatorColor;
 
   @override
   State<AccentBarFilterTabRow> createState() => _AccentBarFilterTabRowState();
@@ -912,13 +1306,26 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
   static const double _scrollbarUnderlineGap = 10;
 
   late final ScrollController _scrollController;
+  final List<GlobalKey> _tabKeys = [];
 
   @override
   void initState() {
     super.initState();
+    _syncTabKeys();
     _scrollController = ScrollController(
       initialScrollOffset: widget.initialScrollOffset,
     )..addListener(_notifyScrollOffsetChanged);
+    _scheduleSelectedTabVisibility();
+  }
+
+  @override
+  void didUpdateWidget(covariant AccentBarFilterTabRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncTabKeys();
+    if (oldWidget.selectedIndex != widget.selectedIndex ||
+        oldWidget.tabs.length != widget.tabs.length) {
+      _scheduleSelectedTabVisibility();
+    }
   }
 
   @override
@@ -932,6 +1339,33 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
     if (_scrollController.hasClients) {
       widget.onScrollOffsetChanged?.call(_scrollController.offset);
     }
+  }
+
+  void _syncTabKeys() {
+    while (_tabKeys.length < widget.tabs.length) {
+      _tabKeys.add(GlobalKey());
+    }
+    if (_tabKeys.length > widget.tabs.length) {
+      _tabKeys.removeRange(widget.tabs.length, _tabKeys.length);
+    }
+  }
+
+  void _scheduleSelectedTabVisibility() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      if (widget.selectedIndex < 0 || widget.selectedIndex >= _tabKeys.length) {
+        return;
+      }
+      final renderObject = _tabKeys[widget.selectedIndex].currentContext
+          ?.findRenderObject();
+      if (renderObject == null) return;
+      _scrollController.position.ensureVisible(
+        renderObject,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   void _onPointerScroll(PointerScrollEvent event) {
@@ -957,46 +1391,57 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
       color: selected ? tabColors.label : tabColors.unselectedLabel,
       fontWeight: selected ? FontWeight.bold : FontWeight.normal,
     );
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => widget.onSelected(index),
-        mouseCursor: SystemMouseCursors.click,
-        overlayColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.pressed)) {
-            return Colors.white.withValues(alpha: 0.12);
-          }
-          if (states.contains(WidgetState.hovered) ||
-              states.contains(WidgetState.focused)) {
-            return Colors.white.withValues(alpha: 0.08);
-          }
-          return null;
-        }),
-        child: IntrinsicWidth(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SizedBox(
-              height: widget.height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: DefaultTextStyle(
-                        style: labelStyle,
-                        child: widget.tabs[index],
+    return KeyedSubtree(
+      key: _tabKeys[index],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.onSelected(index),
+          mouseCursor: SystemMouseCursors.click,
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            final overlayBase = widget.onAccentBar
+                ? Colors.white
+                : Theme.of(context).colorScheme.primary;
+            if (states.contains(WidgetState.pressed)) {
+              return overlayBase.withValues(alpha: 0.12);
+            }
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused)) {
+              return overlayBase.withValues(alpha: 0.08);
+            }
+            return null;
+          }),
+          child: IntrinsicWidth(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox(
+                height: widget.height,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: IconTheme(
+                          data: IconThemeData(color: labelStyle.color),
+                          child: DefaultTextStyle(
+                            style: labelStyle,
+                            child: widget.tabs[index],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    key: selected
-                        ? const ValueKey('accentBarFilterSelectedIndicator')
-                        : null,
-                    height: 3,
-                    color: selected ? tabColors.indicator : Colors.transparent,
-                  ),
-                ],
+                    Container(
+                      key: selected
+                          ? const ValueKey('accentBarFilterSelectedIndicator')
+                          : null,
+                      height: 3,
+                      color: selected
+                          ? tabColors.indicator
+                          : Colors.transparent,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1015,10 +1460,16 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
     );
   }
 
-  ScrollbarThemeData _desktopScrollbarTheme() {
+  ScrollbarThemeData _scrollbarTheme(BuildContext context) {
+    final color = widget.onAccentBar
+        ? Colors.white.withValues(alpha: 0.75)
+        : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7);
+    final trackColor = widget.onAccentBar
+        ? Colors.white.withValues(alpha: 0.18)
+        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08);
     return ScrollbarThemeData(
-      thumbColor: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.75)),
-      trackColor: WidgetStateProperty.all(Colors.white.withValues(alpha: 0.18)),
+      thumbColor: WidgetStateProperty.all(color),
+      trackColor: WidgetStateProperty.all(trackColor),
       trackBorderColor: WidgetStateProperty.all(Colors.transparent),
       thickness: WidgetStateProperty.all(6),
       radius: const Radius.circular(4),
@@ -1060,34 +1511,101 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
 
   @override
   Widget build(BuildContext context) {
-    final tabColors = AccentBarTabBarStyle.colors(context);
-    final showDesktopScrollbar = isDesktopPlatform(context);
-
-    if (!showDesktopScrollbar) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: widget.height,
-            child: _buildScrollableRow(tabColors),
-          ),
-          SizedBox(height: widget.scrollbarSlotHeight),
-        ],
-      );
-    }
+    final defaults = widget.onAccentBar
+        ? AccentBarTabBarStyle.colors(context)
+        : (
+            label: Theme.of(context).colorScheme.primary,
+            unselectedLabel: Theme.of(context).colorScheme.onSurfaceVariant,
+            indicator: Theme.of(context).colorScheme.primary,
+          );
+    final tabColors = (
+      label: widget.labelColor ?? defaults.label,
+      unselectedLabel: widget.unselectedLabelColor ?? defaults.unselectedLabel,
+      indicator: widget.indicatorColor ?? defaults.indicator,
+    );
 
     return SizedBox(
       height: widget.height + widget.scrollbarSlotHeight,
       child: ScrollbarTheme(
-        data: _desktopScrollbarTheme(),
+        data: _scrollbarTheme(context),
         child: Scrollbar(
           key: const ValueKey('accentBarFilterScrollbar'),
           controller: _scrollController,
           thumbVisibility: true,
           interactive: true,
+          scrollbarOrientation: ScrollbarOrientation.bottom,
           child: _buildScrollableRow(tabColors, alignTabsToBottom: true),
         ),
       ),
+    );
+  }
+}
+
+/// Keeps a scrollable tab strip visibly scrollable while synchronizing it with
+/// a [TabBarView]. The thumb is shown whenever the tab labels overflow.
+class PersistentScrollableTabBar extends StatefulWidget {
+  const PersistentScrollableTabBar({
+    super.key,
+    required this.controller,
+    required this.tabs,
+    this.height = 72,
+    this.scrollbarSlotHeight = 14,
+  });
+
+  final TabController controller;
+  final List<Widget> tabs;
+  final double height;
+  final double scrollbarSlotHeight;
+
+  @override
+  State<PersistentScrollableTabBar> createState() =>
+      _PersistentScrollableTabBarState();
+}
+
+class _PersistentScrollableTabBarState
+    extends State<PersistentScrollableTabBar> {
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.controller.index;
+    widget.controller.addListener(_handleControllerChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant PersistentScrollableTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_handleControllerChanged);
+      _selectedIndex = widget.controller.index;
+      widget.controller.addListener(_handleControllerChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_handleControllerChanged);
+    super.dispose();
+  }
+
+  void _handleControllerChanged() {
+    final next = widget.controller.index;
+    if (next != _selectedIndex && mounted) {
+      setState(() => _selectedIndex = next);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AccentBarFilterTabRow(
+      key: const ValueKey('persistentScrollableTopTabs'),
+      tabs: widget.tabs,
+      selectedIndex: _selectedIndex,
+      onSelected: widget.controller.animateTo,
+      height: widget.height,
+      scrollbarSlotHeight: widget.scrollbarSlotHeight,
+      onAccentBar: false,
     );
   }
 }
@@ -1280,12 +1798,14 @@ class EditorChoiceDialogOption<T> {
     required this.icon,
     required this.title,
     this.subtitle,
+    this.key,
   });
 
   final T value;
   final IconData icon;
   final String title;
   final String? subtitle;
+  final Key? key;
 }
 
 /// Shows add-content choices as descriptive cards instead of plain text rows.
@@ -1293,6 +1813,7 @@ Future<T?> showEditorChoiceDialog<T>(
   BuildContext context, {
   required String title,
   required List<EditorChoiceDialogOption<T>> options,
+  Key? dialogKey,
 }) {
   return showDialog<T>(
     context: context,
@@ -1302,6 +1823,8 @@ Future<T?> showEditorChoiceDialog<T>(
       final l10n = AppLocalizations.of(ctx);
       final compact = MediaQuery.sizeOf(ctx).width < 400;
       return AlertDialog(
+        key: dialogKey,
+        scrollable: true,
         insetPadding: EdgeInsets.symmetric(
           horizontal: compact ? 16 : 40,
           vertical: 24,
@@ -1321,87 +1844,92 @@ Future<T?> showEditorChoiceDialog<T>(
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 440),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final option in options)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Material(
-                      key: ValueKey('editorChoiceOption_${option.value}'),
-                      color: colors.surfaceContainerHighest.withValues(
-                        alpha: 0.65,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in options)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Material(
+                    key:
+                        option.key ??
+                        ValueKey('editorChoiceOption_${option.value}'),
+                    color: colors.surfaceContainerHighest.withValues(
+                      alpha: 0.65,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(
+                        color: colors.outlineVariant.withValues(alpha: 0.7),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: colors.outlineVariant.withValues(alpha: 0.7),
-                        ),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: () => Navigator.pop(ctx, option.value),
-                        child: Padding(
-                          padding: EdgeInsets.all(compact ? 12 : 14),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: compact ? 44 : 48,
-                                height: compact ? 44 : 48,
-                                decoration: BoxDecoration(
-                                  color: colors.primaryContainer,
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Icon(
-                                  option.icon,
-                                  color: colors.onPrimaryContainer,
-                                  size: 27,
-                                ),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () => Navigator.pop(ctx, option.value),
+                      child: Padding(
+                        padding: EdgeInsets.all(compact ? 12 : 14),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: compact ? 44 : 48,
+                              height: compact ? 44 : 48,
+                              decoration: BoxDecoration(
+                                color: colors.primaryContainer,
+                                borderRadius: BorderRadius.circular(14),
                               ),
-                              SizedBox(width: compact ? 12 : 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
+                              child: Icon(
+                                option.icon,
+                                color: colors.onPrimaryContainer,
+                                size: 27,
+                              ),
+                            ),
+                            SizedBox(width: compact ? 12 : 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    option.title,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (option.subtitle?.trim().isNotEmpty ==
+                                      true) ...[
+                                    const SizedBox(height: 4),
                                     Text(
-                                      option.title,
-                                      style: theme.textTheme.titleSmall
+                                      option.subtitle!,
+                                      style: theme.textTheme.bodySmall
                                           ?.copyWith(
-                                            fontWeight: FontWeight.bold,
+                                            color: colors.onSurfaceVariant,
+                                            height: 1.3,
                                           ),
                                     ),
-                                    if (option.subtitle?.trim().isNotEmpty ==
-                                        true) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        option.subtitle!,
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: colors.onSurfaceVariant,
-                                              height: 1.3,
-                                            ),
-                                      ),
-                                    ],
                                   ],
-                                ),
+                                ],
                               ),
-                              SizedBox(width: compact ? 4 : 8),
-                              Icon(
-                                Icons.chevron_right,
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(width: compact ? 4 : 8),
+                            Icon(
+                              Icons.chevron_right,
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
+        ),
+        actionsPadding: EdgeInsets.fromLTRB(
+          compact ? 16 : 24,
+          8,
+          compact ? 16 : 24,
+          16,
         ),
         actions: [
           TextButton(
@@ -1723,12 +2251,19 @@ class WaveDropConfigCard extends StatelessWidget {
     final theme = Theme.of(context);
     final AppLocalizations l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
-    final leafColor = isDark ? pvzGreenLight : pvzGreenDark;
+    final plantColor = isDark ? pvzGreenLight : pvzGreenDark;
     final plantCount = plants.length;
+    final hasSeedPacketDrops = plantCount > 0;
     final plantFoodOnlyCount = (totalDropCount - plantCount).clamp(
       0,
       totalDropCount,
     );
+    final hasMixedDrops = hasSeedPacketDrops && plantFoodOnlyCount > 0;
+    final dropConfigTitle = hasMixedDrops
+        ? l10n.waveDropConfigTitle
+        : hasSeedPacketDrops
+        ? l10n.dropConfigPlants
+        : l10n.dropConfigPlantFood;
     final canIncreaseTotal = totalDropCount < zombieCount;
     final canAddPlant =
         onAddPlant != null &&
@@ -1746,14 +2281,16 @@ class WaveDropConfigCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.eco,
+                  key: const ValueKey('waveDropConfigTitleIcon'),
+                  hasSeedPacketDrops ? Icons.local_florist : Icons.eco,
                   size: _kWaveDropConfigTitleIconSize,
-                  color: leafColor,
+                  color: plantColor,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    l10n.waveDropConfigTitle,
+                    key: const ValueKey('waveDropConfigTitle'),
+                    dropConfigTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -1862,30 +2399,14 @@ class WaveDropConfigCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: AssetImageWidget(
-                    assetPath: _kPlantDropTagIconPath,
-                    altCandidates: imageAltCandidates(_kPlantDropTagIconPath),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.dropConfigPlants,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+            Text(
+              key: const ValueKey('waveDropPlantSelectionLabel'),
+              l10n.waveDropPlantSelectionLabel,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
             Wrap(

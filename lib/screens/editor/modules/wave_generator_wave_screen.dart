@@ -796,13 +796,10 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     if (_wave.zombies.isEmpty) {
       return l10n?.waveGeneratorFixedSummaryEmpty ?? 'No fixed spawns';
     }
-    final rowCount = _wave.zombies.map((z) => _rowValue(z.row)).toSet().length;
     final spawnLabel = _wave.zombies.length == 1
         ? '1 fixed spawn'
         : '${_wave.zombies.length} fixed spawns';
-    final rowLabel = rowCount == 1 ? '1 row' : '$rowCount rows';
-    return l10n?.waveGeneratorFixedSummary(_wave.zombies.length, rowCount) ??
-        '$spawnLabel · $rowLabel';
+    return l10n?.waveGeneratorFixedSummary(_wave.zombies.length) ?? spawnLabel;
   }
 
   String _randomSpawnsSummary(AppLocalizations? l10n, int points) {

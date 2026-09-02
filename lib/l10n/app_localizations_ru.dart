@@ -669,6 +669,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportProgressTitle => 'Подготовка экспорта…';
 
   @override
+  String get exportPackageProgressTitle => 'Экспорт пакета данных…';
+
+  @override
   String get backupProgressTitle => 'Создание резервной копии…';
 
   @override
@@ -792,6 +795,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportAssignmentProposalTitle => 'Распределение уровней';
 
   @override
+  String get exportDifficultyReplacementNotice =>
+      'Если в целевом слоте обычный режим и сложный/экспертный режим фактически используют разные уровни, редактор заменит только уровень обычного режима.';
+
+  @override
   String get exportWorld => 'Мир';
 
   @override
@@ -810,7 +817,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String exportSuccessMessage(String file) {
-    return 'Уровни были успешно экспортированы в $file.';
+    return 'Мод для тестирования уровня успешно создан: $file.\nЗамените соответствующий файл игры созданным пакетом данных, затем откройте свой уровень через слот исходного уровня, который был заменён.\nПримечание: 1. Перед заменой полностью завершите процесс игры.\n2. После замены, но до запуска игры, полностью закройте редактор и все файловые менеджеры, использующие целевую папку.';
   }
 
   @override
@@ -1813,14 +1820,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveManagerFirstWaveDelayConveyor =>
-      'Задержка первой волны (конвейер)';
+      'Задержка первой волны (конвейер; секунды)';
 
   @override
   String get waveManagerFirstWaveDelayNormal =>
-      'Задержка первой волны (обычно)';
+      'Задержка первой волны (обычно; секунды)';
 
   @override
-  String get waveManagerFlagWaveDelay => 'Задержка флаговой волны';
+  String get waveManagerFlagWaveDelay => 'Задержка флаговой волны (секунды)';
 
   @override
   String get waveManagerConveyorDetected =>
@@ -2034,6 +2041,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get conflictDesc_CowboyIntro =>
       '«Неудачный загон» конфликтует с модулем вступительной заставки. Их совместное использование нарушает предпросмотр зомби и эффект перехода в начале уровня.';
+
+  @override
+  String get conflictDesc_SingleHandedIntro =>
+      '«В одиночку» конфликтует с модулем вступительной заставки. Их совместное использование нарушает эффект перехода в начале уровня.';
+
+  @override
+  String get conflictDesc_SingleHandedTutorialIntro =>
+      'Обучение «В одиночку» конфликтует с модулем вступительной заставки. Их совместное использование нарушает эффект перехода в начале уровня.';
 
   @override
   String get conflictDesc_EvilDaveZombieDrop =>
@@ -2385,7 +2400,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowInterval =>
-      'Интервал глотания (SwallowInterval)';
+      'Интервал глотания (SwallowInterval; секунды)';
 
   @override
   String get spermWhaleModuleHelpSwallowInterval =>
@@ -2393,7 +2408,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get spermWhaleModulePoisonSwallowInterval =>
-      'Интервал при яде (PoisonSwallowInterval)';
+      'Интервал при яде (PoisonSwallowInterval; секунды)';
 
   @override
   String get spermWhaleModuleHelpPoisonSwallowInterval =>
@@ -2401,7 +2416,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowDuration =>
-      'Длительность глотания (SwallowDuration)';
+      'Длительность глотания (SwallowDuration; секунды)';
 
   @override
   String get spermWhaleModuleHelpSwallowDuration =>
@@ -2589,6 +2604,20 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get moduleDesc_CowboyMinigameProperties =>
       'Запускает волну зомби после посадки растения с конвейера';
+
+  @override
+  String get moduleTitle_SingleHandedProperties => 'В одиночку';
+
+  @override
+  String get moduleDesc_SingleHandedProperties =>
+      'Настраивает основные параметры мини-игры «В одиночку»';
+
+  @override
+  String get moduleTitle_IntroSingleHandedProperties => 'Обучение «В одиночку»';
+
+  @override
+  String get moduleDesc_IntroSingleHandedProperties =>
+      'Настраивает обучающие подсказки мини-игры «В одиночку»';
 
   @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
@@ -3117,6 +3146,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Фургон с мороженым в ряду с настраиваемыми зомби внутри';
 
   @override
+  String get eventTitle_HamsterZombieSpawnerProps => 'Зомби в хомячьем шаре';
+
+  @override
+  String get eventDesc_HamsterZombieSpawnerProps =>
+      'Выкатывает на поле шары с зомби внутри';
+
+  @override
   String get eventTitle_BungeeWaveActionProps => 'Прыжок с парашютом';
 
   @override
@@ -3364,7 +3400,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get showHealthBarOnDamage => 'Показывать полоску здоровья при уроне';
 
   @override
-  String get drawHealthBarTime => 'Время отображения полоски';
+  String get drawHealthBarTime =>
+      'Время отображения полоски (DrawHealthBarTime; секунды)';
 
   @override
   String get enableEliteScale => 'Включить масштаб для элитных зомби';
@@ -3669,6 +3706,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get collectable => 'Собираемый (подкормка)';
 
   @override
+  String get plantFood => 'Подкормка';
+
+  @override
   String get selectGridItem => 'Выбрать предмет';
 
   @override
@@ -3897,19 +3937,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tideWaveTypeRight => 'Вправо';
 
   @override
-  String get tideWaveDuration => 'Длительность';
+  String get tideWaveDuration => 'Длительность (секунды)';
 
   @override
   String get tideWaveSubmarineMovingDistance => 'Расстояние подлодки';
 
   @override
-  String get tideWaveSpeedUpDuration => 'Ускорение длит.';
+  String get tideWaveSpeedUpDuration => 'Длительность ускорения (секунды)';
 
   @override
   String get tideWaveSpeedUpIncreased => 'Ускорение увел.';
 
   @override
-  String get tideWaveSubmarineMovingTime => 'Время подлодки';
+  String get tideWaveSubmarineMovingTime => 'Время движения подлодки (секунды)';
 
   @override
   String get tideWaveZombieMovingSpeed => 'Скорость зомби';
@@ -4152,7 +4192,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'GridY — ряд центра удара; GridXMin и GridXMax задают диапазон возможных центральных столбцов (с 0). Каждый удар покрывает область 3×3 вокруг центра. На предпросмотре выделены все клетки, которые могут быть затронуты. Глубокое море: ряды 0–5, столбцы 0–9.';
 
   @override
-  String get dinoTreadPreview => 'Предпросмотр области удара';
+  String get dinoTreadPreview => 'Предпросмотр возможной области удара';
 
   @override
   String get dinoTreadRowLabel => 'Ряд [GridY]';
@@ -4164,7 +4204,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dinoTreadColMaxLabel => 'Столбец макс [GridXMax]';
 
   @override
-  String get dinoTreadTimeIntervalLabel => 'Интервал [TimeInterval]';
+  String get dinoTreadTimeIntervalLabel =>
+      'Интервал появления (TimeInterval; секунды)';
 
   @override
   String get columnStartLabel => 'Начало [ColumnStart]';
@@ -4786,11 +4827,231 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cowboyMinigameHelpBeginStringBody =>
-      'Текст подсказки появляется вместе с предпросмотром зомби перед каждой посадкой. Стандартный текст в игре: «Посадите растение с конвейера, чтобы начать уровень!». Текст можно скрыть или заменить своим.';
+      'Текст подсказки появляется вместе с предпросмотром зомби перед каждой посадкой. Стандартный текст в игре: «Посадите растение с конвейера, чтобы начать уровень!». Текст можно заменить своим.';
 
   @override
   String get cowboyMinigameHelpTutorialBody =>
       'Если включить обучающий диалог, Безумный Дейв и Пенни появятся перед началом уровня и объяснят сюжет мини-игры. Диалог основан на первом прохождении 4-го дня Дикого Запада.';
+
+  @override
+  String get singleHandedTabLabel => 'В одиночку';
+
+  @override
+  String get singleHandedBasicParameters => 'Основные параметры';
+
+  @override
+  String get singleHandedOverviewBasicConfiguration => 'Базовая конфигурация';
+
+  @override
+  String get singleHandedMissileCount => 'Ракет за запуск';
+
+  @override
+  String get singleHandedMissileInterval => 'Интервал запуска ракет';
+
+  @override
+  String get singleHandedWarningTime => 'Время предупреждения';
+
+  @override
+  String get singleHandedRocketSpeed => 'Скорость ракеты';
+
+  @override
+  String get singleHandedZombieSpeedMultiplier => 'Множитель скорости зомби';
+
+  @override
+  String get singleHandedZombieHealthMultiplier => 'Множитель здоровья зомби';
+
+  @override
+  String get singleHandedSpecialMultiplierHint =>
+      'В особых волнах скорость и здоровье дополнительно умножаются от этих базовых значений.';
+
+  @override
+  String get singleHandedPlantConfiguration => 'Настройка растений';
+
+  @override
+  String get singleHandedPlantConfigurationInfo =>
+      'Начальное растение служит стартовым оружием и улучшается после нужного числа убийств.\nОно появляется в верхней левой клетке. Там должна стоять вагонетка, иначе уровень сразу считается проигранным.';
+
+  @override
+  String singleHandedInitialPlantSubtitle(String interval) {
+    return 'Начальное растение · Интервал атаки: $interval';
+  }
+
+  @override
+  String get singleHandedAttackInterval => 'Интервал атаки';
+
+  @override
+  String get singleHandedAttackIntervalHint =>
+      'Чем меньше интервал, тем выше скорость атаки.';
+
+  @override
+  String get singleHandedAddUpgradePlant => 'Добавить улучшенное растение';
+
+  @override
+  String get singleHandedNoUpgradePlants => 'Улучшенных растений пока нет.';
+
+  @override
+  String get singleHandedRequiredKills => 'Требуется убийств';
+
+  @override
+  String singleHandedEditUpgradePlant(String plantName) {
+    return 'Изменить: $plantName';
+  }
+
+  @override
+  String singleHandedUpgradePlantSubtitle(int kills, String interval) {
+    return 'Убийств: $kills · Интервал атаки: $interval';
+  }
+
+  @override
+  String get singleHandedSpecialWaves => 'Особые волны';
+
+  @override
+  String get singleHandedSpecialWavesInfo =>
+      'Используются для волн с боссами. Множители скорости и здоровья применяются поверх базовых значений выше.';
+
+  @override
+  String get singleHandedAddSpecialWave => 'Добавить особую волну';
+
+  @override
+  String get singleHandedNoSpecialWaves => 'Особых волн пока нет.';
+
+  @override
+  String get singleHandedSpecialWave => 'Особая волна';
+
+  @override
+  String get singleHandedWave => 'Волна';
+
+  @override
+  String get singleHandedSpeedMultiplier => 'Множитель скорости';
+
+  @override
+  String get singleHandedHealthMultiplier => 'Множитель здоровья';
+
+  @override
+  String get singleHandedShowHealthBar => 'Показывать шкалу здоровья';
+
+  @override
+  String singleHandedWaveNumber(int wave) {
+    return 'Волна $wave';
+  }
+
+  @override
+  String get singleHandedHealthBarEnabled => 'Шкала здоровья включена';
+
+  @override
+  String get singleHandedHealthBarDisabled => 'Шкала здоровья выключена';
+
+  @override
+  String singleHandedSpecialWaveSubtitle(String speed, String health) {
+    return 'Скорость x$speed · Здоровье x$health';
+  }
+
+  @override
+  String get singleHandedAddTutorial => 'Добавить обучение «В одиночку»';
+
+  @override
+  String get singleHandedConfigureTutorial => 'Настроить обучение «В одиночку»';
+
+  @override
+  String get singleHandedTutorialSettings => 'Настройки обучения «В одиночку»';
+
+  @override
+  String get singleHandedTutorialWaveForStartRocket => 'Волна появления ракет';
+
+  @override
+  String get singleHandedTutorialHelpTitle => 'Обучение «В одиночку»';
+
+  @override
+  String get singleHandedTutorialHelpPromptsTitle => 'Обучающие подсказки';
+
+  @override
+  String get singleHandedTutorialHelpPromptsBody =>
+      'После добавления этого модуля соответствующие обучающие подсказки появляются в начале уровня, при первом улучшении растения и при первом предупреждении о ракетах.';
+
+  @override
+  String get singleHandedTutorialHelpWaveTitle => 'Волна появления ракет';
+
+  @override
+  String get singleHandedTutorialHelpWaveBody =>
+      'Можно указать волну, с которой начинают появляться ракеты; отсчёт интервала запуска начинается с этой волны. Например, при интервале 30 секунд и начальной волне 7 первая группа ракет будет запущена через 30 секунд после начала волны 7.\nСам по себе этот модуль не вызывает падение ракет на заданной волне. Настройка начальной волны действует только вместе с модулем «В одиночку».';
+
+  @override
+  String get hamsterballGeneration => 'Логика появления';
+
+  @override
+  String get hamsterballTimeBeforeFullSpawn =>
+      'Время до полного появления (TimeBeforeFullSpawn; секунды)';
+
+  @override
+  String get hamsterballZombies => 'Зомби внутри шаров (Zombies)';
+
+  @override
+  String get hamsterballAddZombie => 'Добавить зомби';
+
+  @override
+  String get hamsterballEmptyZombies => 'В списке нет зомби';
+
+  @override
+  String get hamsterballZombieLevel => 'Уровень зомби';
+
+  @override
+  String get hamsterballInitialSpeed => 'Начальная скорость';
+
+  @override
+  String get hamsterballBehavior => 'Поведение';
+
+  @override
+  String get hamsterballBehaviorUniform => 'Постоянная скорость';
+
+  @override
+  String get hamsterballBehaviorSlowdown => 'Сначала быстро, затем медленно';
+
+  @override
+  String get hamsterballBehaviorChangeLane => 'Смена ряда при столкновении';
+
+  @override
+  String get hamsterballBehaviorDetailUniform =>
+      'движется с постоянной скоростью';
+
+  @override
+  String get hamsterballBehaviorDetailSlowdown =>
+      'сначала движется быстро, а после столкновения с растением замедляется';
+
+  @override
+  String get hamsterballBehaviorDetailChangeLane =>
+      'после столкновения с растением меняет ряд';
+
+  @override
+  String hamsterballBehaviorSummary(String value) {
+    return 'Поведение (Behavior): $value';
+  }
+
+  @override
+  String get hamsterballHasPlantfood => 'Несёт подкормку (HasPlantfood)';
+
+  @override
+  String get hamsterballHelpTitle => 'Описание события с хомячьими шарами';
+
+  @override
+  String get hamsterballHelpOverviewTitle => 'Краткое описание';
+
+  @override
+  String get hamsterballHelpOverviewBody =>
+      'Это событие-засада появилось в китайской версии в Тайном мире 12-летия. Оно вызывает катящиеся хомячьи шары, которые доставляют зомби на поле. У шаров есть три режима поведения, а растения на пути мгновенно уничтожаются.\nУ хомячьих шаров есть собственный запас здоровья. После разрушения они выпускают находившихся внутри зомби, и те продолжают движение. Шип-трава, Каменный шип и похожие растения могут проколоть шар и освободить зомби.';
+
+  @override
+  String get hamsterballHelpRangeTitle => 'Диапазон движения';
+
+  @override
+  String get hamsterballHelpRangeBody =>
+      'Диапазон движения шаров фиксирован: от столбца 0 до столбца 8. Эти поля не влияют на редактируемое содержимое и записываются редактором автоматически.';
+
+  @override
+  String get hamsterballHelpGenerationTitle => 'Логика появления';
+
+  @override
+  String get hamsterballHelpGenerationBody =>
+      'Размер группы задаёт число шаров в группе, а интервал — задержку между соседними группами. После достижения времени полного появления дополнительные группы не создаются, и все оставшиеся шары появляются сразу.';
 
   @override
   String get cowboyMinigameDependencyWarningTitle =>
@@ -5075,6 +5336,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unitSeconds => 'Ед.: секунды';
 
   @override
+  String propertyLabelSeconds(String name, String code) {
+    return '$name ($code; секунды)';
+  }
+
+  @override
   String get speedConditions => 'Скорость (SpeedConditions)';
 
   @override
@@ -5192,7 +5458,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get globalParameters => 'Глобальные параметры';
 
   @override
-  String get timePerGrid => 'Время на клетку';
+  String get timePerGrid => 'Время на клетку (секунды)';
 
   @override
   String get damagePerSecond => 'Урон в секунду';
@@ -5492,7 +5758,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groupSize => 'Размер группы';
 
   @override
-  String get timeBetweenGroups => 'Время между группами';
+  String get timeBetweenGroups =>
+      'Время между группами (TimeBetweenGroups; секунды)';
 
   @override
   String applyBatchLevelContent(int level) {
@@ -5580,7 +5847,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ztPerksViewStats => 'Показать параметры';
 
   @override
-  String get ztPerkPropDamageTakenInterval => 'Интервал получения урона';
+  String get ztPerkPropDamageTakenInterval =>
+      'Интервал получения урона (секунды)';
 
   @override
   String get ztPerkPropDamageTotalTaken => 'Суммарное число получений урона';
@@ -6039,13 +6307,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Применяется ко всем неэлитным зомби в этой волне.';
 
   @override
-  String get dropConfigPlants => 'Настройка дропа (растения)';
+  String get dropConfigPlants => 'Настройка дропа (пакеты семян)';
 
   @override
   String get dropConfigPlantFood => 'Настройка дропа (подкормка)';
 
   @override
   String get waveDropConfigTitle => 'Настройка дропа';
+
+  @override
+  String get waveDropPlantSelectionLabel =>
+      'Указанные пакеты семян для выпадения (SpawnPlantName)';
 
   @override
   String get waveDropTotalLabel => 'Всего зомби с дропом (AdditionalPlantfood)';
@@ -6056,7 +6328,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveDropIncreaseTotalBeforePlants =>
-      'Увеличьте общее число дропов перед добавлением растений.';
+      'Увеличьте общее число дропов перед добавлением пакетов семян.';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
@@ -6076,16 +6348,16 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count растений',
-      many: '$count растений',
-      few: '$count растения',
-      one: '1 растение',
+      other: '$count пакета семян',
+      many: '$count пакетов семян',
+      few: '$count пакета семян',
+      one: '1 пакет семян',
     );
     return '$_temp0';
   }
 
   @override
-  String get zombiesCarryingPlants => 'Зомби с растениями';
+  String get zombiesCarryingPlants => 'Зомби с пакетами семян';
 
   @override
   String get zombiesCarryingPlantFood => 'Зомби с подкормкой';
@@ -6100,7 +6372,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get count => 'Количество';
 
   @override
-  String get targetDistance => 'Целевая дистанция';
+  String get targetDistance => 'Расстояние до цветника (TargetDistance)';
+
+  @override
+  String get starChallengeTargetDistanceHint =>
+      'Значение задаёт число столбцов от левого края; чем оно больше, тем дальше от дома. Поддерживаются дробные числа.';
 
   @override
   String get targetSun => 'Целевое солнце';
@@ -6118,10 +6394,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get timeSeconds => 'Время (секунды)';
 
   @override
-  String get speedModifier => 'Модификатор скорости';
+  String get speedModifier => 'Множитель скорости (SpeedModifier)';
 
   @override
-  String get sunModifier => 'Модификатор солнца';
+  String get starChallengeSpeedModifierHint =>
+      'Значение 0,5 увеличивает скорость передвижения зомби на 50 %.';
+
+  @override
+  String get sunModifier => 'Снижение солнца (SunModifier)';
+
+  @override
+  String get starChallengeSunModifierHint =>
+      'Значение 0,2 уменьшает получение солнца на 20 %.';
+
+  @override
+  String get starChallengeChineseUnsupportedHint =>
+      'Китайские символы не поддерживаются.';
 
   @override
   String get maximumPlantsLost => 'Макс. потерянных растений';
@@ -6167,7 +6455,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get initialPotionCount => 'Начальное кол-во зелий';
 
   @override
-  String get operationTimePerGrid => 'Время на ячейку';
+  String get operationTimePerGrid => 'Время на ячейку (секунды)';
 
   @override
   String get levelLabel => 'Уровень: ';
@@ -6179,7 +6467,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sunDropParameters => 'Параметры падения солнца';
 
   @override
-  String get initialDropDelay => 'Начальная задержка падения';
+  String get initialDropDelay =>
+      'Начальная задержка падения (InitialSunDropDelay; секунды)';
 
   @override
   String get baseCountdown => 'Базовый обратный отсчёт';
@@ -6453,16 +6742,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paramAdjust => 'Настройка параметров';
 
   @override
-  String get firstDropDelay => 'Задержка первого падения';
+  String get firstDropDelay =>
+      'Задержка первого падения (InitialSunDropDelay; секунды)';
 
   @override
-  String get initialDropInterval => 'Начальный интервал падения';
+  String get initialDropInterval =>
+      'Начальный интервал падения (SunCountdownBase; секунды)';
 
   @override
-  String get maxDropInterval => 'Макс. интервал падения';
+  String get maxDropInterval =>
+      'Макс. интервал падения (SunCountdownMax; секунды)';
 
   @override
-  String get intervalFloatRange => 'Диапазон интервала';
+  String get intervalFloatRange =>
+      'Диапазон интервала (SunCountdownRange; секунды)';
 
   @override
   String get sunDropperHelpTitle => 'Модуль падающего солнца';
@@ -7114,7 +7407,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldTransferCooldown =>
-      'Перезарядка телепорта на зомби (transferCooldown)';
+      'Перезарядка телепорта на зомби (transferCooldown; секунды)';
 
   @override
   String get pvz1PassageHelpTransferCooldown =>
@@ -7122,7 +7415,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldRefreshTime =>
-      'Интервал смены позиций порталов (refreshTime)';
+      'Интервал смены позиций порталов (refreshTime; секунды)';
 
   @override
   String get pvz1PassageHelpRefreshTime =>
@@ -7503,7 +7796,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get heianWindModuleAppearances => 'Появления';
 
   @override
-  String get heianWindModuleWindDelay => 'Задержка ветра';
+  String get heianWindModuleWindDelay => 'Задержка ветра (WindDelay; секунды)';
 
   @override
   String get heianWindModuleWindDelayHint => 'unit: seconds';
@@ -7530,7 +7823,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get heianWindModuleDistanceHint => '1 tile = 50 units';
 
   @override
-  String get heianWindModuleMoveTime => 'Время движения';
+  String get heianWindModuleMoveTime => 'Время движения (MoveTime; секунды)';
 
   @override
   String get heianWindModuleMoveTimeHint => 'unit: seconds';
@@ -8720,8 +9013,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Задаёт количество зомби на этой волне, которые несут и оставляют подкормку.';
 
   @override
-  String waveGeneratorFixedSummary(int count, int rows) {
-    return 'Фиксированный спавн: $count · Рядов: $rows';
+  String waveGeneratorFixedSummary(int count) {
+    return 'Гарантированное появление зомби: $count';
   }
 
   @override
@@ -9308,7 +9601,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleDesc_RadiationMeteorModuleProperties =>
-      'Обрушивает метеориты, уничтожающие растения и заражающие соседние клетки';
+      'Обрушивает метеориты, уничтожающие боевые единицы и заражающие соседние клетки';
 
   @override
   String get eventTitle_SpawnRocketLandingWaveActionProps => 'Посадка ракеты';
@@ -9501,6 +9794,16 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get powerUpsHelpOverview =>
       'Эта увлекательная механика триумфально вернулась в Тайном мире 13-й годовщины и позволяет уничтожать зомби особыми жестами, пока действует усилитель. После включения модуля можно задать точное число бесплатных применений каждого усилителя на уровне. Обратите внимание: Power Snow и Power Flame из международной версии отсутствуют в китайской версии.';
+
+  @override
+  String get powerUpsAddTitle => 'Добавить усилитель';
+
+  @override
+  String get powerUpsOrder => 'Порядок';
+
+  @override
+  String get powerUpsOrderInfo =>
+      'Усилители появляются в игре в указанном здесь порядке. Перетаскивайте маркеры ⋮⋮, чтобы изменить порядок. Удалённый из списка усилитель не появится в игре; при необходимости его можно снова добавить в этом модуле.';
 
   @override
   String get powerUpsFreeUseCount => 'Бесплатные применения (FreeUseCount)';

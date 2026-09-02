@@ -129,4 +129,31 @@ void main() {
     );
     expect(toggle.onChanged, isNull);
   });
+
+  testWidgets('read-only scalar values stay aligned to the trailing edge', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 800,
+            child: ZombossMechReadOnlyValueRow(
+              key: ValueKey('readOnlyMinColumn'),
+              label: 'Min column',
+              value: '6',
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final rowRect = tester.getRect(
+      find.byKey(const ValueKey('readOnlyMinColumn')),
+    );
+    final valueRect = tester.getRect(find.text('6'));
+    expect(rowRect.right - valueRect.right, lessThanOrEqualTo(1));
+    expect(tester.takeException(), isNull);
+  });
 }

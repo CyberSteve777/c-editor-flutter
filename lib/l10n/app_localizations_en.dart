@@ -658,7 +658,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importProgressTitle => 'Importing files…';
 
   @override
-  String get exportProgressTitle => 'Building data package…';
+  String get exportProgressTitle => 'Exporting files…';
+
+  @override
+  String get exportPackageProgressTitle => 'Exporting data package…';
 
   @override
   String get backupProgressTitle => 'Creating backup…';
@@ -783,6 +786,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportAssignmentProposalTitle => 'Level Distribution';
 
   @override
+  String get exportDifficultyReplacementNotice =>
+      'If the Normal Mode and Hard/Expert Mode in the target level slot are actually different levels, the editor replaces only the Normal Mode level.';
+
+  @override
   String get exportWorld => 'World';
 
   @override
@@ -801,7 +808,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String exportSuccessMessage(String file) {
-    return 'The level testing mod has been successfully built at $file.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced. \nNote: If the game crashes immediately on startup after the replacement, the level itself is most likely the cause.';
+    return 'The level testing mod has been successfully built at $file.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced.\nNote: 1. Before replacing the file, fully close the game process.\n2. After the replacement and before entering the game, fully close the editor and any file manager currently accessing the target directory.';
   }
 
   @override
@@ -1800,13 +1807,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waveManagerTimeControl => 'Time control';
 
   @override
-  String get waveManagerFirstWaveDelayConveyor => 'First wave delay (conveyor)';
+  String get waveManagerFirstWaveDelayConveyor =>
+      'First wave delay (conveyor; seconds)';
 
   @override
-  String get waveManagerFirstWaveDelayNormal => 'First wave delay (normal)';
+  String get waveManagerFirstWaveDelayNormal =>
+      'First wave delay (normal; seconds)';
 
   @override
-  String get waveManagerFlagWaveDelay => 'Flag wave delay';
+  String get waveManagerFlagWaveDelay => 'Flag wave delay (seconds)';
 
   @override
   String get waveManagerConveyorDetected =>
@@ -2018,6 +2027,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get conflictDesc_CowboyIntro =>
       'Not OK Corral conflicts with the Intro Animation module. Using them together will cause the zombie preview and transition effect at the start of the level to behave incorrectly.';
+
+  @override
+  String get conflictDesc_SingleHandedIntro =>
+      'All by Oneself conflicts with the Intro Animation module. Using them together will cause the transition effect at the start of the level to behave incorrectly.';
+
+  @override
+  String get conflictDesc_SingleHandedTutorialIntro =>
+      'The All by Oneself Tutorial conflicts with the Intro Animation module. Using them together will cause the transition effect at the start of the level to behave incorrectly.';
 
   @override
   String get conflictDesc_EvilDaveZombieDrop =>
@@ -2375,7 +2392,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowInterval =>
-      'Swallow Interval (SwallowInterval, unit: seconds)';
+      'Swallow Interval (SwallowInterval, seconds)';
 
   @override
   String get spermWhaleModuleHelpSwallowInterval =>
@@ -2383,7 +2400,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModulePoisonSwallowInterval =>
-      'Rotenone Swallow Interval (PoisonSwallowInterval, unit: seconds)';
+      'Rotenone Swallow Interval (PoisonSwallowInterval, seconds)';
 
   @override
   String get spermWhaleModuleHelpPoisonSwallowInterval =>
@@ -2391,7 +2408,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spermWhaleModuleSwallowDuration =>
-      'Swallow Duration (SwallowDuration, unit: seconds)';
+      'Swallow Duration (SwallowDuration, seconds)';
 
   @override
   String get spermWhaleModuleHelpSwallowDuration =>
@@ -2587,6 +2604,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moduleDesc_CowboyMinigameProperties =>
       'Starts each zombie wave only after a plant from the conveyor belt is planted';
+
+  @override
+  String get moduleTitle_SingleHandedProperties => 'All by Oneself';
+
+  @override
+  String get moduleDesc_SingleHandedProperties =>
+      'Configures the basic properties of the All by Oneself minigame';
+
+  @override
+  String get moduleTitle_IntroSingleHandedProperties =>
+      'All by Oneself Tutorial';
+
+  @override
+  String get moduleDesc_IntroSingleHandedProperties =>
+      'Configures tutorial prompts for the All by Oneself minigame';
 
   @override
   String get moduleTitle_PVZ1OverwhelmModuleProperties =>
@@ -3123,6 +3155,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Spawns an ice cream van in a lane and configures the zombies inside';
 
   @override
+  String get eventTitle_HamsterZombieSpawnerProps => 'Zombie Hamsterball';
+
+  @override
+  String get eventDesc_HamsterZombieSpawnerProps =>
+      'Rolls hamsterballs that carry zombies onto the lawn';
+
+  @override
   String get eventTitle_BungeeWaveActionProps => 'Bungee Drop';
 
   @override
@@ -3376,7 +3415,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show health bar on damage (EnableShowHealthBar)';
 
   @override
-  String get drawHealthBarTime => 'Health bar duration (DrawHealthBarTime)';
+  String get drawHealthBarTime =>
+      'Health bar duration (DrawHealthBarTime; seconds)';
 
   @override
   String get enableEliteScale => 'Enable elite scaling (EnableEliteScale)';
@@ -3689,6 +3729,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collectable => 'Collectible (Plant Food)';
 
   @override
+  String get plantFood => 'Plant Food';
+
+  @override
   String get selectGridItem => 'Select grid item';
 
   @override
@@ -3920,7 +3963,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tideWaveTypeRight => 'Right';
 
   @override
-  String get tideWaveDuration => 'Duration';
+  String get tideWaveDuration => 'Duration (seconds)';
 
   @override
   String get tideWaveSubmarineMovingDistance =>
@@ -4181,7 +4224,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'GridY is the stomp center row; GridXMin and GridXMax bound the possible center columns (all 0-based). Each stomp covers a 3×3 area around its center. The preview highlights every cell that can be stomped across those positions. Underwater World: rows 0–5, columns 0–9.';
 
   @override
-  String get dinoTreadPreview => 'Stomp area preview';
+  String get dinoTreadPreview => 'Possible stomp area preview';
 
   @override
   String get dinoTreadRowLabel => 'Row (GridY)';
@@ -4193,7 +4236,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dinoTreadColMaxLabel => 'Rightmost Column (GridXMax)';
 
   @override
-  String get dinoTreadTimeIntervalLabel => 'Entry Delay (TimeInterval)';
+  String get dinoTreadTimeIntervalLabel =>
+      'Entry delay (TimeInterval; seconds)';
 
   @override
   String get columnStartLabel => 'Start Column (ColumnStart)';
@@ -4721,8 +4765,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select a tile, then tap \"+\" to place a sewer manhole. Each manhole can have its eruption time (StartTime) configured independently, determining how long after the level begins its cover is blasted off and toxic steam is released.';
 
   @override
-  String get smokePollutionModuleStartTimeLabel =>
-      'Eruption time (unit: seconds)';
+  String get smokePollutionModuleStartTimeLabel => 'Eruption time (seconds)';
 
   @override
   String manholePipelineStartEndFormat(int sx, int sy, int ex, int ey) {
@@ -4823,11 +4866,234 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cowboyMinigameHelpBeginStringBody =>
-      'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be hidden or replaced with custom text.';
+      'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be replaced with custom text.';
 
   @override
   String get cowboyMinigameHelpTutorialBody =>
       'When Show Tutorial Dialogue is enabled, Crazy Dave and Penny appear before the level and explain the minigame through dialogue based on the first-play conversation from Wild West - Day 4.';
+
+  @override
+  String get singleHandedTabLabel => 'All by Oneself';
+
+  @override
+  String get singleHandedBasicParameters => 'Basic Parameters';
+
+  @override
+  String get singleHandedOverviewBasicConfiguration => 'Basic Configuration';
+
+  @override
+  String get singleHandedMissileCount => 'Missiles per launch';
+
+  @override
+  String get singleHandedMissileInterval => 'Missile launch interval';
+
+  @override
+  String get singleHandedWarningTime => 'Warning time';
+
+  @override
+  String get singleHandedRocketSpeed => 'Missile speed';
+
+  @override
+  String get singleHandedZombieSpeedMultiplier => 'Zombie speed multiplier';
+
+  @override
+  String get singleHandedZombieHealthMultiplier => 'Zombie health multiplier';
+
+  @override
+  String get singleHandedSpecialMultiplierHint =>
+      'Speed and health in special waves are multiplied again from these base values.';
+
+  @override
+  String get singleHandedPlantConfiguration => 'Plant Configuration';
+
+  @override
+  String get singleHandedPlantConfigurationInfo =>
+      'The initial plant is the starting weapon and upgrades automatically after the required number of kills.\nThe initial plant appears in the upper-left tile. A minecart must be placed there, or the game immediately counts the level as failed.';
+
+  @override
+  String singleHandedInitialPlantSubtitle(String interval) {
+    return 'Initial plant · Attack interval: $interval';
+  }
+
+  @override
+  String get singleHandedAttackInterval => 'Attack interval';
+
+  @override
+  String get singleHandedAttackIntervalHint =>
+      'A smaller attack interval means a faster attack speed.';
+
+  @override
+  String get singleHandedAddUpgradePlant => 'Add Upgrade Plant';
+
+  @override
+  String get singleHandedNoUpgradePlants =>
+      'No upgrade plants yet. Add one to begin.';
+
+  @override
+  String get singleHandedRequiredKills => 'Required kills';
+
+  @override
+  String singleHandedEditUpgradePlant(String plantName) {
+    return 'Edit: $plantName';
+  }
+
+  @override
+  String singleHandedUpgradePlantSubtitle(int kills, String interval) {
+    return 'Kills: $kills · Attack interval: $interval';
+  }
+
+  @override
+  String get singleHandedSpecialWaves => 'Special Waves';
+
+  @override
+  String get singleHandedSpecialWavesInfo =>
+      'Use these for Boss waves. Speed and health multipliers are applied on top of the base values above.';
+
+  @override
+  String get singleHandedAddSpecialWave => 'Add Special Wave';
+
+  @override
+  String get singleHandedNoSpecialWaves =>
+      'No special waves yet. Add one to begin.';
+
+  @override
+  String get singleHandedSpecialWave => 'Special Wave';
+
+  @override
+  String get singleHandedWave => 'Wave';
+
+  @override
+  String get singleHandedSpeedMultiplier => 'Speed multiplier';
+
+  @override
+  String get singleHandedHealthMultiplier => 'Health multiplier';
+
+  @override
+  String get singleHandedShowHealthBar => 'Show health bar';
+
+  @override
+  String singleHandedWaveNumber(int wave) {
+    return 'Wave $wave';
+  }
+
+  @override
+  String get singleHandedHealthBarEnabled => 'Health bar on';
+
+  @override
+  String get singleHandedHealthBarDisabled => 'Health bar off';
+
+  @override
+  String singleHandedSpecialWaveSubtitle(String speed, String health) {
+    return 'Speed x$speed · Health x$health';
+  }
+
+  @override
+  String get singleHandedAddTutorial => 'Add All by Oneself Tutorial';
+
+  @override
+  String get singleHandedConfigureTutorial =>
+      'Configure All by Oneself Tutorial';
+
+  @override
+  String get singleHandedTutorialSettings => 'All by Oneself Tutorial Settings';
+
+  @override
+  String get singleHandedTutorialWaveForStartRocket =>
+      'Missiles start from wave';
+
+  @override
+  String get singleHandedTutorialHelpTitle => 'All by Oneself Tutorial';
+
+  @override
+  String get singleHandedTutorialHelpPromptsTitle => 'Tutorial Prompts';
+
+  @override
+  String get singleHandedTutorialHelpPromptsBody =>
+      'After this module is added, matching tutorial prompts appear at the start of the level, when a plant is upgraded for the first time, and when the first missile warning occurs.';
+
+  @override
+  String get singleHandedTutorialHelpWaveTitle => 'Missile Starting Wave';
+
+  @override
+  String get singleHandedTutorialHelpWaveBody =>
+      'You can choose the wave from which missiles begin appearing; the launch interval is counted starting from that wave. For example, with a 30-second missile interval and a starting wave of 7, the first missiles launch 30 seconds after wave 7 begins.\nNote that adding this module by itself does not make missiles fall on the configured wave. The missile starting-wave setting only takes effect together with the All by Oneself module.';
+
+  @override
+  String get hamsterballGeneration => 'Spawn Logic';
+
+  @override
+  String get hamsterballTimeBeforeFullSpawn =>
+      'Time to full spawn (TimeBeforeFullSpawn; seconds)';
+
+  @override
+  String get hamsterballZombies => 'Zombies inside hamsterballs (Zombies)';
+
+  @override
+  String get hamsterballAddZombie => 'Add zombie';
+
+  @override
+  String get hamsterballEmptyZombies => 'No zombies in the list';
+
+  @override
+  String get hamsterballZombieLevel => 'Zombie level';
+
+  @override
+  String get hamsterballInitialSpeed => 'Initial speed';
+
+  @override
+  String get hamsterballBehavior => 'Behavior';
+
+  @override
+  String get hamsterballBehaviorUniform => 'Constant speed';
+
+  @override
+  String get hamsterballBehaviorSlowdown => 'Fast, then slow';
+
+  @override
+  String get hamsterballBehaviorChangeLane => 'Change lane on impact';
+
+  @override
+  String get hamsterballBehaviorDetailUniform => 'moves at a constant speed';
+
+  @override
+  String get hamsterballBehaviorDetailSlowdown =>
+      'starts fast, then slows down after hitting a plant';
+
+  @override
+  String get hamsterballBehaviorDetailChangeLane =>
+      'changes lane after hitting a plant';
+
+  @override
+  String hamsterballBehaviorSummary(String value) {
+    return 'Behavior: $value';
+  }
+
+  @override
+  String get hamsterballHasPlantfood => 'Carries Plant Food (HasPlantfood)';
+
+  @override
+  String get hamsterballHelpTitle => 'Hamsterball Event Help';
+
+  @override
+  String get hamsterballHelpOverviewTitle => 'Overview';
+
+  @override
+  String get hamsterballHelpOverviewBody =>
+      'Introduced to the Chinese version in the 12th Anniversary Secret Realm, this ambush event summons rolling hamsterballs that carry zombies onto the lawn. Hamsterballs have three behavior modes, and plants run over along the way are destroyed immediately.\nHamsterballs have their own health. When broken, they release the zombies inside so they can continue advancing. Spikeweed, Spikerock, and similar plants can puncture hamsterballs and release their passengers.';
+
+  @override
+  String get hamsterballHelpRangeTitle => 'Rolling Range';
+
+  @override
+  String get hamsterballHelpRangeBody =>
+      'The hamsterball rolling range is fixed from column 0 through column 8. These fields do not affect the editable content and are written silently by the editor.';
+
+  @override
+  String get hamsterballHelpGenerationTitle => 'Spawn Logic';
+
+  @override
+  String get hamsterballHelpGenerationBody =>
+      'Group size controls how many hamsterballs appear in each group, while the group interval controls the delay between adjacent groups. Once the full-spawn time is reached, no extra groups are formed and all remaining hamsterballs spawn immediately.';
 
   @override
   String get cowboyMinigameDependencyWarningTitle => 'Required module missing';
@@ -5111,6 +5377,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitSeconds => 'Unit: seconds';
+
+  @override
+  String propertyLabelSeconds(String name, String code) {
+    return '$name ($code; seconds)';
+  }
 
   @override
   String get speedConditions => 'Conveyor speed (SpeedConditions)';
@@ -5622,7 +5893,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ztPerksViewStats => 'View Stats';
 
   @override
-  String get ztPerkPropDamageTakenInterval => 'Damage interval';
+  String get ztPerkPropDamageTakenInterval => 'Damage interval (seconds)';
 
   @override
   String get ztPerkPropDamageTotalTaken => 'Cumulative damage instances taken';
@@ -6084,13 +6355,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sets all zombies in this wave to the specified level (elite zombies are unaffected and retain their default level).';
 
   @override
-  String get dropConfigPlants => 'Drop Configuration (seed packets)';
+  String get dropConfigPlants => 'Drop configuration (seed packet)';
 
   @override
-  String get dropConfigPlantFood => 'Drop config (Plant Food)';
+  String get dropConfigPlantFood => 'Drop configuration (Plant Food)';
 
   @override
   String get waveDropConfigTitle => 'Drop configuration';
+
+  @override
+  String get waveDropPlantSelectionLabel =>
+      'Specified seed packet drops (SpawnPlantName)';
 
   @override
   String get waveDropTotalLabel => 'Total drops (AdditionalPlantfood)';
@@ -6101,15 +6376,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveDropIncreaseTotalBeforePlants =>
-      'Increase total drops before adding plants.';
+      'Increase total drops before adding seed packets.';
 
   @override
   String waveDropPlantFoodOnlyCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count plant food',
-      one: '1 plant food',
+      other: '$count Plant Foods',
+      one: '1 Plant Food',
     );
     return '$_temp0';
   }
@@ -6119,8 +6394,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count plants',
-      one: '1 plant',
+      other: '$count seed packets',
+      one: '1 seed packet',
     );
     return '$_temp0';
   }
@@ -6141,8 +6416,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get count => 'Count';
 
   @override
-  String get targetDistance =>
-      'Flowerbed Distance (TargetDistance) — Distance from the left edge (in columns); higher values are closer to the house; supports decimals';
+  String get targetDistance => 'Flowerbed Distance (TargetDistance)';
+
+  @override
+  String get starChallengeTargetDistanceHint =>
+      'The value is the number of columns from the left edge; larger values are farther from the house. Decimals are supported.';
 
   @override
   String get targetSun => 'Target Sun';
@@ -6160,12 +6438,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeSeconds => 'Time Limit (seconds)';
 
   @override
-  String get speedModifier =>
-      'Speed Multiplier (SpeedModifier) — e.g. 0.5 = +50% zombie speed';
+  String get speedModifier => 'Speed Multiplier (SpeedModifier)';
 
   @override
-  String get sunModifier =>
-      'Sun Reduction (SunModifier) — e.g. 0.2 = −20% sun gain';
+  String get starChallengeSpeedModifierHint =>
+      'Entering 0.5 increases zombie movement speed by 50%.';
+
+  @override
+  String get sunModifier => 'Sun Reduction (SunModifier)';
+
+  @override
+  String get starChallengeSunModifierHint =>
+      'Entering 0.2 reduces Sun gained by 20%.';
+
+  @override
+  String get starChallengeChineseUnsupportedHint =>
+      'Chinese characters are not supported.';
 
   @override
   String get maximumPlantsLost => 'Maximum Plants Lost';
@@ -6223,7 +6511,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sunDropParameters => 'Sun drop parameters';
 
   @override
-  String get initialDropDelay => 'Initial drop delay (InitialSunDropDelay)';
+  String get initialDropDelay =>
+      'Initial drop delay (InitialSunDropDelay; seconds)';
 
   @override
   String get baseCountdown => 'Base drop interval (SunCountdownBase)';
@@ -6497,17 +6786,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paramAdjust => 'Parameter adjustment';
 
   @override
-  String get firstDropDelay => 'Initial drop delay (InitialSunDropDelay)';
+  String get firstDropDelay =>
+      'Initial drop delay (InitialSunDropDelay; seconds)';
 
   @override
-  String get initialDropInterval => 'Initial drop interval (SunCountdownBase)';
+  String get initialDropInterval =>
+      'Initial drop interval (SunCountdownBase; seconds)';
 
   @override
-  String get maxDropInterval => 'Max drop interval (SunCountdownMax)';
+  String get maxDropInterval => 'Max drop interval (SunCountdownMax; seconds)';
 
   @override
   String get intervalFloatRange =>
-      'Interval variation range (SunCountdownRange)';
+      'Interval variation range (SunCountdownRange; seconds)';
 
   @override
   String get sunDropperHelpTitle => 'Sun Dropper module';
@@ -6707,7 +6998,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tunnelDefendSequenceInterval =>
-      'Pathway Generation Interval (TunnelSequenceInterval, unit: seconds)';
+      'Pathway Generation Interval (TunnelSequenceInterval, seconds)';
 
   @override
   String get tunnelDefendHelpSequenceInterval => 'Pathway Generation Interval';
@@ -6848,7 +7139,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finalStageTimeLimitedChallengeTimeLimit =>
-      'Sword Swing Countdown (ZombossTimeLimit, unit: seconds)';
+      'Sword Swing Countdown (ZombossTimeLimit, seconds)';
 
   @override
   String get moduleTitle_LawnMowerProperties => 'Lawn Mowers';
@@ -6906,7 +7197,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get witchModuleSpawnInterval =>
-      'Witch spawn interval (WitchSpawnInterval, unit: seconds)';
+      'Witch spawn interval (WitchSpawnInterval, seconds)';
 
   @override
   String get gulliverTunnelTitle => 'Gulliver Tunnels';
@@ -7160,7 +7451,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldTransferCooldown =>
-      'Same-zombie teleport cooldown (transferCooldown, unit: seconds)';
+      'Same-zombie teleport cooldown (transferCooldown, seconds)';
 
   @override
   String get pvz1PassageHelpTransferCooldown =>
@@ -7168,7 +7459,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pvz1PassageFieldRefreshTime =>
-      'Portal reposition interval (refreshTime, unit: seconds)';
+      'Portal reposition interval (refreshTime, seconds)';
 
   @override
   String get pvz1PassageHelpRefreshTime =>
@@ -7342,7 +7633,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_GlacierModuleProperties =>
-      'Configure the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss';
+      'Configures the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss';
 
   @override
   String get glacierModuleTitle => 'Ice Chunk module';
@@ -7545,10 +7836,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleAppearances => 'Summon Batches';
 
   @override
-  String get heianWindModuleWindDelay => 'Time between wind spawns (WindDelay)';
+  String get heianWindModuleWindDelay =>
+      'Time between wind spawns (WindDelay; seconds)';
 
   @override
-  String get heianWindModuleWindDelayHint => 'unit: seconds';
+  String get heianWindModuleWindDelayHint => 'seconds';
 
   @override
   String get heianWindModuleWindEntries => 'Wind configurations';
@@ -7573,10 +7865,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heianWindModuleDistanceHint => '1 tile = 50 units';
 
   @override
-  String get heianWindModuleMoveTime => 'Move Duration (MoveTime)';
+  String get heianWindModuleMoveTime => 'Move duration (MoveTime; seconds)';
 
   @override
-  String get heianWindModuleMoveTimeHint => 'unit: seconds';
+  String get heianWindModuleMoveTimeHint => 'seconds';
 
   @override
   String get heianWindModuleExpectationLabel => 'Divine Wind Settings';
@@ -8761,20 +9053,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sets the number of zombies in this wave that carry and drop Plant Food.';
 
   @override
-  String waveGeneratorFixedSummary(int count, int rows) {
+  String waveGeneratorFixedSummary(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count fixed spawns',
-      one: '1 fixed spawn',
+      other: '$count zombies are guaranteed to appear',
+      one: '1 zombie is guaranteed to appear',
     );
-    String _temp1 = intl.Intl.pluralLogic(
-      rows,
-      locale: localeName,
-      other: '$rows rows',
-      one: '1 row',
-    );
-    return '$_temp0 · $_temp1';
+    return '$_temp0';
   }
 
   @override
@@ -9383,7 +9669,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_RadiationMeteorModuleProperties =>
-      'Drops meteorites that destroy plants and contaminate surrounding tiles';
+      'Drops meteorites that destroy units and contaminate surrounding tiles';
 
   @override
   String get eventTitle_SpawnRocketLandingWaveActionProps => 'Rocket Landing';
@@ -9425,7 +9711,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moonPenaltyCountdown =>
-      'Hibernation countdown (PenaltyCountdown, unit: seconds)';
+      'Hibernation countdown (PenaltyCountdown, seconds)';
 
   @override
   String get moonPlantImmunityList =>
@@ -9454,7 +9740,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lunarTerminalCollectorCooldown =>
-      'Robot deployment cooldown (CollectorCooldown, unit: seconds)';
+      'Robot deployment cooldown (CollectorCooldown, seconds)';
 
   @override
   String get lunarMineVeinHelpTitle => 'Lunar Veins';
@@ -9506,15 +9792,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get radiationMeteorWarningDuration =>
-      'Warning duration (WarningDuration, unit: seconds)';
+      'Warning duration (WarningDuration, seconds)';
 
   @override
   String get radiationMeteorPollutionInterval =>
-      'Contamination interval (PollutionInterval, unit: seconds)';
+      'Contamination interval (PollutionInterval, seconds)';
 
   @override
   String get radiationMeteorMiningDuration =>
-      'Required mining duration (MiningDurationRequired, unit: seconds)';
+      'Required mining duration (MiningDurationRequired, seconds)';
 
   @override
   String get radiationMeteorPowerReward =>
@@ -9557,8 +9843,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rocketSpawnCount => 'Total grid items to spawn (SpawnCount)';
 
   @override
-  String get rocketSpawnInterval =>
-      'Spawn interval (SpawnInterval, unit: seconds)';
+  String get rocketSpawnInterval => 'Spawn interval (SpawnInterval, seconds)';
 
   @override
   String get moduleTitle_LevelPowerupModuleProperties => 'Power Ups';
@@ -9573,6 +9858,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get powerUpsHelpOverview =>
       'This wonderfully interesting mechanic makes a major return in the 13th Anniversary Secret Realm, allowing players to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.';
+
+  @override
+  String get powerUpsAddTitle => 'Add Power Up';
+
+  @override
+  String get powerUpsOrder => 'Order';
+
+  @override
+  String get powerUpsOrderInfo =>
+      'Power Ups appear in the game in the order shown here. Drag the ⋮⋮ handles to reorder them. Removing a Power Up from the list prevents it from appearing in the game; it can be added back in this module whenever needed.';
 
   @override
   String get powerUpsFreeUseCount => 'Free uses (FreeUseCount)';

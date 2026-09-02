@@ -77,6 +77,11 @@ Future<void> showRiftThemeDetailsDialog(
       final targetCardWidth = useSingleColumn
           ? availableContentWidth
           : compactCardWidth;
+      final targetColumnCount = useSingleColumn
+          ? 1
+          : ((availableContentWidth + cardSpacing) /
+                    (compactCardWidth + cardSpacing))
+                .floor();
       return AlertDialog(
         title: Row(
           children: [
@@ -144,19 +149,13 @@ Future<void> showRiftThemeDetailsDialog(
                       ),
                     )
                   else
-                    Wrap(
+                    _TargetCardRows(
+                      ids: targetList.ids,
+                      type: targetList.type,
+                      colorScheme: colorScheme,
+                      cardWidth: targetCardWidth,
+                      columnCount: targetColumnCount,
                       spacing: cardSpacing,
-                      runSpacing: cardSpacing,
-                      children: targetList.ids
-                          .map(
-                            (id) => _TargetCard(
-                              id: id.trim(),
-                              type: targetList.type,
-                              colorScheme: colorScheme,
-                              width: targetCardWidth,
-                            ),
-                          )
-                          .toList(),
                     ),
                 ],
               ],
@@ -172,6 +171,63 @@ Future<void> showRiftThemeDetailsDialog(
       );
     },
   );
+}
+
+class _TargetCardRows extends StatelessWidget {
+  const _TargetCardRows({
+    required this.ids,
+    required this.type,
+    required this.colorScheme,
+    required this.cardWidth,
+    required this.columnCount,
+    required this.spacing,
+  });
+
+  final List<String> ids;
+  final RiftThemeTargetType type;
+  final ColorScheme colorScheme;
+  final double cardWidth;
+  final int columnCount;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = <List<String>>[];
+    for (var start = 0; start < ids.length; start += columnCount) {
+      final next = start + columnCount;
+      final end = next < ids.length ? next : ids.length;
+      rows.add(ids.sublist(start, end));
+    }
+
+    return Column(
+      children: [
+        for (var rowIndex = 0; rowIndex < rows.length; rowIndex++) ...[
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var column = 0; column < columnCount; column++) ...[
+                  if (column > 0) SizedBox(width: spacing),
+                  SizedBox(
+                    width: cardWidth,
+                    child: column < rows[rowIndex].length
+                        ? _TargetCard(
+                            id: rows[rowIndex][column].trim(),
+                            type: type,
+                            colorScheme: colorScheme,
+                            width: double.infinity,
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (rowIndex < rows.length - 1) SizedBox(height: spacing),
+        ],
+      ],
+    );
+  }
 }
 
 String _resourceLabel(BuildContext context, String key, String fallback) {
@@ -229,6 +285,7 @@ class _TargetCard extends StatelessWidget {
       child: Container(
         key: ValueKey('riftThemeTarget-$id'),
         width: width,
+        alignment: Alignment.centerLeft,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),

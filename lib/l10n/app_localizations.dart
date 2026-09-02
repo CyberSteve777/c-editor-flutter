@@ -1267,8 +1267,14 @@ abstract class AppLocalizations {
   /// No description provided for @exportProgressTitle.
   ///
   /// In en, this message translates to:
-  /// **'Building data package…'**
+  /// **'Exporting files…'**
   String get exportProgressTitle;
+
+  /// No description provided for @exportPackageProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting data package…'**
+  String get exportPackageProgressTitle;
 
   /// No description provided for @backupProgressTitle.
   ///
@@ -1498,6 +1504,12 @@ abstract class AppLocalizations {
   /// **'Level Distribution'**
   String get exportAssignmentProposalTitle;
 
+  /// No description provided for @exportDifficultyReplacementNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'If the Normal Mode and Hard/Expert Mode in the target level slot are actually different levels, the editor replaces only the Normal Mode level.'**
+  String get exportDifficultyReplacementNotice;
+
   /// No description provided for @exportWorld.
   ///
   /// In en, this message translates to:
@@ -1531,7 +1543,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportSuccessMessage.
   ///
   /// In en, this message translates to:
-  /// **'The level testing mod has been successfully built at {file}.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced. \nNote: If the game crashes immediately on startup after the replacement, the level itself is most likely the cause.'**
+  /// **'The level testing mod has been successfully built at {file}.\nReplace the corresponding game file with the generated data package, then enter your custom level from the original level slot that was replaced.\nNote: 1. Before replacing the file, fully close the game process.\n2. After the replacement and before entering the game, fully close the editor and any file manager currently accessing the target directory.'**
   String exportSuccessMessage(String file);
 
   /// No description provided for @exportCancelled.
@@ -3349,19 +3361,19 @@ abstract class AppLocalizations {
   /// No description provided for @waveManagerFirstWaveDelayConveyor.
   ///
   /// In en, this message translates to:
-  /// **'First wave delay (conveyor)'**
+  /// **'First wave delay (conveyor; seconds)'**
   String get waveManagerFirstWaveDelayConveyor;
 
   /// No description provided for @waveManagerFirstWaveDelayNormal.
   ///
   /// In en, this message translates to:
-  /// **'First wave delay (normal)'**
+  /// **'First wave delay (normal; seconds)'**
   String get waveManagerFirstWaveDelayNormal;
 
   /// No description provided for @waveManagerFlagWaveDelay.
   ///
   /// In en, this message translates to:
-  /// **'Flag wave delay'**
+  /// **'Flag wave delay (seconds)'**
   String get waveManagerFlagWaveDelay;
 
   /// No description provided for @waveManagerConveyorDetected.
@@ -3735,6 +3747,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not OK Corral conflicts with the Intro Animation module. Using them together will cause the zombie preview and transition effect at the start of the level to behave incorrectly.'**
   String get conflictDesc_CowboyIntro;
+
+  /// No description provided for @conflictDesc_SingleHandedIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'All by Oneself conflicts with the Intro Animation module. Using them together will cause the transition effect at the start of the level to behave incorrectly.'**
+  String get conflictDesc_SingleHandedIntro;
+
+  /// No description provided for @conflictDesc_SingleHandedTutorialIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'The All by Oneself Tutorial conflicts with the Intro Animation module. Using them together will cause the transition effect at the start of the level to behave incorrectly.'**
+  String get conflictDesc_SingleHandedTutorialIntro;
 
   /// No description provided for @conflictDesc_EvilDaveZombieDrop.
   ///
@@ -4339,7 +4363,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Swallow Interval (SwallowInterval, unit: seconds)'**
+  /// **'Swallow Interval (SwallowInterval, seconds)'**
   String get spermWhaleModuleSwallowInterval;
 
   /// No description provided for @spermWhaleModuleHelpSwallowInterval.
@@ -4351,7 +4375,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModulePoisonSwallowInterval.
   ///
   /// In en, this message translates to:
-  /// **'Rotenone Swallow Interval (PoisonSwallowInterval, unit: seconds)'**
+  /// **'Rotenone Swallow Interval (PoisonSwallowInterval, seconds)'**
   String get spermWhaleModulePoisonSwallowInterval;
 
   /// No description provided for @spermWhaleModuleHelpPoisonSwallowInterval.
@@ -4363,7 +4387,7 @@ abstract class AppLocalizations {
   /// No description provided for @spermWhaleModuleSwallowDuration.
   ///
   /// In en, this message translates to:
-  /// **'Swallow Duration (SwallowDuration, unit: seconds)'**
+  /// **'Swallow Duration (SwallowDuration, seconds)'**
   String get spermWhaleModuleSwallowDuration;
 
   /// No description provided for @spermWhaleModuleHelpSwallowDuration.
@@ -4689,6 +4713,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Starts each zombie wave only after a plant from the conveyor belt is planted'**
   String get moduleDesc_CowboyMinigameProperties;
+
+  /// No description provided for @moduleTitle_SingleHandedProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'All by Oneself'**
+  String get moduleTitle_SingleHandedProperties;
+
+  /// No description provided for @moduleDesc_SingleHandedProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Configures the basic properties of the All by Oneself minigame'**
+  String get moduleDesc_SingleHandedProperties;
+
+  /// No description provided for @moduleTitle_IntroSingleHandedProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'All by Oneself Tutorial'**
+  String get moduleTitle_IntroSingleHandedProperties;
+
+  /// No description provided for @moduleDesc_IntroSingleHandedProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Configures tutorial prompts for the All by Oneself minigame'**
+  String get moduleDesc_IntroSingleHandedProperties;
 
   /// No description provided for @moduleTitle_PVZ1OverwhelmModuleProperties.
   ///
@@ -5614,6 +5662,18 @@ abstract class AppLocalizations {
   /// **'Spawns an ice cream van in a lane and configures the zombies inside'**
   String get eventDesc_SchoolBusWaveActionProps;
 
+  /// No description provided for @eventTitle_HamsterZombieSpawnerProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Hamsterball'**
+  String get eventTitle_HamsterZombieSpawnerProps;
+
+  /// No description provided for @eventDesc_HamsterZombieSpawnerProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Rolls hamsterballs that carry zombies onto the lawn'**
+  String get eventDesc_HamsterZombieSpawnerProps;
+
   /// No description provided for @eventTitle_BungeeWaveActionProps.
   ///
   /// In en, this message translates to:
@@ -6079,7 +6139,7 @@ abstract class AppLocalizations {
   /// No description provided for @drawHealthBarTime.
   ///
   /// In en, this message translates to:
-  /// **'Health bar duration (DrawHealthBarTime)'**
+  /// **'Health bar duration (DrawHealthBarTime; seconds)'**
   String get drawHealthBarTime;
 
   /// No description provided for @enableEliteScale.
@@ -6628,6 +6688,12 @@ abstract class AppLocalizations {
   /// **'Collectible (Plant Food)'**
   String get collectable;
 
+  /// No description provided for @plantFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant Food'**
+  String get plantFood;
+
   /// No description provided for @selectGridItem.
   ///
   /// In en, this message translates to:
@@ -7039,7 +7105,7 @@ abstract class AppLocalizations {
   /// No description provided for @tideWaveDuration.
   ///
   /// In en, this message translates to:
-  /// **'Duration'**
+  /// **'Duration (seconds)'**
   String get tideWaveDuration;
 
   /// No description provided for @tideWaveSubmarineMovingDistance.
@@ -7489,7 +7555,7 @@ abstract class AppLocalizations {
   /// No description provided for @dinoTreadPreview.
   ///
   /// In en, this message translates to:
-  /// **'Stomp area preview'**
+  /// **'Possible stomp area preview'**
   String get dinoTreadPreview;
 
   /// No description provided for @dinoTreadRowLabel.
@@ -7513,7 +7579,7 @@ abstract class AppLocalizations {
   /// No description provided for @dinoTreadTimeIntervalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Entry Delay (TimeInterval)'**
+  /// **'Entry delay (TimeInterval; seconds)'**
   String get dinoTreadTimeIntervalLabel;
 
   /// No description provided for @columnStartLabel.
@@ -8437,7 +8503,7 @@ abstract class AppLocalizations {
   /// No description provided for @smokePollutionModuleStartTimeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Eruption time (unit: seconds)'**
+  /// **'Eruption time (seconds)'**
   String get smokePollutionModuleStartTimeLabel;
 
   /// No description provided for @manholePipelineStartEndFormat.
@@ -8617,7 +8683,7 @@ abstract class AppLocalizations {
   /// No description provided for @cowboyMinigameHelpBeginStringBody.
   ///
   /// In en, this message translates to:
-  /// **'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be hidden or replaced with custom text.'**
+  /// **'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be replaced with custom text.'**
   String get cowboyMinigameHelpBeginStringBody;
 
   /// No description provided for @cowboyMinigameHelpTutorialBody.
@@ -8625,6 +8691,396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When Show Tutorial Dialogue is enabled, Crazy Dave and Penny appear before the level and explain the minigame through dialogue based on the first-play conversation from Wild West - Day 4.'**
   String get cowboyMinigameHelpTutorialBody;
+
+  /// No description provided for @singleHandedTabLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'All by Oneself'**
+  String get singleHandedTabLabel;
+
+  /// No description provided for @singleHandedBasicParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Parameters'**
+  String get singleHandedBasicParameters;
+
+  /// No description provided for @singleHandedOverviewBasicConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Configuration'**
+  String get singleHandedOverviewBasicConfiguration;
+
+  /// No description provided for @singleHandedMissileCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Missiles per launch'**
+  String get singleHandedMissileCount;
+
+  /// No description provided for @singleHandedMissileInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Missile launch interval'**
+  String get singleHandedMissileInterval;
+
+  /// No description provided for @singleHandedWarningTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning time'**
+  String get singleHandedWarningTime;
+
+  /// No description provided for @singleHandedRocketSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missile speed'**
+  String get singleHandedRocketSpeed;
+
+  /// No description provided for @singleHandedZombieSpeedMultiplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie speed multiplier'**
+  String get singleHandedZombieSpeedMultiplier;
+
+  /// No description provided for @singleHandedZombieHealthMultiplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie health multiplier'**
+  String get singleHandedZombieHealthMultiplier;
+
+  /// No description provided for @singleHandedSpecialMultiplierHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed and health in special waves are multiplied again from these base values.'**
+  String get singleHandedSpecialMultiplierHint;
+
+  /// No description provided for @singleHandedPlantConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant Configuration'**
+  String get singleHandedPlantConfiguration;
+
+  /// No description provided for @singleHandedPlantConfigurationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'The initial plant is the starting weapon and upgrades automatically after the required number of kills.\nThe initial plant appears in the upper-left tile. A minecart must be placed there, or the game immediately counts the level as failed.'**
+  String get singleHandedPlantConfigurationInfo;
+
+  /// No description provided for @singleHandedInitialPlantSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial plant · Attack interval: {interval}'**
+  String singleHandedInitialPlantSubtitle(String interval);
+
+  /// No description provided for @singleHandedAttackInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Attack interval'**
+  String get singleHandedAttackInterval;
+
+  /// No description provided for @singleHandedAttackIntervalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A smaller attack interval means a faster attack speed.'**
+  String get singleHandedAttackIntervalHint;
+
+  /// No description provided for @singleHandedAddUpgradePlant.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Upgrade Plant'**
+  String get singleHandedAddUpgradePlant;
+
+  /// No description provided for @singleHandedNoUpgradePlants.
+  ///
+  /// In en, this message translates to:
+  /// **'No upgrade plants yet. Add one to begin.'**
+  String get singleHandedNoUpgradePlants;
+
+  /// No description provided for @singleHandedRequiredKills.
+  ///
+  /// In en, this message translates to:
+  /// **'Required kills'**
+  String get singleHandedRequiredKills;
+
+  /// No description provided for @singleHandedEditUpgradePlant.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit: {plantName}'**
+  String singleHandedEditUpgradePlant(String plantName);
+
+  /// No description provided for @singleHandedUpgradePlantSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Kills: {kills} · Attack interval: {interval}'**
+  String singleHandedUpgradePlantSubtitle(int kills, String interval);
+
+  /// No description provided for @singleHandedSpecialWaves.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Waves'**
+  String get singleHandedSpecialWaves;
+
+  /// No description provided for @singleHandedSpecialWavesInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Use these for Boss waves. Speed and health multipliers are applied on top of the base values above.'**
+  String get singleHandedSpecialWavesInfo;
+
+  /// No description provided for @singleHandedAddSpecialWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Special Wave'**
+  String get singleHandedAddSpecialWave;
+
+  /// No description provided for @singleHandedNoSpecialWaves.
+  ///
+  /// In en, this message translates to:
+  /// **'No special waves yet. Add one to begin.'**
+  String get singleHandedNoSpecialWaves;
+
+  /// No description provided for @singleHandedSpecialWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Wave'**
+  String get singleHandedSpecialWave;
+
+  /// No description provided for @singleHandedWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave'**
+  String get singleHandedWave;
+
+  /// No description provided for @singleHandedSpeedMultiplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed multiplier'**
+  String get singleHandedSpeedMultiplier;
+
+  /// No description provided for @singleHandedHealthMultiplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Health multiplier'**
+  String get singleHandedHealthMultiplier;
+
+  /// No description provided for @singleHandedShowHealthBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Show health bar'**
+  String get singleHandedShowHealthBar;
+
+  /// No description provided for @singleHandedWaveNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave {wave}'**
+  String singleHandedWaveNumber(int wave);
+
+  /// No description provided for @singleHandedHealthBarEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Health bar on'**
+  String get singleHandedHealthBarEnabled;
+
+  /// No description provided for @singleHandedHealthBarDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Health bar off'**
+  String get singleHandedHealthBarDisabled;
+
+  /// No description provided for @singleHandedSpecialWaveSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed x{speed} · Health x{health}'**
+  String singleHandedSpecialWaveSubtitle(String speed, String health);
+
+  /// No description provided for @singleHandedAddTutorial.
+  ///
+  /// In en, this message translates to:
+  /// **'Add All by Oneself Tutorial'**
+  String get singleHandedAddTutorial;
+
+  /// No description provided for @singleHandedConfigureTutorial.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure All by Oneself Tutorial'**
+  String get singleHandedConfigureTutorial;
+
+  /// No description provided for @singleHandedTutorialSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'All by Oneself Tutorial Settings'**
+  String get singleHandedTutorialSettings;
+
+  /// No description provided for @singleHandedTutorialWaveForStartRocket.
+  ///
+  /// In en, this message translates to:
+  /// **'Missiles start from wave'**
+  String get singleHandedTutorialWaveForStartRocket;
+
+  /// No description provided for @singleHandedTutorialHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All by Oneself Tutorial'**
+  String get singleHandedTutorialHelpTitle;
+
+  /// No description provided for @singleHandedTutorialHelpPromptsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutorial Prompts'**
+  String get singleHandedTutorialHelpPromptsTitle;
+
+  /// No description provided for @singleHandedTutorialHelpPromptsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'After this module is added, matching tutorial prompts appear at the start of the level, when a plant is upgraded for the first time, and when the first missile warning occurs.'**
+  String get singleHandedTutorialHelpPromptsBody;
+
+  /// No description provided for @singleHandedTutorialHelpWaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Missile Starting Wave'**
+  String get singleHandedTutorialHelpWaveTitle;
+
+  /// No description provided for @singleHandedTutorialHelpWaveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can choose the wave from which missiles begin appearing; the launch interval is counted starting from that wave. For example, with a 30-second missile interval and a starting wave of 7, the first missiles launch 30 seconds after wave 7 begins.\nNote that adding this module by itself does not make missiles fall on the configured wave. The missile starting-wave setting only takes effect together with the All by Oneself module.'**
+  String get singleHandedTutorialHelpWaveBody;
+
+  /// No description provided for @hamsterballGeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Logic'**
+  String get hamsterballGeneration;
+
+  /// No description provided for @hamsterballTimeBeforeFullSpawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to full spawn (TimeBeforeFullSpawn; seconds)'**
+  String get hamsterballTimeBeforeFullSpawn;
+
+  /// No description provided for @hamsterballZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombies inside hamsterballs (Zombies)'**
+  String get hamsterballZombies;
+
+  /// No description provided for @hamsterballAddZombie.
+  ///
+  /// In en, this message translates to:
+  /// **'Add zombie'**
+  String get hamsterballAddZombie;
+
+  /// No description provided for @hamsterballEmptyZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'No zombies in the list'**
+  String get hamsterballEmptyZombies;
+
+  /// No description provided for @hamsterballZombieLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie level'**
+  String get hamsterballZombieLevel;
+
+  /// No description provided for @hamsterballInitialSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial speed'**
+  String get hamsterballInitialSpeed;
+
+  /// No description provided for @hamsterballBehavior.
+  ///
+  /// In en, this message translates to:
+  /// **'Behavior'**
+  String get hamsterballBehavior;
+
+  /// No description provided for @hamsterballBehaviorUniform.
+  ///
+  /// In en, this message translates to:
+  /// **'Constant speed'**
+  String get hamsterballBehaviorUniform;
+
+  /// No description provided for @hamsterballBehaviorSlowdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast, then slow'**
+  String get hamsterballBehaviorSlowdown;
+
+  /// No description provided for @hamsterballBehaviorChangeLane.
+  ///
+  /// In en, this message translates to:
+  /// **'Change lane on impact'**
+  String get hamsterballBehaviorChangeLane;
+
+  /// No description provided for @hamsterballBehaviorDetailUniform.
+  ///
+  /// In en, this message translates to:
+  /// **'moves at a constant speed'**
+  String get hamsterballBehaviorDetailUniform;
+
+  /// No description provided for @hamsterballBehaviorDetailSlowdown.
+  ///
+  /// In en, this message translates to:
+  /// **'starts fast, then slows down after hitting a plant'**
+  String get hamsterballBehaviorDetailSlowdown;
+
+  /// No description provided for @hamsterballBehaviorDetailChangeLane.
+  ///
+  /// In en, this message translates to:
+  /// **'changes lane after hitting a plant'**
+  String get hamsterballBehaviorDetailChangeLane;
+
+  /// No description provided for @hamsterballBehaviorSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Behavior: {value}'**
+  String hamsterballBehaviorSummary(String value);
+
+  /// No description provided for @hamsterballHasPlantfood.
+  ///
+  /// In en, this message translates to:
+  /// **'Carries Plant Food (HasPlantfood)'**
+  String get hamsterballHasPlantfood;
+
+  /// No description provided for @hamsterballHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hamsterball Event Help'**
+  String get hamsterballHelpTitle;
+
+  /// No description provided for @hamsterballHelpOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get hamsterballHelpOverviewTitle;
+
+  /// No description provided for @hamsterballHelpOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduced to the Chinese version in the 12th Anniversary Secret Realm, this ambush event summons rolling hamsterballs that carry zombies onto the lawn. Hamsterballs have three behavior modes, and plants run over along the way are destroyed immediately.\nHamsterballs have their own health. When broken, they release the zombies inside so they can continue advancing. Spikeweed, Spikerock, and similar plants can puncture hamsterballs and release their passengers.'**
+  String get hamsterballHelpOverviewBody;
+
+  /// No description provided for @hamsterballHelpRangeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rolling Range'**
+  String get hamsterballHelpRangeTitle;
+
+  /// No description provided for @hamsterballHelpRangeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The hamsterball rolling range is fixed from column 0 through column 8. These fields do not affect the editable content and are written silently by the editor.'**
+  String get hamsterballHelpRangeBody;
+
+  /// No description provided for @hamsterballHelpGenerationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Logic'**
+  String get hamsterballHelpGenerationTitle;
+
+  /// No description provided for @hamsterballHelpGenerationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Group size controls how many hamsterballs appear in each group, while the group interval controls the delay between adjacent groups. Once the full-spawn time is reached, no extra groups are formed and all remaining hamsterballs spawn immediately.'**
+  String get hamsterballHelpGenerationBody;
 
   /// No description provided for @cowboyMinigameDependencyWarningTitle.
   ///
@@ -9165,6 +9621,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unit: seconds'**
   String get unitSeconds;
+
+  /// No description provided for @propertyLabelSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({code}; seconds)'**
+  String propertyLabelSeconds(String name, String code);
 
   /// No description provided for @speedConditions.
   ///
@@ -10045,7 +10507,7 @@ abstract class AppLocalizations {
   /// No description provided for @ztPerkPropDamageTakenInterval.
   ///
   /// In en, this message translates to:
-  /// **'Damage interval'**
+  /// **'Damage interval (seconds)'**
   String get ztPerkPropDamageTakenInterval;
 
   /// No description provided for @ztPerkPropDamageTotalTaken.
@@ -10818,13 +11280,13 @@ abstract class AppLocalizations {
   /// No description provided for @dropConfigPlants.
   ///
   /// In en, this message translates to:
-  /// **'Drop Configuration (seed packets)'**
+  /// **'Drop configuration (seed packet)'**
   String get dropConfigPlants;
 
   /// No description provided for @dropConfigPlantFood.
   ///
   /// In en, this message translates to:
-  /// **'Drop config (Plant Food)'**
+  /// **'Drop configuration (Plant Food)'**
   String get dropConfigPlantFood;
 
   /// No description provided for @waveDropConfigTitle.
@@ -10832,6 +11294,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drop configuration'**
   String get waveDropConfigTitle;
+
+  /// No description provided for @waveDropPlantSelectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Specified seed packet drops (SpawnPlantName)'**
+  String get waveDropPlantSelectionLabel;
 
   /// No description provided for @waveDropTotalLabel.
   ///
@@ -10848,19 +11316,19 @@ abstract class AppLocalizations {
   /// No description provided for @waveDropIncreaseTotalBeforePlants.
   ///
   /// In en, this message translates to:
-  /// **'Increase total drops before adding plants.'**
+  /// **'Increase total drops before adding seed packets.'**
   String get waveDropIncreaseTotalBeforePlants;
 
   /// No description provided for @waveDropPlantFoodOnlyCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 plant food} other{{count} plant food}}'**
+  /// **'{count, plural, =1{1 Plant Food} other{{count} Plant Foods}}'**
   String waveDropPlantFoodOnlyCount(int count);
 
   /// No description provided for @waveDropPlantsCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 plant} other{{count} plants}}'**
+  /// **'{count, plural, =1{1 seed packet} other{{count} seed packets}}'**
   String waveDropPlantsCount(int count);
 
   /// No description provided for @zombiesCarryingPlants.
@@ -10896,8 +11364,14 @@ abstract class AppLocalizations {
   /// No description provided for @targetDistance.
   ///
   /// In en, this message translates to:
-  /// **'Flowerbed Distance (TargetDistance) — Distance from the left edge (in columns); higher values are closer to the house; supports decimals'**
+  /// **'Flowerbed Distance (TargetDistance)'**
   String get targetDistance;
+
+  /// No description provided for @starChallengeTargetDistanceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The value is the number of columns from the left edge; larger values are farther from the house. Decimals are supported.'**
+  String get starChallengeTargetDistanceHint;
 
   /// No description provided for @targetSun.
   ///
@@ -10932,14 +11406,32 @@ abstract class AppLocalizations {
   /// No description provided for @speedModifier.
   ///
   /// In en, this message translates to:
-  /// **'Speed Multiplier (SpeedModifier) — e.g. 0.5 = +50% zombie speed'**
+  /// **'Speed Multiplier (SpeedModifier)'**
   String get speedModifier;
+
+  /// No description provided for @starChallengeSpeedModifierHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Entering 0.5 increases zombie movement speed by 50%.'**
+  String get starChallengeSpeedModifierHint;
 
   /// No description provided for @sunModifier.
   ///
   /// In en, this message translates to:
-  /// **'Sun Reduction (SunModifier) — e.g. 0.2 = −20% sun gain'**
+  /// **'Sun Reduction (SunModifier)'**
   String get sunModifier;
+
+  /// No description provided for @starChallengeSunModifierHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Entering 0.2 reduces Sun gained by 20%.'**
+  String get starChallengeSunModifierHint;
+
+  /// No description provided for @starChallengeChineseUnsupportedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese characters are not supported.'**
+  String get starChallengeChineseUnsupportedHint;
 
   /// No description provided for @maximumPlantsLost.
   ///
@@ -11052,7 +11544,7 @@ abstract class AppLocalizations {
   /// No description provided for @initialDropDelay.
   ///
   /// In en, this message translates to:
-  /// **'Initial drop delay (InitialSunDropDelay)'**
+  /// **'Initial drop delay (InitialSunDropDelay; seconds)'**
   String get initialDropDelay;
 
   /// No description provided for @baseCountdown.
@@ -11544,25 +12036,25 @@ abstract class AppLocalizations {
   /// No description provided for @firstDropDelay.
   ///
   /// In en, this message translates to:
-  /// **'Initial drop delay (InitialSunDropDelay)'**
+  /// **'Initial drop delay (InitialSunDropDelay; seconds)'**
   String get firstDropDelay;
 
   /// No description provided for @initialDropInterval.
   ///
   /// In en, this message translates to:
-  /// **'Initial drop interval (SunCountdownBase)'**
+  /// **'Initial drop interval (SunCountdownBase; seconds)'**
   String get initialDropInterval;
 
   /// No description provided for @maxDropInterval.
   ///
   /// In en, this message translates to:
-  /// **'Max drop interval (SunCountdownMax)'**
+  /// **'Max drop interval (SunCountdownMax; seconds)'**
   String get maxDropInterval;
 
   /// No description provided for @intervalFloatRange.
   ///
   /// In en, this message translates to:
-  /// **'Interval variation range (SunCountdownRange)'**
+  /// **'Interval variation range (SunCountdownRange; seconds)'**
   String get intervalFloatRange;
 
   /// No description provided for @sunDropperHelpTitle.
@@ -11892,7 +12384,7 @@ abstract class AppLocalizations {
   /// No description provided for @tunnelDefendSequenceInterval.
   ///
   /// In en, this message translates to:
-  /// **'Pathway Generation Interval (TunnelSequenceInterval, unit: seconds)'**
+  /// **'Pathway Generation Interval (TunnelSequenceInterval, seconds)'**
   String get tunnelDefendSequenceInterval;
 
   /// No description provided for @tunnelDefendHelpSequenceInterval.
@@ -12126,7 +12618,7 @@ abstract class AppLocalizations {
   /// No description provided for @finalStageTimeLimitedChallengeTimeLimit.
   ///
   /// In en, this message translates to:
-  /// **'Sword Swing Countdown (ZombossTimeLimit, unit: seconds)'**
+  /// **'Sword Swing Countdown (ZombossTimeLimit, seconds)'**
   String get finalStageTimeLimitedChallengeTimeLimit;
 
   /// No description provided for @moduleTitle_LawnMowerProperties.
@@ -12222,7 +12714,7 @@ abstract class AppLocalizations {
   /// No description provided for @witchModuleSpawnInterval.
   ///
   /// In en, this message translates to:
-  /// **'Witch spawn interval (WitchSpawnInterval, unit: seconds)'**
+  /// **'Witch spawn interval (WitchSpawnInterval, seconds)'**
   String get witchModuleSpawnInterval;
 
   /// No description provided for @gulliverTunnelTitle.
@@ -12654,7 +13146,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageFieldTransferCooldown.
   ///
   /// In en, this message translates to:
-  /// **'Same-zombie teleport cooldown (transferCooldown, unit: seconds)'**
+  /// **'Same-zombie teleport cooldown (transferCooldown, seconds)'**
   String get pvz1PassageFieldTransferCooldown;
 
   /// No description provided for @pvz1PassageHelpTransferCooldown.
@@ -12666,7 +13158,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1PassageFieldRefreshTime.
   ///
   /// In en, this message translates to:
-  /// **'Portal reposition interval (refreshTime, unit: seconds)'**
+  /// **'Portal reposition interval (refreshTime, seconds)'**
   String get pvz1PassageFieldRefreshTime;
 
   /// No description provided for @pvz1PassageHelpRefreshTime.
@@ -12984,7 +13476,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_GlacierModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Configure the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss'**
+  /// **'Configures the zombies hidden inside Ice Chunks created by the Frostbite Caves Zomboss'**
   String get moduleDesc_GlacierModuleProperties;
 
   /// No description provided for @glacierModuleTitle.
@@ -13314,13 +13806,13 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleWindDelay.
   ///
   /// In en, this message translates to:
-  /// **'Time between wind spawns (WindDelay)'**
+  /// **'Time between wind spawns (WindDelay; seconds)'**
   String get heianWindModuleWindDelay;
 
   /// No description provided for @heianWindModuleWindDelayHint.
   ///
   /// In en, this message translates to:
-  /// **'unit: seconds'**
+  /// **'seconds'**
   String get heianWindModuleWindDelayHint;
 
   /// No description provided for @heianWindModuleWindEntries.
@@ -13368,13 +13860,13 @@ abstract class AppLocalizations {
   /// No description provided for @heianWindModuleMoveTime.
   ///
   /// In en, this message translates to:
-  /// **'Move Duration (MoveTime)'**
+  /// **'Move duration (MoveTime; seconds)'**
   String get heianWindModuleMoveTime;
 
   /// No description provided for @heianWindModuleMoveTimeHint.
   ///
   /// In en, this message translates to:
-  /// **'unit: seconds'**
+  /// **'seconds'**
   String get heianWindModuleMoveTimeHint;
 
   /// No description provided for @heianWindModuleExpectationLabel.
@@ -15480,8 +15972,8 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorFixedSummary.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 fixed spawn} other{{count} fixed spawns}} · {rows, plural, =1{1 row} other{{rows} rows}}'**
-  String waveGeneratorFixedSummary(int count, int rows);
+  /// **'{count, plural, =1{1 zombie is guaranteed to appear} other{{count} zombies are guaranteed to appear}}'**
+  String waveGeneratorFixedSummary(int count);
 
   /// No description provided for @waveGeneratorFixedSummaryEmpty.
   ///
@@ -16464,7 +16956,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_RadiationMeteorModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Drops meteorites that destroy plants and contaminate surrounding tiles'**
+  /// **'Drops meteorites that destroy units and contaminate surrounding tiles'**
   String get moduleDesc_RadiationMeteorModuleProperties;
 
   /// No description provided for @eventTitle_SpawnRocketLandingWaveActionProps.
@@ -16536,7 +17028,7 @@ abstract class AppLocalizations {
   /// No description provided for @moonPenaltyCountdown.
   ///
   /// In en, this message translates to:
-  /// **'Hibernation countdown (PenaltyCountdown, unit: seconds)'**
+  /// **'Hibernation countdown (PenaltyCountdown, seconds)'**
   String get moonPenaltyCountdown;
 
   /// No description provided for @moonPlantImmunityList.
@@ -16584,7 +17076,7 @@ abstract class AppLocalizations {
   /// No description provided for @lunarTerminalCollectorCooldown.
   ///
   /// In en, this message translates to:
-  /// **'Robot deployment cooldown (CollectorCooldown, unit: seconds)'**
+  /// **'Robot deployment cooldown (CollectorCooldown, seconds)'**
   String get lunarTerminalCollectorCooldown;
 
   /// No description provided for @lunarMineVeinHelpTitle.
@@ -16674,19 +17166,19 @@ abstract class AppLocalizations {
   /// No description provided for @radiationMeteorWarningDuration.
   ///
   /// In en, this message translates to:
-  /// **'Warning duration (WarningDuration, unit: seconds)'**
+  /// **'Warning duration (WarningDuration, seconds)'**
   String get radiationMeteorWarningDuration;
 
   /// No description provided for @radiationMeteorPollutionInterval.
   ///
   /// In en, this message translates to:
-  /// **'Contamination interval (PollutionInterval, unit: seconds)'**
+  /// **'Contamination interval (PollutionInterval, seconds)'**
   String get radiationMeteorPollutionInterval;
 
   /// No description provided for @radiationMeteorMiningDuration.
   ///
   /// In en, this message translates to:
-  /// **'Required mining duration (MiningDurationRequired, unit: seconds)'**
+  /// **'Required mining duration (MiningDurationRequired, seconds)'**
   String get radiationMeteorMiningDuration;
 
   /// No description provided for @radiationMeteorPowerReward.
@@ -16764,7 +17256,7 @@ abstract class AppLocalizations {
   /// No description provided for @rocketSpawnInterval.
   ///
   /// In en, this message translates to:
-  /// **'Spawn interval (SpawnInterval, unit: seconds)'**
+  /// **'Spawn interval (SpawnInterval, seconds)'**
   String get rocketSpawnInterval;
 
   /// No description provided for @moduleTitle_LevelPowerupModuleProperties.
@@ -16790,6 +17282,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This wonderfully interesting mechanic makes a major return in the 13th Anniversary Secret Realm, allowing players to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.'**
   String get powerUpsHelpOverview;
+
+  /// No description provided for @powerUpsAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Power Up'**
+  String get powerUpsAddTitle;
+
+  /// No description provided for @powerUpsOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get powerUpsOrder;
+
+  /// No description provided for @powerUpsOrderInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Power Ups appear in the game in the order shown here. Drag the ⋮⋮ handles to reorder them. Removing a Power Up from the list prevents it from appearing in the game; it can be added back in this module whenever needed.'**
+  String get powerUpsOrderInfo;
 
   /// No description provided for @powerUpsFreeUseCount.
   ///

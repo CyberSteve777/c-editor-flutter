@@ -69,8 +69,36 @@ void main() {
         {'TypeName': 'powerupwizardfinger', 'FreeUseCount': 7},
       ],
     });
+    expect(decoded.toJson(), {
+      'Powerups': [
+        {'TypeName': 'powerupwizardfinger', 'FreeUseCount': 7},
+      ],
+    });
     expect(decoded.entryFor('powerupwizardfinger').freeUseCount, 7);
     expect(decoded.entryFor('powerupflickzombie').freeUseCount, 3);
+  });
+
+  test('Power Ups success guidance covers processes that hold the package', () {
+    final zh = lookupAppLocalizations(const Locale('zh'));
+    final en = lookupAppLocalizations(const Locale('en'));
+
+    expect(
+      zh.powerUpsOrderInfo,
+      '游戏中的金手指会按照此处的顺序排列。拖动 ⋮⋮ 可调整顺序。将金手指从列表中移除后，该金手指将不会在游戏中出现；需要时可在本模块中重新添加。',
+    );
+    expect(zh.exportSuccessMessage('dynamic.rsb.smf'), contains('彻底关闭游戏进程'));
+    expect(
+      zh.exportSuccessMessage('dynamic.rsb.smf'),
+      contains('正在占用目标目录的文件管理器'),
+    );
+    expect(
+      en.exportSuccessMessage('dynamic.rsb.smf'),
+      contains('fully close the game process'),
+    );
+    expect(
+      en.exportSuccessMessage('dynamic.rsb.smf'),
+      contains('file manager currently accessing the target directory'),
+    );
   });
 
   test('Power Ups is a gimmick immediately before Rocket Flick', () {
@@ -178,5 +206,158 @@ void main() {
     expect(field.decoration?.labelText, isNull);
     expect(find.text('Бесплатные применения (FreeUseCount)'), findsWidgets);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Power Ups can be reordered, removed, and added back', (
+    tester,
+  ) async {
+    final object = PvzObject(
+      aliases: const ['LevelPowerups'],
+      objClass: 'LevelPowerupModuleProperties',
+      objData: LevelPowerupModulePropertiesData().toJson(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: LevelPowerupModuleScreen(
+          rtid: 'RTID(LevelPowerups@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [object]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('powerupDragHandle_powerupflickzombie')),
+      findsOneWidget,
+    );
+    final list = tester.widget<ReorderableListView>(
+      find.byType(ReorderableListView),
+    );
+    list.onReorderItem!(0, 2);
+    await tester.pump();
+
+    Map<String, dynamic> json() =>
+        Map<String, dynamic>.from(object.objData as Map);
+    List<String> order() => (json()['Powerups'] as List<dynamic>)
+        .cast<Map<String, dynamic>>()
+        .map((entry) => entry['TypeName'] as String)
+        .toList();
+
+    expect(order(), [
+      'powerupwizardfinger',
+      'poweruppinchzombie',
+      'powerupflickzombie',
+    ]);
+
+    await tester.tap(
+      find.byKey(const ValueKey('powerupDelete_powerupflickzombie')),
+    );
+    await tester.pumpAndSettle();
+    expect(order(), ['powerupwizardfinger', 'poweruppinchzombie']);
+
+    await tester.tap(find.byKey(const ValueKey('powerupAddButton')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('powerupAddDialog')), findsOneWidget);
+    await tester.tap(
+      find.byKey(const ValueKey('powerupAddOption_powerupflickzombie')),
+    );
+    await tester.pumpAndSettle();
+    expect(order(), [
+      'powerupwizardfinger',
+      'poweruppinchzombie',
+      'powerupflickzombie',
+    ]);
+    expect((json()['Powerups'] as List<dynamic>).last, {
+      'TypeName': 'powerupflickzombie',
+      'FreeUseCount': 3,
+    });
+  });
+
+  testWidgets('Power Ups add choices stay clear of Cancel on narrow screens', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final object = PvzObject(
+      aliases: const ['LevelPowerups'],
+      objClass: 'LevelPowerupModuleProperties',
+      objData: LevelPowerupModulePropertiesData(powerups: const []).toJson(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) {
+          final media = MediaQuery.of(context);
+          return MediaQuery(
+            data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+            child: child!,
+          );
+        },
+        home: LevelPowerupModuleScreen(
+          rtid: 'RTID(LevelPowerups@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [object]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('powerupAddButton')));
+    await tester.pumpAndSettle();
+    final pinchOption = find.byKey(
+      const ValueKey('powerupAddOption_poweruppinchzombie'),
+    );
+    final cancelButton = find.widgetWithText(TextButton, 'Cancel');
+    await tester.ensureVisible(pinchOption);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getRect(pinchOption).bottom,
+      lessThanOrEqualTo(tester.getRect(cancelButton).top),
+    );
+    await tester.tap(cancelButton);
+    await tester.pumpAndSettle();
+    expect((object.objData as Map<String, dynamic>)['Powerups'], isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Power Ups help explains that list order controls game order', (
+    tester,
+  ) async {
+    final object = PvzObject(
+      aliases: const ['LevelPowerups'],
+      objClass: 'LevelPowerupModuleProperties',
+      objData: LevelPowerupModulePropertiesData().toJson(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: LevelPowerupModuleScreen(
+          rtid: 'RTID(LevelPowerups@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [object]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.help_outline));
+    await tester.pumpAndSettle();
+    expect(find.text('• Order'), findsOneWidget);
+    expect(find.textContaining('order shown here'), findsOneWidget);
   });
 }

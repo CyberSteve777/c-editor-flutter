@@ -999,19 +999,12 @@ class _ScalarStepper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(child: Text(label)),
-          IconButton(
-            onPressed: value > min ? () => onChanged(value - 1) : null,
-            icon: const Icon(Icons.remove_circle_outline),
-          ),
-          Text('$value', style: Theme.of(context).textTheme.titleMedium),
-          IconButton(
-            onPressed: value < max ? () => onChanged(value + 1) : null,
-            icon: const Icon(Icons.add_circle_outline),
-          ),
-        ],
+      child: EditorResponsiveStepperRow(
+        label: label,
+        value: value,
+        min: min,
+        max: max,
+        onChanged: onChanged,
       ),
     );
   }

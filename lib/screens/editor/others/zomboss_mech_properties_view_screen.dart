@@ -7,7 +7,6 @@ import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/zomboss_mech_action_detail_screen.dart';
-import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossMechPropertiesViewScreen extends StatelessWidget {
@@ -112,7 +111,8 @@ class ZombossMechPropertiesViewScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             ..._generalEntries(context, propsData).map(
-              (entry) => _ReadOnlyValueRow(label: entry.$1, value: entry.$2),
+              (entry) =>
+                  ZombossMechReadOnlyValueRow(label: entry.$1, value: entry.$2),
             ),
             ZombossMechReadOnlyBoolRow(
               key: const ValueKey('readOnlySquashZombies'),
@@ -403,7 +403,10 @@ class _ReadOnlyStageCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _ReadOnlyValueRow(label: hitPointsLabel, value: '$_hitPoints'),
+            ZombossMechReadOnlyValueRow(
+              label: hitPointsLabel,
+              value: '$_hitPoints',
+            ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
@@ -524,8 +527,12 @@ class _ReadOnlyStageCard extends StatelessWidget {
   }
 }
 
-class _ReadOnlyValueRow extends StatelessWidget {
-  const _ReadOnlyValueRow({required this.label, required this.value});
+class ZombossMechReadOnlyValueRow extends StatelessWidget {
+  const ZombossMechReadOnlyValueRow({
+    super.key,
+    required this.label,
+    required this.value,
+  });
 
   final String label;
   final String value;
@@ -533,13 +540,15 @@ class _ReadOnlyValueRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: EditorResponsiveLabelField(
-        breakpoint: 600,
-        labelWidth: 240,
-        label: Text(label),
-        field: SelectableText(value, style: theme.textTheme.titleMedium),
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      trailing: SelectableText(
+        value,
+        textAlign: TextAlign.end,
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

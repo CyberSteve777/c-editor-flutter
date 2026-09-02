@@ -224,7 +224,6 @@ class _MechanismPlankPropertiesScreenState
     return false;
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -264,7 +263,7 @@ class _MechanismPlankPropertiesScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -285,6 +284,7 @@ ModuleAliasInputField(
                 child: Column(
                   children: [
                     _StepperField(
+                      key: const ValueKey('mechanismPlankStartColumnStepper'),
                       label: l10n?.mechanismPlankStartColumn ?? 'Start Column',
                       value: _mX,
                       min: 0,
@@ -293,6 +293,7 @@ ModuleAliasInputField(
                     ),
                     const SizedBox(height: 12),
                     _StepperField(
+                      key: const ValueKey('mechanismPlankTrackLengthStepper'),
                       label: l10n?.mechanismPlankTrackLength ?? 'Track Length',
                       value: _mWidth,
                       min: 1,
@@ -304,16 +305,11 @@ ModuleAliasInputField(
               ),
             ),
             const SizedBox(height: 16),
-            _MechanismPlankInfoBanner(
-              message:
-                  l10n?.mechanismPlankEditNotice ??
-                  'Only mX and mWidth are editable. Other parameters are preserved because changing them may cause in-game layout bugs.',
-            ),
-            const SizedBox(height: 16),
             scaleTableForDesktop(
               context: context,
               desktopScale: 0.5,
               child: Container(
+                key: const ValueKey('mechanismPlankPreviewGrid'),
                 decoration: BoxDecoration(
                   color: gridColor,
                   borderRadius: BorderRadius.circular(6),
@@ -387,6 +383,13 @@ ModuleAliasInputField(
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            _MechanismPlankInfoBanner(
+              key: const ValueKey('mechanismPlankEditNoticeCard'),
+              message:
+                  l10n?.mechanismPlankEditNotice ??
+                  'Only mX and mWidth are editable. Other parameters are preserved because changing them may cause in-game layout bugs.',
+            ),
           ],
         ),
       ),
@@ -396,6 +399,7 @@ ModuleAliasInputField(
 
 class _StepperField extends StatelessWidget {
   const _StepperField({
+    super.key,
     required this.label,
     required this.value,
     required this.min,
@@ -412,29 +416,27 @@ class _StepperField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final canDecrease = value > min;
-    final canIncrease = value < max;
-
-    return Row(
-      children: [
-        Expanded(
-          child: Text('$label: $value', style: theme.textTheme.bodyLarge),
-        ),
-        IconButton(
-          onPressed: canDecrease ? () => onChanged(value - 1) : null,
-          icon: const Icon(Icons.remove),
-        ),
-        IconButton(
-          onPressed: canIncrease ? () => onChanged(value + 1) : null,
-          icon: const Icon(Icons.add),
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: EditorResponsiveStepperRow(
+        label: label,
+        value: value,
+        min: min,
+        max: max,
+        onChanged: onChanged,
+        decreaseIcon: Icons.remove,
+        increaseIcon: Icons.add,
+      ),
     );
   }
 }
 
 class _MechanismPlankInfoBanner extends StatelessWidget {
-  const _MechanismPlankInfoBanner({required this.message});
+  const _MechanismPlankInfoBanner({super.key, required this.message});
 
   final String message;
 

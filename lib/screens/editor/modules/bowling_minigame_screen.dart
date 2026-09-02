@@ -183,33 +183,17 @@ class _BowlingMinigameScreenState extends State<BowlingMinigameScreen> {
                         color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${l10n?.bowlingFoulLine ?? 'No-planting line'}: $foulLine',
-                              style: theme.textTheme.bodyLarge,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: foulLine > minFoulLine
-                                ? () {
-                                    _data.bowlingFoulLine = foulLine - 1;
-                                    _sync();
-                                  }
-                                : null,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: foulLine < maxFoulLine
-                                ? () {
-                                    _data.bowlingFoulLine = foulLine + 1;
-                                    _sync();
-                                  }
-                                : null,
-                          ),
-                        ],
+                      child: EditorResponsiveStepperRow(
+                        label: l10n?.bowlingFoulLine ?? 'No-planting line',
+                        value: foulLine,
+                        min: minFoulLine,
+                        max: maxFoulLine,
+                        decreaseIcon: Icons.remove,
+                        increaseIcon: Icons.add,
+                        onChanged: (value) {
+                          _data.bowlingFoulLine = value;
+                          _sync();
+                        },
                       ),
                     ),
                   ],

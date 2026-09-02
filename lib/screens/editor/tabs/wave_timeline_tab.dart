@@ -1722,175 +1722,256 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (ctx) => EscapeClosesModal(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: SafeArea(
+          top: false,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(ctx).height * 0.9,
+            ),
+            child: SingleChildScrollView(
+              key: const ValueKey('waveEventActionSheetScroll'),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (meta != null) ...[
-                    Icon(meta.icon, color: meta.color),
-                    const SizedBox(width: 8),
-                  ],
-                  Expanded(
-                    child: Text(
-                      sheetTitle,
-                      style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                  Row(
+                    children: [
+                      if (meta != null) ...[
+                        Icon(meta.icon, color: meta.color),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: Text(
+                          sheetTitle,
+                          style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              if (obj?.objClass != null)
-                Text(obj!.objClass, style: Theme.of(ctx).textTheme.bodySmall),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () async {
-                        Navigator.pop(ctx);
-                        await widget.onEditEvent(rtid, waveIndex);
-                        // Do not re-open wave sheet when exiting event editor
-                      },
-                      icon: const Icon(Icons.edit),
-                      label: Text(l10n?.editProperties ?? 'Edit properties'),
+                  if (obj?.objClass != null)
+                    Text(
+                      obj!.objClass,
+                      style: Theme.of(ctx).textTheme.bodySmall,
                     ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () async {
+                            Navigator.pop(ctx);
+                            await widget.onEditEvent(rtid, waveIndex);
+                            // Do not re-open wave sheet when exiting event editor
+                          },
+                          icon: const Icon(Icons.edit),
+                          label: Text(
+                            l10n?.editProperties ?? 'Edit properties',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () => _showRenameDialog(
-                        context,
-                        rtid,
-                        alias,
-                        onEditFinished,
-                      ),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          ctx,
-                        ).colorScheme.primaryContainer,
-                        foregroundColor:
-                            Theme.of(ctx).brightness == Brightness.dark
-                            ? Colors.black
-                            : Theme.of(ctx).colorScheme.primary,
-                      ),
-                      icon: const Icon(Icons.drive_file_rename_outline),
-                      label: Text(l10n?.rename ?? 'Rename'),
-                    ),
-                  ),
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () => _showCopyChoiceDialog(
-                        context,
-                        rtid,
-                        alias,
-                        waveIndex,
-                        onEditFinished,
-                      ),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          ctx,
-                        ).colorScheme.primaryContainer,
-                        foregroundColor:
-                            Theme.of(ctx).brightness == Brightness.dark
-                            ? Colors.black
-                            : Theme.of(ctx).colorScheme.primary,
-                      ),
-                      icon: const Icon(Icons.copy),
-                      label: Text(l10n?.copy ?? 'Copy'),
-                    ),
-                  ),
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () => _showMoveDialog(
-                        context,
-                        rtid,
-                        waveIndex,
-                        onEditFinished,
-                      ),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          ctx,
-                        ).colorScheme.primaryContainer,
-                        foregroundColor:
-                            Theme.of(ctx).brightness == Brightness.dark
-                            ? Colors.black
-                            : Theme.of(ctx).colorScheme.primary,
-                      ),
-                      icon: const Icon(Icons.drive_file_move),
-                      label: Text(l10n?.move ?? 'Move'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Theme.of(ctx).colorScheme.error,
-                      ),
-                      onPressed: () async {
-                        Navigator.pop(ctx);
-                        final ok = await showDialog<bool>(
-                          context: context,
-                          builder: (dctx) {
-                            return AlertDialog(
-                              title: Text(
-                                l10n?.confirmRemoveRef ?? 'Remove reference',
+                  const SizedBox(height: 8),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final theme = Theme.of(ctx);
+                      final scheme = theme.colorScheme;
+                      final actionLabels = <String>[
+                        l10n?.rename ?? 'Rename',
+                        l10n?.copy ?? 'Copy',
+                        l10n?.move ?? 'Move',
+                      ];
+                      final buttonTextStyle =
+                          theme.textTheme.labelLarge ??
+                          const TextStyle(fontSize: 14);
+                      double measuredButtonWidth(String label) {
+                        final painter = TextPainter(
+                          text: TextSpan(text: label, style: buttonTextStyle),
+                          textDirection: Directionality.of(ctx),
+                          textScaler: MediaQuery.textScalerOf(ctx),
+                          maxLines: 1,
+                        )..layout();
+                        return painter.width + 72;
+                      }
+
+                      final requiredRowWidth =
+                          actionLabels
+                              .map(measuredButtonWidth)
+                              .fold<double>(0, (sum, width) => sum + width) +
+                          16;
+                      final compact = constraints.maxWidth < requiredRowWidth;
+
+                      Widget actionButton({
+                        required Key key,
+                        required IconData icon,
+                        required String label,
+                        required VoidCallback onPressed,
+                      }) {
+                        return TextButton.icon(
+                          key: key,
+                          onPressed: onPressed,
+                          style: TextButton.styleFrom(
+                            minimumSize: const Size(0, 48),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            backgroundColor: scheme.primaryContainer,
+                            foregroundColor: scheme.onPrimaryContainer,
+                          ),
+                          icon: Icon(icon),
+                          label: Text(
+                            label,
+                            maxLines: 2,
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }
+
+                      final buttons = <Widget>[
+                        actionButton(
+                          key: const ValueKey('waveEventRenameButton'),
+                          icon: Icons.drive_file_rename_outline,
+                          label: actionLabels[0],
+                          onPressed: () => _showRenameDialog(
+                            context,
+                            rtid,
+                            alias,
+                            onEditFinished,
+                          ),
+                        ),
+                        actionButton(
+                          key: const ValueKey('waveEventCopyButton'),
+                          icon: Icons.copy,
+                          label: actionLabels[1],
+                          onPressed: () => _showCopyChoiceDialog(
+                            context,
+                            rtid,
+                            alias,
+                            waveIndex,
+                            onEditFinished,
+                          ),
+                        ),
+                        actionButton(
+                          key: const ValueKey('waveEventMoveButton'),
+                          icon: Icons.drive_file_move,
+                          label: actionLabels[2],
+                          onPressed: () => _showMoveDialog(
+                            context,
+                            rtid,
+                            waveIndex,
+                            onEditFinished,
+                          ),
+                        ),
+                      ];
+
+                      if (compact) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (
+                              var index = 0;
+                              index < buttons.length;
+                              index++
+                            ) ...[
+                              SizedBox(
+                                width: double.infinity,
+                                child: buttons[index],
                               ),
-                              content: Text(
-                                l10n?.confirmRemoveRefMessage ??
-                                    'Remove this reference? The entity data will remain until all references are removed.',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(dctx, false),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Theme.of(
-                                      dctx,
-                                    ).colorScheme.primary,
-                                  ),
-                                  child: Text(l10n?.cancel ?? 'Cancel'),
-                                ),
-                                FilledButton(
-                                  onPressed: () => Navigator.pop(dctx, true),
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: Theme.of(
-                                      dctx,
-                                    ).colorScheme.error,
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  child: Text(
+                              if (index != buttons.length - 1)
+                                const SizedBox(height: 8),
+                            ],
+                          ],
+                        );
+                      }
+                      return Row(
+                        children: [
+                          for (
+                            var index = 0;
+                            index < buttons.length;
+                            index++
+                          ) ...[
+                            Expanded(child: buttons[index]),
+                            if (index != buttons.length - 1)
+                              const SizedBox(width: 8),
+                          ],
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          key: const ValueKey('waveEventRemoveButton'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Theme.of(ctx).colorScheme.error,
+                          ),
+                          onPressed: () async {
+                            Navigator.pop(ctx);
+                            final ok = await showDialog<bool>(
+                              context: context,
+                              builder: (dctx) {
+                                return AlertDialog(
+                                  title: Text(
                                     l10n?.confirmRemoveRef ??
                                         'Remove reference',
                                   ),
-                                ),
-                              ],
+                                  content: Text(
+                                    l10n?.confirmRemoveRefMessage ??
+                                        'Remove this reference? The entity data will remain until all references are removed.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(dctx, false),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Theme.of(
+                                          dctx,
+                                        ).colorScheme.primary,
+                                      ),
+                                      child: Text(l10n?.cancel ?? 'Cancel'),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () =>
+                                          Navigator.pop(dctx, true),
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: Theme.of(
+                                          dctx,
+                                        ).colorScheme.error,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: Text(
+                                        l10n?.confirmRemoveRef ??
+                                            'Remove reference',
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
+                            if (ok == true) {
+                              _smartDeleteEvent(waveIndex, rtid);
+                            }
                           },
-                        );
-                        if (ok == true) {
-                          _smartDeleteEvent(waveIndex, rtid);
-                        }
-                      },
-                      icon: const Icon(Icons.remove_circle_outline),
-                      label: Text(l10n?.removeFromWave ?? 'Remove from wave'),
-                    ),
+                          icon: const Icon(Icons.remove_circle_outline),
+                          label: Text(
+                            l10n?.removeFromWave ?? 'Remove from wave',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),

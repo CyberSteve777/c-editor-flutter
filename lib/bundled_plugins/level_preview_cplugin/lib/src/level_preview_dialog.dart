@@ -1,4 +1,5 @@
-import 'package:c_editor/widgets/editor_components.dart' show isDesktopPlatform;
+import 'package:c_editor/widgets/editor_components.dart'
+    show HorizontalTagScroller, isDesktopPlatform;
 import 'package:c_editor/data/zombie_conditions.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -32,6 +33,7 @@ import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/widgets/rift_theme_widgets.dart';
+import 'package:c_editor/widgets/explosive_barrels_preview_grid.dart';
 
 class LevelPreviewDialog extends StatefulWidget {
   final CPluginHost host;
@@ -63,7 +65,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   bool _isLoadingRepos = true;
 
   List<String> _cachedZombies = [];
-  List<String> _cachedGridItems = [];
+  List<DiscoveredGridItem> _cachedGridItems = [];
   List<String> _cachedEvents = [];
   int _cachedTotalPfCount = 0;
   List<GridPreviewCategoryOption> _cachedGridCategories = [];
@@ -121,9 +123,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       widget.levelFile,
       widget.parsed,
     ).toList();
-    _cachedGridItems = GridItemDiscovery.discoverGridItems(
+    _cachedGridItems = GridItemDiscovery.discoverGridItemEntries(
       widget.levelFile,
-    ).toList();
+    );
     _cachedEvents = ZombieDiscovery.discoverEvents(widget.parsed).toList();
     _cachedTotalPfCount = PlantFoodDiscovery.calculateTotalPlantFood(
       widget.levelFile,
@@ -325,6 +327,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   _buildSeedBankCard(context, theme, l10n),
                   _buildConveyorCard(context, theme, l10n),
                   _buildCopycatCard(context, theme, l10n),
+                  _buildSingleHandedCard(context, theme, l10n),
                   _buildSeedRainCard(context, theme, l10n),
                   _buildHeianWindCard(context, theme, l10n),
                   _buildPrePlacedCard(context, theme, l10n),
@@ -948,8 +951,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final bool isDataEmpty =
         presetPlants.isEmpty && blackList.isEmpty && whiteList.isEmpty;
     final String levelText = plantLevel == 0
-        ? l10n.followAccountLevel
-        : "$plantLevel";
+        ? l10n.levelAccount
+        : "${l10n.plantLevelLabel}: $plantLevel";
 
     return Container(
       decoration: BoxDecoration(
@@ -1072,7 +1075,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     color: Colors.blueAccent,
                   ),
                   Text(
-                    "${l10n.plantLevelLabel}: $levelText",
+                    levelText,
                     style: const TextStyle(
                       fontSize: 15,
                       color: Colors.blueAccent,
@@ -1385,6 +1388,64 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   (id) => showGridItemIcons
                       ? GridItemIcon(id: id, size: 40)
                       : UniversalIcon(id: id, size: 40, levelFile: levelFile),
+                ),
+            if (canExpand && onToggle != null)
+              IconButton(
+                onPressed: onToggle,
+                icon: Icon(
+                  expanded ? Icons.chevron_left : Icons.chevron_right,
+                  color: Colors.blueAccent,
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.05,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(40, 40),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGridItemListSection(
+    String title,
+    List<DiscoveredGridItem> items,
+    bool expanded, {
+    VoidCallback? onToggle,
+  }) {
+    final canExpand = items.length > 8;
+    final displayItems = (canExpand && !expanded)
+        ? items.take(3).toList()
+        : items;
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSubSectionTitle(title, theme),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            ...displayItems
+                .where((entry) => entry.id.isNotEmpty)
+                .map(
+                  (entry) => GridItemIcon(
+                    key: ValueKey(
+                      'levelOverviewGridItem_${entry.id}_${entry.isDedicatedModuleItem ? 'dedicatedModule' : 'standard'}',
+                    ),
+                    id: entry.id,
+                    size: 40,
+                    suppressCustomBadge: entry.isDedicatedModuleItem,
+                  ),
                 ),
             if (canExpand && onToggle != null)
               IconButton(
@@ -1736,8 +1797,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
     final theme = Theme.of(context);
 
-    final isDesktop = isDesktopPlatform(context);
-
     Widget content = SingleChildScrollView(
       controller: _prePlacedTabScrollController,
       scrollDirection: Axis.horizontal,
@@ -1808,26 +1867,19 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               ],
             ),
           ),
-          if (isDesktop) const SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
 
-    if (isDesktop) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Scrollbar(
-            controller: _prePlacedTabScrollController,
-            thumbVisibility: true,
-            child: content,
-          ),
-        ],
-      );
-    }
-
-    return content;
+    return Scrollbar(
+      key: const ValueKey('prePlacedTabScrollbar'),
+      controller: _prePlacedTabScrollController,
+      thumbVisibility: true,
+      interactive: true,
+      scrollbarOrientation: ScrollbarOrientation.bottom,
+      child: content,
+    );
   }
 
   Widget _tabItem(
@@ -1879,8 +1931,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
   Widget _buildPlantTypeTabSwitcher(AppLocalizations l10n) {
     final theme = Theme.of(context);
-    final isDesktop = isDesktopPlatform(context);
-
     Widget content = SingleChildScrollView(
       controller: _plantTypeTabScrollController,
       scrollDirection: Axis.horizontal,
@@ -1913,26 +1963,19 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               ],
             ),
           ),
-          if (isDesktop) const SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
 
-    if (isDesktop) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Scrollbar(
-            controller: _plantTypeTabScrollController,
-            thumbVisibility: true,
-            child: content,
-          ),
-        ],
-      );
-    }
-
-    return content;
+    return Scrollbar(
+      key: const ValueKey('plantTypeTabScrollbar'),
+      controller: _plantTypeTabScrollController,
+      thumbVisibility: true,
+      interactive: true,
+      scrollbarOrientation: ScrollbarOrientation.bottom,
+      child: content,
+    );
   }
 
   Widget _subTabItem(int index, String label, ThemeData theme) {
@@ -2095,8 +2138,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         .toList();
     if (optionsForKind.length <= 1) return const SizedBox.shrink();
 
-    final isDesktop = isDesktopPlatform(context);
-
     Widget content = SingleChildScrollView(
       controller: _subCategoryScrollController,
       scrollDirection: Axis.horizontal,
@@ -2157,7 +2198,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
               }).toList(),
             ),
           ),
-          if (isDesktop) const SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -2168,14 +2209,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isDesktop)
-            Scrollbar(
-              controller: _subCategoryScrollController,
-              thumbVisibility: true,
-              child: content,
-            )
-          else
-            content,
+          Scrollbar(
+            key: const ValueKey('gridSubCategoryScrollbar'),
+            controller: _subCategoryScrollController,
+            thumbVisibility: true,
+            interactive: true,
+            scrollbarOrientation: ScrollbarOrientation.bottom,
+            child: content,
+          ),
         ],
       ),
     );
@@ -2225,6 +2266,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       cols: cols,
       style: style,
       moduleData: result,
+      activeTabIndex: 1,
       cellBuilder: (col, row) => null,
     );
   }
@@ -3034,36 +3076,24 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     LevelPreviewGridStyle style,
   ) {
     final data = readBombPropertiesData(widget.levelFile);
-    return _buildCompositeLawnGrid(
+    return ExplosiveBarrelsPreviewGrid(
       rows: rows,
       cols: cols,
       style: style,
-      cellBuilder: (col, row) {
-        if (data == null) return null;
-        if (row < data.fuseLengths.length) {
-          final fuseLen = int.tryParse(data.fuseLengths[row]) ?? 0;
-          if (fuseLen > 0 && col < fuseLen) {
-            return Container(
-              margin: EdgeInsets.zero,
-              alignment: Alignment.center,
-              child: Container(
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF57C00),
-                  borderRadius: BorderRadius.circular(2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFFA726).withValues(alpha: 0.8),
-                      blurRadius: 3,
-                      spreadRadius: 0.5,
-                    ),
-                  ],
-                ),
-              ),
-            );
+      fuseLengths: data?.fuseLengths ?? const [],
+      selectedX: _selectedX,
+      selectedY: _selectedY,
+      onCellTap: (col, row) {
+        setState(() {
+          if (_selectedX == col && _selectedY == row) {
+            _selectedX = null;
+            _selectedY = null;
+          } else {
+            _selectedX = col;
+            _selectedY = row;
           }
-        }
-        return null;
+          _selectedIds = [];
+        });
       },
     );
   }
@@ -3246,7 +3276,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             ],
             if (gridItems.isNotEmpty) ...[
               const SizedBox(height: 20),
-              _buildPlantListSection(
+              _buildGridItemListSection(
                 l10n.allObjectsInLevel,
                 gridItems,
                 _encounterGridItemsExpanded,
@@ -3254,8 +3284,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                   () => _encounterGridItemsExpanded =
                       !_encounterGridItemsExpanded,
                 ),
-                levelFile: widget.levelFile,
-                showGridItemIcons: true,
               ),
             ],
             if (events.isNotEmpty) ...[
@@ -3365,6 +3393,256 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         ),
       ),
     );
+  }
+
+  Widget _buildSingleHandedCard(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final moduleObject = widget.levelFile.objects.firstWhereOrNull(
+      (object) => object.objClass == 'SingleHandedProperties',
+    );
+    final tutorialObject = widget.levelFile.objects.firstWhereOrNull(
+      (object) => object.objClass == 'IntroSingleHandedProperties',
+    );
+    if (moduleObject == null && tutorialObject == null) {
+      return const SizedBox.shrink();
+    }
+
+    SingleHandedPropertiesData? data;
+    IntroSingleHandedPropertiesData? tutorialData;
+    try {
+      if (moduleObject?.objData is Map) {
+        data = SingleHandedPropertiesData.fromJson(
+          Map<String, dynamic>.from(moduleObject!.objData as Map),
+        );
+      }
+    } catch (_) {}
+    try {
+      if (tutorialObject?.objData is Map) {
+        tutorialData = IntroSingleHandedPropertiesData.fromJson(
+          Map<String, dynamic>.from(tutorialObject!.objData as Map),
+        );
+      }
+    } catch (_) {}
+    if (data == null && tutorialData == null) {
+      return const SizedBox.shrink();
+    }
+
+    const accent = Color(0xFF29B6F6);
+    final title = data != null
+        ? l10n.moduleTitle_SingleHandedProperties
+        : l10n.moduleTitle_IntroSingleHandedProperties;
+
+    return Container(
+      key: const ValueKey('singleHandedOverviewCard'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                children: [
+                  const Icon(Icons.sledding, size: 20, color: accent),
+                  _buildSectionTitle(title, theme, color: accent),
+                ],
+              ),
+            ),
+            if (data != null) ...[
+              _buildSubSectionTitle(
+                l10n.singleHandedOverviewBasicConfiguration,
+                theme,
+              ),
+              const SizedBox(height: 10),
+              _buildSingleHandedPlantPath(context, data, theme, l10n),
+              const SizedBox(height: 18),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _buildInfoChip(
+                    icon: Icons.rocket_launch,
+                    label:
+                        '${l10n.singleHandedMissileCount}: ${data.missileCount}',
+                    color: Colors.deepOrangeAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.schedule,
+                    label:
+                        '${l10n.singleHandedMissileInterval}: ${_formatSingleHandedNumber(data.missileInterval)}',
+                    color: Colors.orangeAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.notification_important_outlined,
+                    label:
+                        '${l10n.singleHandedWarningTime}: ${_formatSingleHandedNumber(data.rocketHitTime)}',
+                    color: Colors.amber,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.speed,
+                    label:
+                        '${l10n.singleHandedRocketSpeed}: ${_formatSingleHandedNumber(data.rocketSpeed)}',
+                    color: Colors.lightBlueAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.directions_run,
+                    label:
+                        '${l10n.singleHandedZombieSpeedMultiplier}: x${_formatSingleHandedNumber(data.zombiesWalkSpeed)}',
+                    color: Colors.purpleAccent,
+                    theme: theme,
+                  ),
+                  _buildInfoChip(
+                    icon: Icons.favorite_outline,
+                    label:
+                        '${l10n.singleHandedZombieHealthMultiplier}: x${_formatSingleHandedNumber(data.zombiesHitpointsPercent)}',
+                    color: Colors.redAccent,
+                    theme: theme,
+                  ),
+                ],
+              ),
+              if (data.specialWaveDatas.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                _buildSubSectionTitle(l10n.singleHandedSpecialWaves, theme),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: data.specialWaveDatas.map((wave) {
+                    final subtitle = l10n.singleHandedSpecialWaveSubtitle(
+                      _formatSingleHandedNumber(wave.zombiesWalkSpeed),
+                      _formatSingleHandedNumber(wave.zombiesHitpointsPercent),
+                    );
+                    final healthBar = wave.showHealthBar
+                        ? l10n.singleHandedHealthBarEnabled
+                        : l10n.singleHandedHealthBarDisabled;
+                    return Tooltip(
+                      message: '$subtitle\n$healthBar',
+                      child: Chip(
+                        avatar: Icon(
+                          wave.showHealthBar
+                              ? Icons.monitor_heart_outlined
+                              : Icons.favorite_border,
+                          size: 17,
+                          color: accent,
+                        ),
+                        label: Text(
+                          '${l10n.singleHandedWaveNumber(wave.wave)} · $subtitle',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ],
+            if (tutorialData != null) ...[
+              if (data != null) ...[
+                const SizedBox(height: 20),
+                const Divider(height: 1),
+                const SizedBox(height: 16),
+                _buildSubSectionTitle(
+                  l10n.moduleTitle_IntroSingleHandedProperties,
+                  theme,
+                ),
+                const SizedBox(height: 10),
+              ],
+              _buildInfoChip(
+                icon: Icons.school_outlined,
+                label:
+                    '${l10n.singleHandedTutorialWaveForStartRocket}: ${tutorialData.waveForStartRocket}',
+                color: Colors.greenAccent,
+                theme: theme,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSingleHandedPlantPath(
+    BuildContext context,
+    SingleHandedPropertiesData data,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final stages = <({String id, String detail})>[
+      (
+        id: data.initWeapon,
+        detail: l10n.singleHandedInitialPlantSubtitle(
+          _formatSingleHandedNumber(data.initWeaponLaunchTimePercent),
+        ),
+      ),
+      ...data.dropWeaponDatas.map(
+        (entry) => (
+          id: entry.weaponName,
+          detail: l10n.singleHandedUpgradePlantSubtitle(
+            entry.killCount,
+            _formatSingleHandedNumber(entry.launchTimePercent),
+          ),
+        ),
+      ),
+    ].where((stage) => stage.id.isNotEmpty).toList(growable: false);
+
+    return HorizontalTagScroller(
+      key: const ValueKey('singleHandedPlantPathScroller'),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+      children: [
+        Row(
+          key: const ValueKey('singleHandedPlantUpgradePath'),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var index = 0; index < stages.length; index++) ...[
+              Tooltip(
+                message: stages[index].detail,
+                child: PlantIcon(
+                  key: ValueKey(
+                    'singleHandedPlantStage_${stages[index].id}_$index',
+                  ),
+                  id: stages[index].id,
+                  size: 48,
+                ),
+              ),
+              if (index != stages.length - 1)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    key: ValueKey('singleHandedUpgradeArrow_$index'),
+                    size: 22,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.75),
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  String _formatSingleHandedNumber(num value) {
+    final number = value.toDouble();
+    return number == number.roundToDouble()
+        ? number.toInt().toString()
+        : number.toString();
   }
 
   Widget _buildSeedRainCard(

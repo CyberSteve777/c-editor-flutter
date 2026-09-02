@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/challenge_resource_l10n.dart';
 import 'package:c_editor/utils/selection_search.dart';
 
@@ -49,7 +50,7 @@ class ChallengeRepository {
     ),
     ChallengeTypeInfo(
       objClass: 'StarChallengePlantsSurviveProps',
-      defaultAlias: 'PlantsSurive',
+      defaultAlias: 'PlantsSurvive',
       icon: Icons.security,
       initialDataFactory: () => StarChallengePlantSurviveData(),
     ),
@@ -302,5 +303,41 @@ class ChallengeRepository {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Suggests the next local alias for [challenge].
+  ///
+  /// Existing objects of the same challenge type also reserve the numeric
+  /// suffix even when their alias was customized or came from an older build
+  /// with a different default spelling.
+  static String suggestUniqueAlias({
+    required ChallengeTypeInfo challenge,
+    required PvzLevelFile levelFile,
+    Iterable<String> referencedRtids = const <String>[],
+  }) {
+    final usedAliases = <String>{};
+    var hasSameChallengeType = false;
+
+    for (final object in levelFile.objects) {
+      usedAliases.addAll(object.aliases ?? const <String>[]);
+      if (object.objClass == challenge.objClass) {
+        hasSameChallengeType = true;
+      }
+    }
+    for (final rtid in referencedRtids) {
+      final info = RtidParser.parse(rtid);
+      if (info != null) usedAliases.add(info.alias);
+    }
+
+    final base = challenge.defaultAlias.trim().isEmpty
+        ? 'Challenge'
+        : challenge.defaultAlias.trim();
+    if (!hasSameChallengeType && !usedAliases.contains(base)) return base;
+
+    var suffix = 1;
+    while (usedAliases.contains('$base$suffix')) {
+      suffix++;
+    }
+    return '$base$suffix';
   }
 }

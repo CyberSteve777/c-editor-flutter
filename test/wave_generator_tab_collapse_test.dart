@@ -115,4 +115,107 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('zombie pool tile reserves readable name width', (tester) async {
+    tester.view.physicalSize = const Size(320, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) {
+            final media = MediaQuery.of(context);
+            return MediaQuery(
+              data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+              child: Scaffold(
+                body: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: WaveGeneratorZombieTile(
+                      key: const ValueKey('responsiveZombiePoolTile'),
+                      style: WaveGeneratorZombieTileStyle.poolCompact,
+                      localizedName: '周年庆飞行器僵尸',
+                      codename: 'anniversary_flying_zombie',
+                      iconPath: null,
+                      onDelete: () {},
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tile = find.byKey(const ValueKey('responsiveZombiePoolTile'));
+    final name = find.text('周年庆飞行器僵尸');
+    expect(tester.getSize(tile).width, greaterThanOrEqualTo(220));
+    expect(tester.getSize(name).width, greaterThan(80));
+    expect(tester.widget<Text>(name).maxLines, 2);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('zombie pool tile keeps delete action at the trailing edge', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: WaveGeneratorZombieTile(
+              key: const ValueKey('shortNameZombiePoolTile'),
+              style: WaveGeneratorZombieTileStyle.poolCompact,
+              localizedName: 'Future zombie',
+              codename: 'future',
+              iconPath: null,
+              onDelete: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tileRect = tester.getRect(
+      find.byKey(const ValueKey('shortNameZombiePoolTile')),
+    );
+    final deleteCenter = tester.getCenter(find.byIcon(Icons.close));
+    expect(tileRect.right - deleteCenter.dx, lessThan(28));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'horizontal zombie tile keeps delete action at the trailing edge',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: WaveGeneratorZombieTile(
+                key: const ValueKey('horizontalShortNameZombieTile'),
+                localizedName: 'Future zombie',
+                codename: 'future',
+                iconPath: null,
+                onDelete: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final tileRect = tester.getRect(
+        find.byKey(const ValueKey('horizontalShortNameZombieTile')),
+      );
+      final deleteCenter = tester.getCenter(find.byIcon(Icons.close));
+      expect(tileRect.right - deleteCenter.dx, lessThan(32));
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

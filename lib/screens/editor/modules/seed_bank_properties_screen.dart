@@ -1051,33 +1051,26 @@ class _ResourceListEditor extends StatelessWidget {
                 ),
               )
             else if (onReorder != null)
-              SizedBox(
-                height: items.length * kPresetResourceRowHeight,
-                child: ReorderableListView.builder(
-                  clipBehavior: Clip.none,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  buildDefaultDragHandles: false,
-                  itemCount: items.length,
-                  onReorder: (oldIndex, newIndex) {
-                    if (newIndex > oldIndex) {
-                      newIndex--;
-                    }
-                    onReorder!(oldIndex, newIndex);
-                  },
-                  itemBuilder: (context, index) {
-                    final id = items[index];
-                    final iconPath = _entryIconPath(id, isZombie: isZombie);
-                    return PresetResourceListTile(
-                      key: ValueKey('preset-resource-$index-$id'),
-                      label: _entryDisplayName(context, id, isZombie: isZombie),
-                      iconAssetPath: iconPath,
-                      iconAltCandidates: imageAltCandidates(iconPath),
-                      reorderIndex: index,
-                      onRemove: () => onRemove(index),
-                    );
-                  },
-                ),
+              ReorderableListView.builder(
+                clipBehavior: Clip.none,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                buildDefaultDragHandles: false,
+                itemCount: items.length,
+                onReorderItem: (oldIndex, newIndex) =>
+                    onReorder!(oldIndex, newIndex),
+                itemBuilder: (context, index) {
+                  final id = items[index];
+                  final iconPath = _entryIconPath(id, isZombie: isZombie);
+                  return PresetResourceListTile(
+                    key: ValueKey('preset-resource-$index-$id'),
+                    label: _entryDisplayName(context, id, isZombie: isZombie),
+                    iconAssetPath: iconPath,
+                    iconAltCandidates: imageAltCandidates(iconPath),
+                    reorderIndex: index,
+                    onRemove: () => onRemove(index),
+                  );
+                },
               )
             else
               Wrap(

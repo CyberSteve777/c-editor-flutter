@@ -504,6 +504,27 @@ class EventRegistry {
         }
       },
     ),
+    'HamsterZombieSpawnerProps': EventMetadata(
+      titleKey: 'eventTitle_HamsterZombieSpawnerProps',
+      descriptionKey: 'eventDesc_HamsterZombieSpawnerProps',
+      icon: Icons.pets,
+      color: const Color(0xFF607D8B),
+      darkColor: const Color(0xFFB0BEC5),
+      category: EventCategory.zombieSpawn,
+      defaultAlias: 'HamsterBallEvent',
+      defaultObjClass: 'HamsterZombieSpawnerProps',
+      initialDataFactory: () => HamsterZombieSpawnerPropsData(),
+      summaryProvider: (obj) {
+        try {
+          final data = HamsterZombieSpawnerPropsData.fromJson(
+            obj.objData as Map<String, dynamic>,
+          );
+          return '${data.zombies.length}';
+        } catch (_) {
+          return '';
+        }
+      },
+    ),
     'PumpkinHouseActionProps': EventMetadata(
       titleKey: 'eventTitle_PumpkinHouseActionProps',
       descriptionKey: 'eventDesc_PumpkinHouseActionProps',

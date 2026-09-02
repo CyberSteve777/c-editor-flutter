@@ -4,7 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
-enum _BeginStringMode { hidden, defaultText, custom }
+enum _BeginStringMode { defaultText, custom }
 
 class CowboyMinigameScreen extends StatefulWidget {
   const CowboyMinigameScreen({
@@ -56,7 +56,7 @@ class _CowboyMinigameScreenState extends State<CowboyMinigameScreen> {
       _data = CowboyMinigamePropertiesData();
     }
     _beginStringMode = switch (_data.beginString) {
-      '' => _BeginStringMode.hidden,
+      '' => _BeginStringMode.custom,
       CowboyMinigamePropertiesData.defaultBeginString =>
         _BeginStringMode.defaultText,
       _ => _BeginStringMode.custom,
@@ -93,7 +93,6 @@ class _CowboyMinigameScreenState extends State<CowboyMinigameScreen> {
   void _setBeginStringMode(_BeginStringMode mode) {
     _beginStringMode = mode;
     _data.beginString = switch (mode) {
-      _BeginStringMode.hidden => '',
       _BeginStringMode.defaultText =>
         CowboyMinigamePropertiesData.defaultBeginString,
       _BeginStringMode.custom => _customTextController.text,
@@ -182,10 +181,6 @@ class _CowboyMinigameScreenState extends State<CowboyMinigameScreen> {
                         border: const OutlineInputBorder(),
                       ),
                       items: [
-                        DropdownMenuItem(
-                          value: _BeginStringMode.hidden,
-                          child: Text(l10n.cowboyMinigameBeginStringHidden),
-                        ),
                         DropdownMenuItem(
                           value: _BeginStringMode.defaultText,
                           child: Text(l10n.cowboyMinigameBeginStringDefault),

@@ -28,13 +28,15 @@ class LawnGrid extends StatelessWidget {
   final double maxWidth;
   final int? selectedX;
   final int? selectedY;
-  final BoxDecoration? Function(int col, int row, bool isSelected, bool isStripe)?
-      cellDecorationBuilder;
   final BoxDecoration? Function(
     int col,
     int row,
     bool isSelected,
-  )? foregroundDecorationBuilder;
+    bool isStripe,
+  )?
+  cellDecorationBuilder;
+  final BoxDecoration? Function(int col, int row, bool isSelected)?
+  foregroundDecorationBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +61,7 @@ class LawnGrid extends StatelessWidget {
                 ScrollConfiguration(
                   behavior: const ScrollBehavior().copyWith(scrollbars: false),
                   child: GridView.builder(
+                    primary: false,
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: cols,
@@ -70,7 +73,8 @@ class LawnGrid extends StatelessWidget {
                       final row = i ~/ cols;
                       final isSelected = selectedX == col && selectedY == row;
 
-                      final decoration = cellDecorationBuilder?.call(
+                      final decoration =
+                          cellDecorationBuilder?.call(
                             col,
                             row,
                             isSelected,
@@ -98,8 +102,9 @@ class LawnGrid extends StatelessWidget {
                           );
 
                       return GestureDetector(
-                        onTap:
-                            onCellTap != null ? () => onCellTap!(col, row) : null,
+                        onTap: onCellTap != null
+                            ? () => onCellTap!(col, row)
+                            : null,
                         child: Container(
                           decoration: decoration,
                           foregroundDecoration: foregroundDecoration,
@@ -110,9 +115,7 @@ class LawnGrid extends StatelessWidget {
                   ),
                 ),
                 if (foreground != null)
-                  Positioned.fill(
-                    child: IgnorePointer(child: foreground!),
-                  ),
+                  Positioned.fill(child: IgnorePointer(child: foreground!)),
               ],
             ),
           ),

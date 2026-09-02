@@ -37,34 +37,87 @@ String _localizedZombieName(BuildContext context, String typeName) {
 
 Widget _starChallengeEntityCard({
   required BuildContext context,
-  required Widget leading,
   required String title,
-  required VoidCallback onEdit,
+  Widget? leading,
+  String? subtitle,
+  VoidCallback? onEdit,
   VoidCallback? onRemove,
+  Key? cardKey,
+  Key? identityKey,
+  Key? actionsKey,
 }) {
+  final theme = Theme.of(context);
+  final identity = Column(
+    key: identityKey,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        title,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      if (subtitle?.trim().isNotEmpty == true)
+        Text(
+          subtitle!,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+    ],
+  );
+  final hasActions = onEdit != null || onRemove != null;
+  final actions = Row(
+    key: actionsKey,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      if (onEdit != null)
+        IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: onEdit),
+      if (onRemove != null)
+        IconButton(
+          icon: const Icon(Icons.close, size: 20),
+          onPressed: onRemove,
+        ),
+    ],
+  );
   return Card(
+    key: cardKey,
     margin: const EdgeInsets.only(bottom: 8),
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Row(
-        children: [
-          leading,
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              title,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          ),
-          IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: onEdit),
-          if (onRemove != null)
-            IconButton(
-              icon: const Icon(Icons.close, size: 20),
-              onPressed: onRemove,
-            ),
-        ],
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+          final compact = constraints.maxWidth < 320 || textScale > 1.3;
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (leading != null)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      leading,
+                      if (hasActions) ...[const Spacer(), actions],
+                    ],
+                  ),
+                if (leading != null) const SizedBox(height: 8),
+                identity,
+                if (leading == null && hasActions)
+                  Align(alignment: Alignment.centerRight, child: actions),
+              ],
+            );
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (leading != null) ...[leading, const SizedBox(width: 12)],
+              Expanded(child: identity),
+              if (hasActions) ...[const SizedBox(width: 8), actions],
+            ],
+          );
+        },
       ),
     ),
   );
@@ -105,6 +158,7 @@ class StarChallengeDescriptionField extends StatefulWidget {
     required this.label,
     required this.value,
     required this.onChanged,
+    this.hint,
     this.minLines = 3,
     this.maxLines = 8,
   });
@@ -112,6 +166,7 @@ class StarChallengeDescriptionField extends StatefulWidget {
   final String label;
   final String value;
   final ValueChanged<String> onChanged;
+  final String? hint;
   final int minLines;
   final int maxLines;
 
@@ -146,19 +201,34 @@ class _StarChallengeDescriptionFieldState
 
   @override
   Widget build(BuildContext context) {
-    return EditorResponsiveInputField(
-      label: widget.label,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        alignLabelWithHint: true,
-      ),
-      builder: (context, decoration) => TextField(
-        controller: _controller,
-        decoration: decoration,
-        minLines: widget.minLines,
-        maxLines: widget.maxLines,
-        onChanged: widget.onChanged,
-      ),
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        EditorResponsiveInputField(
+          label: widget.label,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            alignLabelWithHint: true,
+          ),
+          builder: (context, decoration) => TextField(
+            controller: _controller,
+            decoration: decoration,
+            minLines: widget.minLines,
+            maxLines: widget.maxLines,
+            onChanged: widget.onChanged,
+          ),
+        ),
+        if (widget.hint?.trim().isNotEmpty == true) ...[
+          const SizedBox(height: 6),
+          Text(
+            widget.hint!,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -177,11 +247,33 @@ class StarChallengeLabeledBoolField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(label),
-      value: value,
-      onChanged: onChanged,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+        final compact = constraints.maxWidth < 360 || textScale > 1.3;
+        if (compact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(label, key: ValueKey('starChallengeBoolLabel_$label')),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Switch(
+                  key: ValueKey('starChallengeBoolSwitch_$label'),
+                  value: value,
+                  onChanged: onChanged,
+                ),
+              ),
+            ],
+          );
+        }
+        return SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(label, key: ValueKey('starChallengeBoolLabel_$label')),
+          value: value,
+          onChanged: onChanged,
+        );
+      },
     );
   }
 }
@@ -332,20 +424,14 @@ class _ApplyZombieConditionsChallengeEditorState
         else
           ...conditions.asMap().entries.map((e) {
             final id = e.value;
-            return Card(
-              margin: const EdgeInsets.only(bottom: 6),
-              child: ListTile(
-                dense: true,
-                title: Text(ConditionL10n.zombieLabel(context, id)),
-                subtitle: Text(
-                  id,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.close, size: 20),
-                  onPressed: () => _removeConditionAt(e.key),
-                ),
-              ),
+            return _starChallengeEntityCard(
+              context: context,
+              title: ConditionL10n.zombieLabel(context, id),
+              subtitle: id,
+              onRemove: () => _removeConditionAt(e.key),
+              cardKey: ValueKey('starChallengeConditionCard_${e.key}'),
+              identityKey: ValueKey('starChallengeConditionIdentity_${e.key}'),
+              actionsKey: ValueKey('starChallengeConditionActions_${e.key}'),
             );
           }),
         const SizedBox(height: 8),
@@ -426,6 +512,7 @@ class _PlantDefeatZombieChallengeEditorState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final plantId = _data['PlantTypeName'] as String? ?? '';
     final plant = PlantRepository().getPlantInfoById(plantId);
     final plantIconPath =
@@ -441,6 +528,7 @@ class _PlantDefeatZombieChallengeEditorState
             _objClass,
             'Description',
           ),
+          hint: l10n?.starChallengeChineseUnsupportedHint,
           value: _data['Description'] as String? ?? '',
           onChanged: (v) {
             setState(() {
@@ -487,7 +575,11 @@ class _PlantDefeatZombieChallengeEditorState
             ),
           ),
           title: plantName,
+          subtitle: plantId,
           onEdit: _pickPlant,
+          cardKey: const ValueKey('starChallengePlantCard'),
+          identityKey: const ValueKey('starChallengePlantIdentity'),
+          actionsKey: const ValueKey('starChallengePlantActions'),
         ),
       ],
     );
@@ -599,6 +691,7 @@ class _DefeatZombiesOfTypeChallengeEditorState
             _objClass,
             'Description',
           ),
+          hint: l10n?.starChallengeChineseUnsupportedHint,
           value: _data['Description'] as String? ?? '',
           onChanged: (v) {
             setState(() {
@@ -623,35 +716,35 @@ class _DefeatZombiesOfTypeChallengeEditorState
           },
         ),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String>(
-          isExpanded: true,
-          key: ValueKey(listType),
-          initialValue: listType == 'blacklist' ? 'blacklist' : 'whitelist',
-          decoration: InputDecoration(
-            labelText: ChallengeResourceL10n.property(
-              context,
-              _objClass,
-              'ListType',
-            ),
-            border: const OutlineInputBorder(),
-          ),
-          items: ['whitelist', 'blacklist']
-              .map(
-                (t) => DropdownMenuItem(
-                  value: t,
-                  child: Text(
-                    ChallengeResourceL10n.listTypeOption(context, _objClass, t),
+        EditorResponsiveInputField(
+          label: ChallengeResourceL10n.property(context, _objClass, 'ListType'),
+          builder: (context, decoration) => DropdownButtonFormField<String>(
+            isExpanded: true,
+            key: ValueKey(listType),
+            initialValue: listType == 'blacklist' ? 'blacklist' : 'whitelist',
+            decoration: decoration,
+            items: ['whitelist', 'blacklist']
+                .map(
+                  (t) => DropdownMenuItem(
+                    value: t,
+                    child: Text(
+                      ChallengeResourceL10n.listTypeOption(
+                        context,
+                        _objClass,
+                        t,
+                      ),
+                    ),
                   ),
-                ),
-              )
-              .toList(),
-          onChanged: (v) {
-            if (v == null) return;
-            setState(() {
-              _setTypesToKill(_zombieList, v);
-              _save();
-            });
-          },
+                )
+                .toList(),
+            onChanged: (v) {
+              if (v == null) return;
+              setState(() {
+                _setTypesToKill(_zombieList, v);
+                _save();
+              });
+            },
+          ),
         ),
         const SizedBox(height: 12),
         Row(
@@ -681,40 +774,26 @@ class _DefeatZombiesOfTypeChallengeEditorState
             final iconPath =
                 zombie?.iconAssetPath ?? 'assets/images/others/unknown.webp';
             final name = _zombieLabel(typeName);
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: AssetImageWidget(
-                          assetPath: iconPath,
-                          fit: BoxFit.contain,
-                          altCandidates: imageAltCandidates(iconPath),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        name,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 20),
-                      onPressed: () => _removeZombieAt(e.key),
-                    ),
-                  ],
+            return _starChallengeEntityCard(
+              context: context,
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: AssetImageWidget(
+                    assetPath: iconPath,
+                    fit: BoxFit.contain,
+                    altCandidates: imageAltCandidates(iconPath),
+                  ),
                 ),
               ),
+              title: name,
+              subtitle: typeName,
+              onRemove: () => _removeZombieAt(e.key),
+              cardKey: ValueKey('starChallengeZombieCard_${e.key}'),
+              identityKey: ValueKey('starChallengeZombieIdentity_${e.key}'),
+              actionsKey: ValueKey('starChallengeZombieActions_${e.key}'),
             );
           }),
       ],
@@ -796,6 +875,7 @@ class _DestroyGridItemsChallengeEditorState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final gridType = _data['GridItemType'] as String? ?? 'gravestone';
     final displayType = gridType == 'gravestone'
         ? 'gravestone_egypt'
@@ -810,6 +890,7 @@ class _DestroyGridItemsChallengeEditorState
             _objClass,
             'ChallengeDescription',
           ),
+          hint: l10n?.starChallengeChineseUnsupportedHint,
           value: _data['ChallengeDescription'] as String? ?? '',
           onChanged: (v) {
             setState(() {
@@ -834,26 +915,19 @@ class _DestroyGridItemsChallengeEditorState
           },
         ),
         const SizedBox(height: 12),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
+        _starChallengeEntityCard(
+          context: context,
           leading: PresetAwareGridItemIcon(
             typeName: displayType,
             size: 44,
             fit: BoxFit.contain,
           ),
-          title: Text(
-            _gridLabel(displayType),
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(
-            ChallengeResourceL10n.property(context, _objClass, 'GridItemType'),
-          ),
-          trailing: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: _pickGridItem,
-          ),
+          title: _gridLabel(displayType),
+          subtitle: gridType,
+          onEdit: _pickGridItem,
+          cardKey: const ValueKey('starChallengeGridItemCard'),
+          identityKey: const ValueKey('starChallengeGridItemIdentity'),
+          actionsKey: const ValueKey('starChallengeGridItemActions'),
         ),
       ],
     );
@@ -916,31 +990,67 @@ class _StarChallengeDisablePlantEditorState
             color: isSelected
                 ? Theme.of(context).colorScheme.primaryContainer
                 : null,
-            child: ListTile(
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Image.asset(
-                  StarChallengeProfessions.iconAsset(id),
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.yard),
-                ),
-              ),
-              title: Text(ChallengeResourceL10n.profession(context, id)),
-              trailing: isSelected
-                  ? Icon(
-                      Icons.check_circle,
-                      color: Theme.of(context).colorScheme.primary,
-                    )
-                  : null,
+            child: InkWell(
               onTap: () {
                 setState(() {
                   _data['Profession'] = id;
                   _save();
                 });
               },
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final textScale =
+                        MediaQuery.textScalerOf(context).scale(16) / 16;
+                    final compact =
+                        constraints.maxWidth < 280 || textScale > 1.3;
+                    final icon = ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.asset(
+                        StarChallengeProfessions.iconAsset(id),
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.yard),
+                      ),
+                    );
+                    final check = isSelected
+                        ? Icon(
+                            Icons.check_circle,
+                            color: Theme.of(context).colorScheme.primary,
+                          )
+                        : null;
+                    final label = Text(
+                      ChallengeResourceL10n.profession(context, id),
+                    );
+                    if (compact) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              icon,
+                              if (check != null) ...[const Spacer(), check],
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          label,
+                        ],
+                      );
+                    }
+                    return Row(
+                      children: [
+                        icon,
+                        const SizedBox(width: 12),
+                        Expanded(child: label),
+                        if (check != null) ...[const SizedBox(width: 8), check],
+                      ],
+                    );
+                  },
+                ),
+              ),
             ),
           );
         }),

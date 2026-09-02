@@ -225,7 +225,7 @@ class WaveGeneratorZombieTile extends StatelessWidget {
                   ),
                 )
               else
-                Flexible(
+                Expanded(
                   child: _NameColumn(
                     localizedName: localizedName,
                     codename: codename,
@@ -328,53 +328,61 @@ class WaveGeneratorZombieTile extends StatelessWidget {
       }
     }
 
-    return Material(
-      color: theme.colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(10),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          constraints: BoxConstraints(maxWidth: isDesktop ? 260 : 220),
-          padding: EdgeInsets.all(isDesktop ? 8 : 6),
-          decoration: BoxDecoration(
+    final preferredWidth = isDesktop ? 260.0 : 220.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth.clamp(0.0, preferredWidth).toDouble()
+            : preferredWidth;
+        return Material(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(10),
+          child: InkWell(
+            onTap: onTap,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: theme.colorScheme.outline.withValues(alpha: 0.4),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildIcon(
-                context,
-                iconSize: iconSize,
-                badge: showSourceBadge ? sourceBadge : null,
-                badgeColor: badgeColor,
-                badgeForeground: badgeForeground,
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: _NameColumn(
-                  localizedName: localizedName,
-                  codename: codename,
-                  align: CrossAxisAlignment.start,
-                  nameStyle: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    height: 1.2,
-                    fontSize: isDesktop ? 13 : 12,
-                  ),
-                  codenameStyle: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: 10,
-                  ),
+            child: Container(
+              width: tileWidth,
+              padding: EdgeInsets.all(isDesktop ? 8 : 6),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: theme.colorScheme.outline.withValues(alpha: 0.4),
                 ),
               ),
-              if (onDelete != null) _DeleteButton(onDelete: onDelete!),
-            ],
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  _buildIcon(
+                    context,
+                    iconSize: iconSize,
+                    badge: showSourceBadge ? sourceBadge : null,
+                    badgeColor: badgeColor,
+                    badgeForeground: badgeForeground,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _NameColumn(
+                      localizedName: localizedName,
+                      codename: codename,
+                      align: CrossAxisAlignment.start,
+                      nameStyle: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
+                        fontSize: isDesktop ? 13 : 12,
+                      ),
+                      codenameStyle: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                  if (onDelete != null) _DeleteButton(onDelete: onDelete!),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

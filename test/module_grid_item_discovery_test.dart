@@ -128,6 +128,87 @@ void main() {
     }
   });
 
+  test(
+    'keeps wave-generator module grid items separate from generic custom items',
+    () {
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: const ['armrack'],
+            objClass: 'GridItemType',
+            objData: const <String, dynamic>{
+              'TypeName': 'armrack',
+              'GridItemClass': 'GridItemArmrack',
+              'Properties': 'RTID(GridItemArmrackDefault@PropertySheets)',
+            },
+          ),
+          PvzObject(
+            aliases: const ['energyGrid'],
+            objClass: 'GridItemType',
+            objData: const <String, dynamic>{
+              'TypeName': 'energyGrid',
+              'GridItemClass': 'GridItemEnergyGrid',
+              'Properties': 'RTID(GridItemEnergyGridDefault@PropertySheets)',
+            },
+          ),
+          PvzObject(
+            aliases: const ['InitialGridItems'],
+            objClass: 'InitialGridItemProperties',
+            objData: const <String, dynamic>{
+              'InitialGridItemPlacements': [
+                {'GridX': 1, 'GridY': 1, 'TypeName': 'armrack'},
+                {'GridX': 2, 'GridY': 1, 'TypeName': 'energyGrid'},
+              ],
+            },
+          ),
+          PvzObject(
+            aliases: const ['Armrack'],
+            objClass: 'ArmrackProperties',
+            objData: const <String, dynamic>{
+              'Overrides': [
+                {
+                  'wave': 2,
+                  'itemList': [
+                    {'mX': 3, 'mY': 1, 'type': 'armrack'},
+                  ],
+                },
+              ],
+            },
+          ),
+          PvzObject(
+            aliases: const ['EnergyGrid'],
+            objClass: 'EnergyGridProperties',
+            objData: const <String, dynamic>{
+              'Overrides': [
+                {
+                  'wave': 3,
+                  'itemList': [
+                    {'mX': 4, 'mY': 1},
+                  ],
+                },
+              ],
+            },
+          ),
+        ],
+      );
+
+      final entries = GridItemDiscovery.discoverGridItemEntries(level);
+
+      for (final id in const ['armrack', 'energyGrid']) {
+        final matching = entries.where((entry) => entry.id == id).toList();
+        expect(matching, hasLength(2));
+        expect(
+          matching.map((entry) => entry.isDedicatedModuleItem),
+          containsAll(const [true, false]),
+        );
+      }
+      expect(GridItemDiscovery.discoverGridItems(level), {
+        'armrack',
+        'energyGrid',
+      });
+    },
+  );
+
   test('does not offer Robot Vacuum as a rift theme', () {
     expect(RiftThemeRepository.themeIds, isNot(contains('cleaner')));
     expect(

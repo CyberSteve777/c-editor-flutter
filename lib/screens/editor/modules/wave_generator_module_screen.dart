@@ -278,6 +278,7 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             helperText: helperText,
+            helperMaxLines: helperText == null ? null : 4,
           ),
           keyboardType: TextInputType.number,
           onChanged: onChanged,
@@ -507,6 +508,7 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 12),
                     if (_data.addToZombiePool.isEmpty)
                       Text(
                         l10n?.waveGeneratorEmptyPool ??
