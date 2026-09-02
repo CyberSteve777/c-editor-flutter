@@ -88,6 +88,8 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Future<void> _initRootPath() async {
+    // Safety net if export is opened before AppBootstrap finished (or in tests).
+    await WorldRepository.init();
     final prefs = await SharedPreferences.getInstance();
     final skipDisclaimer = prefs.getBool(_exportDisclaimerSkipKey) ?? false;
     if (!mounted) return;
