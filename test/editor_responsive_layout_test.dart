@@ -202,6 +202,45 @@ void main() {
     },
   );
 
+  testWidgets('input fields in a plain row align below wrapped labels', (
+    tester,
+  ) async {
+    const shortFieldKey = Key('plain-row-short-input');
+    const longFieldKey = Key('plain-row-long-input');
+
+    await tester.pumpWidget(
+      _testApp(
+        width: 360,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: EditorResponsiveInputField(
+                label: 'Damage to plants',
+                builder: (context, decoration) =>
+                    TextField(key: shortFieldKey, decoration: decoration),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: EditorResponsiveInputField(
+                label: 'Damage dealt to every zombie target',
+                builder: (context, decoration) =>
+                    TextField(key: longFieldKey, decoration: decoration),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final shortFieldRect = tester.getRect(find.byKey(shortFieldKey));
+    final longFieldRect = tester.getRect(find.byKey(longFieldKey));
+    expect(shortFieldRect.top, closeTo(longFieldRect.top, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('responsive action row moves the action below long content', (
     tester,
   ) async {

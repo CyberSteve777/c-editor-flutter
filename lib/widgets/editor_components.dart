@@ -408,6 +408,11 @@ typedef EditorInputFieldBuilder =
 
 final Expando<_EditorResponsiveLabelGroup> _editorResponsiveLabelGroups =
     Expando<_EditorResponsiveLabelGroup>('editorResponsiveLabelGroups');
+final Expando<_EditorResponsiveLabelHeightGroup>
+_editorResponsiveAutomaticLabelHeightGroups =
+    Expando<_EditorResponsiveLabelHeightGroup>(
+      'editorResponsiveAutomaticLabelHeightGroups',
+    );
 
 class _EditorResponsiveLabelGroup extends ChangeNotifier {
   final Map<Object, bool> _overflowByOwner = Map<Object, bool>.identity();
@@ -497,6 +502,31 @@ _EditorResponsiveLabelGroup _responsiveLabelGroupFor(Object key) {
   return _editorResponsiveLabelGroups[key] ??= _EditorResponsiveLabelGroup();
 }
 
+Element? _nearestHorizontalFieldRow(BuildContext context) {
+  Element? result;
+  context.visitAncestorElements((ancestor) {
+    final widget = ancestor.widget;
+    if (widget is Row) {
+      result = ancestor;
+      return false;
+    }
+    // Do not group fields across a vertical form boundary. This keeps the
+    // automatic alignment local to controls that actually share one row.
+    if (widget is Column) return false;
+    return true;
+  });
+  return result;
+}
+
+_EditorResponsiveLabelHeightGroup? _automaticLabelHeightGroupFor(
+  BuildContext context,
+) {
+  final row = _nearestHorizontalFieldRow(context);
+  if (row == null) return null;
+  return _editorResponsiveAutomaticLabelHeightGroups[row] ??=
+      _EditorResponsiveLabelHeightGroup();
+}
+
 /// Keeps an outlined input label readable at large text scales. Short labels
 /// stay in the field; if any label on the same page cannot fit, every field on
 /// that page moves its label above so the form remains visually consistent.
@@ -526,14 +556,27 @@ class _EditorResponsiveInputFieldState
   Object? _groupKey;
   late _EditorResponsiveLabelGroup _group;
   _EditorResponsiveLabelHeightGroup? _heightGroup;
+  bool _usesAutomaticHeightGroup = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final nextHeightGroup = _EditorResponsiveLabelHeightScope.maybeOf(context);
+    final scopedHeightGroup = _EditorResponsiveLabelHeightScope.maybeOf(
+      context,
+    );
+    final nextUsesAutomaticHeightGroup = scopedHeightGroup == null;
+    final nextHeightGroup =
+        scopedHeightGroup ?? _automaticLabelHeightGroupFor(context);
     if (!identical(nextHeightGroup, _heightGroup)) {
+      if (_usesAutomaticHeightGroup) {
+        _heightGroup?.removeListener(_handleHeightGroupChanged);
+      }
       _heightGroup?.remove(this);
       _heightGroup = nextHeightGroup;
+      _usesAutomaticHeightGroup = nextUsesAutomaticHeightGroup;
+      if (_usesAutomaticHeightGroup) {
+        _heightGroup?.addListener(_handleHeightGroupChanged);
+      }
     }
     final nextKey = Scaffold.maybeOf(context) ?? ModalRoute.of(context) ?? this;
     if (identical(nextKey, _groupKey)) return;
@@ -551,12 +594,20 @@ class _EditorResponsiveInputFieldState
     if (mounted) setState(() {});
   }
 
+  void _handleHeightGroupChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
     if (_groupKey != null) {
       _group.removeListener(_handleGroupChanged);
       _group.remove(this);
     }
+    if (_usesAutomaticHeightGroup) {
+      _heightGroup?.removeListener(_handleHeightGroupChanged);
+    }
+    _heightGroup?.remove(this);
     super.dispose();
   }
 

@@ -166,8 +166,8 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   double _lastWidth = 0;
   double _lastFontSize = 0;
   List<_WrappedJsonRow>? _cachedRows;
-  int? _secondaryPointer;
-  double? _secondaryPointerScrollOffset;
+  int? _selectionPointer;
+  double? _selectionPointerScrollOffset;
 
   @override
   void initState() {
@@ -439,21 +439,49 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   void _handleReadViewPointerDown(PointerDownEvent event) {
-    if ((event.buttons & kSecondaryButton) == 0) return;
+    if ((event.buttons & (kPrimaryButton | kSecondaryButton)) == 0) return;
     final offset = _currentScrollOffset();
     if (offset == null) return;
-    _secondaryPointer = event.pointer;
-    _secondaryPointerScrollOffset = offset;
+    _selectionPointer = event.pointer;
+    _selectionPointerScrollOffset = offset;
   }
 
-  void _finishReadViewSecondaryPointer(PointerEvent event) {
-    if (_secondaryPointer != event.pointer) return;
-    final offset = _secondaryPointerScrollOffset;
-    _secondaryPointer = null;
-    _secondaryPointerScrollOffset = null;
+  void _finishReadViewSelectionPointer(PointerEvent event) {
+    if (_selectionPointer != event.pointer) return;
+    final offset = _selectionPointerScrollOffset;
+    _selectionPointer = null;
+    _selectionPointerScrollOffset = null;
     if (offset != null) {
       _restoreScrollOffsetAfterFrame(offset, repeatNextFrame: true);
     }
+  }
+
+  Widget _buildReadSelectionContextMenu(
+    BuildContext context,
+    SelectableRegionState regionState,
+  ) {
+    final items = regionState.contextMenuButtonItems
+        .map((item) {
+          if (item.type != ContextMenuButtonType.selectAll ||
+              item.onPressed == null) {
+            return item;
+          }
+          return item.copyWith(
+            onPressed: () {
+              final offset = _currentScrollOffset();
+              item.onPressed!();
+              if (offset != null) {
+                _restoreScrollOffsetAfterFrame(offset, repeatNextFrame: true);
+              }
+            },
+          );
+        })
+        .toList(growable: false);
+    if (items.isEmpty) return const SizedBox.shrink();
+    return AdaptiveTextSelectionToolbar.buttonItems(
+      anchors: regionState.contextMenuAnchors,
+      buttonItems: items,
+    );
   }
 
   void _onPreviousMatch() {
@@ -969,16 +997,13 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
 
   Widget _buildViewMode(String pretty, bool isDesktop, AppLocalizations? l10n) {
     final scrollLayout = _buildScrollLayout(pretty, isDesktop, l10n);
-    return SelectionArea(
-      child: isDesktop
-          ? Listener(
-              behavior: HitTestBehavior.translucent,
-              onPointerDown: _handleReadViewPointerDown,
-              onPointerUp: _finishReadViewSecondaryPointer,
-              onPointerCancel: _finishReadViewSecondaryPointer,
-              child: scrollLayout,
-            )
-          : scrollLayout,
+    if (!isDesktop) return scrollLayout;
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: _handleReadViewPointerDown,
+      onPointerUp: _finishReadViewSelectionPointer,
+      onPointerCancel: _finishReadViewSelectionPointer,
+      child: scrollLayout,
     );
   }
 
@@ -1192,74 +1217,96 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
 
           final visualRows = _cachedRows!;
 
-          return ListView.builder(
+          final gutterSpans = <InlineSpan>[];
+          for (var i = 0; i < visualRows.length; i++) {
+            final row = visualRows[i];
+            gutterSpans.add(
+              TextSpan(
+                text: row.isContinuation
+                    ? contSymbol
+                    : '${row.logicalLineOneBased}',
+                style: baseStyle.copyWith(
+                  fontFamily: _codeFontFamily,
+                  color: muted,
+                  fontSize: row.isContinuation ? _fontSize * 0.92 : _fontSize,
+                ),
+              ),
+            );
+            if (i != visualRows.length - 1) {
+              gutterSpans.add(const TextSpan(text: '\n'));
+            }
+          }
+
+          // Keep the JSON as one selectable paragraph. The paragraph performs
+          // the same visual wrapping used to calculate the gutter rows, while
+          // its underlying text retains only the original logical newlines.
+          // This makes Select all cover the complete JSON without copying line
+          // numbers or inserting newlines at visual wrap points.
+          final documentSpans = <InlineSpan>[];
+          for (var i = 0; i < logicalLines.length; i++) {
+            final line = logicalLines[i];
+            if (_matches.isEmpty) {
+              documentSpans.add(TextSpan(text: line));
+            } else {
+              documentSpans.addAll(
+                buildHighlightedTextSpans(
+                  text: line,
+                  segmentStartInLine: 0,
+                  segmentEndInLine: line.length,
+                  baseStyle: baseStyle,
+                  highlightStyle: highlightStyle,
+                  activeHighlightStyle: activeHighlightStyle,
+                  lineMatches: _matches
+                      .where((match) => match.lineIndex == i)
+                      .toList(),
+                  activeMatch: activeMatch,
+                  lineStartOffset: lineStarts[i],
+                ),
+              );
+            }
+            if (i != logicalLines.length - 1) {
+              documentSpans.add(const TextSpan(text: '\n'));
+            }
+          }
+
+          return SingleChildScrollView(
             controller: _verticalController,
             padding: const EdgeInsets.all(pad),
-            itemCount: visualRows.length,
-            itemExtent: _fontSize * 1.5, // Strictly matches baseStyle.height
-            itemBuilder: (context, index) {
-              final row = visualRows[index];
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SelectionContainer.disabled(
-                    child: SizedBox(
-                      width: gutterW,
-                      child: row.isContinuation
-                          ? Text(
-                              contSymbol,
-                              textAlign: TextAlign.right,
-                              style: baseStyle.copyWith(
-                                fontFamily: _codeFontFamily,
-                                color: muted,
-                                fontSize: _fontSize * 0.92,
-                              ),
-                            )
-                          : Text(
-                              '${row.logicalLineOneBased}',
-                              textAlign: TextAlign.right,
-                              style: baseStyle.copyWith(
-                                fontFamily: _codeFontFamily,
-                                color: muted,
-                              ),
-                            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: gutterW,
+                  child: RichText(
+                    textAlign: TextAlign.right,
+                    text: TextSpan(style: baseStyle, children: gutterSpans),
+                    strutStyle: StrutStyle(
+                      fontFamily: _codeFontFamily,
+                      fontSize: _fontSize,
+                      height: 1.5,
+                      forceStrutHeight: true,
                     ),
                   ),
-                  SelectionContainer.disabled(
-                    child: const SizedBox(width: gutterTextGap),
+                ),
+                const SizedBox(width: gutterTextGap),
+                Expanded(
+                  child: SelectionArea(
+                    contextMenuBuilder: _buildReadSelectionContextMenu,
+                    child: Text.rich(
+                      TextSpan(children: documentSpans),
+                      style: baseStyle,
+                      strutStyle: StrutStyle(
+                        fontFamily: _codeFontFamily,
+                        fontSize: _fontSize,
+                        height: 1.5,
+                        forceStrutHeight: true,
+                      ),
+                      softWrap: true,
+                    ),
                   ),
-                  Expanded(
-                    child: _matches.isEmpty
-                        ? Text(row.text, style: baseStyle, softWrap: false)
-                        : RichText(
-                            text: TextSpan(
-                              style: baseStyle,
-                              children: buildHighlightedTextSpans(
-                                text: row.text,
-                                segmentStartInLine: row.segmentStartInLine,
-                                segmentEndInLine:
-                                    row.segmentStartInLine + row.text.length,
-                                baseStyle: baseStyle,
-                                highlightStyle: highlightStyle,
-                                activeHighlightStyle: activeHighlightStyle,
-                                lineMatches: _matches
-                                    .where(
-                                      (m) =>
-                                          m.lineIndex ==
-                                          row.logicalLineOneBased - 1,
-                                    )
-                                    .toList(),
-                                activeMatch: activeMatch,
-                                lineStartOffset:
-                                    lineStarts[row.logicalLineOneBased - 1],
-                              ),
-                            ),
-                            softWrap: false,
-                          ),
-                  ),
-                ],
-              );
-            },
+                ),
+              ],
+            ),
           );
         },
       ),

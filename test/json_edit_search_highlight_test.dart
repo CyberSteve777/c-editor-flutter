@@ -167,7 +167,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('right click keeps the JSON reading scroll position', (
+  testWidgets('mouse clicks keep JSON scroll position with full Select all', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
@@ -178,15 +178,41 @@ void main() {
     final scrollController = scrollbar.controller!;
     scrollController.jumpTo(900);
     await tester.pump();
-    final before = scrollController.offset;
+    final beforePrimaryClick = scrollController.offset;
+    final selectionArea = find.byType(SelectionArea).first;
+    final selectionRect = tester.getRect(selectionArea);
+    final viewportRect = tester.getRect(
+      find.byType(SingleChildScrollView).last,
+    );
+    final visibleSelectionRect = selectionRect.intersect(viewportRect);
+    final visiblePoint = visibleSelectionRect.topLeft + const Offset(80, 18);
 
+    await tester.tapAt(visiblePoint);
+    await tester.pumpAndSettle();
+
+    expect(scrollController.offset, closeTo(beforePrimaryClick, 0.5));
+
+    scrollController.jumpTo(1100);
+    await tester.pump();
+    final beforeSecondaryClick = scrollController.offset;
     await tester.tapAt(
-      tester.getRect(find.byType(Scrollbar).last).center,
+      visiblePoint,
+      kind: PointerDeviceKind.mouse,
       buttons: kSecondaryButton,
     );
     await tester.pumpAndSettle();
 
-    expect(scrollController.offset, closeTo(before, 0.5));
+    expect(scrollController.offset, closeTo(beforeSecondaryClick, 0.5));
+    expect(selectionArea, findsOneWidget);
+    final selectAll = find.textContaining(
+      RegExp('select all', caseSensitive: false),
+    );
+    expect(selectAll, findsOneWidget);
+
+    await tester.tap(selectAll);
+    await tester.pumpAndSettle();
+
+    expect(scrollController.offset, closeTo(beforeSecondaryClick, 0.5));
     expect(tester.takeException(), isNull);
   });
 
