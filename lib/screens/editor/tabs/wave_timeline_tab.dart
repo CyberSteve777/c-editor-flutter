@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/module_open_hint.dart';
+import 'package:c_editor/data/moon_wave_preview_utils.dart';
 import 'package:c_editor/data/renai_wave_preview_utils.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -2343,6 +2344,22 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 onTap: () => _showRenaiInfoDialog(context, waveIndex),
               ));
             }
+            if (_waveHasLunarMineVeinActivity(waveIndex)) {
+              actionButtons.add((
+                label:
+                    l10n?.lunarMineVeinModuleExpectationLabel ??
+                    'Lunar Veins',
+                onTap: () => _showLunarMineVeinInfoDialog(context, waveIndex),
+              ));
+            }
+            if (_waveHasRadiationMeteorActivity(waveIndex)) {
+              actionButtons.add((
+                label:
+                    l10n?.radiationMeteorModuleExpectationLabel ??
+                    'Radioactive Meteorite',
+                onTap: () => _showRadiationMeteorInfoDialog(context, waveIndex),
+              ));
+            }
             if (_waveHasDropShipActivity(waveIndex)) {
               actionButtons.add((
                 label: l10n?.airDropShipModuleExpectationLabel ?? 'Imp drops',
@@ -2385,6 +2402,88 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final renai = _getRenaiModuleData();
     if (renai == null) return false;
     return renaiWaveHasPreviewActivity(renai, waveIndex);
+  }
+
+  bool _waveHasLunarMineVeinActivity(int waveIndex) {
+    final data = _getLunarMineVeinModuleData();
+    if (data == null) return false;
+    return lunarMineVeinWaveHasPreviewActivity(data, waveIndex);
+  }
+
+  bool _waveHasRadiationMeteorActivity(int waveIndex) {
+    final data = _getRadiationMeteorModuleData();
+    if (data == null) return false;
+    return radiationMeteorWaveHasPreviewActivity(data, waveIndex);
+  }
+
+  LunarMineVeinModulePropertiesData? _getLunarMineVeinModuleData() {
+    final obj = widget.levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'LunarMineVeinModuleProperties',
+    );
+    if (obj?.objData is Map<String, dynamic>) {
+      try {
+        return LunarMineVeinModulePropertiesData.fromJson(
+          obj!.objData as Map<String, dynamic>,
+        );
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  RadiationMeteorModulePropertiesData? _getRadiationMeteorModuleData() {
+    final obj = widget.levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'RadiationMeteorModuleProperties',
+    );
+    if (obj?.objData is Map<String, dynamic>) {
+      try {
+        return RadiationMeteorModulePropertiesData.fromJson(
+          obj!.objData as Map<String, dynamic>,
+        );
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  void _showLunarMineVeinInfoDialog(BuildContext context, int waveIndex) {
+    final data = _getLunarMineVeinModuleData();
+    if (data == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      showLunarMineVeinWavePreviewDialog(
+        context,
+        levelFile: widget.levelFile,
+        waveIndex: waveIndex,
+        data: data,
+        onOpenModuleSettings: widget.onOpenModule == null
+            ? null
+            : () => openModuleWithHint(
+                widget.onOpenModule,
+                widget.levelFile,
+                'LunarMineVeinModuleProperties',
+              ),
+      );
+    });
+  }
+
+  void _showRadiationMeteorInfoDialog(BuildContext context, int waveIndex) {
+    final data = _getRadiationMeteorModuleData();
+    if (data == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      showRadiationMeteorWavePreviewDialog(
+        context,
+        levelFile: widget.levelFile,
+        waveIndex: waveIndex,
+        data: data,
+        onOpenModuleSettings: widget.onOpenModule == null
+            ? null
+            : () => openModuleWithHint(
+                widget.onOpenModule,
+                widget.levelFile,
+                'RadiationMeteorModuleProperties',
+              ),
+      );
+    });
   }
 
   String? _getModuleRtid(String objClass) {
