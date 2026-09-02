@@ -6688,6 +6688,12 @@ abstract class AppLocalizations {
   /// **'Collectible (Plant Food)'**
   String get collectable;
 
+  /// No description provided for @plantFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant Food'**
+  String get plantFood;
+
   /// No description provided for @selectGridItem.
   ///
   /// In en, this message translates to:

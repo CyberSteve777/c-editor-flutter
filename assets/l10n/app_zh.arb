@@ -1334,6 +1334,7 @@
   "setStart": "放置起点（入口）",
   "setEnd": "放置终点（出口）",
   "collectable": "道具（能量豆）",
+  "plantFood": "能量豆",
   "selectGridItem": "选择障碍物",
   "addItemTitle": "添加障碍物",
   "initialPlantLayout": "初始植物布局",

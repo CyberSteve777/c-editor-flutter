@@ -166,6 +166,8 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   double _lastWidth = 0;
   double _lastFontSize = 0;
   List<_WrappedJsonRow>? _cachedRows;
+  int? _secondaryPointer;
+  double? _secondaryPointerScrollOffset;
 
   @override
   void initState() {
@@ -408,6 +410,52 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     );
   }
 
+  double? _currentScrollOffset() {
+    if (!_verticalController.hasClients) return null;
+    return _verticalController.offset;
+  }
+
+  void _restoreScrollOffsetAfterFrame(
+    double offset, {
+    bool repeatNextFrame = false,
+  }) {
+    void restore() {
+      if (!mounted || !_verticalController.hasClients) return;
+      final position = _verticalController.position;
+      final target = offset
+          .clamp(position.minScrollExtent, position.maxScrollExtent)
+          .toDouble();
+      if ((position.pixels - target).abs() > 0.5) {
+        position.jumpTo(target);
+      }
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      restore();
+      if (repeatNextFrame) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => restore());
+      }
+    });
+  }
+
+  void _handleReadViewPointerDown(PointerDownEvent event) {
+    if ((event.buttons & kSecondaryButton) == 0) return;
+    final offset = _currentScrollOffset();
+    if (offset == null) return;
+    _secondaryPointer = event.pointer;
+    _secondaryPointerScrollOffset = offset;
+  }
+
+  void _finishReadViewSecondaryPointer(PointerEvent event) {
+    if (_secondaryPointer != event.pointer) return;
+    final offset = _secondaryPointerScrollOffset;
+    _secondaryPointer = null;
+    _secondaryPointerScrollOffset = null;
+    if (offset != null) {
+      _restoreScrollOffsetAfterFrame(offset, repeatNextFrame: true);
+    }
+  }
+
   void _onPreviousMatch() {
     if (_matches.isEmpty) return;
     final next = (_currentMatchIndex - 1 + _matches.length) % _matches.length;
@@ -524,12 +572,16 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   void _startEdit() {
+    final previousScrollOffset = _currentScrollOffset();
     _editController.text = _rawPrettyText();
     setState(() {
       _isEditing = true;
       _syntaxError = null;
     });
     _runSearch();
+    if (previousScrollOffset != null) {
+      _restoreScrollOffsetAfterFrame(previousScrollOffset);
+    }
     _pushEscapeHandler();
   }
 
@@ -916,7 +968,18 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   Widget _buildViewMode(String pretty, bool isDesktop, AppLocalizations? l10n) {
-    return SelectionArea(child: _buildScrollLayout(pretty, isDesktop, l10n));
+    final scrollLayout = _buildScrollLayout(pretty, isDesktop, l10n);
+    return SelectionArea(
+      child: isDesktop
+          ? Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: _handleReadViewPointerDown,
+              onPointerUp: _finishReadViewSecondaryPointer,
+              onPointerCancel: _finishReadViewSecondaryPointer,
+              child: scrollLayout,
+            )
+          : scrollLayout,
+    );
   }
 
   final Map<int, String> _jsonStringCache = {};

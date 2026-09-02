@@ -13,7 +13,11 @@ import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
-    show editorInputDecoration, HelpSectionData, showEditorHelpDialog;
+    show
+        editorInputDecoration,
+        EditorResponsiveInputField,
+        HelpSectionData,
+        showEditorHelpDialog;
 
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
 const double _kListIconSize = 40;
@@ -56,8 +60,7 @@ class _PVZ1CopycatsModuleScreenState extends State<PVZ1CopycatsModuleScreen> {
   void initState() {
     super.initState();
     _alias = aliasFromRtid(widget.rtid);
-    PlantRepository().init();
-    ZombieRepository().init();
+    _loadRegistryData();
     _loadData();
     _zombieWeightFocus = FocusNode()..addListener(() => setState(() {}));
     _spawnLevelFocus = FocusNode()..addListener(() => setState(() {}));
@@ -65,6 +68,15 @@ class _PVZ1CopycatsModuleScreenState extends State<PVZ1CopycatsModuleScreen> {
       text: _formatDouble(_data.zombieWeight),
     );
     _spawnLevelCtrl = TextEditingController(text: '${_data.spawnPlantLevel}');
+  }
+
+  Future<void> _loadRegistryData() async {
+    await Future.wait<void>([
+      PlantRepository().init(),
+      ZombieRepository().init(),
+      ResourceNames.ensureLoaded(),
+    ]);
+    if (mounted) setState(() {});
   }
 
   void _loadData() {
@@ -165,7 +177,6 @@ class _PVZ1CopycatsModuleScreenState extends State<PVZ1CopycatsModuleScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -238,7 +249,7 @@ class _PVZ1CopycatsModuleScreenState extends State<PVZ1CopycatsModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -262,51 +273,59 @@ ModuleAliasInputField(
                     const SizedBox(height: 12),
                     Tooltip(
                       message: l10n?.pvz1CopycatsHelpZombieWeight ?? '',
-                      child: TextField(
-                        focusNode: _zombieWeightFocus,
-                        controller: _zombieWeightCtrl,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
+                      child: EditorResponsiveInputField(
+                        label:
+                            l10n?.pvz1CopycatsFieldZombieWeightLabel ??
+                            'Zombie spawn weight (ZombieWeight)',
                         decoration: editorInputDecoration(
                           context,
-                          labelText:
-                              l10n?.pvz1CopycatsFieldZombieWeightLabel ??
-                              'Zombie spawn weight (ZombieWeight)',
                           focusColor: accentColor,
                           isFocused: _zombieWeightFocus.hasFocus,
                         ),
-                        onChanged: (v) {
-                          final n = double.tryParse(v.replaceAll(',', '.'));
-                          if (n != null) {
-                            _data.zombieWeight = n;
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextField(
+                          key: const ValueKey('copycatsZombieWeightInput'),
+                          focusNode: _zombieWeightFocus,
+                          controller: _zombieWeightCtrl,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: decoration,
+                          onChanged: (v) {
+                            final n = double.tryParse(v.replaceAll(',', '.'));
+                            if (n != null) {
+                              _data.zombieWeight = n;
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     Tooltip(
                       message: l10n?.pvz1CopycatsHelpSpawnPlantLevel ?? '',
-                      child: TextField(
-                        focusNode: _spawnLevelFocus,
-                        controller: _spawnLevelCtrl,
-                        keyboardType: TextInputType.number,
+                      child: EditorResponsiveInputField(
+                        label:
+                            l10n?.pvz1CopycatsFieldSpawnPlantLevelLabel ??
+                            'Custom plant tier (SpawnPlantLevel)',
                         decoration: editorInputDecoration(
                           context,
-                          labelText:
-                              l10n?.pvz1CopycatsFieldSpawnPlantLevelLabel ??
-                              'Custom plant tier (SpawnPlantLevel)',
                           focusColor: accentColor,
                           isFocused: _spawnLevelFocus.hasFocus,
                         ),
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data.spawnPlantLevel = n;
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextField(
+                          key: const ValueKey('copycatsSpawnPlantLevelInput'),
+                          focusNode: _spawnLevelFocus,
+                          controller: _spawnLevelCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: decoration,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data.spawnPlantLevel = n;
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -428,24 +447,76 @@ ModuleAliasInputField(
             itemCount: ids.length,
             itemBuilder: (ctx, i) {
               final id = ids[i];
+              final resolvedName = displayName(id).trim();
+              final visibleName = resolvedName.isEmpty ? id : resolvedName;
+              final showId = visibleName != id;
               return Card(
-                child: ListTile(
-                  leading: _buildRegistryIcon(isPlant: isPlant, id: id),
-                  title: Text(
-                    displayName(id),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                key: ValueKey('copycats${isPlant ? 'Plant' : 'Zombie'}Card$i'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
                   ),
-                  subtitle: Text(
-                    id,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () => onRemove(i),
-                    color: theme.colorScheme.error,
+                  child: Row(
+                    children: [
+                      _buildRegistryIcon(isPlant: isPlant, id: id),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          key: ValueKey(
+                            'copycats${isPlant ? 'Plant' : 'Zombie'}Text$i',
+                          ),
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              visibleName,
+                              key: ValueKey(
+                                'copycats${isPlant ? 'Plant' : 'Zombie'}Name$i',
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: theme.colorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            if (showId) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                id,
+                                key: ValueKey(
+                                  'copycats${isPlant ? 'Plant' : 'Zombie'}Id$i',
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        key: ValueKey(
+                          'copycats${isPlant ? 'Plant' : 'Zombie'}Delete$i',
+                        ),
+                        tooltip: AppLocalizations.of(ctx)?.delete ?? 'Delete',
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () => onRemove(i),
+                        color: theme.colorScheme.error,
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints.tightFor(
+                          width: 40,
+                          height: 40,
+                        ),
+                        style: IconButton.styleFrom(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );

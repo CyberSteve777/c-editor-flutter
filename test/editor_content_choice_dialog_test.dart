@@ -103,9 +103,31 @@ void main() {
       find.byKey(const ValueKey('editorChoiceOption_collectable')),
       findsOneWidget,
     );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('editorChoiceOption_plant')),
+        matching: find.byIcon(Icons.local_florist_outlined),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('editorChoiceOption_collectable')),
+        matching: find.byIcon(Icons.eco_outlined),
+      ),
+      findsOneWidget,
+    );
     expect(find.textContaining('植物卡片'), findsNothing);
     expect(find.textContaining('僵尸卡片'), findsNothing);
     expect(find.textContaining('能量豆'), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('editorChoiceOption_collectable')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('能量豆'), findsOneWidget);
+    expect(find.text('Plant Food'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

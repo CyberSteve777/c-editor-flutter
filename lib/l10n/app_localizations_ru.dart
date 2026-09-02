@@ -3706,6 +3706,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get collectable => 'Собираемый (подкормка)';
 
   @override
+  String get plantFood => 'Подкормка';
+
+  @override
   String get selectGridItem => 'Выбрать предмет';
 
   @override

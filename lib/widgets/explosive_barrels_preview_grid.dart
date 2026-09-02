@@ -37,7 +37,7 @@ class ExplosiveBarrelsPreviewGrid extends StatelessWidget {
       onCellTap: onCellTap,
       cellBuilder: (context, col, row) {
         if (row >= fuseLengths.length) return null;
-        final fuseLength = int.tryParse(fuseLengths[row]) ?? 0;
+        final fuseLength = num.tryParse(fuseLengths[row])?.toInt() ?? 8;
         if (fuseLength <= 0 || col >= fuseLength) return null;
         return Center(
           child: Container(

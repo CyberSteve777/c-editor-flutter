@@ -3729,6 +3729,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collectable => 'Collectible (Plant Food)';
 
   @override
+  String get plantFood => 'Plant Food';
+
+  @override
   String get selectGridItem => 'Select grid item';
 
   @override

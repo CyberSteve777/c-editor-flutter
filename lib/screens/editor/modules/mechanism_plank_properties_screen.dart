@@ -284,6 +284,7 @@ class _MechanismPlankPropertiesScreenState
                 child: Column(
                   children: [
                     _StepperField(
+                      key: const ValueKey('mechanismPlankStartColumnStepper'),
                       label: l10n?.mechanismPlankStartColumn ?? 'Start Column',
                       value: _mX,
                       min: 0,
@@ -292,6 +293,7 @@ class _MechanismPlankPropertiesScreenState
                     ),
                     const SizedBox(height: 12),
                     _StepperField(
+                      key: const ValueKey('mechanismPlankTrackLengthStepper'),
                       label: l10n?.mechanismPlankTrackLength ?? 'Track Length',
                       value: _mWidth,
                       min: 1,
@@ -303,16 +305,11 @@ class _MechanismPlankPropertiesScreenState
               ),
             ),
             const SizedBox(height: 16),
-            _MechanismPlankInfoBanner(
-              message:
-                  l10n?.mechanismPlankEditNotice ??
-                  'Only mX and mWidth are editable. Other parameters are preserved because changing them may cause in-game layout bugs.',
-            ),
-            const SizedBox(height: 16),
             scaleTableForDesktop(
               context: context,
               desktopScale: 0.5,
               child: Container(
+                key: const ValueKey('mechanismPlankPreviewGrid'),
                 decoration: BoxDecoration(
                   color: gridColor,
                   borderRadius: BorderRadius.circular(6),
@@ -386,6 +383,13 @@ class _MechanismPlankPropertiesScreenState
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            _MechanismPlankInfoBanner(
+              key: const ValueKey('mechanismPlankEditNoticeCard'),
+              message:
+                  l10n?.mechanismPlankEditNotice ??
+                  'Only mX and mWidth are editable. Other parameters are preserved because changing them may cause in-game layout bugs.',
+            ),
           ],
         ),
       ),
@@ -395,6 +399,7 @@ class _MechanismPlankPropertiesScreenState
 
 class _StepperField extends StatelessWidget {
   const _StepperField({
+    super.key,
     required this.label,
     required this.value,
     required this.min,
@@ -410,20 +415,28 @@ class _StepperField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return EditorResponsiveStepperRow(
-      label: label,
-      value: value,
-      min: min,
-      max: max,
-      onChanged: onChanged,
-      decreaseIcon: Icons.remove,
-      increaseIcon: Icons.add,
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: EditorResponsiveStepperRow(
+        label: label,
+        value: value,
+        min: min,
+        max: max,
+        onChanged: onChanged,
+        decreaseIcon: Icons.remove,
+        increaseIcon: Icons.add,
+      ),
     );
   }
 }
 
 class _MechanismPlankInfoBanner extends StatelessWidget {
-  const _MechanismPlankInfoBanner({required this.message});
+  const _MechanismPlankInfoBanner({super.key, required this.message});
 
   final String message;
 

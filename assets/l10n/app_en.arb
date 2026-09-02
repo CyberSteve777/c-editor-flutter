@@ -1303,6 +1303,7 @@
   "setStart": "Set entrance sewer",
   "setEnd": "Set exit sewer",
   "collectable": "Collectible (Plant Food)",
+  "plantFood": "Plant Food",
   "selectGridItem": "Select grid item",
   "addItemTitle": "Add item",
   "initialPlantLayout": "Initial plant layout",

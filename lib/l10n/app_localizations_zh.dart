@@ -3527,6 +3527,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get collectable => '道具（能量豆）';
 
   @override
+  String get plantFood => '能量豆';
+
+  @override
   String get selectGridItem => '选择障碍物';
 
   @override
