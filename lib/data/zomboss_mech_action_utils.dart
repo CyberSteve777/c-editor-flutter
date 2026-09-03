@@ -50,6 +50,11 @@ abstract class ZombossMechActionUtils {
   static const catalogSource = 'ZombieActions';
   static const customSource = 'CurrentLevel';
 
+  static const jumpActionObjclasses = zombossJumpActionObjclasses;
+
+  static bool isJumpActionObjclass(String objclass) =>
+      isZombossJumpActionObjclass(objclass);
+
   /// Legacy helper; prefer [ZombossMechL10n.labelForStageRtid] when context is available.
   static String displayLabel(String rtid) {
     final info = RtidParser.parse(rtid);
@@ -82,16 +87,25 @@ abstract class ZombossMechActionUtils {
   /// Custom actions intentionally carry no editor metadata in level JSON, so
   /// the nearest original implementation is recovered from its data. The
   /// custom alias is only used as a stable tie-breaker.
+  ///
+  /// When [matchAnyObjclass] is true (default for healing stale level objects),
+  /// candidates are not restricted to [objclass]. Prefer the same-objclass
+  /// match when scores are equal.
   static ZombossMechCatalogAction? inferBaseCatalogAction({
     required ZombossMechCatalogEntry catalog,
     required String customAlias,
     required String objclass,
     required Map<String, dynamic> data,
     bool retreatOnly = false,
+    bool jumpOnly = false,
+    bool matchAnyObjclass = false,
   }) {
     final candidates = catalog.catalogActions.where((action) {
-      if (action.objclass != objclass) return false;
-      return retreatOnly ? action.tag == 'retreat' : action.tag != 'retreat';
+      if (!matchAnyObjclass && action.objclass != objclass) return false;
+      if (jumpOnly) return isZombossJumpActionObjclass(action.objclass);
+      return retreatOnly
+          ? isRetreatPhaseCatalogAction(action)
+          : isRegularPhaseCatalogAction(action);
     }).toList();
     if (candidates.isEmpty) return null;
 
@@ -113,6 +127,10 @@ abstract class ZombossMechActionUtils {
           score -= 1;
         }
       }
+      // Prefer the declared objclass when scores otherwise match (healing path).
+      if (candidate.objclass == objclass) {
+        score += 2;
+      }
       if (customAlias == candidate.alias ||
           customAlias.startsWith('${candidate.alias}_') ||
           customAlias.startsWith('${candidate.alias}Custom')) {
@@ -124,6 +142,22 @@ abstract class ZombossMechActionUtils {
       }
     }
     return best;
+  }
+
+  /// Resolves the field schema for an action objclass (catalog or preset).
+  static List<ZombossMechFieldSpec> fieldsForObjclass({
+    required ZombossMechCatalogEntry catalog,
+    required String objclass,
+    String? editableInstance,
+  }) {
+    final group = catalog.actions
+            .where((g) => g.objclass == objclass)
+            .firstOrNull ??
+        ZombossCustomActionPresetRepository.groupForObjclass(
+          editableInstance ?? catalog.editableInstance,
+          objclass,
+        );
+    return group?.fields ?? const [];
   }
 
   static Map<String, dynamic> defaultsFromFields(

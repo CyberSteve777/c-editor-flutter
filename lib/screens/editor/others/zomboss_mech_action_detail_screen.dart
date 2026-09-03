@@ -109,6 +109,7 @@ class ZombossMechActionDetailScreen extends StatelessWidget {
               data: data,
               objclass: objclass,
               levelFile: levelFile,
+              catalog: catalog,
               editable: false,
               onChanged: () {},
             ),

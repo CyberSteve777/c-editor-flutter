@@ -1,5 +1,17 @@
 [
     {
+        "id": "ZombieZombossBlade",
+        "icon": "kongfu_zomboss_blade.webp",
+        "variations": [
+            "kongfu_zomboss_blade",
+            "kongfu_zomboss_blade_vacation"
+        ],
+        "resourceGroups": [
+            "ZombieKongFuZombossBladeGroup",
+            "ZombossKongfuBladeAudio"
+        ]
+    },
+    {
         "id": "ZombieZombossExplosive",
         "icon": "kongfu_zomboss_explosive.webp",
         "variations": [
@@ -13,25 +25,13 @@
         ]
     },
     {
-        "id": "ZombieZombossBlade",
-        "icon": "kongfu_zomboss_blade.webp",
-        "variations": [
-            "kongfu_zomboss_blade",
-            "kongfu_zomboss_blade_vacation"
-        ],
-        "resourceGroups": [
-            "ZombieKongFuZombossBladeGroup",
-            "ZombossKongfuBladeAudio"
-        ]
-    },
-    {
         "id": "ZombieZombossQigong",
         "icon": "kongfu_zomboss_qigong.webp",
         "variations": [
             "kongfu_zomboss_qigong",
-            "kongfu_zomboss_qigong_vacation",
             "kongfu_zomboss_qigong_12TH",
-            "kongfu_zomboss_qigong_12th"
+            "kongfu_zomboss_qigong_12th",
+            "kongfu_zomboss_qigong_vacation"
         ],
         "resourceGroups": [
             "ZombieKongFuZombossQigongGroup",
