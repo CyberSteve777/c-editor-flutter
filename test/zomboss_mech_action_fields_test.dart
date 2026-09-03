@@ -4,6 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/portal_type_selector.dart';
 import 'package:c_editor/widgets/zomboss_mech_action_fields.dart';
+import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 import 'package:c_editor/widgets/zomboss_mech_weighted_zombie_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -140,6 +141,45 @@ void main() {
         .widgetList<Text>(find.text('Base Action'))
         .firstWhere((text) => text.textAlign == TextAlign.center);
     expect(title.style?.fontWeight, FontWeight.bold);
+  });
+
+  testWidgets('jump action fields use action rows instead of text inputs', (
+    tester,
+  ) async {
+    final data = <String, dynamic>{
+      'SpawnJumpAction': 'RTID(ZombossSpawnJump@ZombieActions)',
+      'BoneProjectileType': 'RTID(SomeBone@ZombieActions)',
+    };
+    var picked = false;
+    await tester.pumpWidget(
+      _app(
+        ZombossMechActionFieldsEditor(
+          mechId: 'ZombieZombossMech_Egypt',
+          objclass: 'ZombossDropZombieActionDefinition',
+          fields: const [
+            ZombossMechFieldSpec(name: 'SpawnJumpAction', type: 'rtid'),
+            ZombossMechFieldSpec(name: 'BoneProjectileType', type: 'rtid'),
+          ],
+          data: data,
+          onPickJumpAction: (current) async {
+            picked = true;
+            expect(current, 'RTID(ZombossSpawnJump@ZombieActions)');
+            return 'RTID(ZombossRetreatJump@ZombieActions)';
+          },
+          onChanged: () {},
+        ),
+      ),
+    );
+
+    expect(find.byType(ZombossMechActionRow), findsOneWidget);
+    expect(find.text('ZombossSpawnJump@ZombieActions'), findsOneWidget);
+    expect(find.byType(TextFormField), findsOneWidget);
+    expect(find.textContaining('BoneProjectileType'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.swap_horiz));
+    await tester.pumpAndSettle();
+    expect(picked, isTrue);
+    expect(data['SpawnJumpAction'], 'RTID(ZombossRetreatJump@ZombieActions)');
   });
 
   testWidgets('long zombie weight labels move above the input', (tester) async {

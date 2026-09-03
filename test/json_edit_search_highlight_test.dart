@@ -237,4 +237,52 @@ void main() {
     expect(scrollController.offset, closeTo(before, 0.5));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('read-mode gutter height matches wrapped JSON height', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final level = PvzLevelFile(
+      objects: List.generate(
+        30,
+        (index) => PvzObject(
+          aliases: ['Wave$index'],
+          objClass: 'SpawnZombiesJitteredWaveActionProps',
+          objData: {
+            'Zombies': List.generate(
+              8,
+              (z) => {'Type': 'RTID(moon_armor${z % 3}@ZombieTypes)'},
+            ),
+          },
+        ),
+      ),
+    );
+    await tester.pumpWidget(_jsonViewer(level));
+    await tester.pumpAndSettle();
+
+    final rowFinder = find.descendant(
+      of: find.byType(Scrollbar).last,
+      matching: find.byType(Row),
+    );
+    final gutterHeight = tester.getSize(
+      find.descendant(
+        of: rowFinder,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is SizedBox && widget.child is Column,
+        ),
+      ),
+    ).height;
+    final contentHeight = tester.getSize(
+      find.descendant(
+        of: rowFinder,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is SizedBox &&
+              (widget.child is Listener || widget.child is SelectionArea),
+        ),
+      ),
+    ).height;
+    expect(gutterHeight, closeTo(contentHeight, 1.5));
+    expect(tester.takeException(), isNull);
+  });
 }

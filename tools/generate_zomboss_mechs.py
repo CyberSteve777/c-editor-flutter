@@ -52,7 +52,6 @@ ACTION_TAGS = frozenset({"movement", "spawn", "attack", "special", "retreat"})
 # Substrings in action implementation aliases that indicate a phase retreat action.
 RETREAT_ALIAS_MARKERS = ("retreat", "coverup", "slowdive")
 
-# One tag per action objclass (movement / spawn / attack / special / retreat).
 ACTION_OBJCLASS_TAGS: dict[str, str] = {
     # movement — repositioning without leaving the active phase
     "ZombossWalkActionDefinition": "movement",
@@ -135,6 +134,44 @@ ACTION_OBJCLASS_TAGS: dict[str, str] = {
 }
 
 
+JUMP_ACTION_OBJCLASSES = frozenset(
+    {
+        "ZombossJumpActionDefinition",
+        "ZombossSteamJumpActionDefinition",
+        "ZombossSteamRandomJumpActionDefinition",
+        "ZombossQigongJumpActionDefinition",
+    }
+)
+
+
+def is_lost_city_identifier(value: str) -> bool:
+    return "lostcity" in value.lower()
+
+
+def jump_alias_matches_mech(alias: str, mech_id: str) -> bool:
+    """Keep Lost City jump impls on Lost City, and generic jump impls off it."""
+    return is_lost_city_identifier(alias) == is_lost_city_identifier(mech_id)
+
+
+def collect_nested_jump_aliases(objdata: Any) -> set[str]:
+    found: set[str] = set()
+
+    def walk(value: Any) -> None:
+        if isinstance(value, dict):
+            for key, nested in value.items():
+                if isinstance(key, str) and key.endswith("JumpAction"):
+                    alias, source = parse_rtid(nested)
+                    if alias and (source is None or source in {"ZombieActions", "."}):
+                        found.add(alias)
+                walk(nested)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    walk(objdata)
+    return found
+
+
 def is_excluded_teamboss(
     zombie_class: Any = None,
     type_name: Any = None,
@@ -174,14 +211,14 @@ def classify_action_tag(
     retreat_aliases: set[str] | None = None,
 ) -> str:
     """Return movement | spawn | attack | special | retreat for a zomboss action group."""
+    if objclass in ACTION_OBJCLASS_TAGS:
+        return ACTION_OBJCLASS_TAGS[objclass]
+
     retreat_aliases = retreat_aliases or set()
     if implementations and implementations_are_retreat_only(
         implementations, retreat_aliases
     ):
         return "retreat"
-
-    if objclass in ACTION_OBJCLASS_TAGS:
-        return ACTION_OBJCLASS_TAGS[objclass]
 
     lower = objclass.lower()
     if objclass == "UnknownAction":
@@ -651,27 +688,59 @@ def collect_retreat_action_aliases(
     return retreat
 
 
+def add_action_implementation(
+    by_class: dict[str, dict[str, dict[str, Any]]],
+    unknown: dict[str, dict[str, Any]],
+    action_map: dict[str, dict[str, Any]],
+    alias: str,
+) -> None:
+    action_def = action_map.get(alias)
+    if not action_def:
+        unknown[alias] = {}
+        return
+    objclass = action_def["objclass"]
+    values = action_def["objdata"]
+    if not isinstance(values, dict):
+        values = {}
+    if not is_valid_action_implementation(objclass, values):
+        return
+    by_class[objclass][alias] = values
+
+
 def build_actions_section(
     referenced_aliases: set[str],
     retreat_aliases: set[str],
     action_map: dict[str, dict[str, Any]],
+    mech_id: str,
 ) -> list[dict[str, Any]]:
     """Only action aliases referenced in this mech's property-sheet stages."""
     by_class: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     unknown: dict[str, dict[str, Any]] = {}
 
     for alias in sorted(referenced_aliases):
-        action_def = action_map.get(alias)
-        if not action_def:
-            unknown[alias] = {}
+        add_action_implementation(by_class, unknown, action_map, alias)
+
+    nested_jumps: set[str] = set()
+    for implementations in by_class.values():
+        for values in implementations.values():
+            nested_jumps |= collect_nested_jump_aliases(values)
+    for alias in sorted(nested_jumps):
+        add_action_implementation(by_class, unknown, action_map, alias)
+
+    for objclass in list(by_class.keys()):
+        if objclass not in JUMP_ACTION_OBJCLASSES:
             continue
-        objclass = action_def["objclass"]
-        values = action_def["objdata"]
-        if not isinstance(values, dict):
-            values = {}
-        if not is_valid_action_implementation(objclass, values):
-            continue
-        by_class[objclass][alias] = values
+        for alias, action_def in action_map.items():
+            if action_def["objclass"] != objclass:
+                continue
+            if not jump_alias_matches_mech(alias, mech_id):
+                continue
+            values = action_def["objdata"]
+            if not isinstance(values, dict):
+                continue
+            if not is_valid_action_implementation(objclass, values):
+                continue
+            by_class[objclass][alias] = values
 
     actions: list[dict[str, Any]] = []
     for objclass in sorted(by_class):
@@ -799,7 +868,7 @@ def build_mech_output(
                 "defaultPhaseCount": default_phase_count,
                 "variations": variations,
                 "actions": build_actions_section(
-                    referenced_actions, retreat_actions, action_map
+                    referenced_actions, retreat_actions, action_map, zombie_class
                 ),
                 "Properties": build_properties_section(property_impls),
                 "editableInstance": editable,
