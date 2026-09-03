@@ -33,6 +33,7 @@ import 'package:c_editor/screens/editor/others/custom_fish_properties_screen.dar
 import 'package:c_editor/screens/editor/others/unknown_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/star_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/max_sun_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/moon_expert_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/rift_theme_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/death_hole_module_screen.dart';
@@ -2698,6 +2699,20 @@ class _EditorScreenState extends State<EditorScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => MaxSunModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' && objClass == 'MoonExpertProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MoonExpertModuleScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,

@@ -122,6 +122,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_ConveyorSeedBankProperties;
       case 'moduleTitle_SunDropperProperties':
         return l10n.moduleTitle_SunDropperProperties;
+      case 'moduleTitle_MoonExpertProperties':
+        return l10n.moduleTitle_MoonExpertProperties;
       case 'moduleTitle_MoonLifeSupportSystemProperties':
         return l10n.moduleTitle_MoonLifeSupportSystemProperties;
       case 'moduleTitle_LunarTerminalModuleProperties':
@@ -290,6 +292,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_ConveyorSeedBankProperties;
       case 'moduleDesc_SunDropperProperties':
         return l10n.moduleDesc_SunDropperProperties;
+      case 'moduleDesc_MoonExpertProperties':
+        return l10n.moduleDesc_MoonExpertProperties;
       case 'moduleDesc_MoonLifeSupportSystemProperties':
         return l10n.moduleDesc_MoonLifeSupportSystemProperties;
       case 'moduleDesc_LunarTerminalModuleProperties':
@@ -568,6 +572,16 @@ class ModuleRegistry {
       defaultAlias: 'OverrideMaxSun',
       initialDataFactory: () => LevelMutatorMaxSunPropsData(),
       routeId: 'MaxSunModule',
+    ),
+    'MoonExpertProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_MoonExpertProperties',
+      descriptionKey: 'moduleDesc_MoonExpertProperties',
+      icon: Icons.nightlight_round,
+      isCore: true,
+      category: ModuleCategory.base,
+      defaultAlias: 'MoonExpertProps',
+      initialDataFactory: () => MoonExpertPropertiesData(),
+      routeId: 'MoonExpertModule',
     ),
     'LevelMutatorStartingPlantfoodProps': ModuleMetadata(
       titleKey: 'moduleTitle_LevelMutatorStartingPlantfoodProps',
