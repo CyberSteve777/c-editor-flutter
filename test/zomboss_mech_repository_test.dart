@@ -28,6 +28,68 @@ void main() {
     );
   });
 
+  test('mech groups follow world priority order', () async {
+    await ZombossMechRepository.init();
+    expect(
+      ZombossMechRepository.allZombossMechs.map((e) => e.id).toList(),
+      [
+        'ZombieZombossMech_Egypt',
+        'ZombieZombossMech_Pirate',
+        'ZombieZombossMech_Cowboy',
+        'ZombieZombossMech_Future',
+        'ZombieZombossMech_Dark',
+        'ZombieZombossMech_Beach',
+        'ZombieZombossMech_IceAge',
+        'ZombieZombossMech_SkyCity',
+        'ZombieZombossMech_LostCity',
+        'ZombieZombossMech_Eighties',
+        'ZombieZombossMech_Dino',
+        'ZombieZombossMech_Steam',
+        'ZombieZombossMech_Renai',
+        'ZombieZombossMech_Hydra',
+        'ZombieZombossMech_PVZ1_Robot',
+      ],
+    );
+    expect(
+      ZombossMechRepository.getBase('ZombieZombossMech_Egypt')!.variations.take(5),
+      [
+        'zombossmech_egypt',
+        'zombossmech_modern_egypt',
+        'zombossmech_egypt_rift',
+        'zombossmech_egypt_vacation',
+        'zombossmech_egypt_12th',
+      ],
+    );
+    expect(
+      ZombossMechRepository.getBase(
+        'ZombieZombossMech_Egypt',
+      )!.variations.contains('zombossmech_egypt_memo'),
+      isFalse,
+    );
+    expect(
+      ZombossMechRepository.getBase('ZombieZombossMech_Egypt')!.editableInstance,
+      'zombossmech_egypt_memo',
+    );
+    expect(
+      ZombossMechRepository.getBase(
+        'ZombieZombossMech_PVZ1_Robot',
+      )!.variations.contains('zombossmech_pvz1_robot_10'),
+      isFalse,
+    );
+    expect(
+      ZombossMechRepository.getBase(
+        'ZombieZombossMech_PVZ1_Robot',
+      )!.editableInstance,
+      'zombossmech_pvz1_robot_10',
+    );
+    expect(
+      ZombossMechRepository.getBase(
+        'ZombieZombossMech_Future',
+      )!.variations.any((v) => v.contains('TimeTravel')),
+      isFalse,
+    );
+  });
+
   test('resolves built-in property data for read-only details', () async {
     await ZombossMechRepository.init();
     await ZombiePropertiesRepository.init();
