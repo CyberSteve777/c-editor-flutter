@@ -699,133 +699,179 @@ class _PlantDetailDialogState extends State<_PlantDetailDialog> {
             PlantRepository().getName(widget.data.plantType),
           );
 
-    return AlertDialog(
-      title: Text(l10n?.editAlias(displayName) ?? 'Edit: $displayName'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (isTool)
-              _NumberField(
-                label: l10n?.initialWeight ?? 'Initial weight',
-                value: _weight,
-                onChanged: (v) => setState(() => _weight = v),
-              )
-            else ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: _NumberField(
-                      label: l10n?.initialWeight ?? 'Initial weight',
-                      value: _weight,
-                      onChanged: (v) => setState(() => _weight = v),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _NumberField(
-                      label: l10n?.plantLevelLabel ?? 'Plant level',
-                      value: _level,
-                      onChanged: (v) => setState(() => _level = v.clamp(0, 5)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.followAccountLevel ??
-                    'Level 0 plants use their corresponding tier from the player\'s account.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+    // AlertDialog uses IntrinsicWidth, which cannot measure LayoutBuilder
+    // (EditorResponsiveInputField). Use a fixed-width Dialog instead.
+    final media = MediaQuery.of(context);
+    final inset = media.size.width < 600
+        ? const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
+        : const EdgeInsets.symmetric(horizontal: 40, vertical: 24);
+    final dialogWidth =
+        (media.size.width - inset.horizontal).clamp(280.0, 480.0);
+    const dialogPadding = EdgeInsets.fromLTRB(24, 20, 24, 12);
+    const actionsGap = 12.0;
+    const estimatedActionsHeight = 52.0;
+    final maxDialogHeight =
+        media.size.height - inset.vertical - media.viewInsets.bottom;
+    final bodyMaxHeight =
+        maxDialogHeight - dialogPadding.vertical - estimatedActionsHeight;
+
+    final form = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n?.editAlias(displayName) ?? 'Edit: $displayName',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 16),
+        if (isTool)
+          _NumberField(
+            label: l10n?.initialWeight ?? 'Initial weight',
+            value: _weight,
+            onChanged: (v) => setState(() => _weight = v),
+          )
+        else ...[
+          Row(
+            children: [
+              Expanded(
+                child: _NumberField(
+                  label: l10n?.initialWeight ?? 'Initial weight',
+                  value: _weight,
+                  onChanged: (v) => setState(() => _weight = v),
                 ),
               ),
-              const SizedBox(height: 8),
-              Opacity(
-                opacity: widget.hasCustomLevelModule ? 0.5 : 1.0,
-                child: Tooltip(
-                  message:
-                      l10n?.conveyorPlantWearCostumeTooltip ??
-                      'When enabled, the seed packet may show a plant costume. '
-                          'Not available in Creative Courtyard levels.',
-                  child: SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      l10n?.conveyorPlantWearCostume ??
-                          'Wear costume (iAvatar)',
-                    ),
-                    value: _iAvatar,
-                    onChanged: widget.hasCustomLevelModule
-                        ? null
-                        : (v) => setState(() => _iAvatar = v),
-                  ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _NumberField(
+                  label: l10n?.plantLevelLabel ?? 'Plant level',
+                  value: _level,
+                  onChanged: (v) => setState(() => _level = v.clamp(0, 5)),
                 ),
               ),
             ],
-            const Divider(height: 24),
-            Text(
-              l10n?.maxLimits ?? 'Max limits',
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n?.followAccountLevel ??
+                'Level 0 plants use their corresponding tier from the player\'s account.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _NumberField(
-                    label: l10n?.maxCountThreshold ?? 'Max count threshold',
-                    value: _maxCount,
-                    onChanged: (v) => setState(() => _maxCount = v),
-                  ),
+          ),
+          const SizedBox(height: 8),
+          Opacity(
+            opacity: widget.hasCustomLevelModule ? 0.5 : 1.0,
+            child: Tooltip(
+              message:
+                  l10n?.conveyorPlantWearCostumeTooltip ??
+                  'When enabled, the seed packet may show a plant costume. '
+                      'Not available in Creative Courtyard levels.',
+              child: SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  l10n?.conveyorPlantWearCostume ?? 'Wear costume (iAvatar)',
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _DoubleField(
-                    label: l10n?.weightFactor ?? 'Weight factor',
-                    value: _maxWeightFactor,
-                    onChanged: (v) => setState(() => _maxWeightFactor = v),
-                  ),
-                ),
-              ],
+                value: _iAvatar,
+                onChanged: widget.hasCustomLevelModule
+                    ? null
+                    : (v) => setState(() => _iAvatar = v),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              l10n?.minLimits ?? 'Min limits',
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+        const Divider(height: 24),
+        Text(
+          l10n?.maxLimits ?? 'Max limits',
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _NumberField(
+                label: l10n?.maxCountThreshold ?? 'Max count threshold',
+                value: _maxCount,
+                onChanged: (v) => setState(() => _maxCount = v),
+              ),
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _NumberField(
-                    label: l10n?.minCountThreshold ?? 'Min count threshold',
-                    value: _minCount,
-                    onChanged: (v) => setState(() => _minCount = v),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _DoubleField(
-                    label: l10n?.weightFactor ?? 'Weight factor',
-                    value: _minWeightFactor,
-                    onChanged: (v) => setState(() => _minWeightFactor = v),
-                  ),
-                ),
-              ],
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DoubleField(
+                label: l10n?.weightFactor ?? 'Weight factor',
+                value: _maxWeightFactor,
+                onChanged: (v) => setState(() => _maxWeightFactor = v),
+              ),
             ),
           ],
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: widget.onDismiss,
-          child: Text(l10n?.cancel ?? 'Cancel'),
+        const SizedBox(height: 16),
+        Text(
+          l10n?.minLimits ?? 'Min limits',
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
-        FilledButton(onPressed: _save, child: Text(l10n?.ok ?? 'OK')),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _NumberField(
+                label: l10n?.minCountThreshold ?? 'Min count threshold',
+                value: _minCount,
+                onChanged: (v) => setState(() => _minCount = v),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DoubleField(
+                label: l10n?.weightFactor ?? 'Weight factor',
+                value: _minWeightFactor,
+                onChanged: (v) => setState(() => _minWeightFactor = v),
+              ),
+            ),
+          ],
+        ),
       ],
+    );
+
+    return Dialog(
+      insetPadding: inset,
+      child: SizedBox(
+        width: dialogWidth,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxDialogHeight),
+          child: Padding(
+            padding: dialogPadding,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: bodyMaxHeight),
+                  child: SingleChildScrollView(child: form),
+                ),
+                const SizedBox(height: actionsGap),
+                OverflowBar(
+                  spacing: 8,
+                  alignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: widget.onDismiss,
+                      child: Text(l10n?.cancel ?? 'Cancel'),
+                    ),
+                    FilledButton(
+                      onPressed: _save,
+                      child: Text(l10n?.ok ?? 'OK'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
