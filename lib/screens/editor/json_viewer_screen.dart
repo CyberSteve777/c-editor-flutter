@@ -162,10 +162,11 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   final Map<int, List<JsonViewerTextMatch>> _objectMatches = {};
   double? _pinchBaseFontSize;
 
-  // Cache for virtualized row wrapping
+  // Cache for gutter rows derived from the rendered document layout.
   double _lastWidth = 0;
   double _lastFontSize = 0;
-  List<_WrappedJsonRow>? _cachedRows;
+  int? _lastContentSignature;
+  _GutterLayout? _cachedGutterLayout;
   int? _selectionPointer;
   double? _selectionPointerScrollOffset;
 
@@ -273,10 +274,19 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   String _rawPrettyText() => _jsonEncoder.convert(widget.levelFile.toJson());
 
   void _invalidateRenderedJson() {
-    _cachedRows = null;
+    _cachedGutterLayout = null;
     _lastWidth = 0;
     _lastFontSize = 0;
+    _lastContentSignature = null;
     _jsonStringCache.clear();
+  }
+
+  double _jsonContentWidth({
+    required double rowWidth,
+    required double gutterW,
+    required double gutterTextGap,
+  }) {
+    return (rowWidth - gutterW - gutterTextGap).clamp(32.0, double.maxFinite);
   }
 
   Future<void> _copyTextToClipboard(
@@ -996,15 +1006,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   Widget _buildViewMode(String pretty, bool isDesktop, AppLocalizations? l10n) {
-    final scrollLayout = _buildScrollLayout(pretty, isDesktop, l10n);
-    if (!isDesktop) return scrollLayout;
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerDown: _handleReadViewPointerDown,
-      onPointerUp: _finishReadViewSelectionPointer,
-      onPointerCancel: _finishReadViewSelectionPointer,
-      child: scrollLayout,
-    );
+    return _buildScrollLayout(pretty, isDesktop, l10n);
   }
 
   final Map<int, String> _jsonStringCache = {};
@@ -1186,132 +1188,165 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     final activeMatch = _matches.isEmpty
         ? null
         : _matches[_currentMatchIndex.clamp(0, _matches.length - 1)];
+    const textHeightBehavior = TextHeightBehavior(
+      applyHeightToFirstAscent: false,
+      applyHeightToLastDescent: false,
+    );
 
     return Scrollbar(
       controller: _verticalController,
       thumbVisibility: true,
       trackVisibility: isDesktop,
       interactive: isDesktop,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const pad = 16.0;
-          const gutterTextGap = 12.0;
-          final maxTextW =
-              constraints.maxWidth - pad * 2 - gutterW - gutterTextGap;
-          final safeMaxTextW = maxTextW.clamp(32.0, double.maxFinite);
-
-          // Optimization: re-wrap ONLY if width or font size changed significantly.
-          // Cached in state to prevent runaway scroll jitter.
-          final sizeDelta = (_fontSize - _lastFontSize).abs();
-          final widthDelta = (safeMaxTextW - _lastWidth).abs();
-
-          if (_cachedRows == null || widthDelta > 1.0 || sizeDelta > 0.1) {
-            _cachedRows = _wrapJsonLogicalLines(
-              logicalLines,
-              safeMaxTextW,
-              baseStyle,
+      child: SingleChildScrollView(
+        controller: _verticalController,
+        padding: const EdgeInsets.all(16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            const gutterTextGap = 12.0;
+            final rowWidth = constraints.maxWidth;
+            final contentWidth = _jsonContentWidth(
+              rowWidth: rowWidth,
+              gutterW: gutterW,
+              gutterTextGap: gutterTextGap,
             );
-            _lastWidth = safeMaxTextW;
-            _lastFontSize = _fontSize;
-          }
+            final strutStyle = StrutStyle(
+              fontFamily: _codeFontFamily,
+              fontSize: _fontSize,
+              height: 1.5,
+              forceStrutHeight: true,
+            );
 
-          final visualRows = _cachedRows!;
+            // Keep the JSON as one selectable paragraph. The paragraph performs
+            // visual wrapping while its underlying text retains only the original
+            // logical newlines. Gutter rows are derived from the same layout pass
+            // so line numbers stay aligned with the rendered source.
+            final documentSpans = <InlineSpan>[];
+            for (var i = 0; i < logicalLines.length; i++) {
+              final line = logicalLines[i];
+              if (_matches.isEmpty) {
+                documentSpans.add(TextSpan(text: line));
+              } else {
+                documentSpans.addAll(
+                  buildHighlightedTextSpans(
+                    text: line,
+                    segmentStartInLine: 0,
+                    segmentEndInLine: line.length,
+                    baseStyle: baseStyle,
+                    highlightStyle: highlightStyle,
+                    activeHighlightStyle: activeHighlightStyle,
+                    lineMatches: _matches
+                        .where((match) => match.lineIndex == i)
+                        .toList(),
+                    activeMatch: activeMatch,
+                    lineStartOffset: lineStarts[i],
+                  ),
+                );
+              }
+              if (i != logicalLines.length - 1) {
+                documentSpans.add(const TextSpan(text: '\n'));
+              }
+            }
 
-          final gutterSpans = <InlineSpan>[];
-          for (var i = 0; i < visualRows.length; i++) {
-            final row = visualRows[i];
-            gutterSpans.add(
-              TextSpan(
-                text: row.isContinuation
-                    ? contSymbol
-                    : '${row.logicalLineOneBased}',
-                style: baseStyle.copyWith(
-                  fontFamily: _codeFontFamily,
-                  color: muted,
-                  fontSize: row.isContinuation ? _fontSize * 0.92 : _fontSize,
-                ),
+            final contentSignature = Object.hash(
+              pretty.hashCode,
+              _matches.length,
+              _currentMatchIndex,
+            );
+            final sizeDelta = (_fontSize - _lastFontSize).abs();
+            final widthDelta = (contentWidth - _lastWidth).abs();
+
+            if (_cachedGutterLayout == null ||
+                widthDelta > 1.0 ||
+                sizeDelta > 0.1 ||
+                _lastContentSignature != contentSignature) {
+              _cachedGutterLayout = _layoutGutter(
+                documentSpans: documentSpans,
+                baseStyle: baseStyle,
+                strutStyle: strutStyle,
+                maxWidth: contentWidth,
+                lineStarts: lineStarts,
+                textScaler: MediaQuery.textScalerOf(context),
+                textHeightBehavior: textHeightBehavior,
+              );
+              _lastWidth = contentWidth;
+              _lastFontSize = _fontSize;
+              _lastContentSignature = contentSignature;
+            }
+
+            final visualRows = _cachedGutterLayout!.rows;
+            final lineHeights = _cachedGutterLayout!.lineHeights;
+
+            final selectableJson = SelectionArea(
+              contextMenuBuilder: _buildReadSelectionContextMenu,
+              child: Text.rich(
+                TextSpan(children: documentSpans),
+                style: baseStyle,
+                strutStyle: strutStyle,
+                textHeightBehavior: textHeightBehavior,
+                softWrap: true,
               ),
             );
-            if (i != visualRows.length - 1) {
-              gutterSpans.add(const TextSpan(text: '\n'));
-            }
-          }
 
-          // Keep the JSON as one selectable paragraph. The paragraph performs
-          // the same visual wrapping used to calculate the gutter rows, while
-          // its underlying text retains only the original logical newlines.
-          // This makes Select all cover the complete JSON without copying line
-          // numbers or inserting newlines at visual wrap points.
-          final documentSpans = <InlineSpan>[];
-          for (var i = 0; i < logicalLines.length; i++) {
-            final line = logicalLines[i];
-            if (_matches.isEmpty) {
-              documentSpans.add(TextSpan(text: line));
-            } else {
-              documentSpans.addAll(
-                buildHighlightedTextSpans(
-                  text: line,
-                  segmentStartInLine: 0,
-                  segmentEndInLine: line.length,
-                  baseStyle: baseStyle,
-                  highlightStyle: highlightStyle,
-                  activeHighlightStyle: activeHighlightStyle,
-                  lineMatches: _matches
-                      .where((match) => match.lineIndex == i)
-                      .toList(),
-                  activeMatch: activeMatch,
-                  lineStartOffset: lineStarts[i],
-                ),
-              );
-            }
-            if (i != logicalLines.length - 1) {
-              documentSpans.add(const TextSpan(text: '\n'));
-            }
-          }
+            final jsonContent = isDesktop
+                ? Listener(
+                    behavior: HitTestBehavior.translucent,
+                    onPointerDown: _handleReadViewPointerDown,
+                    onPointerUp: _finishReadViewSelectionPointer,
+                    onPointerCancel: _finishReadViewSelectionPointer,
+                    child: selectableJson,
+                  )
+                : selectableJson;
 
-          return SingleChildScrollView(
-            controller: _verticalController,
-            padding: const EdgeInsets.all(pad),
-            child: Row(
+            return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                   width: gutterW,
-                  child: RichText(
-                    textAlign: TextAlign.right,
-                    text: TextSpan(style: baseStyle, children: gutterSpans),
-                    strutStyle: StrutStyle(
-                      fontFamily: _codeFontFamily,
-                      fontSize: _fontSize,
-                      height: 1.5,
-                      forceStrutHeight: true,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var i = 0; i < visualRows.length; i++)
+                        SizedBox(
+                          height: lineHeights[i],
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              visualRows[i].isContinuation
+                                  ? contSymbol
+                                  : '${visualRows[i].logicalLineOneBased}',
+                              style: baseStyle.copyWith(
+                                fontFamily: _codeFontFamily,
+                                color: muted,
+                                fontSize: visualRows[i].isContinuation
+                                    ? _fontSize * 0.92
+                                    : _fontSize,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: gutterTextGap),
-                Expanded(
-                  child: SelectionArea(
-                    contextMenuBuilder: _buildReadSelectionContextMenu,
-                    child: Text.rich(
-                      TextSpan(children: documentSpans),
-                      style: baseStyle,
-                      strutStyle: StrutStyle(
-                        fontFamily: _codeFontFamily,
-                        fontSize: _fontSize,
-                        height: 1.5,
-                        forceStrutHeight: true,
-                      ),
-                      softWrap: true,
-                    ),
-                  ),
+                SizedBox(
+                  width: contentWidth,
+                  child: jsonContent,
                 ),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
+}
+
+class _GutterLayout {
+  const _GutterLayout({required this.rows, required this.lineHeights});
+
+  final List<_WrappedJsonRow> rows;
+  final List<double> lineHeights;
 }
 
 class _WrappedJsonRow {
@@ -1328,71 +1363,78 @@ class _WrappedJsonRow {
   final int segmentStartInLine;
 }
 
-List<_WrappedJsonRow> _wrapJsonLogicalLines(
-  List<String> logicalLines,
-  double maxWidth,
-  TextStyle style,
-) {
-  final rows = <_WrappedJsonRow>[];
-  final w = maxWidth <= 8 ? 8.0 : maxWidth;
-  for (var i = 0; i < logicalLines.length; i++) {
-    final line = logicalLines[i];
-    final n = i + 1;
-    if (line.isEmpty) {
-      rows.add(
+_GutterLayout _layoutGutter({
+  required List<InlineSpan> documentSpans,
+  required TextStyle baseStyle,
+  required StrutStyle strutStyle,
+  required double maxWidth,
+  required List<int> lineStarts,
+  required TextScaler textScaler,
+  required TextHeightBehavior textHeightBehavior,
+}) {
+  final width = maxWidth <= 8 ? 8.0 : maxWidth;
+  final painter = TextPainter(
+    text: TextSpan(style: baseStyle, children: documentSpans),
+    textDirection: TextDirection.ltr,
+    strutStyle: strutStyle,
+    textScaler: textScaler,
+    textHeightBehavior: textHeightBehavior,
+  )..layout(maxWidth: width);
+
+  final metrics = painter.computeLineMetrics();
+  if (metrics.isEmpty) {
+    return const _GutterLayout(
+      rows: [
         _WrappedJsonRow(
-          logicalLineOneBased: n,
+          logicalLineOneBased: 1,
           isContinuation: false,
           text: '',
           segmentStartInLine: 0,
         ),
-      );
-      continue;
-    }
-    final tp = TextPainter(
-      text: TextSpan(text: line, style: style),
-      textDirection: TextDirection.ltr,
-    )..layout(maxWidth: w);
-    final metrics = tp.computeLineMetrics();
-    if (metrics.isEmpty) {
-      rows.add(
-        _WrappedJsonRow(
-          logicalLineOneBased: n,
-          isContinuation: false,
-          text: line,
-          segmentStartInLine: 0,
-        ),
-      );
-      continue;
-    }
-    for (var j = 0; j < metrics.length; j++) {
-      final m = metrics[j];
-      final dy = m.baseline - m.ascent;
-      final yMid = dy + m.height / 2;
-      final start = tp.getPositionForOffset(Offset(0, yMid)).offset;
-      final end = tp.getPositionForOffset(Offset(w, yMid)).offset;
-      var a = start;
-      var b = end;
-      if (a < 0) a = 0;
-      if (a > line.length) a = line.length;
-      if (b < 0) b = 0;
-      if (b > line.length) b = line.length;
-      if (b < a) {
-        final t = a;
-        a = b;
-        b = t;
-      }
-      rows.add(
-        _WrappedJsonRow(
-          logicalLineOneBased: n,
-          isContinuation: j > 0,
-          text: line.substring(a, b),
-          segmentStartInLine: a,
-        ),
-      );
+      ],
+      lineHeights: [18],
+    );
+  }
+
+  final plainTextLength = painter.text?.toPlainText().length ?? 0;
+  final rows = <_WrappedJsonRow>[];
+  final lineHeights = <double>[];
+  var previousLogicalLine = -1;
+  for (final metric in metrics) {
+    final yMid = metric.baseline - metric.ascent + metric.height / 2;
+    final offset = painter
+        .getPositionForOffset(Offset(0, yMid))
+        .offset
+        .clamp(0, plainTextLength);
+    final logicalIndex = _logicalLineIndexForOffset(offset, lineStarts);
+    final logicalLineOneBased = logicalIndex + 1;
+    rows.add(
+      _WrappedJsonRow(
+        logicalLineOneBased: logicalLineOneBased,
+        isContinuation: logicalLineOneBased == previousLogicalLine,
+        text: '',
+        segmentStartInLine: 0,
+      ),
+    );
+    lineHeights.add(metric.height);
+    previousLogicalLine = logicalLineOneBased;
+  }
+  return _GutterLayout(rows: rows, lineHeights: lineHeights);
+}
+
+int _logicalLineIndexForOffset(int offset, List<int> lineStarts) {
+  if (lineStarts.isEmpty) return 0;
+  var low = 0;
+  var high = lineStarts.length - 1;
+  while (low < high) {
+    final mid = (low + high + 1) >> 1;
+    if (lineStarts[mid] <= offset) {
+      low = mid;
+    } else {
+      high = mid - 1;
     }
   }
-  return rows;
+  return low;
 }
 
 class _ObjectCodeCard extends StatelessWidget {
