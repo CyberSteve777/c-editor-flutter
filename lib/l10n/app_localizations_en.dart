@@ -8319,6 +8319,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechActionBaseAction => 'Base Action';
 
   @override
+  String get zombossMechActionTemplateHint =>
+      'Pick a built-in action to copy its type and default values. You can edit everything after creating.';
+
+  @override
+  String get zombossMechRecreateFromTemplate => 'Recreate from template';
+
+  @override
+  String get zombossMechRecreateFromTemplateTitle => 'Replace this action?';
+
+  @override
+  String get zombossMechRecreateFromTemplateMessage =>
+      'This replaces the action type (objclass) and all field values with the selected template. Your current values will be lost.';
+
+  @override
   String get zombossMechBaseActionAliasSyncTitle =>
       'Update the action codename?';
 
@@ -9760,6 +9774,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lunarMineVeinPlacements => 'Vein placements (VeinPlacements)';
 
   @override
+  String get lunarMineVeinModuleExpectationLabel => 'Lunar Veins';
+
+  @override
+  String get lunarMineVeinModulePreviewEmerging =>
+      'Lunar Energy Crystals emerging this wave:';
+
+  @override
   String get lunarMineEmergenceWave => 'Growth wave (EmergenceWave, 1-based)';
 
   @override
@@ -9811,6 +9832,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get radiationMeteorWave => 'Wave (Wave, 0-based)';
+
+  @override
+  String get radiationMeteorModuleExpectationLabel => 'Radioactive Meteorite';
+
+  @override
+  String get radiationMeteorModulePreviewLanding =>
+      'Meteorites landing this wave:';
 
   @override
   String get rocketLandingHelpTitle => 'Rocket Landing';

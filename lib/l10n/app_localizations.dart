@@ -14691,6 +14691,30 @@ abstract class AppLocalizations {
   /// **'Base Action'**
   String get zombossMechActionBaseAction;
 
+  /// No description provided for @zombossMechActionTemplateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a built-in action to copy its type and default values. You can edit everything after creating.'**
+  String get zombossMechActionTemplateHint;
+
+  /// No description provided for @zombossMechRecreateFromTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Recreate from template'**
+  String get zombossMechRecreateFromTemplate;
+
+  /// No description provided for @zombossMechRecreateFromTemplateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace this action?'**
+  String get zombossMechRecreateFromTemplateTitle;
+
+  /// No description provided for @zombossMechRecreateFromTemplateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces the action type (objclass) and all field values with the selected template. Your current values will be lost.'**
+  String get zombossMechRecreateFromTemplateMessage;
+
   /// No description provided for @zombossMechBaseActionAliasSyncTitle.
   ///
   /// In en, this message translates to:
@@ -17109,6 +17133,18 @@ abstract class AppLocalizations {
   /// **'Vein placements (VeinPlacements)'**
   String get lunarMineVeinPlacements;
 
+  /// No description provided for @lunarMineVeinModuleExpectationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar Veins'**
+  String get lunarMineVeinModuleExpectationLabel;
+
+  /// No description provided for @lunarMineVeinModulePreviewEmerging.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar Energy Crystals emerging this wave:'**
+  String get lunarMineVeinModulePreviewEmerging;
+
   /// No description provided for @lunarMineEmergenceWave.
   ///
   /// In en, this message translates to:
@@ -17198,6 +17234,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wave (Wave, 0-based)'**
   String get radiationMeteorWave;
+
+  /// No description provided for @radiationMeteorModuleExpectationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Radioactive Meteorite'**
+  String get radiationMeteorModuleExpectationLabel;
+
+  /// No description provided for @radiationMeteorModulePreviewLanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Meteorites landing this wave:'**
+  String get radiationMeteorModulePreviewLanding;
 
   /// No description provided for @rocketLandingHelpTitle.
   ///

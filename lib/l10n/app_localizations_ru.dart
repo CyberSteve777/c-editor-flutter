@@ -8277,6 +8277,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechActionBaseAction => 'Базовое действие';
 
   @override
+  String get zombossMechActionTemplateHint =>
+      'Выберите встроенное действие, чтобы скопировать его тип и значения по умолчанию. После создания всё можно изменить.';
+
+  @override
+  String get zombossMechRecreateFromTemplate => 'Пересоздать из шаблона';
+
+  @override
+  String get zombossMechRecreateFromTemplateTitle => 'Заменить это действие?';
+
+  @override
+  String get zombossMechRecreateFromTemplateMessage =>
+      'Тип действия (objclass) и все значения полей будут заменены выбранным шаблоном. Текущие значения будут потеряны.';
+
+  @override
   String get zombossMechBaseActionAliasSyncTitle =>
       'Обновить кодовое имя действия?';
 
@@ -9693,6 +9707,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lunarMineVeinPlacements => 'Размещение жил (VeinPlacements)';
 
   @override
+  String get lunarMineVeinModuleExpectationLabel => 'Лунные жилы';
+
+  @override
+  String get lunarMineVeinModulePreviewEmerging =>
+      'Лунные кристаллы, появляющиеся на этой волне:';
+
+  @override
   String get lunarMineEmergenceWave =>
       'Волна роста (EmergenceWave, нумерация с 1)';
 
@@ -9745,6 +9766,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get radiationMeteorWave => 'Волна (Wave, нумерация с 0)';
+
+  @override
+  String get radiationMeteorModuleExpectationLabel => 'Радиоактивный метеорит';
+
+  @override
+  String get radiationMeteorModulePreviewLanding =>
+      'Метеориты, падающие на этой волне:';
 
   @override
   String get rocketLandingHelpTitle => 'Посадка ракеты';
