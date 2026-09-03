@@ -2474,6 +2474,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleDesc_LevelMutatorMaxSunProps => 'Лимит солнца';
 
   @override
+  String get moduleTitle_MoonExpertProperties => 'Лунный экспертный режим';
+
+  @override
+  String get moduleDesc_MoonExpertProperties =>
+      'Задаёт единый уровень зомби для уровня и ставит все растения на 1 уровень';
+
+  @override
   String get moduleTitle_LevelMutatorStartingPlantfoodProps =>
       'Стартовая подкормка';
 
@@ -5247,6 +5254,23 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get maxSunHelpOverview =>
       'Этот модуль изначально использовался для настройки уровней сложности. Используйте его для переопределения максимального количества солнца в уровне.';
+
+  @override
+  String get moonExpertZombieLevel => 'Уровень зомби (ZombieLevel)';
+
+  @override
+  String get moonExpertZombieLevelTooltip =>
+      'Перезаписывает все уровни зомби в уровне значением ZombieLevel и ставит все растения на 1 уровень, независимо от настроек уровней растений в других модулях.';
+
+  @override
+  String get moonExpertHelpTitle => 'Лунный экспертный режим';
+
+  @override
+  String get moonExpertHelpOverview =>
+      'Задаёт единый уровень зомби для всего уровня и сбрасывает все растения на 1 уровень, перекрывая другие настройки уровней растений и зомби.';
+
+  @override
+  String get enterMoonExpertZombieLevelHint => 'Введите уровень зомби (0–10)';
 
   @override
   String get startingPlantfoodHelpTitle => 'Модуль начальной еды';

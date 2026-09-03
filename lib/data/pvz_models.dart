@@ -78,6 +78,7 @@ export 'pvz_models/ModifyConveyorPlantData.dart';
 export 'pvz_models/ModifyConveyorRemoveData.dart';
 export 'pvz_models/ModifyConveyorWaveActionData.dart';
 export 'pvz_models/MoldColonyChallengePropsData.dart';
+export 'pvz_models/MoonExpertPropertiesData.dart';
 export 'pvz_models/MoonLifeSupportSystemPropertiesData.dart';
 export 'pvz_models/NewBowlingMinigamePropertiesData.dart';
 export 'pvz_models/PVZ1CopycatsModulePropertiesData.dart';

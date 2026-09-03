@@ -52,6 +52,7 @@ class ObjectOrderRegistry {
     'LevelScoringModuleProperties',
     'LevelMutatorStartingPlantfoodProps',
     'LevelMutatorMaxSunProps',
+    'MoonExpertProperties',
     'RiftThemeDemoModuleProperties',
     'LevelMutatorRiftTimedSunProps',
     'PickupCollectableTutorialProperties',

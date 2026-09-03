@@ -2469,6 +2469,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Overrides the maximum sun limit value';
 
   @override
+  String get moduleTitle_MoonExpertProperties => 'Moon Expert Mode';
+
+  @override
+  String get moduleDesc_MoonExpertProperties =>
+      'Forces one zombie level for the whole level and sets all plants to level 1';
+
+  @override
   String get moduleTitle_LevelMutatorStartingPlantfoodProps =>
       'Starting Plant Food';
 
@@ -5290,6 +5297,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get maxSunHelpOverview =>
       'Originally used for Penny’s Pursuit difficulty settings. This module overrides the maximum amount of sun that can be stored in a level.';
+
+  @override
+  String get moonExpertZombieLevel => 'Zombie level (ZombieLevel)';
+
+  @override
+  String get moonExpertZombieLevelTooltip =>
+      'Overwrites all zombie levels defined in the level to ZombieLevel, and sets all plants to level 1 regardless of how plant levels were configured in other modules.';
+
+  @override
+  String get moonExpertHelpTitle => 'Moon Expert Mode';
+
+  @override
+  String get moonExpertHelpOverview =>
+      'Forces a single zombie level for the whole level and resets all plants to level 1, overriding other plant/zombie level settings.';
+
+  @override
+  String get enterMoonExpertZombieLevelHint => 'Enter zombie level (0–10)';
 
   @override
   String get startingPlantfoodHelpTitle => 'Starting Plant Food module';

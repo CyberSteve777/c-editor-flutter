@@ -2371,6 +2371,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_LevelMutatorMaxSunProps => '覆盖关卡最大阳光存储值';
 
   @override
+  String get moduleTitle_MoonExpertProperties => '月球专家模式';
+
+  @override
+  String get moduleDesc_MoonExpertProperties => '将整关僵尸统一为指定等级，并将所有植物设为 1 级';
+
+  @override
   String get moduleTitle_LevelMutatorStartingPlantfoodProps => '初始能量豆';
 
   @override
@@ -5033,6 +5039,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get maxSunHelpOverview => '该模块原本用于控制潘追关卡不同难度级别，可以用此模块覆盖关卡内能够储存的阳光最大值。';
+
+  @override
+  String get moonExpertZombieLevel => '僵尸等级 (ZombieLevel)';
+
+  @override
+  String get moonExpertZombieLevelTooltip =>
+      '会覆盖关卡中已定义的所有僵尸等级为 ZombieLevel，并将所有植物设为 1 级，无论其他模块如何配置植物等级。';
+
+  @override
+  String get moonExpertHelpTitle => '月球专家模式';
+
+  @override
+  String get moonExpertHelpOverview =>
+      '强制整关使用统一的僵尸等级，并将所有植物重置为 1 级，覆盖其他植物/僵尸等级设置。';
+
+  @override
+  String get enterMoonExpertZombieLevelHint => '输入僵尸等级（0–10）';
 
   @override
   String get startingPlantfoodHelpTitle => '初始能量豆模块说明';
