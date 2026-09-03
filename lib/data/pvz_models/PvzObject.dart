@@ -3,7 +3,7 @@ class PvzObject {
   PvzObject({this.aliases, required this.objClass, required this.objData});
 
   List<String>? aliases;
-  final String objClass;
+  String objClass;
   dynamic objData;
 
   factory PvzObject.fromJson(Map<String, dynamic> json) {

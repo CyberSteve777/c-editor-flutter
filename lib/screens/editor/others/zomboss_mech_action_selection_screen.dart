@@ -39,11 +39,13 @@ class ZombossMechActionSelectionScreen extends StatefulWidget {
     required this.catalog,
     required this.levelFile,
     this.retreatOnly = false,
+    this.jumpOnly = false,
   });
 
   final ZombossMechCatalogEntry catalog;
   final PvzLevelFile levelFile;
   final bool retreatOnly;
+  final bool jumpOnly;
 
   @override
   State<ZombossMechActionSelectionScreen> createState() =>
@@ -67,7 +69,7 @@ class _ZombossMechActionSelectionScreenState
 
   String get _viewStateKey =>
       'level:${identityHashCode(widget.levelFile)}:'
-      '${widget.catalog.id}:${widget.retreatOnly}';
+      '${widget.catalog.id}:${widget.retreatOnly}:${widget.jumpOnly}';
 
   @override
   void initState() {
@@ -75,6 +77,7 @@ class _ZombossMechActionSelectionScreenState
     final remembered = _zombossActionSelectionViewStates[_viewStateKey];
     _category =
         !widget.retreatOnly &&
+            !widget.jumpOnly &&
             remembered != null &&
             _categories.contains(remembered.category)
         ? remembered.category
@@ -171,46 +174,34 @@ class _ZombossMechActionSelectionScreenState
 
   List<_ActionListItem> get _items {
     final items = <_ActionListItem>[];
-    if (widget.retreatOnly) {
-      for (final action in widget.catalog.retreatCatalogActions) {
-        final category = ZombossMechActionOrdering.categoryForCatalogAction(
-          action,
-        );
-        items.add(
-          _ActionListItem.catalog(
-            catalog: widget.catalog,
-            action: action,
-            category: category,
-            rtid: RtidParser.build(
-              action.alias,
-              ZombossMechActionUtils.catalogSource,
-            ),
-          ),
-        );
+    final catalogActions = widget.jumpOnly
+        ? widget.catalog.jumpCatalogActions
+        : widget.retreatOnly
+        ? widget.catalog.retreatCatalogActions
+        : ZombossMechActionOrdering.sortedCatalogActions(widget.catalog);
+    final skipCategory = widget.retreatOnly || widget.jumpOnly;
+    for (final action in catalogActions) {
+      final category = ZombossMechActionOrdering.categoryForCatalogAction(
+        action,
+      );
+      if (!skipCategory &&
+          !_matchesCategory(isCustom: false, category: category)) {
+        continue;
       }
-    } else {
-      for (final action in ZombossMechActionOrdering.sortedCatalogActions(
-        widget.catalog,
-      )) {
-        final category = ZombossMechActionOrdering.categoryForCatalogAction(
-          action,
-        );
-        if (!_matchesCategory(isCustom: false, category: category)) {
-          continue;
-        }
-        items.add(
-          _ActionListItem.catalog(
-            catalog: widget.catalog,
-            action: action,
-            category: category,
-            rtid: RtidParser.build(
-              action.alias,
-              ZombossMechActionUtils.catalogSource,
-            ),
+      items.add(
+        _ActionListItem.catalog(
+          catalog: widget.catalog,
+          action: action,
+          category: category,
+          rtid: RtidParser.build(
+            action.alias,
+            ZombossMechActionUtils.catalogSource,
           ),
-        );
-      }
+        ),
+      );
+    }
 
+    if (!widget.retreatOnly && !widget.jumpOnly) {
       for (final preset in ZombossCustomActionPresetRepository.presetsForMech(
         widget.catalog.editableInstance,
       )) {
@@ -256,8 +247,13 @@ class _ZombossMechActionSelectionScreenState
             obj.objClass,
           );
       if (group == null) continue;
-      if (widget.retreatOnly && group.tag != 'retreat') continue;
-      if (!widget.retreatOnly && group.tag == 'retreat') continue;
+      if (widget.jumpOnly) {
+        if (!isZombossJumpActionObjclass(obj.objClass)) continue;
+      } else if (widget.retreatOnly) {
+        if (!isRetreatPhaseActionGroup(group)) continue;
+      } else if (!isRegularPhaseActionGroup(group)) {
+        continue;
+      }
       final actionRtid = RtidParser.build(
         alias,
         ZombossMechActionUtils.customSource,
@@ -271,7 +267,7 @@ class _ZombossMechActionSelectionScreenState
         group,
         alias: alias,
       );
-      if (!widget.retreatOnly &&
+      if (!skipCategory &&
           !_matchesCategory(isCustom: true, category: category)) {
         continue;
       }
@@ -290,6 +286,7 @@ class _ZombossMechActionSelectionScreenState
               ? Map<String, dynamic>.from(obj.objData as Map)
               : const {},
           retreatOnly: widget.retreatOnly,
+          jumpOnly: widget.jumpOnly,
         )?.alias,
         rtid: actionRtid,
         origin: origin,
@@ -347,6 +344,7 @@ class _ZombossMechActionSelectionScreenState
           catalog: widget.catalog,
           levelFile: widget.levelFile,
           retreatOnly: widget.retreatOnly,
+          jumpOnly: widget.jumpOnly,
         ),
       ),
     );
@@ -397,7 +395,7 @@ class _ZombossMechActionSelectionScreenState
         children: [
           Column(
             children: [
-              if (!widget.retreatOnly)
+              if (!widget.retreatOnly && !widget.jumpOnly)
                 HorizontalTagScroller(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -465,6 +463,7 @@ class _ZombossMechActionSelectionScreenState
                                                 levelFile: widget.levelFile,
                                                 existingRtid: item.rtid,
                                                 retreatOnly: widget.retreatOnly,
+                                                jumpOnly: widget.jumpOnly,
                                               ),
                                         ),
                                       );

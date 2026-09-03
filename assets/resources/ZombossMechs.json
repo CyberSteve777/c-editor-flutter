@@ -8,7 +8,8 @@
             "zombossmech_modern_egypt",
             "zombossmech_egypt_rift",
             "zombossmech_egypt_vacation",
-            "zombossmech_egypt_12th"
+            "zombossmech_egypt_12th",
+            "zombossmech_egypt_TEST"
         ],
         "actions": [
             {
@@ -231,9 +232,14 @@
                         "JumpHeight": 400,
                         "JumpHangTime": 0.8,
                         "JumpAnimRateModifier": 2
+                    },
+                    "ZombossSpawnJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossRushActionDefinition",
@@ -424,7 +430,7 @@
                     {
                         "name": "SpawnJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSpawnJump@ZombieActions)"
+                        "default": "RTID(ZombossSpawnJump@.)"
                     },
                     {
                         "name": "SpawnWavesBetweenPlantFood",
@@ -487,7 +493,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 600,
                             "Max": 1700
@@ -509,7 +515,7 @@
                         "Weight": 14,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2200,
                             "Max": 2600
@@ -531,7 +537,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2200,
                             "Max": 2800
@@ -553,7 +559,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 800,
                             "Max": 800
@@ -573,7 +579,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2000,
                             "Max": 2500
@@ -596,7 +602,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 100,
                             "Max": 100
@@ -615,7 +621,7 @@
                         "Weight": 14,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 200,
                             "Max": 300
@@ -635,7 +641,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 300,
                             "Max": 400
@@ -655,7 +661,7 @@
                         "Weight": 18,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1200,
                             "Max": 1500
@@ -678,7 +684,7 @@
                         "Weight": 17,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1400,
                             "Max": 1700
@@ -702,7 +708,7 @@
                         "Weight": 20,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1800,
                             "Max": 2100
@@ -2465,9 +2471,14 @@
                         "JumpHeight": 400,
                         "JumpHangTime": 0.8,
                         "JumpAnimRateModifier": 2
+                    },
+                    "ZombossSpawnJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossRushActionDefinition",
@@ -2643,7 +2654,7 @@
                     {
                         "name": "SpawnJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSpawnJump@ZombieActions)"
+                        "default": "RTID(ZombossSpawnJump@.)"
                     },
                     {
                         "name": "SpawnWavesBetweenPlantFood",
@@ -2705,7 +2716,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 600,
                             "Max": 3200
@@ -2726,7 +2737,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 4200
@@ -2748,7 +2759,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2800,
                             "Max": 4200
@@ -2770,7 +2781,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 600,
                             "Max": 800
@@ -2790,7 +2801,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1500,
                             "Max": 1500
@@ -2811,7 +2822,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 3200
@@ -2834,7 +2845,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 600,
                             "Max": 3200
@@ -2854,7 +2865,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 4200
@@ -2876,7 +2887,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2800,
                             "Max": 4200
@@ -2897,7 +2908,7 @@
                         "Weight": 20,
                         "RepeatMin": 0,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 700,
                             "Max": 700
@@ -2918,7 +2929,7 @@
                         "Weight": 20,
                         "RepeatMin": 0,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 800,
                             "Max": 800
@@ -2939,7 +2950,7 @@
                         "Weight": 25,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 900,
                             "Max": 900
@@ -2959,7 +2970,7 @@
                         "Weight": 25,
                         "RepeatMin": 0,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1200,
                             "Max": 1200
@@ -2981,7 +2992,7 @@
                         "Weight": 5,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2001,
                             "Max": 2001
@@ -3000,7 +3011,7 @@
                         "Weight": 5,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 800,
                             "Max": 800
@@ -4833,9 +4844,14 @@
                         "JumpHeight": 400,
                         "JumpHangTime": 0.8,
                         "JumpAnimRateModifier": 2
+                    },
+                    "ZombossSpawnJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossRushActionDefinition",
@@ -4996,7 +5012,7 @@
                     {
                         "name": "SpawnJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSpawnJump@ZombieActions)"
+                        "default": "RTID(ZombossSpawnJump@.)"
                     },
                     {
                         "name": "SpawnWavesBetweenPlantFood",
@@ -5059,7 +5075,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 700,
                             "Max": 1200
@@ -5081,7 +5097,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1000,
                             "Max": 2000
@@ -5103,7 +5119,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1500,
                             "Max": 3000
@@ -5125,7 +5141,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1000,
                             "Max": 1200
@@ -5145,7 +5161,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 4400
@@ -5167,7 +5183,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 3000,
                             "Max": 4200
@@ -5189,7 +5205,7 @@
                         "Weight": 10,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 700,
                             "Max": 3200
@@ -5211,7 +5227,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 4400
@@ -5233,7 +5249,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2800,
                             "Max": 4200
@@ -5254,7 +5270,7 @@
                         "Weight": 18,
                         "RepeatMin": 0,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2000,
                             "Max": 2000
@@ -5276,7 +5292,7 @@
                         "Weight": 10,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 300,
                             "Max": 300
@@ -5295,7 +5311,7 @@
                         "Weight": 18,
                         "RepeatMin": 1,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 3000,
                             "Max": 3000
@@ -5318,7 +5334,7 @@
                         "Weight": 18,
                         "RepeatMin": 1,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 3500,
                             "Max": 3500
@@ -7082,9 +7098,14 @@
                         "JumpHeight": 400,
                         "JumpHangTime": 0.8,
                         "JumpAnimRateModifier": 2
+                    },
+                    "ZombossSpawnJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossRushActionDefinition",
@@ -7260,7 +7281,7 @@
                     {
                         "name": "SpawnJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSpawnJump@ZombieActions)"
+                        "default": "RTID(ZombossSpawnJump@.)"
                     },
                     {
                         "name": "SpawnWavesBetweenPlantFood",
@@ -7324,7 +7345,7 @@
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 600,
                             "Max": 3000
@@ -7343,33 +7364,11 @@
                             "Max": 1
                         }
                     },
-                    "ZombossFutureSpawn1_timeTravel": {
-                        "Weight": 12,
-                        "RepeatMin": 1,
-                        "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
-                        "SpawnZombieWavePointRange": {
-                            "Min": 600,
-                            "Max": 3000
-                        },
-                        "SpawnZombieTypes": [
-                            "tutorial",
-                            "tutorial_armor1",
-                            "tutorial_armor2",
-                            "modern_newspaper"
-                        ],
-                        "SpawnChargeTime": 0.5,
-                        "SpawnCooldownTime": 0.5,
-                        "SpawnWavesBetweenPlantFood": {
-                            "Min": 1,
-                            "Max": 1
-                        }
-                    },
                     "ZombossFutureSpawn2": {
                         "Weight": 14,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 3000,
                             "Max": 5000
@@ -7387,33 +7386,11 @@
                             "Max": 1
                         }
                     },
-                    "ZombossFutureSpawn2_timeTravel": {
-                        "Weight": 14,
-                        "RepeatMin": 1,
-                        "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
-                        "SpawnZombieWavePointRange": {
-                            "Min": 3000,
-                            "Max": 5000
-                        },
-                        "SpawnZombieTypes": [
-                            "modern_superfanimp",
-                            "newspaper",
-                            "modern_newspaper",
-                            "modern_balloon"
-                        ],
-                        "SpawnChargeTime": 0.5,
-                        "SpawnCooldownTime": 0.5,
-                        "SpawnWavesBetweenPlantFood": {
-                            "Min": 1,
-                            "Max": 1
-                        }
-                    },
                     "ZombossFutureSpawn3": {
                         "Weight": 12,
                         "RepeatMin": 1,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 4000,
                             "Max": 5500
@@ -7432,34 +7409,11 @@
                             "Max": 1
                         }
                     },
-                    "ZombossFutureSpawn3_timeTravel": {
-                        "Weight": 12,
-                        "RepeatMin": 1,
-                        "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
-                        "SpawnZombieWavePointRange": {
-                            "Min": 4000,
-                            "Max": 5500
-                        },
-                        "SpawnZombieTypes": [
-                            "modern_miner",
-                            "newspaper",
-                            "modern_allstar",
-                            "explosion_proof",
-                            "modern_solar_truck"
-                        ],
-                        "SpawnChargeTime": 0.5,
-                        "SpawnCooldownTime": 0.5,
-                        "SpawnWavesBetweenPlantFood": {
-                            "Min": 1,
-                            "Max": 1
-                        }
-                    },
                     "ZombossRiftFutureSpawn1": {
                         "Weight": 20,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1000,
                             "Max": 1500
@@ -7482,7 +7436,7 @@
                         "Weight": 15,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 3000,
                             "Max": 3500
@@ -7502,7 +7456,7 @@
                         "Weight": 15,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2000,
                             "Max": 2500
@@ -7524,7 +7478,7 @@
                         "Weight": 10,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1500,
                             "Max": 2000
@@ -7546,7 +7500,7 @@
                         "Weight": 8,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2000,
                             "Max": 2500
@@ -7568,7 +7522,7 @@
                         "Weight": 12,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2000,
                             "Max": 2500
@@ -7590,7 +7544,7 @@
                         "Weight": 5,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 3000,
                             "Max": 3000
@@ -7610,7 +7564,7 @@
                         "Weight": 10,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 3000
@@ -7634,7 +7588,7 @@
                         "Weight": 20,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 3000
@@ -7656,7 +7610,7 @@
                         "Weight": 25,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2500,
                             "Max": 3000
@@ -8839,540 +8793,6 @@
                             }
                         ]
                     },
-                    "ZombieZombossMechFuture_TimeTravel_easy": {
-                        "Speed": 0.1,
-                        "CanSpawnPlantFood": false,
-                        "EnableAutoTest": false,
-                        "SizeType": "big",
-                        "CanBeLaunchedByPlants": false,
-                        "HeadDropFraction": -1,
-                        "ArmDropFraction": -1,
-                        "HitRect": {
-                            "mX": 30,
-                            "mY": 10,
-                            "mWidth": 115,
-                            "mHeight": 340
-                        },
-                        "GridExtents": {
-                            "mX": 2,
-                            "mY": 2
-                        },
-                        "AttackRect": {
-                            "mX": 15,
-                            "mY": 0,
-                            "mWidth": 20,
-                            "mHeight": 125
-                        },
-                        "ArtCenter": {
-                            "x": 30,
-                            "y": 130
-                        },
-                        "AlmanacOffset": {
-                            "x": 40,
-                            "y": 130
-                        },
-                        "AlmanacScale": 0.7,
-                        "ShadowOffset": {
-                            "x": 55,
-                            "y": -50,
-                            "z": 0.8
-                        },
-                        "ShadowScaling": {
-                            "x": 4.5,
-                            "y": 4.5
-                        },
-                        "GroundTrackName": "ground_swatch",
-                        "ZombieStats": [
-                            {
-                                "Type": "toughness",
-                                "Value": "toughness8"
-                            },
-                            {
-                                "Type": "speed",
-                                "Value": "speed3"
-                            }
-                        ],
-                        "ZombieLevelStats": [
-                            {
-                                "AttackLevel": 1,
-                                "HitPointsLevel": 1
-                            },
-                            {
-                                "AttackLevel": 2,
-                                "HitPointsLevel": 2
-                            },
-                            {
-                                "AttackLevel": 3,
-                                "HitPointsLevel": 3
-                            },
-                            {
-                                "AttackLevel": 4.5,
-                                "HitPointsLevel": 4.5
-                            },
-                            {
-                                "AttackLevel": 5,
-                                "HitPointsLevel": 5
-                            }
-                        ],
-                        "CanTriggerZombieWin": false,
-                        "IsValidPinchTarget": false,
-                        "CanBeFlicked": false,
-                        "# Zomboss properties": 0,
-                        "SquashZombies": true,
-                        "SquashGridItems": false,
-                        "MinColumn": 5,
-                        "MaxColumn": 7,
-                        "HideDuringIntro": false,
-                        "PowerUpDamageModifier": 0.25,
-                        "CrosshairPopAnim": "POPANIM_EFFECTS_ZOMBOSS_MISSILE_EXPLOSION_COMMON",
-                        "CrosshairAnimation": "missile_lock_reticle",
-                        "RocketAnimation": "missile",
-                        "RocketExplosionAnimation": "missile_explosion",
-                        "Stages": [
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk1@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn1_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire1@ZombieActions)"
-                                ],
-                                "HitPoints": 13000,
-                                "Level": 1,
-                                "DamageIndexFull": 0,
-                                "DamageIndexHalf": 0,
-                                "AnimRateModifier": 1,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.5,
-                                    "Max": 1
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 3,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            },
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk2@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn2_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire2@ZombieActions)",
-                                    "RTID(ZombossFutureRush2@ZombieActions)"
-                                ],
-                                "HitPoints": 19000,
-                                "Level": 1,
-                                "DamageIndexFull": 3,
-                                "DamageIndexHalf": 3,
-                                "AnimRateModifier": 1.1,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.5,
-                                    "Max": 0.5
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 2.5,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            },
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk3@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn3_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire3@ZombieActions)",
-                                    "RTID(ZombossFutureRush3@ZombieActions)"
-                                ],
-                                "HitPoints": 22000,
-                                "Level": 1,
-                                "DamageIndexFull": 6,
-                                "DamageIndexHalf": 6,
-                                "AnimRateModifier": 1.25,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.2,
-                                    "Max": 0.5
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 2,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            }
-                        ]
-                    },
-                    "ZombieZombossMechFuture_TimeTravel_hard": {
-                        "Speed": 0.1,
-                        "CanSpawnPlantFood": false,
-                        "EnableAutoTest": false,
-                        "SizeType": "big",
-                        "CanBeLaunchedByPlants": false,
-                        "HeadDropFraction": -1,
-                        "ArmDropFraction": -1,
-                        "HitRect": {
-                            "mX": 30,
-                            "mY": 10,
-                            "mWidth": 115,
-                            "mHeight": 340
-                        },
-                        "GridExtents": {
-                            "mX": 2,
-                            "mY": 2
-                        },
-                        "AttackRect": {
-                            "mX": 15,
-                            "mY": 0,
-                            "mWidth": 20,
-                            "mHeight": 125
-                        },
-                        "ArtCenter": {
-                            "x": 30,
-                            "y": 130
-                        },
-                        "AlmanacOffset": {
-                            "x": 40,
-                            "y": 130
-                        },
-                        "AlmanacScale": 0.7,
-                        "ShadowOffset": {
-                            "x": 55,
-                            "y": -50,
-                            "z": 0.8
-                        },
-                        "ShadowScaling": {
-                            "x": 4.5,
-                            "y": 4.5
-                        },
-                        "GroundTrackName": "ground_swatch",
-                        "ZombieStats": [
-                            {
-                                "Type": "toughness",
-                                "Value": "toughness8"
-                            },
-                            {
-                                "Type": "speed",
-                                "Value": "speed3"
-                            }
-                        ],
-                        "ZombieLevelStats": [
-                            {
-                                "AttackLevel": 1,
-                                "HitPointsLevel": 1
-                            },
-                            {
-                                "AttackLevel": 2,
-                                "HitPointsLevel": 2
-                            },
-                            {
-                                "AttackLevel": 3,
-                                "HitPointsLevel": 3
-                            },
-                            {
-                                "AttackLevel": 4.5,
-                                "HitPointsLevel": 4.5
-                            },
-                            {
-                                "AttackLevel": 5,
-                                "HitPointsLevel": 5
-                            }
-                        ],
-                        "CanTriggerZombieWin": false,
-                        "IsValidPinchTarget": false,
-                        "CanBeFlicked": false,
-                        "# Zomboss properties": 0,
-                        "SquashZombies": true,
-                        "SquashGridItems": false,
-                        "MinColumn": 5,
-                        "MaxColumn": 7,
-                        "HideDuringIntro": false,
-                        "PowerUpDamageModifier": 0.25,
-                        "CrosshairPopAnim": "POPANIM_EFFECTS_ZOMBOSS_MISSILE_EXPLOSION_COMMON",
-                        "CrosshairAnimation": "missile_lock_reticle",
-                        "RocketAnimation": "missile",
-                        "RocketExplosionAnimation": "missile_explosion",
-                        "Stages": [
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk1@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn1_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire1@ZombieActions)"
-                                ],
-                                "HitPoints": 13000,
-                                "Level": 1,
-                                "DamageIndexFull": 0,
-                                "DamageIndexHalf": 0,
-                                "AnimRateModifier": 1,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.5,
-                                    "Max": 1
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 3,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            },
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk2@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn2_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire2@ZombieActions)",
-                                    "RTID(ZombossFutureRush2@ZombieActions)"
-                                ],
-                                "HitPoints": 19000,
-                                "Level": 1,
-                                "DamageIndexFull": 3,
-                                "DamageIndexHalf": 3,
-                                "AnimRateModifier": 1.1,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.5,
-                                    "Max": 0.5
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 2.5,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            },
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk3@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn3_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire3@ZombieActions)",
-                                    "RTID(ZombossFutureRush3@ZombieActions)"
-                                ],
-                                "HitPoints": 22000,
-                                "Level": 1,
-                                "DamageIndexFull": 6,
-                                "DamageIndexHalf": 6,
-                                "AnimRateModifier": 1.25,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.2,
-                                    "Max": 0.5
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 2,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            }
-                        ]
-                    },
-                    "ZombieZombossMechFuture_TimeTravel_normal": {
-                        "Speed": 0.1,
-                        "CanSpawnPlantFood": false,
-                        "EnableAutoTest": false,
-                        "SizeType": "big",
-                        "CanBeLaunchedByPlants": false,
-                        "HeadDropFraction": -1,
-                        "ArmDropFraction": -1,
-                        "HitRect": {
-                            "mX": 30,
-                            "mY": 10,
-                            "mWidth": 115,
-                            "mHeight": 340
-                        },
-                        "GridExtents": {
-                            "mX": 2,
-                            "mY": 2
-                        },
-                        "AttackRect": {
-                            "mX": 15,
-                            "mY": 0,
-                            "mWidth": 20,
-                            "mHeight": 125
-                        },
-                        "ArtCenter": {
-                            "x": 30,
-                            "y": 130
-                        },
-                        "AlmanacOffset": {
-                            "x": 40,
-                            "y": 130
-                        },
-                        "AlmanacScale": 0.7,
-                        "ShadowOffset": {
-                            "x": 55,
-                            "y": -50,
-                            "z": 0.8
-                        },
-                        "ShadowScaling": {
-                            "x": 4.5,
-                            "y": 4.5
-                        },
-                        "GroundTrackName": "ground_swatch",
-                        "ZombieStats": [
-                            {
-                                "Type": "toughness",
-                                "Value": "toughness8"
-                            },
-                            {
-                                "Type": "speed",
-                                "Value": "speed3"
-                            }
-                        ],
-                        "ZombieLevelStats": [
-                            {
-                                "AttackLevel": 1,
-                                "HitPointsLevel": 1
-                            },
-                            {
-                                "AttackLevel": 2,
-                                "HitPointsLevel": 2
-                            },
-                            {
-                                "AttackLevel": 3,
-                                "HitPointsLevel": 3
-                            },
-                            {
-                                "AttackLevel": 4.5,
-                                "HitPointsLevel": 4.5
-                            },
-                            {
-                                "AttackLevel": 5,
-                                "HitPointsLevel": 5
-                            }
-                        ],
-                        "CanTriggerZombieWin": false,
-                        "IsValidPinchTarget": false,
-                        "CanBeFlicked": false,
-                        "# Zomboss properties": 0,
-                        "SquashZombies": true,
-                        "SquashGridItems": false,
-                        "MinColumn": 5,
-                        "MaxColumn": 7,
-                        "HideDuringIntro": false,
-                        "PowerUpDamageModifier": 0.25,
-                        "CrosshairPopAnim": "POPANIM_EFFECTS_ZOMBOSS_MISSILE_EXPLOSION_COMMON",
-                        "CrosshairAnimation": "missile_lock_reticle",
-                        "RocketAnimation": "missile",
-                        "RocketExplosionAnimation": "missile_explosion",
-                        "Stages": [
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk1@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn1_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire1@ZombieActions)"
-                                ],
-                                "HitPoints": 13000,
-                                "Level": 1,
-                                "DamageIndexFull": 0,
-                                "DamageIndexHalf": 0,
-                                "AnimRateModifier": 1,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.5,
-                                    "Max": 1
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 3,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            },
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk2@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn2_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire2@ZombieActions)",
-                                    "RTID(ZombossFutureRush2@ZombieActions)"
-                                ],
-                                "HitPoints": 19000,
-                                "Level": 1,
-                                "DamageIndexFull": 3,
-                                "DamageIndexHalf": 3,
-                                "AnimRateModifier": 1.1,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.5,
-                                    "Max": 0.5
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 2.5,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            },
-                            {
-                                "Actions": [
-                                    "RTID(ZombossFutureWalk3@ZombieActions)",
-                                    "RTID(ZombossFutureSpawn3_timeTravel@ZombieActions)",
-                                    "RTID(ZombossFutureFire3@ZombieActions)",
-                                    "RTID(ZombossFutureRush3@ZombieActions)"
-                                ],
-                                "HitPoints": 22000,
-                                "Level": 1,
-                                "DamageIndexFull": 6,
-                                "DamageIndexHalf": 6,
-                                "AnimRateModifier": 1.25,
-                                "ChilledDurationFromFrozen": 10,
-                                "IdleTime": {
-                                    "Min": 0.2,
-                                    "Max": 0.5
-                                },
-                                "RetreatAction": "RTID(ZombossRetreatJump@ZombieActions)",
-                                "StunTime": 2,
-                                "StunDamageScale": 1.25,
-                                "StunDamageColorFlash": {
-                                    "mRed": 255,
-                                    "mGreen": 200,
-                                    "mBlue": 200,
-                                    "mAlpha": 255
-                                },
-                                "StunStaggerBackMovement": 80,
-                                "StunStaggerBackTime": 0.4
-                            }
-                        ]
-                    },
                     "ZombieZombossMechModernFuture": {
                         "Speed": 0.1,
                         "CanSpawnPlantFood": false,
@@ -10342,7 +9762,7 @@
                         "WalkPreferSquashChance": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossSpawnPortalActionDefinition",
@@ -15596,7 +15016,7 @@
                         "RepeatMax": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "special"
             },
             {
                 "objclass": "ZombossFireActionDefinition",
@@ -18466,7 +17886,7 @@
                         "WalkPreferSquashChance": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossSpawnPortalActionDefinition",
@@ -20551,7 +19971,7 @@
                     {
                         "name": "SpawnJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSpawnJump@ZombieActions)"
+                        "default": "RTID(ZombossSpawnJump@.)"
                     },
                     {
                         "name": "SpawnWavesBetweenPlantFood",
@@ -20649,7 +20069,7 @@
                         "Weight": 10,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 400,
                             "Max": 1500
@@ -20678,7 +20098,7 @@
                         "Weight": 6,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 400,
                             "Max": 800
@@ -20707,7 +20127,7 @@
                         "Weight": 12,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1200,
                             "Max": 2000
@@ -20737,7 +20157,7 @@
                         "Weight": 6,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 700,
                             "Max": 1500
@@ -20767,7 +20187,7 @@
                         "Weight": 9,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1500,
                             "Max": 2500
@@ -20798,7 +20218,7 @@
                         "Weight": 5,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1000,
                             "Max": 2000
@@ -20827,7 +20247,7 @@
                         "Weight": 20,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 500,
                             "Max": 800
@@ -20859,7 +20279,7 @@
                         "Weight": 15,
                         "RepeatMin": 0,
                         "RepeatMax": 1,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 700,
                             "Max": 1100
@@ -20893,7 +20313,7 @@
                         "Weight": 5,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 2001,
                             "Max": 2001
@@ -20921,7 +20341,7 @@
                         "Weight": 15,
                         "RepeatMin": 0,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1000,
                             "Max": 1400
@@ -20951,7 +20371,7 @@
                         "Weight": 13,
                         "RepeatMin": 0,
                         "RepeatMax": 2,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 500,
                             "Max": 800
@@ -21010,9 +20430,14 @@
                         "JumpHeight": 150,
                         "JumpHangTime": 1.5,
                         "JumpAnimRateModifier": 5.0
+                    },
+                    "ZombossSpawnJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossSpawnPortalActionDefinition",
@@ -23066,7 +22491,7 @@
                 "implementations": {
                     "ZombossEightiesSwapJam": {}
                 },
-                "tag": "retreat"
+                "tag": "special"
             },
             {
                 "objclass": "ZombossSpawnPortalActionDefinition",
@@ -25301,7 +24726,7 @@
                         "WalkPreferSquashChance": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossFireActionDefinition",
@@ -28056,9 +27481,14 @@
                         "JumpHeight": 400,
                         "JumpHangTime": 0.8,
                         "JumpAnimRateModifier": 2
+                    },
+                    "ZombossSpawnJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossSteamFireActionDefinition",
@@ -28066,7 +27496,7 @@
                     {
                         "name": "FireJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSteamJump@ZombieActions)"
+                        "default": "RTID(ZombossSteamJump@.)"
                     },
                     {
                         "name": "FireMaxColumn",
@@ -28167,7 +27597,7 @@
                             "Min": 3,
                             "Max": 3
                         },
-                        "FireJumpAction": "RTID(ZombossSteamJump@ZombieActions)"
+                        "FireJumpAction": "RTID(ZombossSteamJump@.)"
                     },
                     "ZombossSteamFire2": {
                         "Weight": 8,
@@ -28186,7 +27616,7 @@
                             "Min": 4,
                             "Max": 4
                         },
-                        "FireJumpAction": "RTID(ZombossSteamJump@ZombieActions)"
+                        "FireJumpAction": "RTID(ZombossSteamJump@.)"
                     },
                     "ZombossSteamFire3": {
                         "Weight": 5,
@@ -28205,10 +27635,80 @@
                             "Min": 6,
                             "Max": 6
                         },
-                        "FireJumpAction": "RTID(ZombossSteamJump@ZombieActions)"
+                        "FireJumpAction": "RTID(ZombossSteamJump@.)"
                     }
                 },
                 "tag": "attack"
+            },
+            {
+                "objclass": "ZombossSteamJumpActionDefinition",
+                "fields": [
+                    {
+                        "name": "JumpAnimRateModifier",
+                        "type": "int",
+                        "default": 1
+                    },
+                    {
+                        "name": "JumpHangTime",
+                        "type": "float",
+                        "default": 1.2
+                    },
+                    {
+                        "name": "JumpHeight",
+                        "type": "int",
+                        "default": 150
+                    },
+                    {
+                        "name": "JumpTarget",
+                        "type": "object",
+                        "fields": [
+                            {
+                                "name": "mX",
+                                "type": "int",
+                                "default": 6
+                            },
+                            {
+                                "name": "mY",
+                                "type": "int",
+                                "default": 2
+                            }
+                        ],
+                        "default": {
+                            "mX": 6,
+                            "mY": 2
+                        }
+                    }
+                ],
+                "implementations": {
+                    "ZombossSteamJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1,
+                        "JumpTarget": {
+                            "mX": 6,
+                            "mY": 2
+                        }
+                    },
+                    "ZombossSteamJumpTrain": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1,
+                        "JumpTarget": {
+                            "mX": 7,
+                            "mY": 2
+                        }
+                    },
+                    "ZombossSteamRestJump": {
+                        "JumpHeight": 150,
+                        "JumpHangTime": 1.2,
+                        "JumpAnimRateModifier": 1,
+                        "JumpTarget": {
+                            "mX": 7,
+                            "mY": 2
+                        }
+                    }
+                },
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossSteamRestActionDefinition",
@@ -28216,7 +27716,7 @@
                     {
                         "name": "FirstJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSteamRestJump@ZombieActions)"
+                        "default": "RTID(ZombossSteamRestJump@.)"
                     },
                     {
                         "name": "FirstJumpTarget",
@@ -28246,7 +27746,7 @@
                 ],
                 "implementations": {
                     "ZombossSteamRest": {
-                        "FirstJumpAction": "RTID(ZombossSteamRestJump@ZombieActions)",
+                        "FirstJumpAction": "RTID(ZombossSteamRestJump@.)",
                         "MaxRepeatJumpNum": 2,
                         "FirstJumpTarget": {
                             "mX": 7,
@@ -28282,7 +27782,7 @@
                     {
                         "name": "SpawnJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSpawnJump@ZombieActions)"
+                        "default": "RTID(ZombossSpawnJump@.)"
                     },
                     {
                         "name": "SpawnWavesBetweenPlantFood",
@@ -28344,7 +27844,7 @@
                         "Weight": 12,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 1500,
                             "Max": 3000
@@ -28365,7 +27865,7 @@
                         "Weight": 14,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 3000,
                             "Max": 5000
@@ -28387,7 +27887,7 @@
                         "Weight": 12,
                         "RepeatMin": 0,
                         "RepeatMax": 0,
-                        "SpawnJumpAction": "RTID(ZombossSpawnJump@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSpawnJump@.)",
                         "SpawnZombieWavePointRange": {
                             "Min": 5000,
                             "Max": 7500
@@ -28490,7 +27990,7 @@
                     {
                         "name": "SpawnJumpAction",
                         "type": "rtid",
-                        "default": "RTID(ZombossSteamJumpTrain@ZombieActions)"
+                        "default": "RTID(ZombossSteamJumpTrain@.)"
                     },
                     {
                         "name": "TrainSpawnLevel",
@@ -28500,15 +28000,15 @@
                 ],
                 "implementations": {
                     "ZombossSteamTrainSpawn1": {
-                        "SpawnJumpAction": "RTID(ZombossSteamJumpTrain@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSteamJumpTrain@.)",
                         "TrainSpawnLevel": 1
                     },
                     "ZombossSteamTrainSpawn2": {
-                        "SpawnJumpAction": "RTID(ZombossSteamJumpTrain@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSteamJumpTrain@.)",
                         "TrainSpawnLevel": 3
                     },
                     "ZombossSteamTrainSpawn3": {
-                        "SpawnJumpAction": "RTID(ZombossSteamJumpTrain@ZombieActions)",
+                        "SpawnJumpAction": "RTID(ZombossSteamJumpTrain@.)",
                         "TrainSpawnLevel": 5
                     }
                 },
@@ -29505,7 +29005,7 @@
                         "WalkPreferSquashChance": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             },
             {
                 "objclass": "ZombossRenaiHamletActionDefinition",
@@ -31608,7 +31108,7 @@
                         "WalkPreferSquashChance": 1
                     }
                 },
-                "tag": "retreat"
+                "tag": "movement"
             }
         ],
         "Properties": [

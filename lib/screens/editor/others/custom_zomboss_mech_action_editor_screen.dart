@@ -13,10 +13,12 @@ import 'package:c_editor/data/zomboss_mech_action_ordering.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/screens/editor/others/zomboss_mech_action_selection_screen.dart';
 import 'package:c_editor/widgets/alias_rename_dialog.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/zomboss_mech_action_fields.dart';
+import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 /// Creates or edits a level-local zomboss action ([CurrentLevel]).
 class CustomZombossMechActionEditorScreen extends StatefulWidget {
@@ -26,6 +28,7 @@ class CustomZombossMechActionEditorScreen extends StatefulWidget {
     required this.levelFile,
     this.existingRtid,
     this.retreatOnly = false,
+    this.jumpOnly = false,
     this.propsData,
     this.onPropsSync,
   });
@@ -34,6 +37,7 @@ class CustomZombossMechActionEditorScreen extends StatefulWidget {
   final PvzLevelFile levelFile;
   final String? existingRtid;
   final bool retreatOnly;
+  final bool jumpOnly;
   final Map<String, dynamic>? propsData;
   final VoidCallback? onPropsSync;
 
@@ -60,15 +64,27 @@ class _CustomZombossMechActionEditorScreenState
   bool _canPop = false;
   bool _exitDialogOpen = false;
 
+  bool get _isEditing => widget.existingRtid != null;
+
   List<ZombossMechCatalogAction> get _baseActions {
+    if (widget.jumpOnly) return widget.catalog.jumpCatalogActions;
     if (widget.retreatOnly) return widget.catalog.retreatCatalogActions;
     return ZombossMechActionOrdering.sortedCatalogActions(widget.catalog);
   }
 
   List<ZombossMechObjclassGroup> get _groups {
+    if (widget.jumpOnly) {
+      final seen = <String>{};
+      return widget.catalog.actions
+          .where(
+            (g) =>
+                isZombossJumpActionObjclass(g.objclass) && seen.add(g.objclass),
+          )
+          .toList();
+    }
     final groups = widget.retreatOnly
-        ? widget.catalog.actions.where((g) => g.tag == 'retreat')
-        : widget.catalog.actions.where((g) => g.tag != 'retreat');
+        ? widget.catalog.actions.where(isRetreatPhaseActionGroup)
+        : widget.catalog.actions.where(isRegularPhaseActionGroup);
     final seen = <String>{};
     final list = groups.where((g) => seen.add(g.objclass)).toList();
     if (!widget.retreatOnly) {
@@ -84,18 +100,39 @@ class _CustomZombossMechActionEditorScreenState
     return list;
   }
 
-  ZombossMechObjclassGroup? get _group =>
-      _groups.where((g) => g.objclass == _objclass).firstOrNull;
+  /// Schema for the current action type — always keyed by level/state objclass.
+  ZombossMechObjclassGroup? get _group {
+    final exact = _groups.where((g) => g.objclass == _objclass).firstOrNull;
+    if (exact != null) return exact;
+    return widget.catalog.actions
+            .where((g) => g.objclass == _objclass)
+            .firstOrNull ??
+        ZombossCustomActionPresetRepository.groupForObjclass(
+          widget.catalog.editableInstance,
+          _objclass,
+        );
+  }
+
+  List<ZombossMechFieldSpec> get _fields {
+    final group = _group;
+    if (group != null) return group.fields;
+    return ZombossMechActionUtils.fieldsForObjclass(
+      catalog: widget.catalog,
+      objclass: _objclass,
+      editableInstance: widget.catalog.editableInstance,
+    );
+  }
 
   ZombossCustomActionOrigin get _actionOrigin => _obj == null
       ? ZombossCustomActionOrigin.userCreated
       : ZombossCustomActionPresetRepository.originForObject(_obj!);
 
-  bool get _usesBaseActionPicker =>
-      _actionOrigin == ZombossCustomActionOrigin.userCreated;
+  /// New user-created actions pick a catalog template to seed type + defaults.
+  bool get _usesTemplatePicker =>
+      !_isEditing && _actionOrigin == ZombossCustomActionOrigin.userCreated;
 
   ZombossCustomActionPreset? get _dependencyPreset {
-    if (_obj == null || _usesBaseActionPicker) return null;
+    if (_obj == null || _usesTemplatePicker) return null;
     return ZombossCustomActionPresetRepository.presetForObject(_obj!);
   }
 
@@ -107,13 +144,6 @@ class _CustomZombossMechActionEditorScreenState
     return preset.dependencies.firstWhereOrNull(
       (dependency) => dependency.id == dependencyId,
     );
-  }
-
-  String _actionTypeLabel(
-    BuildContext context,
-    ZombossMechObjclassGroup group,
-  ) {
-    return ZombossMechL10n.objclassLabel(context, group.objclass);
   }
 
   String _actionTypeName(BuildContext context, ZombossMechObjclassGroup group) {
@@ -136,6 +166,17 @@ class _CustomZombossMechActionEditorScreenState
     );
   }
 
+  String _objclassDisplayLabel(BuildContext context) {
+    final group = _group;
+    if (group != null) return _actionTypeName(context, group);
+    return ZombossMechL10n.actionLabel(
+      context,
+      widget.catalog.id,
+      _objclass,
+      fallback: _objclass,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -143,20 +184,24 @@ class _CustomZombossMechActionEditorScreenState
       _loadExisting(widget.existingRtid!);
     } else {
       final action = _baseActions.firstOrNull;
-      final group = _groups.firstOrNull ?? widget.catalog.actions.first;
-      _objclass = action?.objclass ?? group.objclass;
+      final group =
+          _groups.firstOrNull ??
+          (widget.jumpOnly ? null : widget.catalog.actions.firstOrNull);
+      _objclass = action?.objclass ?? group?.objclass ?? '';
       _baseActionAlias =
           action?.alias ??
-          group.implementations.keys.firstOrNull ??
+          group?.implementations.keys.firstOrNull ??
           'CustomAction';
       final sampleAlias = _baseActionAlias;
       _alias = ZombossMechActionUtils.uniqueCustomAlias(
         widget.levelFile,
         sampleAlias,
       );
-      _data = action == null
-          ? ZombossMechActionUtils.defaultsFromFields(group.fields)
-          : ZombossMechActionUtils.dataFromCatalogAction(action);
+      _data = action != null
+          ? ZombossMechActionUtils.dataFromCatalogAction(action)
+          : ZombossMechActionUtils.defaultsFromFields(
+              group?.fields ?? const [],
+            );
     }
     _aliasCtrl = TextEditingController(text: _alias);
     _aliasManuallyEdited =
@@ -195,6 +240,7 @@ class _CustomZombossMechActionEditorScreenState
   }
 
   bool _looksLikeGeneratedAlias(String alias, String baseAlias) {
+    if (baseAlias.isEmpty) return false;
     if (alias == baseAlias) return true;
     return RegExp('^${RegExp.escape(baseAlias)}_[0-9]+\$').hasMatch(alias);
   }
@@ -203,7 +249,14 @@ class _CustomZombossMechActionEditorScreenState
     final info = RtidParser.parse(rtid);
     _alias = info?.alias ?? 'CustomAction';
     _obj = ZombossMechActionUtils.findLevelObject(widget.levelFile, rtid);
-    _objclass = _obj?.objClass ?? _groups.first.objclass;
+    // Always trust the level object's objclass — never fall back to the first
+    // catalog action type (that was showing the wrong field schema on edit).
+    final levelObjclass = _obj?.objClass.trim() ?? '';
+    _objclass = levelObjclass.isNotEmpty
+        ? levelObjclass
+        : (_groups.firstOrNull?.objclass ??
+              widget.catalog.actions.firstOrNull?.objclass ??
+              '');
     final raw = _obj?.objData;
     _data = raw is Map<String, dynamic>
         ? Map<String, dynamic>.from(raw)
@@ -217,12 +270,12 @@ class _CustomZombossMechActionEditorScreenState
           objclass: _objclass,
           data: _data,
           retreatOnly: widget.retreatOnly,
+          jumpOnly: widget.jumpOnly,
         )?.alias ??
         _baseActions
             .where((action) => action.objclass == _objclass)
             .firstOrNull
             ?.alias ??
-        _baseActions.firstOrNull?.alias ??
         '';
   }
 
@@ -246,6 +299,7 @@ class _CustomZombossMechActionEditorScreenState
             _alias,
             _obj!.aliases,
           );
+      _obj!.objClass = _objclass;
       _obj!.objData = Map<String, dynamic>.from(_data);
     }
     widget.onPropsSync?.call();
@@ -277,6 +331,19 @@ class _CustomZombossMechActionEditorScreenState
       _data['AwardDrop'] = created.rtid;
       _syncObject();
     });
+  }
+
+  Future<String?> _pickJumpAction(String currentRtid) {
+    return Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZombossMechActionSelectionScreen(
+          catalog: widget.catalog,
+          levelFile: widget.levelFile,
+          jumpOnly: true,
+        ),
+      ),
+    );
   }
 
   Widget _buildAwardDropEditor(BuildContext context) {
@@ -370,6 +437,8 @@ class _CustomZombossMechActionEditorScreenState
               data: dependencyData,
               objclass: spec.objclass,
               levelFile: widget.levelFile,
+              catalog: widget.catalog,
+              onPickJumpAction: _pickJumpAction,
               onChanged: () {
                 dependency.objData =
                     ZombossCustomActionPresetRepository.cloneDependencyData(
@@ -446,37 +515,17 @@ class _CustomZombossMechActionEditorScreenState
     unawaited(_tryApplyAlias(newAlias));
   }
 
-  void _onObjclassChanged(String? value) {
-    if (value == null || value == _objclass) return;
-    final group = _groups.where((g) => g.objclass == value).firstOrNull;
-    if (group == null) return;
-    setState(() {
-      _objclass = value;
-      if (group.implementations.isNotEmpty) {
-        _data = ZombossMechActionUtils.cloneMap(
-          group.implementations.values.first,
-        );
-      } else {
-        _data = ZombossMechActionUtils.defaultsFromFields(group.fields);
-      }
-      _syncObject();
-    });
-  }
-
-  Future<void> _onBaseActionChanged(String alias) async {
-    if (alias == _baseActionAlias) return;
-    final action = _baseActions
-        .where((candidate) => candidate.alias == alias)
-        .firstOrNull;
-    if (action == null) return;
-
+  Future<void> _applyTemplate(
+    ZombossMechCatalogAction action, {
+    required bool confirmAliasSync,
+  }) async {
     final suggestedAlias = ZombossMechActionUtils.uniqueCustomAlias(
       widget.levelFile,
       action.alias,
       except: _obj,
     );
     var syncAlias = !_aliasManuallyEdited;
-    if (_aliasManuallyEdited) {
+    if (confirmAliasSync && _aliasManuallyEdited) {
       final l10n = AppLocalizations.of(context);
       syncAlias =
           await showDialog<bool>(
@@ -525,6 +574,137 @@ class _CustomZombossMechActionEditorScreenState
       _data = ZombossMechActionUtils.dataFromCatalogAction(action);
       _syncObject();
     });
+  }
+
+  Future<void> _onBaseActionChanged(String alias) async {
+    if (alias == _baseActionAlias) return;
+    final action = _baseActions
+        .where((candidate) => candidate.alias == alias)
+        .firstOrNull;
+    if (action == null) return;
+    await _applyTemplate(action, confirmAliasSync: true);
+  }
+
+  Future<void> _recreateFromTemplate() async {
+    if (_baseActions.isEmpty) return;
+    final l10n = AppLocalizations.of(context);
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        final maxHeight = MediaQuery.sizeOf(sheetContext).height * 0.72;
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
+                  child: Text(
+                    l10n?.zombossMechRecreateFromTemplate ??
+                        'Recreate from template',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(sheetContext).textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                  child: Text(
+                    l10n?.zombossMechRecreateFromTemplateMessage ??
+                        'This replaces the action type and all field values.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(sheetContext).textTheme.bodyMedium
+                        ?.copyWith(
+                          color: Theme.of(
+                            sheetContext,
+                          ).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ),
+                const Divider(height: 1),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: _baseActions.length,
+                    separatorBuilder: (_, _) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final action = _baseActions[index];
+                      final selected = action.alias == _baseActionAlias;
+                      return ListTile(
+                        selected: selected,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        title: Text(
+                          ZombossMechL10n.implementationLabel(
+                            context,
+                            widget.catalog.id,
+                            action.alias,
+                          ),
+                          maxLines: 3,
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 3),
+                          child: Text(
+                            '${action.alias}\n${action.objclass}',
+                            maxLines: 3,
+                          ),
+                        ),
+                        isThreeLine: true,
+                        trailing: selected
+                            ? Icon(
+                                Icons.check,
+                                color: Theme.of(context).colorScheme.primary,
+                              )
+                            : null,
+                        onTap: () => Navigator.pop(context, action.alias),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (selected == null || !mounted) return;
+    final action = _baseActions
+        .where((candidate) => candidate.alias == selected)
+        .firstOrNull;
+    if (action == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          l10n?.zombossMechRecreateFromTemplateTitle ?? 'Replace this action?',
+        ),
+        content: Text(
+          l10n?.zombossMechRecreateFromTemplateMessage ??
+              'This replaces the action type and all field values with the selected template.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              l10n?.zombossMechRecreateFromTemplate ?? 'Recreate from template',
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await _applyTemplate(action, confirmAliasSync: true);
   }
 
   Future<String?> _saveAction() async {
@@ -624,11 +804,101 @@ class _CustomZombossMechActionEditorScreenState
     }
   }
 
+  Widget _buildTypeSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    if (_usesTemplatePicker) {
+      final selectedAlias = _baseActions.any(
+        (action) => action.alias == _baseActionAlias,
+      )
+          ? _baseActionAlias
+          : _baseActions.firstOrNull?.alias;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SeparatedOptionPickerField<String>(
+            labelText: l10n?.zombossMechActionBaseAction ?? 'Base Action',
+            value: selectedAlias,
+            items: [
+              for (final action in _baseActions)
+                SeparatedOptionPickerItem(
+                  value: action.alias,
+                  label: ZombossMechL10n.implementationLabel(
+                    context,
+                    widget.catalog.id,
+                    action.alias,
+                  ),
+                  subtitle: '${action.alias} · ${action.objclass}',
+                  fieldLabel: _baseActionLabel(context, action),
+                ),
+            ],
+            onChanged: _onBaseActionChanged,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n?.zombossMechActionTemplateHint ??
+                'Pick a built-in action to copy its type and default values.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Editing (and preset-derived): lock to the level object's objclass.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InputDecorator(
+          decoration: editorInputDecoration(
+            context,
+            labelText: l10n?.zombossMechActionBaseObjclass ?? 'Action Type',
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _objclassDisplayLabel(context),
+                style: theme.textTheme.bodyLarge,
+              ),
+              if (_objclass.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  _objclass,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        if (_actionOrigin == ZombossCustomActionOrigin.userCreated &&
+            _baseActions.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: _recreateFromTemplate,
+              icon: const Icon(Icons.find_replace_outlined),
+              label: Text(
+                l10n?.zombossMechRecreateFromTemplate ??
+                    'Recreate from template',
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final group = _group;
-    final isNew = widget.existingRtid == null;
+    final fields = _fields;
+    final isNew = !_isEditing;
 
     return PopScope(
       canPop: _canPop,
@@ -637,6 +907,8 @@ class _CustomZombossMechActionEditorScreenState
       },
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: zombossMechAccent(context),
+          foregroundColor: Colors.white,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: _confirmExit,
@@ -650,93 +922,53 @@ class _CustomZombossMechActionEditorScreenState
             IconButton(
               onPressed: _saveAndExit,
               tooltip: l10n?.save ?? 'Save',
-              icon: Icon(
-                Icons.save,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              icon: const Icon(Icons.save, color: Colors.white),
             ),
           ],
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            TextFormField(
-              controller: _aliasCtrl,
-              decoration: editorInputDecoration(
-                context,
-                labelText: l10n?.aliasLabel ?? 'Alias',
-                hintText:
-                    l10n?.zombossMechActionAliasHint ??
-                    'Codename used in RTID(alias@CurrentLevel).',
+        body: Theme(
+          data: zombossMechInputTheme(context),
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              TextFormField(
+                controller: _aliasCtrl,
+                decoration: editorInputDecoration(
+                  context,
+                  labelText: l10n?.aliasLabel ?? 'Alias',
+                  hintText:
+                      l10n?.zombossMechActionAliasHint ??
+                      'Codename used in RTID(alias@CurrentLevel).',
+                ),
+                onChanged: (_) => _aliasManuallyEdited = true,
+                onFieldSubmitted: _applyAlias,
               ),
-              onChanged: (_) => _aliasManuallyEdited = true,
-              onFieldSubmitted: _applyAlias,
-            ),
-            const SizedBox(height: 12),
-            if (_usesBaseActionPicker)
-              SeparatedOptionPickerField<String>(
-                labelText: l10n?.zombossMechActionBaseAction ?? 'Base Action',
-                value:
-                    _baseActions.any(
-                      (action) => action.alias == _baseActionAlias,
-                    )
-                    ? _baseActionAlias
-                    : _baseActions.firstOrNull?.alias,
-                items: [
-                  for (final action in _baseActions)
-                    SeparatedOptionPickerItem(
-                      value: action.alias,
-                      label: ZombossMechL10n.implementationLabel(
-                        context,
-                        widget.catalog.id,
-                        action.alias,
-                      ),
-                      subtitle: action.alias,
-                      fieldLabel: _baseActionLabel(context, action),
-                    ),
-                ],
-                onChanged: _onBaseActionChanged,
-              )
-            else
-              SeparatedOptionPickerField<String>(
-                labelText:
-                    l10n?.zombossMechActionBaseObjclass ?? 'Base objclass',
-                value: _groups.any((g) => g.objclass == _objclass)
-                    ? _objclass
-                    : _groups.firstOrNull?.objclass,
-                items: [
-                  for (final g in _groups)
-                    SeparatedOptionPickerItem(
-                      value: g.objclass,
-                      label: _actionTypeName(context, g),
-                      subtitle: g.objclass,
-                      fieldLabel: _actionTypeLabel(context, g),
-                    ),
-                ],
-                enabled: widget.existingRtid == null,
-                onChanged: (value) => _onObjclassChanged(value),
-              ),
-            const SizedBox(height: 16),
-            if (group != null)
-              ZombossMechActionFieldsEditor(
-                mechId: widget.catalog.id,
-                fields: group.fields,
-                data: _data,
-                objclass: _objclass,
-                levelFile: widget.levelFile,
-                hiddenFieldNames: _awardDropDependencySpec == null
-                    ? const {}
-                    : const {'AwardDrop'},
-                onChanged: () {
-                  _syncObject();
-                  setState(() {});
-                },
-              ),
-            if (_awardDropDependencySpec != null) ...[
+              const SizedBox(height: 12),
+              _buildTypeSection(context),
               const SizedBox(height: 16),
-              _buildAwardDropEditor(context),
+              if (fields.isNotEmpty)
+                ZombossMechActionFieldsEditor(
+                  mechId: widget.catalog.id,
+                  fields: fields,
+                  data: _data,
+                  objclass: _objclass,
+                  levelFile: widget.levelFile,
+                  catalog: widget.catalog,
+                  onPickJumpAction: _pickJumpAction,
+                  hiddenFieldNames: _awardDropDependencySpec == null
+                      ? const {}
+                      : const {'AwardDrop'},
+                  onChanged: () {
+                    _syncObject();
+                    setState(() {});
+                  },
+                ),
+              if (_awardDropDependencySpec != null) ...[
+                const SizedBox(height: 16),
+                _buildAwardDropEditor(context),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

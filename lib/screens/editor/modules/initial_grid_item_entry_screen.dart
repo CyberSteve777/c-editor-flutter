@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/select/grid_item_selection_screen.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Initial grid item entry. Ported from Z-Editor-master InitialGridItemEntryEP.kt
 class InitialGridItemEntryScreen extends StatefulWidget {
@@ -36,6 +36,7 @@ class InitialGridItemEntryScreen extends StatefulWidget {
 
 class _InitialGridItemEntryScreenState
     extends State<InitialGridItemEntryScreen> {
+  late String _alias;
   late PvzObject _moduleObj;
   late InitialGridItemEntryData _data;
   int _selectedX = 0;
@@ -45,12 +46,12 @@ class _InitialGridItemEntryScreenState
   @override
   void initState() {
     super.initState();
+    _alias = aliasFromRtid(widget.rtid);
     _loadData();
   }
 
   void _loadData() {
-    final info = RtidParser.parse(widget.rtid);
-    final alias = info?.alias ?? '';
+    final alias = _alias;
     _moduleObj = widget.levelFile.objects.firstWhere(
       (o) => o.aliases?.contains(alias) == true,
       orElse: () => PvzObject(
@@ -70,6 +71,16 @@ class _InitialGridItemEntryScreenState
       _data = InitialGridItemEntryData();
     }
     _data = InitialGridItemEntryData(placements: List.from(_data.placements));
+  }
+
+  void _handleAliasChanged(String newAlias) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: _alias,
+      newAlias: newAlias,
+      onChanged: widget.onChanged,
+    );
+    setState(() => _alias = newAlias);
   }
 
   void _sync() {
@@ -165,6 +176,14 @@ class _InitialGridItemEntryScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 EditorPlacementGridCard(
                   header: Row(
                     children: [

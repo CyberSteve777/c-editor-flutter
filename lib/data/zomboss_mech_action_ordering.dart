@@ -1,4 +1,5 @@
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
+import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
@@ -73,7 +74,7 @@ class ZombossMechActionOrdering {
     final actions = <ZombossMechCatalogAction>[];
     final seen = <String>{};
     for (final action in catalog.catalogActions) {
-      if (action.tag == 'retreat') continue;
+      if (!isRegularPhaseCatalogAction(action)) continue;
       if (seen.add(action.alias)) actions.add(action);
     }
 
@@ -119,6 +120,9 @@ class ZombossMechActionOrdering {
         _isSummonIdentifier(tag) ||
         _isSummonObjclass(objclass)) {
       return ZombossMechActionMainCategory.summon;
+    }
+    if (isZombossJumpActionObjclass(objclass)) {
+      return ZombossMechActionMainCategory.movement;
     }
     return switch (tag) {
       'movement' => ZombossMechActionMainCategory.movement,

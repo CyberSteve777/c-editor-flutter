@@ -58,7 +58,9 @@ void main() {
     expect(zh.exportPackageProgressTitle, '正在导出数据包…');
   });
 
-  test('Moon Base is available for twelve level slots', () {
+  test('Moon Base is available for twelve level slots', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await WorldRepository.init();
     final moon = WorldRepository.findByCodename('moon');
     expect(moon, isNotNull);
     expect(moon!.levelCount, 12);

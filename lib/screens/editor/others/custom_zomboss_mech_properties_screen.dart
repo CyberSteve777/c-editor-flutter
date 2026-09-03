@@ -336,8 +336,10 @@ class _CustomZombossMechPropertiesScreenState
       final selection = await showDialog<({String jam, String animation})>(
         context: context,
         barrierDismissible: false,
-        builder: (dialogContext) => StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
+        builder: (dialogContext) => Theme(
+          data: zombossMechInputTheme(context),
+          child: StatefulBuilder(
+            builder: (context, setDialogState) => AlertDialog(
             scrollable: true,
             title: Text(
               l10n?.zombossMechAddEightiesPhaseTitle ??
@@ -416,6 +418,7 @@ class _CustomZombossMechPropertiesScreenState
               ),
             ],
           ),
+        ),
         ),
       );
       if (selection == null || !mounted) return;
@@ -674,9 +677,11 @@ class _CustomZombossMechPropertiesScreenState
             ),
           ],
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
+        body: Theme(
+          data: zombossMechInputTheme(context),
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
             Card(
               color: accent.withValues(alpha: 0.12),
               shape: RoundedRectangleBorder(
@@ -837,7 +842,8 @@ class _CustomZombossMechPropertiesScreenState
                 deleteTooltip: l10n?.zombossMechDeletePhase ?? 'Delete phase',
                 addActionTooltip: l10n?.zombossMechAddAction ?? 'Add action',
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );

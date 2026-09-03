@@ -11,11 +11,64 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 /// Accent for custom zomboss mech editor (matches boss / custom tooling).
 Color zombossMechAccent(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   return isDark ? pvzPurpleDark : pvzPurpleLight;
+}
+
+InputDecoration zombossMechInputDecoration(
+  BuildContext context, {
+  String? labelText,
+  String? hintText,
+  bool isFocused = false,
+}) {
+  return editorInputDecoration(
+    context,
+    labelText: labelText,
+    hintText: hintText,
+    focusColor: zombossMechAccent(context),
+    isFocused: isFocused,
+  );
+}
+
+/// Theme for inputs/switches inside zomboss mech editors (purple accent).
+ThemeData zombossMechInputTheme(BuildContext context) {
+  final theme = Theme.of(context);
+  final accent = zombossMechAccent(context);
+  return theme.copyWith(
+    colorScheme: theme.colorScheme.copyWith(primary: accent),
+    inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: accent, width: 2),
+      ),
+      floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
+        if (states.contains(WidgetState.focused)) {
+          return TextStyle(color: accent);
+        }
+        return TextStyle(color: theme.colorScheme.onSurface);
+      }),
+      focusColor: accent,
+    ),
+    textSelectionTheme: theme.textSelectionTheme.copyWith(
+      cursorColor: accent,
+      selectionHandleColor: accent,
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return accent;
+        return null;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return accent.withValues(alpha: 0.5);
+        }
+        return null;
+      }),
+    ),
+  );
 }
 
 Color zombossMechActionTagColor(String tag, BuildContext context) {

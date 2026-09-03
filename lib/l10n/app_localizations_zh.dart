@@ -7906,6 +7906,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechActionBaseAction => '基础动作';
 
   @override
+  String get zombossMechActionTemplateHint => '选择一个内置动作以复制其类型与默认参数。创建后仍可自由修改。';
+
+  @override
+  String get zombossMechRecreateFromTemplate => '从模板重建';
+
+  @override
+  String get zombossMechRecreateFromTemplateTitle => '替换此动作？';
+
+  @override
+  String get zombossMechRecreateFromTemplateMessage =>
+      '将用所选模板替换动作类型（objclass）及全部字段值，当前数值会丢失。';
+
+  @override
   String get zombossMechBaseActionAliasSyncTitle => '同步动作代号？';
 
   @override
@@ -9246,6 +9259,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lunarMineVeinPlacements => '矿脉放置 (VeinPlacements)';
 
   @override
+  String get lunarMineVeinModuleExpectationLabel => '月球矿脉';
+
+  @override
+  String get lunarMineVeinModulePreviewEmerging => '本波生长的月能水晶：';
+
+  @override
   String get lunarMineEmergenceWave => '成长波次 (EmergenceWave，从1开始计数)';
 
   @override
@@ -9294,6 +9313,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get radiationMeteorWave => '波次 (Wave，从0开始计数)';
+
+  @override
+  String get radiationMeteorModuleExpectationLabel => '辐射陨石';
+
+  @override
+  String get radiationMeteorModulePreviewLanding => '本波降落的陨石：';
 
   @override
   String get rocketLandingHelpTitle => '火箭降落';

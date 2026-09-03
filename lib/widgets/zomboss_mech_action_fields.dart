@@ -7,6 +7,7 @@ import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/portal_type_selector.dart';
+import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 import 'package:c_editor/widgets/zomboss_mech_robot_spawn_list.dart';
 import 'package:c_editor/widgets/zomboss_mech_weighted_zombie_list.dart';
 import 'package:c_editor/widgets/zomboss_mech_zombie_type_list.dart';
@@ -25,6 +26,8 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
     this.depth = 0,
     this.fieldNamePrefix = '',
     this.hiddenFieldNames = const {},
+    this.catalog,
+    this.onPickJumpAction,
   });
 
   final String mechId;
@@ -37,6 +40,8 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
   final int depth;
   final String fieldNamePrefix;
   final Set<String> hiddenFieldNames;
+  final ZombossMechCatalogEntry? catalog;
+  final Future<String?> Function(String currentRtid)? onPickJumpAction;
 
   String _fullFieldName(ZombossMechFieldSpec field) {
     if (fieldNamePrefix.isEmpty) return field.name;
@@ -167,6 +172,10 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
       );
     }
 
+    if (isZombossJumpActionField(field)) {
+      return _buildJumpActionField(context, field, padding, label);
+    }
+
     if (field.name == 'PortalType' && field.type == 'string') {
       final value = data[field.name] ?? field.defaultValue ?? '';
       return Padding(
@@ -212,6 +221,8 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
               levelFile: levelFile,
               depth: depth,
               fieldNamePrefix: _fullFieldName(field),
+              catalog: catalog,
+              onPickJumpAction: onPickJumpAction,
             ),
           ],
         ),
@@ -261,6 +272,8 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
             levelFile: levelFile,
             depth: depth + 1,
             fieldNamePrefix: _fullFieldName(field),
+            catalog: catalog,
+            onPickJumpAction: onPickJumpAction,
           ),
         ),
       );
@@ -320,6 +333,70 @@ class ZombossMechActionFieldsEditor extends StatelessWidget {
       return values.take(expectedLength).toList();
     }
     return values;
+  }
+
+  Widget _buildJumpActionField(
+    BuildContext context,
+    ZombossMechFieldSpec field,
+    EdgeInsets padding,
+    String label,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final raw = data[field.name] ?? field.defaultValue ?? '';
+    final rtid = raw.toString();
+    var tag = 'movement';
+    Widget? leading;
+    final catalog = this.catalog;
+    final levelFile = this.levelFile;
+    if (catalog != null && levelFile != null && rtid.isNotEmpty) {
+      final resolved = ZombossMechActionUtils.resolveAction(
+        rtid: rtid,
+        catalog: catalog,
+        levelFile: levelFile,
+      );
+      if (resolved != null && resolved.tag.isNotEmpty) {
+        tag = resolved.tag;
+      }
+      leading = customActionOriginBadge(
+        context: context,
+        levelFile: levelFile,
+        rtid: rtid,
+      );
+    }
+    final picker = onPickJumpAction;
+    return Padding(
+      padding: padding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
+          ZombossMechActionRow(
+            key: ValueKey('zomboss-jump-field-${field.name}'),
+            label: rtid.isEmpty
+                ? '—'
+                : ZombossMechActionUtils.displayLabel(rtid),
+            tag: tag,
+            mutedLabel: rtid.isEmpty,
+            leading: leading,
+            showRemoveButton: false,
+            trailing: editable && picker != null
+                ? IconButton(
+                    visualDensity: VisualDensity.compact,
+                    icon: const Icon(Icons.swap_horiz, size: 22),
+                    tooltip: l10n?.zombossMechSelectAction ?? 'Select action',
+                    onPressed: () async {
+                      final next = await picker(rtid);
+                      if (next == null || next.isEmpty) return;
+                      data[field.name] = next;
+                      onChanged();
+                    },
+                  )
+                : null,
+          ),
+        ],
+      ),
+    );
   }
 }
 

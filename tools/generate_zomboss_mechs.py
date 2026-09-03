@@ -49,10 +49,200 @@ QIN_EXTRA_GROUPS = [
 
 ACTION_TAGS = frozenset({"movement", "spawn", "attack", "special", "retreat"})
 
+# Display / catalog order for mech groups (world progression, not alphabetical).
+ZOMBOSS_MECH_ORDER = [
+    "ZombieZombossMech_Egypt",
+    "ZombieZombossMech_Pirate",
+    "ZombieZombossMech_Cowboy",
+    "ZombieZombossMech_Future",
+    "ZombieZombossMech_Dark",
+    "ZombieZombossMech_Beach",
+    "ZombieZombossMech_IceAge",
+    "ZombieZombossMech_SkyCity",
+    "ZombieZombossMech_LostCity",
+    "ZombieZombossMech_Eighties",
+    "ZombieZombossMech_Dino",
+    "ZombieZombossMech_Steam",
+    "ZombieZombossMech_Renai",
+    "ZombieZombossMech_Hydra",
+    "ZombieZombossMech_PVZ1_Robot",
+]
+
+# Display / catalog order for non-mech zomboss groups.
+NON_MECH_ZOMBOSS_ORDER = [
+    "ZombieZombossExplosive",
+    "ZombieZombossBlade",
+    "ZombieZombossQigong",
+    "ZombieZombossQinShiHuang",
+    "ZombieZombossQinShiHuangGhost",
+]
+
+# Preferred variation order per mech. Unknown extras append after; CurrentLevel
+# customizable types and crash-prone Future TimeTravel stay out of this list.
+ZOMBOSS_MECH_VARIATION_ORDER: dict[str, list[str]] = {
+    "ZombieZombossMech_Egypt": [
+        "zombossmech_egypt",
+        "zombossmech_modern_egypt",
+        "zombossmech_egypt_rift",
+        "zombossmech_egypt_vacation",
+        "zombossmech_egypt_12th",
+    ],
+    "ZombieZombossMech_Pirate": [
+        "zombossmech_pirate",
+        "zombossmech_modern_pirate",
+        "zombossmech_pirate_rift",
+        "zombossmech_pirate_vacation",
+        "zombossmech_pirate_12th",
+    ],
+    "ZombieZombossMech_Cowboy": [
+        "zombossmech_cowboy",
+        "zombossmech_modern_cowboy",
+        "zombossmech_cowboy_rift",
+        "vacation_zombossmech_cowboy",
+        "zombossmech_cowboy_12th",
+    ],
+    "ZombieZombossMech_Future": [
+        "zombossmech_future",
+        "zombossmech_modern_future",
+        "zombossmech_future_rift",
+        "zombossmech_future_vacation",
+        "zombossmech_future_12th",
+    ],
+    "ZombieZombossMech_Dark": [
+        "zombossmech_dark",
+        "zombossmech_dark_rift",
+        "zombossmech_modern_dark",
+        "zombossmech_dark_vacation",
+        "zombossmech_dark_TimeTravel_easy",
+        "zombossmech_dark_TimeTravel_normal",
+        "zombossmech_dark_TimeTravel_hard",
+        "zombossmech_dark_12th",
+    ],
+    "ZombieZombossMech_Beach": [
+        "zombossmech_beach",
+        "zombossmech_modern_beach",
+        "zombossmech_beach_rift",
+        "zombossmech_beach_vacation",
+        "zombossmech_beach_12th",
+        "zombossmech_SummerEvent_easyBeach",
+        "zombossmech_SummerEvent_hardBeach",
+        "zombossmech_SummerEvent_legendBeach",
+    ],
+    "ZombieZombossMech_IceAge": [
+        "zombossmech_iceage",
+        "zombossmech_modern_iceage",
+        "zombossmech_iceage_eliminate",
+        "zombossmech_iceage_rift",
+        "zombossmech_iceage_vacation",
+        "zombossmech_iceage_TimeTravel_easy",
+        "zombossmech_iceage_TimeTravel_normal",
+        "zombossmech_iceage_TimeTravel_hard",
+        "zombossmech_iceage_12th",
+    ],
+    "ZombieZombossMech_SkyCity": [
+        "zombossmech_skycity",
+        "zombossmech_skycity_vacation",
+        "zombossmech_skycity_TimeTravel_easy",
+        "zombossmech_skycity_TimeTravel_normal",
+        "zombossmech_skycity_TimeTravel_hard",
+        "zombossmech_skycity_12th",
+    ],
+    "ZombieZombossMech_LostCity": [
+        "zombossmech_lostcity",
+        "zombossmech_modern_lostcity",
+        "zombossmech_lostcity_rift",
+        "zombossmech_lostcity_vacation",
+        "zombossmech_lostcity_TimeTravel_easy",
+        "zombossmech_lostcity_TimeTravel_normal",
+        "zombossmech_lostcity_TimeTravel_hard",
+        "zombossmech_lostcity_12th",
+    ],
+    "ZombieZombossMech_Eighties": [
+        "zombossmech_eighties",
+        "zombossmech_modern_eighties",
+        "zombossmech_eighties_vacation",
+        "zombossmech_eighties_TimeTravel_easy",
+        "zombossmech_eighties_TimeTravel_normal",
+        "zombossmech_eighties_TimeTravel_hard",
+        "zombossmech_eighties_12th",
+    ],
+    "ZombieZombossMech_Dino": [
+        "zombossmech_dino",
+        "zombossmech_modern_dino",
+        "zombossmech_dino_rift",
+        "zombossmech_dino_vacation",
+        "zombossmech_dino_TimeTravel_easy",
+        "zombossmech_dino_TimeTravel_normal",
+        "zombossmech_dino_TimeTravel_hard",
+        "zombossmech_dino_12th",
+    ],
+    "ZombieZombossMech_Steam": [
+        "zombossmech_steam",
+        "zombossmech_steam_rift",
+        "zombossmech_steam_12th",
+    ],
+    "ZombieZombossMech_Renai": [
+        "zombossmech_renai",
+        "zombossmech_renai_12th",
+    ],
+    "ZombieZombossMech_Hydra": [
+        "zombossmech_hydra_normal",
+        "zombossmech_hydra_hard",
+        "zombossmech_hydra",
+        "zombossmech_hydra_12th",
+    ],
+    "ZombieZombossMech_PVZ1_Robot": [
+        "zombossmech_pvz1_robot_1",
+        "zombossmech_pvz1_robot_2",
+        "zombossmech_pvz1_robot_3",
+        "zombossmech_pvz1_robot_4",
+        "zombossmech_pvz1_robot_5",
+        "zombossmech_pvz1_robot_6",
+        "zombossmech_pvz1_robot_7",
+        "zombossmech_pvz1_robot_8",
+        "zombossmech_pvz1_robot_9",
+        "zombossmech_pvz1_robot_normal",
+        "zombossmech_pvz1_robot_hard",
+        "zombossmech_pvz1_robot_1_vacation",
+    ],
+}
+
+NON_MECH_ZOMBOSS_VARIATION_ORDER: dict[str, list[str]] = {
+    "ZombieZombossExplosive": [
+        "kongfu_zomboss_explosive",
+        "kongfu_zomboss_explosive_vacation",
+    ],
+    "ZombieZombossBlade": [
+        "kongfu_zomboss_blade",
+        "kongfu_zomboss_blade_vacation",
+    ],
+    "ZombieZombossQigong": [
+        "kongfu_zomboss_qigong",
+        "kongfu_zomboss_qigong_vacation",
+        "kongfu_zomboss_qigong_12TH",
+        "kongfu_zomboss_qigong_12th",
+    ],
+    "ZombieZombossQinShiHuang": [
+        "zomboss_qinshihuang",
+        "zomboss_qinshihuang_hard",
+    ],
+    "ZombieZombossQinShiHuangGhost": [
+        "zomboss_qinshihuang_ghost",
+    ],
+}
+
+# Game-crash / unsupported variations omitted from the editor catalog.
+EXCLUDED_VARIATIONS = frozenset(
+    {
+        "zombossmech_future_TimeTravel_easy",
+        "zombossmech_future_TimeTravel_normal",
+        "zombossmech_future_TimeTravel_hard",
+    }
+)
+
 # Substrings in action implementation aliases that indicate a phase retreat action.
 RETREAT_ALIAS_MARKERS = ("retreat", "coverup", "slowdive")
 
-# One tag per action objclass (movement / spawn / attack / special / retreat).
 ACTION_OBJCLASS_TAGS: dict[str, str] = {
     # movement — repositioning without leaving the active phase
     "ZombossWalkActionDefinition": "movement",
@@ -135,6 +325,44 @@ ACTION_OBJCLASS_TAGS: dict[str, str] = {
 }
 
 
+JUMP_ACTION_OBJCLASSES = frozenset(
+    {
+        "ZombossJumpActionDefinition",
+        "ZombossSteamJumpActionDefinition",
+        "ZombossSteamRandomJumpActionDefinition",
+        "ZombossQigongJumpActionDefinition",
+    }
+)
+
+
+def is_lost_city_identifier(value: str) -> bool:
+    return "lostcity" in value.lower()
+
+
+def jump_alias_matches_mech(alias: str, mech_id: str) -> bool:
+    """Keep Lost City jump impls on Lost City, and generic jump impls off it."""
+    return is_lost_city_identifier(alias) == is_lost_city_identifier(mech_id)
+
+
+def collect_nested_jump_aliases(objdata: Any) -> set[str]:
+    found: set[str] = set()
+
+    def walk(value: Any) -> None:
+        if isinstance(value, dict):
+            for key, nested in value.items():
+                if isinstance(key, str) and key.endswith("JumpAction"):
+                    alias, source = parse_rtid(nested)
+                    if alias and (source is None or source in {"ZombieActions", "."}):
+                        found.add(alias)
+                walk(nested)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    walk(objdata)
+    return found
+
+
 def is_excluded_teamboss(
     zombie_class: Any = None,
     type_name: Any = None,
@@ -174,14 +402,14 @@ def classify_action_tag(
     retreat_aliases: set[str] | None = None,
 ) -> str:
     """Return movement | spawn | attack | special | retreat for a zomboss action group."""
+    if objclass in ACTION_OBJCLASS_TAGS:
+        return ACTION_OBJCLASS_TAGS[objclass]
+
     retreat_aliases = retreat_aliases or set()
     if implementations and implementations_are_retreat_only(
         implementations, retreat_aliases
     ):
         return "retreat"
-
-    if objclass in ACTION_OBJCLASS_TAGS:
-        return ACTION_OBJCLASS_TAGS[objclass]
 
     lower = objclass.lower()
     if objclass == "UnknownAction":
@@ -240,6 +468,36 @@ def classify_action_tag(
 def load_json(path: Path) -> Any:
     with path.open(encoding="utf-8") as f:
         return json.load(f)
+
+
+def sort_by_priority(
+    items: list[str] | set[str] | tuple[str, ...],
+    priority: list[str] | None = None,
+) -> list[str]:
+    """Stable catalog order: known priority first, then remaining names A–Z."""
+    unique = list(dict.fromkeys(items))
+    if not priority:
+        return sorted(unique)
+    rank = {name: index for index, name in enumerate(priority)}
+    return sorted(
+        unique,
+        key=lambda name: (0, rank[name]) if name in rank else (1, name),
+    )
+
+
+def sort_entries_by_id_priority(
+    entries: list[dict[str, Any]],
+    priority: list[str],
+) -> list[dict[str, Any]]:
+    rank = {name: index for index, name in enumerate(priority)}
+    return sorted(
+        entries,
+        key=lambda entry: (
+            (0, rank[entry["id"]])
+            if isinstance(entry.get("id"), str) and entry["id"] in rank
+            else (1, str(entry.get("id") or ""))
+        ),
+    )
 
 
 def load_mech_seed() -> list[dict[str, Any]]:
@@ -514,7 +772,7 @@ def build_variations(
             variations.add(type_name)
     if icon_key == "zombossmech_pvz1_robot":
         variations.discard("zombossmech_pvz1_robot_1_vacation")
-    return sorted(variations)
+    return list(variations)
 
 
 def filter_variations_for_class(
@@ -522,11 +780,12 @@ def filter_variations_for_class(
     zombie_class: str,
     zombie_type_map: dict[str, dict[str, Any]],
 ) -> list[str]:
-    return sorted(
+    return [
         vid
         for vid in variation_ids
         if zombie_type_map.get(vid, {}).get("zombieClass") == zombie_class
-    )
+        and vid not in EXCLUDED_VARIATIONS
+    ]
 
 
 def resolve_base_mech_id(icon_key: str, variation_ids: list[str]) -> str | None:
@@ -651,27 +910,59 @@ def collect_retreat_action_aliases(
     return retreat
 
 
+def add_action_implementation(
+    by_class: dict[str, dict[str, dict[str, Any]]],
+    unknown: dict[str, dict[str, Any]],
+    action_map: dict[str, dict[str, Any]],
+    alias: str,
+) -> None:
+    action_def = action_map.get(alias)
+    if not action_def:
+        unknown[alias] = {}
+        return
+    objclass = action_def["objclass"]
+    values = action_def["objdata"]
+    if not isinstance(values, dict):
+        values = {}
+    if not is_valid_action_implementation(objclass, values):
+        return
+    by_class[objclass][alias] = values
+
+
 def build_actions_section(
     referenced_aliases: set[str],
     retreat_aliases: set[str],
     action_map: dict[str, dict[str, Any]],
+    mech_id: str,
 ) -> list[dict[str, Any]]:
     """Only action aliases referenced in this mech's property-sheet stages."""
     by_class: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     unknown: dict[str, dict[str, Any]] = {}
 
     for alias in sorted(referenced_aliases):
-        action_def = action_map.get(alias)
-        if not action_def:
-            unknown[alias] = {}
+        add_action_implementation(by_class, unknown, action_map, alias)
+
+    nested_jumps: set[str] = set()
+    for implementations in by_class.values():
+        for values in implementations.values():
+            nested_jumps |= collect_nested_jump_aliases(values)
+    for alias in sorted(nested_jumps):
+        add_action_implementation(by_class, unknown, action_map, alias)
+
+    for objclass in list(by_class.keys()):
+        if objclass not in JUMP_ACTION_OBJCLASSES:
             continue
-        objclass = action_def["objclass"]
-        values = action_def["objdata"]
-        if not isinstance(values, dict):
-            values = {}
-        if not is_valid_action_implementation(objclass, values):
-            continue
-        by_class[objclass][alias] = values
+        for alias, action_def in action_map.items():
+            if action_def["objclass"] != objclass:
+                continue
+            if not jump_alias_matches_mech(alias, mech_id):
+                continue
+            values = action_def["objdata"]
+            if not isinstance(values, dict):
+                continue
+            if not is_valid_action_implementation(objclass, values):
+                continue
+            by_class[objclass][alias] = values
 
     actions: list[dict[str, Any]] = []
     for objclass in sorted(by_class):
@@ -739,7 +1030,7 @@ def build_mech_output(
         base_id = resolve_base_mech_id(icon_key, variations)
         if base_id and base_id not in variations:
             variations.append(base_id)
-        variations = sorted(set(variations))
+        variations = list(dict.fromkeys(variations))
 
         representative = base_id or (seed_ids[0] if seed_ids else icon_key)
         representative = (
@@ -765,9 +1056,17 @@ def build_mech_output(
         editable_props_name = resolve_editable_instance_props_name(
             editable, zombie_type_map
         )
-        if editable != "none" and editable not in variations:
-            variations.append(editable)
-        variations = sorted(set(variations))
+        # Customizable CurrentLevel types (_memo, robot_10, …) are exposed via
+        # editableInstance / the Custom picker option — keep them out of variations
+        # so they are not listed twice.
+        variations = [
+            vid
+            for vid in variations
+            if zombie_type_map.get(vid, {}).get("propertiesSource") != "CurrentLevel"
+        ]
+        variations = sort_by_priority(
+            variations, ZOMBOSS_MECH_VARIATION_ORDER.get(zombie_class)
+        )
 
         default_phase_count = next(
             (
@@ -799,14 +1098,14 @@ def build_mech_output(
                 "defaultPhaseCount": default_phase_count,
                 "variations": variations,
                 "actions": build_actions_section(
-                    referenced_actions, retreat_actions, action_map
+                    referenced_actions, retreat_actions, action_map, zombie_class
                 ),
                 "Properties": build_properties_section(property_impls),
                 "editableInstance": editable,
                 "editableInstancePropsName": editable_props_name,
             }
         )
-    return output
+    return sort_entries_by_id_priority(output, ZOMBOSS_MECH_ORDER)
 
 
 def is_non_mech_zomboss(zombie_class: Any) -> bool:
@@ -890,8 +1189,12 @@ def build_non_mech_output(
         by_class[zombie_class].append(info)
 
     output: list[dict[str, Any]] = []
-    for zombie_class, infos in sorted(by_class.items()):
-        variations = sorted({i["typeName"] for i in infos if isinstance(i.get("typeName"), str)})
+    for zombie_class in sort_by_priority(list(by_class.keys()), NON_MECH_ZOMBOSS_ORDER):
+        infos = by_class[zombie_class]
+        variations = sort_by_priority(
+            [i["typeName"] for i in infos if isinstance(i.get("typeName"), str)],
+            NON_MECH_ZOMBOSS_VARIATION_ORDER.get(zombie_class),
+        )
 
         def _base_priority(type_name: str) -> tuple[int, int, str]:
             suffix_rank = 0

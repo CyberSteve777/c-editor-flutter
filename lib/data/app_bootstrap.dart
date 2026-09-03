@@ -14,6 +14,7 @@ import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
+import 'package:c_editor/data/repository/world_repository.dart';
 import 'package:c_editor/data/repository/zombie_title_catalog_repository.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
@@ -32,7 +33,7 @@ abstract final class AppBootstrap {
   static Future<void> load({BootstrapProgressCallback? onProgress}) async {
     if (_complete) return;
 
-    const dataSteps = 19;
+    const dataSteps = 20;
     var dataStep = 0;
     void dataTick(BootstrapLoadingCategory category) {
       dataStep++;
@@ -104,6 +105,9 @@ abstract final class AppBootstrap {
     dataTick(BootstrapLoadingCategory.zombies);
 
     await ResilienceConfigRepository.init();
+    dataTick(BootstrapLoadingCategory.reference);
+
+    await WorldRepository.init();
     dataTick(BootstrapLoadingCategory.reference);
 
     await ZombieTitleCatalogRepository.init();

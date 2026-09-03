@@ -729,6 +729,37 @@ void main() {
       tester.getSize(find.byType(AddItemCard)).height,
     );
   });
+
+  testWidgets('preset grid items screen exposes the module alias field', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['InitialGridItems'],
+          objClass: 'InitialGridItemProperties',
+          objData: const {
+            'InitialGridItemPlacements': <Map<String, dynamic>>[],
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      _localizedApp(
+        InitialGridItemEntryScreen(
+          rtid: 'RTID(InitialGridItems@CurrentLevel)',
+          levelFile: level,
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alias (English letters only)'), findsOneWidget);
+    expect(find.text('InitialGridItems'), findsOneWidget);
+  });
 }
 
 bool _containsExactString(dynamic value, String target) {
