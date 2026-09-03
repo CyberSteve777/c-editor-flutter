@@ -4486,6 +4486,18 @@ abstract class AppLocalizations {
   /// **'Overrides the maximum sun limit value'**
   String get moduleDesc_LevelMutatorMaxSunProps;
 
+  /// No description provided for @moduleTitle_MoonExpertProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Expert Mode'**
+  String get moduleTitle_MoonExpertProperties;
+
+  /// No description provided for @moduleDesc_MoonExpertProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Forces one zombie level for the whole level and sets all plants to level 1'**
+  String get moduleDesc_MoonExpertProperties;
+
   /// No description provided for @moduleTitle_LevelMutatorStartingPlantfoodProps.
   ///
   /// In en, this message translates to:
@@ -9453,6 +9465,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Originally used for Penny’s Pursuit difficulty settings. This module overrides the maximum amount of sun that can be stored in a level.'**
   String get maxSunHelpOverview;
+
+  /// No description provided for @moonExpertZombieLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie level (ZombieLevel)'**
+  String get moonExpertZombieLevel;
+
+  /// No description provided for @moonExpertZombieLevelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrites all zombie levels defined in the level to ZombieLevel, and sets all plants to level 1 regardless of how plant levels were configured in other modules.'**
+  String get moonExpertZombieLevelTooltip;
+
+  /// No description provided for @moonExpertHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Expert Mode'**
+  String get moonExpertHelpTitle;
+
+  /// No description provided for @moonExpertHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Forces a single zombie level for the whole level and resets all plants to level 1, overriding other plant/zombie level settings.'**
+  String get moonExpertHelpOverview;
+
+  /// No description provided for @enterMoonExpertZombieLevelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter zombie level (0–10)'**
+  String get enterMoonExpertZombieLevelHint;
 
   /// No description provided for @startingPlantfoodHelpTitle.
   ///
