@@ -306,6 +306,47 @@ class LevelParser {
     return isDeepSeaLawn(levelDef, levelFile) ? (6, 10) : (5, 9);
   }
 
+  static const deepSeaBoardType = 'submarine';
+
+  /// Keeps [LevelDefinitionData.boardType] as `"submarine"` iff [isDeepSeaLawn].
+  /// Independent of custom-lawn InitSubmarineInfo — otherwise planting on row 6 fails.
+  /// When [persist] is true, writes the updated definition back into [levelFile].
+  /// Returns true if BoardType changed.
+  static bool syncDeepSeaBoardType(
+    LevelDefinitionData levelDef,
+    PvzLevelFile levelFile, {
+    bool persist = true,
+  }) {
+    final want = isDeepSeaLawn(levelDef, levelFile) ? deepSeaBoardType : null;
+    final current = (levelDef.boardType == null || levelDef.boardType!.isEmpty)
+        ? null
+        : levelDef.boardType;
+    if (current == want) return false;
+    levelDef.boardType = want;
+    if (persist) writeLevelDefinition(levelDef, levelFile);
+    return true;
+  }
+
+  /// Writes [levelDef] into the level file's LevelDefinition object.
+  static void writeLevelDefinition(
+    LevelDefinitionData levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final obj = levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'LevelDefinition',
+    );
+    if (obj != null) obj.objData = levelDef.toJson();
+  }
+
+  /// Syncs DeepSea BoardType then persists the LevelDefinition.
+  static void syncAndWriteLevelDefinition(
+    LevelDefinitionData levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    syncDeepSeaBoardType(levelDef, levelFile, persist: false);
+    writeLevelDefinition(levelDef, levelFile);
+  }
+
   static (int rows, int cols) getGridDimensionsFromFile(
     PvzLevelFile levelFile,
   ) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
@@ -121,10 +122,7 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
   }
 
   void _writeLevelDefinition() {
-    final obj = widget.levelFile.objects
-        .where((o) => o.objClass == 'LevelDefinition')
-        .firstOrNull;
-    if (obj != null) obj.objData = widget.levelDef.toJson();
+    LevelParser.syncAndWriteLevelDefinition(widget.levelDef, widget.levelFile);
   }
 
   bool _resetMissingCustomStageReference() {
