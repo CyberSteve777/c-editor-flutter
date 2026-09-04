@@ -779,6 +779,7 @@
   "conflictDesc_InitialPlantRoof": "Legacy preset plants on the roof will cause a crash.",
   "conflictDesc_ProtectPlantRoof": "Endangered plants on the roof will cause a crash.",
   "conflictDesc_LawnMowerYard": "Lawn mowers are ineffective when the Creative Courtyard module is enabled.",
+  "conflictDesc_MoonExpertYard": "Moon Expert Mode conflicts with the Creative Courtyard module. It is recommended to keep only one.",
   "conflictDesc_WaveGeneratorWaveManagerModule": "Wave Generator and Wave Manager module cannot coexist — they are two different wave systems.",
   "conflictDesc_WaveGeneratorWaveManager": "Wave Generator embeds waves directly and cannot be used with a separate Wave Manager container.",
   "conflictDesc_WaveGeneratorRenai": "Wave Generator is incompatible with the Renaissance module and will cause the level to crash.",

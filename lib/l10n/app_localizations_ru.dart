@@ -2087,6 +2087,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Газонокосилки неэффективны в модуле Yard.';
 
   @override
+  String get conflictDesc_MoonExpertYard =>
+      'Лунный экспертный режим конфликтует с модулем лужайки. Рекомендуется оставить только один из них.';
+
+  @override
   String get conflictDesc_WaveGeneratorWaveManagerModule =>
       'Генератор волн и модуль менеджера волн нельзя использовать одновременно: это две разные системы волн.';
 

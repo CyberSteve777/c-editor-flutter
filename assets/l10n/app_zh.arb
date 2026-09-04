@@ -717,6 +717,7 @@
   "conflictDesc_InitialPlantRoof": "在屋顶上预设植物会导致关卡闪退。",
   "conflictDesc_ProtectPlantRoof": "在屋顶上设置保护植物会导致关卡闪退。",
   "conflictDesc_LawnMowerYard": "庭院模块中添加小推车无效。",
+  "conflictDesc_MoonExpertYard": "月球专家模式与庭院模块冲突，建议只保留其中一个。",
   "conflictDesc_WaveGeneratorWaveManagerModule": "波次生成器与波次管理器模块不能共存——它们是两套不同的波次系统。",
   "conflictDesc_WaveGeneratorWaveManager": "波次生成器内嵌波次数据，不能与独立的波次管理器容器同时使用。",
   "conflictDesc_WaveGeneratorRenai": "波次生成器与「复兴时代模块」不兼容，会导致关卡闪退。",

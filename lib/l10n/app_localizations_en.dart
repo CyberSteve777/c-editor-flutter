@@ -2073,6 +2073,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Lawn mowers are ineffective when the Creative Courtyard module is enabled.';
 
   @override
+  String get conflictDesc_MoonExpertYard =>
+      'Moon Expert Mode conflicts with the Creative Courtyard module. It is recommended to keep only one.';
+
+  @override
   String get conflictDesc_WaveGeneratorWaveManagerModule =>
       'Wave Generator and Wave Manager module cannot coexist — they are two different wave systems.';
 

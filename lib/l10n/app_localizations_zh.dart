@@ -2011,6 +2011,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conflictDesc_LawnMowerYard => '庭院模块中添加小推车无效。';
 
   @override
+  String get conflictDesc_MoonExpertYard => '月球专家模式与庭院模块冲突，建议只保留其中一个。';
+
+  @override
   String get conflictDesc_WaveGeneratorWaveManagerModule =>
       '波次生成器与波次管理器模块不能共存——它们是两套不同的波次系统。';
 
