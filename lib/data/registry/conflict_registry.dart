@@ -104,6 +104,13 @@ class ConflictRegistry {
     ),
     ModuleConflictRule(
       conflictingClasses: {
+        'CustomLevelModuleProperties',
+        'MoonExpertProperties',
+      },
+      descriptionKey: 'conflictDesc_MoonExpertYard',
+    ),
+    ModuleConflictRule(
+      conflictingClasses: {
         'WaveGeneratorProperties',
         'WaveManagerModuleProperties',
       },
@@ -191,6 +198,8 @@ class ConflictRegistry {
         return l10n.conflictDesc_ProtectPlantRoof;
       case 'conflictDesc_LawnMowerYard':
         return l10n.conflictDesc_LawnMowerYard;
+      case 'conflictDesc_MoonExpertYard':
+        return l10n.conflictDesc_MoonExpertYard;
       case 'conflictDesc_WaveGeneratorWaveManagerModule':
         return l10n.conflictDesc_WaveGeneratorWaveManagerModule;
       case 'conflictDesc_WaveGeneratorWaveManager':

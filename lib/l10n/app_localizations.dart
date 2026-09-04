@@ -3814,6 +3814,12 @@ abstract class AppLocalizations {
   /// **'Lawn mowers are ineffective when the Creative Courtyard module is enabled.'**
   String get conflictDesc_LawnMowerYard;
 
+  /// No description provided for @conflictDesc_MoonExpertYard.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Expert Mode conflicts with the Creative Courtyard module. It is recommended to keep only one.'**
+  String get conflictDesc_MoonExpertYard;
+
   /// No description provided for @conflictDesc_WaveGeneratorWaveManagerModule.
   ///
   /// In en, this message translates to:

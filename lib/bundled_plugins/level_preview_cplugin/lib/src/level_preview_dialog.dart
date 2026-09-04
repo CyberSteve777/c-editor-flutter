@@ -461,6 +461,12 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       widget.levelFile,
       'MoonLifeSupportSystemProperties',
     );
+    // LevelModules default uses InitialCapacity 10; CurrentLevel overrides when present.
+    final lifeSupportData = hasLifeSupportSystem
+        ? (readMoonLifeSupportSystemData(widget.levelFile) ??
+              MoonLifeSupportSystemPropertiesData())
+        : null;
+    final lifeSupportCapacity = lifeSupportData?.initialCapacity;
     bool hasLunarTerminal = levelHasModule(
       widget.levelFile,
       'LunarTerminalModuleProperties',
@@ -513,12 +519,21 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     final isDesktop = isDesktopPlatform(context);
     final List<({String title, IconData? icon, String? iconId, Color color})>
     summaryLegends = [];
-    summaryLegends.add((
-      title: l10n.startingSun,
-      icon: null,
-      iconId: 'sun',
-      color: Colors.orange,
-    ));
+    if (hasLifeSupportSystem) {
+      summaryLegends.add((
+        title: l10n.moduleTitle_MoonLifeSupportSystemProperties,
+        icon: Icons.battery_charging_full,
+        iconId: null,
+        color: Colors.lightBlueAccent,
+      ));
+    } else {
+      summaryLegends.add((
+        title: l10n.startingSun,
+        icon: null,
+        iconId: 'sun',
+        color: Colors.orange,
+      ));
+    }
     summaryLegends.add((
       title: _p('previewStartingPlantFood', 'Starting Plant Food'),
       icon: null,
@@ -573,14 +588,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
         iconId: null,
         color: Colors.cyanAccent,
       ));
-    if (hasLifeSupportSystem) {
-      summaryLegends.add((
-        title: l10n.moduleTitle_MoonLifeSupportSystemProperties,
-        icon: Icons.battery_charging_full,
-        iconId: null,
-        color: Colors.lightBlueAccent,
-      ));
-    }
     if (hasLunarTerminal) {
       summaryLegends.add((
         title: l10n.moduleTitle_LunarTerminalModuleProperties,
@@ -679,12 +686,21 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                       spacing: 10,
                       runSpacing: 10,
                       children: [
-                        _buildSummaryAssetChip(
-                          iconId: 'sun',
-                          label: '$startingSun',
-                          color: Colors.orange,
-                          tooltip: l10n.startingSun,
-                        ),
+                        if (hasLifeSupportSystem && lifeSupportCapacity != null)
+                          ResourceChip(
+                            icon: Icons.battery_charging_full,
+                            label: '$lifeSupportCapacity',
+                            color: Colors.lightBlueAccent,
+                            tooltip:
+                                l10n.moduleTitle_MoonLifeSupportSystemProperties,
+                          )
+                        else
+                          _buildSummaryAssetChip(
+                            iconId: 'sun',
+                            label: '$startingSun',
+                            color: Colors.orange,
+                            tooltip: l10n.startingSun,
+                          ),
                         _buildSummaryAssetChip(
                           iconId: 'plantfood',
                           label: '$pfCount',
@@ -807,13 +823,6 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                     label: '',
                     color: Colors.cyanAccent,
                     tooltip: l10n.spermWhaleLabel,
-                  ),
-                if (hasLifeSupportSystem)
-                  ResourceChip(
-                    icon: Icons.battery_charging_full,
-                    label: '',
-                    color: Colors.lightBlueAccent,
-                    tooltip: l10n.moduleTitle_MoonLifeSupportSystemProperties,
                   ),
                 if (hasLunarTerminal)
                   ResourceChip(
@@ -2828,14 +2837,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           cellBuilder: (col, row) => null,
         );
       case GridPreviewModuleKind.common:
-        return _buildCompositeLawnGrid(
-          rows: rows,
-          cols: cols,
-          style: style,
-          moduleData: _getCommonGridData(),
-          activeTabIndex: 2,
-          cellBuilder: (col, row) => null,
-        );
+        return _buildCommonGridItemsPreview(rows, cols, style);
       case GridPreviewModuleKind.piratePlank:
         return _buildPiratePlankGrid(rows, cols, style);
       case GridPreviewModuleKind.railcart:
@@ -5724,13 +5726,29 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
     );
   }
 
+  Widget _buildCommonGridItemsPreview(
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+  ) {
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      moduleData: _getCommonGridData(),
+      activeTabIndex: 2,
+      cellBuilder: (col, row) => null,
+    );
+  }
+
   Widget _buildLunarMineVeinGrid(
     int rows,
     int cols,
     LevelPreviewGridStyle style,
     int wave,
   ) {
-    const asset = 'assets/images/griditems/lunar_mine_vein.webp';
+    // Emerging veins on this wave use the ore (active) art.
+    const asset = 'assets/images/griditems/lunar_mine_ore.webp';
     final placements =
         readLunarMineVeinModuleData(
           widget.levelFile,
@@ -5807,6 +5825,17 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
           data['InitialGridItemPlacements'] ?? data['GridItems'],
           'TypeName',
         );
+    }
+
+    // Overlay every lunar vein (all waves) as dormant vein art on the
+    // Initial grid-items preview; duplicate cells get a count badge.
+    final lunarMineData = readLunarMineVeinModuleData(widget.levelFile);
+    if (lunarMineData != null) {
+      for (final placement in lunarMineData.placements) {
+        final key = '${placement.gridX},${placement.gridY}';
+        result[key] ??= [];
+        result[key]!.add('lunar_mine_vein');
+      }
     }
     return result;
   }
