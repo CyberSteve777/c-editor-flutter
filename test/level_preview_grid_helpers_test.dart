@@ -169,6 +169,11 @@ void main() {
 
     expect(levelHasPrePlacedGridPreview(level), isTrue);
     expect(
+      categories.any((category) => category.kind == GridPreviewModuleKind.common),
+      isTrue,
+      reason: 'Lunar veins should appear on the Initial grid-items preview',
+    );
+    expect(
       categories
           .where(
             (category) => category.kind == GridPreviewModuleKind.lunarMineVein,

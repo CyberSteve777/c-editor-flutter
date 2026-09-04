@@ -427,7 +427,10 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
     }
   }
 
-  if (levelHasCommonGridItems(levelFile)) {
+  final lunarMineForCommon = readLunarMineVeinModuleData(levelFile);
+  final hasLunarVeinsOnCommon =
+      lunarMineForCommon != null && lunarMineForCommon.placements.isNotEmpty;
+  if (levelHasCommonGridItems(levelFile) || hasLunarVeinsOnCommon) {
     categories.add(
       GridPreviewCategoryOption(
         kind: GridPreviewModuleKind.common,
@@ -771,6 +774,20 @@ LunarMineVeinModulePropertiesData? readLunarMineVeinModuleData(
           Map<String, dynamic>.from(obj.objData as Map),
         )
       : null;
+}
+
+MoonLifeSupportSystemPropertiesData? readMoonLifeSupportSystemData(
+  PvzLevelFile levelFile,
+) {
+  final obj = findModuleObject(levelFile, 'MoonLifeSupportSystemProperties');
+  if (obj == null || obj.objData is! Map) return null;
+  try {
+    return MoonLifeSupportSystemPropertiesData.fromJson(
+      Map<String, dynamic>.from(obj.objData as Map),
+    );
+  } catch (_) {
+    return MoonLifeSupportSystemPropertiesData();
+  }
 }
 
 RadiationMeteorModulePropertiesData? readRadiationMeteorModuleData(
