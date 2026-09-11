@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/moon_wave_preview_utils.dart';
+import 'package:c_editor/data/pvz_alias_utils.dart';
 import 'package:c_editor/data/renai_wave_preview_utils.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -16,6 +17,8 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
+import 'package:c_editor/screens/select/existing_wave_event_selection_screen.dart';
+import 'package:c_editor/screens/common/wave_target_parser.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
@@ -23,22 +26,46 @@ import 'package:c_editor/widgets/editor_components.dart'
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
 import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
+import 'package:c_editor/widgets/zombie_lane_drag_widgets.dart'
+    show zombieDragLongPressDelay, zombieDropSlotWidth;
 
 String _waveGuideBodyForPlatform(BuildContext context, AppLocalizations? l10n) {
+  final desktop = isDesktopPlatform(context);
   if (l10n == null) {
-    return 'Tap a wave: Manage wave events\nTap delete: Remove a wave\nTap points: View spawn expectations';
+    return desktop
+        ? 'Left-click a wave: Manage wave events\nLong-press an event: Drag to reorder or move waves\nClick points: View spawn expectations'
+        : 'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
   }
-  return l10n.waveTimelineGuideBodyDesktop;
+  return desktop
+      ? l10n.waveTimelineGuideBodyDesktop
+      : l10n.waveTimelineGuideBodyMobile;
 }
 
 String _waveEmptyRowHintForPlatform(
   BuildContext context,
   AppLocalizations? l10n,
 ) {
+  final desktop = isDesktopPlatform(context);
   if (l10n == null) {
-    return 'Empty wave (tap to manage)';
+    return desktop
+        ? 'Empty wave (click to manage, drop events here)'
+        : 'Empty wave (swipe to manage, drop events here)';
   }
-  return l10n.waveEmptyRowHintDesktop;
+  return desktop
+      ? l10n.waveEmptyRowHintDesktop
+      : l10n.waveEmptyRowHintMobile;
+}
+
+class _WaveEventDragData {
+  const _WaveEventDragData({
+    required this.rtid,
+    required this.sourceWaveIndex,
+    required this.sourceIndex,
+  });
+
+  final String rtid;
+  final int sourceWaveIndex;
+  final int sourceIndex;
 }
 
 const _kUnknownIconPath = 'assets/images/others/unknown.webp';
@@ -98,6 +125,8 @@ class WaveTimelineTab extends StatefulWidget {
 
 class _WaveTimelineTabState extends State<WaveTimelineTab> {
   VoidCallback? _notifierListener;
+  _WaveEventDragData? _draggingEvent;
+  int? _dragHoverWaveIndex;
 
   @override
   void initState() {
@@ -618,7 +647,12 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     bool includeDivider = true,
   }) {
     final l10n = AppLocalizations.of(context);
-    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.onSurfaceVariant;
+    final isDropTarget =
+        _draggingEvent != null &&
+        _draggingEvent!.sourceWaveIndex != waveIndex &&
+        _dragHoverWaveIndex == waveIndex;
     final waveNumber = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -627,7 +661,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Theme.of(context).colorScheme.primary,
+            color: theme.colorScheme.primary,
           ),
         ),
         if (isFlagWave)
@@ -636,9 +670,60 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             child: Icon(
               Icons.flag,
               size: 12,
-              color: Theme.of(context).colorScheme.error,
+              color: theme.colorScheme.error,
             ),
           ),
+      ],
+    );
+    final dragging = _draggingEvent != null;
+    final eventsColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (rtidList.isEmpty)
+          dragging &&
+                  _dragHoverWaveIndex == waveIndex &&
+                  _draggingEvent != null
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: _buildWaveEventPreviewChip(
+                    rtid: _draggingEvent!.rtid,
+                    objectMap: objectMap,
+                  ),
+                )
+              : Text(
+                  _waveEmptyRowHintForPlatform(context, l10n),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                )
+        else ...[
+          // Insert slots use zero layout height (overflow hit targets) so
+          // dragging does not inflate spacing between chips.
+          if (dragging)
+            _buildWaveEventInsertSlot(
+              waveIndex: waveIndex,
+              insertBeforeIndex: 0,
+              objectMap: objectMap,
+            ),
+          for (var i = 0; i < rtidList.length; i++) ...[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: _buildDraggableEventChip(
+                context: context,
+                waveIndex: waveIndex,
+                sourceIndex: i,
+                rtid: rtidList[i],
+                objectMap: objectMap,
+              ),
+            ),
+            if (dragging)
+              _buildWaveEventInsertSlot(
+                waveIndex: waveIndex,
+                insertBeforeIndex: i + 1 < rtidList.length ? i + 1 : null,
+                objectMap: objectMap,
+              ),
+          ],
+        ],
       ],
     );
     final rowContent = Stack(
@@ -648,41 +733,65 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           children: [
             const SizedBox(width: 52),
             Expanded(
-              child: InkWell(
-                onTap: onRowTap,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (rtidList.isEmpty)
-                        Text(
-                          _waveEmptyRowHintForPlatform(context, l10n),
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        )
-                      else
-                        ...rtidList.map(
-                          (rtid) => Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: EventChipWidget(
-                              rtid: rtid,
-                              objectMap: objectMap,
-                              onTap: () => _showEventActionSheet(
-                                context: context,
-                                waveIndex: waveIndex,
-                                rtid: rtid,
-                              ),
-                            ),
-                          ),
+              child: DragTarget<_WaveEventDragData>(
+                key: ValueKey('waveTimelineDropTarget-$waveIndex'),
+                onWillAcceptWithDetails: (details) {
+                  return details.data.sourceWaveIndex != waveIndex;
+                },
+                onMove: (_) {
+                  if (_dragHoverWaveIndex != waveIndex) {
+                    setState(() => _dragHoverWaveIndex = waveIndex);
+                  }
+                },
+                onLeave: (_) {
+                  if (_dragHoverWaveIndex == waveIndex) {
+                    setState(() => _dragHoverWaveIndex = null);
+                  }
+                },
+                onAcceptWithDetails: (details) {
+                  setState(() {
+                    _dragHoverWaveIndex = null;
+                    _draggingEvent = null;
+                  });
+                  _placeWaveEvent(
+                    sourceWaveIndex: details.data.sourceWaveIndex,
+                    sourceIndex: details.data.sourceIndex,
+                    targetWaveIndex: waveIndex,
+                    insertBeforeIndex: null,
+                  );
+                },
+                builder: (context, candidateData, rejectedData) {
+                  final highlighted =
+                      isDropTarget || candidateData.isNotEmpty;
+                  return Material(
+                    color: highlighted
+                        ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      onTap: _draggingEvent == null ? onRowTap : null,
+                      borderRadius: BorderRadius.circular(8),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 120),
+                        curve: Curves.easeOut,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 4,
                         ),
-                    ],
-                  ),
-                ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: highlighted
+                              ? Border.all(
+                                  color: theme.colorScheme.primary,
+                                  width: 1.5,
+                                )
+                              : null,
+                        ),
+                        child: eventsColumn,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             Column(
@@ -705,11 +814,10 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                           Flexible(
                             child: Text(
                               actionButtons[i].label,
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: color,
-                                  ),
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: color,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -736,7 +844,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               type: MaterialType.transparency,
               child: InkWell(
                 key: ValueKey('waveTimelineWaveNumberTap-$waveIndex'),
-                onTap: onRowTap,
+                onTap: _draggingEvent == null ? onRowTap : null,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   child: waveNumber,
@@ -758,6 +866,186 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
         ),
       ],
+    );
+  }
+
+  Widget _buildWaveEventPreviewChip({
+    required String rtid,
+    required Map<String, PvzObject> objectMap,
+  }) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: theme.colorScheme.primary, width: 2),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Opacity(
+          opacity: 0.55,
+          child: EventChipWidget(
+            rtid: rtid,
+            objectMap: objectMap,
+            onTap: () {},
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWaveEventInsertSlot({
+    required int waveIndex,
+    required int? insertBeforeIndex,
+    required Map<String, PvzObject> objectMap,
+  }) {
+    final slotKey = insertBeforeIndex == null
+        ? 'waveTimelineInsertSlot-$waveIndex-end'
+        : 'waveTimelineInsertSlot-$waveIndex-$insertBeforeIndex';
+    return DragTarget<_WaveEventDragData>(
+      key: ValueKey(slotKey),
+      onWillAcceptWithDetails: (details) {
+        if (details.data.sourceWaveIndex != waveIndex) return true;
+        final from = details.data.sourceIndex;
+        // Mirror jittered: reject only the slot immediately before the dragged item.
+        if (insertBeforeIndex == null) return true;
+        return from != insertBeforeIndex;
+      },
+      onMove: (_) {
+        if (_dragHoverWaveIndex != waveIndex) {
+          setState(() => _dragHoverWaveIndex = waveIndex);
+        }
+      },
+      onLeave: (_) {
+        if (_dragHoverWaveIndex == waveIndex) {
+          setState(() => _dragHoverWaveIndex = null);
+        }
+      },
+      onAcceptWithDetails: (details) {
+        setState(() {
+          _dragHoverWaveIndex = null;
+          _draggingEvent = null;
+        });
+        _placeWaveEvent(
+          sourceWaveIndex: details.data.sourceWaveIndex,
+          sourceIndex: details.data.sourceIndex,
+          targetWaveIndex: waveIndex,
+          insertBeforeIndex: insertBeforeIndex,
+        );
+      },
+      builder: (context, candidateData, rejectedData) {
+        final showPreview =
+            candidateData.isNotEmpty && _draggingEvent != null;
+        if (showPreview) {
+          // Jittered-style ghost at the hovered insert position.
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: _buildWaveEventPreviewChip(
+              rtid: _draggingEvent!.rtid,
+              objectMap: objectMap,
+            ),
+          );
+        }
+        // Zero layout height keeps chip spacing unchanged while dragging;
+        // overflow preserves a usable drop hit target between chips.
+        return SizedBox(
+          width: double.infinity,
+          height: 0,
+          child: OverflowBox(
+            minHeight: zombieDropSlotWidth,
+            maxHeight: zombieDropSlotWidth,
+            alignment: Alignment.center,
+            child: const SizedBox(
+              width: double.infinity,
+              height: zombieDropSlotWidth,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDraggableEventChip({
+    required BuildContext context,
+    required int waveIndex,
+    required int sourceIndex,
+    required String rtid,
+    required Map<String, PvzObject> objectMap,
+  }) {
+    final data = _WaveEventDragData(
+      rtid: rtid,
+      sourceWaveIndex: waveIndex,
+      sourceIndex: sourceIndex,
+    );
+    final chip = EventChipWidget(
+      rtid: rtid,
+      objectMap: objectMap,
+      onTap: () => _showEventActionSheet(
+        context: context,
+        waveIndex: waveIndex,
+        rtid: rtid,
+      ),
+    );
+
+    return LongPressDraggable<_WaveEventDragData>(
+      data: data,
+      delay: zombieDragLongPressDelay,
+      maxSimultaneousDrags: 1,
+      rootOverlay: true,
+      hapticFeedbackOnStart: true,
+      onDragStarted: () {
+        setState(() {
+          _draggingEvent = data;
+          _dragHoverWaveIndex = null;
+        });
+      },
+      onDragEnd: (_) {
+        if (!mounted) return;
+        setState(() {
+          _draggingEvent = null;
+          _dragHoverWaveIndex = null;
+        });
+      },
+      onDraggableCanceled: (_, _) {
+        if (!mounted) return;
+        setState(() {
+          _draggingEvent = null;
+          _dragHoverWaveIndex = null;
+        });
+      },
+      feedback: Material(
+        color: Colors.transparent,
+        elevation: 6,
+        borderRadius: BorderRadius.circular(6),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 240),
+          child: EventChipWidget(
+            rtid: rtid,
+            objectMap: objectMap,
+            onTap: () {},
+          ),
+        ),
+      ),
+      childWhenDragging: Opacity(opacity: 0.45, child: chip),
+      child: chip,
+    );
+  }
+
+  void _openReuseExistingEvent(int waveIndex) {
+    final wm = widget.parsed.waveManager;
+    if (wm is! WaveManagerData) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => ExistingWaveEventSelectionScreen(
+          waveIndex: waveIndex,
+          levelFile: widget.levelFile,
+          waveManager: wm,
+          onEventSelected: (rtid) {
+            Navigator.pop(ctx);
+            _performCopyReference(rtid, [waveIndex]);
+          },
+          onBack: () => Navigator.pop(ctx),
+        ),
+      ),
     );
   }
 
@@ -1326,44 +1614,103 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     setState(() {});
   }
 
-  void _performCopyReference(String rtid, int targetWaveIndex) {
+  void _performCopyReference(String rtid, Iterable<int> targetWaveIndexes) {
     final wm = widget.parsed.waveManager;
     if (wm is! WaveManagerData) return;
-    if (targetWaveIndex < 1 || targetWaveIndex > wm.waves.length) return;
-    final targetIdx = targetWaveIndex - 1;
-    wm.waves[targetIdx] = [...wm.waves[targetIdx], rtid];
+    var changed = false;
+    for (final targetWaveIndex in targetWaveIndexes) {
+      if (targetWaveIndex < 1 || targetWaveIndex > wm.waves.length) continue;
+      final targetIdx = targetWaveIndex - 1;
+      // Skip waves that already reference this event.
+      if (wm.waves[targetIdx].contains(rtid)) continue;
+      wm.waves[targetIdx] = [...wm.waves[targetIdx], rtid];
+      changed = true;
+    }
+    if (!changed) return;
     _syncWaves();
     setState(() {});
   }
 
-  void _performDeepCopy(String rtid, String newAlias, int targetWaveIndex) {
+  void _performDeepCopy(
+    String rtid,
+    String newAlias,
+    Iterable<int> targetWaveIndexes,
+  ) {
     final wm = widget.parsed.waveManager;
     if (wm is! WaveManagerData) return;
+    final targets = targetWaveIndexes
+        .where((w) => w >= 1 && w <= wm.waves.length)
+        .toList(growable: false);
+    if (targets.isEmpty) return;
+
     final oldAlias = LevelParser.extractAlias(rtid);
     final obj = widget.levelFile.objects.firstWhereOrNull(
       (o) => o.aliases?.contains(oldAlias) == true,
     );
     if (obj == null) return;
-    if (widget.levelFile.objects.any(
-      (o) => o.aliases?.contains(newAlias) == true,
-    )) {
-      return;
+
+    var changed = false;
+    for (final targetWaveIndex in targets) {
+      final targetIdx = targetWaveIndex - 1;
+      // One independent deep copy per wave; aliases stay unique.
+      final alias = PvzAliasUtils.uniqueAlias(widget.levelFile, newAlias);
+      final newRtid = RtidParser.build(alias, 'CurrentLevel');
+      // Skip if this wave somehow already references the new RTID.
+      if (wm.waves[targetIdx].contains(newRtid)) continue;
+      final dataCopy = obj.objData is Map
+          ? jsonDecode(jsonEncode(obj.objData)) as Map<String, dynamic>
+          : obj.objData;
+      widget.levelFile.objects.add(
+        PvzObject(aliases: [alias], objClass: obj.objClass, objData: dataCopy),
+      );
+      wm.waves[targetIdx] = [...wm.waves[targetIdx], newRtid];
+      changed = true;
     }
-    final newRtid = RtidParser.build(newAlias, 'CurrentLevel');
-    final dataCopy = obj.objData is Map
-        ? jsonDecode(jsonEncode(obj.objData)) as Map<String, dynamic>
-        : obj.objData;
-    widget.levelFile.objects.add(
-      PvzObject(aliases: [newAlias], objClass: obj.objClass, objData: dataCopy),
-    );
-    if (targetWaveIndex >= 1 && targetWaveIndex <= wm.waves.length) {
-      wm.waves[targetWaveIndex - 1] = [
-        ...wm.waves[targetWaveIndex - 1],
-        newRtid,
-      ];
-    }
+    if (!changed) return;
     _syncWaves();
     widget.onChanged();
+    setState(() {});
+  }
+
+  void _placeWaveEvent({
+    required int sourceWaveIndex,
+    required int sourceIndex,
+    required int targetWaveIndex,
+    int? insertBeforeIndex,
+  }) {
+    final wm = widget.parsed.waveManager;
+    if (wm is! WaveManagerData) return;
+    final srcIdx = sourceWaveIndex - 1;
+    final tgtIdx = targetWaveIndex - 1;
+    if (srcIdx < 0 ||
+        srcIdx >= wm.waves.length ||
+        tgtIdx < 0 ||
+        tgtIdx >= wm.waves.length) {
+      return;
+    }
+    final sourceWave = List<String>.from(wm.waves[srcIdx]);
+    if (sourceIndex < 0 || sourceIndex >= sourceWave.length) return;
+    final rtid = sourceWave.removeAt(sourceIndex);
+
+    if (sourceWaveIndex == targetWaveIndex) {
+      var insertAt = insertBeforeIndex ?? sourceWave.length;
+      if (insertBeforeIndex != null && insertBeforeIndex > sourceIndex) {
+        insertAt = insertBeforeIndex - 1;
+      }
+      insertAt = insertAt.clamp(0, sourceWave.length);
+      sourceWave.insert(insertAt, rtid);
+      wm.waves[srcIdx] = sourceWave;
+    } else {
+      final targetWave = List<String>.from(wm.waves[tgtIdx]);
+      final insertAt = (insertBeforeIndex ?? targetWave.length).clamp(
+        0,
+        targetWave.length,
+      );
+      targetWave.insert(insertAt, rtid);
+      wm.waves[srcIdx] = sourceWave;
+      wm.waves[tgtIdx] = targetWave;
+    }
+    _syncWaves();
     setState(() {});
   }
 
@@ -1379,10 +1726,14 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         tgtIdx >= wm.waves.length) {
       return;
     }
-    wm.waves[srcIdx] = wm.waves[srcIdx].where((r) => r != rtid).toList();
-    wm.waves[tgtIdx] = [...wm.waves[tgtIdx], rtid];
-    _syncWaves();
-    setState(() {});
+    final sourceIndex = wm.waves[srcIdx].indexOf(rtid);
+    if (sourceIndex < 0) return;
+    _placeWaveEvent(
+      sourceWaveIndex: sourceWaveIndex,
+      sourceIndex: sourceIndex,
+      targetWaveIndex: targetWaveIndex,
+      insertBeforeIndex: null,
+    );
   }
 
   void _smartDeleteEvent(int waveIndex, String rtid) {
@@ -1596,54 +1947,84 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final wm = widget.parsed.waveManager;
     if (wm is! WaveManagerData) return;
     final ctrl = TextEditingController(text: '1');
+    final helperText =
+        l10n?.targetWaveIndexHelper ??
+        'Enter one wave, or a range start-stop (inclusive).\n'
+            'Copy reference skips waves that already have this event.\n'
+            'Deep copy creates a unique copy per wave.';
     showDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.copyEventTarget ?? 'Target wave'),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            labelText: l10n?.targetWaveIndex ?? 'Target wave index',
-          ),
-          keyboardType: TextInputType.number,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(ctx).colorScheme.error,
-            ),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final target = int.tryParse(ctrl.text.trim());
-              Navigator.pop(ctx);
-              if (target == null || target < 1 || target > wm.waves.length) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      l10n?.invalidWaveIndex ?? 'Invalid wave index',
-                    ),
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return AlertDialog(
+          title: Text(l10n?.copyEventTarget ?? 'Target wave'),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: ctrl,
+                  decoration: InputDecoration(
+                    labelText: l10n?.targetWaveIndex ?? 'Target wave number',
+                    hintText: l10n?.targetWaveIndexHint ?? 'e.g. 3 or 1-5',
                   ),
-                );
-                return;
-              }
-              if (newAlias != null) {
-                _performDeepCopy(rtid, newAlias, target);
-              } else {
-                _performCopyReference(rtid, target);
-              }
-              onEditFinished?.call();
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.primary,
-              foregroundColor: Colors.white,
+                  keyboardType: TextInputType.text,
+                  autofocus: true,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  helperText,
+                  softWrap: true,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
-            child: Text(l10n?.copy ?? 'Copy'),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.error,
+              ),
+              child: Text(l10n?.cancel ?? 'Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final targets = parseWaveTargetSpec(
+                  ctrl.text,
+                  wm.waves.length,
+                );
+                Navigator.pop(ctx);
+                if (targets == null || targets.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n?.invalidWaveIndex ?? 'Invalid wave number',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                if (newAlias != null) {
+                  _performDeepCopy(rtid, newAlias, targets);
+                } else {
+                  _performCopyReference(rtid, targets);
+                }
+                onEditFinished?.call();
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(l10n?.copy ?? 'Copy'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -2186,6 +2567,19 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                         },
                         icon: const Icon(Icons.add),
                         label: Text(l10n?.addEvent ?? 'Add event'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          _openReuseExistingEvent(waveIndex);
+                        },
+                        icon: const Icon(Icons.link),
+                        label: Text(
+                          l10n?.reuseExistingEvent ?? 'Reuse event',
+                        ),
                       ),
                     ),
                   ],

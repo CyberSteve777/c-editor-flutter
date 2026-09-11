@@ -1,3 +1,4 @@
+import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/data/mold_colony_module_utils.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -192,5 +193,91 @@ void main() {
     );
     expect(readLunarMineVeinModuleData(level)!.placements, hasLength(2));
     expect(readRadiationMeteorModuleData(level)!.spawnSchedule, hasLength(2));
+  });
+
+  testWidgets('module armrack/Taiji stay on their own preview tabs', (
+    tester,
+  ) async {
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['ArmrackModule'],
+          objClass: 'ArmrackProperties',
+          objData: const <String, dynamic>{
+            'Overrides': [
+              {
+                'wave': 1,
+                'itemList': [
+                  {'mX': 2, 'mY': 1, 'type': 'ArmrackFlag'},
+                ],
+              },
+              {
+                'wave': 3,
+                'itemList': [
+                  {'mX': 4, 'mY': 2, 'type': 'ArmrackTorch'},
+                ],
+              },
+            ],
+          },
+        ),
+        PvzObject(
+          aliases: const ['EnergyGridModule'],
+          objClass: 'EnergyGridProperties',
+          objData: const <String, dynamic>{
+            'Overrides': [
+              {
+                'wave': 1,
+                'itemList': [
+                  {'mX': 0, 'mY': 0},
+                ],
+              },
+              {
+                'wave': 4,
+                'itemList': [
+                  {'mX': 1, 'mY': 1},
+                ],
+              },
+            ],
+          },
+        ),
+      ],
+    );
+    late List<GridPreviewCategoryOption> categories;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: Builder(
+          builder: (context) {
+            categories = collectGridPreviewCategories(
+              context,
+              level,
+              AppLocalizations.of(context)!,
+            );
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(
+      categories.any((category) => category.kind == GridPreviewModuleKind.common),
+      isFalse,
+      reason: 'Module armrack/Taiji should not open Initial grid items',
+    );
+    expect(
+      categories.any((category) => category.kind == GridPreviewModuleKind.armrack),
+      isTrue,
+    );
+    expect(
+      categories.any(
+        (category) => category.kind == GridPreviewModuleKind.energyGrid,
+      ),
+      isTrue,
+    );
+    expect(hasInitialArmrackItems(readArmrackModuleData(level)), isTrue);
+    expect(hasInitialEnergyGridItems(readEnergyGridModuleData(level)), isTrue);
   });
 }

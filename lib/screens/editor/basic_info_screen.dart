@@ -370,6 +370,16 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
                                 StageRepository.getName(stageInfo.alias),
                               );
                             }(), style: theme.textTheme.titleMedium),
+                            if (stageInfo != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                stageInfo.fullString,
+                                softWrap: true,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
