@@ -1949,7 +1949,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final ctrl = TextEditingController(text: '1');
     final helperText =
         l10n?.targetWaveIndexHelper ??
-        'Enter one wave, or a range start-stop (inclusive).\n'
+        'Separate waves or ranges with commas (1, 3, 5-8).\n'
+            'Ranges are inclusive. Default step is 1 if start <= end, otherwise -1.\n'
+            'Add :step after a range (1-10:2, 10-1:-2). Step sign must match the direction.\n'
             'Copy reference skips waves that already have this event.\n'
             'Deep copy creates a unique copy per wave.';
     showDialog<void>(
@@ -1968,7 +1970,8 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                   controller: ctrl,
                   decoration: InputDecoration(
                     labelText: l10n?.targetWaveIndex ?? 'Target wave number',
-                    hintText: l10n?.targetWaveIndexHint ?? 'e.g. 3 or 1-5',
+                    hintText:
+                        l10n?.targetWaveIndexHint ?? 'e.g. 1, 3, 5-8, 10-2:-2',
                   ),
                   keyboardType: TextInputType.text,
                   autofocus: true,

@@ -882,11 +882,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetWaveIndex => 'Target wave number';
 
   @override
-  String get targetWaveIndexHint => 'e.g. 3 or 1-5';
+  String get targetWaveIndexHint => 'e.g. 1, 3, 5-8, 10-2:-2';
 
   @override
   String get targetWaveIndexHelper =>
-      'Enter one wave, or a range start-stop (inclusive).\nCopy reference skips waves that already have this event.\nDeep copy creates a unique copy per wave.';
+      'Separate waves or ranges with commas (1, 3, 5-8).\nRanges are inclusive. Default step is 1 if start <= end, otherwise -1.\nAdd :step after a range (1-10:2, 10-1:-2). Step sign must match the direction.\nCopy reference skips waves that already have this event.\nDeep copy creates a unique copy per wave.';
 
   @override
   String get moveToWaveIndex => 'Move to wave number';
