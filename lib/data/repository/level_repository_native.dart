@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -300,8 +302,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
       final isDir = stat.type == FileSystemEntityType.directory;
       // Hide the reserved plugin store folder from the level browser.
       if (isDir && isReservedLibraryFolderName(name)) continue;
-      final isLevel = !isDir && isSupportedLevelFileName(name);
-      if (isDir || isLevel) {
+      final isVisible = !isDir && isSupportedLibraryFileName(name);
+      if (isDir || isVisible) {
         list.add(
           FileItem(
             name: name,
@@ -566,6 +568,17 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     String content,
   ) async {
     return false;
+  }
+
+  @override
+  Future<Uint8List?> readLibraryFileBytes(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (!await file.exists()) return null;
+      return await file.readAsBytes();
+    } catch (_) {
+      return null;
+    }
   }
 
   @override

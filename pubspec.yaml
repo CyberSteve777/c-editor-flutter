@@ -49,6 +49,8 @@ dependencies:
   intl: ^0.20.2
   nice_downloader: ^1.3.1
   fs_shim: ^2.5.5
+  google_fonts: ^8.2.1
+  flutter_colorpicker: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -87,6 +89,9 @@ flutter:
     - assets/images/tunnels/
     - lib/bundled_plugins/level_preview_cplugin/manifest.json
     - lib/bundled_plugins/level_preview_cplugin/assets/icon.png
+    - lib/bundled_plugins/level_preview_cplugin/assets/stage_banners.json
+    - lib/bundled_plugins/level_preview_cplugin/assets/feature_groups.json
+    - lib/bundled_plugins/level_preview_cplugin/assets/banners/
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/en.arb
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/ru.arb
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/zh.arb
@@ -95,6 +100,11 @@ flutter:
     - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/en.arb
     - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/ru.arb
     - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/zh.arb
+
+  fonts:
+    - family: PvZPreview
+      fonts:
+        - asset: lib/bundled_plugins/level_preview_cplugin/assets/fonts/FBUSV8C5EI.ttf
 
 flutter_launcher_icons:
   android: true

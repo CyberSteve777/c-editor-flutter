@@ -432,7 +432,7 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
       for (final key in childFiles) {
         final fullPath = '$_webPathPrefix$key';
         final name = _leafNameFromWebPath(fullPath);
-        if (!isSupportedLevelFileName(name)) continue;
+        if (!isSupportedLibraryFileName(name)) continue;
         items.add(
           FileItem(
             name: name,
@@ -709,6 +709,13 @@ class LevelRepositoryWebImpl extends LevelRepositoryBase {
   ) async {
     await _putFile(fileName, Uint8List.fromList(utf8.encode(content)));
     return true;
+  }
+
+  @override
+  Future<Uint8List?> readLibraryFileBytes(String filePath) async {
+    await _ensureReady();
+    final key = _relativeFromWebPath(filePath);
+    return _opfs.read(key);
   }
 
   @override

@@ -65,8 +65,17 @@ class LevelRepository {
   static bool isSupportedLevelFileName(String name) =>
       _impl.isSupportedLevelFileName(name);
 
+  static bool isSupportedImageFileName(String name) =>
+      _impl.isSupportedImageFileName(name);
+
+  static bool isSupportedLibraryFileName(String name) =>
+      _impl.isSupportedLibraryFileName(name);
+
   static String baseNameWithoutLevelExtension(String name) =>
       _impl.baseNameWithoutLevelExtension(name);
+
+  static Future<Uint8List?> readLibraryFileBytes(String filePath) =>
+      _impl.readLibraryFileBytes(filePath);
 
   static Future<List<FileItem>> getDirectoryContents(
     String dirPath, {

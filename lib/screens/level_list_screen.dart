@@ -21,6 +21,7 @@ import 'package:c_editor/plugins/plugin_constants.dart';
 import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
+import 'package:c_editor/screens/image_viewer_screen.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/screens/export/export_screen.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
@@ -489,7 +490,18 @@ class _LevelListScreenState extends State<LevelListScreen> {
       allowMultiple: true,
       withData: true,
       type: FileType.custom,
-      allowedExtensions: ['json', 'hujson', 'rton', 'smf'],
+      allowedExtensions: [
+        'json',
+        'hujson',
+        'rton',
+        'smf',
+        'png',
+        'jpg',
+        'jpeg',
+        'webp',
+        'gif',
+        'bmp',
+      ],
       dialogTitle: l10n.importFiles,
     );
     if (result == null || result.files.isEmpty || !mounted) return;
@@ -1923,6 +1935,20 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                           } else {
                                             if (item.isDirectory) {
                                               _navigateToFolder(item);
+                                            } else if (LevelRepository
+                                                .isSupportedImageFileName(
+                                              item.name,
+                                            )) {
+                                              if (!mounted) return;
+                                              await Navigator.of(context).push(
+                                                MaterialPageRoute<void>(
+                                                  builder: (_) =>
+                                                      ImageViewerScreen(
+                                                        fileName: item.name,
+                                                        filePath: item.path,
+                                                      ),
+                                                ),
+                                              );
                                             } else {
                                               final returnScrollOffset =
                                                   _listScrollController
@@ -2096,11 +2122,20 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                 item.isDirectory ||
                                                 item.name
                                                     .toLowerCase()
-                                                    .endsWith('.smf')
+                                                    .endsWith('.smf') ||
+                                                LevelRepository
+                                                    .isSupportedImageFileName(
+                                                      item.name,
+                                                    )
                                             ? null
                                             : () => _showConvertMenuFor(item),
                                         onToggleFavorite:
-                                            actionsDisabled || item.isDirectory
+                                            actionsDisabled ||
+                                                item.isDirectory ||
+                                                LevelRepository
+                                                    .isSupportedImageFileName(
+                                                      item.name,
+                                                    )
                                             ? null
                                             : () => _toggleFavorite(item),
                                         onShare:
@@ -3278,6 +3313,9 @@ class _FileItemRow extends StatelessWidget {
         !item.isDirectory && item.name.toLowerCase().endsWith('.smf');
     final isRsbSmf =
         !item.isDirectory && item.name.toLowerCase().endsWith('.rsb.smf');
+    final isImageFile =
+        !item.isDirectory &&
+        LevelRepository.isSupportedImageFileName(item.name);
 
     final displayName = item.isDirectory
         ? item.name
@@ -3324,13 +3362,17 @@ class _FileItemRow extends StatelessWidget {
                           ? Icons.folder
                           : (isResourceFile
                                 ? Icons.inventory_2_outlined
-                                : Icons.description),
+                                : (isImageFile
+                                      ? Icons.image_outlined
+                                      : Icons.description)),
                       size: iconSize,
                       color: item.isDirectory
                           ? const Color(0xFFFFC107)
                           : (isResourceFile
                                 ? Colors.blueGrey
-                                : theme.colorScheme.primary),
+                                : (isImageFile
+                                      ? Colors.teal
+                                      : theme.colorScheme.primary)),
                     ),
                   ),
                   SizedBox(width: gap),

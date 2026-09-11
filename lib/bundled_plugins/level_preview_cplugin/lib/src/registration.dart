@@ -7,6 +7,7 @@ import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/active_editor_session.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_dialog.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_settings_screen.dart';
 
 /// Built-in level preview plugin id (must match `manifest.json`).
 const kLevelPreviewPluginId = 'team.international2c.level_preview';
@@ -39,6 +40,12 @@ void registerLevelPreview(CPluginHost host) {
     CPluginUiSlots.editorOverflow,
     (context) => host.openLevelPreview(context),
     eye,
+  );
+
+  host.registerScreen(
+    'preview_settings',
+    'previewSettings',
+    (context) => PreviewSettingsScreen(host: host),
   );
 }
 

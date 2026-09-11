@@ -18,6 +18,7 @@ import 'package:c_editor/data/armrack_type_catalog.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_widgets.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_generator_screen.dart';
 import 'package:c_editor/widgets/lawn_grid.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -58,6 +59,25 @@ class LevelPreviewDialog extends StatefulWidget {
 class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   String _p(String key, [String? fallback]) =>
       widget.host.localize(context, key, fallback ?? key);
+
+  Future<void> _openPreviewGenerator(BuildContext context) async {
+    final style = await showPreviewLayoutStyleDialog(
+      context: context,
+      t: _p,
+    );
+    if (style == null || !context.mounted) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => PreviewGeneratorScreen(
+          host: widget.host,
+          levelFile: widget.levelFile,
+          parsed: widget.parsed,
+          fileName: widget.fileName,
+          initialStyle: style,
+        ),
+      ),
+    );
+  }
 
   int _prePlacedTabIndex = 0;
   int _plantTypeIndex = 0;
@@ -299,10 +319,10 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children:
                 [
-                  Stack(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 48),
+                      Expanded(
                         child: Text(
                           '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
                           style: theme.textTheme.headlineSmall?.copyWith(
@@ -310,15 +330,25 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                           ),
                         ),
                       ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: widget.onBack,
-                          tooltip: l10n.back,
-                          visualDensity: VisualDensity.compact,
+                      TextButton.icon(
+                        onPressed: () => _openPreviewGenerator(context),
+                        icon: const Icon(Icons.image_outlined, size: 20),
+                        label: Text(
+                          _p(
+                            'previewGenerateImagePreview',
+                            'Generate image preview',
+                          ),
                         ),
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: widget.onBack,
+                        tooltip: l10n.back,
+                        visualDensity: VisualDensity.compact,
                       ),
                     ],
                   ),
