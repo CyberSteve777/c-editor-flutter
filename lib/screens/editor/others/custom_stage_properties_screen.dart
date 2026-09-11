@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
@@ -155,6 +156,7 @@ class _CustomStagePropertiesScreenState
       objclass: _objclass,
       template: _template,
     );
+    _stageObj!.objClass = _objclass;
     _stageObj!.objData = _objdata;
     if (renameAlias) {
       _stageObj!.aliases =
@@ -181,12 +183,27 @@ class _CustomStagePropertiesScreenState
         }
       }
     }
+    _syncDeepSeaBoardTypeIfActive();
     _stageBaseOption = StageCatalogRepository.stageBaseOptionForObjdata(
       objclass: _objclass,
       objdata: _objdata,
     );
     widget.onChanged();
     setState(() {});
+  }
+
+  void _syncDeepSeaBoardTypeIfActive() {
+    final levelDefObj = widget.levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'LevelDefinition',
+    );
+    if (levelDefObj?.objData is! Map) return;
+    final levelDef = LevelDefinitionData.fromJson(
+      Map<String, dynamic>.from(levelDefObj!.objData as Map),
+    );
+    final info = RtidParser.parse(levelDef.stageModule);
+    if (info?.source != CustomStageLevelUtils.currentLevel) return;
+    if (info?.alias != _alias && info?.alias != widget.alias) return;
+    LevelParser.syncDeepSeaBoardType(levelDef, widget.levelFile);
   }
 
   void _setResourceGroups(List<String> values) {

@@ -76,6 +76,7 @@ class EditorCubit extends Cubit<EditorState> {
     if (isClosed) return;
     if (level != null) {
       FinalStageTimeLimitedModuleUtils.normalizeForLevelModulesOnly(level);
+      _normalizeDeepSeaBoardType(level);
       _savedLevelSnapshot = _snapshotLevel(level);
       final parsed = LevelParser.parseLevel(level);
       final tabs = _computeAvailableTabs(level, parsed);
@@ -203,6 +204,12 @@ class EditorCubit extends Cubit<EditorState> {
   static Map<String, dynamic> _snapshotLevel(PvzLevelFile level) =>
       jsonDecode(jsonEncode(level.toJson())) as Map<String, dynamic>;
 
+  static void _normalizeDeepSeaBoardType(PvzLevelFile level) {
+    final def = LevelParser.parseLevel(level).levelDef;
+    if (def == null) return;
+    LevelParser.syncDeepSeaBoardType(def, level);
+  }
+
   bool _levelDiffersFromSaved(PvzLevelFile level) {
     final saved = _savedLevelSnapshot;
     return saved == null || !_levelEquality.equals(level.toJson(), saved);
@@ -227,6 +234,7 @@ class EditorCubit extends Cubit<EditorState> {
   /// Pass false after a successful disk write that already matches [newLevel].
   void applyLevelFile(PvzLevelFile newLevel, {bool markDirty = true}) {
     if (isClosed) return;
+    _normalizeDeepSeaBoardType(newLevel);
     final lf = state.levelFile;
     if (lf == null) {
       final parsed = LevelParser.parseLevel(newLevel);

@@ -72,6 +72,7 @@ class GridItemRepository {
     'ArmrackHammer': 'ArmrackHammer.webp',
     'ArmrackNunchaku': 'ArmrackNunchaku.webp',
     'ArmrackTorch': 'ArmrackTorch.webp',
+    'energyGrid': 'energyGrid.webp',
     'lunar_mine_vein': 'lunar_mine_vein.webp',
     'radiation_meteor_ore': 'radiation_meteor_ore.webp',
     'SmokeManhole': 'SmokeManhole.webp',

@@ -892,6 +892,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get targetWaveIndex => 'Номер целевой волны';
 
   @override
+  String get targetWaveIndexHint => 'напр. 3 или 1-5';
+
+  @override
+  String get targetWaveIndexHelper =>
+      'Укажите одну волну или диапазон start-stop (включительно).\nКопирование ссылки пропускает волны, где событие уже есть.\nГлубокая копия создаёт уникальную копию для каждой волны.';
+
+  @override
   String get moveToWaveIndex => 'Переместить в волну №';
 
   @override
@@ -1608,15 +1615,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveTimelineGuideBody =>
-      'Свайп вправо: управление событиями волны\nСвайп влево: удалить волну\nНажмите на очки: ожидание по зомби';
+      'Свайп вправо: управление событиями волны\nДолгое нажатие на событие: переставить или перетащить в другую волну\nНажмите на очки: ожидание по зомби';
 
   @override
   String get waveTimelineGuideBodyDesktop =>
-      'Клик левой кнопокой мыши по волне: управление событиями\nКнопка удаления: убрать волну\nКлик по очкам: ожидание по зомби';
+      'Клик левой кнопкой мыши по волне: управление событиями\nДолгое нажатие на событие: переставить или перетащить в другую волну\nКлик по очкам: ожидание по зомби';
 
   @override
   String get waveTimelineGuideBodyMobile =>
-      'Свайп вправо: управление событиями волны\nСвайп влево: удалить волну\nНажмите на очки: ожидание по зомби';
+      'Свайп вправо: управление событиями волны\nДолгое нажатие на событие: переставить или перетащить в другую волну\nНажмите на очки: ожидание по зомби';
 
   @override
   String get waveDeadLinksTitle => 'Неверные ссылки';
@@ -1735,14 +1742,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get waveEmptyRowHint => 'Пустая волна (свайп влево/вправо)';
+  String get waveEmptyRowHint =>
+      'Пустая волна (свайп для управления, можно перетащить)';
 
   @override
   String get waveEmptyRowHintDesktop =>
-      'Пустая волна (щёлкните для управления)';
+      'Пустая волна (щёлкните для управления, можно перетащить)';
 
   @override
-  String get waveEmptyRowHintMobile => 'Пустая волна (свайп влево/вправо)';
+  String get waveEmptyRowHintMobile =>
+      'Пустая волна (свайп для управления, можно перетащить)';
 
   @override
   String get removeFromWave => 'Удалить из волны';
@@ -1903,6 +1912,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get addEvent => 'Добавить событие';
+
+  @override
+  String get reuseExistingEvent => 'Переиспользовать';
+
+  @override
+  String reuseExistingEventForWave(int wave) {
+    return 'Переиспользовать событие для волны $wave';
+  }
+
+  @override
+  String get reuseExistingEventEmpty => 'В уровне пока нет событий';
+
+  @override
+  String get reuseExistingEventUnused => 'Не используется ни в одной волне';
+
+  @override
+  String reuseExistingEventUsedInWaves(String waves) {
+    return 'Волны: $waves';
+  }
 
   @override
   String get emptyWave => 'Пустая волна';

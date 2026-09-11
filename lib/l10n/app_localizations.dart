@@ -1672,6 +1672,18 @@ abstract class AppLocalizations {
   /// **'Target wave number'**
   String get targetWaveIndex;
 
+  /// No description provided for @targetWaveIndexHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 3 or 1-5'**
+  String get targetWaveIndexHint;
+
+  /// No description provided for @targetWaveIndexHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one wave, or a range start-stop (inclusive).\nCopy reference skips waves that already have this event.\nDeep copy creates a unique copy per wave.'**
+  String get targetWaveIndexHelper;
+
   /// No description provided for @moveToWaveIndex.
   ///
   /// In en, this message translates to:
@@ -3007,19 +3019,19 @@ abstract class AppLocalizations {
   /// No description provided for @waveTimelineGuideBody.
   ///
   /// In en, this message translates to:
-  /// **'Swipe right: Manage wave events\nSwipe left: Delete a wave\nTap points: View spawn expectations'**
+  /// **'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations'**
   String get waveTimelineGuideBody;
 
   /// No description provided for @waveTimelineGuideBodyDesktop.
   ///
   /// In en, this message translates to:
-  /// **'Left-click a wave: Manage wave events\nClick delete: Remove a wave\nClick points: View spawn expectations'**
+  /// **'Left-click a wave: Manage wave events\nLong-press an event: Drag to reorder or move waves\nClick points: View spawn expectations'**
   String get waveTimelineGuideBodyDesktop;
 
   /// No description provided for @waveTimelineGuideBodyMobile.
   ///
   /// In en, this message translates to:
-  /// **'Swipe right: Manage wave events\nSwipe left: Delete a wave\nTap points: View spawn expectations'**
+  /// **'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations'**
   String get waveTimelineGuideBodyMobile;
 
   /// No description provided for @waveDeadLinksTitle.
@@ -3211,19 +3223,19 @@ abstract class AppLocalizations {
   /// No description provided for @waveEmptyRowHint.
   ///
   /// In en, this message translates to:
-  /// **'Empty wave (swipe left/right)'**
+  /// **'Empty wave (swipe to manage, drop events here)'**
   String get waveEmptyRowHint;
 
   /// No description provided for @waveEmptyRowHintDesktop.
   ///
   /// In en, this message translates to:
-  /// **'Empty wave (click to manage)'**
+  /// **'Empty wave (click to manage, drop events here)'**
   String get waveEmptyRowHintDesktop;
 
   /// No description provided for @waveEmptyRowHintMobile.
   ///
   /// In en, this message translates to:
-  /// **'Empty wave (swipe left/right)'**
+  /// **'Empty wave (swipe to manage, drop events here)'**
   String get waveEmptyRowHintMobile;
 
   /// No description provided for @removeFromWave.
@@ -3495,6 +3507,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add event'**
   String get addEvent;
+
+  /// No description provided for @reuseExistingEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reuse event'**
+  String get reuseExistingEvent;
+
+  /// No description provided for @reuseExistingEventForWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Reuse event for wave {wave}'**
+  String reuseExistingEventForWave(int wave);
+
+  /// No description provided for @reuseExistingEventEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No events in this level yet'**
+  String get reuseExistingEventEmpty;
+
+  /// No description provided for @reuseExistingEventUnused.
+  ///
+  /// In en, this message translates to:
+  /// **'Not used in any wave'**
+  String get reuseExistingEventUnused;
+
+  /// No description provided for @reuseExistingEventUsedInWaves.
+  ///
+  /// In en, this message translates to:
+  /// **'Waves: {waves}'**
+  String reuseExistingEventUsedInWaves(String waves);
 
   /// No description provided for @emptyWave.
   ///

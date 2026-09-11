@@ -795,12 +795,10 @@ class _EditorScreenState extends State<EditorScreen> {
 
     if (wasActive) {
       levelDef.stageModule = CustomStageLevelUtils.defaultBuiltinStageRtid;
-      for (final o in _ec.state.levelFile!.objects) {
-        if (o.objClass == 'LevelDefinition') {
-          o.objData = levelDef.toJson();
-          break;
-        }
-      }
+      LevelParser.syncAndWriteLevelDefinition(
+        levelDef,
+        _ec.state.levelFile!,
+      );
     }
     _markDirty();
     return true;
@@ -868,12 +866,7 @@ class _EditorScreenState extends State<EditorScreen> {
       baseOption: baseOption!,
     );
     levelDef.stageModule = rtid;
-    for (final o in _ec.state.levelFile!.objects) {
-      if (o.objClass == 'LevelDefinition') {
-        o.objData = levelDef.toJson();
-        break;
-      }
-    }
+    LevelParser.syncAndWriteLevelDefinition(levelDef, _ec.state.levelFile!);
     _markDirty();
     onStagePicked?.call();
     await _handleEditCustomStage(alias);
@@ -911,12 +904,7 @@ class _EditorScreenState extends State<EditorScreen> {
       prepend: true,
     );
     levelDef.stageModule = rtid;
-    for (final o in levelFile.objects) {
-      if (o.objClass == 'LevelDefinition') {
-        o.objData = levelDef.toJson();
-        break;
-      }
-    }
+    LevelParser.syncAndWriteLevelDefinition(levelDef, levelFile);
 
     final stageObj = CustomStageLevelUtils.findStageObject(levelFile, alias);
     if (stageObj != null) {
@@ -970,12 +958,10 @@ class _EditorScreenState extends State<EditorScreen> {
             );
             if (levelDef.stageModule != rtid) {
               levelDef.stageModule = rtid;
-              for (final o in _ec.state.levelFile!.objects) {
-                if (o.objClass == 'LevelDefinition') {
-                  o.objData = levelDef.toJson();
-                  break;
-                }
-              }
+              LevelParser.syncAndWriteLevelDefinition(
+                levelDef,
+                _ec.state.levelFile!,
+              );
               _markDirty();
               onStagePicked?.call();
             }
@@ -1061,12 +1047,10 @@ class _EditorScreenState extends State<EditorScreen> {
               }
             }
             levelDef.stageModule = newRtid;
-            for (final o in _ec.state.levelFile!.objects) {
-              if (o.objClass == 'LevelDefinition') {
-                o.objData = levelDef.toJson();
-                break;
-              }
-            }
+            LevelParser.syncAndWriteLevelDefinition(
+              levelDef,
+              _ec.state.levelFile!,
+            );
             _markDirty();
             onStagePicked?.call();
             if (!stageRouteContext.mounted) return;

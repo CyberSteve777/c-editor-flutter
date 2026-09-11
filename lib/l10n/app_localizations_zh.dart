@@ -863,6 +863,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get targetWaveIndex => '目标波次序号';
 
   @override
+  String get targetWaveIndexHint => '例如 3 或 1-5';
+
+  @override
+  String get targetWaveIndexHelper =>
+      '输入单个波次，或起止范围（含两端）。\n复制引用会跳过已有该事件的波次。\n深拷贝会为每个波次生成唯一副本。';
+
+  @override
   String get moveToWaveIndex => '移动至波次序号';
 
   @override
@@ -1562,14 +1569,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveTimelineGuideTitle => '操作指引';
 
   @override
-  String get waveTimelineGuideBody => '右滑：管理波次事件\n左滑：删除波次\n点击点数：查看点数出怪期望';
+  String get waveTimelineGuideBody =>
+      '右滑：管理波次事件\n长按事件：拖动排序或移到其他波次\n点击点数：查看点数出怪期望';
 
   @override
   String get waveTimelineGuideBodyDesktop =>
-      '左键点击波次：管理事件\n点击删除按钮：移除波次\n点击点数：查看点数出怪期望';
+      '左键点击波次：管理事件\n长按事件：拖动排序或移到其他波次\n点击点数：查看点数出怪期望';
 
   @override
-  String get waveTimelineGuideBodyMobile => '右滑：管理波次事件\n左滑：删除波次\n点击点数：查看点数出怪期望';
+  String get waveTimelineGuideBodyMobile =>
+      '右滑：管理波次事件\n长按事件：拖动排序或移到其他波次\n点击点数：查看点数出怪期望';
 
   @override
   String get waveDeadLinksTitle => '引用失效报警';
@@ -1682,13 +1691,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get waveEmptyRowHint => '空波次 (左右划操作)';
+  String get waveEmptyRowHint => '空波次 (滑动管理，可拖入事件)';
 
   @override
-  String get waveEmptyRowHintDesktop => '空波次 (点击管理)';
+  String get waveEmptyRowHintDesktop => '空波次 (点击管理，可拖入事件)';
 
   @override
-  String get waveEmptyRowHintMobile => '空波次 (左右划操作)';
+  String get waveEmptyRowHintMobile => '空波次 (滑动管理，可拖入事件)';
 
   @override
   String get removeFromWave => '从波次移除';
@@ -1841,6 +1850,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get addEvent => '添加事件';
+
+  @override
+  String get reuseExistingEvent => '复用事件';
+
+  @override
+  String reuseExistingEventForWave(int wave) {
+    return '为第 $wave 波复用事件';
+  }
+
+  @override
+  String get reuseExistingEventEmpty => '关卡中还没有事件';
+
+  @override
+  String get reuseExistingEventUnused => '未加入任何波次';
+
+  @override
+  String reuseExistingEventUsedInWaves(String waves) {
+    return '波次：$waves';
+  }
 
   @override
   String get emptyWave => '空波次';

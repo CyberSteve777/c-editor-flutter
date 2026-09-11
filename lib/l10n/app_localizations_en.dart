@@ -882,6 +882,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetWaveIndex => 'Target wave number';
 
   @override
+  String get targetWaveIndexHint => 'e.g. 3 or 1-5';
+
+  @override
+  String get targetWaveIndexHelper =>
+      'Enter one wave, or a range start-stop (inclusive).\nCopy reference skips waves that already have this event.\nDeep copy creates a unique copy per wave.';
+
+  @override
   String get moveToWaveIndex => 'Move to wave number';
 
   @override
@@ -1596,15 +1603,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveTimelineGuideBody =>
-      'Swipe right: Manage wave events\nSwipe left: Delete a wave\nTap points: View spawn expectations';
+      'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
 
   @override
   String get waveTimelineGuideBodyDesktop =>
-      'Left-click a wave: Manage wave events\nClick delete: Remove a wave\nClick points: View spawn expectations';
+      'Left-click a wave: Manage wave events\nLong-press an event: Drag to reorder or move waves\nClick points: View spawn expectations';
 
   @override
   String get waveTimelineGuideBodyMobile =>
-      'Swipe right: Manage wave events\nSwipe left: Delete a wave\nTap points: View spawn expectations';
+      'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
 
   @override
   String get waveDeadLinksTitle => 'Broken References';
@@ -1722,13 +1729,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get waveEmptyRowHint => 'Empty wave (swipe left/right)';
+  String get waveEmptyRowHint =>
+      'Empty wave (swipe to manage, drop events here)';
 
   @override
-  String get waveEmptyRowHintDesktop => 'Empty wave (click to manage)';
+  String get waveEmptyRowHintDesktop =>
+      'Empty wave (click to manage, drop events here)';
 
   @override
-  String get waveEmptyRowHintMobile => 'Empty wave (swipe left/right)';
+  String get waveEmptyRowHintMobile =>
+      'Empty wave (swipe to manage, drop events here)';
 
   @override
   String get removeFromWave => 'Remove from wave';
@@ -1889,6 +1899,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addEvent => 'Add event';
+
+  @override
+  String get reuseExistingEvent => 'Reuse event';
+
+  @override
+  String reuseExistingEventForWave(int wave) {
+    return 'Reuse event for wave $wave';
+  }
+
+  @override
+  String get reuseExistingEventEmpty => 'No events in this level yet';
+
+  @override
+  String get reuseExistingEventUnused => 'Not used in any wave';
+
+  @override
+  String reuseExistingEventUsedInWaves(String waves) {
+    return 'Waves: $waves';
+  }
 
   @override
   String get emptyWave => 'Empty wave';

@@ -14,6 +14,7 @@ class LevelDefinitionData extends PvzModel {
     this.ambientAudioSuffix = '',
     this.disablePeavine,
     this.isArtifactDisabled,
+    this.boardType,
     this.modules = const [],
   });
 
@@ -29,11 +30,14 @@ class LevelDefinitionData extends PvzModel {
   String ambientAudioSuffix;
   bool? disablePeavine;
   bool? isArtifactDisabled;
+  /// Deep-sea lawns require `"submarine"` so row 6 stays plantable.
+  String? boardType;
   List<String> modules;
 
   factory LevelDefinitionData.fromJson(Map<String, dynamic> json) {
     final mods = json['Modules'] as List<dynamic>? ?? [];
     final rawMusicType = json['MusicType'] as String?;
+    final rawBoardType = json['BoardType'] as String?;
     return LevelDefinitionData(
       name: json['Name'] as String? ?? '',
       levelNumber: json['LevelNumber'] as int?,
@@ -50,6 +54,9 @@ class LevelDefinitionData extends PvzModel {
       ambientAudioSuffix: json['AmbientAudioSuffix'] as String? ?? '',
       disablePeavine: json['DisablePeavine'] as bool?,
       isArtifactDisabled: json['IsArtifactDisabled'] as bool?,
+      boardType: (rawBoardType == null || rawBoardType.isEmpty)
+          ? null
+          : rawBoardType,
       modules: mods.cast<String>(),
     );
   }
@@ -67,6 +74,7 @@ class LevelDefinitionData extends PvzModel {
     if (ambientAudioSuffix.isNotEmpty) 'AmbientAudioSuffix': ambientAudioSuffix,
     if (disablePeavine != null) 'DisablePeavine': disablePeavine,
     if (isArtifactDisabled != null) 'IsArtifactDisabled': isArtifactDisabled,
+    if (boardType != null && boardType!.isNotEmpty) 'BoardType': boardType,
     'Modules': modules,
   };
 }
