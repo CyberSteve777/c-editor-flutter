@@ -373,11 +373,9 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
                             if (stageInfo != null) ...[
                               const SizedBox(height: 2),
                               Text(
-                                stageInfo.fullString,
+                                '${stageInfo.alias}@${stageInfo.source}',
                                 softWrap: true,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: theme.textTheme.bodySmall,
                               ),
                             ],
                           ],
