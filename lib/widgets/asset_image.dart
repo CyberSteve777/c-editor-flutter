@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Supported image extensions: png, jpg, gif (gif files play animation).
-const List<String> kImageExtensions = ['.gif', '.png', '.jpg', '.webp'];
+const List<String> kImageExtensions = [
+  '.gif',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.webp',
+  '.bmp',
+];
 
 /// Returns alternate asset paths for fallback when primary path fails.
 /// Prefers .gif first so animated icons display correctly.

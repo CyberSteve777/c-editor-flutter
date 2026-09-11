@@ -71,7 +71,7 @@ class FileItem {
   final int size;
   final bool isFavorite;
 
-  /// Rank for file type sorting: SMF (0) -> JSON (1) -> RTON (2) -> HUJSON (3) -> Other (4)
+  /// Rank for file type sorting: SMF (0) -> JSON (1) -> RTON (2) -> HUJSON (3) -> image (4) -> Other (5)
   int get extensionRank {
     if (isDirectory) return -1;
     final lower = name.toLowerCase();
@@ -79,7 +79,8 @@ class FileItem {
     if (lower.endsWith('.json')) return 1;
     if (lower.endsWith('.rton')) return 2;
     if (lower.endsWith('.hujson')) return 3;
-    return 4;
+    if (LevelRepositoryBase.imageExtensions.any(lower.endsWith)) return 4;
+    return 5;
   }
 }
 
@@ -93,6 +94,15 @@ abstract class LevelRepositoryBase {
     '.zlib',
     '.bin',
     '.smf',
+  };
+
+  static const Set<String> imageExtensions = {
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.webp',
+    '.gif',
+    '.bmp',
   };
 
   Future<String?> getSavedFolderPath();
@@ -151,6 +161,7 @@ abstract class LevelRepositoryBase {
   Future<bool> prepareInternalCache(String sourcePath, String fileName);
   Future<bool> prepareInternalCacheFromBytes(String fileName, List<int> bytes);
   Future<bool> prepareInternalCacheFromString(String fileName, String content);
+  Future<Uint8List?> readLibraryFileBytes(String filePath);
   Future<PvzLevelFile?> loadLevel(String fileName);
   Future<PvzLevelFile?> loadLevelFromPath(String filePath);
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData);
@@ -295,6 +306,14 @@ abstract class LevelRepositoryBase {
     }
     return levelExtensions.any(lower.endsWith);
   }
+
+  bool isSupportedImageFileName(String name) {
+    final lower = name.toLowerCase();
+    return imageExtensions.any(lower.endsWith);
+  }
+
+  bool isSupportedLibraryFileName(String name) =>
+      isSupportedLevelFileName(name) || isSupportedImageFileName(name);
 
   String baseNameWithoutLevelExtension(String name) {
     final lower = name.toLowerCase();

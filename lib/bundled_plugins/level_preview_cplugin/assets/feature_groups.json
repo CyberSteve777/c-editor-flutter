@@ -1,0 +1,143 @@
+{
+  "featuresPrefixKey": "previewFeaturesPrefix",
+  "groups": [
+    {
+      "id": "vasebreaker",
+      "nameKey": "previewFeature_vasebreaker",
+      "objClasses": [
+        "VaseBreakerPresetProperties",
+        "VaseBreakerArcadeModuleProperties",
+        "VaseBreakerFlowModuleProperties"
+      ]
+    },
+    {
+      "id": "zomboss_mech",
+      "nameKey": "previewFeature_zomboss_mech",
+      "titleObjClass": "ZombossBattleModuleProperties",
+      "objClasses": [
+        "ZombossBattleModuleProperties",
+        "ZombossBattleIntroProperties"
+      ]
+    },
+    {
+      "id": "zomboss_non_mech",
+      "nameKey": "previewFeature_zomboss_non_mech",
+      "titleObjClass": "ZombossLastStandMinigameProperties",
+      "objClasses": ["ZombossLastStandMinigameProperties"]
+    },
+    {
+      "id": "conveyor",
+      "nameKey": "previewFeature_conveyor",
+      "titleObjClass": "ConveyorSeedBankProperties",
+      "objClasses": ["ConveyorSeedBankProperties"]
+    },
+    {
+      "id": "single_handed",
+      "nameKey": "previewFeature_single_handed",
+      "titleObjClass": "SingleHandedProperties",
+      "objClasses": [
+        "SingleHandedProperties",
+        "IntroSingleHandedProperties"
+      ]
+    },
+    {
+      "id": "last_stand",
+      "nameKey": "previewFeature_last_stand",
+      "titleObjClass": "LastStandMinigameProperties",
+      "objClasses": ["LastStandMinigameProperties"]
+    },
+    {
+      "id": "cowboy",
+      "nameKey": "previewFeature_cowboy",
+      "titleObjClass": "CowboyMinigameProperties",
+      "objClasses": ["CowboyMinigameProperties"]
+    },
+    {
+      "id": "powder_keg",
+      "nameKey": "previewFeature_powder_keg",
+      "titleObjClass": "BombProperties",
+      "objClasses": ["BombProperties"]
+    },
+    {
+      "id": "sun_bombs",
+      "nameKey": "previewFeature_sun_bombs",
+      "titleObjClass": "SunBombChallengeProperties",
+      "objClasses": ["SunBombChallengeProperties"]
+    },
+    {
+      "id": "evil_dave",
+      "nameKey": "previewFeature_evil_dave",
+      "titleObjClass": "EvilDaveProperties",
+      "objClasses": ["EvilDaveProperties"]
+    },
+    {
+      "id": "bulb_bowling",
+      "nameKey": "previewFeature_bulb_bowling",
+      "titleObjClass": "BowlingMinigameProperties",
+      "objClasses": ["BowlingMinigameProperties"]
+    },
+    {
+      "id": "wallnut_bowling",
+      "nameKey": "previewFeature_wallnut_bowling",
+      "titleObjClass": "NewBowlingMinigameProperties",
+      "objClasses": ["NewBowlingMinigameProperties"]
+    },
+    {
+      "id": "seed_rain",
+      "nameKey": "previewFeature_seed_rain",
+      "titleObjClass": "SeedRainProperties",
+      "objClasses": ["SeedRainProperties"]
+    },
+    {
+      "id": "zombie_sun_drop",
+      "nameKey": "previewFeature_zombie_sun_drop",
+      "titleObjClass": "LevelMutatorRiftTimedSunProps",
+      "objClasses": ["LevelMutatorRiftTimedSunProps"]
+    },
+    {
+      "id": "overwhelm",
+      "nameKey": "previewFeature_overwhelm",
+      "titleObjClass": "PVZ1OverwhelmModuleProperties",
+      "objClasses": ["PVZ1OverwhelmModuleProperties"]
+    },
+    {
+      "id": "copycats",
+      "nameKey": "previewFeature_copycats",
+      "titleObjClass": "PVZ1CopycatsModuleProperties",
+      "objClasses": ["PVZ1CopycatsModuleProperties"]
+    },
+    {
+      "id": "inflation",
+      "nameKey": "previewFeature_inflation",
+      "titleObjClass": "IncreasedCostModuleProperties",
+      "objClasses": ["IncreasedCostModuleProperties"]
+    },
+    {
+      "id": "death_craters",
+      "nameKey": "previewFeature_death_craters",
+      "titleObjClass": "DeathHoleModuleProperties",
+      "objClasses": ["DeathHoleModuleProperties"]
+    },
+    {
+      "id": "portal_combat",
+      "nameKey": "previewFeature_portal_combat",
+      "titleObjClass": "PVZ1PassageModuleProperties",
+      "objClasses": ["PVZ1PassageModuleProperties"]
+    },
+    {
+      "id": "fast_entry",
+      "nameKey": "previewFeature_fast_entry",
+      "titleObjClass": "ZombieMoveFastModuleProperties",
+      "objClasses": ["ZombieMoveFastModuleProperties"]
+    },
+    {
+      "id": "level_timer",
+      "nameKey": "previewFeature_level_timer",
+      "titleObjClass": "ZombieRushModuleProperties",
+      "objClasses": ["ZombieRushModuleProperties"]
+    }
+  ],
+  "excludeObjClasses": [
+    "PickupCollectableTutorialProperties"
+  ]
+}
