@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
+import 'package:c_editor/data/registry/module_registry.dart';
 
 typedef PreviewLabelLookup = String Function(String key, String fallback);
 typedef PreviewModuleTitleLookup = String Function(String objClass);
@@ -116,6 +117,35 @@ class PreviewFeatureGroups {
     );
   }
 
+  /// Special Modes ([ModuleCategory.mode]) first, then base → scene → gimmick.
+  /// Within each category, preserves relative order from [objClasses].
+  static List<String> sortObjClassesByCategory(Iterable<String> objClasses) {
+    final unique = <String>[];
+    final seen = <String>{};
+    for (final oc in objClasses) {
+      if (oc.isEmpty) continue;
+      if (seen.add(oc)) unique.add(oc);
+    }
+
+    ModuleCategory categoryOf(String oc) =>
+        ModuleRegistry.getMetadata(oc).category;
+
+    final out = <String>[];
+    for (final oc in unique) {
+      if (categoryOf(oc) == ModuleCategory.mode) out.add(oc);
+    }
+    for (final cat in const [
+      ModuleCategory.base,
+      ModuleCategory.scene,
+      ModuleCategory.gimmick,
+    ]) {
+      for (final oc in unique) {
+        if (categoryOf(oc) == cat) out.add(oc);
+      }
+    }
+    return out;
+  }
+
   String _groupLabel(
     PreviewFeatureGroup group, {
     PreviewLabelLookup? localize,
@@ -171,7 +201,7 @@ class PreviewFeatureGroups {
       claimed.addAll(group.objClasses);
     }
 
-    for (final oc in present) {
+    for (final oc in sortObjClassesByCategory(presentObjClasses)) {
       if (excludeObjClasses.contains(oc)) continue;
       if (claimed.contains(oc)) continue;
       if (moduleTitle != null) {
@@ -184,14 +214,14 @@ class PreviewFeatureGroups {
     return labels;
   }
 
-  /// First feature from [orderedObjClasses] (level definition order).
+  /// First feature from [orderedObjClasses] (Special Modes first, then others).
   String? firstFeatureLabel(
     Iterable<String> orderedObjClasses, {
     PreviewLabelLookup? localize,
     PreviewModuleTitleLookup? moduleTitle,
   }) {
     final claimed = <String>{};
-    for (final oc in orderedObjClasses) {
+    for (final oc in sortObjClassesByCategory(orderedObjClasses)) {
       if (excludeObjClasses.contains(oc)) continue;
       if (claimed.contains(oc)) continue;
       for (final group in groups) {

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
+import 'package:c_editor/data/repository/stage_repository.dart';
 
 /// Resolves stage / custom-stage aliases to banner asset paths.
 class StageBannerResolver {
@@ -71,4 +73,91 @@ class StageBannerResolver {
     final stems = <String>{_defaultStem, ..._stages.values};
     return stems.toList()..sort();
   }
+
+  /// Stage aliases that map to [stem] (e.g. EgyptStage → Egypt).
+  List<String> aliasesForStem(String stem) {
+    final out = <String>[];
+    for (final e in _stages.entries) {
+      if (e.value == stem) out.add(e.key);
+    }
+    out.sort();
+    return out;
+  }
+
+  /// Round icon under assets/images/round_icons (uses Stages_tags icon names).
+  /// Unknown / default stem always uses the shared question-mark icon.
+  String roundIconAssetForStem(String stem) {
+    if (_isUnknownStem(stem)) {
+      return 'assets/images/others/unknown.webp';
+    }
+    final aliases = aliasesForStem(stem);
+    for (final alias in aliases) {
+      final icon = StageRepository.allItems
+          .firstWhereOrNull((s) => s.alias == alias)
+          ?.iconName;
+      if (icon != null && icon.isNotEmpty) {
+        if (icon == 'unknown.webp' || icon.endsWith('/unknown.webp')) {
+          return 'assets/images/others/unknown.webp';
+        }
+        return icon.startsWith('assets/')
+            ? icon
+            : 'assets/images/round_icons/$icon';
+      }
+    }
+
+    // Fallbacks when catalog isn't loaded or stem has no tagged alias.
+    final shortAliases = [
+      for (final a in aliases) a.replaceAll(RegExp(r'(Stage|Custom)$'), ''),
+    ];
+    final candidates = <String>[
+      'assets/images/round_icons/Stage_$stem.webp',
+      'assets/images/round_icons/Stage_$stem.gif',
+      for (final a in shortAliases)
+        if (a.isNotEmpty) 'assets/images/round_icons/Stage_$a.webp',
+      if (stem.startsWith('Uncharted'))
+        'assets/images/round_icons/Suffix_Uncharted.webp',
+      'assets/images/others/unknown.webp',
+    ];
+    return candidates.first;
+  }
+
+  /// Alternate round-icon paths for [AssetImageWidget] fallbacks.
+  List<String> roundIconAltCandidatesForStem(String stem) {
+    if (_isUnknownStem(stem)) {
+      return const [];
+    }
+    final primary = roundIconAssetForStem(stem);
+    final aliases = aliasesForStem(stem);
+    final paths = <String>{
+      'assets/images/others/unknown.webp',
+    };
+    for (final alias in aliases) {
+      final icon = StageRepository.allItems
+          .firstWhereOrNull((s) => s.alias == alias)
+          ?.iconName;
+      if (icon != null && icon.isNotEmpty) {
+        paths.add(
+          icon.startsWith('assets/')
+              ? icon
+              : 'assets/images/round_icons/$icon',
+        );
+      }
+      final short = alias.replaceAll(RegExp(r'(Stage|Custom)$'), '');
+      if (short.isNotEmpty) {
+        paths.add('assets/images/round_icons/Stage_$short.webp');
+      }
+    }
+    paths.add('assets/images/round_icons/Stage_$stem.webp');
+    paths.add('assets/images/round_icons/Stage_$stem.gif');
+    if (stem.startsWith('Uncharted')) {
+      paths.add('assets/images/round_icons/Suffix_Uncharted.webp');
+    }
+    paths.remove(primary);
+    return paths.toList();
+  }
+
+  bool _isUnknownStem(String stem) =>
+      stem == _defaultStem ||
+      stem == 'Unknown' ||
+      stem.toLowerCase() == 'unknown';
 }

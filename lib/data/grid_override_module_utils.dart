@@ -137,7 +137,7 @@ PvzObject? _moduleObject(PvzLevelFile levelFile, String objClass) {
 
 ArmrackPropertiesData? readArmrackModuleData(PvzLevelFile levelFile) {
   final obj = _moduleObject(levelFile, 'ArmrackProperties');
-  if (obj?.objData is! Map<String, dynamic>) return null;
+  if (obj?.objData is! Map) return null;
   try {
     return ArmrackPropertiesData.fromJson(
       Map<String, dynamic>.from(obj!.objData as Map),
@@ -149,7 +149,7 @@ ArmrackPropertiesData? readArmrackModuleData(PvzLevelFile levelFile) {
 
 EnergyGridPropertiesData? readEnergyGridModuleData(PvzLevelFile levelFile) {
   final obj = _moduleObject(levelFile, 'EnergyGridProperties');
-  if (obj?.objData is! Map<String, dynamic>) return null;
+  if (obj?.objData is! Map) return null;
   try {
     return EnergyGridPropertiesData.fromJson(
       Map<String, dynamic>.from(obj!.objData as Map),

@@ -39,6 +39,7 @@ class PreviewAutoComposer {
     this.challengeLabel = 'Challenge',
     this.wavesLabel = 'Waves',
     this.initialZombiesLabel = 'Initial',
+    this.vasebreakerLabel = 'Vasebreaker',
     this.zombotPrefix = 'Zombot: ',
     this.zombossPrefix = 'Zomboss: ',
     this.spawnedZombiesLabel = 'Spawned zombies: ',
@@ -65,6 +66,7 @@ class PreviewAutoComposer {
   final String challengeLabel;
   final String wavesLabel;
   final String initialZombiesLabel;
+  final String vasebreakerLabel;
   final String zombotPrefix;
   final String zombossPrefix;
   final String spawnedZombiesLabel;
@@ -86,13 +88,25 @@ class PreviewAutoComposer {
 
     final plantItems = _collectPlants();
     final extras = await PreviewZombossExtras.collect(levelFile);
-    final waveZombies = _collectWaveZombies(excludeIds: {
+    final bossExclude = {
       ...extras.bossItems.map((e) => e.id),
       if (style == PreviewAutoStyle.normal) ...extras.spawnItems.map((e) => e.id),
-    });
+    };
+    final seedBankZombies = _collectSeedBankZombies(excludeIds: bossExclude);
+    final vaseZombies = _collectVasebreakerZombies(
+      excludeIds: {...bossExclude, ...seedBankZombies.map((e) => e.id)},
+    );
+    final waveZombies = _collectWaveZombies(
+      excludeIds: {
+        ...bossExclude,
+        ...seedBankZombies.map((e) => e.id),
+        ...vaseZombies.map((e) => e.id),
+      },
+    );
+    final zombieItems = [...seedBankZombies, ...vaseZombies, ...waveZombies];
     final layers = style == PreviewAutoStyle.simple
-        ? _composeSimple(levelDef, plantItems, extras, waveZombies)
-        : _composeNormal(levelDef, plantItems, extras, waveZombies);
+        ? _composeSimple(levelDef, plantItems, extras, zombieItems)
+        : _composeNormal(levelDef, plantItems, extras, zombieItems);
 
     return PreviewDocument(
       banner: banner,
@@ -457,7 +471,7 @@ class PreviewAutoComposer {
     for (final obj in levelFile.objects) {
       add(obj.objClass);
     }
-    return out;
+    return PreviewFeatureGroups.sortObjClassesByCategory(out);
   }
 
   String? _resolveModuleObjClass(String rtid) {
@@ -492,6 +506,11 @@ class PreviewAutoComposer {
     return null;
   }
 
+  bool _isIZombieSeedBank(Map data) {
+    return data['ZombieMode'] == true ||
+        '${data['SeedPacketType'] ?? ''}'.contains('UIIZombieSeedPacket');
+  }
+
   List<PreviewItem> _collectPlants() {
     final seen = <String>{};
     final items = <PreviewItem>[];
@@ -501,8 +520,7 @@ class PreviewAutoComposer {
       if (id.isEmpty || !seen.add('$source::$id')) return;
       // Deduplicate by id across sources for display uniqueness, but keep first source.
       if (items.any((e) => e.id == id)) return;
-      final info = PlantRepository().getPlantInfoById(id);
-      final path = info?.iconAssetPath ?? 'assets/images/others/unknown.webp';
+      final path = previewPlantLikeAssetPath(id);
       items.add(PreviewItem(id: id, assetPath: path, sourceLabel: source));
     }
 
@@ -512,7 +530,14 @@ class PreviewAutoComposer {
         if (e is String) {
           addPlant(e, source);
         } else if (e is Map) {
+          final types = e['PlantTypes'];
+          if (types is List) {
+            for (final t in types) {
+              if (t is String) addPlant(t, source);
+            }
+          }
           final id =
+              e['ToolType'] ??
               e['PlantType'] ??
               e['PlantTypeName'] ??
               e['TypeName'] ??
@@ -527,8 +552,11 @@ class PreviewAutoComposer {
     );
     if (sb?.objData is Map) {
       final data = sb!.objData as Map;
-      addFromList(data['PresetPlantList'], seedBankLabel);
-      addFromList(data['PlantWhiteList'] ?? data['WhiteList'], seedBankLabel);
+      // I-zombie seed packets are zombies — collected separately.
+      if (!_isIZombieSeedBank(data)) {
+        addFromList(data['PresetPlantList'], seedBankLabel);
+        addFromList(data['PlantWhiteList'] ?? data['WhiteList'], seedBankLabel);
+      }
     }
 
     final conv = levelFile.objects.firstWhereOrNull(
@@ -541,15 +569,19 @@ class PreviewAutoComposer {
 
     for (final obj in levelFile.objects) {
       if (obj.objClass == 'InitialPlantEntryProperties' ||
-          obj.objClass == 'InitialPlantProperties') {
+          obj.objClass == 'InitialPlantProperties' ||
+          obj.objClass == 'FrozenPlantPlacement') {
         final data = obj.objData;
         if (data is Map) {
           addFromList(
             data['InitialPlantPlacements'] ??
                 data['Plants'] ??
-                data['PlantPlacements'],
+                data['PlantPlacements'] ??
+                data['InitialPlantList'],
             prePlacedLabel,
           );
+          final single = data['PlantType'] ?? data['PlantTypeName'];
+          if (single is String) addPlant(single, prePlacedLabel);
           // Nested plant type fields.
           _scanPlantFields(data, prePlacedLabel, addPlant);
         }
@@ -570,6 +602,87 @@ class PreviewAutoComposer {
       }
     }
 
+    final vaseData = readVaseBreakerData(levelFile);
+    if (vaseData != null) {
+      for (final v in vaseData.vases) {
+        final p = v.plantTypeName;
+        if (p != null && p.isNotEmpty) addPlant(p, vasebreakerLabel);
+      }
+    }
+
+    return items;
+  }
+
+  /// I-zombie seed bank presets/whitelist → zombie icons for zombie sections.
+  List<PreviewItem> _collectSeedBankZombies({
+    Set<String> excludeIds = const {},
+  }) {
+    final items = <PreviewItem>[];
+    final seen = <String>{...excludeIds};
+
+    final sb = levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'SeedBankProperties',
+    );
+    if (sb?.objData is! Map) return items;
+    final data = sb!.objData as Map;
+    if (!_isIZombieSeedBank(data)) return items;
+
+    void addZombie(String rawId) {
+      final id = _cleanId(rawId);
+      if (id.isEmpty || !seen.add(id)) return;
+      final info = ZombieRepository().getZombieById(id);
+      final path = info?.iconAssetPath ?? 'assets/images/others/unknown.webp';
+      items.add(
+        PreviewItem(id: id, assetPath: path, sourceLabel: seedBankLabel),
+      );
+    }
+
+    void addFromList(dynamic raw) {
+      if (raw is! List) return;
+      for (final e in raw) {
+        if (e is String) {
+          addZombie(e);
+        } else if (e is Map) {
+          final types = e['PlantTypes'];
+          if (types is List) {
+            for (final t in types) {
+              if (t is String) addZombie(t);
+            }
+          }
+          final id =
+              e['PlantType'] ??
+              e['PlantTypeName'] ??
+              e['TypeName'] ??
+              e['Type'] ??
+              e['ZombieType'];
+          if (id is String) addZombie(id);
+        }
+      }
+    }
+
+    addFromList(data['PresetPlantList']);
+    addFromList(data['PlantWhiteList'] ?? data['WhiteList']);
+    return items;
+  }
+
+  List<PreviewItem> _collectVasebreakerZombies({
+    Set<String> excludeIds = const {},
+  }) {
+    final items = <PreviewItem>[];
+    final seen = <String>{...excludeIds};
+    final vaseData = readVaseBreakerData(levelFile);
+    if (vaseData == null) return items;
+    for (final v in vaseData.vases) {
+      final z = v.zombieTypeName;
+      if (z == null || z.isEmpty) continue;
+      final id = _cleanId(z);
+      if (id.isEmpty || !seen.add(id)) continue;
+      final info = ZombieRepository().getZombieById(id);
+      final path = info?.iconAssetPath ?? 'assets/images/others/unknown.webp';
+      items.add(
+        PreviewItem(id: id, assetPath: path, sourceLabel: vasebreakerLabel),
+      );
+    }
     return items;
   }
 
