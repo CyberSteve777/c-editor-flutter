@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_export_prefs.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_feature_groups.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_rich_text_controller.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
 
 void main() {
@@ -226,6 +229,111 @@ void main() {
         r.assetPathForStem('Unknown'),
         'lib/bundled_plugins/level_preview_cplugin/assets/banners/Unknown.png',
       );
+      expect(
+        r.roundIconAssetForStem('Unknown'),
+        'assets/images/others/unknown.webp',
+      );
+      expect(r.roundIconAltCandidatesForStem('Unknown'), isEmpty);
+    });
+  });
+
+  group('PreviewLayer text styles', () {
+    PreviewLayer textLayer(List<PreviewTextRun> runs) => PreviewLayer(
+      id: 't',
+      kind: PreviewLayerKind.text,
+      bounds: const Rect.fromLTWH(0, 0, 1, 1),
+      textRuns: runs,
+    );
+
+    test('insert inherits previous character style', () {
+      final small = PreviewTextStyleData(fontSize: 12);
+      final large = PreviewTextStyleData(fontSize: 48);
+      final layer = textLayer([
+        PreviewTextRun(text: 'Ab', style: small),
+        PreviewTextRun(text: 'C', style: large),
+      ]);
+      // Insert 'x' before C (after "Ab") → inherits small from 'b'.
+      layer.updatePlainTextPreservingStyles('AbxC');
+      expect(layer.plainText, 'AbxC');
+      expect(layer.textRuns.length, 2);
+      expect(layer.textRuns[0].text, 'Abx');
+      expect(layer.textRuns[0].style.fontSize, 12);
+      expect(layer.textRuns[1].text, 'C');
+      expect(layer.textRuns[1].style.fontSize, 48);
+    });
+
+    test('insert at start inherits first character style', () {
+      final small = PreviewTextStyleData(fontSize: 12);
+      final large = PreviewTextStyleData(fontSize: 48);
+      final layer = textLayer([
+        PreviewTextRun(text: 'A', style: small),
+        PreviewTextRun(text: 'B', style: large),
+      ]);
+      layer.updatePlainTextPreservingStyles('xAB');
+      expect(layer.textRuns.first.style.fontSize, 12);
+      expect(layer.textRuns.first.text, 'xA');
+    });
+
+    test('typingStyle override wins over inherited style', () {
+      final small = PreviewTextStyleData(fontSize: 12);
+      final layer = textLayer([PreviewTextRun(text: 'Hi', style: small)]);
+      layer.updatePlainTextPreservingStyles(
+        'Hi!',
+        typingStyle: PreviewTextStyleData(fontSize: 64),
+      );
+      expect(layer.textRuns.length, 2);
+      expect(layer.textRuns[0].style.fontSize, 12);
+      expect(layer.textRuns[1].text, '!');
+      expect(layer.textRuns[1].style.fontSize, 64);
+    });
+  });
+
+  group('PreviewRichTextController', () {
+    test('buildTextSpan keeps one style per run after typing', () {
+      final controller = PreviewRichTextController();
+      final layer = PreviewLayer(
+        id: 't',
+        kind: PreviewLayerKind.text,
+        bounds: const Rect.fromLTWH(0, 0, 1, 1),
+        textRuns: [
+          PreviewTextRun(
+            text: 'Hi',
+            style: PreviewTextStyleData(
+              fontFamily: kPreviewCustomFontFamily,
+              fontSize: 36,
+            ),
+          ),
+        ],
+      );
+      controller.loadFromLayer(layer);
+      controller.value = TextEditingValue(
+        text: 'Hi!',
+        selection: const TextSelection.collapsed(offset: 3),
+      );
+      expect(controller.runs, hasLength(1));
+      expect(controller.runs.single.style.fontFamily, kPreviewCustomFontFamily);
+      expect(controller.runs.single.style.fontSize, 36);
+      controller.dispose();
+    });
+
+    test('styleAtCaret uses previous character', () {
+      final controller = PreviewRichTextController();
+      controller.loadFromLayer(
+        PreviewLayer(
+          id: 't',
+          kind: PreviewLayerKind.text,
+          bounds: const Rect.fromLTWH(0, 0, 1, 1),
+          textRuns: [
+            PreviewTextRun(text: 'A', style: PreviewTextStyleData(fontSize: 12)),
+            PreviewTextRun(text: 'B', style: PreviewTextStyleData(fontSize: 48)),
+          ],
+        ),
+      );
+      controller.selection = const TextSelection.collapsed(offset: 2);
+      expect(controller.styleAtCaret().fontSize, 48);
+      controller.selection = const TextSelection.collapsed(offset: 0);
+      expect(controller.styleAtCaret().fontSize, 12);
+      controller.dispose();
     });
   });
 }

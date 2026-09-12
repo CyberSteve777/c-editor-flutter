@@ -3,16 +3,20 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/gif_first_frame.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_file_image.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_fonts.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_rich_text_controller.dart';
+import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/lawn_grid.dart';
 
 enum _BoxHandle { nw, n, ne, e, se, s, sw, w, rotate }
 
 /// Extra space around the design banner so edge/rotate handles stay hittable.
-const double kPreviewInteractPad = 56.0;
+const double kPreviewInteractPad = 120.0;
 
 /// Renders a [PreviewDocument] at design size inside a [RepaintBoundary].
 class PreviewCanvas extends StatefulWidget {
@@ -31,7 +35,14 @@ class PreviewCanvas extends StatefulWidget {
     this.onStrokeStarted,
     this.onStrokeUpdated,
     this.onStrokeEnded,
+    this.onEraseAt,
     this.onShapeDraft,
+    this.textEditingController,
+    this.textFocusNode,
+    this.editingTextLayerId,
+    this.onBeginTextEdit,
+    this.onEndTextEdit,
+    this.onTextEdited,
     this.boundaryKey,
   });
 
@@ -48,7 +59,17 @@ class PreviewCanvas extends StatefulWidget {
   final void Function(Offset normalized)? onStrokeStarted;
   final void Function(Offset normalized)? onStrokeUpdated;
   final VoidCallback? onStrokeEnded;
+  /// Eraser brush hit in normalized canvas coords.
+  final void Function(Offset normalized)? onEraseAt;
   final void Function(Rect normalizedBounds)? onShapeDraft;
+  /// When set and a text layer is selected, that layer edits in-place.
+  final TextEditingController? textEditingController;
+  final FocusNode? textFocusNode;
+  /// Explicit in-place text edit target (PowerPoint-style).
+  final String? editingTextLayerId;
+  final ValueChanged<String>? onBeginTextEdit;
+  final VoidCallback? onEndTextEdit;
+  final ValueChanged<String>? onTextEdited;
   final GlobalKey? boundaryKey;
 
   @override
@@ -77,12 +98,17 @@ class PreviewCanvasState extends State<PreviewCanvas> {
 
   void _prefetchGifs() {
     for (final layer in widget.document.layers) {
-      if (layer.kind != PreviewLayerKind.iconGrid) continue;
-      final paths = <String>{
-        for (final item in layer.items) item.assetPath,
-        for (final section in layer.sections)
-          for (final item in section.items) item.assetPath,
-      };
+      final paths = <String>{};
+      if (layer.kind == PreviewLayerKind.iconGrid) {
+        paths.addAll({
+          for (final item in layer.items) item.assetPath,
+          for (final section in layer.sections)
+            for (final item in section.items) item.assetPath,
+        });
+      } else if (layer.kind == PreviewLayerKind.image &&
+          layer.imageAsset != null) {
+        paths.add(layer.imageAsset!);
+      }
       for (final assetPath in paths) {
         if (!isGifAssetPath(assetPath)) continue;
         if (_gifFrames.containsKey(assetPath)) continue;
@@ -130,8 +156,8 @@ class PreviewCanvasState extends State<PreviewCanvas> {
     final drawing =
         widget.interactive &&
         (widget.tool == PreviewEditTool.pen ||
-            widget.tool == PreviewEditTool.rect ||
-            widget.tool == PreviewEditTool.oval);
+            widget.tool == PreviewEditTool.eraser ||
+            widget.tool == PreviewEditTool.figures);
     final selected = _selectedLayer;
 
     final design = SizedBox(
@@ -142,14 +168,15 @@ class PreviewCanvasState extends State<PreviewCanvas> {
         key: widget.boundaryKey,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTapUp: widget.interactive && widget.tool == PreviewEditTool.select
-              ? (_) => widget.onSelectLayer?.call(null)
-              : null,
+          // Deselect is handled by a behind-layers hit target so it does not
+          // race text Listener pointer-ups and cancel in-place editing.
           onPanStart: drawing
               ? (d) {
                   final n = _toNorm(d.localPosition);
                   if (widget.tool == PreviewEditTool.pen) {
                     widget.onStrokeStarted?.call(n);
+                  } else if (widget.tool == PreviewEditTool.eraser) {
+                    widget.onEraseAt?.call(n);
                   } else {
                     _shapeStart = n;
                   }
@@ -160,6 +187,8 @@ class PreviewCanvasState extends State<PreviewCanvas> {
                   final n = _toNorm(d.localPosition);
                   if (widget.tool == PreviewEditTool.pen) {
                     widget.onStrokeUpdated?.call(n);
+                  } else if (widget.tool == PreviewEditTool.eraser) {
+                    widget.onEraseAt?.call(n);
                   } else if (_shapeStart != null) {
                     final s = _shapeStart!;
                     final left = s.dx < n.dx ? s.dx : n.dx;
@@ -185,6 +214,17 @@ class PreviewCanvasState extends State<PreviewCanvas> {
             clipBehavior: Clip.none,
             children: [
               _buildBanner(doc),
+              if (widget.interactive &&
+                  widget.tool == PreviewEditTool.select)
+                Positioned.fill(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      widget.onEndTextEdit?.call();
+                      widget.onSelectLayer?.call(null);
+                    },
+                  ),
+                ),
               for (final layer in doc.sortedLayers)
                 if (layer.visible)
                   _LayerWidget(
@@ -194,8 +234,22 @@ class PreviewCanvasState extends State<PreviewCanvas> {
                         widget.interactive &&
                         widget.tool == PreviewEditTool.select,
                     selected: widget.selectedLayerId == layer.id,
+                    editingText: widget.editingTextLayerId == layer.id,
                     gifFrames: _gifFrames,
+                    textEditingController:
+                        widget.selectedLayerId == layer.id &&
+                            layer.kind == PreviewLayerKind.text
+                        ? widget.textEditingController
+                        : null,
+                    textFocusNode:
+                        widget.selectedLayerId == layer.id &&
+                            layer.kind == PreviewLayerKind.text
+                        ? widget.textFocusNode
+                        : null,
+                    onTextEdited: widget.onTextEdited,
                     onSelect: () => widget.onSelectLayer?.call(layer.id),
+                    onBeginTextEdit: () =>
+                        widget.onBeginTextEdit?.call(layer.id),
                     onMoved: (bounds) =>
                         widget.onLayerMoved?.call(layer.id, bounds),
                     onScaled: (scale) =>
@@ -212,6 +266,9 @@ class PreviewCanvasState extends State<PreviewCanvas> {
         widget.tool == PreviewEditTool.select &&
         selected != null &&
         selected.kind != PreviewLayerKind.stroke;
+    final editingText =
+        widget.editingTextLayerId != null &&
+        widget.editingTextLayerId == widget.selectedLayerId;
 
     // Outer size includes pad so handles past the banner still receive hits.
     // Export [RepaintBoundary] stays at design size only.
@@ -220,26 +277,58 @@ class PreviewCanvasState extends State<PreviewCanvas> {
       child: SizedBox(
         width: w + pad * 2,
         height: h + pad * 2,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(left: pad, top: pad, width: w, height: h, child: design),
-            if (showHandles)
-              _SelectionHandlesOverlay(
-                layer: selected,
-                canvasSize: kPreviewCanvasSize,
-                canvasKey: _canvasKey,
-                originOffset: Offset(pad, pad),
-                onMoved: (bounds) =>
-                    widget.onLayerMoved?.call(selected.id, bounds),
-                onRotated: (rotation) =>
-                    widget.onLayerRotated?.call(selected.id, rotation),
-                onSelect: () => widget.onSelectLayer?.call(selected.id),
+        child: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerSignal: _onCanvasPointerSignal,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                left: pad,
+                top: pad,
+                width: w,
+                height: h,
+                child: design,
               ),
-          ],
+              if (showHandles)
+                _SelectionHandlesOverlay(
+                  layer: selected,
+                  canvasSize: kPreviewCanvasSize,
+                  canvasKey: _canvasKey,
+                  originOffset: Offset(pad, pad),
+                  stripedBorder: editingText,
+                  onMoved: (bounds) =>
+                      widget.onLayerMoved?.call(selected.id, bounds),
+                  onRotated: (rotation) =>
+                      widget.onLayerRotated?.call(selected.id, rotation),
+                  onSelect: () => widget.onSelectLayer?.call(selected.id),
+                ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _onCanvasPointerSignal(PointerSignalEvent event) {
+    if (!widget.interactive) return;
+    if (widget.tool != PreviewEditTool.select) return;
+    if (event is! PointerScrollEvent) return;
+    final ctrl =
+        HardwareKeyboard.instance.isControlPressed ||
+        HardwareKeyboard.instance.isMetaPressed;
+    if (!ctrl) return;
+    final layer = _selectedLayer;
+    if (layer == null) return;
+    if (layer.kind == PreviewLayerKind.text ||
+        layer.kind == PreviewLayerKind.image ||
+        layer.kind == PreviewLayerKind.stroke) {
+      return;
+    }
+    final delta = event.scrollDelta.dy;
+    if (delta == 0) return;
+    final next = (layer.scale * (delta > 0 ? 0.92 : 1.08)).clamp(0.25, 4.0);
+    widget.onLayerScaled?.call(layer.id, next.toDouble());
   }
 
   Widget _buildBanner(PreviewDocument doc) {
@@ -248,7 +337,7 @@ class PreviewCanvasState extends State<PreviewCanvas> {
         ref.userFilePath != null) {
       final fileImg = fileBannerImage(
         ref.userFilePath!,
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
         width: kPreviewCanvasSize.width,
         height: kPreviewCanvasSize.height,
       );
@@ -276,6 +365,8 @@ Rect _growIconGridBoundsIfNeeded(PreviewLayer layer, Rect proposed, Size canvas)
     showChrome: layer.showChrome,
     gridTitle: layer.gridTitle,
     sourceLabel: layer.sourceLabel,
+    lawnRows: layer.lawnRows,
+    lawnCols: layer.lawnCols,
   );
   final needH = (intrinsic.height / canvas.height).clamp(0.04, 1.0 - proposed.top);
   final h = math.max(proposed.height, needH);
@@ -288,20 +379,30 @@ class _LayerWidget extends StatefulWidget {
     required this.canvasSize,
     required this.interactive,
     required this.selected,
+    required this.editingText,
     required this.gifFrames,
     required this.onSelect,
     required this.onMoved,
     required this.onScaled,
+    this.onBeginTextEdit,
+    this.textEditingController,
+    this.textFocusNode,
+    this.onTextEdited,
   });
 
   final PreviewLayer layer;
   final Size canvasSize;
   final bool interactive;
   final bool selected;
+  final bool editingText;
   final Map<String, ui.Image> gifFrames;
   final VoidCallback onSelect;
+  final VoidCallback? onBeginTextEdit;
   final ValueChanged<Rect> onMoved;
   final ValueChanged<double> onScaled;
+  final TextEditingController? textEditingController;
+  final FocusNode? textFocusNode;
+  final ValueChanged<String>? onTextEdited;
 
   @override
   State<_LayerWidget> createState() => _LayerWidgetState();
@@ -311,41 +412,99 @@ class _LayerWidgetState extends State<_LayerWidget> {
   double _scaleAtStart = 1;
   static const _minScale = 0.25;
   static const _maxScale = 4.0;
+  static const _dragSlop = 4.0;
+
+  Offset? _pointerDownLocal;
+  Offset _lastPointerLocal = Offset.zero;
+  bool _dragging = false;
 
   PreviewLayer get layer => widget.layer;
 
-  Offset _toLocalDelta(Offset globalDelta) {
-    final a = -layer.rotation;
+  @override
+  void initState() {
+    super.initState();
+    widget.textFocusNode?.addListener(_onTextFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant _LayerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.textFocusNode != widget.textFocusNode) {
+      oldWidget.textFocusNode?.removeListener(_onTextFocusChanged);
+      widget.textFocusNode?.addListener(_onTextFocusChanged);
+    }
+    if (widget.editingText &&
+        !oldWidget.editingText &&
+        widget.textFocusNode != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && widget.editingText) {
+          widget.textFocusNode?.requestFocus();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.textFocusNode?.removeListener(_onTextFocusChanged);
+    super.dispose();
+  }
+
+  void _onTextFocusChanged() {
+    if (mounted) setState(() {});
+  }
+
+  bool get _textEditingActive =>
+      layer.kind == PreviewLayerKind.text &&
+      widget.editingText &&
+      widget.textEditingController != null;
+
+  /// Move in canvas/parent space. [localDelta] is in the layer's local axes
+  /// (GestureDetector sits under [Transform.rotate]), so rotate it forward.
+  void _moveByLocalDelta(Offset localDelta) {
+    final a = layer.rotation;
     final c = math.cos(a);
     final s = math.sin(a);
-    return Offset(
-      globalDelta.dx * c - globalDelta.dy * s,
-      globalDelta.dx * s + globalDelta.dy * c,
+    final parent = Offset(
+      localDelta.dx * c - localDelta.dy * s,
+      localDelta.dx * s + localDelta.dy * c,
+    );
+    final dx = parent.dx / widget.canvasSize.width;
+    final dy = parent.dy / widget.canvasSize.height;
+    final nl = (layer.bounds.left + dx).clamp(0.0, 1.0 - layer.bounds.width);
+    final nt = (layer.bounds.top + dy).clamp(0.0, 1.0 - layer.bounds.height);
+    widget.onMoved(
+      Rect.fromLTWH(nl, nt, layer.bounds.width, layer.bounds.height),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     if (layer.kind == PreviewLayerKind.stroke) {
-      return CustomPaint(
-        size: widget.canvasSize,
-        painter: _StrokePainter(
-          points: layer.points,
-          color: layer.strokeColor,
-          strokeWidth:
-              layer.strokeWidth * layer.scale.clamp(_minScale, _maxScale),
-          selected: widget.selected,
+      return Opacity(
+        opacity: layer.opacity.clamp(0.0, 1.0),
+        child: CustomPaint(
+          size: widget.canvasSize,
+          painter: _StrokePainter(
+            points: layer.points,
+            color: layer.strokeColor,
+            strokeWidth:
+                layer.strokeWidth * layer.scale.clamp(_minScale, _maxScale),
+            selected: widget.selected,
+          ),
+          child: widget.interactive
+              ? GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: widget.onSelect,
+                )
+              : null,
         ),
-        child: widget.interactive
-            ? GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: widget.onSelect,
-              )
-            : null,
       );
     }
 
-    final scale = layer.kind == PreviewLayerKind.text
+    final scale =
+        (layer.kind == PreviewLayerKind.text ||
+            layer.kind == PreviewLayerKind.image)
         ? 1.0
         : layer.scale.clamp(_minScale, _maxScale);
     final left = layer.bounds.left * widget.canvasSize.width;
@@ -391,9 +550,69 @@ class _LayerWidgetState extends State<_LayerWidget> {
             ),
           );
 
-    final allowScale = layer.kind != PreviewLayerKind.text;
-    final child = widget.interactive
-        ? GestureDetector(
+    final allowScale =
+        layer.kind != PreviewLayerKind.text &&
+        layer.kind != PreviewLayerKind.image;
+    final editingText = _textEditingActive;
+
+    void beginTextEdit() {
+      widget.onSelect();
+      widget.onBeginTextEdit?.call();
+    }
+
+    final child = !widget.interactive
+        ? body
+        : editingText
+        // No competing GestureDetector while editing — TextField must get taps.
+        ? body
+        : layer.kind == PreviewLayerKind.text
+        // Tap / double-tap to edit; drag only after slop so taps still work.
+        ? Listener(
+            behavior: HitTestBehavior.opaque,
+            onPointerDown: (event) {
+              _pointerDownLocal = event.localPosition;
+              _lastPointerLocal = event.localPosition;
+              _dragging = false;
+            },
+            onPointerMove: (event) {
+              final start = _pointerDownLocal;
+              if (start == null) return;
+              if (!_dragging) {
+                if ((event.localPosition - start).distance >= _dragSlop) {
+                  _dragging = true;
+                  widget.onSelect();
+                } else {
+                  return;
+                }
+              }
+              final delta = event.localPosition - _lastPointerLocal;
+              _lastPointerLocal = event.localPosition;
+              _moveByLocalDelta(delta);
+            },
+            onPointerUp: (event) {
+              final wasDragging = _dragging;
+              _pointerDownLocal = null;
+              _dragging = false;
+              if (wasDragging) return;
+              if (widget.selected && widget.textEditingController != null) {
+                beginTextEdit();
+              } else {
+                widget.onSelect();
+              }
+            },
+            onPointerCancel: (_) {
+              _pointerDownLocal = null;
+              _dragging = false;
+            },
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onDoubleTap: widget.textEditingController != null
+                  ? beginTextEdit
+                  : null,
+              child: body,
+            ),
+          )
+        : GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: widget.onSelect,
             onScaleStart: (_) {
@@ -407,124 +626,151 @@ class _LayerWidgetState extends State<_LayerWidget> {
                 );
                 return;
               }
-              final local = _toLocalDelta(details.focalPointDelta);
-              final dx = local.dx / widget.canvasSize.width;
-              final dy = local.dy / widget.canvasSize.height;
-              final nl = (layer.bounds.left + dx).clamp(
-                0.0,
-                1.0 - layer.bounds.width,
-              );
-              final nt = (layer.bounds.top + dy).clamp(
-                0.0,
-                1.0 - layer.bounds.height,
-              );
-              widget.onMoved(
-                Rect.fromLTWH(
-                  nl,
-                  nt,
-                  layer.bounds.width,
-                  layer.bounds.height,
-                ),
-              );
+              _moveByLocalDelta(details.focalPointDelta);
             },
-            child: Listener(
-              onPointerSignal: (event) {
-                if (!allowScale) return;
-                if (event is! PointerScrollEvent) return;
-                if (!widget.selected) return;
-                final delta = event.scrollDelta.dy;
-                if (delta == 0) return;
-                final next = (layer.scale * (delta > 0 ? 0.92 : 1.08))
-                    .clamp(_minScale, _maxScale);
-                widget.onScaled(next.toDouble());
-              },
-              child: body,
-            ),
-          )
-        : body;
+            child: body,
+          );
 
     return Positioned(
       left: left,
       top: top,
       width: hitW,
       height: hitH,
-      child: Transform.rotate(
-        angle: layer.rotation,
-        alignment: Alignment.center,
-        child: child,
+      child: Opacity(
+        opacity: layer.opacity.clamp(0.0, 1.0),
+        child: Transform.rotate(
+          angle: layer.rotation,
+          alignment: Alignment.center,
+          child: child,
+        ),
       ),
     );
   }
 
   Widget _buildText(double width, double height) {
     final runs = layer.effectiveTextRuns();
-    if (runs.isEmpty) {
-      return SizedBox(width: width, height: height);
-    }
     final align = layer.textAlign;
-    final hasOutline = runs.any((r) => r.style.outline);
-    final base = Text.rich(
-      TextSpan(
+    final editing = _textEditingActive;
+
+    Widget richVisual() {
+      if (runs.isEmpty && !editing) {
+        return SizedBox(width: width, height: height);
+      }
+      final hasOutline = runs.any((r) => r.style.outline);
+      final base = Text.rich(
+        TextSpan(
+          children: [
+            for (final run in runs)
+              TextSpan(
+                text: run.text,
+                style: PreviewFonts.resolve(
+                  run.style,
+                  fill: !run.style.outline,
+                ),
+              ),
+          ],
+        ),
+        textAlign: align,
+        softWrap: true,
+      );
+      if (!hasOutline) return base;
+      return Stack(
         children: [
-          for (final run in runs)
+          Text.rich(
             TextSpan(
-              text: run.text,
-              style: PreviewFonts.resolve(run.style, fill: !run.style.outline),
+              children: [
+                for (final run in runs)
+                  TextSpan(
+                    text: run.text,
+                    style: PreviewFonts.resolve(run.style, fill: false),
+                  ),
+              ],
             ),
+            textAlign: align,
+            softWrap: true,
+          ),
+          Text.rich(
+            TextSpan(
+              children: [
+                for (final run in runs)
+                  TextSpan(
+                    text: run.text,
+                    style: run.style.outline
+                        ? PreviewFonts.resolve(run.style, fill: true)
+                        : PreviewFonts.resolve(run.style, fill: true)
+                              .copyWith(color: Colors.transparent),
+                  ),
+              ],
+            ),
+            textAlign: align,
+            softWrap: true,
+          ),
         ],
-      ),
-      textAlign: align,
-      softWrap: true,
-    );
-    final child = hasOutline
-        ? Stack(
-            children: [
-              Text.rich(
-                TextSpan(
-                  children: [
-                    for (final run in runs)
-                      TextSpan(
-                        text: run.text,
-                        style: PreviewFonts.resolve(run.style, fill: false),
-                      ),
-                  ],
-                ),
-                textAlign: align,
-                softWrap: true,
-              ),
-              Text.rich(
-                TextSpan(
-                  children: [
-                    for (final run in runs)
-                      TextSpan(
-                        text: run.text,
-                        style: run.style.outline
-                            ? PreviewFonts.resolve(run.style, fill: true)
-                            : PreviewFonts.resolve(run.style, fill: true)
-                                  .copyWith(color: Colors.transparent),
-                      ),
-                  ],
-                ),
-                textAlign: align,
-                softWrap: true,
-              ),
-            ],
-          )
-        : base;
+      );
+    }
+
     final fittedAlign = switch (align) {
       TextAlign.center || TextAlign.justify => Alignment.center,
       TextAlign.right || TextAlign.end => Alignment.centerRight,
       _ => Alignment.centerLeft,
     };
+
+    final pad = layer.textBackgroundColor != null
+        ? const EdgeInsets.symmetric(horizontal: 8, vertical: 4)
+        : EdgeInsets.zero;
+    final decoration = layer.textBackgroundColor != null
+        ? BoxDecoration(
+            color: layer.textBackgroundColor,
+            borderRadius: BorderRadius.circular(6),
+          )
+        : null;
+
+    // Single TextField paints styled runs via PreviewRichTextController —
+    // no transparent overlay (that caused selected vs idle style mismatch).
+    if (editing && widget.textEditingController != null) {
+      final caretStyle = widget.textEditingController is PreviewRichTextController
+          ? (widget.textEditingController as PreviewRichTextController)
+                .styleAtCaret()
+          : (layer.textStyle ??
+                (runs.isNotEmpty ? runs.first.style : PreviewTextStyleData()));
+      final fieldStyle = PreviewFonts.resolveFieldBase(caretStyle);
+      return SizedBox(
+        width: width,
+        height: height,
+        child: Container(
+          padding: pad,
+          decoration: decoration,
+          child: TextField(
+            controller: widget.textEditingController,
+            focusNode: widget.textFocusNode,
+            maxLines: null,
+            expands: true,
+            style: fieldStyle,
+            cursorColor: Colors.white,
+            showCursor: true,
+            textAlign: align,
+            decoration: const InputDecoration(
+              isCollapsed: true,
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+            onChanged: widget.onTextEdited,
+          ),
+        ),
+      );
+    }
+
     return SizedBox(
       width: width,
       height: height,
       child: FittedBox(
         fit: BoxFit.scaleDown,
         alignment: fittedAlign,
-        child: SizedBox(
+        child: Container(
           width: width,
-          child: child,
+          padding: pad,
+          decoration: decoration,
+          child: richVisual(),
         ),
       ),
     );
@@ -532,8 +778,58 @@ class _LayerWidgetState extends State<_LayerWidget> {
 
   Widget _buildIconGrid(double width, double height) {
     final sections = previewEffectiveSections(layer);
+    // Chrome padding is 8 all around; row content must fill that inner width so
+    // justify/spaceBetween can stretch icon gaps when the layer is widened.
+    final rowWidth = math.max(0.0, width - (layer.showChrome ? 16 : 0));
+    final cross = switch (layer.iconAlign) {
+      TextAlign.justify => CrossAxisAlignment.stretch,
+      TextAlign.center => CrossAxisAlignment.center,
+      TextAlign.right || TextAlign.end => CrossAxisAlignment.end,
+      _ => CrossAxisAlignment.start,
+    };
+    final wrapAlign = switch (layer.iconAlign) {
+      TextAlign.center => WrapAlignment.center,
+      TextAlign.right || TextAlign.end => WrapAlignment.end,
+      TextAlign.justify => WrapAlignment.spaceBetween,
+      _ => WrapAlignment.start,
+    };
+    final titleAlign = layer.iconAlign;
+    final useLawn =
+        layer.lawnRows != null &&
+        layer.lawnCols != null &&
+        layer.lawnRows! > 0 &&
+        layer.lawnCols! > 0 &&
+        sections.any((s) => s.items.any((i) => i.hasCell));
+
+    Widget sectionBody(PreviewIconSection section) {
+      if (useLawn) {
+        return _buildMiniLawn(
+          width: rowWidth,
+          rows: layer.lawnRows!,
+          cols: layer.lawnCols!,
+          items: section.items,
+        );
+      }
+      return SizedBox(
+        width: rowWidth,
+        child: Wrap(
+          spacing: layer.iconAlign == TextAlign.justify ? 0 : 4,
+          runSpacing: 4,
+          alignment: wrapAlign,
+          children: [
+            for (final item in section.items.take(48))
+              _ItemIcon(
+                item: item,
+                gifFrames: widget.gifFrames,
+                size: section.iconSize,
+              ),
+          ],
+        ),
+      );
+    }
+
     final body = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: cross,
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < sections.length; i++) ...[
@@ -541,29 +837,22 @@ class _LayerWidgetState extends State<_LayerWidget> {
           if (sections[i].title != null && sections[i].title!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                sections[i].title!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.95),
-                  fontSize: sections[i].iconSize >= 64 ? 15 : 13,
-                  fontWeight: FontWeight.w600,
+              child: SizedBox(
+                width: rowWidth,
+                child: Text(
+                  sections[i].title!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: titleAlign,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.95),
+                    fontSize: sections[i].iconSize >= 64 ? 15 : 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
-          Wrap(
-            spacing: 4,
-            runSpacing: 4,
-            children: [
-              for (final item in sections[i].items.take(48))
-                _ItemIcon(
-                  item: item,
-                  gifFrames: widget.gifFrames,
-                  size: sections[i].iconSize,
-                ),
-            ],
-          ),
+          sectionBody(sections[i]),
         ],
       ],
     );
@@ -605,28 +894,37 @@ class _LayerWidgetState extends State<_LayerWidget> {
           border: Border.all(color: Colors.white24),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: cross,
           mainAxisSize: MainAxisSize.min,
           children: [
             if (layer.gridTitle != null && layer.gridTitle!.isNotEmpty)
-              Text(
-                layer.gridTitle!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              SizedBox(
+                width: rowWidth,
+                child: Text(
+                  layer.gridTitle!,
+                  textAlign: titleAlign,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             if (layer.sourceLabel != null && layer.sourceLabel!.isNotEmpty)
-              Text(
-                layer.sourceLabel!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 11,
+              SizedBox(
+                width: rowWidth,
+                child: Text(
+                  layer.sourceLabel!,
+                  maxLines: 6,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: titleAlign,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontSize: 11,
+                    height: 1.25,
+                  ),
                 ),
               ),
             if ((layer.gridTitle != null && layer.gridTitle!.isNotEmpty) ||
@@ -636,6 +934,69 @@ class _LayerWidgetState extends State<_LayerWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMiniLawn({
+    required double width,
+    required int rows,
+    required int cols,
+    required List<PreviewItem> items,
+  }) {
+    final byCell = <String, List<PreviewItem>>{};
+    for (final item in items.take(96)) {
+      if (!item.hasCell) continue;
+      final key = '${item.gridX},${item.gridY}';
+      (byCell[key] ??= []).add(item);
+    }
+    return LawnGrid(
+      rows: rows,
+      cols: cols,
+      maxWidth: width,
+      style: LevelPreviewGridStyle(
+        gridBg: const Color(0xFF1A1A1A).withValues(alpha: 0.55),
+        borderColor: Colors.white24,
+        cellBorderColor: Colors.white24,
+        cellAspectRatio: 1.0,
+        maxWidth: width,
+      ),
+      cellBuilder: (context, col, row) {
+        final list = byCell['$col,$row'];
+        if (list == null || list.isEmpty) return null;
+        Widget iconFor(PreviewItem item) {
+          final gif = widget.gifFrames[item.assetPath];
+          if (gif != null) {
+            return RawImage(image: gif, fit: BoxFit.contain);
+          }
+          return AssetImageWidget(
+            assetPath: item.assetPath,
+            altCandidates: imageAltCandidates(item.assetPath),
+            fit: BoxFit.contain,
+          );
+        }
+
+        if (list.length == 1) {
+          return Padding(
+            padding: const EdgeInsets.all(1),
+            child: iconFor(list.first),
+          );
+        }
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            for (var i = 0; i < list.length && i < 4; i++)
+              Padding(
+                padding: EdgeInsets.only(
+                  left: i * 2.0,
+                  top: i * 2.0,
+                  right: 1,
+                  bottom: 1,
+                ),
+                child: iconFor(list[i]),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -651,13 +1012,23 @@ class _LayerWidgetState extends State<_LayerWidget> {
           ) ??
           const ColoredBox(color: Colors.black26);
     } else if (layer.imageAsset != null) {
-      img = Image.asset(
-        layer.imageAsset!,
-        fit: BoxFit.contain,
-        width: width,
-        height: height,
-        errorBuilder: (_, _, _) => const ColoredBox(color: Colors.black26),
-      );
+      final gif = widget.gifFrames[layer.imageAsset!];
+      if (gif != null) {
+        img = RawImage(
+          image: gif,
+          fit: BoxFit.contain,
+          width: width,
+          height: height,
+        );
+      } else {
+        img = Image.asset(
+          layer.imageAsset!,
+          fit: BoxFit.contain,
+          width: width,
+          height: height,
+          errorBuilder: (_, _, _) => const ColoredBox(color: Colors.black26),
+        );
+      }
     } else {
       img = const ColoredBox(color: Colors.black26);
     }
@@ -665,28 +1036,31 @@ class _LayerWidgetState extends State<_LayerWidget> {
   }
 
   Widget _buildShape(double width, double height) {
-    final fill = layer.fillColor;
-    final stroke = layer.strokeColor;
-    final sw = layer.strokeWidth;
+    final fill = layer.shapeFilled
+        ? (layer.fillColor ?? layer.strokeColor.withValues(alpha: 0.35))
+        : layer.fillColor;
     return CustomPaint(
       size: Size(width, height),
       painter: _ShapePainter(
-        oval: layer.shapeKind == PreviewShapeKind.oval,
-        fill: fill,
-        stroke: stroke,
-        strokeWidth: sw,
+        kind: layer.shapeKind ?? PreviewShapeKind.rect,
+        fill: layer.shapeFilled ? fill : null,
+        stroke: layer.strokeColor,
+        strokeWidth: layer.strokeWidth,
       ),
     );
   }
 }
 
 /// Drawn above all layers so handles always receive pointer events first.
+/// Positions are computed in the padded outer frame (including rotation) so
+/// handles remain hittable when they sit outside the design banner.
 class _SelectionHandlesOverlay extends StatefulWidget {
   const _SelectionHandlesOverlay({
     required this.layer,
     required this.canvasSize,
     required this.canvasKey,
     this.originOffset = Offset.zero,
+    this.stripedBorder = false,
     required this.onMoved,
     required this.onRotated,
     required this.onSelect,
@@ -697,6 +1071,8 @@ class _SelectionHandlesOverlay extends StatefulWidget {
   final GlobalKey canvasKey;
   /// Top-left of the design banner inside the padded interactive frame.
   final Offset originOffset;
+  /// Striped frame while in-place text editing (vs solid when only selected).
+  final bool stripedBorder;
   final ValueChanged<Rect> onMoved;
   final ValueChanged<double> onRotated;
   final VoidCallback onSelect;
@@ -712,7 +1088,8 @@ class _SelectionHandlesOverlayState extends State<_SelectionHandlesOverlay> {
   Offset? _rotateCenterGlobal;
   static const _minNorm = 0.04;
   static const _handleVisual = 12.0;
-  static const _handleHit = 28.0;
+  static const _handleHit = 32.0;
+  static const _rotateGap = 28.0;
 
   PreviewLayer get layer => widget.layer;
 
@@ -786,7 +1163,6 @@ class _SelectionHandlesOverlayState extends State<_SelectionHandlesOverlay> {
     b = b.clamp(t + _minNorm, 1.0);
 
     var next = Rect.fromLTRB(l, t, r, b);
-    // Width changes that wrap icons should grow height so content isn't hidden.
     if (handle == _BoxHandle.e ||
         handle == _BoxHandle.w ||
         handle == _BoxHandle.ne ||
@@ -798,27 +1174,67 @@ class _SelectionHandlesOverlayState extends State<_SelectionHandlesOverlay> {
     widget.onMoved(next);
   }
 
-  double get _displayScale => layer.kind == PreviewLayerKind.text
+  double get _displayScale =>
+      (layer.kind == PreviewLayerKind.text ||
+          layer.kind == PreviewLayerKind.image)
       ? 1.0
       : layer.scale.clamp(0.25, 4.0);
 
-  Offset? _layerCenterGlobal() {
-    final box = widget.canvasKey.currentContext?.findRenderObject() as RenderBox?;
-    if (box == null) return null;
+  /// Unrotated box in outer-frame coordinates (origin = padded stack top-left).
+  Rect get _boxInFrame {
     final scale = _displayScale;
-    final left = layer.bounds.left * widget.canvasSize.width;
-    final top = layer.bounds.top * widget.canvasSize.height;
-    final hitW = layer.bounds.width * widget.canvasSize.width * scale;
-    final hitH = layer.bounds.height * widget.canvasSize.height * scale;
-    return box.localToGlobal(Offset(left + hitW / 2, top + hitH / 2));
+    final ox = widget.originOffset.dx;
+    final oy = widget.originOffset.dy;
+    final left = ox + layer.bounds.left * widget.canvasSize.width;
+    final top = oy + layer.bounds.top * widget.canvasSize.height;
+    final w = layer.bounds.width * widget.canvasSize.width * scale;
+    final h = layer.bounds.height * widget.canvasSize.height * scale;
+    return Rect.fromLTWH(left, top, w, h);
   }
 
-  Widget _handle(_BoxHandle kind, {required double left, required double top}) {
+  Offset _rotateAround(Offset point, Offset center, double angle) {
+    final c = math.cos(angle);
+    final s = math.sin(angle);
+    final d = point - center;
+    return Offset(center.dx + d.dx * c - d.dy * s, center.dy + d.dx * s + d.dy * c);
+  }
+
+  Offset? _layerCenterGlobal() {
+    final box =
+        widget.canvasKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return null;
+    final frame = _boxInFrame;
+    final localInDesign = Offset(
+      frame.center.dx - widget.originOffset.dx,
+      frame.center.dy - widget.originOffset.dy,
+    );
+    return box.localToGlobal(localInDesign);
+  }
+
+  Map<_BoxHandle, Offset> _handleCenters(Rect box) {
+    final center = box.center;
+    final angle = layer.rotation;
+    Offset map(Offset p) => _rotateAround(p, center, angle);
+    return {
+      _BoxHandle.nw: map(box.topLeft),
+      _BoxHandle.n: map(Offset(box.center.dx, box.top)),
+      _BoxHandle.ne: map(box.topRight),
+      _BoxHandle.e: map(Offset(box.right, box.center.dy)),
+      _BoxHandle.se: map(box.bottomRight),
+      _BoxHandle.s: map(Offset(box.center.dx, box.bottom)),
+      _BoxHandle.sw: map(box.bottomLeft),
+      _BoxHandle.w: map(Offset(box.left, box.center.dy)),
+      _BoxHandle.rotate: map(
+        Offset(box.center.dx, box.top - _rotateGap),
+      ),
+    };
+  }
+
+  Widget _handle(_BoxHandle kind, Offset center) {
     final isRotate = kind == _BoxHandle.rotate;
-    final inset = (_handleHit - _handleVisual) / 2;
     return Positioned(
-      left: left - inset,
-      top: top - inset,
+      left: center.dx - _handleHit / 2,
+      top: center.dy - _handleHit / 2,
       width: _handleHit,
       height: _handleHit,
       child: Listener(
@@ -826,7 +1242,7 @@ class _SelectionHandlesOverlayState extends State<_SelectionHandlesOverlay> {
         onPointerDown: (_) => widget.onSelect(),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onPanStart: (details) {
+          onPanStart: (_) {
             widget.onSelect();
             _boundsAtResizeStart = layer.bounds;
             _resizeAccum = Offset.zero;
@@ -837,7 +1253,6 @@ class _SelectionHandlesOverlayState extends State<_SelectionHandlesOverlay> {
               final center = _rotateCenterGlobal ?? _layerCenterGlobal();
               if (center == null) return;
               final v = details.globalPosition - center;
-              // 0 rad = handle pointing up; drag direction rotates the layer.
               widget.onRotated(math.atan2(v.dx, -v.dy));
               return;
             }
@@ -890,83 +1305,125 @@ class _SelectionHandlesOverlayState extends State<_SelectionHandlesOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = _displayScale;
-    final left = layer.bounds.left * widget.canvasSize.width;
-    final top = layer.bounds.top * widget.canvasSize.height;
-    final hitW = layer.bounds.width * widget.canvasSize.width * scale;
-    final hitH = layer.bounds.height * widget.canvasSize.height * scale;
-    final hs = _handleVisual;
-    // Expand hit-test bounds so corner + rotation handles outside the box
-    // still receive pointer events (parent Positioned otherwise rejects them).
-    const pad = 40.0;
-    final midX = (hitW - hs) / 2;
-    final midY = (hitH - hs) / 2;
-    const rotateGap = 28.0;
-    final totalW = hitW + pad * 2;
-    final totalH = hitH + pad * 2;
-    final alignX = ((pad + hitW / 2) / totalW) * 2 - 1;
-    final alignY = ((pad + hitH / 2) / totalH) * 2 - 1;
+    final box = _boxInFrame;
+    final centers = _handleCenters(box);
+    final n = centers[_BoxHandle.n]!;
+    final rotate = centers[_BoxHandle.rotate]!;
 
-    return Positioned(
-      left: widget.originOffset.dx + left - pad,
-      top: widget.originOffset.dy + top - pad,
-      width: totalW,
-      height: totalH,
-      child: Transform.rotate(
-        angle: layer.rotation,
-        alignment: Alignment(alignX, alignY),
+    return Positioned.fill(
+      child: IgnorePointer(
+        ignoring: false,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Positioned(
-              left: pad,
-              top: pad,
-              width: hitW,
-              height: hitH,
+            Positioned.fill(
               child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.blueGrey.shade400,
-                      width: 1.25,
-                    ),
+                child: CustomPaint(
+                  painter: _SelectionBorderPainter(
+                    box: box,
+                    rotation: layer.rotation,
+                    rotateHandle: rotate,
+                    northHandle: n,
+                    striped: widget.stripedBorder,
                   ),
                 ),
               ),
             ),
-            Positioned(
-              left: pad + hitW / 2 - 0.75,
-              top: pad - rotateGap,
-              child: IgnorePointer(
-                child: Container(
-                  width: 1.5,
-                  height: rotateGap,
-                  color: Colors.blueGrey,
-                ),
-              ),
-            ),
-            _handle(
-              _BoxHandle.rotate,
-              left: pad + midX,
-              top: pad - rotateGap - hs / 2,
-            ),
-            _handle(_BoxHandle.nw, left: pad - hs / 2, top: pad - hs / 2),
-            _handle(_BoxHandle.n, left: pad + midX, top: pad - hs / 2),
-            _handle(_BoxHandle.ne, left: pad + hitW - hs / 2, top: pad - hs / 2),
-            _handle(_BoxHandle.e, left: pad + hitW - hs / 2, top: pad + midY),
-            _handle(
-              _BoxHandle.se,
-              left: pad + hitW - hs / 2,
-              top: pad + hitH - hs / 2,
-            ),
-            _handle(_BoxHandle.s, left: pad + midX, top: pad + hitH - hs / 2),
-            _handle(_BoxHandle.sw, left: pad - hs / 2, top: pad + hitH - hs / 2),
-            _handle(_BoxHandle.w, left: pad - hs / 2, top: pad + midY),
+            for (final entry in centers.entries) _handle(entry.key, entry.value),
           ],
         ),
       ),
     );
   }
+}
+
+class _SelectionBorderPainter extends CustomPainter {
+  _SelectionBorderPainter({
+    required this.box,
+    required this.rotation,
+    required this.rotateHandle,
+    required this.northHandle,
+    this.striped = false,
+  });
+
+  final Rect box;
+  final double rotation;
+  final Offset rotateHandle;
+  final Offset northHandle;
+  final bool striped;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = box.center;
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(rotation);
+    canvas.translate(-center.dx, -center.dy);
+    if (striped) {
+      _paintStripedRect(canvas, box);
+    } else {
+      final paint = Paint()
+        ..color = Colors.blueGrey.shade400
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.25;
+      canvas.drawRect(box, paint);
+    }
+    canvas.restore();
+
+    canvas.drawLine(
+      northHandle,
+      rotateHandle,
+      Paint()
+        ..color = Colors.blueGrey
+        ..strokeWidth = 1.5,
+    );
+  }
+
+  /// Alternating dark/light dashes — distinct from PowerPoint-style dots.
+  void _paintStripedRect(Canvas canvas, Rect rect) {
+    const stripe = 7.0;
+    const gap = 5.0;
+    final dark = Paint()
+      ..color = const Color(0xFF37474F)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.butt;
+    final light = Paint()
+      ..color = const Color(0xFFECEFF1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.butt;
+
+    void paintEdge(Offset a, Offset b) {
+      final delta = b - a;
+      final length = delta.distance;
+      if (length <= 0) return;
+      final dir = delta / length;
+      var t = 0.0;
+      var useDark = true;
+      while (t < length) {
+        final seg = math.min(stripe, length - t);
+        final p0 = a + dir * t;
+        final p1 = a + dir * (t + seg);
+        canvas.drawLine(p0, p1, useDark ? dark : light);
+        t += seg + gap;
+        useDark = !useDark;
+      }
+    }
+
+    paintEdge(rect.topLeft, rect.topRight);
+    paintEdge(rect.topRight, rect.bottomRight);
+    paintEdge(rect.bottomRight, rect.bottomLeft);
+    paintEdge(rect.bottomLeft, rect.topLeft);
+  }
+
+  @override
+  bool shouldRepaint(covariant _SelectionBorderPainter oldDelegate) =>
+      oldDelegate.box != box ||
+      oldDelegate.rotation != rotation ||
+      oldDelegate.striped != striped ||
+      oldDelegate.rotateHandle != rotateHandle ||
+      oldDelegate.northHandle != northHandle;
 }
 
 class _StrokePainter extends CustomPainter {
@@ -1014,36 +1471,62 @@ class _StrokePainter extends CustomPainter {
 
 class _ShapePainter extends CustomPainter {
   _ShapePainter({
-    required this.oval,
+    required this.kind,
     required this.fill,
     required this.stroke,
     required this.strokeWidth,
   });
 
-  final bool oval;
+  final PreviewShapeKind kind;
   final Color? fill;
   final Color stroke;
   final double strokeWidth;
 
+  Path _starPath(Rect rect) {
+    final cx = rect.center.dx;
+    final cy = rect.center.dy;
+    final outer = math.min(rect.width, rect.height) / 2;
+    final inner = outer * 0.4;
+    final path = Path();
+    for (var i = 0; i < 10; i++) {
+      final r = i.isEven ? outer : inner;
+      final a = -math.pi / 2 + i * math.pi / 5;
+      final x = cx + r * math.cos(a);
+      final y = cy + r * math.sin(a);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    return path;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    if (fill != null) {
-      final fp = Paint()..color = fill!;
-      if (oval) {
-        canvas.drawOval(rect, fp);
-      } else {
-        canvas.drawRect(rect, fp);
-      }
-    }
     final sp = Paint()
       ..color = stroke
       ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-    if (oval) {
-      canvas.drawOval(rect, sp);
-    } else {
-      canvas.drawRect(rect, sp);
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    final fp = fill == null ? null : (Paint()..color = fill!);
+
+    switch (kind) {
+      case PreviewShapeKind.rect:
+        if (fp != null) canvas.drawRect(rect, fp);
+        canvas.drawRect(rect, sp);
+      case PreviewShapeKind.oval:
+        if (fp != null) canvas.drawOval(rect, fp);
+        canvas.drawOval(rect, sp);
+      case PreviewShapeKind.line:
+        canvas.drawLine(rect.topLeft, rect.bottomRight, sp);
+      case PreviewShapeKind.star:
+        final path = _starPath(rect);
+        if (fp != null) canvas.drawPath(path, fp);
+        canvas.drawPath(path, sp);
     }
   }
 
@@ -1076,7 +1559,31 @@ class _ItemIcon extends StatelessWidget {
         border: Border.all(color: Colors.black87, width: 1),
       ),
       padding: const EdgeInsets.all(2),
-      child: child,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          child,
+          if (item.label != null && item.label!.isNotEmpty)
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                color: Colors.black54,
+                child: Text(
+                  item.label!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: (size * 0.22).clamp(8.0, 12.0),
+                    fontWeight: FontWeight.w700,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

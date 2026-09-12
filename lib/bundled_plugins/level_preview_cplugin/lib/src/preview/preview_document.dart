@@ -1,7 +1,36 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/repository/plant_repository.dart';
+import 'package:c_editor/data/repository/tool_repository.dart';
 
 /// Design size of pre-made stage banners.
 const Size kPreviewCanvasSize = Size(1144, 439);
+
+/// Icon path for seed-bank / conveyor entries (plants, tools, plant food…).
+String previewPlantLikeAssetPath(String id) {
+  final plant = PlantRepository().getPlantInfoById(id);
+  if (plant?.iconAssetPath != null) return plant!.iconAssetPath!;
+
+  if (id == 'plantfood' || id == 'tool_plantfood') {
+    return 'assets/images/others/plantfood.png';
+  }
+  if (id == 'sun' || id == 'sun_large') {
+    return 'assets/images/others/sun_large.webp';
+  }
+
+  ToolCardInfo? tool = ToolRepository.get(id);
+  if (tool == null && !id.startsWith('tool_')) {
+    tool = ToolRepository.get('tool_$id');
+  }
+  final icon = tool?.icon;
+  if (icon != null && icon.isNotEmpty) {
+    if (icon.startsWith('assets/')) return icon;
+    return 'assets/images/tools/$icon';
+  }
+
+  return 'assets/images/others/unknown.webp';
+}
 
 /// Family registered from plugin `assets/fonts/`.
 const kPreviewCustomFontFamily = 'PvZPreview';
@@ -14,9 +43,9 @@ enum PreviewLayerKind { text, iconGrid, image, shape, stroke }
 
 enum PreviewIconGridKind { plants, zombies, gridItems, custom }
 
-enum PreviewShapeKind { rect, oval }
+enum PreviewShapeKind { rect, oval, line, star }
 
-enum PreviewEditTool { select, text, image, pen, rect, oval }
+enum PreviewEditTool { select, pen, eraser, figures }
 
 enum PreviewBossKind { zombot, zomboss }
 
@@ -46,6 +75,8 @@ Size previewIconGridIntrinsicSize({
   bool showChrome = true,
   String? gridTitle,
   String? sourceLabel,
+  int? lawnRows,
+  int? lawnCols,
 }) {
   const pad = 8.0;
   const sectionGap = 8.0;
@@ -60,8 +91,35 @@ Size previewIconGridIntrinsicSize({
   if (showChrome) {
     // Match TextStyle metrics used in preview_canvas chrome (~1.25 line height).
     if (gridTitle != null && gridTitle.isNotEmpty) contentH += 24;
-    if (sourceLabel != null && sourceLabel.isNotEmpty) contentH += 16;
+    if (sourceLabel != null && sourceLabel.isNotEmpty) {
+      final lines = sourceLabel.split('\n').where((l) => l.trim().isNotEmpty);
+      contentH += lines.length.clamp(1, 6) * 14.0;
+    }
     if (contentH > 0) contentH += 4; // SizedBox after headers
+  }
+
+  final useLawn =
+      lawnRows != null &&
+      lawnCols != null &&
+      lawnRows > 0 &&
+      lawnCols > 0 &&
+      sections.any((s) => s.items.any((i) => i.hasCell));
+
+  if (useLawn) {
+    final lawnH = innerMax / ((lawnCols / lawnRows) * 1.0);
+    for (var i = 0; i < sections.length; i++) {
+      final section = sections[i];
+      if (section.items.isEmpty) continue;
+      if (contentH > 0 && (i > 0 || showChrome)) contentH += sectionGap;
+      if (section.title != null && section.title!.isNotEmpty) {
+        final titleSize = section.iconSize >= 64 ? 15.0 : 13.0;
+        contentH += titleSize * 1.25 * 2 + 4;
+      }
+      contentH += lawnH;
+      contentW = math.max(contentW, innerMax);
+    }
+    final totalH = contentH + (showChrome ? pad * 2 : 0);
+    return Size(maxWidth, totalH.clamp(24.0, 4096.0));
   }
 
   for (var i = 0; i < sections.length; i++) {
@@ -129,6 +187,8 @@ class PreviewItem {
     required this.assetPath,
     this.label,
     this.sourceLabel,
+    this.gridX,
+    this.gridY,
   });
 
   final String id;
@@ -136,11 +196,21 @@ class PreviewItem {
   final String? label;
   final String? sourceLabel;
 
+  /// Lawn-cell column when this item is placed on a mini lawn grid.
+  final int? gridX;
+
+  /// Lawn-cell row when this item is placed on a mini lawn grid.
+  final int? gridY;
+
+  bool get hasCell => gridX != null && gridY != null;
+
   PreviewItem copy() => PreviewItem(
     id: id,
     assetPath: assetPath,
     label: label,
     sourceLabel: sourceLabel,
+    gridX: gridX,
+    gridY: gridY,
   );
 }
 
@@ -202,21 +272,27 @@ class PreviewLayer {
     required this.bounds,
     this.scale = 1.0,
     this.rotation = 0.0,
+    this.opacity = 1.0,
     this.visible = true,
     this.zIndex = 0,
     this.text,
     this.textStyle,
     List<PreviewTextRun>? textRuns,
     this.textAlign = TextAlign.left,
+    this.textBackgroundColor,
+    this.iconAlign = TextAlign.left,
     this.gridKind,
     this.gridTitle,
     this.sourceLabel,
     this.showChrome = true,
+    this.lawnRows,
+    this.lawnCols,
     List<PreviewItem>? items,
     List<PreviewIconSection>? sections,
     this.imagePath,
     this.imageAsset,
     this.shapeKind,
+    this.shapeFilled = false,
     this.fillColor,
     this.strokeColor = const Color(0xFFFFFFFF),
     this.strokeWidth = 3,
@@ -232,6 +308,8 @@ class PreviewLayer {
   double scale;
   /// Clockwise radians around the layer center.
   double rotation;
+  /// 0–1; applied to the whole layer when painting.
+  double opacity;
   bool visible;
   int zIndex;
 
@@ -241,12 +319,19 @@ class PreviewLayer {
   /// Styled runs; when empty, [text] + [textStyle] are used as a single run.
   List<PreviewTextRun> textRuns;
   TextAlign textAlign;
+  /// Optional solid background behind text (independent of fill text color).
+  Color? textBackgroundColor;
+  /// Horizontal alignment for icon-grid content (icons / section titles).
+  TextAlign iconAlign;
 
   // icon grid
   PreviewIconGridKind? gridKind;
   String? gridTitle;
   String? sourceLabel;
   bool showChrome;
+  /// When set with [lawnCols], icon-grid content is painted as a mini lawn.
+  int? lawnRows;
+  int? lawnCols;
   List<PreviewItem> items;
   List<PreviewIconSection> sections;
 
@@ -256,6 +341,7 @@ class PreviewLayer {
 
   // shape
   PreviewShapeKind? shapeKind;
+  bool shapeFilled;
   Color? fillColor;
   Color strokeColor;
   double strokeWidth;
@@ -305,6 +391,101 @@ class PreviewLayer {
     }
     text = value;
     textStyle = textRuns.first.style.copy();
+  }
+
+  /// Updates plain text while preserving per-run styles around the edit.
+  ///
+  /// Inserted characters use [typingStyle] when provided; otherwise they inherit
+  /// the style of the character before the caret (or the first character when
+  /// inserting at the start).
+  void updatePlainTextPreservingStyles(
+    String newValue, {
+    PreviewTextStyleData? typingStyle,
+  }) {
+    ensureTextRuns();
+    final oldValue = plainText;
+    if (newValue == oldValue) {
+      text = newValue;
+      return;
+    }
+    if (textRuns.length == 1 && typingStyle == null) {
+      textRuns.first.text = newValue;
+      text = newValue;
+      textStyle = textRuns.first.style.copy();
+      return;
+    }
+
+    var prefix = 0;
+    final maxPrefix = math.min(oldValue.length, newValue.length);
+    while (prefix < maxPrefix && oldValue[prefix] == newValue[prefix]) {
+      prefix++;
+    }
+    var oldEnd = oldValue.length;
+    var newEnd = newValue.length;
+    while (oldEnd > prefix &&
+        newEnd > prefix &&
+        oldValue[oldEnd - 1] == newValue[newEnd - 1]) {
+      oldEnd--;
+      newEnd--;
+    }
+
+    final charStyles = <PreviewTextStyleData>[];
+    for (final run in textRuns) {
+      for (var i = 0; i < run.text.length; i++) {
+        charStyles.add(run.style);
+      }
+    }
+
+    final fallback =
+        (textStyle ??
+                (charStyles.isNotEmpty
+                    ? charStyles.first
+                    : PreviewTextStyleData()))
+            .copy();
+    // Inherit previous character; at the start, inherit the first character.
+    final inherited = prefix > 0 && prefix <= charStyles.length
+        ? charStyles[prefix - 1].copy()
+        : (charStyles.isNotEmpty ? charStyles.first.copy() : fallback);
+    final insertStyle = typingStyle?.copy() ?? inherited;
+
+    final nextStyles = <PreviewTextStyleData>[];
+    for (var i = 0; i < prefix; i++) {
+      nextStyles.add(charStyles[i].copy());
+    }
+    for (var i = prefix; i < newEnd; i++) {
+      nextStyles.add(insertStyle.copy());
+    }
+    for (var i = oldEnd; i < oldValue.length; i++) {
+      nextStyles.add(charStyles[i].copy());
+    }
+
+    final next = <PreviewTextRun>[];
+    for (var i = 0; i < newValue.length; i++) {
+      final ch = newValue[i];
+      final style = i < nextStyles.length ? nextStyles[i] : fallback;
+      if (next.isNotEmpty && _sameTextStyle(next.last.style, style)) {
+        next.last.text += ch;
+      } else {
+        next.add(PreviewTextRun(text: ch, style: style.copy()));
+      }
+    }
+    textRuns = next.isEmpty
+        ? [
+            PreviewTextRun(text: '', style: fallback),
+          ]
+        : next;
+    text = plainText;
+    textStyle = textRuns.first.style.copy();
+  }
+
+  static bool _sameTextStyle(PreviewTextStyleData a, PreviewTextStyleData b) {
+    return a.fontFamily == b.fontFamily &&
+        a.fontSize == b.fontSize &&
+        a.fontWeight == b.fontWeight &&
+        a.italic == b.italic &&
+        a.underline == b.underline &&
+        a.outline == b.outline &&
+        a.color == b.color;
   }
 
   /// Applies [mutate] to the style of characters in `[start, end)`.
@@ -376,21 +557,27 @@ class PreviewLayer {
     bounds: bounds,
     scale: scale,
     rotation: rotation,
+    opacity: opacity,
     visible: visible,
     zIndex: zIndex,
     text: text,
     textStyle: textStyle?.copy(),
     textRuns: textRuns.map((e) => e.copy()).toList(),
     textAlign: textAlign,
+    textBackgroundColor: textBackgroundColor,
+    iconAlign: iconAlign,
     gridKind: gridKind,
     gridTitle: gridTitle,
     sourceLabel: sourceLabel,
     showChrome: showChrome,
+    lawnRows: lawnRows,
+    lawnCols: lawnCols,
     items: items.map((e) => e.copy()).toList(),
     sections: sections.map((e) => e.copy()).toList(),
     imagePath: imagePath,
     imageAsset: imageAsset,
     shapeKind: shapeKind,
+    shapeFilled: shapeFilled,
     fillColor: fillColor,
     strokeColor: strokeColor,
     strokeWidth: strokeWidth,
