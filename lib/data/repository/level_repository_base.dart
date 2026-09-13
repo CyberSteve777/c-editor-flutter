@@ -80,7 +80,8 @@ class FileItem {
     if (lower.endsWith('.rton')) return 2;
     if (lower.endsWith('.hujson')) return 3;
     if (LevelRepositoryBase.imageExtensions.any(lower.endsWith)) return 4;
-    return 5;
+    if (LevelRepositoryBase.pluginExtensions.any(lower.endsWith)) return 5;
+    return 6;
   }
 }
 
@@ -104,6 +105,10 @@ abstract class LevelRepositoryBase {
     '.gif',
     '.bmp',
   };
+
+  /// Plugin packages shown in the level library (installable archives).
+  static const Set<String> pluginExtensions = {'.cplugin'};
+
 
   Future<String?> getSavedFolderPath();
   Future<void> setSavedFolderPath(String path);
@@ -312,8 +317,15 @@ abstract class LevelRepositoryBase {
     return imageExtensions.any(lower.endsWith);
   }
 
+  bool isSupportedPluginFileName(String name) {
+    final lower = name.toLowerCase();
+    return pluginExtensions.any(lower.endsWith);
+  }
+
   bool isSupportedLibraryFileName(String name) =>
-      isSupportedLevelFileName(name) || isSupportedImageFileName(name);
+      isSupportedLevelFileName(name) ||
+      isSupportedImageFileName(name) ||
+      isSupportedPluginFileName(name);
 
   String baseNameWithoutLevelExtension(String name) {
     final lower = name.toLowerCase();
@@ -373,7 +385,13 @@ abstract class LevelRepositoryBase {
     final lower = fileName.toLowerCase();
     final ext = levelExtensions.firstWhere(
       lower.endsWith,
-      orElse: () => '.json',
+      orElse: () => pluginExtensions.firstWhere(
+        lower.endsWith,
+        orElse: () => imageExtensions.firstWhere(
+          lower.endsWith,
+          orElse: () => '.json',
+        ),
+      ),
     );
     final newFileName = '$suggested$ext';
     return moveFileWithName(srcDirPath, fileName, destDirPath, newFileName);

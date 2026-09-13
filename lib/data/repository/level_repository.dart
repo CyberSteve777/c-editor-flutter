@@ -68,6 +68,9 @@ class LevelRepository {
   static bool isSupportedImageFileName(String name) =>
       _impl.isSupportedImageFileName(name);
 
+  static bool isSupportedPluginFileName(String name) =>
+      _impl.isSupportedPluginFileName(name);
+
   static bool isSupportedLibraryFileName(String name) =>
       _impl.isSupportedLibraryFileName(name);
 

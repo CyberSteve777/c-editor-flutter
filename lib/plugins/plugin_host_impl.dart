@@ -10,6 +10,7 @@ import 'package:c_editor/plugins/plugin_level_io.dart';
 import 'package:c_editor/plugins/plugin_arb.dart';
 import 'package:c_editor/plugins/plugin_l10n.dart';
 import 'package:c_editor/plugins/plugin_material_icon.dart';
+import 'package:c_editor/plugins/plugin_config_store.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 
 /// In-memory asset accessor for a loaded plugin.
@@ -268,6 +269,16 @@ class PluginHostImpl implements CPluginHost {
       cubit.applyLevelFile(level, markDirty: false);
     }
   }
+
+  @override
+  Future<String> readConfigJson() => PluginConfigStore.instance.readJson(pluginId);
+
+  @override
+  Future<void> writeConfigJson(String json) =>
+      PluginConfigStore.instance.writeJson(pluginId, json);
+
+  @override
+  Future<void> clearConfig() => PluginConfigStore.instance.clear(pluginId);
 
   @override
   String localize(

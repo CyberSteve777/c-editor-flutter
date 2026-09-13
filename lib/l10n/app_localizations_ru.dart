@@ -293,7 +293,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pluginsFolderReserved =>
-      'Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.';
+      'Имена папок \".plugins\" и \".plugin_config\" зарезервированы для плагинов редактора. Выберите другое имя.';
 
   @override
   String get pluginNoLibraryForInstall =>
@@ -369,10 +369,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pluginOpenScreen => 'Открыть';
 
   @override
+  String get pluginOpenSettings => 'Настройки';
+
+  @override
+  String get pluginInstallAction => 'Установить';
+
+  @override
+  String get pluginConfigurable => 'Настраиваемый';
+
+  @override
   String get pluginFeaturesSection => 'Функции и экраны';
 
   @override
   String get pluginNoDescription => 'Описание не указано.';
+
+  @override
+  String get pluginSettingsUnavailable =>
+      'У этого плагина нет экрана настроек.';
 
   @override
   String get share => 'Поделиться';

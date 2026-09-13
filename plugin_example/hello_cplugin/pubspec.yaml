@@ -1,7 +1,7 @@
 name: hello_cplugin
 description: Sample C-Editor plugin (debug as a Flutter package, ship as .cplugin)
 publish_to: "none"
-version: 1.0.0
+version: 1.1.0
 
 environment:
   sdk: ^3.9.2
@@ -23,3 +23,5 @@ flutter:
     - assets/l10n/en.arb
     - assets/l10n/ru.arb
     - assets/l10n/zh.arb
+    - assets/icon.png
+    - assets/config_schema.json

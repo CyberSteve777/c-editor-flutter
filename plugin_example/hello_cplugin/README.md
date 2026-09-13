@@ -82,6 +82,13 @@ dart run tools/pack_cplugin.dart build/hello_cplugin build/hello.cplugin
   - `host.getOpenLevelJson()` / `applyOpenLevelJson(json)` / `saveOpenLevel()`
   - `await host.loadLevelJson(path)` / `await host.saveLevelJson(path, json)`
     (if `path` is the open editor level, the editor session is updated too)
+- Plugin config (UTF-8 JSON object; Unicode-safe values):
+  - `await host.readConfigJson()` / `writeConfigJson(json)` / `clearConfig()`
+  - Native: `{levelLibrary}/.plugin_config/{pluginId}/config.json`
+  - Set `"configurable": true` in `manifest.json` (default `false`) so Plugins
+    shows a Settings button; register a screen id of `settings`, `config`, or
+    `*_settings`. Optional `assets/config_schema.json` can map option keys to
+    ARB `titleKey` / `descriptionKey` strings.
 - Localization: `host.localize(context, 'someKey')` looks up plugin
   `assets/l10n/{locale}.arb` (Flutter ARB), then `en.arb`, then curated host
   ARB keys. Pass ICU args as the 4th parameter:

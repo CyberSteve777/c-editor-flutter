@@ -288,7 +288,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pluginImportedBadge => '已导入';
 
   @override
-  String get pluginsFolderReserved => '“.plugins” 文件夹名已保留给编辑器插件使用，请换一个名称。';
+  String get pluginsFolderReserved =>
+      '“.plugins” 和 “.plugin_config” 文件夹名已保留给编辑器插件使用，请换一个名称。';
 
   @override
   String get pluginNoLibraryForInstall => '请先选择工作区文件夹，再安装插件。';
@@ -360,10 +361,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pluginOpenScreen => '打开';
 
   @override
+  String get pluginOpenSettings => '设置';
+
+  @override
+  String get pluginInstallAction => '安装';
+
+  @override
+  String get pluginConfigurable => '可配置';
+
+  @override
   String get pluginFeaturesSection => '功能与界面';
 
   @override
   String get pluginNoDescription => '暂无描述。';
+
+  @override
+  String get pluginSettingsUnavailable => '此插件没有设置界面。';
 
   @override
   String get share => '分享';

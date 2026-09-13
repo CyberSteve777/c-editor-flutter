@@ -113,20 +113,26 @@ class _PreviewSettingsScreenState extends State<PreviewSettingsScreen> {
                   onPressed: _saving ? null : _chooseFolder,
                   icon: const Icon(Icons.folder_open),
                   label: Text(
-                    '${_t('previewSettingsChooseFolder', 'Choose export folder')}: ${_folder == '.' ? _t('previewSettingsWorkspaceRoot', 'Workspace') : _folder}',
+                    '${_t('configExportFolder', _t('previewSettingsChooseFolder', 'Choose export folder'))}: ${_folder == '.' ? _t('previewSettingsWorkspaceRoot', 'Workspace') : _folder}',
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   key: const ValueKey('previewSettingsFolderHint'),
                   _t(
-                    'previewSettingsFolderHint',
-                    'PNG previews are saved to this folder in your workspace.',
+                    'configExportFolderDescription',
+                    _t(
+                      'previewSettingsFolderHint',
+                      'PNG previews are saved to this folder in your workspace.',
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  _t('previewSettingsToolbarStyle', 'Toolbar style'),
+                  _t(
+                    'configToolbarStyle',
+                    _t('previewSettingsToolbarStyle', 'Toolbar style'),
+                  ),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 RadioGroup<PreviewToolbarStyle>(
@@ -142,23 +148,37 @@ class _PreviewSettingsScreenState extends State<PreviewSettingsScreen> {
                         key: const ValueKey('previewToolbarStyleCompact'),
                         value: PreviewToolbarStyle.compact,
                         title: Text(
-                          _t('previewSettingsToolbarCompact', 'Compact'),
+                          _t(
+                            'configToolbarStyleCompact',
+                            _t('previewSettingsToolbarCompact', 'Compact'),
+                          ),
                         ),
                         subtitle: Text(
                           _t(
-                            'previewSettingsToolbarCompactHint',
-                            'Icon-only controls with tooltips; tool and add-element controls share one row.',
+                            'configToolbarStyleCompactDescription',
+                            _t(
+                              'previewSettingsToolbarCompactHint',
+                              'Icon-only controls with tooltips; tool and add-element controls share one row.',
+                            ),
                           ),
                         ),
                       ),
                       RadioListTile<PreviewToolbarStyle>(
                         key: const ValueKey('previewToolbarStyleFull'),
                         value: PreviewToolbarStyle.full,
-                        title: Text(_t('previewSettingsToolbarFull', 'Full')),
+                        title: Text(
+                          _t(
+                            'configToolbarStyleFull',
+                            _t('previewSettingsToolbarFull', 'Full'),
+                          ),
+                        ),
                         subtitle: Text(
                           _t(
-                            'previewSettingsToolbarFullHint',
-                            'Show button labels and explanations below each function.',
+                            'configToolbarStyleFullDescription',
+                            _t(
+                              'previewSettingsToolbarFullHint',
+                              'Show button labels and explanations below each function.',
+                            ),
                           ),
                         ),
                       ),

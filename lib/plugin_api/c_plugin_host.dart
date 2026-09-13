@@ -152,6 +152,20 @@ abstract class CPluginHost {
   /// open session so the editor stays consistent.
   Future<void> saveLevelJson(String filePath, String json);
 
+  // --- Plugin config (UTF-8 JSON object; Unicode-safe) ---
+
+  /// Returns this plugin's config as a JSON object string, or `'{}'` if none.
+  ///
+  /// Persisted under `{levelLibrary}/.plugin_config/{pluginId}/config.json`
+  /// (native) or a prefs key on web. Values may use any Unicode characters.
+  Future<String> readConfigJson();
+
+  /// Replaces this plugin's config with a UTF-8 JSON object string.
+  Future<void> writeConfigJson(String json);
+
+  /// Deletes this plugin's stored config.
+  Future<void> clearConfig();
+
   // --- Localization ---
 
   /// Resolves a localization key for this plugin.

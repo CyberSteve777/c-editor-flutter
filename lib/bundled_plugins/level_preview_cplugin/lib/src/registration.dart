@@ -9,8 +9,7 @@ import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_dialog.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_settings_screen.dart';
 
-/// Built-in level preview plugin id (must match `manifest.json`).
-const kLevelPreviewPluginId = 'team.international2c.level_preview';
+export 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_constants.dart';
 
 /// Wires host hooks and registers UI via the public [CPluginHost] API.
 ///
