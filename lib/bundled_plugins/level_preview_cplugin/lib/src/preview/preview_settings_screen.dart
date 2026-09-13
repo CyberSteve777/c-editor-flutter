@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_export_prefs.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/data/repository/level_repository.dart';
+import 'preview_export_folder_picker.dart';
+import 'preview_toolbar_prefs.dart';
 
-/// Plugin settings: preview PNG export folder name under the level library.
+/// Preview export destination and generator toolbar presentation.
 class PreviewSettingsScreen extends StatefulWidget {
   const PreviewSettingsScreen({super.key, required this.host});
 
@@ -13,7 +16,8 @@ class PreviewSettingsScreen extends StatefulWidget {
 }
 
 class _PreviewSettingsScreenState extends State<PreviewSettingsScreen> {
-  final _controller = TextEditingController();
+  String _folder = kDefaultPreviewExportFolder;
+  PreviewToolbarStyle _toolbarStyle = PreviewToolbarStyle.full;
   bool _loading = true;
   bool _saving = false;
 
@@ -28,31 +32,69 @@ class _PreviewSettingsScreenState extends State<PreviewSettingsScreen> {
 
   Future<void> _load() async {
     final name = await PreviewExportPrefs.getFolderName();
+    final toolbarStyle = await PreviewToolbarPrefs.getStyle();
     if (!mounted) return;
     setState(() {
-      _controller.text = name;
+      _folder = name;
+      _toolbarStyle = toolbarStyle;
       _loading = false;
     });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Future<void> _chooseFolder() async {
+    final workspace = await LevelRepository.getSavedFolderPath();
+    if (!mounted) return;
+    if (workspace == null || workspace.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _t(
+              'previewSettingsWorkspaceRequired',
+              'Choose a workspace before selecting an export folder.',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+    final folder = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PreviewExportFolderPicker(
+          workspacePath: workspace,
+          initialFolder: _folder,
+          t: _t,
+        ),
+      ),
+    );
+    if (folder != null && mounted) setState(() => _folder = folder);
   }
 
   Future<void> _save() async {
     setState(() => _saving = true);
-    await PreviewExportPrefs.setFolderName(_controller.text);
-    final sanitized = await PreviewExportPrefs.getFolderName();
-    if (!mounted) return;
-    setState(() {
-      _controller.text = sanitized;
-      _saving = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(_t('previewSettingsSaved', 'Settings saved'))),
-    );
+    try {
+      await PreviewExportPrefs.setFolderPath(_folder);
+      await PreviewToolbarPrefs.setStyle(_toolbarStyle);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_t('previewSettingsSaved', 'Settings saved'))),
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _t(
+                'previewSettingsSaveFailed',
+                'Unable to save settings. Please try again.',
+              ),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -66,22 +108,61 @@ class _PreviewSettingsScreenState extends State<PreviewSettingsScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(
-                  _t(
-                    'previewSettingsFolderHint',
-                    'PNG previews are written under this folder inside your level library.',
+                OutlinedButton.icon(
+                  key: const ValueKey('previewSettingsChooseExportFolder'),
+                  onPressed: _saving ? null : _chooseFolder,
+                  icon: const Icon(Icons.folder_open),
+                  label: Text(
+                    '${_t('previewSettingsChooseFolder', 'Choose export folder')}: ${_folder == '.' ? _t('previewSettingsWorkspaceRoot', 'Workspace') : _folder}',
                   ),
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    labelText: _t(
-                      'previewSettingsFolderLabel',
-                      'Preview export folder name',
-                    ),
-                    hintText: kDefaultPreviewExportFolder,
-                    border: const OutlineInputBorder(),
+                const SizedBox(height: 8),
+                Text(
+                  key: const ValueKey('previewSettingsFolderHint'),
+                  _t(
+                    'previewSettingsFolderHint',
+                    'PNG previews are saved to this folder in your workspace.',
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  _t('previewSettingsToolbarStyle', 'Toolbar style'),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                RadioGroup<PreviewToolbarStyle>(
+                  groupValue: _toolbarStyle,
+                  onChanged: (value) {
+                    if (value != null && !_saving) {
+                      setState(() => _toolbarStyle = value);
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<PreviewToolbarStyle>(
+                        key: const ValueKey('previewToolbarStyleCompact'),
+                        value: PreviewToolbarStyle.compact,
+                        title: Text(
+                          _t('previewSettingsToolbarCompact', 'Compact'),
+                        ),
+                        subtitle: Text(
+                          _t(
+                            'previewSettingsToolbarCompactHint',
+                            'Icon-only controls with tooltips; tool and add-element controls share one row.',
+                          ),
+                        ),
+                      ),
+                      RadioListTile<PreviewToolbarStyle>(
+                        key: const ValueKey('previewToolbarStyleFull'),
+                        value: PreviewToolbarStyle.full,
+                        title: Text(_t('previewSettingsToolbarFull', 'Full')),
+                        subtitle: Text(
+                          _t(
+                            'previewSettingsToolbarFullHint',
+                            'Show button labels and explanations below each function.',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),

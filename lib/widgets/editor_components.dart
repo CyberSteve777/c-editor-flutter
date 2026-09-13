@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -661,21 +662,27 @@ class _EditorResponsiveInputFieldState
             : widget.decoration.copyWith(labelText: widget.label);
         final field = widget.builder(context, effectiveDecoration);
 
-        if (!showExternalLabel) return field;
+        // Keep the input at the same child position while labels move so
+        // resizing preserves focus and partially entered, unparsed values.
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: math.max(
-                _heightGroup?.maxHeight ?? 0,
-                externalLabelPainter.height,
-              ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(widget.label, style: externalLabelStyle),
-              ),
+              height: showExternalLabel
+                  ? math.max(
+                      _heightGroup?.maxHeight ?? 0,
+                      externalLabelPainter.height,
+                    )
+                  : 0,
+              child: showExternalLabel
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(widget.label, style: externalLabelStyle),
+                    )
+                  : null,
             ),
-            SizedBox(height: widget.labelSpacing),
+            SizedBox(height: showExternalLabel ? widget.labelSpacing : 0),
             field,
           ],
         );
@@ -1791,6 +1798,322 @@ class EventChipWidget extends StatelessWidget {
   }
 }
 
+/// A choice row that gives text its own line when icons or actions would squeeze it.
+///
+/// Place this in a bounded list or an explicitly sized dialog content area.
+class EditorOptionTile extends StatelessWidget {
+  const EditorOptionTile({
+    super.key,
+    this.leading,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+    this.selected = false,
+    this.enabled = true,
+    this.contentPadding = const EdgeInsets.all(12),
+  });
+
+  final Widget? leading;
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final bool selected;
+  final bool enabled;
+  final EdgeInsetsGeometry contentPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final foreground = !enabled
+        ? theme.disabledColor
+        : selected
+        ? colors.primary
+        : colors.onSurface;
+    final scale = (MediaQuery.textScalerOf(context).scale(14) / 14).clamp(
+      1.0,
+      2.0,
+    );
+    final text = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DefaultTextStyle(
+          style: (theme.textTheme.titleMedium ?? const TextStyle()).copyWith(
+            color: foreground,
+          ),
+          child: title,
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 4),
+          DefaultTextStyle(
+            style: (theme.textTheme.bodyMedium ?? const TextStyle()).copyWith(
+              color: enabled ? colors.onSurfaceVariant : theme.disabledColor,
+            ),
+            child: subtitle!,
+          ),
+        ],
+      ],
+    );
+    return Semantics(
+      button: onTap != null,
+      enabled: enabled,
+      selected: selected,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: enabled ? onTap : null,
+          child: IconTheme.merge(
+            data: IconThemeData(color: foreground),
+            child: Padding(
+              padding: contentPadding,
+              child: _EditorOptionLayout(
+                minTextWidth: 120 * scale,
+                minRowWidth: leading == null && trailing == null
+                    ? 0
+                    : (leading != null && trailing != null ? 240 : 180) *
+                          (MediaQuery.textScalerOf(context).scale(14) / 14)
+                              .clamp(1.0, 2.0),
+                textDirection: Directionality.of(context),
+                leading: leading ?? const SizedBox.shrink(),
+                text: text,
+                trailing: trailing ?? const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Unlike LayoutBuilder, this layout also answers the intrinsic height queries
+/// made by AlertDialog on short screens, using the same measurements as paint.
+class _EditorOptionLayout extends MultiChildRenderObjectWidget {
+  _EditorOptionLayout({
+    required this.minRowWidth,
+    required this.minTextWidth,
+    required this.textDirection,
+    required Widget leading,
+    required Widget text,
+    required Widget trailing,
+  }) : super(children: [leading, text, trailing]);
+
+  final double minRowWidth;
+  final double minTextWidth;
+  final TextDirection textDirection;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderEditorOptionLayout(minRowWidth, minTextWidth, textDirection);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderEditorOptionLayout renderObject,
+  ) {
+    renderObject.updateLayout(minRowWidth, minTextWidth, textDirection);
+  }
+}
+
+class _EditorOptionParentData extends ContainerBoxParentData<RenderBox> {}
+
+class _RenderEditorOptionLayout extends RenderBox
+    with
+        ContainerRenderObjectMixin<
+          RenderBox,
+          ContainerBoxParentData<RenderBox>
+        >,
+        RenderBoxContainerDefaultsMixin<
+          RenderBox,
+          ContainerBoxParentData<RenderBox>
+        > {
+  _RenderEditorOptionLayout(
+    this._minRowWidth,
+    this._minTextWidth,
+    this._textDirection,
+  );
+
+  double _minRowWidth;
+  double _minTextWidth;
+  TextDirection _textDirection;
+
+  void updateLayout(
+    double minRowWidth,
+    double minTextWidth,
+    TextDirection textDirection,
+  ) {
+    if (_minRowWidth == minRowWidth &&
+        _minTextWidth == minTextWidth &&
+        _textDirection == textDirection) {
+      return;
+    }
+    _minRowWidth = minRowWidth;
+    _minTextWidth = minTextWidth;
+    _textDirection = textDirection;
+    markNeedsLayout();
+  }
+
+  @override
+  void setupParentData(RenderBox child) {
+    if (child.parentData is! ContainerBoxParentData<RenderBox>) {
+      child.parentData = _EditorOptionParentData();
+    }
+  }
+
+  List<RenderBox> get _children {
+    final leading = firstChild!;
+    final text = childAfter(leading)!;
+    return [leading, text, childAfter(text)!];
+  }
+
+  ({Size size, List<Offset> offsets}) _measure(
+    double width,
+    Size Function(RenderBox, BoxConstraints) measureChild,
+  ) {
+    final children = _children;
+    final loose = BoxConstraints(maxWidth: width);
+    final leading = measureChild(children[0], loose);
+    final trailing = measureChild(children[2], loose);
+    final leadingGap = leading.width > 0 ? 12.0 : 0.0;
+    final trailingGap = trailing.width > 0 ? 12.0 : 0.0;
+    final remaining =
+        width - leading.width - trailing.width - leadingGap - trailingGap;
+    final stacked = width < _minRowWidth || remaining < _minTextWidth;
+    final text = measureChild(
+      children[1],
+      BoxConstraints.tightFor(width: stacked ? width : remaining),
+    );
+    if (!stacked) {
+      final height = math.max(
+        text.height,
+        math.max(leading.height, trailing.height),
+      );
+      return (
+        size: Size(width, height),
+        offsets: [
+          Offset(0, (height - leading.height) / 2),
+          Offset(leading.width + leadingGap, (height - text.height) / 2),
+          Offset(width - trailing.width, (height - trailing.height) / 2),
+        ],
+      );
+    }
+    final wrapHeader =
+        leading.width > 0 &&
+        trailing.width > 0 &&
+        leading.width + trailing.width + 12 > width;
+    final headerHeight = wrapHeader
+        ? leading.height + 8 + trailing.height
+        : math.max(leading.height, trailing.height);
+    final textTop = headerHeight + (headerHeight > 0 ? 8 : 0);
+    return (
+      size: Size(width, textTop + text.height),
+      offsets: [
+        Offset.zero,
+        Offset(0, textTop),
+        wrapHeader
+            ? Offset(0, leading.height + 8)
+            : Offset(width - trailing.width, 0),
+      ],
+    );
+  }
+
+  double _width(BoxConstraints constraints) => constraints.hasBoundedWidth
+      ? constraints.maxWidth
+      : math.max(
+          constraints.minWidth,
+          computeMaxIntrinsicWidth(double.infinity),
+        );
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) => constraints.constrain(
+    _measure(
+      _width(constraints),
+      (child, constraints) => child.getDryLayout(constraints),
+    ).size,
+  );
+
+  @override
+  double computeMinIntrinsicWidth(double height) => _children
+      .map((child) => child.getMinIntrinsicWidth(height))
+      .reduce(math.max);
+
+  @override
+  double computeMaxIntrinsicWidth(double height) {
+    final widths = _children
+        .map((child) => child.getMaxIntrinsicWidth(height))
+        .toList();
+    return widths.reduce((a, b) => a + b) +
+        (widths[0] > 0 ? 12 : 0) +
+        (widths[2] > 0 ? 12 : 0);
+  }
+
+  double _intrinsicHeight(double width) => _measure(
+    width.isFinite ? width : computeMaxIntrinsicWidth(double.infinity),
+    (child, constraints) => child.getDryLayout(constraints),
+  ).size.height;
+
+  @override
+  double computeMinIntrinsicHeight(double width) => _intrinsicHeight(width);
+
+  @override
+  double computeMaxIntrinsicHeight(double width) => _intrinsicHeight(width);
+
+  @override
+  void performLayout() {
+    final layout = _measure(_width(constraints), (child, constraints) {
+      child.layout(constraints, parentUsesSize: true);
+      return child.size;
+    });
+    size = constraints.constrain(layout.size);
+    final children = _children;
+    for (var i = 0; i < children.length; i++) {
+      final offset = layout.offsets[i];
+      (children[i].parentData! as ContainerBoxParentData<RenderBox>).offset =
+          _textDirection == TextDirection.ltr
+          ? offset
+          : Offset(size.width - offset.dx - children[i].size.width, offset.dy);
+    }
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) =>
+      defaultPaint(context, offset);
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) =>
+      defaultHitTestChildren(result, position: position);
+}
+
+/// Bounded content for a popup menu's intrinsic width measurement.
+class EditorPopupMenuTile extends StatelessWidget {
+  const EditorPopupMenuTile({
+    super.key,
+    this.leading,
+    required this.title,
+    this.enabled = true,
+    this.contentPadding = EdgeInsets.zero,
+  });
+
+  final Widget? leading;
+  final Widget title;
+  final bool enabled;
+  final EdgeInsetsGeometry contentPadding;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 240,
+    child: EditorOptionTile(
+      enabled: enabled,
+      leading: leading,
+      title: title,
+      contentPadding: contentPadding,
+    ),
+  );
+}
+
 /// A rich, reusable choice shown in editor add-content dialogs.
 class EditorChoiceDialogOption<T> {
   const EditorChoiceDialogOption({
@@ -1814,6 +2137,7 @@ Future<T?> showEditorChoiceDialog<T>(
   required String title,
   required List<EditorChoiceDialogOption<T>> options,
   Key? dialogKey,
+  String? message,
 }) {
   return showDialog<T>(
     context: context,
@@ -1842,11 +2166,20 @@ Future<T?> showEditorChoiceDialog<T>(
           0,
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        content: ConstrainedBox(
+        content: Container(
+          width: double.maxFinite,
           constraints: const BoxConstraints(maxWidth: 440),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (message?.trim().isNotEmpty == true)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(message!),
+                  ),
+                ),
               for (final option in options)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -1864,60 +2197,40 @@ Future<T?> showEditorChoiceDialog<T>(
                       ),
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: InkWell(
+                    child: EditorOptionTile(
                       onTap: () => Navigator.pop(ctx, option.value),
-                      child: Padding(
-                        padding: EdgeInsets.all(compact ? 12 : 14),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: compact ? 44 : 48,
-                              height: compact ? 44 : 48,
-                              decoration: BoxDecoration(
-                                color: colors.primaryContainer,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Icon(
-                                option.icon,
-                                color: colors.onPrimaryContainer,
-                                size: 27,
-                              ),
-                            ),
-                            SizedBox(width: compact ? 12 : 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    option.title,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  if (option.subtitle?.trim().isNotEmpty ==
-                                      true) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      option.subtitle!,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: colors.onSurfaceVariant,
-                                            height: 1.3,
-                                          ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: compact ? 4 : 8),
-                            Icon(
-                              Icons.chevron_right,
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ],
+                      contentPadding: EdgeInsets.all(compact ? 12 : 14),
+                      leading: Container(
+                        width: compact ? 44 : 48,
+                        height: compact ? 44 : 48,
+                        decoration: BoxDecoration(
+                          color: colors.primaryContainer,
+                          borderRadius: BorderRadius.circular(14),
                         ),
+                        child: Icon(
+                          option.icon,
+                          color: colors.onPrimaryContainer,
+                          size: 27,
+                        ),
+                      ),
+                      title: Text(
+                        option.title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: option.subtitle?.trim().isNotEmpty == true
+                          ? Text(
+                              option.subtitle!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                                height: 1.3,
+                              ),
+                            )
+                          : null,
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ),

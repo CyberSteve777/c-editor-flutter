@@ -23,6 +23,12 @@ import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/screens/image_viewer_screen.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show
+        EditorChoiceDialogOption,
+        EditorOptionTile,
+        EditorPopupMenuTile,
+        showEditorChoiceDialog;
 import 'package:c_editor/screens/export/export_screen.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 
@@ -139,6 +145,182 @@ bool shouldShowLevelListUploadFab({
 @visibleForTesting
 bool shouldDismissLevelListReturnUploadFab(ScrollDirection direction) =>
     direction != ScrollDirection.idle;
+
+@visibleForTesting
+class LevelTemplateSelectionDialog extends StatelessWidget {
+  const LevelTemplateSelectionDialog({
+    super.key,
+    required this.title,
+    required this.cancelLabel,
+    required this.templates,
+    required this.displayName,
+    required this.onSelected,
+    required this.onCancel,
+  });
+
+  final String title;
+  final String cancelLabel;
+  final List<String> templates;
+  final String Function(String template) displayName;
+  final ValueChanged<String> onSelected;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.sizeOf(context);
+    final compact = screenSize.width < 420;
+    return AlertDialog(
+      scrollable: true,
+      constraints: const BoxConstraints(maxWidth: 560),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: compact ? 12 : 40,
+        vertical: 24,
+      ),
+      titlePadding: compact ? const EdgeInsets.fromLTRB(16, 16, 16, 8) : null,
+      contentPadding: compact
+          ? const EdgeInsets.symmetric(horizontal: 8)
+          : null,
+      actionsPadding: compact ? const EdgeInsets.fromLTRB(8, 4, 8, 8) : null,
+      title: Text(
+        title,
+        style: compact ? Theme.of(context).textTheme.titleLarge : null,
+      ),
+      content: SizedBox(
+        width: compact ? screenSize.width - 40 : double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final template in templates)
+              EditorOptionTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
+                leading: const Icon(Icons.description, color: Colors.grey),
+                title: Text(
+                  displayName(template),
+                  style: compact
+                      ? Theme.of(context).textTheme.bodyMedium
+                      : null,
+                ),
+                onTap: () => onSelected(template),
+              ),
+          ],
+        ),
+      ),
+      actions: [TextButton(onPressed: onCancel, child: Text(cancelLabel))],
+    );
+  }
+}
+
+@visibleForTesting
+class LevelConversionRequiredDialog extends StatelessWidget {
+  const LevelConversionRequiredDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final compact = MediaQuery.sizeOf(context).width < 480;
+    final padding = compact ? 16.0 : 24.0;
+    return AlertDialog(
+      key: const ValueKey('levelConversionRequiredDialog'),
+      scrollable: true,
+      constraints: const BoxConstraints(maxWidth: 560),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: compact ? 12 : 40,
+        vertical: compact ? 16 : 24,
+      ),
+      titlePadding: EdgeInsets.fromLTRB(padding, padding, padding, 12),
+      contentPadding: EdgeInsets.fromLTRB(padding, 0, padding, 8),
+      actionsPadding: EdgeInsets.fromLTRB(padding, 8, padding, 16),
+      actionsOverflowButtonSpacing: 8,
+      title: Text(
+        l10n.conversionRequiredTitle,
+        style: compact ? Theme.of(context).textTheme.titleLarge : null,
+      ),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Text(l10n.conversionRequiredMessage),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          style: TextButton.styleFrom(foregroundColor: Colors.green),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
+          ),
+          child: Text(l10n.convertAction),
+        ),
+      ],
+    );
+  }
+}
+
+@visibleForTesting
+Future<String?> showLevelConversionOptionsDialog(
+  BuildContext context, {
+  required String sourceName,
+  bool includeDebugFormats = kDebugMode,
+}) {
+  final l10n = AppLocalizations.of(context)!;
+  final lower = sourceName.toLowerCase();
+  final options = <EditorChoiceDialogOption<String>>[];
+  if (lower.endsWith('.json')) {
+    options.addAll([
+      EditorChoiceDialogOption(
+        value: '.hujson',
+        icon: Icons.sync_alt,
+        title: l10n.convertToHotUpdateJson,
+        subtitle: l10n.hujsonFormatDescription,
+      ),
+      EditorChoiceDialogOption(
+        value: '.rton',
+        icon: Icons.sync_alt,
+        title: l10n.convertToEncryptedRton,
+        subtitle: l10n.rtonFormatDescription,
+      ),
+    ]);
+  } else if (lower.endsWith('.hujson') || lower.endsWith('.rton')) {
+    options.add(
+      EditorChoiceDialogOption(
+        value: '.json',
+        icon: Icons.sync_alt,
+        title: l10n.convertToJson,
+      ),
+    );
+  } else if (lower.endsWith('.zlib')) {
+    options.add(
+      const EditorChoiceDialogOption(
+        value: '.bin',
+        icon: Icons.expand,
+        title: 'Decompress ZLib',
+      ),
+    );
+  } else {
+    return Future.value();
+  }
+  if (includeDebugFormats && !lower.endsWith('.zlib')) {
+    options.add(
+      const EditorChoiceDialogOption(
+        value: '.zlib',
+        icon: Icons.compress,
+        title: 'Compress with ZLib',
+      ),
+    );
+  }
+  return showEditorChoiceDialog<String>(
+    context,
+    title: l10n.convertAction,
+    dialogKey: const ValueKey('levelConversionOptionsDialog'),
+    options: options,
+  );
+}
 
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
@@ -902,49 +1084,42 @@ class _LevelListScreenState extends State<LevelListScreen> {
     String fileName,
   ) async {
     final l10n = AppLocalizations.of(context)!;
-    return showDialog<_SmartUploadChoice>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.smartUploadTitle),
-        content: Text(l10n.smartUploadFileMessage(fileName)),
-        actions: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _SmartUploadChoice.skipThis),
-                child: Text(l10n.smartUploadSkip),
-              ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _SmartUploadChoice.overwriteThis),
-                child: Text(l10n.smartUploadOverwrite),
-              ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _SmartUploadChoice.copyThis),
-                child: Text(l10n.smartUploadAsCopy),
-              ),
-              const Divider(height: 1),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, _SmartUploadChoice.skipAll),
-                child: Text(l10n.smartUploadSkipAll),
-              ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(ctx, _SmartUploadChoice.overwriteAll),
-                child: Text(l10n.smartUploadOverwriteAll),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, _SmartUploadChoice.copyAll),
-                child: Text(l10n.smartUploadCopyAll),
-              ),
-            ],
-          ),
-        ],
-      ),
+    return showEditorChoiceDialog<_SmartUploadChoice>(
+      context,
+      title: l10n.smartUploadTitle,
+      message: l10n.smartUploadFileMessage(fileName),
+      options: [
+        EditorChoiceDialogOption(
+          value: _SmartUploadChoice.skipThis,
+          icon: Icons.skip_next,
+          title: l10n.smartUploadSkip,
+        ),
+        EditorChoiceDialogOption(
+          value: _SmartUploadChoice.overwriteThis,
+          icon: Icons.save,
+          title: l10n.smartUploadOverwrite,
+        ),
+        EditorChoiceDialogOption(
+          value: _SmartUploadChoice.copyThis,
+          icon: Icons.copy,
+          title: l10n.smartUploadAsCopy,
+        ),
+        EditorChoiceDialogOption(
+          value: _SmartUploadChoice.skipAll,
+          icon: Icons.skip_next,
+          title: l10n.smartUploadSkipAll,
+        ),
+        EditorChoiceDialogOption(
+          value: _SmartUploadChoice.overwriteAll,
+          icon: Icons.save,
+          title: l10n.smartUploadOverwriteAll,
+        ),
+        EditorChoiceDialogOption(
+          value: _SmartUploadChoice.copyAll,
+          icon: Icons.copy,
+          title: l10n.smartUploadCopyAll,
+        ),
+      ],
     );
   }
 
@@ -1242,46 +1417,27 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.newLevelTemplate ?? 'New level - Select template'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 320),
-            child: ListView.builder(
-              shrinkWrap: false,
-              itemCount: _templates.length,
-              itemBuilder: (_, i) {
-                final t = _templates[i];
-                return ListTile(
-                  leading: const Icon(Icons.description, color: Colors.grey),
-                  title: Text(_templateDisplayName(t, l10n)),
-                  onTap: () async {
-                    Navigator.pop(ctx);
-                    _selectedTemplate = t;
-                    final defaultBase = LevelTemplateUtils.defaultLevelName(t);
-                    if (_pathStack.isNotEmpty) {
-                      _newLevelNameInput =
-                          await LevelRepository.getNextAvailableNameForTemplate(
-                            _pathStack.last.path,
-                            defaultBase,
-                          );
-                    } else {
-                      _newLevelNameInput = defaultBase;
-                    }
-                    if (mounted) _methodShowCreateNameDialog();
-                  },
+      builder: (ctx) => LevelTemplateSelectionDialog(
+        title: l10n?.newLevelTemplate ?? 'New level - Select template',
+        cancelLabel: l10n?.cancel ?? 'Cancel',
+        templates: _templates,
+        displayName: (template) => _templateDisplayName(template, l10n),
+        onCancel: () => Navigator.pop(ctx),
+        onSelected: (template) async {
+          Navigator.pop(ctx);
+          _selectedTemplate = template;
+          final defaultBase = LevelTemplateUtils.defaultLevelName(template);
+          if (_pathStack.isNotEmpty) {
+            _newLevelNameInput =
+                await LevelRepository.getNextAvailableNameForTemplate(
+                  _pathStack.last.path,
+                  defaultBase,
                 );
-              },
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-        ],
+          } else {
+            _newLevelNameInput = defaultBase;
+          }
+          if (mounted) _methodShowCreateNameDialog();
+        },
       ),
     );
   }
@@ -1620,7 +1776,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 if (!kIsWeb) ...[
                   PopupMenuItem(
                     value: 'refresh',
-                    child: ListTile(
+                    child: EditorPopupMenuTile(
                       leading: const Icon(Icons.refresh),
                       title: Text(l10n.refresh),
                       contentPadding: EdgeInsets.zero,
@@ -1628,7 +1784,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   ),
                   PopupMenuItem(
                     value: 'switch_folder',
-                    child: ListTile(
+                    child: EditorPopupMenuTile(
                       leading: const Icon(Icons.folder_open),
                       title: Text(l10n.switchFolder),
                       contentPadding: EdgeInsets.zero,
@@ -1638,7 +1794,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 if (kIsWeb) ...[
                   PopupMenuItem(
                     value: 'import_files',
-                    child: ListTile(
+                    child: EditorPopupMenuTile(
                       leading: const Icon(Icons.file_open),
                       title: Text(l10n.importFiles),
                       contentPadding: EdgeInsets.zero,
@@ -1646,7 +1802,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   ),
                   PopupMenuItem(
                     value: 'import_folder',
-                    child: ListTile(
+                    child: EditorPopupMenuTile(
                       leading: const Icon(Icons.drive_folder_upload_outlined),
                       title: Text(l10n.importFolder),
                       contentPadding: EdgeInsets.zero,
@@ -1654,7 +1810,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   ),
                   PopupMenuItem(
                     value: 'download_all',
-                    child: ListTile(
+                    child: EditorPopupMenuTile(
                       leading: const Icon(Icons.download),
                       title: Text(l10n.downloadAllLevels),
                       contentPadding: EdgeInsets.zero,
@@ -1665,7 +1821,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ],
               PopupMenuItem(
                 value: 'theme',
-                child: ListTile(
+                child: EditorPopupMenuTile(
                   leading: Icon(
                     settings.themeMode == ThemeMode.dark
                         ? Icons.light_mode
@@ -1677,7 +1833,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ),
               PopupMenuItem(
                 value: 'cache',
-                child: ListTile(
+                child: EditorPopupMenuTile(
                   leading: const Icon(Icons.delete_outline),
                   title: Text(l10n.clearCache),
                   contentPadding: EdgeInsets.zero,
@@ -1685,7 +1841,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ),
               PopupMenuItem(
                 value: 'ui',
-                child: ListTile(
+                child: EditorPopupMenuTile(
                   leading: const Icon(Icons.aspect_ratio),
                   title: Text(l10n.uiSize),
                   contentPadding: EdgeInsets.zero,
@@ -1693,7 +1849,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ),
               PopupMenuItem(
                 value: 'lang',
-                child: ListTile(
+                child: EditorPopupMenuTile(
                   leading: const Icon(Icons.language),
                   title: Text(l10n.language),
                   contentPadding: EdgeInsets.zero,
@@ -1702,7 +1858,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               if (kIsWeb || !Platform.isIOS)
                 PopupMenuItem(
                   value: 'export',
-                  child: ListTile(
+                  child: EditorPopupMenuTile(
                     leading: const Icon(Icons.output_rounded),
                     title: Text(l10n.exportLevels),
                     contentPadding: EdgeInsets.zero,
@@ -1710,7 +1866,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 ),
               PopupMenuItem(
                 value: 'plugins',
-                child: ListTile(
+                child: EditorPopupMenuTile(
                   leading: const Icon(Icons.extension),
                   title: Text(l10n.pluginsTitle),
                   contentPadding: EdgeInsets.zero,
@@ -1723,7 +1879,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
               ),
               PopupMenuItem(
                 value: 'about',
-                child: ListTile(
+                child: EditorPopupMenuTile(
                   leading: const Icon(Icons.info_outline),
                   title: Text(l10n.aboutSoftware),
                   contentPadding: EdgeInsets.zero,
@@ -1935,8 +2091,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                           } else {
                                             if (item.isDirectory) {
                                               _navigateToFolder(item);
-                                            } else if (LevelRepository
-                                                .isSupportedImageFileName(
+                                            } else if (LevelRepository.isSupportedImageFileName(
                                               item.name,
                                             )) {
                                               if (!mounted) return;
@@ -2123,19 +2278,17 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                 item.name
                                                     .toLowerCase()
                                                     .endsWith('.smf') ||
-                                                LevelRepository
-                                                    .isSupportedImageFileName(
-                                                      item.name,
-                                                    )
+                                                LevelRepository.isSupportedImageFileName(
+                                                  item.name,
+                                                )
                                             ? null
                                             : () => _showConvertMenuFor(item),
                                         onToggleFavorite:
                                             actionsDisabled ||
                                                 item.isDirectory ||
-                                                LevelRepository
-                                                    .isSupportedImageFileName(
-                                                      item.name,
-                                                    )
+                                                LevelRepository.isSupportedImageFileName(
+                                                  item.name,
+                                                )
                                             ? null
                                             : () => _toggleFavorite(item),
                                         onShare:
@@ -2442,49 +2595,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   Future<String?> _showConversionRequiredDialog(FileItem item) async {
     if (_pathStack.isEmpty || item.isDirectory) return null;
-    final l10n = AppLocalizations.of(context)!;
-    final lower = item.name.toLowerCase();
-    final formatDescription = lower.endsWith('.hujson')
-        ? l10n.hujsonFormatDescription
-        : lower.endsWith('.rton')
-        ? l10n.rtonFormatDescription
-        : null;
     final shouldConvert = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.conversionRequiredTitle),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.conversionRequiredMessage),
-            if (formatDescription != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                formatDescription,
-                style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            style: TextButton.styleFrom(foregroundColor: Colors.green),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-            ),
-            child: Text(l10n.convertAction),
-          ),
-        ],
-      ),
+      builder: (_) => const LevelConversionRequiredDialog(),
     );
     if (shouldConvert != true || !mounted) return null;
     final convertedName = await _convertItemToExtension(item, '.json');
@@ -2558,77 +2671,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
 
   Future<void> _showConvertMenuFor(FileItem item) async {
     if (_pathStack.isEmpty || item.isDirectory) return;
-    final l10n = AppLocalizations.of(context)!;
-    final lower = item.name.toLowerCase();
-    String? targetExt;
-    if (lower.endsWith('.json')) {
-      targetExt = await showDialog<String>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.convertAction),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.sync_alt),
-                title: Text(l10n.convertToHotUpdateJson),
-                subtitle: Text(l10n.hujsonFormatDescription),
-                isThreeLine: true,
-                onTap: () => Navigator.pop(ctx, '.hujson'),
-              ),
-              ListTile(
-                leading: const Icon(Icons.sync_alt),
-                title: Text(l10n.convertToEncryptedRton),
-                subtitle: Text(l10n.rtonFormatDescription),
-                isThreeLine: true,
-                onTap: () => Navigator.pop(ctx, '.rton'),
-              ),
-              if (kDebugMode)
-                ListTile(
-                  leading: const Icon(Icons.compress),
-                  title: const Text('Compress with ZLib'),
-                  onTap: () => Navigator.pop(ctx, '.zlib'),
-                ),
-            ],
-          ),
-        ),
-      );
-    } else if (lower.endsWith('.hujson') || lower.endsWith('.rton')) {
-      targetExt = await showDialog<String>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.convertAction),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.sync_alt),
-                title: Text(l10n.convertToJson),
-                onTap: () => Navigator.pop(ctx, '.json'),
-              ),
-              if (kDebugMode)
-                ListTile(
-                  leading: const Icon(Icons.compress),
-                  title: const Text('Compress with ZLib'),
-                  onTap: () => Navigator.pop(ctx, '.zlib'),
-                ),
-            ],
-          ),
-        ),
-      );
-    } else if (lower.endsWith('.zlib')) {
-      targetExt = await showDialog<String>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.convertAction),
-          content: ListTile(
-            leading: const Icon(Icons.expand),
-            title: const Text('Decompress ZLib'),
-            onTap: () => Navigator.pop(ctx, '.bin'),
-          ),
-        ),
-      );
-    }
+    final targetExt = await showLevelConversionOptionsDialog(
+      context,
+      sourceName: item.name,
+    );
     if (targetExt == null || !mounted) return;
     await _convertItemToExtension(item, targetExt);
   }
@@ -3088,14 +3134,13 @@ class _FileItemRow extends StatelessWidget {
     Color? iconColor,
     Color? textColor,
   }) {
-    return ListTile(
+    return EditorPopupMenuTile(
       leading: Icon(icon, size: 22, color: iconColor),
       title: Text(
         label,
         style: textColor != null ? TextStyle(color: textColor) : null,
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-      visualDensity: VisualDensity.compact,
     );
   }
 
@@ -3316,6 +3361,7 @@ class _FileItemRow extends StatelessWidget {
     final isImageFile =
         !item.isDirectory &&
         LevelRepository.isSupportedImageFileName(item.name);
+    final isGifFile = isImageFile && item.name.toLowerCase().endsWith('.gif');
 
     final displayName = item.isDirectory
         ? item.name
@@ -3363,7 +3409,9 @@ class _FileItemRow extends StatelessWidget {
                           : (isResourceFile
                                 ? Icons.inventory_2_outlined
                                 : (isImageFile
-                                      ? Icons.image_outlined
+                                      ? (isGifFile
+                                            ? Icons.gif_box_outlined
+                                            : Icons.image_outlined)
                                       : Icons.description)),
                       size: iconSize,
                       color: item.isDirectory

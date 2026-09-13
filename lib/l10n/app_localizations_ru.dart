@@ -886,17 +886,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get emptyFavorites => 'У вас пока нет избранных уровней';
 
   @override
-  String get copyEventTarget => 'Целевая волна';
+  String get copyEventTarget => 'Выберите целевые волны';
 
   @override
   String get targetWaveIndex => 'Номер целевой волны';
 
   @override
-  String get targetWaveIndexHint => 'напр. 1, 3, 5-8, 10-2:-2';
+  String get targetWaveAlreadyContainsEvent => 'Уже содержит это событие';
 
   @override
   String get targetWaveIndexHelper =>
-      'Несколько волн или диапазонов разделяйте запятыми (1, 3, 5-8).\nДиапазон включает границы. Если шаг не указан: 1 при start <= end, иначе -1.\nШаг задаётся как :шаг (1-10:2, 10-1:-2). Знак шага должен совпадать с направлением.\nКопирование ссылки пропускает волны, где событие уже есть.\nГлубокая копия создаёт уникальную копию для каждой волны.';
+      'При копировании ссылок волны, уже содержащие это событие, автоматически пропускаются.';
 
   @override
   String get moveToWaveIndex => 'Переместить в волну №';
@@ -2125,14 +2125,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get conflictDesc_WaveGeneratorWaveManager =>
       'Генератор волн хранит данные волн внутри модуля и не может использоваться вместе с отдельным контейнером менеджера волн.';
-
-  @override
-  String get conflictDesc_WaveGeneratorRenai =>
-      'Генератор волн несовместим с модулем «Ренессанс» и приводит к сбою уровня.';
-
-  @override
-  String get conflictDesc_WaveGeneratorWitch =>
-      'Генератор волн несовместим с модулем «Тыквенная ведьма» и приводит к сбою уровня.';
 
   @override
   String get missingPlantModuleWarningTitle =>
@@ -7120,10 +7112,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.';
 
   @override
-  String get lifeSupportLastStandConflictWarning =>
-      'Модули «Система жизнеобеспечения» и «Последний рубеж» нельзя использовать одновременно, иначе уровень не сможет нормально запуститься.';
-
-  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
       'Лимит времени финальной фазы';
 
@@ -8850,7 +8838,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpIncompatBody =>
-      'Генератор волн нельзя использовать одновременно с менеджером волн, модулем «Ренессанс» или модулем «Тыквенная ведьма»: это приведёт к сбою уровня.';
+      'Может быть несовместим с некоторыми модулями и вызывать сбой уровня. Используйте с осторожностью.';
 
   @override
   String get waveGeneratorModuleHelpRow => 'Номера рядов';

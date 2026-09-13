@@ -178,22 +178,25 @@ class _WarMistPropertiesScreenState extends State<WarMistPropertiesScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _initPosController,
-                      keyboardType: TextInputType.number,
+                    EditorResponsiveInputField(
+                      label:
+                          l10n?.initialMistPositionX ??
+                          'Initial mist position X',
                       decoration: InputDecoration(
-                        labelText:
-                            l10n?.initialMistPositionX ??
-                            'Initial mist position X',
                         border: const OutlineInputBorder(),
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          _data.initMistPosX = n;
-                          _sync();
-                        }
-                      },
+                      builder: (context, decoration) => TextField(
+                        controller: _initPosController,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            _data.initMistPosX = n;
+                            _sync();
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(height: 16),
                     EditorResponsiveInputField(
@@ -212,22 +215,25 @@ class _WarMistPropertiesScreenState extends State<WarMistPropertiesScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _bloverController,
-                      keyboardType: TextInputType.number,
+                    EditorResponsiveInputField(
+                      label:
+                          l10n?.bloverEffectInterval ??
+                          'Blover effect interval (seconds)',
                       decoration: InputDecoration(
-                        labelText:
-                            l10n?.bloverEffectInterval ??
-                            'Blover effect interval (seconds)',
                         border: const OutlineInputBorder(),
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          _data.bloverEffectInterval = n;
-                          _sync();
-                        }
-                      },
+                      builder: (context, decoration) => TextField(
+                        controller: _bloverController,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            _data.bloverEffectInterval = n;
+                            _sync();
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),

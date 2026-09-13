@@ -145,25 +145,28 @@ class _FairyTaleWindEventScreenState extends State<FairyTaleWindEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: _data.duration.toString(),
+                      EditorResponsiveInputField(
+                        label: 'Duration',
                         decoration: const InputDecoration(
-                          labelText: 'Duration',
                           border: OutlineInputBorder(),
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.duration.toString(),
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final n = double.tryParse(v);
+                            if (n != null) {
+                              _data = FairyTaleWindWaveActionData(
+                                duration: n,
+                                velocityScale: _data.velocityScale,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        onChanged: (v) {
-                          final n = double.tryParse(v);
-                          if (n != null) {
-                            _data = FairyTaleWindWaveActionData(
-                              duration: n,
-                              velocityScale: _data.velocityScale,
-                            );
-                            _sync();
-                          }
-                        },
                       ),
                       const SizedBox(height: 12),
                       EditorResponsiveInputField(

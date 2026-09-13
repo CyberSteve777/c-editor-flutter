@@ -345,30 +345,36 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
                             children: [
                               Expanded(
                                 flex: 2,
-                                child: TextFormField(
-                                  initialValue: '${selectedWave.waveNumber}',
+                                child: EditorResponsiveInputField(
+                                  label: l10n?.heianWindModuleWaves ?? 'Wave',
                                   decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.heianWindModuleWaves ?? 'Wave',
                                     hintText:
                                         l10n?.heianWindModuleWavesHint ??
                                         '0-based',
                                     border: const OutlineInputBorder(),
                                   ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 0) {
-                                      _updateWave(
-                                        _selectedWaveIndex,
-                                        HeianWindWaveWindInfoData(
-                                          waveNumber: n,
-                                          windDelay: selectedWave.windDelay,
-                                          windInfos: selectedWave.windInfos,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue:
+                                            '${selectedWave.waveNumber}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 0) {
+                                            _updateWave(
+                                              _selectedWaveIndex,
+                                              HeianWindWaveWindInfoData(
+                                                waveNumber: n,
+                                                windDelay:
+                                                    selectedWave.windDelay,
+                                                windInfos:
+                                                    selectedWave.windInfos,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),

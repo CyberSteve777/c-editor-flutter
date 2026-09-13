@@ -449,11 +449,9 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    DropdownButtonFormField<int>(
-                      isExpanded: true,
-                      initialValue: rowValue,
+                    EditorResponsiveInputField(
+                      label: l10n?.row ?? 'Row',
                       decoration: InputDecoration(
-                        labelText: l10n?.row ?? 'Row',
                         border: const OutlineInputBorder(),
                         isDense: true,
                         contentPadding: const EdgeInsets.symmetric(
@@ -461,51 +459,57 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                           vertical: 8,
                         ),
                       ),
-                      selectedItemBuilder: (context) => [
-                        Text(
-                          l10n?.random ?? 'Random',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        ...List.generate(
-                          _isDeepSeaLawn ? 6 : 5,
-                          (i) => i + 1,
-                        ).map(
-                          (v) => Text(
-                            l10n?.rowN(v) ?? 'Row $v',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<int>(
+                            isExpanded: true,
+                            initialValue: rowValue,
+                            decoration: decoration,
+                            selectedItemBuilder: (context) => [
+                              Text(
+                                l10n?.random ?? 'Random',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              ...List.generate(
+                                _isDeepSeaLawn ? 6 : 5,
+                                (i) => i + 1,
+                              ).map(
+                                (v) => Text(
+                                  l10n?.rowN(v) ?? 'Row $v',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                            items: [
+                              DropdownMenuItem(
+                                value: 0,
+                                child: Text(l10n?.random ?? 'Random'),
+                              ),
+                              ...List.generate(
+                                _isDeepSeaLawn ? 6 : 5,
+                                (i) => i + 1,
+                              ).map(
+                                (v) => DropdownMenuItem(
+                                  value: v,
+                                  child: Text(l10n?.rowN(v) ?? 'Row $v'),
+                                ),
+                              ),
+                            ],
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setModalState(() => rowValue = v);
+                              _updateZombie(
+                                index,
+                                zombie.copyWith(
+                                  row: v == 0 ? null : v,
+                                  clearRow: v == 0,
+                                  direction: fromLeft ? 'left' : null,
+                                  clearDirection: !fromLeft,
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      ],
-                      items: [
-                        DropdownMenuItem(
-                          value: 0,
-                          child: Text(l10n?.random ?? 'Random'),
-                        ),
-                        ...List.generate(
-                          _isDeepSeaLawn ? 6 : 5,
-                          (i) => i + 1,
-                        ).map(
-                          (v) => DropdownMenuItem(
-                            value: v,
-                            child: Text(l10n?.rowN(v) ?? 'Row $v'),
-                          ),
-                        ),
-                      ],
-                      onChanged: (v) {
-                        if (v == null) return;
-                        setModalState(() => rowValue = v);
-                        _updateZombie(
-                          index,
-                          zombie.copyWith(
-                            row: v == 0 ? null : v,
-                            clearRow: v == 0,
-                            direction: fromLeft ? 'left' : null,
-                            clearDirection: !fromLeft,
-                          ),
-                        );
-                      },
                     ),
                     const SizedBox(height: 12),
                     if (isElite)

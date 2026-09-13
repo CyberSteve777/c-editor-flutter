@@ -61,10 +61,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       widget.host.localize(context, key, fallback ?? key);
 
   Future<void> _openPreviewGenerator(BuildContext context) async {
-    final style = await showPreviewLayoutStyleDialog(
-      context: context,
-      t: _p,
-    );
+    final style = await showPreviewLayoutStyleDialog(context: context, t: _p);
     if (style == null || !context.mounted) return;
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
@@ -107,6 +104,9 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
   int? _selectedX;
   int? _selectedY;
   List<String> _selectedIds = [];
+  // Bare IDs can belong to both plants and grid items, such as cosmoss.
+  // Retain the selected grid's resource domain instead of guessing it again.
+  int _selectedResourceTabIndex = 2;
 
   final ScrollController _subCategoryScrollController = ScrollController();
   final ScrollController _sidebarScrollController = ScrollController();
@@ -291,6 +291,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
     if (levelDef == null) {
       return AlertDialog(
+        scrollable: true,
         title: Text(widget.fileName),
         content: Text(l10n.noLevelDefinitionHint),
         actions: [TextButton(onPressed: widget.onBack, child: Text(l10n.back))],
@@ -319,39 +320,87 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children:
                 [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                  if (isNarrow)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: widget.onBack,
+                              tooltip: l10n.back,
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: () => _openPreviewGenerator(context),
+                            icon: const Icon(Icons.image_outlined, size: 20),
+                            label: Text(
+                              _p(
+                                'previewGenerateImagePreview',
+                                'Generate image preview',
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () => _openPreviewGenerator(context),
-                        icon: const Icon(Icons.image_outlined, size: 20),
-                        label: Text(
-                          _p(
-                            'previewGenerateImagePreview',
-                            'Generate image preview',
+                      ],
+                    )
+                  else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        style: TextButton.styleFrom(
+                        TextButton.icon(
+                          onPressed: () => _openPreviewGenerator(context),
+                          icon: const Icon(Icons.image_outlined, size: 20),
+                          label: Text(
+                            _p(
+                              'previewGenerateImagePreview',
+                              'Generate image preview',
+                            ),
+                          ),
+                          style: TextButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: widget.onBack,
+                          tooltip: l10n.back,
                           visualDensity: VisualDensity.compact,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: widget.onBack,
-                        tooltip: l10n.back,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   const SizedBox(height: 12),
                   _buildSummaryCard(context, levelDef, theme, l10n),
                   _buildSeedBankCard(context, theme, l10n),
@@ -721,8 +770,8 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
                             icon: Icons.battery_charging_full,
                             label: '$lifeSupportCapacity',
                             color: Colors.lightBlueAccent,
-                            tooltip:
-                                l10n.moduleTitle_MoonLifeSupportSystemProperties,
+                            tooltip: l10n
+                                .moduleTitle_MoonLifeSupportSystemProperties,
                           )
                         else
                           _buildSummaryAssetChip(
@@ -2070,7 +2119,14 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             spacing: 12,
             runSpacing: 10,
             children: _selectedIds
-                .map((id) => UniversalIcon(id: id, size: 44))
+                .map(
+                  (id) => _getIconForId(
+                    id,
+                    _selectedResourceTabIndex,
+                    size: 44,
+                    levelFile: widget.levelFile,
+                  ),
+                )
                 .toList(),
           ),
         ],
@@ -2656,7 +2712,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       cols: cols,
       style: style,
       moduleData: data,
-      activeTabIndex: 5,
+      activeTabIndex: 0,
       cellBuilder: (col, row) => null,
     );
   }
@@ -2687,7 +2743,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
       cols: cols,
       style: style,
       moduleData: data,
-      activeTabIndex: 5,
+      activeTabIndex: 2,
       cellBuilder: (col, row) => null,
     );
   }
@@ -5416,6 +5472,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             _selectedX = col;
             _selectedY = row;
             _selectedIds = ids;
+            _selectedResourceTabIndex = activeTabIndex ?? 2;
           }
         });
       },

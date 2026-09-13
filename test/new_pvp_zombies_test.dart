@@ -17,6 +17,9 @@ Widget _localizedApp(Widget home) => MaterialApp(
   home: home,
 );
 
+int _worldGroupIndex(ZombieInfo zombie) =>
+    zombieWorldTagOrder.indexWhere((tag) => zombie.tags.contains(tag));
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -185,6 +188,136 @@ void main() {
     expect(
       lookupAppLocalizations(const Locale('en')).zombieTagPvp,
       'Two-Player Mode Variants',
+    );
+  });
+
+  test('Roman world group is between underground and Memory Lane', () {
+    expect(
+      zombieWorldTagOrder.indexOf(ZombieTag.toTheWest),
+      zombieWorldTagOrder.indexOf(ZombieTag.parkourSpeed) + 1,
+    );
+    expect(
+      zombieWorldTagOrder.indexOf(ZombieTag.toTheWest),
+      zombieWorldTagOrder.indexOf(ZombieTag.roman) - 1,
+    );
+    expect(
+      zombieWorldTagOrder.indexOf(ZombieTag.roman),
+      zombieWorldTagOrder.indexOf(ZombieTag.memory) - 1,
+    );
+  });
+
+  test('all-zombie order follows Zombies.json and keeps stay_tuned last', () {
+    final repositoryZombies = ZombieRepository().allZombies;
+    final catalogIds = zombies
+        .map((zombie) => zombie['id'] as String)
+        .toSet()
+        .toList();
+    expect(repositoryZombies.map((zombie) => zombie.id), catalogIds);
+    expect(catalogIds.last, 'stay_tuned');
+    expect(catalogIds[catalogIds.length - 2], 'fairy_tale_imp_Elite');
+    expect(repositoryZombies.last.id, 'stay_tuned');
+    expect(
+      ZombieRepository()
+          .search('', ZombieTag.all, ZombieCategory.main)
+          .map((zombie) => zombie.id),
+      catalogIds,
+    );
+  });
+
+  test('static catalog follows the complete world tag order', () {
+    final repositoryZombies = ZombieRepository().allZombies;
+    final groups = <ZombieTag>[];
+    var previousWorldIndex = -1;
+    for (final zombie in repositoryZombies) {
+      if (zombie.id == 'stay_tuned') continue;
+      final worldIndex = _worldGroupIndex(zombie);
+      expect(worldIndex, greaterThanOrEqualTo(0), reason: zombie.id);
+      expect(
+        worldIndex,
+        greaterThanOrEqualTo(previousWorldIndex),
+        reason: '${zombie.id} must belong to its earliest assigned world tag',
+      );
+      if (worldIndex != previousWorldIndex) {
+        groups.add(zombieWorldTagOrder[worldIndex]);
+      }
+      previousWorldIndex = worldIndex;
+    }
+    expect(groups, zombieWorldTagOrder);
+
+    final swimmingRing = ZombieRepository().getZombieById('SwimmingRing')!;
+    expect(
+      swimmingRing.tags,
+      containsAll([
+        ZombieTag.modernPvz1,
+        ZombieTag.darkBeach,
+        ZombieTag.memory,
+      ]),
+    );
+    expect(
+      _worldGroupIndex(swimmingRing),
+      zombieWorldTagOrder.indexOf(ZombieTag.darkBeach),
+    );
+    final snowPea = ZombieRepository().getZombieById('zombie_snowpea')!;
+    expect(snowPea.tags, containsAll([ZombieTag.modernPvz1, ZombieTag.memory]));
+    expect(
+      _worldGroupIndex(snowPea),
+      zombieWorldTagOrder.indexOf(ZombieTag.modernPvz1),
+    );
+  });
+
+  test('western and Roman catalog groups precede the Memory Lane block', () {
+    final repositoryZombies = ZombieRepository().allZombies;
+    final catalogIds = zombies.map((zombie) => zombie['id'] as String).toList();
+    final westIds = zombies
+        .where((zombie) => (zombie['tags'] as List).contains('Tothewest'))
+        .map((zombie) => zombie['id'] as String)
+        .toList();
+    final romanIds = zombies
+        .where((zombie) => (zombie['tags'] as List).contains('Roman'))
+        .map((zombie) => zombie['id'] as String)
+        .toList();
+    expect(westIds, hasLength(51));
+    expect(romanIds, hasLength(33));
+    final firstWest = catalogIds.indexOf(westIds.first);
+    final firstRoman = catalogIds.indexOf(romanIds.first);
+    final firstMemory = repositoryZombies.indexWhere(
+      (zombie) =>
+          _worldGroupIndex(zombie) ==
+          zombieWorldTagOrder.indexOf(ZombieTag.memory),
+    );
+    expect(catalogIds[firstWest - 1], 'zombie_van');
+    expect(catalogIds.sublist(firstWest, firstRoman), westIds);
+    expect(catalogIds.sublist(firstRoman, firstMemory), romanIds);
+    final lastMemory = repositoryZombies.lastIndexWhere(
+      (zombie) =>
+          _worldGroupIndex(zombie) ==
+          zombieWorldTagOrder.indexOf(ZombieTag.memory),
+    );
+    expect(catalogIds[lastMemory], 'carnie_dove');
+
+    // Memo variants retain their explicit Roman placement even without a
+    // Memory tag; actual dual-world variants are also kept in the Roman block.
+    for (final id in const ['roman_ballista_memo', 'roman_ballista_memo2']) {
+      final zombie = ZombieRepository().getZombieById(id)!;
+      expect(zombie.tags, contains(ZombieTag.roman));
+      expect(
+        catalogIds.indexOf(id),
+        inInclusiveRange(firstRoman, firstMemory - 1),
+      );
+    }
+    for (final id in const ['elite_roman_healer', 'elite_roman_ballista']) {
+      final zombie = ZombieRepository().getZombieById(id)!;
+      expect(zombie.tags, containsAll([ZombieTag.roman, ZombieTag.memory]));
+      expect(
+        catalogIds.indexOf(id),
+        inInclusiveRange(firstRoman, firstMemory - 1),
+      );
+    }
+    expect(
+      ZombieRepository()
+          .search('', ZombieTag.roman, ZombieCategory.main)
+          .map((zombie) => zombie.id),
+      romanIds,
     );
   });
 

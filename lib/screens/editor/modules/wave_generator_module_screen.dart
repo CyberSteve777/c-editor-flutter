@@ -365,7 +365,7 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
                       'Incompatibilities',
                   body:
                       l10n?.waveGeneratorModuleHelpIncompatBody ??
-                      'Cannot coexist with Wave Manager modules, Renai, or Witch modules.',
+                      'May be incompatible with some modules and cause the level to crash. Use with caution.',
                 ),
               ],
             ),

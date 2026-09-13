@@ -231,30 +231,36 @@ class _CustomPortalPropertiesScreenState
                       ),
                     ),
                     const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      initialValue:
-                          PortalRepository.worldCodes.contains(_data['World'])
-                          ? _data['World'].toString()
-                          : null,
-                      decoration: editorInputDecoration(
-                        context,
-                        labelText: _portalPropertyLabel(
-                          l10n?.customPortalWorld ?? 'World',
-                          'World',
-                        ),
+                    EditorResponsiveInputField(
+                      label: _portalPropertyLabel(
+                        l10n?.customPortalWorld ?? 'World',
+                        'World',
                       ),
-                      items: [
-                        for (final code in PortalRepository.worldCodes)
-                          DropdownMenuItem(
-                            value: code,
-                            child: Text('${_worldName(context, code)} ($code)'),
+                      decoration: editorInputDecoration(context),
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            initialValue:
+                                PortalRepository.worldCodes.contains(
+                                  _data['World'],
+                                )
+                                ? _data['World'].toString()
+                                : null,
+                            decoration: decoration,
+                            items: [
+                              for (final code in PortalRepository.worldCodes)
+                                DropdownMenuItem(
+                                  value: code,
+                                  child: Text(
+                                    '${_worldName(context, code)} ($code)',
+                                  ),
+                                ),
+                            ],
+                            onChanged: (value) {
+                              if (value == null) return;
+                              setState(() => _data['World'] = value);
+                            },
                           ),
-                      ],
-                      onChanged: (value) {
-                        if (value == null) return;
-                        setState(() => _data['World'] = value);
-                      },
                     ),
                     const SizedBox(height: 12),
                     SeparatedOptionPickerField<String>(
@@ -401,22 +407,23 @@ class _CustomPortalPropertiesScreenState
     final interval = Map<String, dynamic>.from(
       _data['TimeBetweenSpawns'] as Map,
     );
-    return TextFormField(
-      initialValue: '${interval[field] ?? 1.0}',
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: editorInputDecoration(
-        context,
-        labelText: _portalPropertyLabel(label, field),
+    return EditorResponsiveInputField(
+      label: _portalPropertyLabel(label, field),
+      decoration: editorInputDecoration(context),
+      builder: (context, decoration) => TextFormField(
+        initialValue: '${interval[field] ?? 1.0}',
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
+        onChanged: (value) {
+          final parsed = double.tryParse(value);
+          if (parsed == null) return;
+          final next = Map<String, dynamic>.from(
+            _data['TimeBetweenSpawns'] as Map,
+          );
+          next[field] = parsed;
+          _data['TimeBetweenSpawns'] = next;
+        },
       ),
-      onChanged: (value) {
-        final parsed = double.tryParse(value);
-        if (parsed == null) return;
-        final next = Map<String, dynamic>.from(
-          _data['TimeBetweenSpawns'] as Map,
-        );
-        next[field] = parsed;
-        _data['TimeBetweenSpawns'] = next;
-      },
     );
   }
 

@@ -231,10 +231,7 @@ class _StormEventScreenState extends State<StormEventScreen> {
         });
       },
       onCopy: () {
-        final copy = StormZombieData(
-          type: z.type,
-          level: z.level ?? 0,
-        );
+        final copy = StormZombieData(type: z.type, level: z.level ?? 0);
         _data = StormZombieSpawnerPropsData(
           columnStart: _data.columnStart,
           columnEnd: _data.columnEnd,
@@ -392,76 +389,85 @@ class _StormEventScreenState extends State<StormEventScreen> {
                       const SizedBox(height: 12),
                       EditorResponsiveFieldRow(
                         children: [
-                          TextFormField(
-                            initialValue: _data.columnStart.toString(),
+                          EditorResponsiveInputField(
+                            label: l10n?.columnStart ?? 'Column start',
                             decoration: InputDecoration(
-                              labelText: l10n?.columnStart ?? 'Column start',
                               border: OutlineInputBorder(),
                             ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (v) {
-                              final n = int.tryParse(v);
-                              if (n != null) {
-                                _data = StormZombieSpawnerPropsData(
-                                  columnStart: n,
-                                  columnEnd: _data.columnEnd,
-                                  groupSize: _data.groupSize,
-                                  timeBetweenGroups: _data.timeBetweenGroups,
-                                  type: _data.type,
-                                  zombies: _data.zombies,
-                                );
-                                _sync();
-                              }
-                            },
+                            builder: (context, decoration) => TextFormField(
+                              initialValue: _data.columnStart.toString(),
+                              decoration: decoration,
+                              keyboardType: TextInputType.number,
+                              onChanged: (v) {
+                                final n = int.tryParse(v);
+                                if (n != null) {
+                                  _data = StormZombieSpawnerPropsData(
+                                    columnStart: n,
+                                    columnEnd: _data.columnEnd,
+                                    groupSize: _data.groupSize,
+                                    timeBetweenGroups: _data.timeBetweenGroups,
+                                    type: _data.type,
+                                    zombies: _data.zombies,
+                                  );
+                                  _sync();
+                                }
+                              },
+                            ),
                           ),
-                          TextFormField(
-                            initialValue: _data.columnEnd.toString(),
+                          EditorResponsiveInputField(
+                            label: l10n?.columnEnd ?? 'Column end',
                             decoration: InputDecoration(
-                              labelText: l10n?.columnEnd ?? 'Column end',
                               border: OutlineInputBorder(),
                             ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (v) {
-                              final n = int.tryParse(v);
-                              if (n != null) {
-                                _data = StormZombieSpawnerPropsData(
-                                  columnStart: _data.columnStart,
-                                  columnEnd: n,
-                                  groupSize: _data.groupSize,
-                                  timeBetweenGroups: _data.timeBetweenGroups,
-                                  type: _data.type,
-                                  zombies: _data.zombies,
-                                );
-                                _sync();
-                              }
-                            },
+                            builder: (context, decoration) => TextFormField(
+                              initialValue: _data.columnEnd.toString(),
+                              decoration: decoration,
+                              keyboardType: TextInputType.number,
+                              onChanged: (v) {
+                                final n = int.tryParse(v);
+                                if (n != null) {
+                                  _data = StormZombieSpawnerPropsData(
+                                    columnStart: _data.columnStart,
+                                    columnEnd: n,
+                                    groupSize: _data.groupSize,
+                                    timeBetweenGroups: _data.timeBetweenGroups,
+                                    type: _data.type,
+                                    zombies: _data.zombies,
+                                  );
+                                  _sync();
+                                }
+                              },
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       const EventColumnRangeHint(),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.groupSize.toString(),
+                      EditorResponsiveInputField(
+                        label: l10n?.groupSize ?? 'Group size',
                         decoration: InputDecoration(
-                          labelText: l10n?.groupSize ?? 'Group size',
                           border: OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = StormZombieSpawnerPropsData(
-                              columnStart: _data.columnStart,
-                              columnEnd: _data.columnEnd,
-                              groupSize: n,
-                              timeBetweenGroups: _data.timeBetweenGroups,
-                              type: _data.type,
-                              zombies: _data.zombies,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.groupSize.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = StormZombieSpawnerPropsData(
+                                columnStart: _data.columnStart,
+                                columnEnd: _data.columnEnd,
+                                groupSize: n,
+                                timeBetweenGroups: _data.timeBetweenGroups,
+                                type: _data.type,
+                                zombies: _data.zombies,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                       const SizedBox(height: 12),
                       EditorResponsiveInputField(

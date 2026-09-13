@@ -3,9 +3,21 @@ import 'dart:ui' as ui;
 
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_export_prefs.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
-import 'package:path/path.dart' as p;
 
 import 'preview_png_writer.dart' as writer;
+
+enum PreviewPngExportFailure { encoding, libraryNotConfigured }
+
+/// A known export failure that the interface can describe with localization.
+/// Filesystem and unexpected encoding errors retain their original exceptions.
+class PreviewPngExportException implements Exception {
+  const PreviewPngExportException(this.failure);
+
+  final PreviewPngExportFailure failure;
+
+  @override
+  String toString() => 'PreviewPngExportException(${failure.name})';
+}
 
 class PreviewExportResult {
   const PreviewExportResult({required this.path, required this.bytes});
@@ -15,7 +27,7 @@ class PreviewExportResult {
 }
 
 class PreviewPngExporter {
-  /// Renders [boundary] to PNG and writes under the level library export folder.
+  /// Encodes [image] as PNG and writes under the level library export folder.
   static Future<PreviewExportResult> export({
     required ui.Image image,
     required String levelFileName,
@@ -23,27 +35,32 @@ class PreviewPngExporter {
   }) async {
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) {
-      throw StateError('Failed to encode preview PNG');
+      throw const PreviewPngExportException(PreviewPngExportFailure.encoding);
     }
     final bytes = byteData.buffer.asUint8List(
       byteData.offsetInBytes,
       byteData.lengthInBytes,
     );
 
+    if (bytes.isEmpty) {
+      throw const PreviewPngExportException(PreviewPngExportFailure.encoding);
+    }
     final libraryPath = await LevelRepository.getSavedFolderPath();
     if (libraryPath == null || libraryPath.isEmpty) {
-      throw StateError('Level library folder is not configured');
+      throw const PreviewPngExportException(
+        PreviewPngExportFailure.libraryNotConfigured,
+      );
     }
 
     final folderName = await PreviewExportPrefs.getFolderName();
     final base = sanitizePreviewFileBaseName(levelFileName);
-    final dirPath = p.join(libraryPath, folderName);
+    final dirPath = previewExportDirectoryPath(libraryPath, folderName);
     var fileName = '$base.png';
-    var outPath = p.join(dirPath, fileName);
+    var outPath = previewExportFilePath(dirPath, fileName);
     var n = 2;
     while (await writer.fileExists(outPath)) {
       fileName = '${base}_$n.png';
-      outPath = p.join(dirPath, fileName);
+      outPath = previewExportFilePath(dirPath, fileName);
       n++;
     }
 

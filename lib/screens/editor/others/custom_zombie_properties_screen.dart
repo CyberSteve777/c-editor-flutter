@@ -564,6 +564,14 @@ class _CustomZombiePropertiesScreenState
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(ctx).width < 400 ? 16 : 40,
+          vertical: 24,
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(ctx).width < 400 ? 12 : 24,
+        ),
         title: Text(l10n?.selectSize ?? 'Select size'),
         content: StatefulBuilder(
           builder: (context, setState) {
@@ -826,22 +834,25 @@ class _CustomZombiePropertiesScreenState
                       children: [
                         _cardSectionTitle(l10n?.baseStats ?? 'Base stats'),
                         const SizedBox(height: 12),
-                        TextFormField(
-                          initialValue: _typeObj!.aliases?.isNotEmpty == true
-                              ? _typeObj!.aliases!.first
-                              : '',
+                        EditorResponsiveInputField(
+                          label: l10n?.aliasLabel ?? 'Alias',
                           decoration: InputDecoration(
-                            labelText: l10n?.aliasLabel ?? 'Alias',
                             border: const OutlineInputBorder(),
                           ),
-                          onChanged: (v) {
-                            final trimmed = v.trim();
-                            if (trimmed.isNotEmpty && _typeObj != null) {
-                              _typeObj!.aliases = [trimmed];
-                              widget.onChanged();
-                              setState(() {});
-                            }
-                          },
+                          builder: (context, decoration) => TextFormField(
+                            initialValue: _typeObj!.aliases?.isNotEmpty == true
+                                ? _typeObj!.aliases!.first
+                                : '',
+                            decoration: decoration,
+                            onChanged: (v) {
+                              final trimmed = v.trim();
+                              if (trimmed.isNotEmpty && _typeObj != null) {
+                                _typeObj!.aliases = [trimmed];
+                                widget.onChanged();
+                                setState(() {});
+                              }
+                            },
+                          ),
                         ),
                         const SizedBox(height: 12),
                         _doubleInput(
@@ -960,42 +971,46 @@ class _CustomZombiePropertiesScreenState
                       const Divider(height: 1),
                       Padding(
                         padding: const EdgeInsets.all(16),
-                        child: DropdownButtonFormField<String>(
-                          isExpanded: true,
-                          initialValue:
-                              _propsData.groundTrackName == 'ground_swatch'
-                              ? 'ground_swatch'
-                              : '',
+                        child: EditorResponsiveInputField(
+                          label:
+                              l10n?.groundTrackName ?? 'GroundTrackName (行进轨迹)',
                           decoration: InputDecoration(
-                            labelText:
-                                l10n?.groundTrackName ??
-                                'GroundTrackName (行进轨迹)',
                             border: const OutlineInputBorder(),
                           ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 'ground_swatch',
-                              child: Text(
-                                l10n?.groundTrackNormal ??
-                                    'Normal ground (ground_swatch)',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                          builder: (context, decoration) =>
+                              DropdownButtonFormField<String>(
+                                isExpanded: true,
+                                initialValue:
+                                    _propsData.groundTrackName ==
+                                        'ground_swatch'
+                                    ? 'ground_swatch'
+                                    : '',
+                                decoration: decoration,
+                                items: [
+                                  DropdownMenuItem(
+                                    value: 'ground_swatch',
+                                    child: Text(
+                                      l10n?.groundTrackNormal ??
+                                          'Normal ground (ground_swatch)',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '',
+                                    child: Text(
+                                      l10n?.groundTrackNone ?? 'None (null)',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val == null) return;
+                                  _propsData.groundTrackName = val;
+                                  _sync();
+                                },
                               ),
-                            ),
-                            DropdownMenuItem(
-                              value: '',
-                              child: Text(
-                                l10n?.groundTrackNone ?? 'None (null)',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                          onChanged: (val) {
-                            if (val == null) return;
-                            _propsData.groundTrackName = val;
-                            _sync();
-                          },
                         ),
                       ),
                     ],

@@ -40,6 +40,7 @@ class _RadiationMeteorModuleScreenState
   late TextEditingController _pollutionCtrl;
   late TextEditingController _miningCtrl;
   late TextEditingController _rewardCtrl;
+  late TextEditingController _waveCtrl;
   late List<int> _waveGroups;
   int _selectedGroupIndex = 0;
   int _selectedX = 0;
@@ -90,6 +91,7 @@ class _RadiationMeteorModuleScreenState
       text: '${_data.miningDurationRequired}',
     );
     _rewardCtrl = TextEditingController(text: '${_data.powerRewardOnDestroy}');
+    _waveCtrl = TextEditingController(text: '${_selectedWave ?? ''}');
   }
 
   @override
@@ -98,6 +100,7 @@ class _RadiationMeteorModuleScreenState
     _pollutionCtrl.dispose();
     _miningCtrl.dispose();
     _rewardCtrl.dispose();
+    _waveCtrl.dispose();
     super.dispose();
   }
 
@@ -142,10 +145,33 @@ class _RadiationMeteorModuleScreenState
   }
 
   void _addWaveGroup() {
-    final nextWave = _waveGroups.isEmpty ? 0 : _waveGroups.last + 1;
+    final nextWave = _waveGroups.isEmpty
+        ? 0
+        : _waveGroups.reduce((a, b) => a > b ? a : b) + 1;
     setState(() {
       _waveGroups.add(nextWave);
       _selectedGroupIndex = _waveGroups.length - 1;
+      _syncSelectedWaveController();
+    });
+  }
+
+  void _syncSelectedWaveController() {
+    final text = '${_selectedWave ?? ''}';
+    _waveCtrl.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
+  void _selectWaveGroup(int index) {
+    if (index < 0 ||
+        index >= _waveGroups.length ||
+        index == _selectedGroupIndex) {
+      return;
+    }
+    setState(() {
+      _selectedGroupIndex = index;
+      _syncSelectedWaveController();
     });
   }
 
@@ -187,9 +213,12 @@ class _RadiationMeteorModuleScreenState
     final wave = _waveGroups[index];
     _data.spawnSchedule.removeWhere((entry) => entry.wave == wave);
     _waveGroups.removeAt(index);
-    if (_selectedGroupIndex >= _waveGroups.length) {
+    if (index < _selectedGroupIndex) {
+      _selectedGroupIndex--;
+    } else if (_selectedGroupIndex >= _waveGroups.length) {
       _selectedGroupIndex = _waveGroups.length - 1;
     }
+    _syncSelectedWaveController();
     _sync();
   }
 
@@ -345,8 +374,7 @@ class _RadiationMeteorModuleScreenState
             GridOverrideWaveGroupsBar(
               itemCount: _waveGroups.length,
               selectedIndex: _selectedGroupIndex,
-              onSelected: (index) =>
-                  setState(() => _selectedGroupIndex = index),
+              onSelected: _selectWaveGroup,
               onDeleteAt: _confirmDeleteWaveGroup,
               onAdd: _addWaveGroup,
               groupLabel: (index) =>
@@ -370,8 +398,10 @@ class _RadiationMeteorModuleScreenState
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
-                        key: ValueKey('meteor-wave-$selectedWave'),
-                        initialValue: '$selectedWave',
+                        // Keep the editor mounted while the wave number changes
+                        // so each keystroke preserves focus, caret and draft text.
+                        key: ValueKey('meteor-wave-$_selectedGroupIndex'),
+                        controller: _waveCtrl,
                         decoration: InputDecoration(
                           labelText:
                               l10n?.radiationMeteorWave ??

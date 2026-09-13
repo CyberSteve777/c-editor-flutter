@@ -2,6 +2,7 @@ import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/others/custom_zomboss_mech_action_editor_screen.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -123,7 +124,15 @@ void main() {
       expect(find.text('Base Action'), findsOneWidget);
       expect(find.text('Recreate from template'), findsNothing);
 
-      await tester.tap(find.text('Base Action'));
+      final baseActionInput = find.descendant(
+        of: find.byWidgetPredicate(
+          (widget) =>
+              widget is SeparatedOptionPickerField<String> &&
+              widget.labelText == 'Base Action',
+        ),
+        matching: find.byType(InputDecorator),
+      );
+      await tester.tap(baseActionInput);
       await tester.pumpAndSettle();
       await tester.tap(find.text('SecondAction').last);
       await tester.pumpAndSettle();
@@ -133,10 +142,7 @@ void main() {
 
       expect(level.objects, hasLength(1));
       expect(level.objects.single.objClass, 'SecondActionDefinition');
-      expect(
-        level.objects.single.objData,
-        containsPair('SecondOnlyField', 42),
-      );
+      expect(level.objects.single.objData, containsPair('SecondOnlyField', 42));
       expect(level.objects.single.objData, isNot(contains('FirstOnlyField')));
       expect(tester.takeException(), isNull);
     },

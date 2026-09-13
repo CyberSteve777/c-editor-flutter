@@ -168,34 +168,38 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue:
-                            _fogOptions.any((e) => e.$1 == _data.fogType)
-                            ? _data.fogType
-                            : null,
+                      EditorResponsiveInputField(
+                        label: 'Fog type (FogType)',
                         decoration: const InputDecoration(
-                          labelText: 'Fog type (FogType)',
                           border: OutlineInputBorder(),
                         ),
-                        items: _fogOptions
-                            .map(
-                              (e) => DropdownMenuItem(
-                                value: e.$1,
-                                child: Text(e.$2),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (v) {
-                          if (v != null) {
-                            _data = FairyTaleFogWaveActionData(
-                              movingTime: _data.movingTime,
-                              fogType: v,
-                              range: _data.range,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) =>
+                            DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              initialValue:
+                                  _fogOptions.any((e) => e.$1 == _data.fogType)
+                                  ? _data.fogType
+                                  : null,
+                              decoration: decoration,
+                              items: _fogOptions
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e.$1,
+                                      child: Text(e.$2),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (v) {
+                                if (v != null) {
+                                  _data = FairyTaleFogWaveActionData(
+                                    movingTime: _data.movingTime,
+                                    fogType: v,
+                                    range: _data.range,
+                                  );
+                                  _sync();
+                                }
+                              },
+                            ),
                       ),
                       const SizedBox(height: 12),
                       EditorResponsiveInputField(
@@ -230,56 +234,62 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                       EditorResponsiveFieldRow(
                         children: [
                           Expanded(
-                            child: TextFormField(
-                              initialValue: _data.range.mX.toString(),
+                            child: EditorResponsiveInputField(
+                              label: 'mX',
                               decoration: const InputDecoration(
-                                labelText: 'mX',
                                 border: OutlineInputBorder(),
                               ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                final n = int.tryParse(v);
-                                if (n != null) {
-                                  _data = FairyTaleFogWaveActionData(
-                                    movingTime: _data.movingTime,
-                                    fogType: _data.fogType,
-                                    range: FogRangeData(
-                                      mX: n,
-                                      mY: _data.range.mY,
-                                      mWidth: _data.range.mWidth,
-                                      mHeight: _data.range.mHeight,
-                                    ),
-                                  );
-                                  _sync();
-                                }
-                              },
+                              builder: (context, decoration) => TextFormField(
+                                initialValue: _data.range.mX.toString(),
+                                decoration: decoration,
+                                keyboardType: TextInputType.number,
+                                onChanged: (v) {
+                                  final n = int.tryParse(v);
+                                  if (n != null) {
+                                    _data = FairyTaleFogWaveActionData(
+                                      movingTime: _data.movingTime,
+                                      fogType: _data.fogType,
+                                      range: FogRangeData(
+                                        mX: n,
+                                        mY: _data.range.mY,
+                                        mWidth: _data.range.mWidth,
+                                        mHeight: _data.range.mHeight,
+                                      ),
+                                    );
+                                    _sync();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: TextFormField(
-                              initialValue: _data.range.mY.toString(),
+                            child: EditorResponsiveInputField(
+                              label: 'mY',
                               decoration: const InputDecoration(
-                                labelText: 'mY',
                                 border: OutlineInputBorder(),
                               ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                final n = int.tryParse(v);
-                                if (n != null) {
-                                  _data = FairyTaleFogWaveActionData(
-                                    movingTime: _data.movingTime,
-                                    fogType: _data.fogType,
-                                    range: FogRangeData(
-                                      mX: _data.range.mX,
-                                      mY: n,
-                                      mWidth: _data.range.mWidth,
-                                      mHeight: _data.range.mHeight,
-                                    ),
-                                  );
-                                  _sync();
-                                }
-                              },
+                              builder: (context, decoration) => TextFormField(
+                                initialValue: _data.range.mY.toString(),
+                                decoration: decoration,
+                                keyboardType: TextInputType.number,
+                                onChanged: (v) {
+                                  final n = int.tryParse(v);
+                                  if (n != null) {
+                                    _data = FairyTaleFogWaveActionData(
+                                      movingTime: _data.movingTime,
+                                      fogType: _data.fogType,
+                                      range: FogRangeData(
+                                        mX: _data.range.mX,
+                                        mY: n,
+                                        mWidth: _data.range.mWidth,
+                                        mHeight: _data.range.mHeight,
+                                      ),
+                                    );
+                                    _sync();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -288,56 +298,62 @@ class _FairyTaleFogEventScreenState extends State<FairyTaleFogEventScreen> {
                       EditorResponsiveFieldRow(
                         children: [
                           Expanded(
-                            child: TextFormField(
-                              initialValue: _data.range.mWidth.toString(),
+                            child: EditorResponsiveInputField(
+                              label: 'mWidth',
                               decoration: const InputDecoration(
-                                labelText: 'mWidth',
                                 border: OutlineInputBorder(),
                               ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                final n = int.tryParse(v);
-                                if (n != null) {
-                                  _data = FairyTaleFogWaveActionData(
-                                    movingTime: _data.movingTime,
-                                    fogType: _data.fogType,
-                                    range: FogRangeData(
-                                      mX: _data.range.mX,
-                                      mY: _data.range.mY,
-                                      mWidth: n,
-                                      mHeight: _data.range.mHeight,
-                                    ),
-                                  );
-                                  _sync();
-                                }
-                              },
+                              builder: (context, decoration) => TextFormField(
+                                initialValue: _data.range.mWidth.toString(),
+                                decoration: decoration,
+                                keyboardType: TextInputType.number,
+                                onChanged: (v) {
+                                  final n = int.tryParse(v);
+                                  if (n != null) {
+                                    _data = FairyTaleFogWaveActionData(
+                                      movingTime: _data.movingTime,
+                                      fogType: _data.fogType,
+                                      range: FogRangeData(
+                                        mX: _data.range.mX,
+                                        mY: _data.range.mY,
+                                        mWidth: n,
+                                        mHeight: _data.range.mHeight,
+                                      ),
+                                    );
+                                    _sync();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: TextFormField(
-                              initialValue: _data.range.mHeight.toString(),
+                            child: EditorResponsiveInputField(
+                              label: 'mHeight',
                               decoration: const InputDecoration(
-                                labelText: 'mHeight',
                                 border: OutlineInputBorder(),
                               ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                final n = int.tryParse(v);
-                                if (n != null) {
-                                  _data = FairyTaleFogWaveActionData(
-                                    movingTime: _data.movingTime,
-                                    fogType: _data.fogType,
-                                    range: FogRangeData(
-                                      mX: _data.range.mX,
-                                      mY: _data.range.mY,
-                                      mWidth: _data.range.mWidth,
-                                      mHeight: n,
-                                    ),
-                                  );
-                                  _sync();
-                                }
-                              },
+                              builder: (context, decoration) => TextFormField(
+                                initialValue: _data.range.mHeight.toString(),
+                                decoration: decoration,
+                                keyboardType: TextInputType.number,
+                                onChanged: (v) {
+                                  final n = int.tryParse(v);
+                                  if (n != null) {
+                                    _data = FairyTaleFogWaveActionData(
+                                      movingTime: _data.movingTime,
+                                      fogType: _data.fogType,
+                                      range: FogRangeData(
+                                        mX: _data.range.mX,
+                                        mY: _data.range.mY,
+                                        mWidth: _data.range.mWidth,
+                                        mHeight: n,
+                                      ),
+                                    );
+                                    _sync();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ],

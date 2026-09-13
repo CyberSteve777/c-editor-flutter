@@ -41,11 +41,11 @@ enum ZombieTag {
   taleZCorp,
   parkourSpeed,
   toTheWest,
+  roman,
   memory,
   universe,
   festival1,
   festival2,
-  roman,
   pet,
   imp,
   basic,
@@ -60,6 +60,28 @@ enum ZombieTag {
   chinese,
   international,
 }
+
+/// Display order for world-group tags in the zombie picker.
+const List<ZombieTag> zombieWorldTagOrder = [
+  ZombieTag.egyptPirate,
+  ZombieTag.westFuture,
+  ZombieTag.darkBeach,
+  ZombieTag.iceageLostcity,
+  ZombieTag.kongfuSkycity,
+  ZombieTag.eightiesDino,
+  ZombieTag.modernPvz1,
+  ZombieTag.steamRenai,
+  ZombieTag.henaiAtlantis,
+  ZombieTag.moon,
+  ZombieTag.taleZCorp,
+  ZombieTag.parkourSpeed,
+  ZombieTag.toTheWest,
+  ZombieTag.roman,
+  ZombieTag.memory,
+  ZombieTag.universe,
+  ZombieTag.festival1,
+  ZombieTag.festival2,
+];
 
 extension ZombieTagExtension on ZombieTag {
   String getLabel(BuildContext context) {
@@ -148,11 +170,11 @@ extension ZombieTagExtension on ZombieTag {
       case ZombieTag.taleZCorp:
       case ZombieTag.parkourSpeed:
       case ZombieTag.toTheWest:
+      case ZombieTag.roman:
       case ZombieTag.memory:
       case ZombieTag.universe:
       case ZombieTag.festival1:
       case ZombieTag.festival2:
-      case ZombieTag.roman:
         return ZombieCategory.main;
       case ZombieTag.pet:
       case ZombieTag.imp:
@@ -280,6 +302,8 @@ class ZombieRepository {
         );
       }
 
+      // Catalog order is intentional, including multi-world variants and the
+      // final stay_tuned entry. Filtering must not re-sort it by world tags.
       _isLoaded = true;
     } catch (e) {
       debugPrint('Error loading zombies: $e');

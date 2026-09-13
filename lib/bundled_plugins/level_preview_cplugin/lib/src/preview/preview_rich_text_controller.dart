@@ -61,7 +61,10 @@ class PreviewRichTextController extends TextEditingController {
   }
 
   /// Refresh span styles from [layer] without moving the caret (toolbar edits).
-  void reloadStylesFromLayer(PreviewLayer layer, {TextSelection? keepSelection}) {
+  void reloadStylesFromLayer(
+    PreviewLayer layer, {
+    TextSelection? keepSelection,
+  }) {
     layer.ensureTextRuns();
     final sel = keepSelection ?? selection;
     _runs = [for (final r in layer.textRuns) r.copy()];
@@ -91,16 +94,16 @@ class PreviewRichTextController extends TextEditingController {
     if (typingStyle != null) return typingStyle!.copy();
     final plain = plainText;
     if (plain.isEmpty) {
-      return (_runs.isNotEmpty
-              ? _runs.first.style
-              : PreviewTextStyleData())
+      return (_runs.isNotEmpty ? _runs.first.style : PreviewTextStyleData())
           .copy();
     }
     final sel = selection;
     if (sel.isValid && !sel.isCollapsed) {
       return _styleAtIndex(sel.start);
     }
-    final caret = sel.isValid ? sel.baseOffset.clamp(0, plain.length) : plain.length;
+    final caret = sel.isValid
+        ? sel.baseOffset.clamp(0, plain.length)
+        : plain.length;
     if (caret <= 0) return _styleAtIndex(0);
     return _styleAtIndex(caret - 1);
   }
@@ -192,17 +195,25 @@ class PreviewRichTextController extends TextEditingController {
   @override
   set value(TextEditingValue newValue) {
     final oldText = text;
-    super.value = newValue;
-    if (_mutatingValue) return;
-    if (newValue.text == oldText) {
-      // Selection-only change — drop pending typing style so toolbar follows caret.
-      if (typingStyle != null) {
-        typingStyle = null;
-        notifyListeners();
-      }
+    if (_mutatingValue) {
+      super.value = newValue;
       return;
     }
-    _updateRunsPreservingStyles(oldText, newValue.text);
+    final valueChanged = value != newValue;
+    final clearTypingStyle = newValue.text == oldText && typingStyle != null;
+    if (newValue.text != oldText) {
+      // TextEditingController.value synchronously notifies listeners. Prepare
+      // runs first so a listener that applies them to a layer sees this edit,
+      // including the final character typed before editing ends.
+      _updateRunsPreservingStyles(oldText, newValue.text);
+    } else if (clearTypingStyle) {
+      // Selection-only change — drop pending typing style so toolbar follows caret.
+      typingStyle = null;
+    }
+    super.value = newValue;
+    // Equal values do not notify through ValueNotifier, but the pending style
+    // may still have changed and needs a toolbar refresh.
+    if (clearTypingStyle && !valueChanged) notifyListeners();
   }
 
   void _updateRunsPreservingStyles(String oldValue, String newValue) {

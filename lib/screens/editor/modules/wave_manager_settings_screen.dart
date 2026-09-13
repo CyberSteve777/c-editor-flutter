@@ -371,26 +371,30 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String?>(
-              isExpanded: true,
-              initialValue: _wm.levelJam,
+            EditorResponsiveInputField(
+              label: l10n?.waveManagerLevelJam ?? 'Level Jam',
               decoration: InputDecoration(
-                labelText: l10n?.waveManagerLevelJam ?? 'Level Jam',
                 prefixIcon: const Icon(Icons.music_note),
                 border: const OutlineInputBorder(),
               ),
-              items: jamOptions.map((e) {
-                return DropdownMenuItem<String?>(
-                  value: e.$1,
-                  child: Text(e.$2),
-                );
-              }).toList(),
-              onChanged: (v) {
-                setState(() {
-                  _wm.levelJam = v;
-                  _save();
-                });
-              },
+              builder: (context, decoration) =>
+                  DropdownButtonFormField<String?>(
+                    isExpanded: true,
+                    initialValue: _wm.levelJam,
+                    decoration: decoration,
+                    items: jamOptions.map((e) {
+                      return DropdownMenuItem<String?>(
+                        value: e.$1,
+                        child: Text(e.$2),
+                      );
+                    }).toList(),
+                    onChanged: (v) {
+                      setState(() {
+                        _wm.levelJam = v;
+                        _save();
+                      });
+                    },
+                  ),
             ),
             const SizedBox(height: 6),
             Text(

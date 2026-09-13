@@ -77,16 +77,36 @@ class _PluginsScreenState extends State<PluginsScreen> {
     final url = await showDialog<String>(
       context: context,
       builder: (ctx) {
+        final compact = MediaQuery.sizeOf(ctx).width < 480;
         return AlertDialog(
+          key: const ValueKey('pluginUrlDialog'),
+          scrollable: true,
+          constraints: const BoxConstraints(maxWidth: 560),
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: compact ? 12 : 40,
+            vertical: compact ? 16 : 24,
+          ),
+          titlePadding: compact
+              ? const EdgeInsets.fromLTRB(16, 16, 16, 12)
+              : null,
+          contentPadding: compact
+              ? const EdgeInsets.fromLTRB(16, 0, 16, 8)
+              : null,
+          actionsPadding: compact
+              ? const EdgeInsets.fromLTRB(16, 8, 16, 16)
+              : null,
           title: Text(l10n.pluginInstallFromUrl),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: l10n.pluginUrlHint,
-              labelText: 'URL',
+          content: SizedBox(
+            width: double.maxFinite,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: l10n.pluginUrlHint,
+                labelText: 'URL',
+              ),
+              keyboardType: TextInputType.url,
+              autofocus: true,
             ),
-            keyboardType: TextInputType.url,
-            autofocus: true,
           ),
           actions: [
             TextButton(

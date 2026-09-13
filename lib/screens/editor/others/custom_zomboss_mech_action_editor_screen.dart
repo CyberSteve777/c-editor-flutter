@@ -597,9 +597,8 @@ class _CustomZombossMechActionEditorScreenState
         return SafeArea(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeight),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: ListView(
+              shrinkWrap: true,
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
@@ -626,15 +625,13 @@ class _CustomZombossMechActionEditorScreenState
                   ),
                 ),
                 const Divider(height: 1),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: _baseActions.length,
-                    separatorBuilder: (_, _) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
+                for (var index = 0; index < _baseActions.length; index++) ...[
+                  if (index > 0) const Divider(height: 1),
+                  Builder(
+                    builder: (context) {
                       final action = _baseActions[index];
                       final selected = action.alias == _baseActionAlias;
-                      return ListTile(
+                      return EditorOptionTile(
                         selected: selected,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -646,16 +643,11 @@ class _CustomZombossMechActionEditorScreenState
                             widget.catalog.id,
                             action.alias,
                           ),
-                          maxLines: 3,
                         ),
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 3),
-                          child: Text(
-                            '${action.alias}\n${action.objclass}',
-                            maxLines: 3,
-                          ),
+                          child: Text('${action.alias}\n${action.objclass}'),
                         ),
-                        isThreeLine: true,
                         trailing: selected
                             ? Icon(
                                 Icons.check,
@@ -666,7 +658,7 @@ class _CustomZombossMechActionEditorScreenState
                       );
                     },
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -682,6 +674,7 @@ class _CustomZombossMechActionEditorScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        scrollable: true,
         title: Text(
           l10n?.zombossMechRecreateFromTemplateTitle ?? 'Replace this action?',
         ),
@@ -809,9 +802,8 @@ class _CustomZombossMechActionEditorScreenState
     final theme = Theme.of(context);
 
     if (_usesTemplatePicker) {
-      final selectedAlias = _baseActions.any(
-        (action) => action.alias == _baseActionAlias,
-      )
+      final selectedAlias =
+          _baseActions.any((action) => action.alias == _baseActionAlias)
           ? _baseActionAlias
           : _baseActions.firstOrNull?.alias;
       return Column(
@@ -851,28 +843,29 @@ class _CustomZombossMechActionEditorScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        InputDecorator(
-          decoration: editorInputDecoration(
-            context,
-            labelText: l10n?.zombossMechActionBaseObjclass ?? 'Action Type',
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _objclassDisplayLabel(context),
-                style: theme.textTheme.bodyLarge,
-              ),
-              if (_objclass.isNotEmpty) ...[
-                const SizedBox(height: 2),
+        EditorResponsiveInputField(
+          label: l10n?.zombossMechActionBaseObjclass ?? 'Action Type',
+          decoration: editorInputDecoration(context),
+          builder: (context, decoration) => InputDecorator(
+            decoration: decoration,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  _objclass,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  _objclassDisplayLabel(context),
+                  style: theme.textTheme.bodyLarge,
                 ),
+                if (_objclass.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    _objclass,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         if (_actionOrigin == ZombossCustomActionOrigin.userCreated &&
@@ -931,17 +924,20 @@ class _CustomZombossMechActionEditorScreenState
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              TextFormField(
-                controller: _aliasCtrl,
+              EditorResponsiveInputField(
+                label: l10n?.aliasLabel ?? 'Alias',
                 decoration: editorInputDecoration(
                   context,
-                  labelText: l10n?.aliasLabel ?? 'Alias',
                   hintText:
                       l10n?.zombossMechActionAliasHint ??
                       'Codename used in RTID(alias@CurrentLevel).',
                 ),
-                onChanged: (_) => _aliasManuallyEdited = true,
-                onFieldSubmitted: _applyAlias,
+                builder: (context, decoration) => TextFormField(
+                  controller: _aliasCtrl,
+                  decoration: decoration,
+                  onChanged: (_) => _aliasManuallyEdited = true,
+                  onFieldSubmitted: _applyAlias,
+                ),
               ),
               const SizedBox(height: 12),
               _buildTypeSection(context),

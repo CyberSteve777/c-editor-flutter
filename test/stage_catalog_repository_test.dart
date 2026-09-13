@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
 import 'package:c_editor/data/repository/stage_catalog_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
@@ -113,6 +114,48 @@ void main() {
       expect(impl.objdata['ResourceGroupNames'], contains('AudioMoon'));
       expect(moonBase.objdata['ResourceGroupNames'], contains('AudioMoon'));
       expect(resourceGroupField.defaultValue, contains('AudioMoon'));
+    });
+  });
+
+  group('CardGameStage catalog entry', () {
+    setUpAll(() async {
+      await StageCatalogRepository.init();
+      await StageRepository.init();
+    });
+
+    test('appears between Rift and Dave Cup under Extra', () {
+      final options = StageCatalogRepository.stageBaseOptions();
+      final aliases = options.map((option) => option.alias).toList();
+      final cardGame = options.firstWhere(
+        (option) => option.alias == 'CardGameStage',
+      );
+
+      expect(
+        aliases.indexOf('RiftStage'),
+        lessThan(aliases.indexOf('CardGameStage')),
+      );
+      expect(
+        aliases.indexOf('CardGameStage'),
+        lessThan(aliases.indexOf('DaveCupStage')),
+      );
+      expect(cardGame.type, 'extra');
+      expect(
+        StageRepository.allItems
+            .firstWhere((stage) => stage.alias == 'CardGameStage')
+            .type,
+        StageType.extra,
+      );
+    });
+
+    test('preview backgrounds follow stage order with Unknown last', () async {
+      final resolver = await StageBannerResolver.load();
+      final stems = resolver.orderedStemsForStageAliases(
+        StageRepository.allItems.map((stage) => stage.alias),
+      );
+
+      expect(stems.indexOf('Rift'), lessThan(stems.indexOf('CardGame')));
+      expect(stems.indexOf('CardGame'), lessThan(stems.indexOf('DaveCup')));
+      expect(stems.last, resolver.defaultStem);
     });
   });
 

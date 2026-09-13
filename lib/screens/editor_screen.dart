@@ -795,10 +795,7 @@ class _EditorScreenState extends State<EditorScreen> {
 
     if (wasActive) {
       levelDef.stageModule = CustomStageLevelUtils.defaultBuiltinStageRtid;
-      LevelParser.syncAndWriteLevelDefinition(
-        levelDef,
-        _ec.state.levelFile!,
-      );
+      LevelParser.syncAndWriteLevelDefinition(levelDef, _ec.state.levelFile!);
     }
     _markDirty();
     return true;
@@ -2473,6 +2470,11 @@ class _EditorScreenState extends State<EditorScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
+          scrollable: true,
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.sizeOf(ctx).width < 480 ? 12 : 40,
+            vertical: 24,
+          ),
           title: Text(l10n.adjustUiSize),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -2484,7 +2486,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 max: 1.5,
                 onChanged: (v) => setDialogState(() => tempScale = v),
               ),
-              _UiScalePresetLabels(
+              EditorUiScalePresetLabels(
                 currentScale: tempScale,
                 onPresetSelected: (scale) =>
                     setDialogState(() => tempScale = scale),
@@ -3933,42 +3935,39 @@ class _EditorScreenState extends State<EditorScreen> {
                       PopupMenuItem(
                         value: 'json',
                         enabled: _ec.state.levelFile != null,
-                        child: ListTile(
+                        child: EditorPopupMenuTile(
+                          enabled: _ec.state.levelFile != null,
                           leading: const Icon(Icons.code),
                           title: Text(
                             l10n?.tooltipJsonViewer ?? 'View/edit JSON',
                           ),
-                          contentPadding: EdgeInsets.zero,
                         ),
                       ),
                       const PopupMenuDivider(),
                     ],
                     PopupMenuItem(
                       value: 'lang',
-                      child: ListTile(
+                      child: EditorPopupMenuTile(
                         leading: const Icon(Icons.language),
                         title: Text(l10n?.language ?? 'Language'),
-                        contentPadding: EdgeInsets.zero,
                       ),
                     ),
                     PopupMenuItem(
                       value: 'ui',
-                      child: ListTile(
+                      child: EditorPopupMenuTile(
                         leading: const Icon(Icons.aspect_ratio),
                         title: Text(l10n?.uiSize ?? 'UI size'),
-                        contentPadding: EdgeInsets.zero,
                       ),
                     ),
                     PopupMenuItem(
                       value: 'theme',
-                      child: ListTile(
+                      child: EditorPopupMenuTile(
                         leading: Icon(
                           settings.themeMode == ThemeMode.dark
                               ? Icons.light_mode
                               : Icons.dark_mode,
                         ),
                         title: Text(l10n?.toggleTheme ?? 'Toggle theme'),
-                        contentPadding: EdgeInsets.zero,
                       ),
                     ),
                     ...pluginOverflowMenuItems(
@@ -4318,8 +4317,9 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 }
 
-class _UiScalePresetLabels extends StatelessWidget {
-  const _UiScalePresetLabels({
+class EditorUiScalePresetLabels extends StatelessWidget {
+  const EditorUiScalePresetLabels({
+    super.key,
     required this.currentScale,
     required this.onPresetSelected,
     required this.smallLabel,
@@ -4347,7 +4347,9 @@ class _UiScalePresetLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 12,
+      runSpacing: 4,
       children: [
         _UiScalePresetLabel(
           label: smallLabel,
@@ -4405,19 +4407,19 @@ class _UiScalePresetLabel extends StatelessWidget {
       fontWeight: isSelected ? FontWeight.bold : null,
     );
 
-    return Expanded(
-      child: Semantics(
-        button: true,
-        selected: isSelected,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(6),
-          onTap: () => onSelected(scale),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Align(
-              alignment: alignment,
-              child: Text(label, overflow: TextOverflow.ellipsis, style: style),
-            ),
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () => onSelected(scale),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Align(
+            alignment: alignment,
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Text(label, style: style),
           ),
         ),
       ),

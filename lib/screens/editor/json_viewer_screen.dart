@@ -10,6 +10,8 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/utils/json_viewer_search.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show EditorPopupMenuTile;
 import 'package:c_editor/widgets/json_viewer_search_bar.dart';
 
 const _fontSizeKey = 'json_viewer_font_size';
@@ -783,7 +785,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                       if (isNarrow) ...[
                         PopupMenuItem(
                           value: 'toggle_view',
-                          child: ListTile(
+                          child: EditorPopupMenuTile(
                             contentPadding: EdgeInsets.zero,
                             leading: Icon(
                               _viewMode == _JsonViewMode.structured
@@ -798,7 +800,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                         ),
                         PopupMenuItem(
                           value: 'copy',
-                          child: ListTile(
+                          child: EditorPopupMenuTile(
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.copy),
                             title: Text(
@@ -810,7 +812,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                       ],
                       PopupMenuItem(
                         value: 'clear_unused',
-                        child: ListTile(
+                        child: EditorPopupMenuTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.cleaning_services),
                           title: Text(
@@ -820,7 +822,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                       ),
                       PopupMenuItem(
                         value: 'edit',
-                        child: ListTile(
+                        child: EditorPopupMenuTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.edit),
                           title: Text(l10n?.tooltipEdit ?? 'Edit'),
@@ -1329,10 +1331,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                   ),
                 ),
                 const SizedBox(width: gutterTextGap),
-                SizedBox(
-                  width: contentWidth,
-                  child: jsonContent,
-                ),
+                SizedBox(width: contentWidth, child: jsonContent),
               ],
             );
           },

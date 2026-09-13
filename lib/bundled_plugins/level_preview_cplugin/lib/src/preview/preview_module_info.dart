@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
+import 'preview_module_resource_names.dart';
 import 'package:c_editor/data/armrack_type_catalog.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -59,7 +60,9 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
   required PvzLevelFile levelFile,
   required String objClass,
   required PreviewModuleL10n t,
+  PreviewModuleResourceName? resourceName,
 }) {
+  final name = resourceName ?? _fallbackResourceName;
   switch (objClass) {
     case 'SeedBankProperties':
       return _seedBank(levelFile, t);
@@ -67,17 +70,17 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
       return _conveyor(levelFile, t);
     case 'InitialPlantEntryProperties':
     case 'InitialPlantProperties':
-      return _initialPlants(levelFile, objClass, t);
+      return _initialPlants(levelFile, objClass, t, name);
     case 'InitialZombieProperties':
-      return _initialZombies(levelFile, t);
+      return _initialZombies(levelFile, t, name);
     case 'ProtectThePlantChallengeProperties':
-      return _protectPlants(levelFile, t);
+      return _protectPlants(levelFile, t, name);
     case 'ProtectTheGridItemChallengeProperties':
-      return _protectGridItems(levelFile, t);
+      return _protectGridItems(levelFile, t, name);
     case 'VaseBreakerPresetProperties':
     case 'VaseBreakerArcadeModuleProperties':
     case 'VaseBreakerFlowModuleProperties':
-      return _vases(levelFile, t);
+      return _vases(levelFile, t, name);
     case 'ArmrackProperties':
       return _armrack(levelFile, t);
     case 'EnergyGridProperties':
@@ -89,17 +92,17 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
     case 'InitialGridItemGulliverTunnelProperties':
       return _gulliver(levelFile, t);
     case 'InitialGridItemProperties':
-      return _initialGridItems(levelFile, t);
+      return _initialGridItems(levelFile, t, name);
     case 'BronzeProperties':
-      return _bronze(levelFile, t);
+      return _bronze(levelFile, t, name);
     case 'PowerTileProperties':
-      return _powerTiles(levelFile, t);
+      return _powerTiles(levelFile, t, name);
     case 'RailcartProperties':
       return _railcart(levelFile, t);
     case 'SmokePollutionModuleProperties':
       return _smokePollution(levelFile, t);
     case 'RenaiModuleProperties':
-      return _renai(levelFile, t);
+      return _renai(levelFile, t, name);
     case 'TunnelDefendModuleProperties':
       return _tunnelDefend(levelFile, t);
     case 'ManholePipelineModuleProperties':
@@ -111,7 +114,7 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
     case 'LastStandMinigameProperties':
       return _lastStand(levelFile, t);
     case 'SeedRainProperties':
-      return _seedRain(levelFile, t);
+      return _seedRain(levelFile, t, name);
     case 'DropShipProperties':
       return _dropShip(levelFile, t);
     case 'PiratePlankProperties':
@@ -119,7 +122,7 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
     case 'TideProperties':
       return _tide(levelFile, t);
     default:
-      return _genericDump(levelFile, objClass, t);
+      return _genericDump(levelFile, objClass, t, name);
   }
 }
 
@@ -128,11 +131,13 @@ List<PreviewIconSection>? previewModuleInfoSections({
   required PvzLevelFile levelFile,
   required String objClass,
   required PreviewModuleL10n t,
+  PreviewModuleResourceName? resourceName,
 }) {
   final built = previewModuleInfoBuild(
     levelFile: levelFile,
     objClass: objClass,
     t: t,
+    resourceName: resourceName,
   );
   return built.sections.isEmpty ? null : built.sections;
 }
@@ -141,11 +146,13 @@ String? previewModuleInfoTextSummary({
   required PvzLevelFile levelFile,
   required String objClass,
   required PreviewModuleL10n t,
+  PreviewModuleResourceName? resourceName,
 }) {
   final body = previewModuleInfoBuild(
     levelFile: levelFile,
     objClass: objClass,
     t: t,
+    resourceName: resourceName,
   ).textBody;
   return body.isEmpty ? null : body;
 }
@@ -250,6 +257,9 @@ String _clean(String raw) {
   return s;
 }
 
+String _fallbackResourceName(PreviewModuleResourceKind kind, String raw) =>
+    _clean(raw);
+
 String _unknownAsset() => 'assets/images/others/unknown.webp';
 
 PvzObject? _obj(PvzLevelFile levelFile, String objClass) =>
@@ -297,7 +307,10 @@ PreviewItem _gridItem(String id, {String? label, int? gridX, int? gridY}) {
 
 // --- module builders ---------------------------------------------------------
 
-PreviewModuleInfoPayload _seedBank(PvzLevelFile levelFile, PreviewModuleL10n t) {
+PreviewModuleInfoPayload _seedBank(
+  PvzLevelFile levelFile,
+  PreviewModuleL10n t,
+) {
   final map = _objMap(levelFile, 'SeedBankProperties');
   if (map == null) {
     return PreviewModuleInfoPayload(
@@ -339,10 +352,7 @@ PreviewModuleInfoPayload _seedBank(PvzLevelFile levelFile, PreviewModuleL10n t) 
 
   final items = <PreviewItem>[
     for (final id in ids)
-      if (iZombie)
-        _zombieItem(id)
-      else
-        _plantItem(id),
+      if (iZombie) _zombieItem(id) else _plantItem(id),
   ];
 
   return PreviewModuleInfoPayload(
@@ -414,6 +424,7 @@ PreviewModuleInfoPayload _initialPlants(
   PvzLevelFile levelFile,
   String oc,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final placements = <(String, int, int)>[];
   for (final obj in levelFile.objects) {
@@ -439,10 +450,7 @@ PreviewModuleInfoPayload _initialPlants(
           }
         }
         final id =
-            e['PlantType'] ??
-            e['PlantTypeName'] ??
-            e['TypeName'] ??
-            e['Type'];
+            e['PlantType'] ?? e['PlantTypeName'] ?? e['TypeName'] ?? e['Type'];
         if (id is String) placements.add((_clean(id), x, y));
       }
     }
@@ -459,7 +467,8 @@ PreviewModuleInfoPayload _initialPlants(
       'count': placements.length,
     }),
     for (final p in placements.take(12))
-      if (p.$1.isNotEmpty) '${p.$1} ${_cell(t, p.$2, p.$3)}',
+      if (p.$1.isNotEmpty)
+        '${name(PreviewModuleResourceKind.plant, p.$1)} ${_cell(t, p.$2, p.$3)}',
     if (placements.length > 12) '…',
   ];
   final (rows, cols) = _lawnDims(levelFile);
@@ -482,6 +491,7 @@ PreviewModuleInfoPayload _initialPlants(
 PreviewModuleInfoPayload _initialZombies(
   PvzLevelFile levelFile,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final placements = <(String, int, int, String?)>[];
   for (final obj in levelFile.objects) {
@@ -516,12 +526,13 @@ PreviewModuleInfoPayload _initialZombies(
       'count': placements.length,
     }),
     for (final p in placements.take(12))
-      '${p.$1} ${_cell(t, p.$2, p.$3)}${p.$4 != null && p.$4!.isNotEmpty ? ' (${p.$4})' : ''}',
+      '${name(PreviewModuleResourceKind.zombie, p.$1)} ${_cell(t, p.$2, p.$3)}${p.$4 != null && p.$4!.isNotEmpty ? ' (${p.$4})' : ''}',
     if (placements.length > 12) '…',
   ];
   final conditionNotes = [
     for (final p in placements)
-      if (p.$4 != null && p.$4!.isNotEmpty) '${p.$1}: ${p.$4}',
+      if (p.$4 != null && p.$4!.isNotEmpty)
+        '${name(PreviewModuleResourceKind.zombie, p.$1)}: ${p.$4}',
   ];
   final (rows, cols) = _lawnDims(levelFile);
 
@@ -544,6 +555,7 @@ PreviewModuleInfoPayload _initialZombies(
 PreviewModuleInfoPayload _protectPlants(
   PvzLevelFile levelFile,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final data = readProtectPlantData(levelFile);
   if (data == null) {
@@ -559,7 +571,7 @@ PreviewModuleInfoPayload _protectPlants(
       'count': data.plants.length,
     }),
     for (final p in data.plants.take(12))
-      '${_clean(p.plantType)} ${_cell(t, p.gridX, p.gridY)}',
+      '${name(PreviewModuleResourceKind.plant, p.plantType)} ${_cell(t, p.gridX, p.gridY)}',
     if (data.plants.length > 12) '…',
   ];
   final (rows, cols) = _lawnDims(levelFile);
@@ -594,6 +606,7 @@ PreviewModuleInfoPayload _protectPlants(
 PreviewModuleInfoPayload _protectGridItems(
   PvzLevelFile levelFile,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final data = readProtectGridItemData(levelFile);
   if (data == null) {
@@ -609,7 +622,7 @@ PreviewModuleInfoPayload _protectGridItems(
       'count': data.gridItems.length,
     }),
     for (final g in data.gridItems.take(12))
-      '${_clean(g.gridItemType)} ${_cell(t, g.gridX, g.gridY)}',
+      '${name(PreviewModuleResourceKind.gridItem, g.gridItemType)} ${_cell(t, g.gridX, g.gridY)}',
     if (data.gridItems.length > 12) '…',
   ];
 
@@ -640,7 +653,11 @@ PreviewModuleInfoPayload _protectGridItems(
   );
 }
 
-PreviewModuleInfoPayload _vases(PvzLevelFile levelFile, PreviewModuleL10n t) {
+PreviewModuleInfoPayload _vases(
+  PvzLevelFile levelFile,
+  PreviewModuleL10n t,
+  PreviewModuleResourceName name,
+) {
   // Arcade/Flow store content in the Preset object when present.
   final data = readVaseBreakerData(levelFile);
   if (data == null || data.vases.isEmpty) {
@@ -680,8 +697,8 @@ PreviewModuleInfoPayload _vases(PvzLevelFile levelFile, PreviewModuleL10n t) {
   final lines = <String>[
     t('previewGenVaseCount', '{count} vases', {'count': total}),
     t('previewGenColumnRange', 'Cols {min}–{max}', {
-      'min': data.minColumnIndex,
-      'max': data.maxColumnIndex,
+      'min': data.minColumnIndex + 1,
+      'max': data.maxColumnIndex + 1,
     }),
     if (data.numColoredPlantVases > 0)
       t('previewGenColoredPlantVases', 'Colored plant vases: {count}', {
@@ -691,13 +708,17 @@ PreviewModuleInfoPayload _vases(PvzLevelFile levelFile, PreviewModuleL10n t) {
       t('previewGenColoredZombieVases', 'Colored zombie vases: {count}', {
         'count': data.numColoredZombieVases,
       }),
-    for (final e in plantCounts.entries) '${e.key} ${_times(t, e.value)}',
-    for (final e in zombieCounts.entries) '${e.key} ${_times(t, e.value)}',
+    for (final e in plantCounts.entries)
+      '${name(PreviewModuleResourceKind.plant, e.key)} ${_times(t, e.value)}',
+    for (final e in zombieCounts.entries)
+      '${name(PreviewModuleResourceKind.zombie, e.key)} ${_times(t, e.value)}',
+    for (final e in collectCounts.entries)
+      '${name(PreviewModuleResourceKind.collectable, e.key)} ${_times(t, e.value)}',
   ];
 
   final col = t('previewGenColumnRange', 'Cols {min}–{max}', {
-    'min': data.minColumnIndex,
-    'max': data.maxColumnIndex,
+    'min': data.minColumnIndex + 1,
+    'max': data.maxColumnIndex + 1,
   });
   final sections = <PreviewIconSection>[];
   if (plantCounts.isNotEmpty) {
@@ -725,7 +746,7 @@ PreviewModuleInfoPayload _vases(PvzLevelFile levelFile, PreviewModuleL10n t) {
   if (collectCounts.isNotEmpty) {
     sections.add(
       PreviewIconSection(
-        title: t('previewGenGridItems', 'Initial grid items'),
+        title: t('previewGenGridItems', 'Grid Items'),
         items: [
           for (final e in collectCounts.entries)
             _gridItem(e.key, label: e.value > 1 ? _times(t, e.value) : null),
@@ -805,9 +826,7 @@ PreviewModuleInfoPayload _energy(PvzLevelFile levelFile, PreviewModuleL10n t) {
   for (final o in waves) {
     if (o.itemList.isEmpty) continue;
     final cells = _cellsList(o.itemList.map((i) => (i.mX, i.mY)));
-    lines.add(
-      '${_waveWithCount(t, o.wave, o.itemList.length)}: $cells',
-    );
+    lines.add('${_waveWithCount(t, o.wave, o.itemList.length)}: $cells');
     sections.add(
       PreviewIconSection(
         title: _waveWithCount(t, o.wave, o.itemList.length),
@@ -983,6 +1002,7 @@ PreviewModuleInfoPayload _gulliver(
 PreviewModuleInfoPayload _initialGridItems(
   PvzLevelFile levelFile,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final placements = <(String, int, int)>[];
   for (final obj in levelFile.objects) {
@@ -1013,10 +1033,9 @@ PreviewModuleInfoPayload _initialGridItems(
   }
 
   final lines = <String>[
-    t('previewGenGridItemCount', '{count} items', {
-      'count': placements.length,
-    }),
-    for (final p in placements.take(12)) '${p.$1} ${_cell(t, p.$2, p.$3)}',
+    t('previewGenGridItemCount', '{count} items', {'count': placements.length}),
+    for (final p in placements.take(12))
+      '${name(PreviewModuleResourceKind.gridItem, p.$1)} ${_cell(t, p.$2, p.$3)}',
     if (placements.length > 12) '…',
   ];
   final (rows, cols) = _lawnDims(levelFile);
@@ -1039,6 +1058,7 @@ PreviewModuleInfoPayload _initialGridItems(
 PreviewModuleInfoPayload _seedRain(
   PvzLevelFile levelFile,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final data = readSeedRainData(levelFile);
   if (data == null) {
@@ -1061,13 +1081,13 @@ PreviewModuleInfoPayload _seedRain(
     if (plant != null && plant.isNotEmpty) {
       final id = _clean(plant);
       lines.add(
-        '$id · ${_times(t, e.maxCount)} · w${e.weight}',
+        '${name(PreviewModuleResourceKind.plant, id)} · ${_times(t, e.maxCount)} · w${e.weight}',
       );
       items.add(_plantItem(id, label: _times(t, e.maxCount)));
     } else if (zombie != null && zombie.isNotEmpty) {
       final id = _clean(zombie);
       lines.add(
-        '$id · ${_times(t, e.maxCount)} · w${e.weight}',
+        '${name(PreviewModuleResourceKind.zombie, id)} · ${_times(t, e.maxCount)} · w${e.weight}',
       );
       items.add(_zombieItem(id, label: _times(t, e.maxCount)));
     }
@@ -1109,10 +1129,10 @@ PreviewModuleInfoPayload _dropShip(
           'wave': w.wave + 1,
           'imp': w.imp,
           'lv': w.impLv,
-          'rmin': w.rowRange.min,
-          'rmax': w.rowRange.max,
-          'cmin': w.colRange.min,
-          'cmax': w.colRange.max,
+          'rmin': w.rowRange.min + 1,
+          'rmax': w.rowRange.max + 1,
+          'cmin': w.colRange.min + 1,
+          'cmax': w.colRange.max + 1,
         },
       ),
   ];
@@ -1127,10 +1147,10 @@ PreviewModuleInfoPayload _dropShip(
           {
             'wave': w.wave + 1,
             'imp': w.imp,
-            'rmin': w.rowRange.min,
-            'rmax': w.rowRange.max,
-            'cmin': w.colRange.min,
-            'cmax': w.colRange.max,
+            'rmin': w.rowRange.min + 1,
+            'rmax': w.rowRange.max + 1,
+            'cmin': w.colRange.min + 1,
+            'cmax': w.colRange.max + 1,
           },
         ),
         items: [
@@ -1160,7 +1180,11 @@ String _bronzeZombieId(BronzeStatueKind kind) => switch (kind) {
   BronzeStatueKind.agile => 'kongfu_agile_bronze',
 };
 
-PreviewModuleInfoPayload _bronze(PvzLevelFile levelFile, PreviewModuleL10n t) {
+PreviewModuleInfoPayload _bronze(
+  PvzLevelFile levelFile,
+  PreviewModuleL10n t,
+  PreviewModuleResourceName name,
+) {
   final data = readBronzeModuleData(levelFile);
   final items = data?.data.expand((b) => b.itemList).toList() ?? const [];
   if (items.isEmpty) {
@@ -1180,7 +1204,7 @@ PreviewModuleInfoPayload _bronze(PvzLevelFile levelFile, PreviewModuleL10n t) {
         'count': byTime[time]!.length,
       }),
     for (final i in items.take(10))
-      '${_bronzeZombieId(i.kind)} ${_cell(t, i.mX, i.mY)} @${i.spawnTime}s',
+      '${name(PreviewModuleResourceKind.zombie, _bronzeZombieId(i.kind))} ${_cell(t, i.mX, i.mY)} @${i.spawnTime}s',
     if (items.length > 10) '…',
   ];
   return PreviewModuleInfoPayload(
@@ -1196,11 +1220,7 @@ PreviewModuleInfoPayload _bronze(PvzLevelFile levelFile, PreviewModuleL10n t) {
           }),
           items: [
             for (final i in byTime[time]!.take(96))
-              _zombieItem(
-                _bronzeZombieId(i.kind),
-                gridX: i.mX,
-                gridY: i.mY,
-              ),
+              _zombieItem(_bronzeZombieId(i.kind), gridX: i.mX, gridY: i.mY),
           ],
         ),
     ],
@@ -1210,6 +1230,7 @@ PreviewModuleInfoPayload _bronze(PvzLevelFile levelFile, PreviewModuleL10n t) {
 PreviewModuleInfoPayload _powerTiles(
   PvzLevelFile levelFile,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final data = readPowerTileModuleData(levelFile);
   if (data == null || data.linkedTiles.isEmpty) {
@@ -1222,7 +1243,7 @@ PreviewModuleInfoPayload _powerTiles(
       'count': data.linkedTiles.length,
     }),
     for (final tile in data.linkedTiles.take(12))
-      '${tile.group} ${_cell(t, tile.location.mx, tile.location.my)}',
+      '${name(PreviewModuleResourceKind.tool, 'tool_powertile_${tile.group}')} ${_cell(t, tile.location.mx, tile.location.my)}',
     if (data.linkedTiles.length > 12) '…',
   ];
   final (rows, cols) = _lawnDims(levelFile);
@@ -1268,17 +1289,19 @@ PreviewModuleInfoPayload _railcart(
       '${t('previewGenRailcartLabel', 'Cart')} ${_cell(t, c.column, c.row)}',
     for (final r in data.rails.take(6))
       t('previewGenRailRange', 'Rail col {col} rows {start}–{end}', {
-        'col': r.column,
-        'start': r.rowStart,
-        'end': r.rowEnd,
+        'col': r.column + 1,
+        'start': r.rowStart + 1,
+        'end': r.rowEnd + 1,
       }),
   ];
   final (rows, cols) = _lawnDims(levelFile);
   final items = <PreviewItem>[
     for (final r in data.rails)
-      for (var row = math.min(r.rowStart, r.rowEnd);
-          row <= math.max(r.rowStart, r.rowEnd);
-          row++)
+      for (
+        var row = math.min(r.rowStart, r.rowEnd);
+        row <= math.max(r.rowStart, r.rowEnd);
+        row++
+      )
         PreviewItem(
           id: 'rails_${r.column}_$row',
           assetPath: 'assets/images/others/rails.webp',
@@ -1349,7 +1372,11 @@ PreviewModuleInfoPayload _smokePollution(
   );
 }
 
-PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
+PreviewModuleInfoPayload _renai(
+  PvzLevelFile levelFile,
+  PreviewModuleL10n t,
+  PreviewModuleResourceName name,
+) {
   final data = readRenaiModuleData(levelFile);
   if (data == null) {
     return PreviewModuleInfoPayload(
@@ -1370,14 +1397,14 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
       }),
     if (data.nightEnabled)
       t('previewGenRenaiNightWave', 'Night from wave {wave}', {
-        'wave': data.nightStartWaveNum,
+        'wave': data.nightStartWaveNum + 1,
       }),
     if (night.isNotEmpty)
       t('previewGenRenaiNightCount', 'Night statues: {count}', {
         'count': night.length,
       }),
     for (final s in [...day, ...night].take(12))
-      '${_clean(s.typeName)} ${_cell(t, s.gridX, s.gridY)}',
+      '${name(PreviewModuleResourceKind.gridItem, s.typeName)} ${_cell(t, s.gridX, s.gridY)}',
     if (day.length + night.length > 12) '…',
   ];
   final (rows, cols) = _lawnDims(levelFile);
@@ -1391,11 +1418,7 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
         items: [
           for (final s in day.take(96))
             if (_clean(s.typeName).isNotEmpty)
-              _gridItem(
-                _clean(s.typeName),
-                gridX: s.gridX,
-                gridY: s.gridY,
-              ),
+              _gridItem(_clean(s.typeName), gridX: s.gridX, gridY: s.gridY),
         ],
       ),
     );
@@ -1409,11 +1432,7 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
         items: [
           for (final s in night.take(96))
             if (_clean(s.typeName).isNotEmpty)
-              _gridItem(
-                _clean(s.typeName),
-                gridX: s.gridX,
-                gridY: s.gridY,
-              ),
+              _gridItem(_clean(s.typeName), gridX: s.gridX, gridY: s.gridY),
         ],
       ),
     );
@@ -1423,7 +1442,7 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
     gridNotes: [
       if (data.nightEnabled)
         t('previewGenRenaiNightWave', 'Night from wave {wave}', {
-          'wave': data.nightStartWaveNum,
+          'wave': data.nightStartWaveNum + 1,
         }),
     ],
     lawnRows: rows,
@@ -1624,9 +1643,7 @@ PreviewModuleInfoPayload _lastStand(
   }
   final data = LastStandMinigamePropertiesData.fromJson(map);
   final lines = <String>[
-    t('previewGenLastStandSun', 'Starting sun: {n}', {
-      'n': data.startingSun,
-    }),
+    t('previewGenLastStandSun', 'Starting sun: {n}', {'n': data.startingSun}),
     t('previewGenLastStandPlantFood', 'Starting plant food: {n}', {
       'n': data.startingPlantfood,
     }),
@@ -1689,6 +1706,7 @@ PreviewModuleInfoPayload _genericDump(
   PvzLevelFile levelFile,
   String objClass,
   PreviewModuleL10n t,
+  PreviewModuleResourceName name,
 ) {
   final map = _objMap(levelFile, objClass);
   if (map == null || map.isEmpty) {
@@ -1696,6 +1714,37 @@ PreviewModuleInfoPayload _genericDump(
       lines: [t('previewGenModuleInfoNoData', 'No module data on this level')],
     );
   }
+  PreviewModuleResourceKind? kindFor(String hint) {
+    final value = hint.toLowerCase().replaceAll('_', '');
+    if (value.contains('tool')) return PreviewModuleResourceKind.tool;
+    if (value.contains('griditem')) return PreviewModuleResourceKind.gridItem;
+    if (value.contains('zombie')) return PreviewModuleResourceKind.zombie;
+    if (value.contains('plant')) return PreviewModuleResourceKind.plant;
+    if (value.contains('collectable') || value.contains('collectible')) {
+      return PreviewModuleResourceKind.collectable;
+    }
+    if (value.contains('creature') ||
+        value.contains('fish') ||
+        value.contains('dino')) {
+      return PreviewModuleResourceKind.creature;
+    }
+    return null;
+  }
+
+  String displayResource(String raw, String key, {String scope = ''}) {
+    final genericType = const [
+      'type',
+      'typename',
+      'itemtype',
+    ].contains(key.toLowerCase());
+    final kind =
+        kindFor(key) ??
+        kindFor(RtidParser.parse(raw)?.source ?? '') ??
+        (genericType ? kindFor(scope) ?? kindFor(objClass) : null);
+    // Do not guess the resource type for arbitrary custom labels/aliases.
+    return kind == null ? _clean(raw) : name(kind, raw);
+  }
+
   final lines = <String>[];
   for (final e in map.entries) {
     if (lines.length >= 14) break;
@@ -1704,7 +1753,7 @@ PreviewModuleInfoPayload _genericDump(
     if (v is num || v is bool) {
       lines.add('$key: $v');
     } else if (v is String && v.length <= 48) {
-      lines.add('$key: ${_clean(v)}');
+      lines.add('$key: ${displayResource(v, key)}');
     } else if (v is List) {
       lines.add(
         t('previewGenListCount', '{key}: {count}', {
@@ -1714,23 +1763,41 @@ PreviewModuleInfoPayload _genericDump(
       );
       for (final item in v.take(4)) {
         if (item is Map) {
-          final type =
-              item['PlantType'] ??
-              item['TypeName'] ??
-              item['ZombieType'] ??
-              item['GridItemType'] ??
-              item['type'];
+          final typeEntry = item.entries.firstWhereOrNull(
+            (entry) => const {
+              'PlantType',
+              'PlantTypeName',
+              'ZombieType',
+              'ZombieTypeName',
+              'GridItemType',
+              'GridItemTypeName',
+              'ToolType',
+              'CollectableTypeName',
+              'CollectibleTypeName',
+              'CreatureType',
+              'FishType',
+              'DinoType',
+              'TypeName',
+              'Type',
+              'type',
+            }.contains(entry.key),
+          );
           final x = item['GridX'] ?? item['mX'];
           final y = item['GridY'] ?? item['mY'];
           final wave = item['Wave'] ?? item['EmergenceWave'] ?? item['wave'];
           final parts = <String>[
-            if (type != null) _clean('$type'),
+            if (typeEntry?.value != null)
+              displayResource(
+                '${typeEntry!.value}',
+                '${typeEntry.key}',
+                scope: key,
+              ),
             if (wave != null) _waveWhen(t, (wave as num).toInt()),
             if (x is num && y is num) _cell(t, x.toInt(), y.toInt()),
           ];
           if (parts.isNotEmpty) lines.add('  · ${parts.join(' ')}');
         } else if (item is String) {
-          lines.add('  · ${_clean(item)}');
+          lines.add('  · ${displayResource(item, key)}');
         }
       }
     }

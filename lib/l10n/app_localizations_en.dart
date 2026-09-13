@@ -876,17 +876,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptyFavorites => 'You don\'t have any favorite levels yet';
 
   @override
-  String get copyEventTarget => 'Target wave';
+  String get copyEventTarget => 'Select target waves';
 
   @override
   String get targetWaveIndex => 'Target wave number';
 
   @override
-  String get targetWaveIndexHint => 'e.g. 1, 3, 5-8, 10-2:-2';
+  String get targetWaveAlreadyContainsEvent => 'Already contains this event';
 
   @override
   String get targetWaveIndexHelper =>
-      'Separate waves or ranges with commas (1, 3, 5-8).\nRanges are inclusive. Default step is 1 if start <= end, otherwise -1.\nAdd :step after a range (1-10:2, 10-1:-2). Step sign must match the direction.\nCopy reference skips waves that already have this event.\nDeep copy creates a unique copy per wave.';
+      'When copying references, waves that already contain this event are automatically skipped.';
 
   @override
   String get moveToWaveIndex => 'Move to wave number';
@@ -2103,7 +2103,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get conflictDesc_MoonExpertYard =>
-      'Moon Expert Mode conflicts with the Creative Courtyard module. It is recommended to keep only one.';
+      'The Moon Expert module has no effect when the Creative Courtyard module is enabled.';
 
   @override
   String get conflictDesc_WaveGeneratorWaveManagerModule =>
@@ -2112,14 +2112,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get conflictDesc_WaveGeneratorWaveManager =>
       'Wave Generator embeds waves directly and cannot be used with a separate Wave Manager container.';
-
-  @override
-  String get conflictDesc_WaveGeneratorRenai =>
-      'Wave Generator is incompatible with the Renaissance module and will cause the level to crash.';
-
-  @override
-  String get conflictDesc_WaveGeneratorWitch =>
-      'Wave Generator is incompatible with the Fright Witch module and will cause the level to crash.';
 
   @override
   String get missingPlantModuleWarningTitle =>
@@ -2502,11 +2494,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Overrides the maximum sun limit value';
 
   @override
-  String get moduleTitle_MoonExpertProperties => 'Moon Expert Mode';
+  String get moduleTitle_MoonExpertProperties => 'Moon Expert';
 
   @override
   String get moduleDesc_MoonExpertProperties =>
-      'Forces one zombie level for the whole level and sets all plants to level 1';
+      'Sets fixed plant and zombie levels (doesn\'t work in Creative Courtyard)';
 
   @override
   String get moduleTitle_LevelMutatorStartingPlantfoodProps =>
@@ -2945,7 +2937,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bronzeModuleHelpOverviewBody =>
-      'This module is used to place bronze statue grid items on the lawn that exist at the start of the level, commonly used in the Kongfu World brain buster \"Bronze Matrix\". Bronze statues gradually lose their copper coating over time and will revive as gargantuar bronzes when the specified countdown ends. The HP of a bronze statue is the same as the corresponding Tier 1 Gargantuar Bronze.\nShake offset (shakeOffset) indicates the center offset of the revive animation’s shaking; adjusting this value has no practical effect.\nNote: This module itself does not include the effect of instantly eliminating remaining zombies after all bronze statues and gargantuar bronzes on the lawn are destroyed. To achieve that effect, the Bronze Matrix Loot Drop module must be added.';
+      'This module is used to place bronze statue grid items on the lawn that exist at the start of the level, commonly used in the Kongfu World brain buster \"Bronze Matrix\". Bronze statues gradually lose their copper coating over time and will revive as gargantuar bronzes when the specified countdown ends. The HP of a bronze statue is the same as the corresponding Level 1 Gargantuar Bronze.\nShake offset (shakeOffset) indicates the center offset of the revive animation’s shaking; adjusting this value has no practical effect.\nNote: This module itself does not include the effect of instantly eliminating remaining zombies after all bronze statues and gargantuar bronzes on the lawn are destroyed. To achieve that effect, the Bronze Matrix Loot Drop module must be added.';
 
   @override
   String get bronzeModuleHelpBatches => 'Revival Logic';
@@ -4576,7 +4568,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Weight determines an item\'s chance of dropping, while Max count limits how many copies may be present on the lawn at once. Note that most zombies do not have matching zombie card icons.';
 
   @override
-  String get moduleHelpSeedRainPlantLevels => 'Plant tiers';
+  String get moduleHelpSeedRainPlantLevels => 'Plant levels';
 
   @override
   String get seedRainAddContentTitle => 'Add rain content';
@@ -5336,14 +5328,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moonExpertZombieLevelTooltip =>
-      'Overwrites all zombie levels defined in the level to ZombieLevel, and sets all plants to level 1 regardless of how plant levels were configured in other modules.';
+      'When this module is enabled, all zombie levels defined in the level are overridden by the level set here.';
 
   @override
-  String get moonExpertHelpTitle => 'Moon Expert Mode';
+  String get moonExpertHelpTitle => 'Moon Expert';
 
   @override
   String get moonExpertHelpOverview =>
-      'Forces a single zombie level for the whole level and resets all plants to level 1, overriding other plant/zombie level settings.';
+      'This module is commonly used in Moon BaseZ Expert Mode. When enabled, every zombie in the level uses the specified level, and all plants are forced to Level 1. \nThese settings override other plant and zombie level settings, including those in the Tier Definition module. Note that this module has no effect in Creative Courtyard.';
 
   @override
   String get enterMoonExpertZombieLevelHint => 'Enter zombie level (0–10)';
@@ -6217,7 +6209,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get plantLevelsFollowGlobal =>
-      'Plants in this module follow their respective tiers from the player’s account. You can standardize their levels using the Tier Definition module.';
+      'Plants in this module follow their respective levels from the player’s account. You can standardize their levels using the Tier Definition module.';
 
   @override
   String get protectPlantsOverview =>
@@ -7163,10 +7155,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tunnelExpeditionCompatibilityWarningBody =>
       'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.';
-
-  @override
-  String get lifeSupportLastStandConflictWarning =>
-      'The Life Support System and Last Stand modules cannot coexist; otherwise, the level will fail to start correctly.';
 
   @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
@@ -8888,7 +8876,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpIncompatBody =>
-      'Wave Generator cannot coexist with the Wave Manager, Renaissance, or Fright Witch modules; doing so will cause the level to crash.';
+      'May be incompatible with some modules and cause the level to crash. Use with caution.';
 
   @override
   String get waveGeneratorModuleHelpRow => 'Row numbers';
@@ -9728,11 +9716,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Deploys mining robots to collect crystal energy and increase the power capacity limit';
 
   @override
-  String get moduleTitle_LunarMineVeinModuleProperties => 'Lunar Veins';
+  String get moduleTitle_LunarMineVeinModuleProperties => 'Crystal Veins';
 
   @override
   String get moduleDesc_LunarMineVeinModuleProperties =>
-      'Places Lunar Energy Crystal veins and sets their growth waves';
+      'Places Lunar Energy Crystal Veins and sets their growth waves';
 
   @override
   String get moduleTitle_RadiationMeteorModuleProperties =>
@@ -9814,11 +9802,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Robot deployment cooldown (CollectorCooldown, seconds)';
 
   @override
-  String get lunarMineVeinHelpTitle => 'Lunar Veins';
+  String get lunarMineVeinHelpTitle => 'Crystal Veins';
 
   @override
   String get lunarMineVeinHelpOverview =>
-      'Places Lunar Energy Crystal veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a Lunar Energy Crystal grows at the same position and can then be harvested normally to supply power.';
+      'Places Lunar Energy Crystal Veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a Lunar Energy Crystal grows at the same position and can then be harvested normally to supply power.';
 
   @override
   String get lunarMineVeinHelpWaveTitle => 'Wave numbering';
@@ -9831,7 +9819,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lunarMineVeinPlacements => 'Vein placements (VeinPlacements)';
 
   @override
-  String get lunarMineVeinModuleExpectationLabel => 'Lunar Veins';
+  String get lunarMineVeinModuleExpectationLabel => 'Crystal Veins';
 
   @override
   String get lunarMineVeinModulePreviewEmerging =>

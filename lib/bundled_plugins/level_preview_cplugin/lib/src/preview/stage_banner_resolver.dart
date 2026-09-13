@@ -6,7 +6,12 @@ import 'package:c_editor/data/repository/stage_repository.dart';
 
 /// Resolves stage / custom-stage aliases to banner asset paths.
 class StageBannerResolver {
-  StageBannerResolver._(this._defaultStem, this._extension, this._directory, this._stages);
+  StageBannerResolver._(
+    this._defaultStem,
+    this._extension,
+    this._directory,
+    this._stages,
+  );
 
   static const flutterAssetsRoot =
       'lib/bundled_plugins/level_preview_cplugin/assets';
@@ -69,6 +74,33 @@ class StageBannerResolver {
   String resolveAssetPath(String? stageAlias) =>
       assetPathForStem(resolveStem(stageAlias));
 
+  /// Stage aliases that explicitly map to [stem], in catalog order.
+  ///
+  /// This is intentionally different from [resolveStem]: an unknown alias
+  /// resolves to the fallback banner, but must not be presented as a stage
+  /// that belongs to that banner in selection UI.
+  List<String> stageAliasesForStem(String stem) => [
+    for (final entry in _stages.entries)
+      if (entry.value == stem) entry.key,
+  ];
+
+  /// Banner stems ordered by the supplied stage catalog, followed by banners
+  /// that only belong to custom stages. The fallback banner is always last.
+  /// Picker actions such as adding a custom image are not part of this list.
+  List<String> orderedStemsForStageAliases(Iterable<String> stageAliases) {
+    final stems = <String>{};
+    for (final alias in stageAliases) {
+      final stem = _stages[alias];
+      if (stem != null && stem.isNotEmpty && stem != _defaultStem) {
+        stems.add(stem);
+      }
+    }
+    for (final stem in _stages.values) {
+      if (stem.isNotEmpty && stem != _defaultStem) stems.add(stem);
+    }
+    return [...stems, _defaultStem];
+  }
+
   List<String> get allStems {
     final stems = <String>{_defaultStem, ..._stages.values};
     return stems.toList()..sort();
@@ -128,18 +160,14 @@ class StageBannerResolver {
     }
     final primary = roundIconAssetForStem(stem);
     final aliases = aliasesForStem(stem);
-    final paths = <String>{
-      'assets/images/others/unknown.webp',
-    };
+    final paths = <String>{'assets/images/others/unknown.webp'};
     for (final alias in aliases) {
       final icon = StageRepository.allItems
           .firstWhereOrNull((s) => s.alias == alias)
           ?.iconName;
       if (icon != null && icon.isNotEmpty) {
         paths.add(
-          icon.startsWith('assets/')
-              ? icon
-              : 'assets/images/round_icons/$icon',
+          icon.startsWith('assets/') ? icon : 'assets/images/round_icons/$icon',
         );
       }
       final short = alias.replaceAll(RegExp(r'(Stage|Custom)$'), '');

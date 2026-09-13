@@ -391,30 +391,39 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  initialValue:
-                      _musicTypeOptions.map((e) => e.$1).contains(def.musicType)
-                      ? def.musicType
-                      : 'MainPath',
+                child: EditorResponsiveInputField(
+                  label: '${l10n?.musicType ?? 'Music type'} (MusicType)',
                   decoration: editorInputDecoration(
                     context,
-                    labelText: '${l10n?.musicType ?? 'Music type'} (MusicType)',
                     focusColor: theme.colorScheme.primary,
                   ),
-                  items: _musicTypeOptions
-                      .map(
-                        (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)),
-                      )
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) {
-                      setState(() {
-                        def.musicType = v;
-                        _sync();
-                      });
-                    }
-                  },
+                  builder: (context, decoration) =>
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue:
+                            _musicTypeOptions
+                                .map((e) => e.$1)
+                                .contains(def.musicType)
+                            ? def.musicType
+                            : 'MainPath',
+                        decoration: decoration,
+                        items: _musicTypeOptions
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.$1,
+                                child: Text(e.$2),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() {
+                              def.musicType = v;
+                              _sync();
+                            });
+                          }
+                        },
+                      ),
                 ),
               ),
             ),
@@ -422,29 +431,37 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  initialValue: _lootOptions.map((e) => e.$1).contains(def.loot)
-                      ? def.loot
-                      : _lootOptions.first.$1,
+                child: EditorResponsiveInputField(
+                  label: '${l10n?.loot ?? 'Loot'} (Loot)',
                   decoration: editorInputDecoration(
                     context,
-                    labelText: '${l10n?.loot ?? 'Loot'} (Loot)',
                     focusColor: theme.colorScheme.primary,
                   ),
-                  items: _lootOptions
-                      .map(
-                        (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)),
-                      )
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) {
-                      setState(() {
-                        def.loot = v;
-                        _sync();
-                      });
-                    }
-                  },
+                  builder: (context, decoration) =>
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue:
+                            _lootOptions.map((e) => e.$1).contains(def.loot)
+                            ? def.loot
+                            : _lootOptions.first.$1,
+                        decoration: decoration,
+                        items: _lootOptions
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.$1,
+                                child: Text(e.$2),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() {
+                              def.loot = v;
+                              _sync();
+                            });
+                          }
+                        },
+                      ),
                 ),
               ),
             ),
@@ -452,33 +469,40 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  initialValue:
-                      _victoryOptions
-                          .map((e) => e.$1)
-                          .contains(def.victoryModule)
-                      ? def.victoryModule
-                      : _victoryOptions.first.$1,
+                child: EditorResponsiveInputField(
+                  label:
+                      '${l10n?.victoryModule ?? 'Victory module'} (VictoryModule)',
                   decoration: editorInputDecoration(
                     context,
-                    labelText:
-                        '${l10n?.victoryModule ?? 'Victory module'} (VictoryModule)',
                     focusColor: theme.colorScheme.primary,
                   ),
-                  items: _victoryOptions
-                      .map(
-                        (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)),
-                      )
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) {
-                      setState(() {
-                        def.victoryModule = v;
-                        _sync();
-                      });
-                    }
-                  },
+                  builder: (context, decoration) =>
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue:
+                            _victoryOptions
+                                .map((e) => e.$1)
+                                .contains(def.victoryModule)
+                            ? def.victoryModule
+                            : _victoryOptions.first.$1,
+                        decoration: decoration,
+                        items: _victoryOptions
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.$1,
+                                child: Text(e.$2),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() {
+                              def.victoryModule = v;
+                              _sync();
+                            });
+                          }
+                        },
+                      ),
                 ),
               ),
             ),
