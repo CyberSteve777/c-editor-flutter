@@ -135,6 +135,9 @@ class _PreviewExportFolderPickerState extends State<PreviewExportFolderPicker> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final currentFolder = _relative == '.'
+        ? _t('previewSettingsWorkspaceRoot', 'Workspace')
+        : _relative;
     return PopScope(
       canPop: _segments.isEmpty,
       onPopInvokedWithResult: (didPop, _) {
@@ -154,21 +157,54 @@ class _PreviewExportFolderPickerState extends State<PreviewExportFolderPicker> {
         body: ListView(
           key: const ValueKey('previewExportFoldersScroll'),
           children: [
-            ListTile(
-              leading: const Icon(Icons.folder_open),
-              title: Text(
-                _relative == '.'
-                    ? _t('previewSettingsWorkspaceRoot', 'Workspace')
-                    : _relative,
-                key: const ValueKey('previewExportCurrentFolder'),
+            Container(
+              key: const ValueKey('previewExportLocationBanner'),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              // Match the workspace Move banner, rather than looking like a
+              // selectable directory row. This banner is information only.
+              color: theme.colorScheme.secondaryContainer,
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.folder_open,
+                    color: theme.colorScheme.onSecondaryContainer,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _t(
+                            'previewSettingsCurrentFolder',
+                            'Currently in: {folder}',
+                          ).replaceAll('{folder}', currentFolder),
+                          key: const ValueKey('previewExportCurrentFolder'),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSecondaryContainer,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _t(
+                            'previewSettingsFolderPickerHint',
+                            'Open a folder below or create a new one, then tap '
+                                '“Select this folder” to use the folder shown '
+                                'above for export.',
+                          ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer
+                                .withAlpha(204),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              subtitle: Text(
-                _t(
-                  'previewSettingsFolderPickerHint',
-                  'Open or create a folder, then select it as the export folder.',
-                ),
-              ),
-              tileColor: theme.colorScheme.surfaceContainer,
             ),
             if (_loading)
               const Padding(
@@ -180,9 +216,10 @@ class _PreviewExportFolderPickerState extends State<PreviewExportFolderPicker> {
             else ...[
               if (_segments.isNotEmpty)
                 ListTile(
+                  key: const ValueKey('previewExportParentFolder'),
                   leading: const Icon(Icons.drive_folder_upload_outlined),
                   title: Text(
-                    _t('previewSettingsParentFolder', 'Parent folder'),
+                    _t('previewSettingsParentFolder', 'Go to parent folder'),
                   ),
                   onTap: _back,
                 ),

@@ -14,6 +14,7 @@ import 'package:c_editor/screens/level_list_screen.dart';
 import 'package:c_editor/screens/plugins_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/app_ui_scale.dart';
 import 'package:c_editor/widgets/locale_flag_icon.dart';
 import 'package:c_editor/widgets/editor_components.dart' show EditorOptionTile;
 
@@ -149,7 +150,10 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 child: SizedBox(
                   width: scaledSize.width,
                   height: scaledSize.height,
-                  child: AppMessageMessenger(child: child!),
+                  child: AppUiScale(
+                    scale: scale,
+                    child: AppMessageMessenger(child: child!),
+                  ),
                 ),
               ),
             );

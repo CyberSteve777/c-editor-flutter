@@ -183,7 +183,7 @@ void main() {
       );
       await tester.tap(find.text('Open picker'));
       await tester.pumpAndSettle();
-      expect(find.text('previews'), findsOneWidget);
+      expect(find.text('Currently in: previews'), findsOneWidget);
       await tester.tap(find.text(_t('previewSettingsParentFolder')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('previewExportFolder-截图')));
@@ -196,7 +196,7 @@ void main() {
       );
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
-      expect(find.text('截图/关卡预览'), findsOneWidget);
+      expect(find.text('Currently in: 截图/关卡预览'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('previewExportSelectFolder')));
       await tester.pumpAndSettle();
       expect(result, '截图/关卡预览');
@@ -258,7 +258,10 @@ void main() {
       tester.getRect(hint).top,
       greaterThanOrEqualTo(tester.getRect(button).bottom),
     );
-    expect(find.textContaining('previews'), findsOneWidget);
+    expect(
+      find.descendant(of: button, matching: find.textContaining('previews')),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const ValueKey('previewToolbarStyleCompact')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_t('previewSettingsSave')));
@@ -355,6 +358,12 @@ void main() {
       } else {
         expect(find.text(_t('previewGenAddText')), findsOneWidget);
         expect(
+          tester.widget(
+            find.byKey(const ValueKey('previewToolbarFullToolRow')),
+          ),
+          isA<Wrap>(),
+        );
+        expect(
           find.descendant(of: addText, matching: find.byType(Column)),
           findsNothing,
         );
@@ -373,63 +382,80 @@ void main() {
     });
   }
 
-  testWidgets('narrow full toolbar reuses horizontal overflow scrollbars', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({
-      kPreviewToolbarStylePrefsKey: PreviewToolbarStyle.full.name,
-    });
-    await tester.binding.setSurfaceSize(const Size(600, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(
-      MaterialApp(
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: const TextScaler.linear(1.5)),
-          child: child!,
+  testWidgets(
+    'full toolbar naturally wraps instead of locking horizontal rows',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({
+        kPreviewToolbarStylePrefsKey: PreviewToolbarStyle.full.name,
+      });
+      await tester.binding.setSurfaceSize(const Size(600, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(1.5)),
+            child: child!,
+          ),
+          home: PreviewGeneratorScreen(
+            host: _Host(),
+            levelFile: PvzLevelFile(objects: []),
+            parsed: ParsedLevelData(objectMap: {}),
+            fileName: 'toolbar-scroll.json',
+          ),
         ),
-        home: PreviewGeneratorScreen(
-          host: _Host(),
-          levelFile: PvzLevelFile(objects: []),
-          parsed: ParsedLevelData(objectMap: {}),
-          fileName: 'toolbar-scroll.json',
-        ),
-      ),
-    );
-    for (
-      var attempt = 0;
-      attempt < 200 && find.byType(PreviewCanvas).evaluate().isEmpty;
-      attempt++
-    ) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 25)),
       );
-      await tester.pump(const Duration(milliseconds: 25));
-    }
-    await tester.pumpAndSettle();
-    final row = find.byKey(const ValueKey('previewToolbarElementOptionsRow'));
-    expect(tester.widget(row), isA<HorizontalTagScroller>());
-    final scroll = find.descendant(
-      of: row,
-      matching: find.byKey(const ValueKey('horizontalTagScrollerScrollView')),
-    );
-    final controller = tester.widget<SingleChildScrollView>(scroll).controller!;
-    expect(controller.position.maxScrollExtent, greaterThan(0));
-    expect(
-      tester
-          .widget<Scrollbar>(
-            find.descendant(of: row, matching: find.byType(Scrollbar)),
-          )
-          .thumbVisibility,
-      isTrue,
-    );
-    expect(tester.getSize(row).height, lessThan(100));
-    await tester.drag(scroll, const Offset(-400, 0));
-    await tester.pumpAndSettle();
-    expect(controller.offset, greaterThan(0));
-    expect(tester.takeException(), isNull);
-  });
+      for (
+        var attempt = 0;
+        attempt < 200 && find.byType(PreviewCanvas).evaluate().isEmpty;
+        attempt++
+      ) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 25)),
+        );
+        await tester.pump(const Duration(milliseconds: 25));
+      }
+      await tester.pumpAndSettle();
+      final row = find.byKey(const ValueKey('previewToolbarElementOptionsRow'));
+      expect(tester.widget(row), isA<Wrap>());
+      expect(
+        find.descendant(of: row, matching: find.byType(HorizontalTagScroller)),
+        findsNothing,
+      );
+      final narrowHeight = tester.getSize(row).height;
+      expect(narrowHeight, greaterThan(100));
+      final narrowRowRect = tester.getRect(row);
+      final actions = find.descendant(
+        of: row,
+        matching: find.byType(PreviewToolbarAction),
+      );
+      expect(actions, findsNWidgets(7));
+      for (final element in actions.evaluate()) {
+        final rect = tester.getRect(find.byWidget(element.widget));
+        expect(rect.left, greaterThanOrEqualTo(narrowRowRect.left));
+        expect(rect.right, lessThanOrEqualTo(narrowRowRect.right));
+      }
+      // Adding rows must remain inside the independently scrollable toolbar,
+      // rather than causing that toolbar to take more of the fitted canvas.
+      final canvasSize = tester.getSize(find.byType(PreviewCanvas));
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('previewToolbarAction-previewGenRecreate')),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.getSize(find.byType(PreviewCanvas)), canvasSize);
+      expect(
+        find
+            .byKey(const ValueKey('previewToolbarAction-previewGenRecreate'))
+            .hitTestable(),
+        findsOneWidget,
+      );
+      await tester.binding.setSurfaceSize(const Size(1200, 900));
+      await tester.pumpAndSettle();
+      expect(tester.getSize(row).height, lessThan(narrowHeight));
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   for (final style in PreviewToolbarStyle.values) {
     testWidgets(
@@ -512,15 +538,26 @@ void main() {
         final options = find.byKey(
           const ValueKey('previewToolbarElementOptionsRow'),
         );
-        expect(tester.widget(options), isA<HorizontalTagScroller>());
-        expect(
-          tester
-              .widget<Scrollbar>(
-                find.descendant(of: options, matching: find.byType(Scrollbar)),
-              )
-              .thumbVisibility,
-          isTrue,
-        );
+        if (style == PreviewToolbarStyle.compact) {
+          expect(tester.widget(options), isA<HorizontalTagScroller>());
+          expect(
+            tester
+                .widget<Scrollbar>(
+                  find.descendant(
+                    of: options,
+                    matching: find.byType(Scrollbar),
+                  ),
+                )
+                .thumbVisibility,
+            isTrue,
+          );
+        } else {
+          expect(tester.widget(options), isA<Wrap>());
+          expect(
+            find.descendant(of: options, matching: find.byType(Scrollbar)),
+            findsNothing,
+          );
+        }
         final controlCenters = <double>[];
         for (final key in ['previewGenScale', 'previewGenCornerRadius']) {
           final label = _t(key);
@@ -566,10 +603,12 @@ void main() {
             );
           }
         }
-        expect(
-          (controlCenters[0] - controlCenters[1]).abs(),
-          lessThanOrEqualTo(2),
-        );
+        if (style == PreviewToolbarStyle.compact) {
+          expect(
+            (controlCenters[0] - controlCenters[1]).abs(),
+            lessThanOrEqualTo(2),
+          );
+        }
         expect(tester.takeException(), isNull);
       },
     );

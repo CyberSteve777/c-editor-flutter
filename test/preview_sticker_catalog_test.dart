@@ -154,7 +154,10 @@ void main() {
         .map((match) => 'assets/images/tunnels/${match.group(1)}.webp');
     expect(
       stickers
-          .where((sticker) => sticker.assetPath.contains('/IMAGE_UI_MAUSOLEUM_TUNNEL_'))
+          .where(
+            (sticker) =>
+                sticker.assetPath.contains('/IMAGE_UI_MAUSOLEUM_TUNNEL_'),
+          )
           .map((sticker) => sticker.assetPath),
       expectedTunnels,
     );
@@ -262,6 +265,18 @@ void main() {
             .firstWhere((entry) => entry.assetPath.endsWith('/sun_large.webp'))
             .localizedName(appContext, translate),
         locale == 'zh' ? '阳光' : 'Sun',
+      );
+      final unknown = stickers.firstWhere(
+        (entry) => entry.assetPath == 'assets/images/others/unknown.webp',
+      );
+      expect(unknown.labelKey, 'previewStickerNameUnknown');
+      expect(
+        unknown.localizedName(appContext, translate),
+        locale == 'zh' ? '未知' : 'Unknown',
+      );
+      expect(
+        messages['previewGenUnknownBanner'],
+        locale == 'zh' ? '时空主界面' : 'Spacetime Main Menu',
       );
     });
   }

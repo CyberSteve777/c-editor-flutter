@@ -75,6 +75,7 @@ class PreviewCanvas extends StatefulWidget {
     this.onEndTextEdit,
     this.onTextEdited,
     this.boundaryKey,
+    this.imageFrameOverrides = const {},
   });
 
   final PreviewDocument document;
@@ -126,6 +127,10 @@ class PreviewCanvas extends StatefulWidget {
   final ValueChanged<String>? onTextEdited;
   final GlobalKey? boundaryKey;
 
+  /// Deterministic frames during animated export, keyed by asset/file path.
+  /// Normal layout, layer order and clipping are unchanged.
+  final Map<String, ui.Image> imageFrameOverrides;
+
   @override
   State<PreviewCanvas> createState() => PreviewCanvasState();
 }
@@ -145,9 +150,8 @@ class PreviewCanvasState extends State<PreviewCanvas> {
   @override
   void didUpdateWidget(covariant PreviewCanvas oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.document, widget.document)) {
-      _prefetchGifs();
-    }
+    // Layers can be inserted into the existing document in-place.
+    _prefetchGifs();
   }
 
   void _prefetchGifs() {
@@ -204,6 +208,7 @@ class PreviewCanvasState extends State<PreviewCanvas> {
   @override
   Widget build(BuildContext context) {
     final doc = widget.document;
+    final imageFrames = {..._gifFrames, ...widget.imageFrameOverrides};
     final w = kPreviewCanvasSize.width;
     final h = kPreviewCanvasSize.height;
     final drawing =
@@ -315,7 +320,7 @@ class PreviewCanvasState extends State<PreviewCanvas> {
                         selectedTextPart: widget.selectedLayerId == layer.id
                             ? widget.selectedTextPart
                             : null,
-                        gifFrames: _gifFrames,
+                        gifFrames: imageFrames,
                         textEditingController:
                             widget.selectedLayerId == layer.id &&
                                 layer.kind == PreviewLayerKind.text
@@ -485,6 +490,20 @@ class PreviewCanvasState extends State<PreviewCanvas> {
 
   Widget _buildBanner(PreviewDocument doc) {
     final ref = doc.banner;
+    final override =
+        widget.imageFrameOverrides[ref.kind == PreviewBannerSourceKind.userFile
+            ? ref.userFilePath
+            : ref.assetPath];
+    if (override != null) {
+      return RawImage(
+        image: override,
+        fit: ref.kind == PreviewBannerSourceKind.userFile
+            ? BoxFit.fill
+            : BoxFit.cover,
+        width: kPreviewCanvasSize.width,
+        height: kPreviewCanvasSize.height,
+      );
+    }
     if (ref.kind == PreviewBannerSourceKind.userFile &&
         ref.userFilePath != null) {
       final fileImg = fileBannerImage(
@@ -1580,7 +1599,15 @@ class _LayerWidgetState extends State<_LayerWidget> {
 
   Widget _buildImage(double width, double height) {
     Widget img;
-    if (layer.imagePath != null) {
+    final frame = widget.gifFrames[layer.imagePath ?? layer.imageAsset];
+    if (frame != null) {
+      img = RawImage(
+        image: frame,
+        fit: BoxFit.contain,
+        width: width,
+        height: height,
+      );
+    } else if (layer.imagePath != null) {
       img =
           fileBannerImage(
             layer.imagePath!,

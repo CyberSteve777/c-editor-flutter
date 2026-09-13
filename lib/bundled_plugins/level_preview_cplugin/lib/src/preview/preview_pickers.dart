@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
+import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 import 'preview_sticker_catalog.dart';
 import 'preview_sticker_picker_session.dart';
+import 'preview_document.dart';
 
 export 'preview_sticker_picker_session.dart';
 
@@ -259,15 +261,30 @@ Future<PreviewAssetImageChoice?> showPreviewAssetImagePicker({
   required BuildContext context,
   required String Function(String key, [String? fallback]) t,
   PreviewStickerPickerSession? session,
+  PvzLevelFile? levelFile,
+  ParsedLevelData? parsed,
+  PreviewDocument? document,
 }) async {
   final stickers = await loadPreviewStickerCatalog();
+  final priorityAssets = levelFile == null || parsed == null
+      ? const <String>{}
+      : await loadPreviewCurrentLevelStickerAssetPaths(
+          stickers: stickers,
+          levelFile: levelFile,
+          parsed: parsed,
+          document: document,
+        );
 
   if (!context.mounted) return null;
 
   return showDialog<PreviewAssetImageChoice>(
     context: context,
-    builder: (ctx) =>
-        PreviewStickerPickerDialog(stickers: stickers, t: t, session: session),
+    builder: (ctx) => PreviewStickerPickerDialog(
+      stickers: stickers,
+      priorityAssetPaths: priorityAssets,
+      t: t,
+      session: session,
+    ),
   );
 }
 
@@ -277,11 +294,13 @@ class PreviewStickerPickerDialog extends StatefulWidget {
     required this.stickers,
     required this.t,
     this.session,
+    this.priorityAssetPaths = const [],
   });
 
   final List<PreviewSticker> stickers;
   final String Function(String key, [String? fallback]) t;
   final PreviewStickerPickerSession? session;
+  final Iterable<String> priorityAssetPaths;
 
   @override
   State<PreviewStickerPickerDialog> createState() =>
@@ -293,6 +312,7 @@ class _PreviewStickerPickerDialogState
   late final PreviewStickerPickerSession _session;
   late final ScrollController _scrollController;
   late final TextEditingController _searchController;
+  late List<PreviewSticker> _orderedStickers;
   bool _restoringPosition = true;
   String? _folder;
   String _query = '';
@@ -301,6 +321,7 @@ class _PreviewStickerPickerDialogState
   void initState() {
     super.initState();
     _session = widget.session ?? PreviewStickerPickerSession();
+    _orderStickers();
     _folder = _session.selectedTag;
     if (!_folders.contains(_folder)) _folder = null;
     _query = _session.query;
@@ -310,6 +331,22 @@ class _PreviewStickerPickerDialogState
       keepScrollOffset: false,
     )..addListener(_rememberPosition);
     _restorePosition();
+  }
+
+  void _orderStickers() {
+    _orderedStickers = prioritizePreviewStickers(
+      stickers: widget.stickers,
+      priorityAssetPaths: widget.priorityAssetPaths,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant PreviewStickerPickerDialog oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.stickers != widget.stickers ||
+        oldWidget.priorityAssetPaths != widget.priorityAssetPaths) {
+      _orderStickers();
+    }
   }
 
   void _rememberPosition() {
@@ -366,7 +403,7 @@ class _PreviewStickerPickerDialogState
 
   List<PreviewSticker> get _filtered {
     final q = _query.trim().toLowerCase();
-    return widget.stickers.where((sticker) {
+    return _orderedStickers.where((sticker) {
       if (_folder != null && sticker.tag != _folder) return false;
       return q.isEmpty ||
           sticker.localizedName(context, widget.t).toLowerCase().contains(q) ||

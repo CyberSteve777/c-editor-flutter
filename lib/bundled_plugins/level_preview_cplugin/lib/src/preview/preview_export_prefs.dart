@@ -117,13 +117,13 @@ String previewExportLibraryRelativePath(String path, String workspace) {
   return relative;
 }
 
-/// Sanitizes a level / file base name for PNG export.
+/// Sanitizes a level / file base name for image export.
 String sanitizePreviewFileBaseName(String raw) {
   var s = raw.trim();
   if (s.isEmpty) return 'preview';
   // Strip extension if present.
   s = s.replaceAll(
-    RegExp(r'\.(json|hujson|rton|png)$', caseSensitive: false),
+    RegExp(r'\.(json|hujson|rton|png|gif)$', caseSensitive: false),
     '',
   );
   s = s.replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1f]'), '_');

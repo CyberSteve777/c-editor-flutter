@@ -3361,6 +3361,7 @@ class _FileItemRow extends StatelessWidget {
     final isImageFile =
         !item.isDirectory &&
         LevelRepository.isSupportedImageFileName(item.name);
+    final isGifFile = isImageFile && item.name.toLowerCase().endsWith('.gif');
 
     final displayName = item.isDirectory
         ? item.name
@@ -3408,7 +3409,9 @@ class _FileItemRow extends StatelessWidget {
                           : (isResourceFile
                                 ? Icons.inventory_2_outlined
                                 : (isImageFile
-                                      ? Icons.image_outlined
+                                      ? (isGifFile
+                                            ? Icons.gif_box_outlined
+                                            : Icons.image_outlined)
                                       : Icons.description)),
                       size: iconSize,
                       color: item.isDirectory

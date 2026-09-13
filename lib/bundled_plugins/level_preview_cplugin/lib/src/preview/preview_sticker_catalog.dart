@@ -5,15 +5,27 @@ import 'package:flutter/widgets.dart';
 import 'package:c_editor/data/asset_loader.dart';
 import 'package:c_editor/data/dino_type_catalog.dart';
 import 'package:c_editor/data/music_suffix_catalog.dart';
+import 'package:c_editor/data/grid_item_discovery.dart';
+import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/custom_stage_level_utils.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/fish_type_repository.dart';
+import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
+import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/repository/rift_theme_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
 import 'package:c_editor/data/repository/tool_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
+import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/data/zombie_discovery.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+
+import 'preview_document.dart';
+import 'preview_zomboss_extras.dart';
 
 /// Display order, rather than the order of image directories in the manifest.
 const kPreviewStickerTags = <String>[
@@ -63,6 +75,272 @@ String _imageStem(String path) => path.replaceFirst(RegExp(r'\.[^/.]+$'), '');
 int _imagePriority(String path) {
   final extension = path.split('.').last.toLowerCase();
   return const ['gif', 'webp', 'png', 'jpg', 'jpeg'].indexOf(extension);
+}
+
+/// A stable partition, not a new catalog sort. Both parts retain the editor's
+/// tag order and original item order; filtering either part keeps that order.
+List<PreviewSticker> prioritizePreviewStickers({
+  required List<PreviewSticker> stickers,
+  required Iterable<String> priorityAssetPaths,
+}) {
+  final preferred = priorityAssetPaths
+      .map((path) => _imageStem(path).toLowerCase())
+      .toSet();
+  if (preferred.isEmpty) return stickers;
+  final currentLevel = <PreviewSticker>[];
+  final other = <PreviewSticker>[];
+  for (final sticker in stickers) {
+    (preferred.contains(_imageStem(sticker.assetPath).toLowerCase())
+            ? currentLevel
+            : other)
+        .add(sticker);
+  }
+  return List.unmodifiable([...currentLevel, ...other]);
+}
+
+String _resourceAlias(String raw, String tag) {
+  var alias = raw.trim();
+  if (alias.startsWith('RTID(')) alias = LevelParser.extractAlias(alias);
+  final prefix = switch (tag) {
+    'plants' => 'plant_',
+    'zombies' => 'zombie_',
+    'griditems' => 'griditem_',
+    _ => '',
+  };
+  alias = alias.toLowerCase();
+  return prefix.isNotEmpty && alias.startsWith(prefix)
+      ? alias.substring(prefix.length)
+      : alias;
+}
+
+/// Resources used in the current level, including overview-only lists (seed
+/// blacklists, copycat, seed rain, themes) that are not in the initial image.
+/// Use typed fields and existing overview discovery, never arbitrary prose or
+/// image-directory order. Matching assets also handles shared/animated icons.
+Set<String> previewCurrentLevelStickerAssetPaths({
+  required List<PreviewSticker> stickers,
+  required PvzLevelFile levelFile,
+  required ParsedLevelData parsed,
+  PreviewDocument? document,
+}) {
+  final assets = <String>{};
+  final references = <String, Set<String>>{
+    for (final tag in kPreviewStickerTags) tag: <String>{},
+  };
+  void addReference(String tag, String raw) {
+    final alias = _resourceAlias(raw, tag);
+    if (alias.isNotEmpty) references[tag]!.add(alias);
+    // Resolve identities before the catalog's shared-image deduplication.
+    // A second grid item/stage/theme using the same image must still promote
+    // that image even when its first catalog entry has a different name.
+    switch (tag) {
+      case 'plants':
+        final path = previewPlantLikeAssetPath(alias);
+        if (!path.endsWith('/unknown.webp')) assets.add(path);
+      case 'zombies':
+        final path = ZombieRepository().getZombieById(alias)?.iconAssetPath;
+        if (path != null) assets.add(path);
+      case 'griditems':
+        final clean = raw.startsWith('RTID(')
+            ? LevelParser.extractAlias(raw)
+            : raw;
+        final display = GridItemRepository.displayTypeNameForLevel(
+          clean,
+          levelFile,
+        );
+        final path = GridItemRepository.getIconPath(display ?? clean);
+        if (!path.endsWith('/unknown.webp')) assets.add(path);
+        final tool =
+            ToolRepository.get(clean) ?? ToolRepository.get('tool_$clean');
+        final toolIcon = tool?.icon;
+        if (toolIcon != null) {
+          assets.add(
+            toolIcon.startsWith('assets/')
+                ? toolIcon
+                : 'assets/images/tools/$toolIcon',
+          );
+        }
+      case 'others':
+        if (alias == 'sun' || alias == 'sun_large') {
+          assets.add('assets/images/others/sun_large.webp');
+        } else if (alias == 'plantfood' || alias == 'tool_plantfood') {
+          assets.add('assets/images/others/plantfood.webp');
+        }
+      case 'ui':
+        if (RiftThemeRepository.themeIds.contains(alias)) {
+          assets.add(RiftThemeRepository.iconAssetPath(alias));
+        }
+      case 'round_icons':
+        for (final stage in StageRepository.allItems) {
+          if (stage.alias.toLowerCase() == alias && stage.iconName != null) {
+            final icon = stage.iconName!;
+            assets.add(
+              icon == 'unknown.webp'
+                  ? 'assets/images/others/unknown.webp'
+                  : 'assets/images/round_icons/$icon',
+            );
+          }
+        }
+        for (final code in MusicSuffixCatalog.orderedCodes) {
+          if (code.toLowerCase() == alias) {
+            assets.add(MusicSuffixCatalog.iconAsset(code));
+          }
+        }
+      default:
+        break;
+    }
+  }
+
+  for (final id in ZombieDiscovery.discoverZombies(levelFile, parsed)) {
+    addReference('zombies', id);
+  }
+  for (final id in GridItemDiscovery.discoverGridItems(levelFile)) {
+    addReference('griditems', id);
+  }
+  final levelDef = parsed.levelDef;
+  if (levelDef != null) {
+    addReference('round_icons', levelDef.stageModule);
+    addReference('round_icons', levelDef.musicSuffix);
+    final stageRef = RtidParser.parse(levelDef.stageModule);
+    if (stageRef?.source == CustomStageLevelUtils.currentLevel) {
+      final stage = CustomStageLevelUtils.findStageObject(
+        levelFile,
+        stageRef!.alias,
+      );
+      if (stage != null && stage.objData is Map) {
+        final icon = CustomStageLevelUtils.displayIconFileName(
+          objclass: stage.objClass,
+          objdata: Map<String, dynamic>.from(stage.objData as Map),
+        );
+        if (icon != null) assets.add('assets/images/round_icons/$icon');
+      }
+    }
+  }
+
+  // Keep module context for generic Type/TypeName entries, but only collect
+  // resource-bearing fields. A title or description equal to an ID is not an
+  // occurrence of that resource, and grid-item IDs cannot become plant IDs.
+  void scan(dynamic value, String? scope, String seedScope, bool resource) {
+    if (value is PvzModel) value = value.toJson();
+    if (value is String) {
+      if (resource && scope != null) addReference(scope, value);
+    } else if (value is List) {
+      for (final item in value) {
+        scan(item, scope, seedScope, resource);
+      }
+    } else if (value is Map) {
+      for (final entry in value.entries) {
+        final field = '${entry.key}'.toLowerCase();
+        final nextScope = switch (field) {
+          _ when field.contains('rifttheme') => 'ui',
+          'stagemodule' || 'musicsuffix' => 'round_icons',
+          _ when field.contains('zombie') => 'zombies',
+          _ when field.contains('griditem') => 'griditems',
+          _ when field.contains('collectable') => 'others',
+          _ when field.contains('plant') => seedScope,
+          'tooltype' => 'griditems',
+          _ => scope,
+        };
+        final isResourceField =
+            nextScope != scope ||
+            field.contains('plant') ||
+            field.contains('zombie') ||
+            field.contains('griditem') ||
+            field.contains('collectable') ||
+            field.contains('rifttheme') ||
+            field == 'stagemodule' ||
+            field == 'musicsuffix' ||
+            field == 'tooltype' ||
+            field == 'type' ||
+            field == 'typename' ||
+            field == 'whitelist' ||
+            field == 'blacklist';
+        scan(entry.value, nextScope, seedScope, isResourceField);
+      }
+    }
+  }
+
+  for (final obj in levelFile.objects) {
+    final data = obj.objData is PvzModel
+        ? (obj.objData as PvzModel).toJson()
+        : obj.objData;
+    var seedScope = 'plants';
+    if (obj.objClass == 'SeedBankProperties' && data is Map) {
+      if (data['ZombieMode'] == true ||
+          '${data['SeedPacketType'] ?? ''}'.contains('UIIZombieSeedPacket')) {
+        seedScope = 'zombies';
+      } else if (data['GridItemMode'] == true) {
+        seedScope = 'griditems';
+        for (final id in kSeedBankGridItemIds) {
+          addReference('griditems', id);
+        }
+      }
+    }
+    final className = obj.objClass.toLowerCase();
+    final scope = className.contains('griditem')
+        ? 'griditems'
+        : className.contains('zombie')
+        ? 'zombies'
+        : className.contains('plant') ||
+              className.contains('seedbank') ||
+              className.contains('seedrain')
+        ? seedScope
+        : null;
+    scan(data, scope, seedScope, false);
+  }
+
+  if (document != null) {
+    for (final layer in document.layers) {
+      // These paths already account for custom resources, bosses and dedicated
+      // modules resolved by the initial composition and module-info readers.
+      for (final item in layer.items) {
+        assets.add(item.assetPath);
+      }
+      for (final section in layer.sections) {
+        for (final item in section.items) {
+          assets.add(item.assetPath);
+        }
+        for (final row in section.rows) {
+          for (final item in row.items) {
+            assets.add(item.assetPath);
+          }
+        }
+      }
+    }
+  }
+  for (final sticker in stickers) {
+    if (sticker.searchTerms.any(
+      (term) =>
+          references[sticker.tag]!.contains(_resourceAlias(term, sticker.tag)),
+    )) {
+      assets.add(sticker.assetPath);
+    }
+  }
+  return assets;
+}
+
+/// Include the level's boss and mech action resources even when the user has
+/// removed their icon panel from the preview. The document is only an extra
+/// resolved-resource source; editing it must not hide resources on the level.
+Future<Set<String>> loadPreviewCurrentLevelStickerAssetPaths({
+  required List<PreviewSticker> stickers,
+  required PvzLevelFile levelFile,
+  required ParsedLevelData parsed,
+  PreviewDocument? document,
+}) async {
+  final assets = previewCurrentLevelStickerAssetPaths(
+    stickers: stickers,
+    levelFile: levelFile,
+    parsed: parsed,
+    document: document,
+  );
+  await ZombiePropertiesRepository.init();
+  final extras = await PreviewZombossExtras.collect(levelFile);
+  assets.addAll([
+    for (final item in extras.bossItems) item.assetPath,
+    for (final item in extras.spawnItems) item.assetPath,
+  ]);
+  return assets;
 }
 
 /// Matches catalog icons to their actual packaged format (including GIFs).
@@ -161,6 +439,10 @@ Future<List<PreviewSticker>> loadPreviewStickerCatalog() async {
     CustomStagePresetRepository.init(),
     MusicSuffixCatalog.init(),
     FishTypeRepository().init(),
+    GridItemRepository.init(),
+    ReferenceRepository.init(),
+    PlantRepository().init(),
+    ZombieRepository().init(),
     ResourceNames.ensureLoaded(),
   ]);
   final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
@@ -369,7 +651,7 @@ Iterable<PreviewSticker> _supplementalStickers() sync* {
     );
   }
   const labels = <String, String>{
-    'others/unknown': 'MainMenu',
+    'others/unknown': 'Unknown',
     'others/rails': 'Rails',
     'others/railcarts': 'Railcart',
     'others/Pirate_Seas_Planks': 'PiratePlanks',
@@ -386,9 +668,7 @@ Iterable<PreviewSticker> _supplementalStickers() sync* {
     yield PreviewSticker(
       assetPath: 'assets/images/${entry.key}.webp',
       tag: entry.key.startsWith('tunnels/') ? 'griditems' : 'others',
-      labelKey: entry.value == 'MainMenu'
-          ? 'previewGenUnknownBanner'
-          : 'previewStickerName${entry.value}',
+      labelKey: 'previewStickerName${entry.value}',
       searchTerms: [entry.key.split('/').last],
     );
   }

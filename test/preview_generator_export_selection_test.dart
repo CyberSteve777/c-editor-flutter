@@ -1,10 +1,12 @@
 import 'dart:ui' as ui;
+import 'dart:io';
 
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_canvas.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_generator_screen.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_png_exporter.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +15,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image/image.dart' as gif;
 
 class _Host extends Fake implements CPluginHost {
   @override
@@ -258,6 +261,111 @@ Future<void> _finishExport(WidgetTester tester) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets(
+    'animated GIF export composites the actual canvas and restores editing',
+    (tester) async {
+      var pngExports = 0;
+      await _open(tester, (_, _) async {
+        pngExports++;
+        throw StateError('GIF must use the animated export path');
+      });
+      final temp = await tester.runAsync(
+        () => Directory.systemTemp.createTemp('preview_gif_generator_'),
+      );
+      addTearDown(() async => temp!.delete(recursive: true));
+      final file = File('${temp!.path}/sticker.gif');
+      final encoder = gif.GifEncoder();
+      for (final color in [
+        gif.ColorRgb8(255, 0, 0),
+        gif.ColorRgb8(0, 0, 255),
+      ]) {
+        final frame = gif.Image(width: 8, height: 8);
+        gif.fill(frame, color: color);
+        encoder.addFrame(frame, duration: color.r == 255 ? 7 : 11);
+      }
+      await tester.runAsync(() async {
+        await file.writeAsBytes(encoder.finish()!);
+        await LevelRepository.setSavedFolderPath(temp.path);
+      });
+      final strokeId = await _drawStroke(tester);
+      _canvas(tester).document.addLayer(
+        PreviewLayer(
+          id: 'animated-sticker',
+          kind: PreviewLayerKind.image,
+          bounds: const Rect.fromLTWH(.25, .25, .1, .1),
+          imagePath: file.path,
+        ),
+      );
+      await _selectStrokeInLayers(tester, strokeId);
+      final export = find
+          .descendant(
+            of: find.byType(AppBar),
+            matching: find.byType(IconButton),
+          )
+          .last;
+      await tester.tap(export);
+      await tester.pumpAndSettle();
+      final dialog = find.byKey(const ValueKey('previewExportFormatDialog'));
+      expect(dialog, findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('previewExportGifOption')));
+      await tester.pump();
+      var sawFrameOverride = false;
+      // Real engine image decoding and palette conversion run asynchronously.
+      for (var attempt = 0; attempt < 600; attempt++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 25)),
+        );
+        await tester.pump(const Duration(milliseconds: 25));
+        final canvas = _canvas(tester);
+        if (canvas.imageFrameOverrides.isNotEmpty) {
+          sawFrameOverride = true;
+          expect(canvas.selectedLayerId, isNull);
+          expect(
+            tester
+                .widget<AbsorbPointer>(
+                  find.byKey(const ValueKey('previewExportInputBarrier')),
+                )
+                .absorbing,
+            isTrue,
+          );
+        }
+        if (find.byType(SnackBar).evaluate().isNotEmpty) break;
+      }
+      expect(find.byType(SnackBar), findsOneWidget);
+      final output = File('${temp.path}/previews/selected-stroke.gif');
+      final bytes = await tester.runAsync(output.readAsBytes);
+      final animation = gif.decodeGif(bytes!);
+      expect(animation, isNotNull);
+      expect(animation!.numFrames, 2);
+      expect(animation.frames.map((frame) => frame.frameDuration), [70, 110]);
+      expect(animation.width, (kPreviewCanvasSize.width * 2).round());
+      expect(animation.height, (kPreviewCanvasSize.height * 2).round());
+      final x = (animation.width * .3).round();
+      final y = (animation.height * .3).round();
+      final first = animation.frames[0].getPixel(x, y);
+      final second = animation.frames[1].getPixel(x, y);
+      expect(first.r, greaterThan(220));
+      expect(first.b, lessThan(35));
+      expect(second.b, greaterThan(220));
+      expect(second.r, lessThan(35));
+      expect(sawFrameOverride, isTrue);
+      expect(pngExports, 0);
+      expect(_canvas(tester).imageFrameOverrides, isEmpty);
+      expect(_canvas(tester).selectedLayerId, strokeId);
+      expect(
+        tester
+            .widget<AbsorbPointer>(
+              find.byKey(const ValueKey('previewExportInputBarrier')),
+            )
+            .absorbing,
+        isFalse,
+      );
+      expect(tester.takeException(), isNull);
+      // Remove the custom file GIF before deleting its test-only directory.
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   for (final succeeds in [true, false]) {
     testWidgets(

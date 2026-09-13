@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 /// Keeps editing controls from changing the fitted canvas size as they grow.
@@ -37,15 +38,24 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
   final _toolbarScroll = ScrollController();
   late final _canvasHorizontalScroll = _PreviewCanvasZoomScrollController(
     pendingOffset: (metrics) => _zoomOffsetForAxis(metrics, Axis.horizontal),
-  );
+  )..addListener(_discardHorizontalZoomAnchor);
   late final _canvasVerticalScroll = _PreviewCanvasZoomScrollController(
     pendingOffset: (metrics) => _zoomOffsetForAxis(metrics, Axis.vertical),
-  );
+  )..addListener(_discardVerticalZoomAnchor);
   double _toolbarFraction = 0.28;
   double _zoom = 1;
   Size _canvasViewport = Size.zero;
-  Offset? _pendingZoomCenter;
+  double? _pendingHorizontalZoomCenter;
+  double? _pendingVerticalZoomCenter;
   int _zoomRevision = 0;
+
+  // A thumb drag or wheel event can arrive after zoom was queued but before
+  // its layout. That newer input takes precedence on the axis it scrolls.
+  // Layout's correctPixels does not notify these listeners, so the other
+  // axis still applies its pending zoom anchor before the first paint.
+  void _discardHorizontalZoomAnchor() => _pendingHorizontalZoomCenter = null;
+
+  void _discardVerticalZoomAnchor() => _pendingVerticalZoomCenter = null;
 
   @override
   void dispose() {
@@ -65,31 +75,36 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
   void _setZoom(double value, {bool fit = false}) {
     final zoom = value.clamp(0.5, 3.0);
     final origin = _zoomOrigin(_zoom);
-    final center = fit
-        ? const Offset(0.5, 0.5)
-        : _pendingZoomCenter ??
-              Offset(
+    final center = Offset(
+      fit
+          ? 0.5
+          : _pendingHorizontalZoomCenter ??
                 ((_canvasHorizontalScroll.hasClients
                             ? _canvasHorizontalScroll.offset
                             : 0) +
                         _canvasViewport.width / 2 -
                         origin.dx) /
                     (_zoom * math.max(1, _canvasViewport.width)),
+      fit
+          ? 0.5
+          : _pendingVerticalZoomCenter ??
                 ((_canvasVerticalScroll.hasClients
                             ? _canvasVerticalScroll.offset
                             : 0) +
                         _canvasViewport.height / 2 -
                         origin.dy) /
                     (_zoom * math.max(1, _canvasViewport.height)),
-              );
-    _pendingZoomCenter = center;
+    );
+    _pendingHorizontalZoomCenter = center.dx;
+    _pendingVerticalZoomCenter = center.dy;
     final revision = ++_zoomRevision;
     setState(() => _zoom = zoom);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || revision != _zoomRevision) return;
       // Position correction happens during layout, before the scaled canvas
       // paints. Only clear the queued anchor here; never jump after painting.
-      _pendingZoomCenter = null;
+      _pendingHorizontalZoomCenter = null;
+      _pendingVerticalZoomCenter = null;
     });
   }
 
@@ -121,49 +136,54 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
               scrollbarOrientation: ScrollbarOrientation.bottom,
               notificationPredicate: (notification) =>
                   notification.metrics.axis == Axis.horizontal,
-              child: SingleChildScrollView(
-                controller: _canvasVerticalScroll,
-                primary: false,
-                physics: const ClampingScrollPhysics(),
+              child: _ScrollbarThumbInputGuard(
+                enabled: _zoom > 1,
                 child: SingleChildScrollView(
-                  controller: _canvasHorizontalScroll,
+                  controller: _canvasVerticalScroll,
                   primary: false,
-                  scrollDirection: Axis.horizontal,
                   physics: const ClampingScrollPhysics(),
-                  child: SizedBox(
-                    width: _canvasViewport.width * math.max(1, _zoom),
-                    height: _canvasViewport.height * math.max(1, _zoom),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          left: origin.dx,
-                          top: origin.dy,
-                          width: _canvasViewport.width,
-                          height: _canvasViewport.height,
-                          child: Transform.scale(
-                            scale: _zoom,
-                            alignment: Alignment.topLeft,
-                            child: Listener(
-                              onPointerSignal: (event) {
-                                if (event is PointerScrollEvent &&
-                                    (HardwareKeyboard
-                                            .instance
-                                            .isControlPressed ||
-                                        HardwareKeyboard
-                                            .instance
-                                            .isMetaPressed)) {
-                                  // The editor uses Ctrl/Command-wheel to scale
-                                  // selected elements. Keep that gesture from
-                                  // also scrolling the surrounding canvas view.
-                                  GestureBinding.instance.pointerSignalResolver
-                                      .register(event, (_) {});
-                                }
-                              },
-                              child: widget.canvas,
+                  child: SingleChildScrollView(
+                    controller: _canvasHorizontalScroll,
+                    primary: false,
+                    scrollDirection: Axis.horizontal,
+                    physics: const ClampingScrollPhysics(),
+                    child: SizedBox(
+                      width: _canvasViewport.width * math.max(1, _zoom),
+                      height: _canvasViewport.height * math.max(1, _zoom),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            left: origin.dx,
+                            top: origin.dy,
+                            width: _canvasViewport.width,
+                            height: _canvasViewport.height,
+                            child: Transform.scale(
+                              scale: _zoom,
+                              alignment: Alignment.topLeft,
+                              child: Listener(
+                                onPointerSignal: (event) {
+                                  if (event is PointerScrollEvent &&
+                                      (HardwareKeyboard
+                                              .instance
+                                              .isControlPressed ||
+                                          HardwareKeyboard
+                                              .instance
+                                              .isMetaPressed)) {
+                                    // The editor uses Ctrl/Command-wheel to scale
+                                    // selected elements. Keep that gesture from
+                                    // also scrolling the surrounding canvas view.
+                                    GestureBinding
+                                        .instance
+                                        .pointerSignalResolver
+                                        .register(event, (_) {});
+                                  }
+                                },
+                                child: widget.canvas,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -176,12 +196,13 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
   }
 
   double? _zoomOffsetForAxis(ScrollMetrics metrics, Axis axis) {
-    final center = _pendingZoomCenter;
+    final center = axis == Axis.horizontal
+        ? _pendingHorizontalZoomCenter
+        : _pendingVerticalZoomCenter;
     if (center == null) return null;
     final dimension = metrics.viewportDimension;
-    final normalizedCenter = axis == Axis.horizontal ? center.dx : center.dy;
     final origin = _zoom < 1 ? dimension * (1 - _zoom) / 2 : 0;
-    return normalizedCenter * dimension * _zoom + origin - dimension / 2;
+    return center * dimension * _zoom + origin - dimension / 2;
   }
 
   Widget _buildZoomBar({required bool showLabel}) {
@@ -355,6 +376,64 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
         );
       },
     );
+  }
+}
+
+/// Keeps the canvas out of the thumb's expanded touch target. The standard
+/// scrollbar only shields its painted track from child hit tests, while its
+/// drag recognizer also accepts a larger area around the thumb. Without this
+/// guard, a drawing gesture or raw text listener can consume that same input.
+/// This stays in the tree at every zoom so fitting does not remount the canvas.
+class _ScrollbarThumbInputGuard extends SingleChildRenderObjectWidget {
+  const _ScrollbarThumbInputGuard({
+    required this.enabled,
+    required super.child,
+  });
+
+  final bool enabled;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _ScrollbarThumbInputGuardRenderBox(enabled);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _ScrollbarThumbInputGuardRenderBox renderObject,
+  ) => renderObject.enabled = enabled;
+}
+
+class _ScrollbarThumbInputGuardRenderBox extends RenderProxyBox {
+  _ScrollbarThumbInputGuardRenderBox(this.enabled);
+
+  bool enabled;
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    if (enabled && size.contains(position)) {
+      final globalPosition = localToGlobal(position);
+      RenderObject? ancestor = parent;
+      while (ancestor != null) {
+        if (ancestor is RenderCustomPaint) {
+          final painter = ancestor.foregroundPainter;
+          // RenderBox hit testing has no pointer kind. Reserve the actual
+          // touch thumb target for all pointers, but leave every other canvas
+          // point editable; do not approximate it with a fixed edge gutter.
+          if (painter is ScrollbarPainter &&
+              painter.hitTestOnlyThumbInteractive(
+                ancestor.globalToLocal(globalPosition),
+                PointerDeviceKind.touch,
+              )) {
+            // Stay an opaque child hit so the outer scrollbar's recognizer
+            // receives the pointer, without delivering it to the canvas.
+            result.add(BoxHitTestEntry(this, position));
+            return true;
+          }
+        }
+        ancestor = ancestor.parent;
+      }
+    }
+    return super.hitTest(result, position: position);
   }
 }
 

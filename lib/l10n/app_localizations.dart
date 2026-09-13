@@ -1681,7 +1681,7 @@ abstract class AppLocalizations {
   /// No description provided for @targetWaveIndexHelper.
   ///
   /// In en, this message translates to:
-  /// **'Waves that already contain this event are automatically skipped when copying references.'**
+  /// **'Drag along the column of unchecked boxes to quickly select multiple waves. Start dragging from a checked box to deselect multiple waves. When copying references, waves that already contain this event are automatically skipped.'**
   String get targetWaveIndexHelper;
 
   /// No description provided for @moveToWaveIndex.

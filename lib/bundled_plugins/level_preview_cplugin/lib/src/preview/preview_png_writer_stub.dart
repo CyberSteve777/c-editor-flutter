@@ -10,7 +10,7 @@ Future<void> writeBytes(String path, Uint8List bytes) async {
   }
   final key = previewExportLibraryRelativePath(path, workspace);
   if (!await LevelRepository.prepareInternalCacheFromBytes(key, bytes)) {
-    throw StateError('Failed to save preview PNG');
+    throw StateError('Failed to save preview image');
   }
 }
 

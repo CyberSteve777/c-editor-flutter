@@ -121,7 +121,7 @@ class _PreviewSettingsScreenState extends State<PreviewSettingsScreen> {
                   key: const ValueKey('previewSettingsFolderHint'),
                   _t(
                     'previewSettingsFolderHint',
-                    'PNG previews are written under this folder inside your level library.',
+                    'PNG or GIF previews are saved to this folder in your workspace.',
                   ),
                 ),
                 const SizedBox(height: 24),

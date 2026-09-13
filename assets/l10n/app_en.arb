@@ -374,7 +374,7 @@
   "copyEventTarget": "Select target waves",
   "targetWaveIndex": "Target wave number",
   "targetWaveAlreadyContainsEvent": "Already contains this event",
-  "targetWaveIndexHelper": "Waves that already contain this event are automatically skipped when copying references.",
+  "targetWaveIndexHelper": "Drag along the column of unchecked boxes to quickly select multiple waves. Start dragging from a checked box to deselect multiple waves. When copying references, waves that already contain this event are automatically skipped.",
   "moveToWaveIndex": "Move to wave number",
   "invalidWaveIndex": "Invalid wave number",
   "renamingFailed": "Renaming failed",

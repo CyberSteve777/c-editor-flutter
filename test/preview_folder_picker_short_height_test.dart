@@ -60,6 +60,92 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  testWidgets(
+    'folder location is a Move-style information banner, not a choice',
+    (tester) async {
+      final reads = <String>[];
+      final colors = ColorScheme.fromSeed(seedColor: Colors.green).copyWith(
+        secondaryContainer: Colors.blue,
+        onSecondaryContainer: Colors.black,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(colorScheme: colors),
+          home: PreviewExportFolderPicker(
+            workspacePath: 'web://',
+            initialFolder: 'previews',
+            t: _t,
+            listFolders: (path) async {
+              reads.add(path);
+              return path == 'web://' ? [_folder('previews')] : [];
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final banner = find.byKey(const ValueKey('previewExportLocationBanner'));
+      expect(tester.widget<Container>(banner).color, Colors.blue);
+      expect(find.text('Currently in: previews'), findsOneWidget);
+      expect(find.text('Go to parent folder'), findsOneWidget);
+      expect(
+        find.descendant(of: banner, matching: find.byType(ListTile)),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: banner, matching: find.byType(InkWell)),
+        findsNothing,
+      );
+      final readCount = reads.length;
+      await tester.tap(banner);
+      await tester.pumpAndSettle();
+      expect(reads.length, readCount);
+      expect(find.text('Currently in: previews'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('previewExportParentFolder')));
+      await tester.pumpAndSettle();
+      expect(find.text('Currently in: Workspace'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('previewExportParentFolder')),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'localized location keeps long paths readable on a narrow screen',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(320, 700);
+      addTearDown(tester.view.reset);
+      const folder = '关卡预览截图导出文件夹';
+      String localized(String key, [String? fallback]) => switch (key) {
+        'previewSettingsCurrentFolder' => '当前位于：{folder}',
+        'previewSettingsParentFolder' => '返回上级文件夹',
+        'previewSettingsFolderPickerHint' =>
+          '打开下方的文件夹或新建文件夹，再点击“选择此文件夹”，将当前所在文件夹设为导出位置。',
+        _ => fallback ?? key,
+      };
+      await tester.pumpWidget(
+        _app(
+          PreviewExportFolderPicker(
+            workspacePath: 'web://',
+            initialFolder: folder,
+            t: localized,
+            listFolders: (path) async =>
+                path == 'web://' ? [_folder(folder)] : [],
+          ),
+          1.8,
+        ),
+      );
+      await tester.pumpAndSettle();
+      final current = find.byKey(const ValueKey('previewExportCurrentFolder'));
+      expect(tester.widget<Text>(current).data, '当前位于：$folder');
+      expect(tester.widget<Text>(current).maxLines, isNull);
+      expect(tester.getRect(current).right, lessThanOrEqualTo(320));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final textScale in [1.0, 2.0]) {
     testWidgets(
       'short landscape folder picker scrolls its header and folders at $textScale',

@@ -12,10 +12,13 @@ import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/plugins/plugin_host_impl.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart'
     show CustomResourceBadge;
+import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/lawn_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,6 +51,30 @@ Widget _preview(PvzLevelFile level) {
       onBack: () {},
     ),
   );
+}
+
+Finder _placementTab(String label) => find.descendant(
+  of: find.byKey(const ValueKey('prePlacedTabScrollbar')),
+  matching: find.text(label),
+);
+
+void _setLargeViewport(WidgetTester tester) {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = const Size(1200, 1600);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.view.resetPhysicalSize);
+}
+
+Future<void> _tapLawnCell(WidgetTester tester, int col, [int row = 0]) async {
+  final lawn = tester.widget<LawnGrid>(find.byType(LawnGrid));
+  final cells = find.descendant(
+    of: find.byType(LawnGrid),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is GestureDetector && widget.onTap != null,
+    ),
+  );
+  await tester.tap(cells.at(row * lawn.cols + col));
+  await tester.pumpAndSettle();
 }
 
 PvzObject _customGridItemType(String id) {
@@ -87,8 +114,213 @@ void main() {
       StageRepository.init(),
       ZombossMechRepository.ensureLoaded(),
       ZombossBattleRepository.init(),
+      ResourceNames.ensureLoaded(),
     ]);
   });
+
+  testWidgets('selected grid items retain their type when plant IDs overlap', (
+    tester,
+  ) async {
+    _setLargeViewport(tester);
+    final level = PvzLevelFile(
+      objects: [
+        PvzObject(
+          aliases: const ['InitialGridItems'],
+          objClass: 'InitialGridItemProperties',
+          objData: const <String, dynamic>{
+            'InitialGridItemPlacements': [
+              {'GridX': 0, 'GridY': 0, 'TypeName': 'cosmoss'},
+              {'GridX': 1, 'GridY': 0, 'TypeName': 'lilypad'},
+              {'GridX': 2, 'GridY': 0, 'TypeName': 'flowerpot'},
+            ],
+          },
+        ),
+      ],
+    );
+    await tester.pumpWidget(_preview(level));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byType(LawnGrid));
+    await tester.pumpAndSettle();
+
+    var col = 0;
+    for (final entry in const {
+      'cosmoss': 'Moss Tile',
+      'lilypad': 'Lily Pad',
+      'flowerpot': 'Flower Pot',
+    }.entries) {
+      await _tapLawnCell(tester, col++);
+
+      final selectedIcon = find.byWidgetPredicate(
+        (widget) =>
+            widget is GridItemIcon &&
+            widget.id == entry.key &&
+            widget.size == 44,
+      );
+      expect(selectedIcon, findsOneWidget);
+      expect(
+        find.descendant(
+          of: selectedIcon,
+          matching: find.byWidgetPredicate(
+            (widget) => widget is Tooltip && widget.message == entry.value,
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: selectedIcon,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is AssetImageWidget &&
+                widget.assetPath == 'assets/images/griditems/${entry.key}.webp',
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PlantIcon && widget.id == entry.key,
+        ),
+        findsNothing,
+      );
+    }
+  });
+
+  testWidgets(
+    'Cosmoss plant and Moss Tile remain distinct after switching tabs',
+    (tester) async {
+      _setLargeViewport(tester);
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: const ['InitialPlants'],
+            objClass: 'InitialPlantEntryProperties',
+            objData: const <String, dynamic>{
+              'Plants': [
+                {'GridX': 0, 'GridY': 0, 'TypeName': 'cosmoss'},
+              ],
+            },
+          ),
+          PvzObject(
+            aliases: const ['InitialGridItems'],
+            objClass: 'InitialGridItemProperties',
+            objData: const <String, dynamic>{
+              'InitialGridItemPlacements': [
+                {'GridX': 0, 'GridY': 0, 'TypeName': 'cosmoss'},
+              ],
+            },
+          ),
+        ],
+      );
+      await tester.pumpWidget(_preview(level));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byType(LawnGrid));
+      await tester.pumpAndSettle();
+
+      for (var round = 0; round < 2; round++) {
+        await _tapLawnCell(tester, 0);
+        final plantFooter = find.byWidgetPredicate(
+          (widget) =>
+              widget is PlantIcon &&
+              widget.id == 'cosmoss' &&
+              widget.size == 44,
+        );
+        expect(plantFooter, findsOneWidget);
+        expect(
+          find.descendant(
+            of: plantFooter,
+            matching: find.byWidgetPredicate(
+              (widget) => widget is Tooltip && widget.message == 'Cosmoss',
+            ),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: plantFooter,
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is AssetImageWidget &&
+                  widget.assetPath == 'assets/images/plants/icon_cosmoss.webp',
+            ),
+          ),
+          findsOneWidget,
+        );
+
+        await tester.tap(_placementTab('Grid Items'));
+        await tester.pumpAndSettle();
+        await _tapLawnCell(tester, 0);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is GridItemIcon &&
+                widget.id == 'cosmoss' &&
+                widget.size == 44,
+          ),
+          findsOneWidget,
+        );
+        await tester.tap(_placementTab('Plants'));
+        await tester.pumpAndSettle();
+      }
+    },
+  );
+
+  testWidgets(
+    'protected Moss Tile grid and selection do not resolve to Cosmoss',
+    (tester) async {
+      _setLargeViewport(tester);
+      final level = PvzLevelFile(
+        objects: [
+          PvzObject(
+            aliases: const ['InitialGridItems'],
+            objClass: 'InitialGridItemProperties',
+            objData: const <String, dynamic>{
+              'InitialGridItemPlacements': [
+                {'GridX': 0, 'GridY': 0, 'TypeName': 'cosmoss'},
+              ],
+            },
+          ),
+          PvzObject(
+            aliases: const ['ProtectedGridItems'],
+            objClass: 'ProtectTheGridItemChallengeProperties',
+            objData: const <String, dynamic>{
+              'GridItems': [
+                {'GridX': 0, 'GridY': 0, 'GridItemType': 'cosmoss'},
+              ],
+            },
+          ),
+        ],
+      );
+      await tester.pumpWidget(_preview(level));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byType(LawnGrid));
+      await tester.pumpAndSettle();
+      await tester.tap(_placementTab('Challenge Module Settings'));
+      await tester.pumpAndSettle();
+
+      final cellIcon = find.byWidgetPredicate(
+        (widget) =>
+            widget is GridItemIcon && widget.id == 'cosmoss' && widget.isGrid,
+      );
+      expect(cellIcon, findsOneWidget);
+      await _tapLawnCell(tester, 0);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is GridItemIcon &&
+              widget.id == 'cosmoss' &&
+              widget.size == 44,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PlantIcon && widget.id == 'cosmoss',
+        ),
+        findsNothing,
+      );
+    },
+  );
 
   testWidgets('bronze matrix statues use their corresponding zombie icons', (
     tester,

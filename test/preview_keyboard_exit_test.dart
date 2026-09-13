@@ -247,6 +247,42 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final systemBack in [false, true]) {
+    testWidgets(
+      'blocked generator exits without saving via ${systemBack ? 'system' : 'app-bar'} back',
+      (tester) async {
+        var exports = 0;
+        await _openGenerator(
+          tester,
+          exporter: (_, _) async {
+            exports++;
+            throw StateError('A blocked generator must not export on exit');
+          },
+        );
+        // A composed document must not trigger a save dialog when its editor is
+        // hidden by the display-area guard.
+        await tester.binding.setSurfaceSize(const Size(400, 800));
+        await tester.pumpAndSettle();
+        expect(find.text('previewGenDisplayTooNarrowTitle'), findsOneWidget);
+        if (systemBack) {
+          await tester.binding.handlePopRoute();
+        } else {
+          await tester.tap(
+            find.byKey(const ValueKey('previewGeneratorBackButton')),
+          );
+        }
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('previewGeneratorExitDialog')),
+          findsNothing,
+        );
+        expect(find.byType(PreviewGeneratorScreen), findsNothing);
+        expect(exports, 0);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('save and leave exports before popping', (tester) async {
     var exports = 0;
     await _openGenerator(

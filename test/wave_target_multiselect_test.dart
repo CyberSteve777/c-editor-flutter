@@ -5,6 +5,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/tabs/wave_timeline_tab.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -98,7 +99,202 @@ Finder _target(int wave) => find.byKey(ValueKey('waveCopyTarget-$wave'));
 Finder get _confirm => find.byKey(const ValueKey('waveCopyTargetConfirm'));
 Finder get _targetDialog => find.byKey(const ValueKey('waveCopyTargetDialog'));
 
+Offset _checkboxCenter(WidgetTester tester, int wave) => tester.getCenter(
+  find.descendant(of: _target(wave), matching: find.byType(Checkbox)),
+);
+
 void main() {
+  for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
+    testWidgets(
+      '$kind sweeps select and clear crossed waves without toggling on return',
+      (tester) async {
+        _setSize(tester, const Size(900, 1200));
+        final rtid = RtidParser.build(_alias, 'CurrentLevel');
+        final fixture = _Fixture([
+          [rtid],
+          <String>[],
+          [rtid],
+          <String>[],
+          <String>[],
+        ]);
+        await tester.pumpWidget(fixture.build());
+        await tester.pumpAndSettle();
+        await _openCopy(tester);
+        await tester.tap(find.text('Copy reference'));
+        await tester.pumpAndSettle();
+
+        if (kind == PointerDeviceKind.mouse) {
+          final hover = await tester.createGesture(kind: kind);
+          await hover.addPointer(location: _checkboxCenter(tester, 1));
+          await hover.moveTo(_checkboxCenter(tester, 4));
+          await tester.pump();
+          expect(tester.widget<FilledButton>(_confirm).onPressed, isNull);
+          await hover.removePointer();
+        }
+
+        // A preselected intermediate row must remain selected. One large
+        // pointer update crosses multiple rows, including wrapped annotations.
+        await tester.tapAt(_checkboxCenter(tester, 2));
+        await tester.pump();
+        final select = await tester.startGesture(
+          _checkboxCenter(tester, 1),
+          kind: kind,
+        );
+        await select.moveTo(_checkboxCenter(tester, 4));
+        await tester.pump();
+        for (var wave = 1; wave <= 4; wave++) {
+          expect(tester.widget<CheckboxListTile>(_target(wave)).value, isTrue);
+        }
+        await select.moveTo(_checkboxCenter(tester, 2));
+        await select.moveTo(_checkboxCenter(tester, 4));
+        await select.up();
+        await tester.pump();
+        for (var wave = 1; wave <= 4; wave++) {
+          expect(tester.widget<CheckboxListTile>(_target(wave)).value, isTrue);
+        }
+        expect(tester.widget<CheckboxListTile>(_target(5)).value, isFalse);
+
+        final clear = await tester.startGesture(
+          _checkboxCenter(tester, 4),
+          kind: kind,
+        );
+        await clear.moveTo(_checkboxCenter(tester, 3));
+        await clear.up();
+        await tester.pump();
+        expect(tester.widget<CheckboxListTile>(_target(1)).value, isTrue);
+        expect(tester.widget<CheckboxListTile>(_target(2)).value, isTrue);
+        expect(tester.widget<CheckboxListTile>(_target(3)).value, isFalse);
+        expect(tester.widget<CheckboxListTile>(_target(4)).value, isFalse);
+        await tester.tap(_confirm);
+        await tester.pumpAndSettle();
+        expect(fixture.waveManager.waves, [
+          [rtid],
+          [rtid],
+          [rtid],
+          <String>[],
+          <String>[],
+        ]);
+        expect(fixture.level.objects.length, 2);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('sweeping pauses outside the checkbox column and ends on cancel', (
+    tester,
+  ) async {
+    _setSize(tester, const Size(900, 1200));
+    final rtid = RtidParser.build(_alias, 'CurrentLevel');
+    final fixture = _Fixture([
+      [rtid],
+      for (var index = 1; index < 6; index++) <String>[],
+    ]);
+    await tester.pumpWidget(fixture.build());
+    await tester.pumpAndSettle();
+    await _openCopy(tester);
+    await tester.tap(find.text('Copy reference'));
+    await tester.pumpAndSettle();
+    final gesture = await tester.startGesture(_checkboxCenter(tester, 1));
+    await gesture.moveTo(_checkboxCenter(tester, 2));
+    await tester.pump();
+    await gesture.moveTo(_checkboxCenter(tester, 2) + const Offset(120, 0));
+    await gesture.moveTo(_checkboxCenter(tester, 5) + const Offset(120, 0));
+    await gesture.moveTo(_checkboxCenter(tester, 5));
+    await gesture.cancel();
+    await tester.pumpAndSettle();
+    for (var wave = 1; wave <= 6; wave++) {
+      expect(
+        tester.widget<CheckboxListTile>(_target(wave)).value,
+        [1, 2, 5].contains(wave),
+      );
+    }
+    // A regular checkbox tap still toggles exactly once after a canceled sweep.
+    await tester.tapAt(_checkboxCenter(tester, 5));
+    await tester.pumpAndSettle();
+    expect(tester.widget<CheckboxListTile>(_target(5)).value, isFalse);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('trackpad scrolling over checkboxes does not select waves', (
+    tester,
+  ) async {
+    _setSize(tester, const Size(900, 1200));
+    final rtid = RtidParser.build(_alias, 'CurrentLevel');
+    final fixture = _Fixture([
+      [rtid],
+      for (var index = 1; index < 40; index++) <String>[],
+    ]);
+    await tester.pumpWidget(fixture.build());
+    await tester.pumpAndSettle();
+    await _openCopy(tester);
+    await tester.tap(find.text('Copy reference'));
+    await tester.pumpAndSettle();
+    final scrollable = find.descendant(
+      of: _targetDialog,
+      matching: find.byType(Scrollable),
+    );
+    final scrollState = tester.state<ScrollableState>(scrollable);
+    final start = _checkboxCenter(tester, 2);
+    final trackpad = await tester.createGesture(
+      kind: PointerDeviceKind.trackpad,
+    );
+    await trackpad.panZoomStart(start);
+    await trackpad.panZoomUpdate(start, pan: const Offset(0, -100));
+    await tester.pump();
+    await trackpad.panZoomUpdate(start, pan: const Offset(0, -200));
+    await tester.pump();
+    await trackpad.panZoomEnd();
+    await tester.pumpAndSettle();
+    expect(scrollState.position.pixels, greaterThan(0));
+    for (var wave = 1; wave <= 40; wave++) {
+      expect(tester.widget<CheckboxListTile>(_target(wave)).value, isFalse);
+    }
+    expect(tester.widget<FilledButton>(_confirm).onPressed, isNull);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'holding a sweep at the viewport edge scrolls and selects waves',
+    (tester) async {
+      _setSize(tester, const Size(900, 1200));
+      final rtid = RtidParser.build(_alias, 'CurrentLevel');
+      final fixture = _Fixture([
+        [rtid],
+        for (var index = 1; index < 40; index++) <String>[],
+      ]);
+      await tester.pumpWidget(fixture.build());
+      await tester.pumpAndSettle();
+      await _openCopy(tester);
+      await tester.tap(find.text('Copy reference'));
+      await tester.pumpAndSettle();
+      tester.view.physicalSize = const Size(900, 650);
+      await tester.pumpAndSettle();
+      final scrollable = find.descendant(
+        of: _targetDialog,
+        matching: find.byType(Scrollable),
+      );
+      final scrollState = tester.state<ScrollableState>(scrollable);
+      final start = _checkboxCenter(tester, 2);
+      final gesture = await tester.startGesture(start);
+      await gesture.moveTo(
+        Offset(start.dx, tester.getRect(scrollable).bottom - 2),
+      );
+      for (var frame = 0; frame < 100; frame++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      expect(scrollState.position.pixels, greaterThan(200));
+      expect(tester.widget<CheckboxListTile>(_target(8)).value, isTrue);
+      expect(tester.widget<CheckboxListTile>(_target(1)).value, isFalse);
+      expect(tester.widget<CheckboxListTile>(_target(40)).value, isFalse);
+      await gesture.up();
+      await tester.pumpAndSettle();
+      final stoppedAt = scrollState.position.pixels;
+      await tester.pump(const Duration(seconds: 1));
+      expect(scrollState.position.pixels, stoppedAt);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets(
     'reference selection is empty by default and skips existing references',
     (tester) async {
@@ -297,6 +493,9 @@ void main() {
         scrollable: scrollable,
         maxScrolls: 40,
       );
+      for (var wave = 1; wave <= 40; wave++) {
+        expect(tester.widget<CheckboxListTile>(_target(wave)).value, isFalse);
+      }
       await tester.tap(_target(40));
       await tester.pump();
       expect(tester.widget<CheckboxListTile>(_target(40)).value, isTrue);
@@ -309,23 +508,23 @@ void main() {
     },
   );
 
-  test(
-    'target wave localizations remove free-form hints and keep only skip help',
-    () {
-      for (final locale in ['zh', 'en', 'ru']) {
-        final arb =
-            jsonDecode(File('assets/l10n/app_$locale.arb').readAsStringSync())
-                as Map<String, dynamic>;
-        expect(arb.containsKey('targetWaveIndexHint'), isFalse);
-        expect(arb['targetWaveIndexHelper'], isNot(contains('\n')));
-        expect(arb['targetWaveAlreadyContainsEvent'], isA<String>());
-      }
-      final zh =
-          jsonDecode(File('assets/l10n/app_zh.arb').readAsStringSync())
+  test('target wave localizations describe sweeping and reference skips', () {
+    for (final locale in ['zh', 'en', 'ru']) {
+      final arb =
+          jsonDecode(File('assets/l10n/app_$locale.arb').readAsStringSync())
               as Map<String, dynamic>;
-      expect(zh['copyEventTarget'], '选择目标波次');
-      expect(zh['targetWaveAlreadyContainsEvent'], '已包含该事件');
-      expect(zh['targetWaveIndexHelper'], '已包含该事件的波次在复制引用时会自动跳过。');
-    },
-  );
+      expect(arb.containsKey('targetWaveIndexHint'), isFalse);
+      expect(arb['targetWaveIndexHelper'], isNot(contains('\n')));
+      expect(arb['targetWaveAlreadyContainsEvent'], isA<String>());
+    }
+    final zh =
+        jsonDecode(File('assets/l10n/app_zh.arb').readAsStringSync())
+            as Map<String, dynamic>;
+    expect(zh['copyEventTarget'], '选择目标波次');
+    expect(zh['targetWaveAlreadyContainsEvent'], '已包含该事件');
+    expect(
+      zh['targetWaveIndexHelper'],
+      '沿空框一列滑动可快速多选，从已勾选的方框开始滑动可连续取消选择。复制引用时，已包含该事件的波次会自动跳过。',
+    );
+  });
 }

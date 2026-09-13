@@ -375,7 +375,7 @@
   "copyEventTarget": "选择目标波次",
   "targetWaveIndex": "目标波次序号",
   "targetWaveAlreadyContainsEvent": "已包含该事件",
-  "targetWaveIndexHelper": "已包含该事件的波次在复制引用时会自动跳过。",
+  "targetWaveIndexHelper": "沿空框一列滑动可快速多选，从已勾选的方框开始滑动可连续取消选择。复制引用时，已包含该事件的波次会自动跳过。",
   "moveToWaveIndex": "移动至波次序号",
   "invalidWaveIndex": "无效波次序号",
   "renamingFailed": "重命名失败",

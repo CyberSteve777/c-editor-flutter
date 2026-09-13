@@ -21,21 +21,57 @@ import 'preview_toolbar_action.dart';
 import 'preview_generator_pickers.dart';
 import 'preview_layers_dialog.dart';
 import 'preview_sticker_catalog.dart';
+import 'preview_export_format_dialog.dart';
+import 'preview_gif_animation.dart';
+import 'preview_gif_encoder.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/app_ui_scale.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'dart:ui' as ui;
 
-/// Minimum horizontal space needed to keep the preview canvas and its editing
-/// controls practical to use.
+/// Desktop windows keep the full-width budget. Mobile screens can use the
+/// scrollable toolbar and view-only canvas zoom at a smaller allocation.
 const double kPreviewGeneratorMinimumWidth = 600;
 
 @visibleForTesting
 bool isPreviewGeneratorWidthAvailable(double availableWidth) =>
     availableWidth >= kPreviewGeneratorMinimumWidth;
+
+@visibleForTesting
+bool isPreviewGeneratorDisplayAreaAvailable({
+  required Size availableSize,
+  required TargetPlatform platform,
+  double uiScale = 1,
+  bool isWeb = kIsWeb,
+}) {
+  // Even the responsive controls need a usable touch/keyboard editing area.
+  if (!availableSize.width.isFinite ||
+      !availableSize.height.isFinite ||
+      availableSize.width < 320 ||
+      availableSize.height < 160 ||
+      !uiScale.isFinite ||
+      uiScale <= 0) {
+    return false;
+  }
+  final windowAllocation = availableSize * uiScale;
+  final nativeMobile = useMobilePreviewGeneratorNarrowPrompt(
+    platform: platform,
+    isWeb: isWeb,
+  );
+  if (!nativeMobile) {
+    return isPreviewGeneratorWidthAvailable(windowAllocation.width);
+  }
+  // Wide portrait tablets/foldables do not need to rotate. Smaller phones can
+  // also edit in a wide allocation, without an orientation-only exemption for
+  // genuinely narrow split-screen windows. UI zoom does not change this budget.
+  return windowAllocation.width >= 480 ||
+      (windowAllocation.width >= 400 &&
+          windowAllocation.width >= windowAllocation.height);
+}
 
 @visibleForTesting
 bool useMobilePreviewGeneratorNarrowPrompt({
@@ -168,6 +204,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   int _idSeq = 0;
   bool _loading = true;
   bool _exporting = false;
+  bool _choosingExportFormat = false;
+  Map<String, ui.Image> _exportImageFrames = const {};
   bool _widthAvailable = false;
   bool _confirmingExit = false;
   bool _allowExit = false;
@@ -449,10 +487,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
           'previewIZombieSeedBank',
           'Seed Bank (I, Zombie)',
         ),
-        vasebreakerLabel: _t('previewFeature_vasebreaker', 'Vasebreaker'),
+        vasebreakerLabel: _t('previewGenVaseContent', 'Vase content'),
         conveyorLabel: _t('previewGenConveyor', 'Conveyor'),
-        prePlacedLabel: _t('previewPrePlaced', 'Placement'),
-        protectLabel: _t('previewGenProtect', 'Protect'),
+        prePlacedLabel: _t('previewGenPresetLayout', 'Preset layout'),
+        protectLabel: _t('previewGenProtect', 'Endangered targets'),
         challengeLabel: _t('previewGenChallenge', 'Challenge'),
         wavesLabel: _t('previewGenWaves', 'Waves'),
         initialZombiesLabel: _t('previewGenInitial', 'Initial'),
@@ -1115,6 +1153,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       context: context,
       t: _t,
       session: _stickerPickerSession,
+      levelFile: widget.levelFile,
+      parsed: widget.parsed,
+      document: doc,
     );
     if (choice == null || !mounted) return;
 
@@ -1542,8 +1583,21 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   Future<bool> _export() async {
-    if (_exporting || _document == null) return false;
+    if (_exporting || _choosingExportFormat || _document == null) return false;
     _endTextEdit();
+    final document = _document!;
+    var format = PreviewImageExportFormat.png;
+    if (previewDocumentGifSources(document).isNotEmpty) {
+      _choosingExportFormat = true;
+      PreviewImageExportFormat? choice;
+      try {
+        choice = await showPreviewExportFormatDialog(context: context, t: _t);
+      } finally {
+        _choosingExportFormat = false;
+      }
+      if (choice == null || !mounted) return false;
+      format = choice;
+    }
     final selectedIconSectionIndex = _selectedIconSectionIndex;
     final selectedIconRowIndex = _selectedIconRowIndex;
     final selectedTextPart = _selectedTextPart;
@@ -1553,37 +1607,72 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       _selectedIconRowIndex = null;
       _selectedTextPart = null;
     });
+    PreviewGifAnimation? animation;
     try {
-      // Capture only after the non-interactive, unselected canvas has painted.
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return false;
-      final box =
-          _boundaryKey.currentContext?.findRenderObject()
-              as RenderRepaintBoundary?;
-      if (box == null) throw StateError('Preview canvas is not ready');
-      final image = await box.toImage(pixelRatio: 2.0);
-      try {
-        final result = widget.imageExporter != null
-            ? await widget.imageExporter!(image, widget.fileName)
-            : await PreviewPngExporter.export(
-                image: image,
-                levelFileName: widget.fileName,
-              );
-        if (!mounted) return false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _t(
-                'previewGenExportOk',
-                'Saved preview to {path}',
-              ).replaceAll('{path}', result.path),
+      PreviewExportResult result;
+      if (format == PreviewImageExportFormat.gif) {
+        animation = await PreviewGifAnimation.load(document);
+        final encoder = PreviewGifEncoder();
+        for (var i = 0; i < animation.frameTimes.length - 1; i++) {
+          if (!mounted) return false;
+          setState(
+            () => _exportImageFrames = animation!.imagesAt(
+              animation.frameTimes[i],
             ),
-          ),
+          );
+          await WidgetsBinding.instance.endOfFrame;
+          if (!mounted) return false;
+          final box =
+              _boundaryKey.currentContext?.findRenderObject()
+                  as RenderRepaintBoundary?;
+          if (box == null) throw StateError('Preview canvas is not ready');
+          final image = await box.toImage(pixelRatio: 2);
+          try {
+            await encoder.addFrame(
+              image,
+              duration: animation.frameTimes[i + 1] - animation.frameTimes[i],
+            );
+          } finally {
+            image.dispose();
+          }
+        }
+        result = await PreviewPngExporter.exportEncoded(
+          bytes: encoder.finish(),
+          levelFileName: widget.fileName,
+          extension: 'gif',
         );
-        return true;
-      } finally {
-        image.dispose();
+      } else {
+        // Capture only after the non-interactive, unselected canvas has painted.
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return false;
+        final box =
+            _boundaryKey.currentContext?.findRenderObject()
+                as RenderRepaintBoundary?;
+        if (box == null) throw StateError('Preview canvas is not ready');
+        final image = await box.toImage(pixelRatio: 2.0);
+        try {
+          result = widget.imageExporter != null
+              ? await widget.imageExporter!(image, widget.fileName)
+              : await PreviewPngExporter.export(
+                  image: image,
+                  levelFileName: widget.fileName,
+                );
+        } finally {
+          image.dispose();
+        }
       }
+      if (!mounted) return false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _t(
+              'previewGenExportOk',
+              'Saved preview to {path}',
+            ).replaceAll('{path}', result.path),
+          ),
+        ),
+      );
+      return true;
     } catch (e) {
       if (!mounted) return false;
       debugPrint('Preview export failed: $e');
@@ -1597,6 +1686,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                 'previewGenExportLibraryNotConfigured',
                 'Please configure the level library folder before exporting a preview.',
               ),
+              PreviewPngExportFailure.animationTooLarge => _t(
+                'previewGenExportAnimationTooLarge',
+                'The animation is too large to export as GIF. Remove some GIF stickers or export as PNG.',
+              ),
             }
           : _t('previewGenExportFail', 'Export failed');
       ScaffoldMessenger.of(
@@ -1607,20 +1700,26 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       if (mounted) {
         setState(() {
           _exporting = false;
+          _exportImageFrames = const {};
           _selectedIconSectionIndex = selectedIconSectionIndex;
           _selectedIconRowIndex = selectedIconRowIndex;
           _selectedTextPart = selectedTextPart;
         });
+        // Replace RawImage references before releasing their decoded frames.
+        if (animation != null) await WidgetsBinding.instance.endOfFrame;
       }
+      animation?.dispose();
     }
   }
 
   Future<void> _requestExit() async {
-    if (_confirmingExit || _exporting || _allowExit) return;
+    if (_confirmingExit || _exporting || _choosingExportFormat || _allowExit) {
+      return;
+    }
     _confirmingExit = true;
     try {
       _endTextEdit();
-      final choice = _document == null
+      final choice = !_widthAvailable || _document == null
           ? _PreviewExitChoice.discard
           : await showDialog<_PreviewExitChoice>(
               context: context,
@@ -1849,10 +1948,20 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     final theme = Theme.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final availableWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : MediaQuery.sizeOf(context).width;
-        final widthAvailable = isPreviewGeneratorWidthAvailable(availableWidth);
+        final mediaSize = MediaQuery.sizeOf(context);
+        final availableSize = Size(
+          constraints.maxWidth.isFinite
+              ? constraints.maxWidth
+              : mediaSize.width,
+          constraints.maxHeight.isFinite
+              ? constraints.maxHeight
+              : mediaSize.height,
+        );
+        final widthAvailable = isPreviewGeneratorDisplayAreaAvailable(
+          availableSize: availableSize,
+          platform: theme.platform,
+          uiScale: AppUiScale.of(context),
+        );
         _widthAvailable = widthAvailable;
         final useMobilePrompt = useMobilePreviewGeneratorNarrowPrompt(
           platform: theme.platform,
@@ -1922,7 +2031,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                             icon: const Icon(Icons.redo),
                           ),
                           IconButton(
-                            tooltip: _t('previewGenExport', 'Export PNG'),
+                            tooltip: _t('previewGenExport', 'Export image'),
                             onPressed:
                                 (_loading || _exporting || _document == null)
                                 ? null
@@ -1983,6 +2092,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
           child: Center(
             child: PreviewCanvas(
               document: _document!,
+              imageFrameOverrides: _exportImageFrames,
               interactive: true,
               tool: _tool,
               selectedLayerId: _exporting ? null : _selectedLayerId,
@@ -2239,16 +2349,29 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       Key? key,
       double spacing = 8,
       required List<Widget> children,
-    }) => HorizontalTagScroller(
-      key: key,
-      padding: EdgeInsets.zero,
-      children: [
-        for (var i = 0; i < children.length; i++) ...[
-          if (i > 0) SizedBox(width: spacing),
-          children[i],
+    }) {
+      // Full controls keep their original labels and wrap to as many lines as
+      // the viewport needs. Only the icon-only compact layout stays in a row.
+      if (!compact) {
+        return Wrap(
+          key: key,
+          spacing: spacing,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: children,
+        );
+      }
+      return HorizontalTagScroller(
+        key: key,
+        padding: EdgeInsets.zero,
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0) SizedBox(width: spacing),
+            children[i],
+          ],
         ],
-      ],
-    );
+      );
+    }
 
     return Material(
       color: Colors.transparent,
@@ -2419,7 +2542,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                       ),
                     if (compact)
                       Tooltip(
-                        message: _t('previewGenBorder', 'Border'),
+                        message: _t('previewGenBorder', 'Show border'),
                         child: IconButton.outlined(
                           icon: const Icon(Icons.border_outer),
                           isSelected: selected.strokeWidth > 0,
@@ -2436,7 +2559,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                       )
                     else
                       FilterChip(
-                        label: Text(_t('previewGenBorder', 'Border')),
+                        label: Text(_t('previewGenBorder', 'Show border')),
                         selected: selected.strokeWidth > 0,
                         onSelected: (enabled) {
                           _pushHistory();

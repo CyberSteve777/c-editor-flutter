@@ -135,29 +135,37 @@ class _PreviewLayersDialogState extends State<_PreviewLayersDialog> {
                         color: selected
                             ? theme.colorScheme.primaryContainer
                             : null,
-                        child: EditorOptionTile(
-                          selected: selected,
-                          leading: Icon(_iconFor(entry)),
-                          title: Text(
-                            widget.entryTitle(entry),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(_typeName(entry)),
-                          trailing: ReorderableDragStartListener(
-                            key: ValueKey('previewLayerDragHandle-${entry.id}'),
-                            index: index,
-                            child: const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Icon(Icons.drag_indicator),
+                        child: Row(
+                          children: [
+                            ReorderableDragStartListener(
+                              key: ValueKey(
+                                'previewLayerDragHandle-${entry.id}',
+                              ),
+                              index: index,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Icon(Icons.drag_indicator),
+                              ),
                             ),
-                          ),
-                          onTap: () {
-                            widget.onSelected(entry.id);
-                            if (mounted) {
-                              setState(() => _selectedLayerId = entry.id);
-                            }
-                          },
+                            Expanded(
+                              child: EditorOptionTile(
+                                selected: selected,
+                                leading: Icon(_iconFor(entry)),
+                                title: Text(
+                                  widget.entryTitle(entry),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(_typeName(entry)),
+                                onTap: () {
+                                  widget.onSelected(entry.id);
+                                  if (mounted) {
+                                    setState(() => _selectedLayerId = entry.id);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },

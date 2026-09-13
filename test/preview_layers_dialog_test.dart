@@ -116,6 +116,20 @@ void main() {
         lessThan(tester.getTopLeft(_option(kPreviewBackgroundLayerId)).dy),
       );
       expect(_tile(tester, 'top').selected, isTrue);
+      for (final id in ['top', 'bottom', kPreviewBackgroundLayerId]) {
+        final row = _tile(tester, id);
+        final handle = tester.getRect(_handle(id));
+        final typeIcon = find.descendant(
+          of: _option(id),
+          matching: find.byWidget(row.leading!),
+        );
+        expect(handle.right, lessThanOrEqualTo(tester.getRect(typeIcon).left));
+        expect(
+          handle.right,
+          lessThan(tester.getRect(find.byWidget(row.title)).left),
+        );
+        expect(row.trailing, isNull);
+      }
       await tester.tap(find.text('Stage background'));
       await tester.pumpAndSettle();
       expect(selected, kPreviewBackgroundLayerId);
@@ -264,6 +278,10 @@ void main() {
     expect(tester.widget<Text>(title).overflow, TextOverflow.ellipsis);
     expect(tester.getSize(title).width, greaterThanOrEqualTo(200));
     expect(_handle('top'), findsOneWidget);
+    expect(
+      tester.getRect(_handle('top')).right,
+      lessThanOrEqualTo(tester.getRect(title).left),
+    );
     expect(tester.takeException(), isNull);
   });
 }

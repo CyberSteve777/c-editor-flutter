@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_auto_composer.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_feature_groups.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_fonts.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
+import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/plugins/plugin_arb.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -162,6 +166,66 @@ void main() {
         expected[locale],
       );
     }
+  });
+
+  test('shape names and border toggle describe the actual controls', () {
+    const expectedBorder = {
+      'zh': '显示边框',
+      'en': 'Show border',
+      'ru': 'Показывать границу',
+    };
+    for (final locale in _locales) {
+      expect(
+        lookupPluginArbMessage(readAsset, locale, 'previewGenBorder'),
+        expectedBorder[locale],
+      );
+    }
+    const chineseFilledShapes = {
+      'previewFigure_rect_filled': '实心矩形',
+      'previewFigure_oval_filled': '实心椭圆',
+      'previewFigure_star_filled': '实心星形',
+    };
+    for (final entry in chineseFilledShapes.entries) {
+      expect(lookupPluginArbMessage(readAsset, 'zh', entry.key), entry.value);
+    }
+  });
+
+  test('source subtitles are distinct from formal mode and section names', () {
+    const expectedEnglish = {
+      'previewGenVaseContent': 'Vase content',
+      'previewGenProtect': 'Endangered targets',
+      'previewGenPresetLayout': 'Preset layout',
+      'previewFeature_vasebreaker': 'Vasebreaker',
+      'previewPrePlaced': 'Preset Layout',
+    };
+    for (final entry in expectedEnglish.entries) {
+      expect(lookupPluginArbMessage(readAsset, 'en', entry.key), entry.value);
+    }
+    for (final locale in _locales) {
+      for (final key in const [
+        'previewGenVaseContent',
+        'previewGenPresetLayout',
+      ]) {
+        expect(
+          lookupPluginArbMessage(readAsset, locale, key),
+          messages[locale]![key],
+          reason: '$locale: $key must not fall back to another locale',
+        );
+      }
+    }
+  });
+
+  test('composer defaults use the same source subtitles as localized UI', () {
+    final composer = PreviewAutoComposer(
+      levelFile: PvzLevelFile(objects: []),
+      parsed: ParsedLevelData(objectMap: {}),
+      fileName: 'source-labels.json',
+      banners: StageBannerResolver.forTest(stages: const {}),
+      featureGroups: PreviewFeatureGroups.forTest(groups: const []),
+    );
+    expect(composer.vasebreakerLabel, messages['en']!['previewGenVaseContent']);
+    expect(composer.protectLabel, messages['en']!['previewGenProtect']);
+    expect(composer.prePlacedLabel, messages['en']!['previewGenPresetLayout']);
   });
 
   test(

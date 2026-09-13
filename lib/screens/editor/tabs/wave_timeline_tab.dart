@@ -28,6 +28,7 @@ import 'package:c_editor/widgets/editor_components.dart'
         EditorChoiceDialogOption,
         showEditorChoiceDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/widgets/checkbox_sweep_selection.dart';
 import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
 import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
 import 'package:c_editor/widgets/zombie_lane_drag_widgets.dart'
@@ -2043,7 +2044,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final selectedWaves = <int>{};
     final helperText =
         l10n?.targetWaveIndexHelper ??
-        'Waves that already contain this event are automatically skipped when copying references.';
+        'Drag along the column of unchecked boxes to quickly select multiple waves. Start dragging from a checked box to deselect multiple waves. When copying references, waves that already contain this event are automatically skipped.';
     showDialog<void>(
       context: context,
       builder: (ctx) => StatefulBuilder(
@@ -2067,36 +2068,40 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  for (var index = 0; index < wm.waves.length; index++)
-                    CheckboxListTile(
-                      key: ValueKey('waveCopyTarget-${index + 1}'),
-                      contentPadding: EdgeInsets.zero,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      value: selectedWaves.contains(index + 1),
-                      onChanged: (selected) => setDialogState(() {
-                        if (selected == true) {
-                          selectedWaves.add(index + 1);
-                        } else {
-                          selectedWaves.remove(index + 1);
-                        }
-                      }),
-                      title: Wrap(
-                        spacing: 12,
-                        runSpacing: 4,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Text('${index + 1}'),
-                          if (wm.waves[index].contains(rtid))
-                            Text(
-                              l10n?.targetWaveAlreadyContainsEvent ??
-                                  'Already contains this event',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+                  CheckboxSweepSelection(
+                    children: [
+                      for (var index = 0; index < wm.waves.length; index++)
+                        CheckboxListTile(
+                          key: ValueKey('waveCopyTarget-${index + 1}'),
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          value: selectedWaves.contains(index + 1),
+                          onChanged: (selected) => setDialogState(() {
+                            if (selected == true) {
+                              selectedWaves.add(index + 1);
+                            } else {
+                              selectedWaves.remove(index + 1);
+                            }
+                          }),
+                          title: Wrap(
+                            spacing: 12,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Text('${index + 1}'),
+                              if (wm.waves[index].contains(rtid))
+                                Text(
+                                  l10n?.targetWaveAlreadyContainsEvent ??
+                                      'Already contains this event',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ),

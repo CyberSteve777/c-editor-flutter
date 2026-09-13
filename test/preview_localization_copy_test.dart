@@ -99,6 +99,7 @@ void main() {
       ])
         key: {'n'},
       'previewGenExportOk': {'path'},
+      'previewSettingsCurrentFolder': {'folder'},
       'previewGenWaveLabel': {'wave'},
       'previewGenWaveWithCount': {'wave', 'count'},
       'previewGenCell': {'x', 'y'},

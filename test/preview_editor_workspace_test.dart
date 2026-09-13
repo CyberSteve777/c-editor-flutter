@@ -32,12 +32,14 @@ Widget _workspace({
   required Widget toolbar,
   required PreviewDocument document,
   required GlobalKey boundaryKey,
+  PreviewEditTool tool = PreviewEditTool.select,
   String? selectedLayerId,
   ValueChanged<String?>? onSelectLayer,
   void Function(String id, Rect bounds)? onLayerMoved,
   void Function(String id, double scale)? onLayerScaled,
   VoidCallback? onToolbarResizeStarted,
   VoidCallback? onCanvasPaint,
+  ValueChanged<Offset>? onStrokeStarted,
 }) => PreviewEditorWorkspace(
   toolbar: toolbar,
   canvas: _CanvasPaintProbe(
@@ -45,11 +47,13 @@ Widget _workspace({
     child: PreviewCanvas(
       document: document,
       interactive: true,
+      tool: tool,
       boundaryKey: boundaryKey,
       selectedLayerId: selectedLayerId,
       onSelectLayer: onSelectLayer,
       onLayerMoved: onLayerMoved,
       onLayerScaled: onLayerScaled,
+      onStrokeStarted: onStrokeStarted,
     ),
   ),
   canvasZoomLabel: 'Canvas zoom',
@@ -71,6 +75,77 @@ Rect _paintedCanvasRect(GlobalKey boundaryKey) {
 Future<void> _setZoom(WidgetTester tester, double zoom) async {
   tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(zoom);
   await tester.pumpAndSettle();
+}
+
+Finder _scrollbarPaint(
+  Finder viewport,
+  ScrollbarOrientation orientation,
+) => find.descendant(
+  of: viewport,
+  matching: find.byWidgetPredicate(
+    (widget) =>
+        widget is CustomPaint &&
+        widget.foregroundPainter is ScrollbarPainter &&
+        ((widget.foregroundPainter! as ScrollbarPainter).scrollbarOrientation ==
+                orientation ||
+            (orientation == ScrollbarOrientation.right &&
+                (widget.foregroundPainter! as ScrollbarPainter)
+                        .scrollbarOrientation ==
+                    null)),
+  ),
+);
+
+Offset _thumbCenter(
+  WidgetTester tester,
+  Finder paint,
+  ScrollbarOrientation orientation,
+  PointerDeviceKind kind,
+) {
+  final painter =
+      tester.widget<CustomPaint>(paint).foregroundPainter! as ScrollbarPainter;
+  final box = tester.renderObject<RenderBox>(paint);
+  final vertical = orientation == ScrollbarOrientation.right;
+  final extent = vertical ? box.size.height : box.size.width;
+  final points = <Offset>[];
+  for (var position = 0.0; position < extent; position++) {
+    final point = vertical
+        ? Offset(box.size.width - 2, position)
+        : Offset(position, box.size.height - 2);
+    if (painter.hitTestOnlyThumbInteractive(point, kind)) points.add(point);
+  }
+  expect(points, isNotEmpty, reason: 'The painted thumb must accept $kind');
+  return box.localToGlobal(points[points.length ~/ 2]);
+}
+
+Rect _renderedRect(WidgetTester tester, Finder finder) {
+  final box = tester.renderObject<RenderBox>(finder);
+  return Rect.fromPoints(
+    box.localToGlobal(Offset.zero),
+    box.localToGlobal(box.size.bottomRight(Offset.zero)),
+  );
+}
+
+Widget _scaledApp(Widget home, double scale) => MaterialApp(
+  builder: (context, child) {
+    final mediaQuery = MediaQuery.of(context);
+    final size = mediaQuery.size / scale;
+    return MediaQuery(
+      data: mediaQuery.copyWith(size: size),
+      child: FittedBox(
+        fit: BoxFit.contain,
+        alignment: Alignment.topLeft,
+        child: SizedBox(width: size.width, height: size.height, child: child),
+      ),
+    );
+  },
+  home: Scaffold(body: home),
+);
+
+void _setDeviceViewport(WidgetTester tester, Size size) {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = size;
+  addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.view.resetPhysicalSize);
 }
 
 class _CanvasPaintProbe extends SingleChildRenderObjectWidget {
@@ -102,6 +177,487 @@ class _CanvasPaintProbeRenderObject extends RenderProxyBox {
 }
 
 void main() {
+  for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
+    testWidgets('thumb dragging in pen mode does not draw ($kind)', (
+      tester,
+    ) async {
+      _setDeviceViewport(tester, const Size(1200, 800));
+      var strokes = 0;
+      final boundaryKey = GlobalKey();
+      await tester.pumpWidget(
+        _scaledApp(
+          _workspace(
+            toolbar: const Text('Controls'),
+            document: _document(),
+            boundaryKey: boundaryKey,
+            tool: PreviewEditTool.pen,
+            onStrokeStarted: (_) => strokes++,
+          ),
+          1.4,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _setZoom(tester, 3);
+      final viewport = find.byKey(_canvasViewportKey);
+      for (final orientation in [
+        ScrollbarOrientation.bottom,
+        ScrollbarOrientation.right,
+      ]) {
+        final paint = _scrollbarPaint(viewport, orientation);
+        final horizontal = orientation == ScrollbarOrientation.bottom;
+        var thumb = _thumbCenter(tester, paint, orientation, kind);
+        if (kind == PointerDeviceKind.touch) {
+          // A finger may hit the larger thumb target just inside the painted
+          // track. It is still a scrollbar interaction, not a drawing gesture.
+          thumb -= horizontal ? const Offset(0, 12) : const Offset(12, 0);
+          final painter =
+              tester.widget<CustomPaint>(paint).foregroundPainter!
+                  as ScrollbarPainter;
+          final box = tester.renderObject<RenderBox>(paint);
+          expect(
+            painter.hitTestOnlyThumbInteractive(box.globalToLocal(thumb), kind),
+            isTrue,
+          );
+        }
+        final oldRect = _paintedCanvasRect(boundaryKey);
+        final gesture = await tester.startGesture(thumb, kind: kind);
+        await gesture.moveBy(
+          horizontal ? const Offset(60, 0) : const Offset(0, 60),
+        );
+        await tester.pump();
+        final newRect = _paintedCanvasRect(boundaryKey);
+        expect(
+          horizontal ? newRect.left : newRect.top,
+          lessThan(horizontal ? oldRect.left : oldRect.top),
+          reason: 'Pen mode must not steal thumb panning',
+        );
+        expect(
+          strokes,
+          0,
+          reason: 'Scrollbar dragging must not start a stroke',
+        );
+        await gesture.up();
+        await tester.pumpAndSettle();
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
+    for (final orientation in [
+      ScrollbarOrientation.bottom,
+      ScrollbarOrientation.right,
+    ]) {
+      testWidgets(
+        'thumb input wins over pending zoom layout ($orientation, $kind)',
+        (tester) async {
+          _setDeviceViewport(tester, const Size(1200, 800));
+          final boundaryKey = GlobalKey();
+          await tester.pumpWidget(
+            _scaledApp(
+              _workspace(
+                toolbar: const Text('Controls'),
+                document: _document(),
+                boundaryKey: boundaryKey,
+              ),
+              1.4,
+            ),
+          );
+          await tester.pumpAndSettle();
+          await _setZoom(tester, 2);
+          final viewport = find.byKey(_canvasViewportKey);
+          final bars = tester.widgetList<Scrollbar>(
+            find.descendant(of: viewport, matching: find.byType(Scrollbar)),
+          );
+          final scrollbar = bars.singleWhere(
+            (bar) => bar.scrollbarOrientation == orientation,
+          );
+          final horizontal = orientation == ScrollbarOrientation.bottom;
+          final otherBar = bars.singleWhere(
+            (bar) => bar.scrollbarOrientation != orientation,
+          );
+          final otherOffset = otherBar.controller!.offset;
+          final otherDimension =
+              otherBar.controller!.position.viewportDimension;
+          final thumb = _thumbCenter(
+            tester,
+            _scrollbarPaint(viewport, orientation),
+            orientation,
+            kind,
+          );
+          final gesture = await tester.startGesture(thumb, kind: kind);
+          await gesture.moveBy(
+            horizontal ? const Offset(5, 0) : const Offset(0, 5),
+          );
+          await tester.pump();
+          tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(2.1);
+          // The second interaction occurs before the queued zoom layout: its pan
+          // must not be overwritten by the older focal-point correction.
+          await gesture.moveBy(
+            horizontal ? const Offset(60, 0) : const Offset(0, 60),
+          );
+          final requestedOffset = scrollbar.controller!.offset;
+          await tester.pump();
+          expect(scrollbar.controller!.offset, closeTo(requestedOffset, 0.01));
+          expect(
+            otherBar.controller!.offset,
+            closeTo(
+              (otherOffset + otherDimension / 2) / 2 * 2.1 - otherDimension / 2,
+              0.01,
+            ),
+            reason: 'Panning one axis must not cancel the other zoom anchor',
+          );
+          await gesture.up();
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
+  testWidgets('visible thumb accepts dragging after rapid fit and zoom', (
+    tester,
+  ) async {
+    _setDeviceViewport(tester, const Size(1200, 800));
+    final boundaryKey = GlobalKey();
+    await tester.pumpWidget(
+      _scaledApp(
+        _workspace(
+          toolbar: const Text('Controls'),
+          document: _document(),
+          boundaryKey: boundaryKey,
+        ),
+        1.4,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _setZoom(tester, 2);
+    tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(1);
+    await tester.pump();
+    tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(2);
+    await tester.pump();
+    // Let the standard scrollbar rebuild its recognizer after the fit frame
+    // reported a zero scroll extent; the thumb must then remain draggable.
+    await tester.pump();
+    final viewport = find.byKey(_canvasViewportKey);
+    final scrollbar = tester
+        .widgetList<Scrollbar>(
+          find.descendant(of: viewport, matching: find.byType(Scrollbar)),
+        )
+        .singleWhere(
+          (bar) => bar.scrollbarOrientation == ScrollbarOrientation.right,
+        );
+    final oldOffset = scrollbar.controller!.offset;
+    final oldCanvasRect = _paintedCanvasRect(boundaryKey);
+    final thumb = _thumbCenter(
+      tester,
+      _scrollbarPaint(viewport, ScrollbarOrientation.right),
+      ScrollbarOrientation.right,
+      PointerDeviceKind.touch,
+    );
+    final gesture = await tester.startGesture(thumb);
+    await gesture.moveBy(const Offset(0, 60));
+    await tester.pump();
+    expect(scrollbar.controller!.offset, greaterThan(oldOffset));
+    expect(_paintedCanvasRect(boundaryKey).top, lessThan(oldCanvasRect.top));
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final uiScale in [0.85, 1.4, 2.0]) {
+    for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
+      testWidgets(
+        'thumb panning paints both axes at UI scale $uiScale ($kind)',
+        (tester) async {
+          _setDeviceViewport(tester, const Size(1200, 800));
+          final boundaryKey = GlobalKey();
+          var selected = 0;
+          await tester.pumpWidget(
+            _scaledApp(
+              _workspace(
+                toolbar: const Text('Controls'),
+                document: _document(),
+                boundaryKey: boundaryKey,
+                onSelectLayer: (_) => selected++,
+              ),
+              uiScale,
+            ),
+          );
+          await tester.pumpAndSettle();
+          await _setZoom(tester, 2.5);
+          final viewport = find.byKey(_canvasViewportKey);
+          final viewportRect = _renderedRect(tester, viewport);
+          final bars = tester.widgetList<Scrollbar>(
+            find.descendant(of: viewport, matching: find.byType(Scrollbar)),
+          );
+          for (final orientation in [
+            ScrollbarOrientation.bottom,
+            ScrollbarOrientation.right,
+          ]) {
+            final bar = bars.singleWhere(
+              (bar) => bar.scrollbarOrientation == orientation,
+            );
+            final oldOffset = bar.controller!.offset;
+            final oldImageRect = _paintedCanvasRect(boundaryKey);
+            final thumb = _thumbCenter(
+              tester,
+              _scrollbarPaint(viewport, orientation),
+              orientation,
+              kind,
+            );
+            final horizontal = orientation == ScrollbarOrientation.bottom;
+            final gesture = await tester.startGesture(thumb, kind: kind);
+            await gesture.moveBy(
+              horizontal
+                  ? Offset(viewportRect.width * 0.18, 0)
+                  : Offset(0, viewportRect.height * 0.18),
+            );
+            await tester.pump();
+            final newOffset = bar.controller!.offset;
+            final newImageRect = _paintedCanvasRect(boundaryKey);
+            expect(newOffset, greaterThan(oldOffset));
+            final expectedShift = -(newOffset - oldOffset) * uiScale;
+            expect(
+              horizontal
+                  ? newImageRect.left - oldImageRect.left
+                  : newImageRect.top - oldImageRect.top,
+              closeTo(expectedShift, 0.01),
+              reason:
+                  'Thumb movement must repaint the actual canvas this frame',
+            );
+            expect(
+              horizontal
+                  ? newImageRect.top - oldImageRect.top
+                  : newImageRect.left - oldImageRect.left,
+              closeTo(0, 0.01),
+            );
+            await gesture.up();
+            await tester.pumpAndSettle();
+          }
+          expect(selected, 0, reason: 'Thumb dragging must not select a layer');
+          final center = viewportRect.center;
+          final boundary =
+              boundaryKey.currentContext!.findRenderObject()! as RenderBox;
+          final visiblePoint = boundary.globalToLocal(center);
+          tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(2.8);
+          await tester.pump();
+          expect(
+            (boundary.localToGlobal(visiblePoint) - center).distance,
+            lessThan(0.01),
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+
+      testWidgets('toolbar thumb pans content at UI scale $uiScale ($kind)', (
+        tester,
+      ) async {
+        _setDeviceViewport(tester, const Size(1200, 800));
+        final boundaryKey = GlobalKey();
+        await tester.pumpWidget(
+          _scaledApp(
+            _workspace(
+              toolbar: Column(
+                children: [
+                  for (var i = 0; i < 30; i++)
+                    SizedBox(height: 48, child: Text('Control $i')),
+                ],
+              ),
+              document: _document(),
+              boundaryKey: boundaryKey,
+            ),
+            uiScale,
+          ),
+        );
+        await tester.pumpAndSettle();
+        final viewport = find.byKey(_toolbarViewportKey);
+        final rect = _renderedRect(tester, viewport);
+        final scrollbar = tester.widget<Scrollbar>(
+          find.byKey(const ValueKey('previewToolbarScrollbar')),
+        );
+        final oldOffset = scrollbar.controller!.offset;
+        final oldControlRect = _renderedRect(tester, find.text('Control 0'));
+        final oldCanvasRect = _paintedCanvasRect(boundaryKey);
+        final thumb = _thumbCenter(
+          tester,
+          _scrollbarPaint(viewport, ScrollbarOrientation.right),
+          ScrollbarOrientation.right,
+          kind,
+        );
+        final gesture = await tester.startGesture(thumb, kind: kind);
+        await gesture.moveBy(Offset(0, rect.height * 0.35));
+        await tester.pump();
+        final newOffset = scrollbar.controller!.offset;
+        expect(newOffset, greaterThan(oldOffset));
+        expect(
+          _renderedRect(tester, find.text('Control 0')).top -
+              oldControlRect.top,
+          closeTo(-(newOffset - oldOffset) * uiScale, 0.01),
+        );
+        expect(_paintedCanvasRect(boundaryKey), oldCanvasRect);
+        await gesture.up();
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
+  testWidgets('padded touch thumb dragging does not move underlying text', (
+    tester,
+  ) async {
+    _setDeviceViewport(tester, const Size(1200, 800));
+    final document = _document();
+    document.layers.add(
+      PreviewLayer(
+        id: 'text',
+        kind: PreviewLayerKind.text,
+        bounds: const Rect.fromLTWH(0, 0, 1, 1),
+        text: 'Canvas text',
+      ),
+    );
+    var selected = 0;
+    var moved = 0;
+    final boundaryKey = GlobalKey();
+    await tester.pumpWidget(
+      _scaledApp(
+        _workspace(
+          toolbar: const Text('Controls'),
+          document: document,
+          boundaryKey: boundaryKey,
+          selectedLayerId: 'text',
+          onSelectLayer: (_) => selected++,
+          onLayerMoved: (_, _) => moved++,
+        ),
+        1.4,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _setZoom(tester, 3);
+    final viewport = find.byKey(_canvasViewportKey);
+    for (final orientation in [
+      ScrollbarOrientation.bottom,
+      ScrollbarOrientation.right,
+    ]) {
+      var thumb = _thumbCenter(
+        tester,
+        _scrollbarPaint(viewport, orientation),
+        orientation,
+        PointerDeviceKind.touch,
+      );
+      thumb -= orientation == ScrollbarOrientation.bottom
+          ? const Offset(0, 12)
+          : const Offset(12, 0);
+      final oldRect = _paintedCanvasRect(boundaryKey);
+      final gesture = await tester.startGesture(thumb);
+      await gesture.moveBy(
+        orientation == ScrollbarOrientation.bottom
+            ? const Offset(60, 0)
+            : const Offset(0, 60),
+      );
+      await tester.pump();
+      final newRect = _paintedCanvasRect(boundaryKey);
+      expect(
+        orientation == ScrollbarOrientation.bottom ? newRect.left : newRect.top,
+        lessThan(
+          orientation == ScrollbarOrientation.bottom
+              ? oldRect.left
+              : oldRect.top,
+        ),
+      );
+      await gesture.up();
+      await tester.pumpAndSettle();
+    }
+    expect(
+      selected,
+      0,
+      reason: 'A scrollbar drag must not select underlying text',
+    );
+    expect(moved, 0, reason: 'A scrollbar drag must not move underlying text');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'thumbs remain usable after selection, toolbar growth and resize',
+    (tester) async {
+      _setDeviceViewport(tester, const Size(1200, 800));
+      final boundaryKey = GlobalKey();
+      final document = _document();
+      late StateSetter rebuild;
+      var controlCount = 3;
+      String? selected;
+      await tester.pumpWidget(
+        _scaledApp(
+          StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return _workspace(
+                toolbar: Column(
+                  children: [
+                    for (var i = 0; i < controlCount; i++)
+                      SizedBox(height: 48, child: Text('Control $i')),
+                  ],
+                ),
+                document: document,
+                boundaryKey: boundaryKey,
+                selectedLayerId: selected,
+              );
+            },
+          ),
+          1.4,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _setZoom(tester, 2);
+      final initialImageRect = _paintedCanvasRect(boundaryKey);
+      rebuild(() {
+        controlCount = 30;
+        selected = 'edge';
+      });
+      await tester.pumpAndSettle();
+      expect(_paintedCanvasRect(boundaryKey), initialImageRect);
+      await tester.drag(
+        find.byKey(const ValueKey('previewToolbarResizeHandle')),
+        const Offset(0, -60),
+      );
+      await tester.pumpAndSettle();
+      final viewport = find.byKey(_canvasViewportKey);
+      for (final orientation in [
+        ScrollbarOrientation.bottom,
+        ScrollbarOrientation.right,
+      ]) {
+        final scrollbar = tester
+            .widgetList<Scrollbar>(
+              find.descendant(of: viewport, matching: find.byType(Scrollbar)),
+            )
+            .singleWhere((bar) => bar.scrollbarOrientation == orientation);
+        final oldOffset = scrollbar.controller!.offset;
+        final oldRect = _paintedCanvasRect(boundaryKey);
+        final thumb = _thumbCenter(
+          tester,
+          _scrollbarPaint(viewport, orientation),
+          orientation,
+          PointerDeviceKind.touch,
+        );
+        final horizontal = orientation == ScrollbarOrientation.bottom;
+        final gesture = await tester.startGesture(thumb);
+        await gesture.moveBy(
+          horizontal ? const Offset(60, 0) : const Offset(0, 60),
+        );
+        await tester.pump();
+        final newRect = _paintedCanvasRect(boundaryKey);
+        expect(scrollbar.controller!.offset, greaterThan(oldOffset));
+        expect(
+          horizontal ? newRect.left : newRect.top,
+          lessThan(horizontal ? oldRect.left : oldRect.top),
+        );
+        await gesture.up();
+        await tester.pumpAndSettle();
+      }
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('every zoom frame paints with its center already anchored', (
     tester,
   ) async {

@@ -44,6 +44,7 @@ Future<void> _open(
   double keyboardHeight = 0,
   ValueChanged<PreviewAssetImageChoice?>? onSelected,
   PreviewStickerPickerSession? session,
+  Iterable<String> priorityAssetPaths = const [],
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
@@ -68,6 +69,7 @@ Future<void> _open(
                   stickers: stickers,
                   t: _t,
                   session: session,
+                  priorityAssetPaths: priorityAssetPaths,
                 ),
               );
               onSelected?.call(selected);
@@ -178,6 +180,65 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('current-level stickers stay first in All, tags and search', (
+    tester,
+  ) async {
+    final stickers = [
+      ..._stickers(3),
+      for (var i = 0; i < 3; i++)
+        PreviewSticker(
+          assetPath: 'assets/images/zombies/fixture_$i.webp',
+          tag: 'zombies',
+          labelKey: 'fixtureZombie',
+          searchTerms: ['fixture_$i'],
+        ),
+    ];
+    await _open(
+      tester,
+      size: const Size(900, 700),
+      stickers: stickers,
+      priorityAssetPaths: [stickers[1].assetPath, stickers[5].assetPath],
+    );
+    List<Key?> displayedKeys() => tester
+        .widgetList<InkWell>(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is InkWell &&
+                widget.key is ValueKey<String> &&
+                (widget.key! as ValueKey<String>).value.startsWith(
+                  'preview-sticker-assets/',
+                ),
+          ),
+        )
+        .map((widget) => widget.key)
+        .toList();
+    Key stickerKey(PreviewSticker sticker) =>
+        ValueKey('preview-sticker-${sticker.assetPath}');
+    expect(displayedKeys(), [
+      for (final index in [1, 5, 0, 2, 3, 4]) stickerKey(stickers[index]),
+    ]);
+    await tester.tap(find.byKey(const ValueKey('preview-sticker-tag-zombies')));
+    await tester.pumpAndSettle();
+    expect(displayedKeys(), [
+      for (final index in [5, 3, 4]) stickerKey(stickers[index]),
+    ]);
+    await tester.enterText(
+      find.byKey(const ValueKey('preview-sticker-search')),
+      'fixture',
+    );
+    await tester.pumpAndSettle();
+    expect(displayedKeys(), [
+      for (final index in [5, 3, 4]) stickerKey(stickers[index]),
+    ]);
+    await tester.enterText(
+      find.byKey(const ValueKey('preview-sticker-search')),
+      'fixture_0',
+    );
+    await tester.pumpAndSettle();
+    expect(displayedKeys(), [stickerKey(stickers[3])]);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('category chips follow catalog tag order with Others last', (
     tester,
   ) async {
@@ -239,6 +300,7 @@ void main() {
         size: const Size(900, 600),
         stickers: stickers,
         session: session,
+        priorityAssetPaths: [stickers[79].assetPath, stickers.last.assetPath],
       );
       await tester.tap(
         find.byKey(const ValueKey('preview-sticker-tag-zombies')),
