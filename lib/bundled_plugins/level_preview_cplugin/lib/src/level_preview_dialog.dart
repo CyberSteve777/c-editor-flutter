@@ -319,39 +319,87 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children:
                 [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                  if (isNarrow)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: widget.onBack,
+                              tooltip: l10n.back,
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: () => _openPreviewGenerator(context),
+                            icon: const Icon(Icons.image_outlined, size: 20),
+                            label: Text(
+                              _p(
+                                'previewGenerateImagePreview',
+                                'Generate image preview',
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () => _openPreviewGenerator(context),
-                        icon: const Icon(Icons.image_outlined, size: 20),
-                        label: Text(
-                          _p(
-                            'previewGenerateImagePreview',
-                            'Generate image preview',
+                      ],
+                    )
+                  else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${_p('levelPreview', 'Level Overview')}: ${widget.fileName}',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        style: TextButton.styleFrom(
+                        TextButton.icon(
+                          onPressed: () => _openPreviewGenerator(context),
+                          icon: const Icon(Icons.image_outlined, size: 20),
+                          label: Text(
+                            _p(
+                              'previewGenerateImagePreview',
+                              'Generate image preview',
+                            ),
+                          ),
+                          style: TextButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: widget.onBack,
+                          tooltip: l10n.back,
                           visualDensity: VisualDensity.compact,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: widget.onBack,
-                        tooltip: l10n.back,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   const SizedBox(height: 12),
                   _buildSummaryCard(context, levelDef, theme, l10n),
                   _buildSeedBankCard(context, theme, l10n),

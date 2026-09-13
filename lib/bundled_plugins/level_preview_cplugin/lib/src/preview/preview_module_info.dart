@@ -297,7 +297,10 @@ PreviewItem _gridItem(String id, {String? label, int? gridX, int? gridY}) {
 
 // --- module builders ---------------------------------------------------------
 
-PreviewModuleInfoPayload _seedBank(PvzLevelFile levelFile, PreviewModuleL10n t) {
+PreviewModuleInfoPayload _seedBank(
+  PvzLevelFile levelFile,
+  PreviewModuleL10n t,
+) {
   final map = _objMap(levelFile, 'SeedBankProperties');
   if (map == null) {
     return PreviewModuleInfoPayload(
@@ -339,10 +342,7 @@ PreviewModuleInfoPayload _seedBank(PvzLevelFile levelFile, PreviewModuleL10n t) 
 
   final items = <PreviewItem>[
     for (final id in ids)
-      if (iZombie)
-        _zombieItem(id)
-      else
-        _plantItem(id),
+      if (iZombie) _zombieItem(id) else _plantItem(id),
   ];
 
   return PreviewModuleInfoPayload(
@@ -439,10 +439,7 @@ PreviewModuleInfoPayload _initialPlants(
           }
         }
         final id =
-            e['PlantType'] ??
-            e['PlantTypeName'] ??
-            e['TypeName'] ??
-            e['Type'];
+            e['PlantType'] ?? e['PlantTypeName'] ?? e['TypeName'] ?? e['Type'];
         if (id is String) placements.add((_clean(id), x, y));
       }
     }
@@ -680,8 +677,8 @@ PreviewModuleInfoPayload _vases(PvzLevelFile levelFile, PreviewModuleL10n t) {
   final lines = <String>[
     t('previewGenVaseCount', '{count} vases', {'count': total}),
     t('previewGenColumnRange', 'Cols {min}–{max}', {
-      'min': data.minColumnIndex,
-      'max': data.maxColumnIndex,
+      'min': data.minColumnIndex + 1,
+      'max': data.maxColumnIndex + 1,
     }),
     if (data.numColoredPlantVases > 0)
       t('previewGenColoredPlantVases', 'Colored plant vases: {count}', {
@@ -696,8 +693,8 @@ PreviewModuleInfoPayload _vases(PvzLevelFile levelFile, PreviewModuleL10n t) {
   ];
 
   final col = t('previewGenColumnRange', 'Cols {min}–{max}', {
-    'min': data.minColumnIndex,
-    'max': data.maxColumnIndex,
+    'min': data.minColumnIndex + 1,
+    'max': data.maxColumnIndex + 1,
   });
   final sections = <PreviewIconSection>[];
   if (plantCounts.isNotEmpty) {
@@ -805,9 +802,7 @@ PreviewModuleInfoPayload _energy(PvzLevelFile levelFile, PreviewModuleL10n t) {
   for (final o in waves) {
     if (o.itemList.isEmpty) continue;
     final cells = _cellsList(o.itemList.map((i) => (i.mX, i.mY)));
-    lines.add(
-      '${_waveWithCount(t, o.wave, o.itemList.length)}: $cells',
-    );
+    lines.add('${_waveWithCount(t, o.wave, o.itemList.length)}: $cells');
     sections.add(
       PreviewIconSection(
         title: _waveWithCount(t, o.wave, o.itemList.length),
@@ -1013,9 +1008,7 @@ PreviewModuleInfoPayload _initialGridItems(
   }
 
   final lines = <String>[
-    t('previewGenGridItemCount', '{count} items', {
-      'count': placements.length,
-    }),
+    t('previewGenGridItemCount', '{count} items', {'count': placements.length}),
     for (final p in placements.take(12)) '${p.$1} ${_cell(t, p.$2, p.$3)}',
     if (placements.length > 12) '…',
   ];
@@ -1060,15 +1053,11 @@ PreviewModuleInfoPayload _seedRain(
     final zombie = e.zombieTypeName;
     if (plant != null && plant.isNotEmpty) {
       final id = _clean(plant);
-      lines.add(
-        '$id · ${_times(t, e.maxCount)} · w${e.weight}',
-      );
+      lines.add('$id · ${_times(t, e.maxCount)} · w${e.weight}');
       items.add(_plantItem(id, label: _times(t, e.maxCount)));
     } else if (zombie != null && zombie.isNotEmpty) {
       final id = _clean(zombie);
-      lines.add(
-        '$id · ${_times(t, e.maxCount)} · w${e.weight}',
-      );
+      lines.add('$id · ${_times(t, e.maxCount)} · w${e.weight}');
       items.add(_zombieItem(id, label: _times(t, e.maxCount)));
     }
   }
@@ -1109,10 +1098,10 @@ PreviewModuleInfoPayload _dropShip(
           'wave': w.wave + 1,
           'imp': w.imp,
           'lv': w.impLv,
-          'rmin': w.rowRange.min,
-          'rmax': w.rowRange.max,
-          'cmin': w.colRange.min,
-          'cmax': w.colRange.max,
+          'rmin': w.rowRange.min + 1,
+          'rmax': w.rowRange.max + 1,
+          'cmin': w.colRange.min + 1,
+          'cmax': w.colRange.max + 1,
         },
       ),
   ];
@@ -1127,10 +1116,10 @@ PreviewModuleInfoPayload _dropShip(
           {
             'wave': w.wave + 1,
             'imp': w.imp,
-            'rmin': w.rowRange.min,
-            'rmax': w.rowRange.max,
-            'cmin': w.colRange.min,
-            'cmax': w.colRange.max,
+            'rmin': w.rowRange.min + 1,
+            'rmax': w.rowRange.max + 1,
+            'cmin': w.colRange.min + 1,
+            'cmax': w.colRange.max + 1,
           },
         ),
         items: [
@@ -1196,11 +1185,7 @@ PreviewModuleInfoPayload _bronze(PvzLevelFile levelFile, PreviewModuleL10n t) {
           }),
           items: [
             for (final i in byTime[time]!.take(96))
-              _zombieItem(
-                _bronzeZombieId(i.kind),
-                gridX: i.mX,
-                gridY: i.mY,
-              ),
+              _zombieItem(_bronzeZombieId(i.kind), gridX: i.mX, gridY: i.mY),
           ],
         ),
     ],
@@ -1268,17 +1253,19 @@ PreviewModuleInfoPayload _railcart(
       '${t('previewGenRailcartLabel', 'Cart')} ${_cell(t, c.column, c.row)}',
     for (final r in data.rails.take(6))
       t('previewGenRailRange', 'Rail col {col} rows {start}–{end}', {
-        'col': r.column,
-        'start': r.rowStart,
-        'end': r.rowEnd,
+        'col': r.column + 1,
+        'start': r.rowStart + 1,
+        'end': r.rowEnd + 1,
       }),
   ];
   final (rows, cols) = _lawnDims(levelFile);
   final items = <PreviewItem>[
     for (final r in data.rails)
-      for (var row = math.min(r.rowStart, r.rowEnd);
-          row <= math.max(r.rowStart, r.rowEnd);
-          row++)
+      for (
+        var row = math.min(r.rowStart, r.rowEnd);
+        row <= math.max(r.rowStart, r.rowEnd);
+        row++
+      )
         PreviewItem(
           id: 'rails_${r.column}_$row',
           assetPath: 'assets/images/others/rails.webp',
@@ -1370,7 +1357,7 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
       }),
     if (data.nightEnabled)
       t('previewGenRenaiNightWave', 'Night from wave {wave}', {
-        'wave': data.nightStartWaveNum,
+        'wave': data.nightStartWaveNum + 1,
       }),
     if (night.isNotEmpty)
       t('previewGenRenaiNightCount', 'Night statues: {count}', {
@@ -1391,11 +1378,7 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
         items: [
           for (final s in day.take(96))
             if (_clean(s.typeName).isNotEmpty)
-              _gridItem(
-                _clean(s.typeName),
-                gridX: s.gridX,
-                gridY: s.gridY,
-              ),
+              _gridItem(_clean(s.typeName), gridX: s.gridX, gridY: s.gridY),
         ],
       ),
     );
@@ -1409,11 +1392,7 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
         items: [
           for (final s in night.take(96))
             if (_clean(s.typeName).isNotEmpty)
-              _gridItem(
-                _clean(s.typeName),
-                gridX: s.gridX,
-                gridY: s.gridY,
-              ),
+              _gridItem(_clean(s.typeName), gridX: s.gridX, gridY: s.gridY),
         ],
       ),
     );
@@ -1423,7 +1402,7 @@ PreviewModuleInfoPayload _renai(PvzLevelFile levelFile, PreviewModuleL10n t) {
     gridNotes: [
       if (data.nightEnabled)
         t('previewGenRenaiNightWave', 'Night from wave {wave}', {
-          'wave': data.nightStartWaveNum,
+          'wave': data.nightStartWaveNum + 1,
         }),
     ],
     lawnRows: rows,
@@ -1624,9 +1603,7 @@ PreviewModuleInfoPayload _lastStand(
   }
   final data = LastStandMinigamePropertiesData.fromJson(map);
   final lines = <String>[
-    t('previewGenLastStandSun', 'Starting sun: {n}', {
-      'n': data.startingSun,
-    }),
+    t('previewGenLastStandSun', 'Starting sun: {n}', {'n': data.startingSun}),
     t('previewGenLastStandPlantFood', 'Starting plant food: {n}', {
       'n': data.startingPlantfood,
     }),

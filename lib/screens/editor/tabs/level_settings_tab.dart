@@ -263,9 +263,6 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     final existingObjClasses = currentModulesList
         .map((m) => m.objClass)
         .toSet();
-    final showLifeSupportLastStandConflict =
-        existingObjClasses.contains('MoonLifeSupportSystemProperties') &&
-        existingObjClasses.contains('LastStandMinigameProperties');
     final showCowboyWithoutConveyorWarning =
         existingObjClasses.contains('CowboyMinigameProperties') &&
         !existingObjClasses.contains('ConveyorSeedBankProperties');
@@ -443,55 +440,6 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                 ),
               ),
             ),
-
-            if (showLifeSupportLastStandConflict) ...[
-              const SizedBox(height: 12),
-              Card(
-                key: const ValueKey('lifeSupportLastStandConflictWarning'),
-                color: Theme.of(context).colorScheme.errorContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.error,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onErrorContainer,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n?.conflictTitle_ModuleLogic ??
-                                  'Module logic conflict',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onErrorContainer,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n?.lifeSupportLastStandConflictWarning ??
-                            'The Life Support System and Last Stand modules '
-                                'cannot coexist; otherwise, the level will '
-                                'fail to start correctly.',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
 
             if (showCowboyWithoutConveyorWarning) ...[
               const SizedBox(height: 12),

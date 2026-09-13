@@ -33,10 +33,7 @@ Widget _buildTab({
             ),
           ],
         ),
-        parsed: ParsedLevelData(
-          waveManager: waveManager,
-          objectMap: objectMap,
-        ),
+        parsed: ParsedLevelData(waveManager: waveManager, objectMap: objectMap),
         onChanged: () {},
         onEditEvent: (_, _) async {},
         onAddEvent: (_) {},
@@ -78,6 +75,16 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('waveTimelineWaveNumberTap-2')));
     await tester.pumpAndSettle();
     expect(find.text('Reuse event'), findsOneWidget);
+
+    final addButton = find.byKey(const ValueKey('waveManageAddEventButton'));
+    final reuseButton = find.byKey(
+      const ValueKey('waveManageReuseEventButton'),
+    );
+    expect(tester.getRect(addButton).top, tester.getRect(reuseButton).top);
+    expect(
+      tester.getRect(addButton).right,
+      lessThan(tester.getRect(reuseButton).left),
+    );
 
     await tester.tap(find.text('Reuse event'));
     await tester.pumpAndSettle();
@@ -170,7 +177,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 250));
     // Slots appear after drag starts.
     await tester.pump();
-    final slotBeforeA = find.byKey(const ValueKey('waveTimelineInsertSlot-1-0'));
+    final slotBeforeA = find.byKey(
+      const ValueKey('waveTimelineInsertSlot-1-0'),
+    );
     expect(slotBeforeA, findsOneWidget);
     await gesture.moveTo(tester.getCenter(slotBeforeA));
     await tester.pump();
@@ -228,4 +237,3 @@ void main() {
     expect(waveManager.waves[2], [rtid]);
   });
 }
-

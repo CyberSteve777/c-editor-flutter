@@ -51,9 +51,7 @@ String _waveEmptyRowHintForPlatform(
         ? 'Empty wave (click to manage, drop events here)'
         : 'Empty wave (swipe to manage, drop events here)';
   }
-  return desktop
-      ? l10n.waveEmptyRowHintDesktop
-      : l10n.waveEmptyRowHintMobile;
+  return desktop ? l10n.waveEmptyRowHintDesktop : l10n.waveEmptyRowHintMobile;
 }
 
 class _WaveEventDragData {
@@ -87,6 +85,53 @@ Size _expectationDialogListSize(BuildContext context) {
 }
 
 bool compactWidth(double screenWidth) => screenWidth < 500;
+
+double _requiredIconButtonWidth(BuildContext context, String label) {
+  final theme = Theme.of(context);
+  final textStyle = theme.textTheme.labelLarge ?? const TextStyle(fontSize: 14);
+  final painter = TextPainter(
+    text: TextSpan(text: label, style: textStyle),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+    maxLines: 1,
+  )..layout();
+  // Includes the icon, icon/label gap, and horizontal button padding.
+  return painter.width + 72;
+}
+
+Size _waveManageButtonSize(
+  BuildContext context,
+  ButtonStyle style,
+  String label,
+  double availableWidth,
+) {
+  const states = <WidgetState>{};
+  final textStyle =
+      style.textStyle?.resolve(states) ??
+      Theme.of(context).textTheme.labelLarge;
+  final padding =
+      style.padding?.resolve(states)?.resolve(Directionality.of(context)) ??
+      EdgeInsets.zero;
+  final iconSize = style.iconSize?.resolve(states) ?? 24.0;
+  final minimumSize = style.minimumSize?.resolve(states) ?? Size.zero;
+  final painter = TextPainter(
+    text: TextSpan(text: label, style: textStyle),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+  )..layout();
+  final width = painter.width + padding.horizontal + iconSize + 8;
+  painter.layout(
+    maxWidth: (availableWidth - padding.horizontal - iconSize - 8).clamp(
+      1,
+      double.infinity,
+    ),
+  );
+  // Reserve the padded Material tap target as well as the visible button.
+  final height = (painter.height + padding.vertical)
+      .clamp(minimumSize.height.clamp(48, double.infinity), double.infinity)
+      .toDouble();
+  return Size(width.clamp(minimumSize.width, double.infinity), height);
+}
 
 /// Wave timeline tab with events. Ported from Z-Editor-master WaveTimelineTab.kt
 class WaveTimelineTab extends StatefulWidget {
@@ -667,11 +712,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         if (isFlagWave)
           Padding(
             padding: const EdgeInsets.only(left: 2),
-            child: Icon(
-              Icons.flag,
-              size: 12,
-              color: theme.colorScheme.error,
-            ),
+            child: Icon(Icons.flag, size: 12, color: theme.colorScheme.error),
           ),
       ],
     );
@@ -680,9 +721,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (rtidList.isEmpty)
-          dragging &&
-                  _dragHoverWaveIndex == waveIndex &&
-                  _draggingEvent != null
+          dragging && _dragHoverWaveIndex == waveIndex && _draggingEvent != null
               ? Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: _buildWaveEventPreviewChip(
@@ -726,7 +765,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         ],
       ],
     );
-    final rowContent = Stack(
+    final rowStack = Stack(
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -761,8 +800,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                   );
                 },
                 builder: (context, candidateData, rejectedData) {
-                  final highlighted =
-                      isDropTarget || candidateData.isNotEmpty;
+                  final highlighted = isDropTarget || candidateData.isNotEmpty;
                   return Material(
                     color: highlighted
                         ? theme.colorScheme.primary.withValues(alpha: 0.12)
@@ -855,6 +893,13 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         ),
       ],
     );
+    final rowContent = ConstrainedBox(
+      // Empty waves have less intrinsic content than event waves. Keep enough
+      // height for the overlaid number strip (and its full tap target) so the
+      // number is never compressed out of view.
+      constraints: const BoxConstraints(minHeight: 48),
+      child: rowStack,
+    );
     if (!includeDivider) {
       return rowContent;
     }
@@ -933,8 +978,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         );
       },
       builder: (context, candidateData, rejectedData) {
-        final showPreview =
-            candidateData.isNotEmpty && _draggingEvent != null;
+        final showPreview = candidateData.isNotEmpty && _draggingEvent != null;
         if (showPreview) {
           // Jittered-style ghost at the hovered insert position.
           return Padding(
@@ -1997,10 +2041,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             ),
             FilledButton(
               onPressed: () {
-                final targets = parseWaveTargetSpec(
-                  ctrl.text,
-                  wm.waves.length,
-                );
+                final targets = parseWaveTargetSpec(ctrl.text, wm.waves.length);
                 Navigator.pop(ctx);
                 if (targets == null || targets.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -2171,22 +2212,11 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                         l10n?.copy ?? 'Copy',
                         l10n?.move ?? 'Move',
                       ];
-                      final buttonTextStyle =
-                          theme.textTheme.labelLarge ??
-                          const TextStyle(fontSize: 14);
-                      double measuredButtonWidth(String label) {
-                        final painter = TextPainter(
-                          text: TextSpan(text: label, style: buttonTextStyle),
-                          textDirection: Directionality.of(ctx),
-                          textScaler: MediaQuery.textScalerOf(ctx),
-                          maxLines: 1,
-                        )..layout();
-                        return painter.width + 72;
-                      }
-
                       final requiredRowWidth =
                           actionLabels
-                              .map(measuredButtonWidth)
+                              .map(
+                                (label) => _requiredIconButtonWidth(ctx, label),
+                              )
                               .fold<double>(0, (sum, width) => sum + width) +
                           16;
                       final compact = constraints.maxWidth < requiredRowWidth;
@@ -2432,195 +2462,373 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (ctx) => EscapeClosesModal(
-        child: DraggableScrollableSheet(
-          initialChildSize: 0.5,
-          minChildSize: 0.25,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (ctx2, scrollController) => Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n?.waveEventsTitle(waveIndex) ?? 'Wave $waveIndex events',
-                  style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+        child: LayoutBuilder(
+          builder: (ctx, viewport) {
+            final theme = Theme.of(ctx);
+            final title =
+                l10n?.waveEventsTitle(waveIndex) ?? 'Wave $waveIndex events';
+            final titleStyle = theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            );
+            final contentWidth = (viewport.maxWidth - 32)
+                .clamp(1, double.infinity)
+                .toDouble();
+
+            double textHeight(String text, TextStyle? style, double width) {
+              final painter = TextPainter(
+                text: TextSpan(text: text, style: style),
+                textDirection: Directionality.of(ctx),
+                textScaler: MediaQuery.textScalerOf(ctx),
+              )..layout(maxWidth: width.clamp(1, double.infinity));
+              return painter.height;
+            }
+
+            Widget eventCard(int i) {
+              final rtid = rtidList[i];
+              final alias = LevelParser.extractAlias(rtid);
+              final obj = widget.parsed.objectMap[alias];
+              final meta = EventRegistry.getByObjClass(obj?.objClass);
+              final color = meta?.color ?? Theme.of(ctx).colorScheme.primary;
+              final displayTitle = EventSelectionScreen.resolveEventTitle(
+                ctx,
+                meta,
+                l10n,
+              );
+              return Card(
+                key: ValueKey('waveManageEvent-$i'),
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: Icon(meta?.icon ?? Icons.event, color: color),
+                  title: Text(alias),
+                  subtitle: Text(
+                    displayTitle.isNotEmpty
+                        ? displayTitle
+                        : (meta?.titleKey ?? 'Unknown event'),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: rtidList.isEmpty
-                      ? Center(
-                          child: Text(
-                            l10n?.emptyWave ?? 'Empty wave',
-                            style: Theme.of(ctx).textTheme.bodySmall,
-                          ),
-                        )
-                      : ListView.builder(
-                          controller: scrollController,
-                          itemCount: rtidList.length,
-                          itemBuilder: (_, i) {
-                            final rtid = rtidList[i];
-                            final alias = LevelParser.extractAlias(rtid);
-                            final obj = widget.parsed.objectMap[alias];
-                            final meta = EventRegistry.getByObjClass(
-                              obj?.objClass,
-                            );
-                            final color =
-                                meta?.color ??
-                                Theme.of(ctx).colorScheme.primary;
-                            final displayTitle =
-                                EventSelectionScreen.resolveEventTitle(
-                                  ctx,
-                                  meta,
-                                  l10n,
-                                );
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              child: ListTile(
-                                leading: Icon(
-                                  meta?.icon ?? Icons.event,
-                                  color: color,
-                                ),
-                                title: Text(alias),
-                                subtitle: Text(
-                                  displayTitle.isNotEmpty
-                                      ? displayTitle
-                                      : (meta?.titleKey ?? 'Unknown event'),
-                                ),
-                                onTap: () {
-                                  Navigator.pop(ctx);
-                                  _showEventActionSheet(
-                                    context: context,
-                                    waveIndex: waveIndex,
-                                    rtid: rtid,
-                                    onEditFinished: () => _showWaveManageSheet(
-                                      context,
-                                      waveIndex,
-                                    ),
-                                  );
-                                },
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete_outline),
-                                  onPressed: () async {
-                                    Navigator.pop(ctx);
-                                    final ok = await showDialog<bool>(
-                                      context: context,
-                                      builder: (dctx) => AlertDialog(
-                                        title: Text(
-                                          l10n?.confirmRemoveRef ??
-                                              'Remove reference',
-                                        ),
-                                        content: Text(
-                                          l10n?.confirmRemoveRefMessage ??
-                                              'Remove this reference? The entity data will remain until all references are removed.',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(dctx, false),
-                                            style: TextButton.styleFrom(
-                                              foregroundColor: Theme.of(
-                                                dctx,
-                                              ).colorScheme.primary,
-                                            ),
-                                            child: Text(
-                                              l10n?.cancel ?? 'Cancel',
-                                            ),
-                                          ),
-                                          FilledButton(
-                                            onPressed: () =>
-                                                Navigator.pop(dctx, true),
-                                            style: FilledButton.styleFrom(
-                                              backgroundColor: Theme.of(
-                                                dctx,
-                                              ).colorScheme.error,
-                                              foregroundColor: Colors.white,
-                                            ),
-                                            child: Text(
-                                              l10n?.confirmRemoveRef ??
-                                                  'Remove reference',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    if (ok == true) {
-                                      _smartDeleteEvent(waveIndex, rtid);
-                                      setState(() {});
-                                    }
-                                  },
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          widget.onAddEvent(waveIndex);
-                        },
-                        icon: const Icon(Icons.add),
-                        label: Text(l10n?.addEvent ?? 'Add event'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          _openReuseExistingEvent(waveIndex);
-                        },
-                        icon: const Icon(Icons.link),
-                        label: Text(
-                          l10n?.reuseExistingEvent ?? 'Reuse event',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Theme.of(ctx).colorScheme.error,
-                      foregroundColor: Theme.of(ctx).colorScheme.onError,
-                    ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showEventActionSheet(
+                      context: context,
+                      waveIndex: waveIndex,
+                      rtid: rtid,
+                      onEditFinished: () =>
+                          _showWaveManageSheet(context, waveIndex),
+                    );
+                  },
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
                       Navigator.pop(ctx);
-                      final ok = await _showDeleteWaveConfirmDialog(
-                        context,
-                        waveIndex,
-                        rtidList.length,
+                      final ok = await showDialog<bool>(
+                        context: context,
+                        builder: (dctx) => AlertDialog(
+                          title: Text(
+                            l10n?.confirmRemoveRef ?? 'Remove reference',
+                          ),
+                          content: Text(
+                            l10n?.confirmRemoveRefMessage ??
+                                'Remove this reference? The entity data will remain until all references are removed.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dctx, false),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Theme.of(
+                                  dctx,
+                                ).colorScheme.primary,
+                              ),
+                              child: Text(l10n?.cancel ?? 'Cancel'),
+                            ),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(dctx, true),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Theme.of(
+                                  dctx,
+                                ).colorScheme.error,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text(
+                                l10n?.confirmRemoveRef ?? 'Remove reference',
+                              ),
+                            ),
+                          ],
+                        ),
                       );
-                      if (ok == true && mounted) {
-                        final wm = widget.parsed.waveManager;
-                        if (wm is WaveManagerData &&
-                            waveIndex >= 1 &&
-                            waveIndex <= wm.waves.length) {
-                          wm.waves.removeAt(waveIndex - 1);
-                          wm.waveCount = wm.waves.length;
-                          _syncWaves();
-                          setState(() {});
-                        }
+                      if (ok == true) {
+                        _smartDeleteEvent(waveIndex, rtid);
+                        setState(() {});
                       }
                     },
-                    icon: const Icon(Icons.delete),
-                    label: Text(l10n?.deleteWave ?? 'Delete wave'),
                   ),
                 ),
+              );
+            }
+
+            final addLabel = l10n?.addEvent ?? 'Add event';
+            final reuseLabel = l10n?.reuseExistingEvent ?? 'Reuse event';
+            final addButton = OutlinedButton.icon(
+              key: const ValueKey('waveManageAddEventButton'),
+              onPressed: () {
+                Navigator.pop(ctx);
+                widget.onAddEvent(waveIndex);
+              },
+              icon: const Icon(Icons.add),
+              label: Text(addLabel, textAlign: TextAlign.center),
+            );
+            final reuseButton = OutlinedButton.icon(
+              key: const ValueKey('waveManageReuseEventButton'),
+              onPressed: () {
+                Navigator.pop(ctx);
+                _openReuseExistingEvent(waveIndex);
+              },
+              icon: const Icon(Icons.link),
+              label: Text(reuseLabel, textAlign: TextAlign.center),
+            );
+            final outlinedStyle =
+                (OutlinedButtonTheme.of(ctx).style ?? const ButtonStyle())
+                    .merge(addButton.defaultStyleOf(ctx));
+            final addSize = _waveManageButtonSize(
+              ctx,
+              outlinedStyle,
+              addLabel,
+              contentWidth,
+            );
+            final reuseSize = _waveManageButtonSize(
+              ctx,
+              outlinedStyle,
+              reuseLabel,
+              contentWidth,
+            );
+            // The row uses equal-width buttons, so both halves must fit the
+            // longer label, including the active theme and system text scale.
+            final requiredButtonWidth = addSize.width > reuseSize.width
+                ? addSize.width
+                : reuseSize.width;
+            final stackedActions = contentWidth < requiredButtonWidth * 2 + 8;
+            final actionWidth = stackedActions
+                ? contentWidth
+                : (contentWidth - 8) / 2;
+            final addHeight = _waveManageButtonSize(
+              ctx,
+              outlinedStyle,
+              addLabel,
+              actionWidth,
+            ).height;
+            final reuseHeight = _waveManageButtonSize(
+              ctx,
+              outlinedStyle,
+              reuseLabel,
+              actionWidth,
+            ).height;
+            final actionHeight = stackedActions
+                ? addHeight + reuseHeight + 8
+                : (addHeight > reuseHeight ? addHeight : reuseHeight);
+
+            final deleteLabel = l10n?.deleteWave ?? 'Delete wave';
+            final deleteButton = FilledButton.icon(
+              key: const ValueKey('waveManageDeleteWaveButton'),
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.error,
+                foregroundColor: theme.colorScheme.onError,
+              ),
+              onPressed: () async {
+                Navigator.pop(ctx);
+                final ok = await _showDeleteWaveConfirmDialog(
+                  context,
+                  waveIndex,
+                  rtidList.length,
+                );
+                if (ok == true && mounted) {
+                  final wm = widget.parsed.waveManager;
+                  if (wm is WaveManagerData &&
+                      waveIndex >= 1 &&
+                      waveIndex <= wm.waves.length) {
+                    wm.waves.removeAt(waveIndex - 1);
+                    wm.waveCount = wm.waves.length;
+                    _syncWaves();
+                    setState(() {});
+                  }
+                }
+              },
+              icon: const Icon(Icons.delete),
+              label: Text(deleteLabel, textAlign: TextAlign.center),
+            );
+            final filledStyle = (deleteButton.style ?? const ButtonStyle())
+                .merge(FilledButtonTheme.of(ctx).style)
+                .merge(deleteButton.defaultStyleOf(ctx));
+            final deleteHeight = _waveManageButtonSize(
+              ctx,
+              filledStyle,
+              deleteLabel,
+              contentWidth,
+            ).height;
+            final actions = Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (stackedActions) ...[
+                  addButton,
+                  const SizedBox(height: 8),
+                  reuseButton,
+                ] else
+                  Row(
+                    children: [
+                      Expanded(child: addButton),
+                      const SizedBox(width: 8),
+                      Expanded(child: reuseButton),
+                    ],
+                  ),
+                const SizedBox(height: 12),
+                deleteButton,
               ],
-            ),
-          ),
+            );
+
+            final titleHeight = textHeight(title, titleStyle, contentWidth);
+            final tileTheme = ListTileTheme.of(ctx);
+            final tilePadding =
+                (tileTheme.contentPadding ??
+                        const EdgeInsetsDirectional.fromSTEB(16, 0, 24, 0))
+                    .resolve(Directionality.of(ctx));
+            final tileTextWidth =
+                contentWidth -
+                tilePadding.horizontal -
+                (tileTheme.minLeadingWidth ?? 40) -
+                (tileTheme.horizontalTitleGap ?? 16) * 2 -
+                48;
+            final visibleEventHeights = <double>[];
+            for (final rtid in rtidList.take(3)) {
+              final alias = LevelParser.extractAlias(rtid);
+              final meta = EventRegistry.getByObjClass(
+                widget.parsed.objectMap[alias]?.objClass,
+              );
+              final localizedTitle = EventSelectionScreen.resolveEventTitle(
+                ctx,
+                meta,
+                l10n,
+              );
+              final subtitle = localizedTitle.isNotEmpty
+                  ? localizedTitle
+                  : (meta?.titleKey ?? 'Unknown event');
+              final textExtent =
+                  textHeight(
+                    alias,
+                    tileTheme.titleTextStyle ?? theme.textTheme.bodyLarge,
+                    tileTextWidth,
+                  ) +
+                  textHeight(
+                    subtitle,
+                    tileTheme.subtitleTextStyle ?? theme.textTheme.bodyMedium,
+                    tileTextWidth,
+                  ) +
+                  24;
+              visibleEventHeights.add(
+                textExtent.clamp(72, double.infinity) + 8,
+              );
+            }
+            final firstEventHeight = visibleEventHeights.isEmpty
+                ? 96.0
+                : visibleEventHeights.first;
+            final desiredEventHeight = visibleEventHeights.isEmpty
+                ? 96.0
+                : visibleEventHeights.fold<double>(
+                    0,
+                    (sum, height) => sum + height,
+                  );
+            final fixedContentHeight =
+                titleHeight +
+                12 +
+                8 +
+                actionHeight +
+                12 +
+                deleteHeight +
+                24 +
+                MediaQuery.paddingOf(ctx).bottom;
+            final availableHeight = viewport.maxHeight;
+            final desiredHeight = fixedContentHeight + desiredEventHeight;
+            final initialSize = (desiredHeight / availableHeight).clamp(
+              rtidList.isEmpty ? 0.5 : 0.7,
+              0.9,
+            );
+
+            return DraggableScrollableSheet(
+              key: const ValueKey('waveManageSheet'),
+              initialChildSize: initialSize,
+              minChildSize: 0.25,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (ctx2, scrollController) => SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  child: LayoutBuilder(
+                    builder: (ctx2, contentConstraints) {
+                      final heading = Text(title, style: titleStyle);
+                      final empty = Center(
+                        child: Text(
+                          l10n?.emptyWave ?? 'Empty wave',
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      );
+                      // On a short landscape window, keeping the action area
+                      // fixed would leave no usable event list. Let all content
+                      // scroll together while retaining the sheet's controller.
+                      if (contentConstraints.maxHeight <
+                          fixedContentHeight + firstEventHeight) {
+                        return CustomScrollView(
+                          key: const ValueKey('waveManageSheetScroll'),
+                          controller: scrollController,
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [heading, const SizedBox(height: 12)],
+                              ),
+                            ),
+                            if (rtidList.isEmpty)
+                              SliverToBoxAdapter(
+                                child: SizedBox(height: 96, child: empty),
+                              )
+                            else
+                              SliverList.builder(
+                                itemCount: rtidList.length,
+                                itemBuilder: (_, i) => eventCard(i),
+                              ),
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: actions,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          heading,
+                          const SizedBox(height: 12),
+                          Expanded(
+                            child: ListView.builder(
+                              key: const ValueKey('waveManageEventList'),
+                              controller: scrollController,
+                              itemCount: rtidList.isEmpty ? 1 : rtidList.length,
+                              itemBuilder: (_, i) => rtidList.isEmpty
+                                  ? SizedBox(height: 96, child: empty)
+                                  : eventCard(i),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          actions,
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -2744,8 +2952,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             if (_waveHasLunarMineVeinActivity(waveIndex)) {
               actionButtons.add((
                 label:
-                    l10n?.lunarMineVeinModuleExpectationLabel ??
-                    'Lunar Veins',
+                    l10n?.lunarMineVeinModuleExpectationLabel ?? 'Lunar Veins',
                 onTap: () => _showLunarMineVeinInfoDialog(context, waveIndex),
               ));
             }

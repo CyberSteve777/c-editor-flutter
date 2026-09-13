@@ -140,6 +140,73 @@ bool shouldShowLevelListUploadFab({
 bool shouldDismissLevelListReturnUploadFab(ScrollDirection direction) =>
     direction != ScrollDirection.idle;
 
+@visibleForTesting
+class LevelTemplateSelectionDialog extends StatelessWidget {
+  const LevelTemplateSelectionDialog({
+    super.key,
+    required this.title,
+    required this.cancelLabel,
+    required this.templates,
+    required this.displayName,
+    required this.onSelected,
+    required this.onCancel,
+  });
+
+  final String title;
+  final String cancelLabel;
+  final List<String> templates;
+  final String Function(String template) displayName;
+  final ValueChanged<String> onSelected;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.sizeOf(context);
+    final compact = screenSize.width < 420;
+    final contentHeight = (screenSize.height - (compact ? 190 : 220)).clamp(
+      160.0,
+      400.0,
+    );
+    return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: compact ? 12 : 40,
+        vertical: 24,
+      ),
+      titlePadding: compact ? const EdgeInsets.fromLTRB(16, 16, 16, 8) : null,
+      contentPadding: compact
+          ? const EdgeInsets.symmetric(horizontal: 8)
+          : null,
+      actionsPadding: compact ? const EdgeInsets.fromLTRB(8, 4, 8, 8) : null,
+      title: Text(
+        title,
+        style: compact ? Theme.of(context).textTheme.titleLarge : null,
+      ),
+      content: SizedBox(
+        width: compact ? screenSize.width - 40 : double.maxFinite,
+        height: contentHeight,
+        child: ListView.builder(
+          itemCount: templates.length,
+          itemBuilder: (_, i) {
+            final template = templates[i];
+            return ListTile(
+              dense: compact,
+              contentPadding: compact
+                  ? const EdgeInsets.symmetric(horizontal: 8)
+                  : null,
+              minLeadingWidth: compact ? 32 : null,
+              horizontalTitleGap: compact ? 8 : null,
+              leading: const Icon(Icons.description, color: Colors.grey),
+              title: Text(displayName(template)),
+              onTap: () => onSelected(template),
+            );
+          },
+        ),
+      ),
+      actions: [TextButton(onPressed: onCancel, child: Text(cancelLabel))],
+    );
+  }
+}
+
 class LevelListScreen extends StatefulWidget {
   const LevelListScreen({
     super.key,
@@ -1242,46 +1309,27 @@ class _LevelListScreenState extends State<LevelListScreen> {
     final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.newLevelTemplate ?? 'New level - Select template'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 320),
-            child: ListView.builder(
-              shrinkWrap: false,
-              itemCount: _templates.length,
-              itemBuilder: (_, i) {
-                final t = _templates[i];
-                return ListTile(
-                  leading: const Icon(Icons.description, color: Colors.grey),
-                  title: Text(_templateDisplayName(t, l10n)),
-                  onTap: () async {
-                    Navigator.pop(ctx);
-                    _selectedTemplate = t;
-                    final defaultBase = LevelTemplateUtils.defaultLevelName(t);
-                    if (_pathStack.isNotEmpty) {
-                      _newLevelNameInput =
-                          await LevelRepository.getNextAvailableNameForTemplate(
-                            _pathStack.last.path,
-                            defaultBase,
-                          );
-                    } else {
-                      _newLevelNameInput = defaultBase;
-                    }
-                    if (mounted) _methodShowCreateNameDialog();
-                  },
+      builder: (ctx) => LevelTemplateSelectionDialog(
+        title: l10n?.newLevelTemplate ?? 'New level - Select template',
+        cancelLabel: l10n?.cancel ?? 'Cancel',
+        templates: _templates,
+        displayName: (template) => _templateDisplayName(template, l10n),
+        onCancel: () => Navigator.pop(ctx),
+        onSelected: (template) async {
+          Navigator.pop(ctx);
+          _selectedTemplate = template;
+          final defaultBase = LevelTemplateUtils.defaultLevelName(template);
+          if (_pathStack.isNotEmpty) {
+            _newLevelNameInput =
+                await LevelRepository.getNextAvailableNameForTemplate(
+                  _pathStack.last.path,
+                  defaultBase,
                 );
-              },
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-        ],
+          } else {
+            _newLevelNameInput = defaultBase;
+          }
+          if (mounted) _methodShowCreateNameDialog();
+        },
       ),
     );
   }

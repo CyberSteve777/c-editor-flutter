@@ -49,13 +49,38 @@ enum PreviewEditTool { select, pen, eraser, figures }
 
 enum PreviewBossKind { zombot, zomboss }
 
+enum PreviewTextPartKind { gridTitle, sourceLabel, sectionTitle, contained }
+
+@immutable
+class PreviewTextPartSelection {
+  const PreviewTextPartSelection({
+    required this.layerId,
+    required this.kind,
+    this.sectionIndex,
+    this.containedTextId,
+  });
+
+  final String layerId;
+  final PreviewTextPartKind kind;
+  final int? sectionIndex;
+  final String? containedTextId;
+
+  @override
+  bool operator ==(Object other) =>
+      other is PreviewTextPartSelection &&
+      other.layerId == layerId &&
+      other.kind == kind &&
+      other.sectionIndex == sectionIndex &&
+      other.containedTextId == containedTextId;
+
+  @override
+  int get hashCode => Object.hash(layerId, kind, sectionIndex, containedTextId);
+}
+
 /// One titled block inside an icon-grid layer (boss, spawned, waves, …).
 class PreviewIconSection {
-  PreviewIconSection({
-    this.title,
-    List<PreviewItem>? items,
-    this.iconSize = 36,
-  }) : items = items ?? <PreviewItem>[];
+  PreviewIconSection({this.title, List<PreviewItem>? items, this.iconSize = 36})
+    : items = items ?? <PreviewItem>[];
 
   String? title;
   List<PreviewItem> items;
@@ -251,6 +276,33 @@ class PreviewTextStyleData {
   );
 }
 
+/// Editable text positioned inside an icon panel, rectangle, or oval.
+class PreviewContainedText {
+  PreviewContainedText({
+    required this.id,
+    required this.text,
+    this.bounds = const Rect.fromLTWH(0.1, 0.25, 0.8, 0.5),
+    PreviewTextStyleData? style,
+    this.textAlign = TextAlign.center,
+  }) : style = style ?? PreviewTextStyleData(fontSize: 24);
+
+  final String id;
+  String text;
+
+  /// Bounds normalized to the containing layer.
+  Rect bounds;
+  PreviewTextStyleData style;
+  TextAlign textAlign;
+
+  PreviewContainedText copy() => PreviewContainedText(
+    id: id,
+    text: text,
+    bounds: bounds,
+    style: style.copy(),
+    textAlign: textAlign,
+  );
+}
+
 /// One contiguous styled run inside a text layer.
 class PreviewTextRun {
   PreviewTextRun({required this.text, PreviewTextStyleData? style})
@@ -296,9 +348,12 @@ class PreviewLayer {
     this.fillColor,
     this.strokeColor = const Color(0xFFFFFFFF),
     this.strokeWidth = 3,
+    this.cornerRadius = 0,
+    List<PreviewContainedText>? containedTexts,
     List<Offset>? points,
   }) : items = items ?? <PreviewItem>[],
        sections = sections ?? <PreviewIconSection>[],
+       containedTexts = containedTexts ?? <PreviewContainedText>[],
        points = points ?? <Offset>[],
        textRuns = textRuns ?? <PreviewTextRun>[];
 
@@ -306,6 +361,7 @@ class PreviewLayer {
   PreviewLayerKind kind;
   Rect bounds;
   double scale;
+
   /// Clockwise radians around the layer center.
   double rotation;
   /// 0–1; applied to the whole layer when painting.
@@ -316,6 +372,7 @@ class PreviewLayer {
   // text
   String? text;
   PreviewTextStyleData? textStyle;
+
   /// Styled runs; when empty, [text] + [textStyle] are used as a single run.
   List<PreviewTextRun> textRuns;
   TextAlign textAlign;
@@ -345,6 +402,10 @@ class PreviewLayer {
   Color? fillColor;
   Color strokeColor;
   double strokeWidth;
+  double cornerRadius;
+
+  // text contained by icon panels and shapes
+  List<PreviewContainedText> containedTexts;
 
   // freehand (normalized canvas coords)
   List<Offset> points;
@@ -544,7 +605,10 @@ class PreviewLayer {
     textRuns = next.where((r) => r.text.isNotEmpty).toList();
     if (textRuns.isEmpty) {
       textRuns = [
-        PreviewTextRun(text: '', style: (textStyle ?? PreviewTextStyleData()).copy()),
+        PreviewTextRun(
+          text: '',
+          style: (textStyle ?? PreviewTextStyleData()).copy(),
+        ),
       ];
     }
     text = plainText;
@@ -581,6 +645,8 @@ class PreviewLayer {
     fillColor: fillColor,
     strokeColor: strokeColor,
     strokeWidth: strokeWidth,
+    cornerRadius: cornerRadius,
+    containedTexts: containedTexts.map((e) => e.copy()).toList(),
     points: List<Offset>.from(points),
   );
 }

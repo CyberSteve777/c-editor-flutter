@@ -41,11 +41,11 @@ enum ZombieTag {
   taleZCorp,
   parkourSpeed,
   toTheWest,
+  roman,
   memory,
   universe,
   festival1,
   festival2,
-  roman,
   pet,
   imp,
   basic,
@@ -59,6 +59,37 @@ enum ZombieTag {
   expedition,
   chinese,
   international,
+}
+
+/// Display and sorting order for world-group tags in the zombie picker.
+const List<ZombieTag> zombieWorldTagOrder = [
+  ZombieTag.egyptPirate,
+  ZombieTag.westFuture,
+  ZombieTag.darkBeach,
+  ZombieTag.iceageLostcity,
+  ZombieTag.kongfuSkycity,
+  ZombieTag.eightiesDino,
+  ZombieTag.modernPvz1,
+  ZombieTag.steamRenai,
+  ZombieTag.henaiAtlantis,
+  ZombieTag.moon,
+  ZombieTag.taleZCorp,
+  ZombieTag.parkourSpeed,
+  ZombieTag.toTheWest,
+  ZombieTag.roman,
+  ZombieTag.memory,
+  ZombieTag.universe,
+  ZombieTag.festival1,
+  ZombieTag.festival2,
+];
+
+/// Earliest world group assigned to a zombie; non-world entries sort last.
+int zombieWorldTagOrderIndex(Iterable<ZombieTag> tags) {
+  final tagSet = tags.toSet();
+  for (var i = 0; i < zombieWorldTagOrder.length; i++) {
+    if (tagSet.contains(zombieWorldTagOrder[i])) return i;
+  }
+  return zombieWorldTagOrder.length;
 }
 
 extension ZombieTagExtension on ZombieTag {
@@ -148,11 +179,11 @@ extension ZombieTagExtension on ZombieTag {
       case ZombieTag.taleZCorp:
       case ZombieTag.parkourSpeed:
       case ZombieTag.toTheWest:
+      case ZombieTag.roman:
       case ZombieTag.memory:
       case ZombieTag.universe:
       case ZombieTag.festival1:
       case ZombieTag.festival2:
-      case ZombieTag.roman:
         return ZombieCategory.main;
       case ZombieTag.pet:
       case ZombieTag.imp:
@@ -243,11 +274,13 @@ class ZombieRepository {
       final List<dynamic> jsonList = json.decode(jsonString);
 
       final seenIds = <String>{};
+      final sourceOrderById = <String, int>{};
       _allZombies = [];
       for (final jsonItem in jsonList) {
         final id = jsonItem['id'] as String;
         if (seenIds.contains(id)) continue;
         seenIds.add(id);
+        sourceOrderById[id] = sourceOrderById.length;
 
         final name = jsonItem['name'] as String;
         final icon = jsonItem['icon'] as String?;
@@ -279,6 +312,14 @@ class ZombieRepository {
           ),
         );
       }
+
+      _allZombies.sort((a, b) {
+        final byWorld = zombieWorldTagOrderIndex(
+          a.tags,
+        ).compareTo(zombieWorldTagOrderIndex(b.tags));
+        if (byWorld != 0) return byWorld;
+        return sourceOrderById[a.id]!.compareTo(sourceOrderById[b.id]!);
+      });
 
       _isLoaded = true;
     } catch (e) {

@@ -16,7 +16,8 @@ class LevelDefinitionData extends PvzModel {
     this.isArtifactDisabled,
     this.boardType,
     this.modules = const [],
-  });
+    Map<String, dynamic>? extraFields,
+  }) : extraFields = Map<String, dynamic>.from(extraFields ?? const {});
 
   String name;
   int? levelNumber;
@@ -30,14 +31,33 @@ class LevelDefinitionData extends PvzModel {
   String ambientAudioSuffix;
   bool? disablePeavine;
   bool? isArtifactDisabled;
+
   /// Deep-sea lawns require `"submarine"` so row 6 stays plantable.
   String? boardType;
   List<String> modules;
+
+  /// Fields that this editor version does not expose must survive edits.
+  final Map<String, dynamic> extraFields;
 
   factory LevelDefinitionData.fromJson(Map<String, dynamic> json) {
     final mods = json['Modules'] as List<dynamic>? ?? [];
     final rawMusicType = json['MusicType'] as String?;
     final rawBoardType = json['BoardType'] as String?;
+    final extras = Map<String, dynamic>.from(json)
+      ..remove('Name')
+      ..remove('LevelNumber')
+      ..remove('Description')
+      ..remove('StageModule')
+      ..remove('Loot')
+      ..remove('StartingSun')
+      ..remove('VictoryModule')
+      ..remove('MusicType')
+      ..remove('MusicSuffix')
+      ..remove('AmbientAudioSuffix')
+      ..remove('DisablePeavine')
+      ..remove('IsArtifactDisabled')
+      ..remove('BoardType')
+      ..remove('Modules');
     return LevelDefinitionData(
       name: json['Name'] as String? ?? '',
       levelNumber: json['LevelNumber'] as int?,
@@ -58,10 +78,13 @@ class LevelDefinitionData extends PvzModel {
           ? null
           : rawBoardType,
       modules: mods.cast<String>(),
+      extraFields: extras,
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
+    ...extraFields,
     'Name': name,
     'LevelNumber': levelNumber,
     'Description': description,

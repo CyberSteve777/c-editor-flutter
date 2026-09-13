@@ -18,6 +18,67 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zombie_discovery.dart';
 import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
 
+/// Fits a simple-layout icon group into a useful visual height.
+///
+/// Small groups are enlarged so the actual icons occupy roughly one third of
+/// the banner height. Large groups are reduced to keep them clear of the theme
+/// caption. Relative sizes (for example boss icons versus wave icons) are
+/// retained until an individual row reaches the supported size limits.
+void fitSimplePreviewIconSections({
+  required List<PreviewIconSection> sections,
+  required double maxWidth,
+  double? targetHeight,
+  double? minimumHeight,
+  double? maximumHeight,
+  double minimumIconSize = 24,
+  double maximumIconSize = 152,
+}) {
+  final populated = sections.where((section) => section.items.isNotEmpty);
+  if (populated.isEmpty || maxWidth <= 0) return;
+  final desiredHeight = targetHeight ?? kPreviewCanvasSize.height * 0.42;
+  final minHeight = minimumHeight ?? kPreviewCanvasSize.height * 0.34;
+  final maxHeight = maximumHeight ?? kPreviewCanvasSize.height * 0.58;
+
+  final originalSizes = [for (final section in sections) section.iconSize];
+  var bestScale = 1.0;
+  var bestScore = double.infinity;
+  var bestDistance = double.infinity;
+
+  // Sampling handles the deliberate row-wrap discontinuities better than a
+  // binary search: a slightly larger icon can create an extra row and become
+  // much taller even though the scale changed very little.
+  for (var step = 0; step <= 500; step++) {
+    final scale = 0.25 + step * 0.01;
+    for (var i = 0; i < sections.length; i++) {
+      sections[i].iconSize = (originalSizes[i] * scale).clamp(
+        minimumIconSize,
+        maximumIconSize,
+      );
+    }
+    final height = previewIconGridIntrinsicSize(
+      maxWidth: maxWidth,
+      sections: sections,
+      showChrome: false,
+    ).height;
+    final below = height < minHeight ? minHeight - height : 0.0;
+    final above = height > maxHeight ? height - maxHeight : 0.0;
+    final distance = (height - desiredHeight).abs();
+    final score = distance + (below + above) * 8;
+    if (score < bestScore || (score == bestScore && distance < bestDistance)) {
+      bestScale = scale;
+      bestScore = score;
+      bestDistance = distance;
+    }
+  }
+
+  for (var i = 0; i < sections.length; i++) {
+    sections[i].iconSize = (originalSizes[i] * bestScale).clamp(
+      minimumIconSize,
+      maximumIconSize,
+    );
+  }
+}
+
 /// Builds a [PreviewDocument] from the open level.
 class PreviewAutoComposer {
   PreviewAutoComposer({
@@ -33,6 +94,7 @@ class PreviewAutoComposer {
     this.zombiesSourceLabel = 'Zombies',
     this.gridItemsSourceLabel = 'Initial grid items',
     this.seedBankLabel = 'Seed Bank',
+    this.zombieSeedBankLabel = 'Seed Bank (I, Zombie)',
     this.conveyorLabel = 'Conveyor',
     this.prePlacedLabel = 'Pre-placed',
     this.protectLabel = 'Protect',
@@ -60,6 +122,7 @@ class PreviewAutoComposer {
   final String zombiesSourceLabel;
   final String gridItemsSourceLabel;
   final String seedBankLabel;
+  final String zombieSeedBankLabel;
   final String conveyorLabel;
   final String prePlacedLabel;
   final String protectLabel;
@@ -90,7 +153,8 @@ class PreviewAutoComposer {
     final extras = await PreviewZombossExtras.collect(levelFile);
     final bossExclude = {
       ...extras.bossItems.map((e) => e.id),
-      if (style == PreviewAutoStyle.normal) ...extras.spawnItems.map((e) => e.id),
+      if (style == PreviewAutoStyle.normal)
+        ...extras.spawnItems.map((e) => e.id),
     };
     final seedBankZombies = _collectSeedBankZombies(excludeIds: bossExclude);
     final vaseZombies = _collectVasebreakerZombies(
@@ -298,24 +362,21 @@ class PreviewAutoComposer {
           showChrome: true,
           bounds: bounds,
           zIndex: z++,
-          items: [
-            ...extras.bossItems,
-            ...extras.spawnItems,
-            ...waveZombies,
-          ],
+          items: [...extras.bossItems, ...extras.spawnItems, ...waveZombies],
           sections: zombieSections,
         ),
       );
-      cursorY = (plantBottom > bounds.bottom ? plantBottom : bounds.bottom) + 0.02;
+      cursorY =
+          (plantBottom > bounds.bottom ? plantBottom : bounds.bottom) + 0.02;
     } else if (hasPlants) {
       cursorY = plantBottom + 0.02;
     }
     if (gridItems.isNotEmpty) {
-      final gridSections = [
-        PreviewIconSection(items: gridItems, iconSize: 36),
-      ];
+      final gridSections = [PreviewIconSection(items: gridItems, iconSize: 36)];
       final source = _combinedSources(gridItems);
-      final top = hasGrid ? cursorY.clamp(0.55, 0.85) : (hasPlants || hasZombies ? cursorY : 0.40);
+      final top = hasGrid
+          ? cursorY.clamp(0.55, 0.85)
+          : (hasPlants || hasZombies ? cursorY : 0.40);
       final bounds = _iconGridBounds(
         left: 0.03,
         top: top,
@@ -370,6 +431,11 @@ class PreviewAutoComposer {
       final plantSections = [
         PreviewIconSection(items: plantItems, iconSize: 36),
       ];
+      final maxWidthNorm = zombieSections.isNotEmpty ? 0.40 : 0.90;
+      fitSimplePreviewIconSections(
+        sections: plantSections,
+        maxWidth: maxWidthNorm * kPreviewCanvasSize.width,
+      );
       layers.add(
         PreviewLayer(
           id: 'plants',
@@ -379,7 +445,7 @@ class PreviewAutoComposer {
           bounds: _iconGridBounds(
             left: 0.04,
             top: 0.08,
-            maxWidthNorm: zombieSections.isNotEmpty ? 0.40 : 0.90,
+            maxWidthNorm: maxWidthNorm,
             sections: plantSections,
             showChrome: false,
           ),
@@ -390,6 +456,11 @@ class PreviewAutoComposer {
       );
     }
     if (zombieSections.isNotEmpty) {
+      final maxWidthNorm = plantItems.isNotEmpty ? 0.48 : 0.90;
+      fitSimplePreviewIconSections(
+        sections: zombieSections,
+        maxWidth: maxWidthNorm * kPreviewCanvasSize.width,
+      );
       layers.add(
         PreviewLayer(
           id: 'zombies',
@@ -399,7 +470,7 @@ class PreviewAutoComposer {
           bounds: _iconGridBounds(
             left: plantItems.isNotEmpty ? 0.48 : 0.04,
             top: 0.06,
-            maxWidthNorm: plantItems.isNotEmpty ? 0.48 : 0.90,
+            maxWidthNorm: maxWidthNorm,
             sections: zombieSections,
             showChrome: false,
           ),
@@ -633,7 +704,7 @@ class PreviewAutoComposer {
       final info = ZombieRepository().getZombieById(id);
       final path = info?.iconAssetPath ?? 'assets/images/others/unknown.webp';
       items.add(
-        PreviewItem(id: id, assetPath: path, sourceLabel: seedBankLabel),
+        PreviewItem(id: id, assetPath: path, sourceLabel: zombieSeedBankLabel),
       );
     }
 
@@ -798,7 +869,9 @@ class PreviewAutoComposer {
       if (item.type.isEmpty) continue;
       addItem(id: item.type, assetPath: armrackIconAsset(item.type));
     }
-    if (initialEnergyGridItems(readEnergyGridModuleData(levelFile)).isNotEmpty) {
+    if (initialEnergyGridItems(
+      readEnergyGridModuleData(levelFile),
+    ).isNotEmpty) {
       addItem(
         id: 'energyGrid',
         assetPath: GridItemRepository.getIconPath('energyGrid'),

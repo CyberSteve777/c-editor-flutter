@@ -138,6 +138,9 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
 
   List<ZombieTag> _visibleTagsFor(ZombieCategory category) {
     if (category == ZombieCategory.collection) return [];
+    if (category == ZombieCategory.main) {
+      return const [ZombieTag.all, ...zombieWorldTagOrder];
+    }
     if (category == ZombieCategory.other) {
       return const [
         ZombieTag.all,

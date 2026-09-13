@@ -2127,14 +2127,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Генератор волн хранит данные волн внутри модуля и не может использоваться вместе с отдельным контейнером менеджера волн.';
 
   @override
-  String get conflictDesc_WaveGeneratorRenai =>
-      'Генератор волн несовместим с модулем «Ренессанс» и приводит к сбою уровня.';
-
-  @override
-  String get conflictDesc_WaveGeneratorWitch =>
-      'Генератор волн несовместим с модулем «Тыквенная ведьма» и приводит к сбою уровня.';
-
-  @override
   String get missingPlantModuleWarningTitle =>
       'Отсутствует модуль для параллельных растений';
 
@@ -7120,10 +7112,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Using the \"Underground Palace Pathways\" module together with the \"Expedition Tiles\" module can cause tile textures to overlap and may affect the level\'s overall appearance. If you must use both, be extremely careful.';
 
   @override
-  String get lifeSupportLastStandConflictWarning =>
-      'Модули «Система жизнеобеспечения» и «Последний рубеж» нельзя использовать одновременно, иначе уровень не сможет нормально запуститься.';
-
-  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
       'Лимит времени финальной фазы';
 
@@ -8850,7 +8838,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpIncompatBody =>
-      'Генератор волн нельзя использовать одновременно с менеджером волн, модулем «Ренессанс» или модулем «Тыквенная ведьма»: это приведёт к сбою уровня.';
+      'Может быть несовместим с некоторыми модулями и вызывать сбой уровня. Используйте с осторожностью.';
 
   @override
   String get waveGeneratorModuleHelpRow => 'Номера рядов';

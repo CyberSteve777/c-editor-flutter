@@ -126,7 +126,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get all => '全部';
 
   @override
-  String get impLv => '小鬼等级';
+  String get impLv => '小鬼阶级';
 
   @override
   String get sortByLabel => '排序';
@@ -2039,7 +2039,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conflictDesc_LawnMowerYard => '庭院模块中添加小推车无效。';
 
   @override
-  String get conflictDesc_MoonExpertYard => '月球专家模式与庭院模块冲突，建议只保留其中一个。';
+  String get conflictDesc_MoonExpertYard => '「月球专家」模块在庭院模块下无效。';
 
   @override
   String get conflictDesc_WaveGeneratorWaveManagerModule =>
@@ -2048,12 +2048,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get conflictDesc_WaveGeneratorWaveManager =>
       '波次生成器内嵌波次数据，不能与独立的波次管理器容器同时使用。';
-
-  @override
-  String get conflictDesc_WaveGeneratorRenai => '波次生成器与「复兴时代模块」不兼容，会导致关卡闪退。';
-
-  @override
-  String get conflictDesc_WaveGeneratorWitch => '波次生成器与「女巫登场」模块不兼容，会导致关卡闪退。';
 
   @override
   String get missingPlantModuleWarningTitle => '缺少平行宇宙植物所需模块';
@@ -2402,10 +2396,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_LevelMutatorMaxSunProps => '覆盖关卡最大阳光存储值';
 
   @override
-  String get moduleTitle_MoonExpertProperties => '月球专家模式';
+  String get moduleTitle_MoonExpertProperties => '月球专家';
 
   @override
-  String get moduleDesc_MoonExpertProperties => '将整关僵尸统一为指定等级，并将所有植物设为 1 级';
+  String get moduleDesc_MoonExpertProperties => '固定植物和僵尸阶级，注意在庭院中不生效';
 
   @override
   String get moduleTitle_LevelMutatorStartingPlantfoodProps => '初始能量豆';
@@ -2601,7 +2595,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get frozenPlantPlacementLevel => '等级';
+  String get frozenPlantPlacementLevel => '阶级';
 
   @override
   String get frozenPlantPlacementCondition => '初始状态 (Condition)';
@@ -3819,7 +3813,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '使用“添加海洋生物属性”按钮在场地上放置深海鱼群。场地大小因关卡而异，海底世界关卡为 6×10，其他关卡为 5×9。坐标中行对应 Y，列对应 X。';
 
   @override
-  String get eventHelpBatchLevel => '将本波次所有僵尸设为指定等级（精英僵尸不受影响，保持默认等级）。';
+  String get eventHelpBatchLevel => '将本波次所有僵尸设为指定阶级（精英僵尸不受影响，保持默认阶级）。';
 
   @override
   String get eventHelpDropConfig => '当掉落植物列表的植物数等于能量豆数量时会变为掉落植物卡片。';
@@ -4107,7 +4101,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventHelpFairyFogBody =>
-      '本事件用于生成覆盖场地、给僵尸提供护盾的魔力迷雾，常用于童话森林关卡，只有微风事件才能吹散。\n迷雾等级越高，僵尸获得的护盾及免控效果越强。等级从低到高依次为白色、蓝色、紫色。';
+      '本事件用于生成覆盖场地、给僵尸提供护盾的魔力迷雾，常用于童话森林关卡，只有微风事件才能吹散。\n迷雾阶级越高，僵尸获得的护盾及免控效果越强。阶级从低到高依次为白色、蓝色、紫色。';
 
   @override
   String get eventHelpFairyFogRange =>
@@ -4203,7 +4197,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get schoolBusZombies => '车内僵尸 (Zombies)';
 
   @override
-  String get schoolBusZombieLevel => '僵尸等级 (Level)';
+  String get schoolBusZombieLevel => '僵尸阶级 (Level)';
 
   @override
   String get schoolBusAddZombie => '添加僵尸';
@@ -4284,7 +4278,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get barrelWaveZombies => '桶内僵尸 (Zombies)';
 
   @override
-  String get barrelWaveZombieLevel => '僵尸等级 (Level)';
+  String get barrelWaveZombieLevel => '僵尸阶级 (Level)';
 
   @override
   String get barrelWaveAddZombie => '添加僵尸';
@@ -4474,7 +4468,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventColumnRangeExampleHint => '若需要在第 n 到 m 列刷新，起始列填 n-1 终止列填 m';
 
   @override
-  String get zombieLevels => '僵尸等级';
+  String get zombieLevels => '僵尸阶级';
 
   @override
   String get missingAssets => '缺少资源';
@@ -4821,7 +4815,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hamsterballEmptyZombies => '列表中没有僵尸';
 
   @override
-  String get hamsterballZombieLevel => '僵尸等级';
+  String get hamsterballZombieLevel => '僵尸阶级';
 
   @override
   String get hamsterballInitialSpeed => '初始速度';
@@ -4989,7 +4983,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get change => '更换';
 
   @override
-  String get autoLevel => '自动设置等级';
+  String get autoLevel => '自动设置阶级';
 
   @override
   String get apply => '一键应用';
@@ -5072,21 +5066,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get maxSunHelpOverview => '该模块原本用于控制潘追关卡不同难度级别，可以用此模块覆盖关卡内能够储存的阳光最大值。';
 
   @override
-  String get moonExpertZombieLevel => '僵尸等级 (ZombieLevel)';
+  String get moonExpertZombieLevel => '僵尸阶级 (ZombieLevel)';
 
   @override
   String get moonExpertZombieLevelTooltip =>
-      '会覆盖关卡中已定义的所有僵尸等级为 ZombieLevel，并将所有植物设为 1 级，无论其他模块如何配置植物等级。';
+      '启用该模块后，关卡中已定义的所有僵尸阶级都会被此处设置的阶级覆盖。';
 
   @override
-  String get moonExpertHelpTitle => '月球专家模式';
+  String get moonExpertHelpTitle => '月球专家';
 
   @override
   String get moonExpertHelpOverview =>
-      '强制整关使用统一的僵尸等级，并将所有植物重置为 1 级，覆盖其他植物/僵尸等级设置。';
+      '该模块常见于月球基地专家模式。启用后，关卡中的所有僵尸都会统一使用指定阶级，所有植物都会被强制设为1阶。上述设置会覆盖包括「阶级定义」模块在内的其他植物与僵尸阶级设置。注意在庭院环境下该模块不生效。';
 
   @override
-  String get enterMoonExpertZombieLevelHint => '输入僵尸等级（0–10）';
+  String get enterMoonExpertZombieLevelHint => '输入僵尸阶级（0–10）';
 
   @override
   String get startingPlantfoodHelpTitle => '初始能量豆模块说明';
@@ -5255,7 +5249,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventEditorInDevelopment => '事件编辑器开发中';
 
   @override
-  String get level => '等级';
+  String get level => '阶级';
 
   @override
   String get missingTideModule => '模块缺失警告';
@@ -5519,7 +5513,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get current => '当前';
 
   @override
-  String get eliteZombiesUseDefaultLevel => '精英僵尸使用默认等级。';
+  String get eliteZombiesUseDefaultLevel => '精英僵尸使用默认阶级。';
 
   @override
   String get basicParameters => '基本参数';
@@ -5599,15 +5593,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String levelFormat(int level) {
-    return '等级：$level';
+    return '阶级：$level';
   }
 
   @override
-  String get levelAccount => '等级：随账户';
+  String get levelAccount => '阶级：随账户';
 
   @override
   String levelDisplay(String value) {
-    return '等级：$value';
+    return '阶级：$value';
   }
 
   @override
@@ -5791,7 +5785,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get initialWeight => '初始权重';
 
   @override
-  String get plantLevelLabel => '植物等级';
+  String get plantLevelLabel => '植物阶级';
 
   @override
   String get missingIntroModule => '模块缺失警告';
@@ -5922,7 +5916,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get protectedList => '保护目标列表';
 
   @override
-  String get plantLevelsFollowGlobal => '此模块中的植物随玩家账号阶级，可以使用全局阶级定义模块统一等级。';
+  String get plantLevelsFollowGlobal => '此模块中的植物随玩家账号阶级，可以使用全局阶级定义模块统一阶级。';
 
   @override
   String get protectPlantsOverview => '定义关卡中必须保护的植物。如果这些植物被僵尸吃掉或摧毁，关卡失败。';
@@ -5978,7 +5972,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conveyorCardPool => '传送带卡片池';
 
   @override
-  String get toolCardsUseFixedLevel => '工具卡默认固定等级，无需修改';
+  String get toolCardsUseFixedLevel => '工具卡默认固定阶级，无需修改';
 
   @override
   String get maxLimits => '上限控制 (Max Limits)';
@@ -6024,7 +6018,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String plantLevelsCount(int count) {
-    return '植物等级：$count';
+    return '植物阶级：$count';
   }
 
   @override
@@ -6054,10 +6048,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get globalPlantLevelsOverview =>
-      '此模块用于定义植物的全局等级。它通常优于种子库中的等级设置，且可以针对特定植物单独设置等级。';
+      '此模块用于定义植物的全局阶级。它通常优于种子库中的阶级设置，且可以针对特定植物单独设置阶级。';
 
   @override
-  String get globalPlantLevelsScope => '设置的等级将应用于关卡内玩家使用的该种植物，包括保护植物、卡片掉落等。';
+  String get globalPlantLevelsScope => '设置的阶级将应用于关卡内玩家使用的该种植物，包括保护植物、卡片掉落等。';
 
   @override
   String mustProtectCountFormat(int count) {
@@ -6084,7 +6078,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '风暴内僵尸的阶级和所在行不能独立设置。因此对僵尸阶级进行手动编辑是无效的，阶级默认随地图阶级序列。';
 
   @override
-  String get batchLevel => '批量设置等级';
+  String get batchLevel => '批量设置阶级';
 
   @override
   String get start => '起始';
@@ -6099,7 +6093,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get onlyAppliesRockEra => '此事件触发时切换背景音乐，仅对摇滚年代地图有效。';
 
   @override
-  String get appliesToAllNonElite => '将本波次所有僵尸设为指定等级（精英僵尸不受影响，保持默认等级）。';
+  String get appliesToAllNonElite => '将本波次所有僵尸设为指定阶级（精英僵尸不受影响，保持默认阶级）。';
 
   @override
   String get dropConfigPlants => '掉落物（植物卡片）配置';
@@ -6241,7 +6235,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get operationTimePerGrid => '传输耗时（秒/格）';
 
   @override
-  String get levelLabel => '等级：';
+  String get levelLabel => '阶级：';
 
   @override
   String get mistParameters => '迷雾参数';
@@ -6809,10 +6803,6 @@ class AppLocalizationsZh extends AppLocalizations {
       '同时使用「地宫坑道」模块与「远征地砖」模块时，可能会出现地砖贴图互相覆盖的现象，影响关卡整体观感。如一定要同时使用，请万分注意。';
 
   @override
-  String get lifeSupportLastStandConflictWarning =>
-      '「维生系统」与「坚不可摧」模块不能共存，否则关卡无法正常开始。';
-
-  @override
   String get moduleTitle_ZombossFinalStageTimeLimitedChallengeProperties =>
       '终结技计时';
 
@@ -7279,7 +7269,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get airDropShipModuleExpectationLabel => '空投小鬼';
 
   @override
-  String get airDropShipModuleImpLevel => '小鬼等级 (ImpLv)';
+  String get airDropShipModuleImpLevel => '小鬼阶级 (ImpLv)';
 
   @override
   String get airDropShipModuleRowMin => '起始行';
@@ -7443,7 +7433,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get glacierModuleEmptyWeightTooltip => '设置“冰堆破碎后不出现僵尸”这一结果的权重。';
 
   @override
-  String get glacierModuleLevel => '僵尸等级';
+  String get glacierModuleLevel => '僵尸阶级';
 
   @override
   String get glacierModuleLevelTooltip =>
@@ -7657,7 +7647,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bungeeWavePropertiesConfig => '属性配置';
 
   @override
-  String get bungeeWaveZombieLevel => '僵尸等级 (Level)';
+  String get bungeeWaveZombieLevel => '僵尸阶级 (Level)';
 
   @override
   String get bungeeWaveRoofWarning => '注意在屋顶地图中蹦极投放事件被叶子保护伞拦截后有可能直接触发食脑，请谨慎使用。';
@@ -7812,7 +7802,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get customZombossMechEditHint =>
-      '编辑关卡内使用的自定义机甲变体 (memo)的属性。此类自定义僵王机甲常见于回忆之旅关卡。';
+      '编辑关卡内使用的自定义机甲变体 (memo) 的属性。此类自定义僵王机甲常见于回忆之旅关卡。';
 
   @override
   String get zombossMechMinColumn => '最小列';
@@ -7828,7 +7818,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMultipleModuleSelectionHint =>
-      '检测到多个同类 Boss 模块，请在关卡设置的模块列表中选择要编辑的具体实例。';
+      '检测到多个同类僵王战模块，请在关卡设置的模块列表中选择要编辑的具体实例。';
 
   @override
   String get zombossMechStageActions => '动作';
@@ -8072,7 +8062,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechRobotSpawnRowRandom => '随机 (-1)';
 
   @override
-  String get zombossMechRobotSpawnLevel => '等级';
+  String get zombossMechRobotSpawnLevel => '阶级';
 
   @override
   String get zombossMechRobotSpawnWeight => '权重';
@@ -8459,8 +8449,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorModuleHelpIncompat => '模块兼容性提示';
 
   @override
-  String get waveGeneratorModuleHelpIncompatBody =>
-      '波次生成器不能与波次管理器、复兴时代模块或女巫登场等模块共存，否则会造成关卡闪退。';
+  String get waveGeneratorModuleHelpIncompatBody => '可能与部分模块不兼容，造成关卡闪退，请谨慎使用。';
 
   @override
   String get waveGeneratorModuleHelpRow => '行号';
@@ -9217,7 +9206,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_LunarTerminalModuleProperties => '部署采矿机器人采集水晶能量，提高电力上限';
 
   @override
-  String get moduleTitle_LunarMineVeinModuleProperties => '月球矿脉';
+  String get moduleTitle_LunarMineVeinModuleProperties => '月球晶矿';
 
   @override
   String get moduleDesc_LunarMineVeinModuleProperties => '放置月能水晶矿脉并设置其成长波次';
@@ -9296,11 +9285,11 @@ class AppLocalizationsZh extends AppLocalizations {
       '机器人部署冷却 (CollectorCooldown，单位：秒)';
 
   @override
-  String get lunarMineVeinHelpTitle => '月球矿脉';
+  String get lunarMineVeinHelpTitle => '月球晶矿';
 
   @override
   String get lunarMineVeinHelpOverview =>
-      '在关卡开始时于场上放置月能水晶矿脉，常见于月球基地。矿脉初始无法提供能量，进入设定波次后，会在原位置生长出月能水晶，此后可正常采集供能。';
+      '在关卡开始时于场上放置月能水晶矿脉，常见于月球基地。晶矿初始无法提供能量，进入设定波次后，会在原位置生长出月能水晶，此后可正常采集供能。';
 
   @override
   String get lunarMineVeinHelpWaveTitle => '波次编号';
@@ -9310,10 +9299,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '成长波次 (EmergenceWave) 从1开始计数：第1波成长填1，第2波成长填2，以此类推。';
 
   @override
-  String get lunarMineVeinPlacements => '矿脉放置 (VeinPlacements)';
+  String get lunarMineVeinPlacements => '晶矿放置 (VeinPlacements)';
 
   @override
-  String get lunarMineVeinModuleExpectationLabel => '月球矿脉';
+  String get lunarMineVeinModuleExpectationLabel => '月球晶矿';
 
   @override
   String get lunarMineVeinModulePreviewEmerging => '本波生长的月能水晶：';

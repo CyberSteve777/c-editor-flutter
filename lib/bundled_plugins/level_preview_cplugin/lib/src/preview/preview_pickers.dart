@@ -1,73 +1,239 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 
-/// Banner picker: localized names, round icons, custom entry.
+class _PreviewBannerPresentation {
+  const _PreviewBannerPresentation({required this.name, this.iconAssetPath});
+
+  final String name;
+  final String? iconAssetPath;
+}
+
+String _roundIconAssetPath(String iconName) {
+  if (iconName.startsWith('assets/')) return iconName;
+  if (iconName == 'unknown.webp' || iconName.endsWith('/unknown.webp')) {
+    return 'assets/images/others/unknown.webp';
+  }
+  return 'assets/images/round_icons/$iconName';
+}
+
+_PreviewBannerPresentation _bannerPresentationFor({
+  required BuildContext context,
+  required String stem,
+  required StageBannerResolver banners,
+  required String Function(String key, [String? fallback]) t,
+}) {
+  if (stem == banners.defaultStem || stem.toLowerCase() == 'unknown') {
+    return _PreviewBannerPresentation(
+      name: t('previewGenUnknownBanner', 'Unknown background'),
+      iconAssetPath: 'assets/images/others/unknown.webp',
+    );
+  }
+
+  final aliases = banners.stageAliasesForStem(stem);
+  final candidates = [
+    for (final stage in StageRepository.allItems)
+      if (aliases.contains(stage.alias)) stage,
+  ];
+  final expectedAlias = '${stem}Stage'.toLowerCase();
+  StageItem? representative;
+  for (final stage in candidates) {
+    if (stage.alias.toLowerCase() == expectedAlias) {
+      representative = stage;
+      break;
+    }
+  }
+  if (representative == null) {
+    for (final stage in candidates) {
+      if (stage.type == StageType.main) {
+        representative = stage;
+        break;
+      }
+    }
+  }
+  if (representative == null && candidates.isNotEmpty) {
+    representative = candidates.first;
+  }
+  if (representative != null) {
+    final iconName = representative.iconName;
+    return _PreviewBannerPresentation(
+      name: ResourceNames.lookupOrFallback(
+        context,
+        StageRepository.getName(representative.alias),
+        representative.alias,
+      ),
+      iconAssetPath: iconName == null ? null : _roundIconAssetPath(iconName),
+    );
+  }
+
+  for (final alias in aliases) {
+    final preset = CustomStagePresetRepository.presetForAlias(alias);
+    if (preset == null) continue;
+    final iconName = preset.iconName;
+    return _PreviewBannerPresentation(
+      name: ResourceNames.lookupOrFallback(
+        context,
+        preset.nameKey,
+        preset.alias,
+      ),
+      iconAssetPath: _roundIconAssetPath(iconName),
+    );
+  }
+
+  return _PreviewBannerPresentation(
+    name: t('previewGenUnknownBanner', 'Unknown background'),
+    iconAssetPath: 'assets/images/others/unknown.webp',
+  );
+}
+
+/// Banner picker: catalog-ordered localized cards, round icons, custom entry.
+/// The unknown/fallback banner is always the last list item.
 Future<String?> showPreviewBannerPicker({
   required BuildContext context,
   required StageBannerResolver banners,
   required String Function(String key, [String? fallback]) t,
+  String? currentStem,
 }) async {
-  await StageRepository.init();
+  await Future.wait([
+    StageRepository.init(),
+    CustomStagePresetRepository.init(),
+    ResourceNames.ensureLoaded(),
+  ]);
   if (!context.mounted) return null;
   return showDialog<String>(
     context: context,
     builder: (ctx) {
-      final stems = banners.allStems;
+      final theme = Theme.of(ctx);
+      final height = (MediaQuery.sizeOf(ctx).height - 180).clamp(140.0, 620.0);
+      final stems = banners.orderedStemsForStageAliases(
+        StageRepository.allItems.map((stage) => stage.alias),
+      );
+      final entries = [
+        ...stems.take(stems.length - 1),
+        '__custom__',
+        stems.last,
+      ];
       return AlertDialog(
         title: Text(t('previewGenChooseBanner', 'Choose banner')),
+        contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         content: SizedBox(
-          width: 420,
-          height: 360,
+          width: 520,
+          height: height,
           child: ListView.builder(
-            itemCount: stems.length + 1,
+            itemCount: entries.length,
             itemBuilder: (_, i) {
-              if (i == stems.length) {
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 10,
+              final stem = entries[i];
+              if (stem == '__custom__') {
+                return Card(
+                  key: const ValueKey('preview-banner-custom'),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    leading: const CircleAvatar(
+                      child: Icon(Icons.folder_open, size: 22),
+                    ),
+                    title: Text(
+                      t('previewGenCustomBanner', 'Custom image'),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap: () => Navigator.pop(ctx, '__custom__'),
                   ),
-                  leading: const CircleAvatar(
-                    child: Icon(Icons.folder_open, size: 22),
-                  ),
-                  title: Text(
-                    t('previewGenCustomBanner', 'Custom image'),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  onTap: () => Navigator.pop(ctx, '__custom__'),
                 );
               }
-              final stem = stems[i];
-              final aliases = banners.aliasesForStem(stem);
-              final alias = aliases.isNotEmpty ? aliases.first : stem;
-              final nameKey = StageRepository.getName(alias);
-              final label = ResourceNames.lookup(ctx, nameKey);
-              final display = (label == nameKey || label.isEmpty) ? stem : label;
-              return ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
+              final info = _bannerPresentationFor(
+                context: ctx,
+                stem: stem,
+                banners: banners,
+                t: t,
+              );
+              final isSelected = stem == currentStem;
+              return Card(
+                key: ValueKey('preview-banner-$stem'),
+                margin: const EdgeInsets.only(bottom: 8),
+                color: isSelected
+                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                    : null,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : theme.dividerColor.withValues(alpha: 0.3),
+                    width: isSelected ? 2 : 1,
+                  ),
                 ),
-                leading: ClipOval(
-                  child: SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: AssetImageWidget(
-                      assetPath: banners.roundIconAssetForStem(stem),
-                      altCandidates: banners.roundIconAltCandidatesForStem(
-                        stem,
-                      ),
-                      fit: BoxFit.cover,
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => Navigator.pop(ctx, stem),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: AssetImageWidget(
+                            assetPath:
+                                info.iconAssetPath ??
+                                banners.roundIconAssetForStem(stem),
+                            altCandidates: banners
+                                .roundIconAltCandidatesForStem(stem),
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                info.name,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                stem,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isSelected) ...[
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.check_circle,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),
-                title: Text(display, style: const TextStyle(fontSize: 16)),
-                subtitle: Text(stem, style: const TextStyle(fontSize: 12)),
-                onTap: () => Navigator.pop(ctx, stem),
               );
             },
           ),
@@ -107,27 +273,23 @@ Future<PreviewAssetImageChoice?> showPreviewAssetImagePicker({
   required String Function(String key, [String? fallback]) t,
 }) async {
   final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-  final all = manifest.listAssets()
-      .where((p) => p.startsWith('assets/images/'))
-      .where((p) {
+  final all =
+      manifest.listAssets().where((p) => p.startsWith('assets/images/')).where((
+        p,
+      ) {
         final lower = p.toLowerCase();
         return lower.endsWith('.png') ||
             lower.endsWith('.webp') ||
             lower.endsWith('.jpg') ||
             lower.endsWith('.jpeg') ||
             lower.endsWith('.gif');
-      })
-      .toList()
-    ..sort();
+      }).toList()..sort();
 
   if (!context.mounted) return null;
 
   return showDialog<PreviewAssetImageChoice>(
     context: context,
-    builder: (ctx) => _AssetImagePickerDialog(
-      assets: all,
-      t: t,
-    ),
+    builder: (ctx) => _AssetImagePickerDialog(assets: all, t: t),
   );
 }
 
@@ -156,8 +318,7 @@ class _AssetImagePickerDialogState extends State<_AssetImagePickerDialog> {
     final ordered = [
       for (final f in kPreviewImageFolders)
         if (found.contains(f)) f,
-      ...found.where((f) => !kPreviewImageFolders.contains(f)).toList()
-        ..sort(),
+      ...found.where((f) => !kPreviewImageFolders.contains(f)).toList()..sort(),
     ];
     return ordered;
   }
@@ -271,10 +432,8 @@ class _AssetImagePickerDialogState extends State<_AssetImagePickerDialog> {
           child: Text(t('previewGenCancel', 'Cancel')),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(
-            context,
-            const PreviewAssetImageChoice.custom(),
-          ),
+          onPressed: () =>
+              Navigator.pop(context, const PreviewAssetImageChoice.custom()),
           child: Text(t('previewGenCustomImage', 'Custom file')),
         ),
       ],

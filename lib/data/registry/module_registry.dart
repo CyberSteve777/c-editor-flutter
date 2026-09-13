@@ -573,16 +573,6 @@ class ModuleRegistry {
       initialDataFactory: () => LevelMutatorMaxSunPropsData(),
       routeId: 'MaxSunModule',
     ),
-    'MoonExpertProperties': ModuleMetadata(
-      titleKey: 'moduleTitle_MoonExpertProperties',
-      descriptionKey: 'moduleDesc_MoonExpertProperties',
-      icon: Icons.nightlight_round,
-      isCore: true,
-      category: ModuleCategory.base,
-      defaultAlias: 'MoonExpertProps',
-      initialDataFactory: () => MoonExpertPropertiesData(),
-      routeId: 'MoonExpertModule',
-    ),
     'LevelMutatorStartingPlantfoodProps': ModuleMetadata(
       titleKey: 'moduleTitle_LevelMutatorStartingPlantfoodProps',
       descriptionKey: 'moduleDesc_LevelMutatorStartingPlantfoodProps',
@@ -632,6 +622,16 @@ class ModuleRegistry {
       defaultAlias: 'FrontLawnMowers',
       defaultSource: 'LevelModules',
       routeId: 'LawnMower',
+    ),
+    'MoonExpertProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_MoonExpertProperties',
+      descriptionKey: 'moduleDesc_MoonExpertProperties',
+      icon: Icons.nightlight_round,
+      isCore: true,
+      category: ModuleCategory.base,
+      defaultAlias: 'MoonExpertProps',
+      initialDataFactory: () => MoonExpertPropertiesData(),
+      routeId: 'MoonExpertModule',
     ),
     'LastStandMinigameProperties': ModuleMetadata(
       titleKey: 'moduleTitle_LastStandMinigameProperties',

@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,7 @@ import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/g
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_auto_composer.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_canvas.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_editor_workspace.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_feature_groups.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_fonts.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_module_info.dart';
@@ -19,6 +21,23 @@ import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'dart:ui' as ui;
+
+/// Minimum horizontal space needed to keep the preview canvas and its editing
+/// controls practical to use.
+const double kPreviewGeneratorMinimumWidth = 600;
+
+@visibleForTesting
+bool isPreviewGeneratorWidthAvailable(double availableWidth) =>
+    availableWidth >= kPreviewGeneratorMinimumWidth;
+
+@visibleForTesting
+bool useMobilePreviewGeneratorNarrowPrompt({
+  required TargetPlatform platform,
+  bool isWeb = kIsWeb,
+}) {
+  if (isWeb) return false;
+  return platform == TargetPlatform.android || platform == TargetPlatform.iOS;
+}
 
 /// Asks for Normal / Simple starting layout. Cancel returns null.
 /// [Simple] is the recommended (primary) action.
@@ -60,9 +79,7 @@ Future<PreviewAutoStyle?> showPreviewLayoutStyleDialog({
             onPressed: () => Navigator.pop(ctx, PreviewAutoStyle.normal),
             child: Text(
               t(
-                recreate
-                    ? 'previewGenRecreateFromNormal'
-                    : 'previewGenNormal',
+                recreate ? 'previewGenRecreateFromNormal' : 'previewGenNormal',
                 recreate ? 'From normal' : 'Normal',
               ),
             ),
@@ -71,9 +88,7 @@ Future<PreviewAutoStyle?> showPreviewLayoutStyleDialog({
             onPressed: () => Navigator.pop(ctx, PreviewAutoStyle.simple),
             child: Text(
               t(
-                recreate
-                    ? 'previewGenRecreateFromSimple'
-                    : 'previewGenSimple',
+                recreate ? 'previewGenRecreateFromSimple' : 'previewGenSimple',
                 recreate ? 'From simple' : 'Simple',
               ),
             ),
@@ -110,6 +125,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   final _focusNode = FocusNode();
   final _textFocusNode = FocusNode();
   String _lastControllerText = '';
+
   /// Snapshot taken on toolbar pointer-down so range styles survive focus theft.
   TextSelection? _toolbarSelectionSnapshot;
   final List<_TextEditCheckpoint> _textUndoStack = [];
@@ -123,6 +139,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   bool _figureFilled = false;
   String? _selectedLayerId;
   String? _editingTextLayerId;
+  int? _selectedIconSectionIndex;
+  PreviewTextPartSelection? _selectedTextPart;
   String? _activeStrokeId;
   String? _draftShapeId;
   Color _drawColor = Colors.white;
@@ -183,6 +201,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
 
   void _onTextFocusChanged() {
     if (!mounted) return;
+    setState(() {});
     if (_textFocusNode.hasFocus || _editingTextLayerId == null) return;
     // Focus left the field while still in edit mode (e.g. parent Focus stole
     // it on rebuild). Restore unless another control intentionally took it.
@@ -336,6 +355,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       _undoSnapshot = null;
       _selectedLayerId = null;
       _editingTextLayerId = null;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
       _activeStrokeId = null;
       _draftShapeId = null;
       _clearTextHistory();
@@ -357,6 +378,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       _redoSnapshot = null;
       _selectedLayerId = null;
       _editingTextLayerId = null;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
       _activeStrokeId = null;
       _draftShapeId = null;
       _clearTextHistory();
@@ -387,6 +410,11 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         zombiesSourceLabel: _t('previewGenZombies', 'Zombies'),
         gridItemsSourceLabel: _t('previewGenGridItems', 'Initial grid items'),
         seedBankLabel: _t('previewSeedBank', 'Seed Bank'),
+        zombieSeedBankLabel: _t(
+          'previewIZombieSeedBank',
+          'Seed Bank (I, Zombie)',
+        ),
+        vasebreakerLabel: _t('previewFeature_vasebreaker', 'Vasebreaker'),
         conveyorLabel: _t('previewGenConveyor', 'Conveyor'),
         prePlacedLabel: _t('previewPrePlaced', 'Placement'),
         protectLabel: _t('previewGenProtect', 'Protect'),
@@ -408,6 +436,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         _loading = false;
         _selectedLayerId = null;
         _editingTextLayerId = null;
+        _selectedIconSectionIndex = null;
+        _selectedTextPart = null;
         _activeStrokeId = null;
         _draftShapeId = null;
         if (clearHistory) {
@@ -427,6 +457,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   Future<void> _recreateFromAuto() async {
+    _endTextEdit();
     final choice = await showPreviewLayoutStyleDialog(
       context: context,
       t: _t,
@@ -441,14 +472,21 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
 
   void _syncTextController() {
     final layer = _selectedTextLayer();
-    if (layer == null) {
-      if (_textController.text.isNotEmpty) {
-        _textController.clear();
-        _lastControllerText = '';
-      }
-      return;
+    if (layer != null) {
+      _textController.loadFromLayer(layer);
+    } else {
+      // Use the rich controller's programmatic path for panel/shape text too,
+      // so selection changes are not mistaken for edits of the previous layer.
+      _textController.loadFromLayer(
+        PreviewLayer(
+          id: 'selected_text_part',
+          kind: PreviewLayerKind.text,
+          bounds: const Rect.fromLTWH(0, 0, 1, 1),
+          text: _selectedTextValue() ?? '',
+          textStyle: _selectedContainedText()?.style.copy(),
+        ),
+      );
     }
-    _textController.loadFromLayer(layer);
     _lastControllerText = _textController.text;
   }
 
@@ -568,28 +606,60 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     required IconData icon,
     required String tooltip,
     required TextAlign align,
-    required PreviewLayer layer,
+    PreviewLayer? layer,
     bool forIcons = false,
+    TextAlign? currentAlign,
   }) {
     final selected = forIcons
-        ? layer.iconAlign == align
-        : layer.textAlign == align;
+        ? layer?.iconAlign == align
+        : currentAlign == align;
     return _toolbarToggleShell(
       tooltip: tooltip,
-      selected: selected,
+      selected: forIcons ? selected : currentAlign == align,
       onTap: () {
         _runTextToolbarAction(() {
           _pushHistory();
           setState(() {
             if (forIcons) {
-              layer.iconAlign = align;
+              layer!.iconAlign = align;
             } else {
-              layer.textAlign = align;
+              _setSelectedTextAlign(align);
             }
           });
         });
       },
       child: Icon(icon, size: 18),
+    );
+  }
+
+  Widget _labeledSlider({
+    required String label,
+    required double value,
+    required double min,
+    required double max,
+    required int divisions,
+    required String valueLabel,
+    required ValueChanged<double> onChanged,
+  }) {
+    return SizedBox(
+      width: 260,
+      child: Row(
+        children: [
+          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: divisions,
+              label: valueLabel,
+              onChangeStart: (_) => _pushHistory(),
+              onChanged: onChanged,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -612,8 +682,11 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   void _beginTextEdit(String id) {
+    if (_document?.layerById(id)?.kind != PreviewLayerKind.text) return;
     setState(() {
       _selectedLayerId = id;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
       _editingTextLayerId = id;
       _draftShapeId = null;
       _clearTextHistory();
@@ -639,6 +712,138 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     }
   }
 
+  PreviewContainedText? _selectedContainedText() {
+    final selection = _selectedTextPart;
+    if (selection == null || selection.kind != PreviewTextPartKind.contained) {
+      return null;
+    }
+    final layer = _document?.layerById(selection.layerId);
+    if (layer == null) return null;
+    for (final text in layer.containedTexts) {
+      if (text.id == selection.containedTextId) return text;
+    }
+    return null;
+  }
+
+  String? _selectedTextValue() {
+    final textLayer = _selectedTextLayer();
+    if (textLayer != null) return textLayer.plainText;
+
+    final selection = _selectedTextPart;
+    if (selection == null) return null;
+    final layer = _document?.layerById(selection.layerId);
+    if (layer == null) return null;
+    return switch (selection.kind) {
+      PreviewTextPartKind.gridTitle => layer.gridTitle,
+      PreviewTextPartKind.sourceLabel => layer.sourceLabel,
+      PreviewTextPartKind.sectionTitle =>
+        selection.sectionIndex != null &&
+                selection.sectionIndex! >= 0 &&
+                selection.sectionIndex! < layer.sections.length
+            ? layer.sections[selection.sectionIndex!].title
+            : null,
+      PreviewTextPartKind.contained => _selectedContainedText()?.text,
+    };
+  }
+
+  void _setSelectedText(String value) {
+    final textLayer = _selectedTextLayer();
+    if (textLayer != null) {
+      textLayer.setPlainText(value);
+      return;
+    }
+
+    final selection = _selectedTextPart;
+    if (selection == null) return;
+    final layer = _document?.layerById(selection.layerId);
+    if (layer == null) return;
+    switch (selection.kind) {
+      case PreviewTextPartKind.gridTitle:
+        layer.gridTitle = value;
+      case PreviewTextPartKind.sourceLabel:
+        layer.sourceLabel = value;
+      case PreviewTextPartKind.sectionTitle:
+        final index = selection.sectionIndex;
+        if (index != null && index >= 0 && index < layer.sections.length) {
+          layer.sections[index].title = value;
+        }
+      case PreviewTextPartKind.contained:
+        final contained = _selectedContainedText();
+        if (contained != null) contained.text = value;
+    }
+    _resizeIconGridToContent(layer);
+  }
+
+  PreviewTextStyleData? _activeSelectedTextStyle() {
+    final textLayer = _selectedTextLayer();
+    if (textLayer != null) return _activeTextStyle(textLayer);
+    return _selectedContainedText()?.style;
+  }
+
+  void _mutateActiveTextStyle(
+    void Function(PreviewTextStyleData style) mutate,
+  ) {
+    final textLayer = _selectedTextLayer();
+    if (textLayer != null) {
+      _mutateSelectedTextStyle(textLayer, mutate);
+      return;
+    }
+    final contained = _selectedContainedText();
+    if (contained != null) mutate(contained.style);
+  }
+
+  TextAlign? _selectedTextAlign() {
+    final textLayer = _selectedTextLayer();
+    if (textLayer != null) return textLayer.textAlign;
+    return _selectedContainedText()?.textAlign;
+  }
+
+  void _setSelectedTextAlign(TextAlign align) {
+    final textLayer = _selectedTextLayer();
+    if (textLayer != null) {
+      textLayer.textAlign = align;
+      return;
+    }
+    final contained = _selectedContainedText();
+    if (contained != null) contained.textAlign = align;
+  }
+
+  PreviewIconSection? _selectedIconSection() {
+    final layer = _selectedLayer();
+    final index = _selectedIconSectionIndex;
+    if (layer == null ||
+        layer.kind != PreviewLayerKind.iconGrid ||
+        index == null) {
+      return null;
+    }
+    final sections = previewEffectiveSections(layer);
+    if (index < 0 || index >= sections.length) return null;
+    return sections[index];
+  }
+
+  void _resizeIconGridToContent(PreviewLayer layer) {
+    if (layer.kind != PreviewLayerKind.iconGrid) return;
+    final size = previewIconGridIntrinsicSize(
+      maxWidth: layer.bounds.width * kPreviewCanvasSize.width,
+      sections: previewEffectiveSections(layer),
+      showChrome: layer.showChrome,
+      gridTitle: layer.gridTitle,
+      sourceLabel: layer.sourceLabel,
+      lawnRows: layer.lawnRows,
+      lawnCols: layer.lawnCols,
+    );
+    final height = (size.height / kPreviewCanvasSize.height).clamp(
+      0.04,
+      1.0 - layer.bounds.top,
+    );
+    layer.bounds = Rect.fromLTWH(
+      layer.bounds.left,
+      layer.bounds.top,
+      layer.bounds.width,
+      height,
+    );
+  }
+
   void _applyColor(Color c) {
     _runTextToolbarAction(() {
       _pushHistory();
@@ -648,11 +853,13 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         if (layer == null) return;
         if (layer.kind == PreviewLayerKind.text) {
           _mutateSelectedTextStyle(layer, (s) => s.color = c);
+        } else if (_selectedContainedText() != null) {
+          _mutateActiveTextStyle((s) => s.color = c);
         } else if (layer.kind == PreviewLayerKind.shape ||
             layer.kind == PreviewLayerKind.stroke) {
           layer.strokeColor = c;
-          if (layer.kind == PreviewLayerKind.shape) {
-            layer.fillColor = c.withValues(alpha: 0.25);
+          if (layer.kind == PreviewLayerKind.shape && layer.shapeFilled) {
+            layer.fillColor = c.withValues(alpha: 0.35);
           }
         }
       });
@@ -691,6 +898,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   Future<void> _pickBannerStem() async {
+    _endTextEdit();
     final banners = _banners;
     final doc = _document;
     if (banners == null || doc == null) return;
@@ -698,6 +906,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       context: context,
       banners: banners,
       t: _t,
+      currentStem: doc.banner.stem,
     );
     if (chosen == null || !mounted) return;
     if (chosen == '__custom__') {
@@ -733,12 +942,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   Future<void> _addOverlayImage() async {
+    _endTextEdit();
     final doc = _document;
     if (doc == null) return;
-    final choice = await showPreviewAssetImagePicker(
-      context: context,
-      t: _t,
-    );
+    final choice = await showPreviewAssetImagePicker(context: context, t: _t);
     if (choice == null || !mounted) return;
 
     String? path;
@@ -796,10 +1003,13 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       );
       _selectedLayerId = id;
       _tool = PreviewEditTool.select;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
     });
   }
 
   Future<void> _openFiguresMenu() async {
+    _endTextEdit();
     final choice = await showModalBottomSheet<(PreviewShapeKind, bool)>(
       context: context,
       showDragHandle: true,
@@ -807,9 +1017,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              title: Text(_t('previewTool_figures', 'Figures')),
-            ),
+            ListTile(title: Text(_t('previewTool_figures', 'Figures'))),
             for (final e in [
               (PreviewShapeKind.rect, false, Icons.crop_square, 'Rectangle'),
               (PreviewShapeKind.oval, false, Icons.circle_outlined, 'Oval'),
@@ -843,6 +1051,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   Future<void> _addModuleInfoElement() async {
+    _endTextEdit();
     final doc = _document;
     if (doc == null) return;
     final classes = previewPresentModuleObjClasses(widget.levelFile);
@@ -893,7 +1102,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                           final meta = ModuleRegistry.getMetadata(oc);
                           return ListTile(
                             title: Text(meta.getTitle(ctx)),
-                            subtitle: Text(oc, style: const TextStyle(fontSize: 11)),
+                            subtitle: Text(
+                              oc,
+                              style: const TextStyle(fontSize: 11),
+                            ),
                             onTap: () => Navigator.pop(ctx, oc),
                           );
                         },
@@ -982,6 +1194,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         );
         _selectedLayerId = id;
         _tool = PreviewEditTool.select;
+        _selectedIconSectionIndex = null;
+        _selectedTextPart = null;
         _syncTextController();
       });
       return;
@@ -1012,16 +1226,46 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ),
       );
       _selectedLayerId = id;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
       _tool = PreviewEditTool.select;
     });
   }
 
   void _addTextLayer() {
+    _endTextEdit();
     final doc = _document;
     if (doc == null) return;
+    final container = _selectedLayer();
     final id = _nextId('text');
     _pushHistory();
     setState(() {
+      if (container != null &&
+          (container.kind == PreviewLayerKind.iconGrid ||
+              container.kind == PreviewLayerKind.shape)) {
+        final containedIndex = container.containedTexts.length;
+        final top = (0.35 + containedIndex * 0.2).clamp(0.05, 0.77);
+        container.containedTexts.add(
+          PreviewContainedText(
+            id: id,
+            text: _t('previewGenNewText', 'New text'),
+            bounds: Rect.fromLTWH(0.1, top, 0.8, 0.18),
+            style: PreviewTextStyleData(
+              fontFamily: PreviewFonts.familyPvZ,
+              fontSize: 24,
+            ),
+          ),
+        );
+        _selectedTextPart = PreviewTextPartSelection(
+          layerId: container.id,
+          kind: PreviewTextPartKind.contained,
+          containedTextId: id,
+        );
+        _selectedIconSectionIndex = null;
+        _tool = PreviewEditTool.select;
+        _syncTextController();
+        return;
+      }
       doc.layers.add(
         PreviewLayer(
           id: id,
@@ -1036,26 +1280,76 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ),
       );
       _selectedLayerId = id;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
       _tool = PreviewEditTool.select;
       _syncTextController();
     });
   }
 
   void _deleteSelected() {
+    _endTextEdit();
     final doc = _document;
     final id = _selectedLayerId;
     if (doc == null || id == null) return;
+    final layer = doc.layerById(id);
+    if (layer == null) return;
     _pushHistory();
     setState(() {
+      final textPart = _selectedTextPart;
+      if (textPart != null) {
+        switch (textPart.kind) {
+          case PreviewTextPartKind.gridTitle:
+            layer.gridTitle = null;
+          case PreviewTextPartKind.sourceLabel:
+            layer.sourceLabel = null;
+          case PreviewTextPartKind.sectionTitle:
+            final index = textPart.sectionIndex;
+            if (index != null && index >= 0 && index < layer.sections.length) {
+              layer.sections[index].title = null;
+            }
+          case PreviewTextPartKind.contained:
+            layer.containedTexts.removeWhere(
+              (text) => text.id == textPart.containedTextId,
+            );
+        }
+        _selectedTextPart = null;
+        _resizeIconGridToContent(layer);
+        _textController.clear();
+        return;
+      }
+
+      final sectionIndex = _selectedIconSectionIndex;
+      if (sectionIndex != null &&
+          layer.kind == PreviewLayerKind.iconGrid &&
+          layer.sections.isNotEmpty &&
+          sectionIndex >= 0 &&
+          sectionIndex < layer.sections.length) {
+        layer.sections.removeAt(sectionIndex);
+        layer.items = [for (final section in layer.sections) ...section.items];
+        _selectedIconSectionIndex = null;
+        _resizeIconGridToContent(layer);
+        return;
+      }
+
       doc.layers.removeWhere((l) => l.id == id);
       _selectedLayerId = null;
       _editingTextLayerId = null;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
       _textController.clear();
     });
   }
 
   Future<void> _export() async {
-    setState(() => _exporting = true);
+    _endTextEdit();
+    final selectedIconSectionIndex = _selectedIconSectionIndex;
+    final selectedTextPart = _selectedTextPart;
+    setState(() {
+      _exporting = true;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
+    });
     try {
       await Future<void>.delayed(const Duration(milliseconds: 50));
       final box =
@@ -1072,8 +1366,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              _t('previewGenExportOk', 'Saved preview to {path}')
-                  .replaceAll('{path}', result.path),
+              _t(
+                'previewGenExportOk',
+                'Saved preview to {path}',
+              ).replaceAll('{path}', result.path),
             ),
           ),
         );
@@ -1088,7 +1384,13 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ),
       );
     } finally {
-      if (mounted) setState(() => _exporting = false);
+      if (mounted) {
+        setState(() {
+          _exporting = false;
+          _selectedIconSectionIndex = selectedIconSectionIndex;
+          _selectedTextPart = selectedTextPart;
+        });
+      }
     }
   }
 
@@ -1111,6 +1413,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ),
       );
       _selectedLayerId = id;
+      _selectedIconSectionIndex = null;
+      _selectedTextPart = null;
     });
   }
 
@@ -1168,10 +1472,15 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
             zIndex: doc.layers.length + 15,
             fillColor: filled ? _drawColor.withValues(alpha: 0.35) : null,
             strokeColor: _drawColor,
-            strokeWidth: _drawStrokeWidth,
+            strokeWidth: kind == PreviewShapeKind.rect && filled
+                ? 0
+                : _drawStrokeWidth,
+            cornerRadius: kind == PreviewShapeKind.rect ? 10 : 0,
           ),
         );
         _selectedLayerId = _draftShapeId;
+        _selectedIconSectionIndex = null;
+        _selectedTextPart = null;
       } else {
         final layer = doc.layerById(_draftShapeId!);
         if (layer != null) {
@@ -1235,162 +1544,261 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.keyZ, control: true): _undo,
-        const SingleActivator(LogicalKeyboardKey.keyZ, meta: true): _undo,
-        const SingleActivator(
-          LogicalKeyboardKey.keyZ,
-          control: true,
-          shift: true,
-        ): _redo,
-        const SingleActivator(
-          LogicalKeyboardKey.keyZ,
-          meta: true,
-          shift: true,
-        ): _redo,
-        const SingleActivator(LogicalKeyboardKey.keyY, control: true): _redo,
-        const SingleActivator(LogicalKeyboardKey.keyY, meta: true): _redo,
-        // Only bind Delete/Backspace when not editing text — otherwise
-        // CallbackShortcuts swallows them and the TextField never sees them.
-        if (_editingTextLayerId == null) ...{
-          const SingleActivator(LogicalKeyboardKey.delete): _deleteSelected,
-          const SingleActivator(LogicalKeyboardKey.backspace): _deleteSelected,
-        },
-      },
-      child: Focus(
-        focusNode: _focusNode,
-        autofocus: true,
-        onKeyEvent: _onKey,
-        child: Scaffold(
-        appBar: AppBar(
-          title: Text(_t('previewGenerator', 'Image Preview Generator')),
-          actions: [
-            IconButton(
-              tooltip: '${_t('previewGenUndo', 'Undo')} (Ctrl+Z)',
-              onPressed: (_canUndoText || _undoSnapshot != null) ? _undo : null,
-              icon: const Icon(Icons.undo),
-            ),
-            IconButton(
-              tooltip: '${_t('previewGenRedo', 'Redo')} (Ctrl+Y)',
-              onPressed: (_canRedoText || _redoSnapshot != null) ? _redo : null,
-              icon: const Icon(Icons.redo),
-            ),
-            IconButton(
-              tooltip: _t('previewGenExport', 'Export PNG'),
-              onPressed: (_loading || _exporting || _document == null)
-                  ? null
-                  : _export,
-              icon: _exporting
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save_alt),
-            ),
-          ],
-        ),
-        body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _error != null
-            ? Center(child: Text(_error!))
-            : _document == null
-            ? const SizedBox.shrink()
-            : Column(
-                children: [
-                  _buildManualToolbar(theme),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Center(
-                        child: PreviewCanvas(
-                          document: _document!,
-                          interactive: true,
-                          tool: _tool,
-                          selectedLayerId: _selectedLayerId,
-                          editingTextLayerId: _editingTextLayerId,
-                          drawColor: _drawColor,
-                          drawStrokeWidth: _drawStrokeWidth,
-                          boundaryKey: _boundaryKey,
-                          textEditingController: _textController,
-                          textFocusNode: _textFocusNode,
-                          onTextEdited: (_) {
-                            // Runs/styles sync via _onTextControllerTick.
-                            _ensureTextFocus();
-                          },
-                          onBeginTextEdit: _beginTextEdit,
-                          onEndTextEdit: _endTextEdit,
-                          onSelectLayer: (id) {
-                            final prevId = _selectedLayerId;
-                            setState(() {
-                              _selectedLayerId = id;
-                              _draftShapeId = null;
-                              if (id != prevId || id == null) {
-                                _editingTextLayerId = null;
-                              }
-                              _syncTextController();
-                            });
-                            if (_editingTextLayerId == null &&
-                                _textFocusNode.hasFocus) {
-                              _textFocusNode.unfocus();
-                              _focusNode.requestFocus();
-                            }
-                          },
-                          onLayerMoved: (id, bounds) {
-                            final layer = _document?.layerById(id);
-                            if (layer == null) return;
-                            if (_editingTextLayerId != null) {
-                              _endTextEdit();
-                            } else if (_textFocusNode.hasFocus) {
-                              _textFocusNode.unfocus();
-                              _focusNode.requestFocus();
-                            }
-                            if (_undoSnapshot == null) _pushHistory();
-                            setState(() => layer.bounds = bounds);
-                          },
-                          onLayerScaled: (id, scale) {
-                            final layer = _document?.layerById(id);
-                            if (layer == null) return;
-                            if (_editingTextLayerId != null) {
-                              _endTextEdit();
-                            } else if (_textFocusNode.hasFocus) {
-                              _textFocusNode.unfocus();
-                              _focusNode.requestFocus();
-                            }
-                            if (_undoSnapshot == null) _pushHistory();
-                            setState(() => layer.scale = scale);
-                          },
-                          onLayerRotated: (id, rotation) {
-                            final layer = _document?.layerById(id);
-                            if (layer == null) return;
-                            if (_editingTextLayerId != null) {
-                              _endTextEdit();
-                            } else if (_textFocusNode.hasFocus) {
-                              _textFocusNode.unfocus();
-                              _focusNode.requestFocus();
-                            }
-                            if (_undoSnapshot == null) _pushHistory();
-                            setState(() => layer.rotation = rotation);
-                          },
-                          onStrokeStarted: _onStrokeStarted,
-                          onStrokeUpdated: _onStrokeUpdated,
-                          onStrokeEnded: () {
-                            setState(() {
-                              _onStrokeEnded();
-                              _draftShapeId = null;
-                            });
-                          },
-                          onEraseAt: _onEraseAt,
-                          onShapeDraft: (bounds) {
-                            _onShapeDraft(bounds);
-                          },
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+        final widthAvailable = isPreviewGeneratorWidthAvailable(availableWidth);
+        final useMobilePrompt = useMobilePreviewGeneratorNarrowPrompt(
+          platform: theme.platform,
+        );
+
+        return CallbackShortcuts(
+          bindings: widthAvailable
+              ? {
+                  const SingleActivator(LogicalKeyboardKey.keyZ, control: true):
+                      _undo,
+                  const SingleActivator(LogicalKeyboardKey.keyZ, meta: true):
+                      _undo,
+                  const SingleActivator(
+                    LogicalKeyboardKey.keyZ,
+                    control: true,
+                    shift: true,
+                  ): _redo,
+                  const SingleActivator(
+                    LogicalKeyboardKey.keyZ,
+                    meta: true,
+                    shift: true,
+                  ): _redo,
+                  const SingleActivator(LogicalKeyboardKey.keyY, control: true):
+                      _redo,
+                  const SingleActivator(LogicalKeyboardKey.keyY, meta: true):
+                      _redo,
+                  if (_editingTextLayerId == null &&
+                      !_textFocusNode.hasFocus) ...{
+                    const SingleActivator(LogicalKeyboardKey.delete):
+                        _deleteSelected,
+                    const SingleActivator(LogicalKeyboardKey.backspace):
+                        _deleteSelected,
+                  },
+                }
+              : {},
+          child: Focus(
+            focusNode: _focusNode,
+            autofocus: true,
+            onKeyEvent: widthAvailable
+                ? _onKey
+                : (_, _) => KeyEventResult.ignored,
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(_t('previewGenerator', 'Image Preview Generator')),
+                actions: widthAvailable
+                    ? [
+                        IconButton(
+                          tooltip: '${_t('previewGenUndo', 'Undo')} (Ctrl+Z)',
+                          onPressed: (_canUndoText || _undoSnapshot != null)
+                              ? _undo
+                              : null,
+                          icon: const Icon(Icons.undo),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
+                        IconButton(
+                          tooltip: '${_t('previewGenRedo', 'Redo')} (Ctrl+Y)',
+                          onPressed: (_canRedoText || _redoSnapshot != null)
+                              ? _redo
+                              : null,
+                          icon: const Icon(Icons.redo),
+                        ),
+                        IconButton(
+                          tooltip: _t('previewGenExport', 'Export PNG'),
+                          onPressed:
+                              (_loading || _exporting || _document == null)
+                              ? null
+                              : _export,
+                          icon: _exporting
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.save_alt),
+                        ),
+                      ]
+                    : null,
               ),
+              body: widthAvailable
+                  ? _buildGeneratorBody(theme)
+                  : _buildNarrowWidthNotice(
+                      theme,
+                      useMobilePrompt: useMobilePrompt,
+                    ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _finishEditingForTransform() {
+    if (_editingTextLayerId != null || _textFocusNode.hasFocus) {
+      _endTextEdit();
+    }
+  }
+
+  Widget _buildGeneratorBody(ThemeData theme) {
+    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_error != null) return Center(child: Text(_error!));
+    if (_document == null) return const SizedBox.shrink();
+
+    return PreviewEditorWorkspace(
+      toolbar: _buildManualToolbar(theme),
+      canvasZoomLabel: _t('previewGenCanvasZoom'),
+      fitCanvasLabel: _t('previewGenFitCanvas'),
+      resizeToolbarLabel: _t('previewGenResizeToolbar'),
+      zoomInLabel: _t('previewGenZoomIn'),
+      zoomOutLabel: _t('previewGenZoomOut'),
+      onToolbarResizeStarted: _endTextEdit,
+      canvas: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Center(
+          child: PreviewCanvas(
+            document: _document!,
+            interactive: true,
+            tool: _tool,
+            selectedLayerId: _selectedLayerId,
+            editingTextLayerId: _editingTextLayerId,
+            selectedIconSectionIndex: _selectedIconSectionIndex,
+            selectedTextPart: _selectedTextPart,
+            drawColor: _drawColor,
+            drawStrokeWidth: _drawStrokeWidth,
+            boundaryKey: _boundaryKey,
+            textEditingController: _textController,
+            textFocusNode: _textFocusNode,
+            onTextEdited: (_) => _ensureTextFocus(),
+            onBeginTextEdit: _beginTextEdit,
+            onEndTextEdit: _endTextEdit,
+            onSelectLayer: (id) {
+              final previousId = _selectedLayerId;
+              if (id != previousId || id == null || _selectedTextPart != null) {
+                _endTextEdit();
+              }
+              setState(() {
+                _selectedLayerId = id;
+                _selectedIconSectionIndex = null;
+                _selectedTextPart = null;
+                _draftShapeId = null;
+                _syncTextController();
+              });
+            },
+            onSelectIconSection: (layerId, index) {
+              _endTextEdit();
+              setState(() {
+                _selectedLayerId = layerId;
+                _selectedIconSectionIndex = index;
+                _selectedTextPart = null;
+                _draftShapeId = null;
+                _syncTextController();
+              });
+            },
+            onSelectTextPart: (selection) {
+              _endTextEdit();
+              setState(() {
+                _selectedLayerId = selection.layerId;
+                _selectedIconSectionIndex = null;
+                _selectedTextPart = selection;
+                _draftShapeId = null;
+                _syncTextController();
+              });
+            },
+            onIconSectionScaled: (layerId, index, iconSize) {
+              final layer = _document?.layerById(layerId);
+              if (layer == null) return;
+              final sections = previewEffectiveSections(layer);
+              if (index < 0 || index >= sections.length) return;
+              if (_undoSnapshot == null) _pushHistory();
+              setState(() {
+                sections[index].iconSize = iconSize;
+                _resizeIconGridToContent(layer);
+              });
+            },
+            onLayerMoved: (id, bounds) {
+              final layer = _document?.layerById(id);
+              if (layer == null) return;
+              _finishEditingForTransform();
+              if (_undoSnapshot == null) _pushHistory();
+              setState(() => layer.bounds = bounds);
+            },
+            onLayerScaled: (id, scale) {
+              final layer = _document?.layerById(id);
+              if (layer == null) return;
+              _finishEditingForTransform();
+              if (_undoSnapshot == null) _pushHistory();
+              setState(() => layer.scale = scale);
+            },
+            onLayerRotated: (id, rotation) {
+              final layer = _document?.layerById(id);
+              if (layer == null) return;
+              _finishEditingForTransform();
+              if (_undoSnapshot == null) _pushHistory();
+              setState(() => layer.rotation = rotation);
+            },
+            onStrokeStarted: _onStrokeStarted,
+            onStrokeUpdated: _onStrokeUpdated,
+            onStrokeEnded: () {
+              setState(() {
+                _onStrokeEnded();
+                _draftShapeId = null;
+              });
+            },
+            onEraseAt: _onEraseAt,
+            onShapeDraft: _onShapeDraft,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNarrowWidthNotice(
+    ThemeData theme, {
+    required bool useMobilePrompt,
+  }) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                useMobilePrompt ? Icons.screen_rotation : Icons.aspect_ratio,
+                size: 72,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                _t('previewGenDisplayTooNarrowTitle'),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _t(
+                  useMobilePrompt
+                      ? 'previewGenDisplayTooNarrowMobileHint'
+                      : 'previewGenDisplayTooNarrowDesktopHint',
+                ),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1400,10 +1808,14 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     final selected = _selectedLayer();
     final textLayer = _selectedTextLayer();
     final iconGrid = _selectedIconGridLayer();
+    final selectedIconSection = _selectedIconSection();
+    final selectedText = _selectedTextValue();
+    final activeTextStyle = _activeSelectedTextStyle();
+    final selectedTextAlign = _selectedTextAlign();
 
     return Material(
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
-      child: SingleChildScrollView(
+      color: Colors.transparent,
+      child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1429,11 +1841,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                     selected: _tool == entry.$1,
                     showCheckmark: false,
                     onSelected: (_) {
+                      _endTextEdit();
                       setState(() {
                         _tool = entry.$1;
                         _draftShapeId = null;
-                        _editingTextLayerId = null;
-                        _clearTextHistory();
                       });
                       if (_textFocusNode.hasFocus) {
                         _textFocusNode.unfocus();
@@ -1454,7 +1865,11 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                     setState(() => _tool = PreviewEditTool.select);
                     _addTextLayer();
                     final id = _selectedLayerId;
-                    if (id != null) _beginTextEdit(id);
+                    if (id != null && _selectedTextLayer() != null) {
+                      _beginTextEdit(id);
+                    } else {
+                      _textFocusNode.requestFocus();
+                    }
                   },
                   icon: const Icon(Icons.text_fields),
                   label: Text(_t('previewGenAddText', 'Add text')),
@@ -1521,27 +1936,62 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                   ),
                 ),
                 if (selected != null) ...[
-                  if (selected.kind != PreviewLayerKind.text &&
+                  if (selectedIconSection != null)
+                    _labeledSlider(
+                      label: _t('previewGenIconSize', 'Icon size'),
+                      value: selectedIconSection.iconSize.clamp(20, 152),
+                      min: 20,
+                      max: 152,
+                      divisions: 66,
+                      valueLabel: selectedIconSection.iconSize
+                          .round()
+                          .toString(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedIconSection.iconSize = value;
+                          _resizeIconGridToContent(selected);
+                        });
+                      },
+                    )
+                  else if (selectedText == null &&
+                      selected.kind != PreviewLayerKind.text &&
                       selected.kind != PreviewLayerKind.image)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(_t('previewGenScale', 'Scale')),
-                        SizedBox(
-                          width: 140,
-                          child: Slider(
-                            value: selected.scale.clamp(0.25, 4.0),
-                            min: 0.25,
-                            max: 4.0,
-                            divisions: 75,
-                            label: selected.scale.toStringAsFixed(2),
-                            onChangeStart: (_) => _pushHistory(),
-                            onChanged: (v) =>
-                                setState(() => selected.scale = v),
-                          ),
-                        ),
-                      ],
+                    _labeledSlider(
+                      label: _t('previewGenScale', 'Scale'),
+                      value: selected.scale.clamp(0.25, 4.0),
+                      min: 0.25,
+                      max: 4.0,
+                      divisions: 75,
+                      valueLabel: selected.scale.toStringAsFixed(2),
+                      onChanged: (value) =>
+                          setState(() => selected.scale = value),
                     ),
+                  if (selectedText == null &&
+                      selected.kind == PreviewLayerKind.shape) ...[
+                    if (selected.shapeKind == PreviewShapeKind.rect)
+                      _labeledSlider(
+                        label: _t('previewGenCornerRadius', 'Corner radius'),
+                        value: selected.cornerRadius.clamp(0, 40),
+                        min: 0,
+                        max: 40,
+                        divisions: 20,
+                        valueLabel: selected.cornerRadius.round().toString(),
+                        onChanged: (value) =>
+                            setState(() => selected.cornerRadius = value),
+                      ),
+                    FilterChip(
+                      label: Text(_t('previewGenBorder', 'Border')),
+                      selected: selected.strokeWidth > 0,
+                      onSelected: (enabled) {
+                        _pushHistory();
+                        setState(
+                          () => selected.strokeWidth = enabled
+                              ? _drawStrokeWidth
+                              : 0,
+                        );
+                      },
+                    ),
+                  ],
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -1571,6 +2021,21 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                 ],
               ],
             ),
+            if (selectedText != null && textLayer == null) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: _textController,
+                focusNode: _textFocusNode,
+                decoration: InputDecoration(
+                  labelText: _t('previewGenTextContent', 'Text'),
+                  isDense: true,
+                ),
+                onChanged: (value) {
+                  if (_undoSnapshot == null) _pushHistory();
+                  setState(() => _setSelectedText(value));
+                },
+              ),
+            ],
             if (iconGrid != null) ...[
               const SizedBox(height: 8),
               Wrap(
@@ -1683,182 +2148,169 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                   ),
                 ],
               ),
+            ],
+            if (activeTextStyle != null && selectedTextAlign != null) ...[
               const SizedBox(height: 8),
               Listener(
                 behavior: HitTestBehavior.translucent,
                 onPointerDown: (_) => _snapshotTextSelectionForToolbar(),
                 child: Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  DropdownButton<String?>(
-                    value: _activeTextStyle(textLayer).fontFamily,
-                    hint: Text(_t('previewGenFont', 'Font')),
-                    items: [
-                      for (final c in PreviewFonts.choices)
-                        DropdownMenuItem(
-                          value: c.family,
-                          child: Text(c.label),
-                        ),
-                    ],
-                    onChanged: (v) {
-                      _runTextToolbarAction(() {
-                        _pushHistory();
-                        setState(() {
-                          _mutateSelectedTextStyle(
-                            textLayer,
-                            (s) => s.fontFamily = v,
-                          );
+                  spacing: 6,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    DropdownButton<String?>(
+                      value: activeTextStyle.fontFamily,
+                      hint: Text(_t('previewGenFont', 'Font')),
+                      items: [
+                        for (final c in PreviewFonts.choices)
+                          DropdownMenuItem(
+                            value: c.family,
+                            child: Text(c.label),
+                          ),
+                      ],
+                      onChanged: (v) {
+                        _runTextToolbarAction(() {
+                          _pushHistory();
+                          setState(() {
+                            _mutateActiveTextStyle((s) => s.fontFamily = v);
+                          });
                         });
-                      });
-                    },
-                  ),
-                  DropdownButton<double>(
-                    value: _snapFontSize(_activeTextStyle(textLayer).fontSize),
-                    items: [
-                      for (final size in _fontSizeChoices)
-                        DropdownMenuItem(
-                          value: size,
-                          child: Text('${size.toInt()}'),
-                        ),
-                    ],
-                    onChanged: (v) {
-                      if (v == null) return;
-                      _runTextToolbarAction(() {
-                        _pushHistory();
-                        setState(() {
-                          _mutateSelectedTextStyle(
-                            textLayer,
-                            (s) => s.fontSize = v,
-                          );
-                        });
-                      });
-                    },
-                  ),
-                  _styleToggle(
-                    label: 'B',
-                    tooltip: _activeTextStyle(textLayer).fontFamily ==
-                            PreviewFonts.familyPvZ
-                        ? _t(
-                            'previewGenBoldPvZ',
-                            'Bold (simulated — PvZ font has one weight)',
-                          )
-                        : _t('previewGenBold', 'Bold'),
-                    selected:
-                        _activeTextStyle(textLayer).fontWeight ==
-                        FontWeight.bold,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
+                      },
                     ),
-                    onTap: () {
-                      _runTextToolbarAction(() {
-                        _pushHistory();
-                        setState(() {
-                          final on =
-                              _activeTextStyle(textLayer).fontWeight !=
-                              FontWeight.bold;
-                          _mutateSelectedTextStyle(
-                            textLayer,
-                            (s) => s.fontWeight = on
-                                ? FontWeight.bold
-                                : FontWeight.w400,
-                          );
+                    DropdownButton<double>(
+                      value: _snapFontSize(activeTextStyle.fontSize),
+                      items: [
+                        for (final size in _fontSizeChoices)
+                          DropdownMenuItem(
+                            value: size,
+                            child: Text('${size.toInt()}'),
+                          ),
+                      ],
+                      onChanged: (v) {
+                        if (v == null) return;
+                        _runTextToolbarAction(() {
+                          _pushHistory();
+                          setState(() {
+                            _mutateActiveTextStyle((s) => s.fontSize = v);
+                          });
                         });
-                      });
-                    },
-                  ),
-                  _styleToggle(
-                    label: 'I',
-                    tooltip: _t('previewGenItalic', 'Italic'),
-                    selected: _activeTextStyle(textLayer).italic,
-                    style: const TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      },
                     ),
-                    onTap: () {
-                      _runTextToolbarAction(() {
-                        _pushHistory();
-                        setState(() {
-                          _mutateSelectedTextStyle(
-                            textLayer,
-                            (s) => s.italic = !s.italic,
-                          );
+                    _styleToggle(
+                      label: 'B',
+                      tooltip:
+                          activeTextStyle.fontFamily == PreviewFonts.familyPvZ
+                          ? _t(
+                              'previewGenBoldPvZ',
+                              'Bold (simulated — PvZ font has one weight)',
+                            )
+                          : _t('previewGenBold', 'Bold'),
+                      selected: activeTextStyle.fontWeight == FontWeight.bold,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                      ),
+                      onTap: () {
+                        _runTextToolbarAction(() {
+                          _pushHistory();
+                          setState(() {
+                            final on =
+                                activeTextStyle.fontWeight != FontWeight.bold;
+                            _mutateActiveTextStyle(
+                              (s) => s.fontWeight = on
+                                  ? FontWeight.bold
+                                  : FontWeight.w400,
+                            );
+                          });
                         });
-                      });
-                    },
-                  ),
-                  _styleToggle(
-                    label: 'U',
-                    tooltip: _t('previewGenUnderline', 'Underline'),
-                    selected: _activeTextStyle(textLayer).underline,
-                    style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                      decorationThickness: 2.5,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      },
                     ),
-                    onTap: () {
-                      _runTextToolbarAction(() {
-                        _pushHistory();
-                        setState(() {
-                          _mutateSelectedTextStyle(
-                            textLayer,
-                            (s) => s.underline = !s.underline,
-                          );
+                    _styleToggle(
+                      label: 'I',
+                      tooltip: _t('previewGenItalic', 'Italic'),
+                      selected: activeTextStyle.italic,
+                      style: const TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      onTap: () {
+                        _runTextToolbarAction(() {
+                          _pushHistory();
+                          setState(() {
+                            _mutateActiveTextStyle((s) => s.italic = !s.italic);
+                          });
                         });
-                      });
-                    },
-                  ),
-                  _styleToggle(
-                    label: 'O',
-                    tooltip: _t('previewGenOutline', 'Outline'),
-                    selected: _activeTextStyle(textLayer).outline,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
+                      },
                     ),
-                    onTap: () {
-                      _runTextToolbarAction(() {
-                        _pushHistory();
-                        setState(() {
-                          _mutateSelectedTextStyle(
-                            textLayer,
-                            (s) => s.outline = !s.outline,
-                          );
+                    _styleToggle(
+                      label: 'U',
+                      tooltip: _t('previewGenUnderline', 'Underline'),
+                      selected: activeTextStyle.underline,
+                      style: const TextStyle(
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 2.5,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      onTap: () {
+                        _runTextToolbarAction(() {
+                          _pushHistory();
+                          setState(() {
+                            _mutateActiveTextStyle(
+                              (s) => s.underline = !s.underline,
+                            );
+                          });
                         });
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 4),
-                  _alignToggle(
-                    icon: Icons.format_align_left,
-                    tooltip: _t('previewGenAlignLeft', 'Align left'),
-                    align: TextAlign.left,
-                    layer: textLayer,
-                  ),
-                  _alignToggle(
-                    icon: Icons.format_align_center,
-                    tooltip: _t('previewGenAlignCenter', 'Align center'),
-                    align: TextAlign.center,
-                    layer: textLayer,
-                  ),
-                  _alignToggle(
-                    icon: Icons.format_align_right,
-                    tooltip: _t('previewGenAlignRight', 'Align right'),
-                    align: TextAlign.right,
-                    layer: textLayer,
-                  ),
-                  _alignToggle(
-                    icon: Icons.format_align_justify,
-                    tooltip: _t('previewGenAlignJustify', 'Justify'),
-                    align: TextAlign.justify,
-                    layer: textLayer,
-                  ),
-                ],
-              ),
+                      },
+                    ),
+                    _styleToggle(
+                      label: 'O',
+                      tooltip: _t('previewGenOutline', 'Outline'),
+                      selected: activeTextStyle.outline,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      onTap: () {
+                        _runTextToolbarAction(() {
+                          _pushHistory();
+                          setState(() {
+                            _mutateActiveTextStyle(
+                              (s) => s.outline = !s.outline,
+                            );
+                          });
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 4),
+                    _alignToggle(
+                      icon: Icons.format_align_left,
+                      tooltip: _t('previewGenAlignLeft', 'Align left'),
+                      align: TextAlign.left,
+                      currentAlign: selectedTextAlign,
+                    ),
+                    _alignToggle(
+                      icon: Icons.format_align_center,
+                      tooltip: _t('previewGenAlignCenter', 'Align center'),
+                      align: TextAlign.center,
+                      currentAlign: selectedTextAlign,
+                    ),
+                    _alignToggle(
+                      icon: Icons.format_align_right,
+                      tooltip: _t('previewGenAlignRight', 'Align right'),
+                      align: TextAlign.right,
+                      currentAlign: selectedTextAlign,
+                    ),
+                    _alignToggle(
+                      icon: Icons.format_align_justify,
+                      tooltip: _t('previewGenAlignJustify', 'Justify'),
+                      align: TextAlign.justify,
+                      currentAlign: selectedTextAlign,
+                    ),
+                  ],
+                ),
               ),
             ],
           ],

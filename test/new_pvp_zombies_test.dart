@@ -188,6 +188,52 @@ void main() {
     );
   });
 
+  test('Roman world group is between underground and Memory Lane', () {
+    expect(
+      zombieWorldTagOrder.indexOf(ZombieTag.toTheWest),
+      lessThan(zombieWorldTagOrder.indexOf(ZombieTag.roman)),
+    );
+    expect(
+      zombieWorldTagOrder.indexOf(ZombieTag.roman),
+      lessThan(zombieWorldTagOrder.indexOf(ZombieTag.memory)),
+    );
+  });
+
+  test('all-zombie order uses the earliest assigned world group', () {
+    final repositoryZombies = ZombieRepository().allZombies;
+    var previousWorldIndex = -1;
+    for (final zombie in repositoryZombies) {
+      final worldIndex = zombieWorldTagOrderIndex(zombie.tags);
+      expect(
+        worldIndex,
+        greaterThanOrEqualTo(previousWorldIndex),
+        reason: zombie.id,
+      );
+      previousWorldIndex = worldIndex;
+    }
+
+    for (final id in const ['roman_ballista_memo', 'roman_ballista_memo2']) {
+      final zombie = ZombieRepository().getZombieById(id)!;
+      expect(zombie.tags, containsAll([ZombieTag.roman, ZombieTag.memory]));
+      expect(
+        zombieWorldTagOrderIndex(zombie.tags),
+        zombieWorldTagOrder.indexOf(ZombieTag.roman),
+      );
+    }
+
+    final lastRoman = repositoryZombies.lastIndexWhere(
+      (zombie) =>
+          zombieWorldTagOrderIndex(zombie.tags) ==
+          zombieWorldTagOrder.indexOf(ZombieTag.roman),
+    );
+    final firstMemory = repositoryZombies.indexWhere(
+      (zombie) =>
+          zombieWorldTagOrderIndex(zombie.tags) ==
+          zombieWorldTagOrder.indexOf(ZombieTag.memory),
+    );
+    expect(lastRoman, lessThan(firstMemory));
+  });
+
   testWidgets('zombie picker shows PvP before Expedition in Other', (
     tester,
   ) async {

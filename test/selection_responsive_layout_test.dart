@@ -45,6 +45,11 @@ void main() {
     );
   }
 
+  test('unused BGMe and circus music suffixes are not selectable', () {
+    expect(MusicSuffixCatalog.orderedCodes, isNot(contains('BGMe')));
+    expect(MusicSuffixCatalog.orderedCodes, isNot(contains('circus')));
+  });
+
   testWidgets('lawn and music grids contain maximum-scale text', (
     tester,
   ) async {

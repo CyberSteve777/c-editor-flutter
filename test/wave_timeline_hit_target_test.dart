@@ -212,4 +212,70 @@ void main() {
     expect(tester.getRect(copy).right, lessThan(tester.getRect(move).left));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'empty wave number remains visible and manage actions stack when narrow',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final waveManager = WaveManagerData(
+        waveCount: 1,
+        waves: const [<String>[]],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Scaffold(
+            body: WaveTimelineTab(
+              levelFile: PvzLevelFile(objects: const []),
+              parsed: ParsedLevelData(
+                waveManager: waveManager,
+                objectMap: const {},
+              ),
+              onChanged: () {},
+              onEditEvent: (_, _) async {},
+              onAddEvent: (_) {},
+              onEditWaveManagerSettings: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final waveNumberStrip = find.byKey(
+        const ValueKey('waveTimelineWaveNumberTap-1'),
+      );
+      await tester.scrollUntilVisible(waveNumberStrip, 300);
+      final waveNumber = find.text('1');
+      expect(waveNumber, findsOneWidget);
+      expect(find.byIcon(Icons.flag), findsOneWidget);
+      expect(tester.getSize(waveNumber).height, greaterThanOrEqualTo(16));
+      expect(
+        tester.getRect(waveNumberStrip).contains(tester.getCenter(waveNumber)),
+        isTrue,
+      );
+
+      await tester.tap(waveNumberStrip);
+      await tester.pumpAndSettle();
+
+      final add = find.byKey(const ValueKey('waveManageAddEventButton'));
+      final reuse = find.byKey(const ValueKey('waveManageReuseEventButton'));
+      expect(add, findsOneWidget);
+      expect(reuse, findsOneWidget);
+      expect(
+        tester.getRect(reuse).top,
+        greaterThan(tester.getRect(add).bottom),
+      );
+      expect(tester.getSize(add).width, greaterThan(250));
+      expect(tester.getSize(reuse).width, greaterThan(250));
+      expect(tester.getSize(find.text('Add event')).height, lessThan(30));
+      expect(tester.getSize(find.text('Reuse event')).height, lessThan(30));
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

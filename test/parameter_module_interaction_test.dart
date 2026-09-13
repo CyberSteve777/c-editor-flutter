@@ -64,7 +64,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('warns when Life Support System and Last Stand coexist', (
+  testWidgets('Life Support System and Last Stand coexist without a warning', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -88,6 +88,7 @@ void main() {
         objData: const <String, dynamic>{},
       ),
     };
+    final edited = <String>[];
 
     await tester.pumpWidget(
       MaterialApp(
@@ -100,7 +101,7 @@ void main() {
             objectMap: objects,
             missingModules: const [],
             onEditBasicInfo: () {},
-            onEditModule: (_) {},
+            onEditModule: edited.add,
             onRemoveModule: (_) {},
             onReorderModules:
                 ({
@@ -118,12 +119,18 @@ void main() {
     final warning = find.byKey(
       const ValueKey('lifeSupportLastStandConflictWarning'),
     );
-    expect(warning, findsOneWidget);
-    expect(find.text('模块逻辑冲突'), findsOneWidget);
-    expect(find.text('「维生系统」与「坚不可摧」模块不能共存，否则关卡无法正常开始。'), findsOneWidget);
-    final card = tester.widget<Card>(warning);
-    final context = tester.element(warning);
-    expect(card.color, Theme.of(context).colorScheme.errorContainer);
+    expect(warning, findsNothing);
+    expect(find.text('模块逻辑冲突'), findsNothing);
+    for (final rtid in [lifeSupportRtid, lastStandRtid]) {
+      final tile = find.byKey(ValueKey(rtid));
+      expect(tile, findsOneWidget);
+      final tapTarget = find
+          .descendant(of: tile, matching: find.byType(InkWell))
+          .first;
+      expect(tester.widget<InkWell>(tapTarget).onTap, isNotNull);
+      await tester.tap(tapTarget);
+    }
+    expect(edited, [lifeSupportRtid, lastStandRtid]);
     expect(tester.takeException(), isNull);
   });
 
