@@ -8,6 +8,7 @@
   "minEditorVersion": "0.1.0",
   "license": "MIT",
   "icon": "icon.png",
+  "configurable": true,
   "entry": {
     "library": "package:c_editor/bundled_plugins/level_preview_cplugin/lib/main.dart",
     "function": "initialize"

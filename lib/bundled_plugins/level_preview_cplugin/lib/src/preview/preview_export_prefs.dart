@@ -1,25 +1,37 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_constants.dart';
+import 'package:c_editor/plugins/plugin_config_store.dart';
 
 const kDefaultPreviewExportFolder = 'previews';
+
+/// Legacy SharedPreferences key (migrated into plugin config once).
 const kPreviewExportFolderPrefsKey = 'level_preview_export_folder';
+
+/// Config JSON key for the export folder (Unicode path segments allowed).
+const kPreviewConfigExportFolderKey = 'exportFolder';
+
+/// ARB key for the export-folder config option title.
+const kPreviewConfigExportFolderTitleKey = 'configExportFolder';
+
+/// ARB key for the export-folder config option description.
+const kPreviewConfigExportFolderDescriptionKey = 'configExportFolderDescription';
 
 class PreviewExportPrefs {
   static Future<String> getFolderName() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(kPreviewExportFolderPrefsKey);
-    final trimmed = raw?.trim() ?? '';
+    await _migrateLegacyIfNeeded();
+    final map = await PluginConfigStore.instance.readMap(kLevelPreviewPluginId);
+    final raw = map[kPreviewConfigExportFolderKey];
+    final trimmed = raw is String ? raw.trim() : '';
     if (trimmed.isEmpty) return kDefaultPreviewExportFolder;
     return normalizeRelativeFolderPath(trimmed);
   }
 
   static Future<void> setFolderPath(String path) async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = await prefs.setString(
-      kPreviewExportFolderPrefsKey,
-      normalizeRelativeFolderPath(path),
-    );
-    if (!saved) throw StateError('Failed to save preview export folder');
+    await _migrateLegacyIfNeeded();
+    final map = await PluginConfigStore.instance.readMap(kLevelPreviewPluginId);
+    map[kPreviewConfigExportFolderKey] = normalizeRelativeFolderPath(path);
+    await PluginConfigStore.instance.writeMap(kLevelPreviewPluginId, map);
   }
 
   /// Workspace-relative paths, preserving nested folders and localized names.
@@ -37,11 +49,7 @@ class PreviewExportPrefs {
   }
 
   static Future<void> setFolderName(String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      kPreviewExportFolderPrefsKey,
-      sanitizeFolderName(name),
-    );
+    await setFolderPath(sanitizeFolderName(name));
   }
 
   /// Keeps folder names filesystem-safe (no path separators).
@@ -50,10 +58,21 @@ class PreviewExportPrefs {
     if (s.isEmpty) return kDefaultPreviewExportFolder;
     s = s.replaceAll(RegExp(r'[\\/]+'), '_');
     s = s.replaceAll('..', '');
-    s = s.replaceAll(RegExp(r'[^A-Za-z0-9_\- ]'), '');
+    s = s.replaceAll(RegExp(r'[<>:"|?*\x00-\x1f]'), '');
     s = s.replaceAll(RegExp(r'^[\s_]+|[\s_]+$'), '');
     if (s.isEmpty) return kDefaultPreviewExportFolder;
     return s;
+  }
+
+  static Future<void> _migrateLegacyIfNeeded() async {
+    final map = await PluginConfigStore.instance.readMap(kLevelPreviewPluginId);
+    if (map.containsKey(kPreviewConfigExportFolderKey)) return;
+    final prefs = await SharedPreferences.getInstance();
+    final legacy = prefs.getString(kPreviewExportFolderPrefsKey)?.trim() ?? '';
+    if (legacy.isEmpty) return;
+    map[kPreviewConfigExportFolderKey] = normalizeRelativeFolderPath(legacy);
+    await PluginConfigStore.instance.writeMap(kLevelPreviewPluginId, map);
+    await prefs.remove(kPreviewExportFolderPrefsKey);
   }
 }
 

@@ -328,6 +328,40 @@ class $CPluginHost implements $Instance {
           ],
         ),
       ),
+      'readConfigJson': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.future, [
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+            ]),
+          ),
+        ),
+      ),
+      'writeConfigJson': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.future, [
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+            ]),
+          ),
+          params: [
+            BridgeParameter(
+              'json',
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
+              false,
+            ),
+          ],
+        ),
+      ),
+      'clearConfig': BridgeMethodDef(
+        BridgeFunctionDef(
+          returns: BridgeTypeAnnotation(
+            BridgeTypeRef(CoreTypes.future, [
+              BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.voidType)),
+            ]),
+          ),
+        ),
+      ),
       'localize': BridgeMethodDef(
         BridgeFunctionDef(
           returns: BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string)),
@@ -458,6 +492,23 @@ class $CPluginHost implements $Instance {
           return $Future.wrap(
             $value.saveLevelJson(path, json).then((_) => null),
           );
+        });
+      case 'readConfigJson':
+        return $Function((runtime, target, args) {
+          return $Future.wrap(
+            $value.readConfigJson().then((json) => $String(json)),
+          );
+        });
+      case 'writeConfigJson':
+        return $Function((runtime, target, args) {
+          final json = args[0]!.$value as String;
+          return $Future.wrap(
+            $value.writeConfigJson(json).then((_) => null),
+          );
+        });
+      case 'clearConfig':
+        return $Function((runtime, target, args) {
+          return $Future.wrap($value.clearConfig().then((_) => null));
         });
       case 'localize':
         return $Function((runtime, target, args) {

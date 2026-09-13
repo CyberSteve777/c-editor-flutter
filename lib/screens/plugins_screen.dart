@@ -10,6 +10,7 @@ import 'package:c_editor/plugins/plugin_file_read_stub.dart'
     as file_read;
 import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
+import 'package:c_editor/plugins/plugin_settings_screen.dart';
 import 'package:c_editor/plugins/plugin_storage.dart';
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/app_message.dart';
@@ -837,6 +838,29 @@ class _PluginDetailPane extends StatelessWidget {
           value: plugin.enabled,
           onChanged: busy ? null : onToggle,
         ),
+        if (m.configurable) ...[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton.tonalIcon(
+              onPressed: busy
+                  ? null
+                  : () {
+                      final settings = findPluginSettingsScreen(screens);
+                      if (settings == null) {
+                        AppMessage.show(
+                          context,
+                          l10n.pluginSettingsUnavailable,
+                        );
+                        return;
+                      }
+                      onOpenScreen(settings);
+                    },
+              icon: const Icon(Icons.settings_outlined),
+              label: Text(l10n.pluginOpenSettings),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
         if (plugin.canUninstall)
           Align(
             alignment: Alignment.centerLeft,
@@ -891,27 +915,39 @@ class _PluginDetailPane extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        if (screens.isEmpty)
-          Text(
-            l10n.pluginNoScreens,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          )
-        else
-          ...screens.map(
-            (screen) => Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: const Icon(Icons.extension),
-                title: Text(screen.resolvedTitle(context)),
-                trailing: TextButton(
-                  onPressed: () => onOpenScreen(screen),
-                  child: Text(l10n.pluginOpenScreen),
+        Builder(
+          builder: (context) {
+            final featureScreens = m.configurable
+                ? screens
+                      .where((s) => !isPluginSettingsScreenId(s.screenId))
+                      .toList(growable: false)
+                : screens;
+            if (featureScreens.isEmpty) {
+              return Text(
+                l10n.pluginNoScreens,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-              ),
-            ),
-          ),
+              );
+            }
+            return Column(
+              children: [
+                for (final screen in featureScreens)
+                  Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      leading: const Icon(Icons.extension),
+                      title: Text(screen.resolvedTitle(context)),
+                      trailing: TextButton(
+                        onPressed: () => onOpenScreen(screen),
+                        child: Text(l10n.pluginOpenScreen),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
       ],
     );
   }

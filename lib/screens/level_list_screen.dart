@@ -18,6 +18,7 @@ import 'package:c_editor/data/repository/level_repository_base.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/plugin_constants.dart';
+import 'package:c_editor/plugins/plugin_install_dialog.dart';
 import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
@@ -422,7 +423,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
         lower.endsWith('.bin') ||
         lower.endsWith('.smf') ||
         lower.endsWith('.rsb') ||
-        lower.endsWith('.rsg')) {
+        lower.endsWith('.rsg') ||
+        lower.endsWith('.cplugin')) {
       return trimmed;
     }
     return trimmed + _levelExtensionFromFileName(referenceFileName);
@@ -677,6 +679,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         'hujson',
         'rton',
         'smf',
+        'cplugin',
         'png',
         'jpg',
         'jpeg',
@@ -2104,6 +2107,10 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                       ),
                                                 ),
                                               );
+                                            } else if (LevelRepository.isSupportedPluginFileName(
+                                              item.name,
+                                            )) {
+                                              await _openCpluginInstall(item);
                                             } else {
                                               final returnScrollOffset =
                                                   _listScrollController
@@ -2280,6 +2287,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                     .endsWith('.smf') ||
                                                 LevelRepository.isSupportedImageFileName(
                                                   item.name,
+                                                ) ||
+                                                LevelRepository.isSupportedPluginFileName(
+                                                  item.name,
                                                 )
                                             ? null
                                             : () => _showConvertMenuFor(item),
@@ -2288,15 +2298,28 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                 item.isDirectory ||
                                                 LevelRepository.isSupportedImageFileName(
                                                   item.name,
+                                                ) ||
+                                                LevelRepository.isSupportedPluginFileName(
+                                                  item.name,
                                                 )
                                             ? null
                                             : () => _toggleFavorite(item),
                                         onShare:
                                             actionsDisabled ||
                                                 item.isDirectory ||
+                                                LevelRepository.isSupportedPluginFileName(
+                                                  item.name,
+                                                ) ||
                                                 !isLevelFileShareSupported
                                             ? null
                                             : () => _handleShare(item),
+                                        onInstallPlugin:
+                                            actionsDisabled ||
+                                                !LevelRepository.isSupportedPluginFileName(
+                                                  item.name,
+                                                )
+                                            ? null
+                                            : () => _openCpluginInstall(item),
                                         showMove: !item.isDirectory && !kIsWeb,
                                       ),
                                     );
@@ -2591,6 +2614,21 @@ class _LevelListScreenState extends State<LevelListScreen> {
     } else {
       _showWarningMessage(text);
     }
+  }
+
+  Future<void> _openCpluginInstall(FileItem item) async {
+    final l10n = AppLocalizations.of(context)!;
+    final bytes = await LevelRepository.readLibraryFileBytes(item.path);
+    if (!mounted) return;
+    if (bytes == null || bytes.isEmpty) {
+      AppMessage.show(
+        context,
+        l10n.pluginReadFailed,
+        icon: Icons.error_outline,
+      );
+      return;
+    }
+    await showCpluginInstallDialog(context, bytes: bytes);
   }
 
   Future<String?> _showConversionRequiredDialog(FileItem item) async {
@@ -3056,6 +3094,7 @@ class _FileItemRow extends StatelessWidget {
     this.onConvert,
     this.onToggleFavorite,
     this.onShare,
+    this.onInstallPlugin,
   });
 
   final FileItem item;
@@ -3072,6 +3111,7 @@ class _FileItemRow extends StatelessWidget {
   final VoidCallback? onConvert;
   final VoidCallback? onToggleFavorite;
   final VoidCallback? onShare;
+  final VoidCallback? onInstallPlugin;
 
   /// Must stay in sync with the non-compact layout in [build].
   static const _marginBottom = 12.0;
@@ -3171,6 +3211,14 @@ class _FileItemRow extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(6),
       itemBuilder: (_) => [
+        if (onInstallPlugin != null)
+          PopupMenuItem(
+            value: 'install_plugin',
+            child: _popupMenuTile(
+              icon: Icons.extension,
+              label: l10n.pluginInstallAction,
+            ),
+          ),
         if (onToggleFavorite != null)
           PopupMenuItem(
             value: 'favorite',
@@ -3240,6 +3288,8 @@ class _FileItemRow extends StatelessWidget {
           return;
         }
         switch (v) {
+          case 'install_plugin':
+            onInstallPlugin?.call();
           case 'favorite':
             onToggleFavorite?.call();
           case 'rename':
@@ -3361,6 +3411,9 @@ class _FileItemRow extends StatelessWidget {
     final isImageFile =
         !item.isDirectory &&
         LevelRepository.isSupportedImageFileName(item.name);
+    final isPluginFile =
+        !item.isDirectory &&
+        LevelRepository.isSupportedPluginFileName(item.name);
     final isGifFile = isImageFile && item.name.toLowerCase().endsWith('.gif');
 
     final displayName = item.isDirectory
@@ -3408,19 +3461,23 @@ class _FileItemRow extends StatelessWidget {
                           ? Icons.folder
                           : (isResourceFile
                                 ? Icons.inventory_2_outlined
-                                : (isImageFile
-                                      ? (isGifFile
-                                            ? Icons.gif_box_outlined
-                                            : Icons.image_outlined)
-                                      : Icons.description)),
+                                : (isPluginFile
+                                      ? Icons.extension
+                                      : (isImageFile
+                                            ? (isGifFile
+                                                  ? Icons.gif_box_outlined
+                                                  : Icons.image_outlined)
+                                            : Icons.description))),
                       size: iconSize,
                       color: item.isDirectory
                           ? const Color(0xFFFFC107)
                           : (isResourceFile
                                 ? Colors.blueGrey
-                                : (isImageFile
-                                      ? Colors.teal
-                                      : theme.colorScheme.primary)),
+                                : (isPluginFile
+                                      ? theme.colorScheme.primary
+                                      : (isImageFile
+                                            ? Colors.teal
+                                            : theme.colorScheme.primary))),
                     ),
                   ),
                   SizedBox(width: gap),

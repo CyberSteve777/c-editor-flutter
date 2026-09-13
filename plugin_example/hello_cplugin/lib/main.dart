@@ -3,16 +3,8 @@ import 'package:c_editor/plugin_api.dart';
 
 /// C-Editor plugin entrypoint (`package:hello_cplugin/main.dart`).
 ///
-/// Named `main.dart` so dart_eval's default entrypoint list (`/main.dart`)
-/// keeps [initialize] in the bytecode.
-///
-/// - **Debug:** load into C-Editor via `CPLUGIN_DEBUG_PATH` or Plugins →
-///   Load folder (debug).
-/// - **Ship:** compile to EVC and pack as `.cplugin`.
-///
-/// Prefer non-`const` constructors — dart_eval support for const is limited.
-/// Use string slot names (`'editorAppBar'`, …) so dart_eval does not need
-/// extra bridges for [CPluginUiSlots].
+/// Prefer widgets already bridged by flutter_eval. Avoid StatefulWidget,
+/// StatefulBuilder, FilledButton, showDialog, and dart:convert where possible.
 void initialize(CPluginHost host) {
   host.registerScreen('hello', 'Hello Plugin', (context) {
     return Scaffold(
@@ -39,6 +31,81 @@ void initialize(CPluginHost host) {
             pvzAddButton(
               onPressed: () {},
               label: 'Host PvzAddButton',
+            ),
+          ],
+        ),
+      ),
+    );
+  });
+
+  host.registerScreen('settings', 'helloSettingsTitle', (context) {
+    final controller = TextEditingController();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          host.localize(context, 'helloSettingsTitle', 'Hello settings'),
+        ),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(host.localize(context, 'configGreeting', 'Greeting')),
+            SizedBox(height: 8.0),
+            Text(
+              host.localize(
+                context,
+                'configGreetingDescription',
+                'Saved with host.readConfigJson / writeConfigJson.',
+              ),
+            ),
+            SizedBox(height: 12.0),
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: host.localize(
+                  context,
+                  'configGreetingHint',
+                  'e.g. Hello · Привет · 你好',
+                ),
+              ),
+            ),
+            SizedBox(height: 12.0),
+            ElevatedButton(
+              onPressed: () async {
+                final raw = await host.readConfigJson();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(raw)),
+                );
+              },
+              child: Text('Load'),
+            ),
+            SizedBox(height: 8.0),
+            ElevatedButton(
+              onPressed: () async {
+                final text = controller.text;
+                final escaped = text
+                    .replaceAll('\\', '\\\\')
+                    .replaceAll('"', '\\"');
+                await host.writeConfigJson(
+                  '{"greeting":"' + escaped + '"}',
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      host.localize(
+                        context,
+                        'helloSettingsSaved',
+                        'Settings saved',
+                      ),
+                    ),
+                  ),
+                );
+              },
+              child: Text(
+                host.localize(context, 'helloSettingsSave', 'Save'),
+              ),
             ),
           ],
         ),

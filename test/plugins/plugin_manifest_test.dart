@@ -66,6 +66,7 @@ void main() {
       expect(manifest.source, 'https://github.com/example/rich');
       expect(manifest.discord, 'https://discord.gg/example');
       expect(manifest.resolvedAuthors, ['Alice', 'Bob']);
+      expect(manifest.configurable, isFalse);
     });
 
     test('legacy name and description still parse', () {

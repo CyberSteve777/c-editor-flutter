@@ -25,6 +25,9 @@ level_preview_cplugin/
 ```
 
 Localization uses ARB under `assets/l10n/` (`host.localize`). Other plugin JSON/files belong elsewhere under `assets/` (not in `l10n/`).
+Config options use dedicated ARB keys (`configExportFolder`, `configToolbarStyle`, …)
+and optional `assets/config_schema.json`. Settings persist via the host config API
+(`{levelLibrary}/.plugin_config/.../config.json`). Manifest sets `"configurable": true`.
 
 This folder lives under `lib/bundled_plugins/` (part of the `c_editor` package)
 instead of a separate pub package, so it can use host APIs without a circular

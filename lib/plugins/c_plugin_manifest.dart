@@ -80,6 +80,7 @@ class CPluginManifest {
     this.source,
     this.discord,
     this.incompatibleWith = const [],
+    this.configurable = false,
   });
 
   final String format;
@@ -113,6 +114,10 @@ class CPluginManifest {
   final String? discord;
 
   final List<CPluginIncompatibility> incompatibleWith;
+
+  /// When true, the Plugins UI offers a Settings entry for this plugin.
+  /// Defaults to false so non-configurable plugins stay uncluttered.
+  final bool configurable;
 
   final String entryLibrary;
   final String entryFunction;
@@ -201,6 +206,7 @@ class CPluginManifest {
       source: _optionalString(json['source']),
       discord: _optionalString(json['discord']),
       incompatibleWith: _incompatList(json['incompatibleWith']),
+      configurable: json['configurable'] == true,
       entryLibrary: library,
       entryFunction: function,
     );
@@ -236,6 +242,7 @@ class CPluginManifest {
         if (incompatibleWith.isNotEmpty)
           'incompatibleWith':
               incompatibleWith.map((e) => e.toJson()).toList(growable: false),
+        if (configurable) 'configurable': true,
         'entry': {
           'library': entryLibrary,
           'function': entryFunction,

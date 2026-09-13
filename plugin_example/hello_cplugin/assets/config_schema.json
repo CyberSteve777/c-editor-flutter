@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "options": [
+    {
+      "key": "greeting",
+      "type": "string",
+      "titleKey": "configGreeting",
+      "descriptionKey": "configGreetingDescription"
+    }
+  ]
+}

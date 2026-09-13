@@ -1,5 +1,11 @@
 {
   "@@locale": "en",
   "pluginName": "Hello Plugin",
-  "pluginDescription": "Sample plugin that registers a Hello screen and editor UI actions"
+  "pluginDescription": "Sample plugin that registers a Hello screen, editor UI actions, and a settings page backed by the host config API.",
+  "helloSettingsTitle": "Hello settings",
+  "configGreeting": "Greeting",
+  "configGreetingDescription": "Saved with host.readConfigJson / writeConfigJson (Unicode OK).",
+  "configGreetingHint": "e.g. Hello · Привет · 你好",
+  "helloSettingsSave": "Save",
+  "helloSettingsSaved": "Settings saved"
 }

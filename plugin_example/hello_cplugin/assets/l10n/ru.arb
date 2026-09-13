@@ -1,5 +1,11 @@
 {
   "@@locale": "ru",
   "pluginName": "Hello Plugin",
-  "pluginDescription": "Пример плагина: экран Hello и действия в интерфейсе редактора"
+  "pluginDescription": "Пример плагина: экран Hello, действия в редакторе и настройки через API конфигурации хоста.",
+  "helloSettingsTitle": "Настройки Hello",
+  "configGreeting": "Приветствие",
+  "configGreetingDescription": "Сохраняется через host.readConfigJson / writeConfigJson (Unicode поддерживается).",
+  "configGreetingHint": "напр. Hello · Привет · 你好",
+  "helloSettingsSave": "Сохранить",
+  "helloSettingsSaved": "Настройки сохранены"
 }

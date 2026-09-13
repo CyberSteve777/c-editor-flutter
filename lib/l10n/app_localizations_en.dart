@@ -292,7 +292,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pluginsFolderReserved =>
-      'The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.';
+      'The \".plugins\" and \".plugin_config\" folder names are reserved for editor plugins. Please choose a different name.';
 
   @override
   String get pluginNoLibraryForInstall =>
@@ -366,10 +366,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pluginOpenScreen => 'Open';
 
   @override
+  String get pluginOpenSettings => 'Settings';
+
+  @override
+  String get pluginInstallAction => 'Install';
+
+  @override
+  String get pluginConfigurable => 'Configurable';
+
+  @override
   String get pluginFeaturesSection => 'Features & screens';
 
   @override
   String get pluginNoDescription => 'No description provided.';
+
+  @override
+  String get pluginSettingsUnavailable => 'This plugin has no settings screen.';
 
   @override
   String get share => 'Share';

@@ -123,7 +123,7 @@
   "pluginLoadError": "Failed to load",
   "pluginBundledBadge": "Built-in",
   "pluginImportedBadge": "Imported",
-  "pluginsFolderReserved": "The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.",
+  "pluginsFolderReserved": "The \".plugins\" and \".plugin_config\" folder names are reserved for editor plugins. Please choose a different name.",
   "pluginNoLibraryForInstall": "Select a workspace folder before installing plugins.",
     "pluginShowingCount": "{count, plural, =1{1 installed plugin} other{{count} installed plugins}}",
   "@pluginShowingCount": {
@@ -158,8 +158,12 @@
   "pluginLinkDiscord": "Discord",
   "pluginIncompatibleWith": "Incompatible with",
   "pluginOpenScreen": "Open",
+  "pluginOpenSettings": "Settings",
+  "pluginInstallAction": "Install",
+  "pluginConfigurable": "Configurable",
   "pluginFeaturesSection": "Features & screens",
   "pluginNoDescription": "No description provided.",
+  "pluginSettingsUnavailable": "This plugin has no settings screen.",
   "share": "Share",
   "shareLevelFileText": "Level file: {name}",
   "@shareLevelFileText": {

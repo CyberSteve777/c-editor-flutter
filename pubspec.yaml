@@ -92,6 +92,7 @@ flutter:
     - lib/bundled_plugins/level_preview_cplugin/assets/icon.png
     - lib/bundled_plugins/level_preview_cplugin/assets/stage_banners.json
     - lib/bundled_plugins/level_preview_cplugin/assets/feature_groups.json
+    - lib/bundled_plugins/level_preview_cplugin/assets/config_schema.json
     - lib/bundled_plugins/level_preview_cplugin/assets/banners/
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/en.arb
     - lib/bundled_plugins/level_preview_cplugin/assets/l10n/ru.arb

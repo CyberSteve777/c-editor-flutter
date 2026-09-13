@@ -34,6 +34,14 @@ void main() {
     );
     expect(screenRegistry.screens, isNotEmpty);
     expect(screenRegistry.uiElements, isNotEmpty);
+    expect(
+      screenRegistry.screens.any((s) => s.screenId == 'settings'),
+      isTrue,
+    );
+    expect(package.manifest.configurable, isTrue);
+    expect(package.manifest.icon, 'icon.png');
+    expect(package.manifest.version, '1.1.0');
+
 
     final outDir = Directory('build/hello_cplugin');
     if (outDir.existsSync()) {

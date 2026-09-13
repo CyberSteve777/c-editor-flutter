@@ -619,7 +619,7 @@ abstract class AppLocalizations {
   /// No description provided for @pluginsFolderReserved.
   ///
   /// In en, this message translates to:
-  /// **'The \".plugins\" folder name is reserved for editor plugins. Please choose a different name.'**
+  /// **'The \".plugins\" and \".plugin_config\" folder names are reserved for editor plugins. Please choose a different name.'**
   String get pluginsFolderReserved;
 
   /// No description provided for @pluginNoLibraryForInstall.
@@ -736,6 +736,24 @@ abstract class AppLocalizations {
   /// **'Open'**
   String get pluginOpenScreen;
 
+  /// No description provided for @pluginOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get pluginOpenSettings;
+
+  /// No description provided for @pluginInstallAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get pluginInstallAction;
+
+  /// No description provided for @pluginConfigurable.
+  ///
+  /// In en, this message translates to:
+  /// **'Configurable'**
+  String get pluginConfigurable;
+
   /// No description provided for @pluginFeaturesSection.
   ///
   /// In en, this message translates to:
@@ -747,6 +765,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No description provided.'**
   String get pluginNoDescription;
+
+  /// No description provided for @pluginSettingsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This plugin has no settings screen.'**
+  String get pluginSettingsUnavailable;
 
   /// No description provided for @share.
   ///
