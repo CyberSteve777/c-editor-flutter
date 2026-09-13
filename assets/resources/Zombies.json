@@ -1093,7 +1093,7 @@
       "Imp",
       "Chinese"
     ],
-    "icon": "zombie_towerdefend_wolf_imp.webp"
+    "icon": "zombie_zombie_towerdefend_wolf_imp.webp"
   },
   {
     "id": "zombie_towerdefend_wolf_fire",
@@ -1103,7 +1103,7 @@
       "Basic",
       "Chinese"
     ],
-    "icon": "zombie_towerdefend_wolf_fire.webp"
+    "icon": "zombie_zombie_towerdefend_wolf_fire.webp"
   },
   {
     "id": "zombie_towerdefend_boss",
@@ -1113,7 +1113,7 @@
       "Basic",
       "Chinese"
     ],
-    "icon": "zombie_towerdefend_boss.webp"
+    "icon": "zombie_zombie_towerdefend_boss.webp"
   },
   {
     "id": "beach",
