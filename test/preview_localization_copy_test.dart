@@ -132,6 +132,7 @@ void main() {
       },
       'previewGenPiratePlankRows': {'rows'},
       'previewGenListCount': {'key', 'count'},
+      'previewGenLayerLabel': {'type', 'number'},
     };
     expect(
       en.entries

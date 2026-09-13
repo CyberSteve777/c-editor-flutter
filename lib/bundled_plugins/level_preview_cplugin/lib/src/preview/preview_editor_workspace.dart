@@ -35,8 +35,12 @@ class PreviewEditorWorkspace extends StatefulWidget {
 
 class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
   final _toolbarScroll = ScrollController();
-  final _canvasHorizontalScroll = ScrollController();
-  final _canvasVerticalScroll = ScrollController();
+  late final _canvasHorizontalScroll = _PreviewCanvasZoomScrollController(
+    pendingOffset: (metrics) => _zoomOffsetForAxis(metrics, Axis.horizontal),
+  );
+  late final _canvasVerticalScroll = _PreviewCanvasZoomScrollController(
+    pendingOffset: (metrics) => _zoomOffsetForAxis(metrics, Axis.vertical),
+  );
   double _toolbarFraction = 0.28;
   double _zoom = 1;
   Size _canvasViewport = Size.zero;
@@ -61,43 +65,30 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
   void _setZoom(double value, {bool fit = false}) {
     final zoom = value.clamp(0.5, 3.0);
     final origin = _zoomOrigin(_zoom);
-    final center =
-        _pendingZoomCenter ??
-        Offset(
-          ((_canvasHorizontalScroll.hasClients
-                      ? _canvasHorizontalScroll.offset
-                      : 0) +
-                  _canvasViewport.width / 2 -
-                  origin.dx) /
-              _zoom,
-          ((_canvasVerticalScroll.hasClients
-                      ? _canvasVerticalScroll.offset
-                      : 0) +
-                  _canvasViewport.height / 2 -
-                  origin.dy) /
-              _zoom,
-        );
+    final center = fit
+        ? const Offset(0.5, 0.5)
+        : _pendingZoomCenter ??
+              Offset(
+                ((_canvasHorizontalScroll.hasClients
+                            ? _canvasHorizontalScroll.offset
+                            : 0) +
+                        _canvasViewport.width / 2 -
+                        origin.dx) /
+                    (_zoom * math.max(1, _canvasViewport.width)),
+                ((_canvasVerticalScroll.hasClients
+                            ? _canvasVerticalScroll.offset
+                            : 0) +
+                        _canvasViewport.height / 2 -
+                        origin.dy) /
+                    (_zoom * math.max(1, _canvasViewport.height)),
+              );
     _pendingZoomCenter = center;
     final revision = ++_zoomRevision;
     setState(() => _zoom = zoom);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || revision != _zoomRevision) return;
-      final newOrigin = _zoomOrigin(_zoom);
-      void reposition(ScrollController controller, double position) {
-        if (!controller.hasClients) return;
-        controller.jumpTo(
-          position.clamp(0.0, controller.position.maxScrollExtent),
-        );
-      }
-
-      reposition(
-        _canvasHorizontalScroll,
-        fit ? 0 : center.dx * _zoom + newOrigin.dx - _canvasViewport.width / 2,
-      );
-      reposition(
-        _canvasVerticalScroll,
-        fit ? 0 : center.dy * _zoom + newOrigin.dy - _canvasViewport.height / 2,
-      );
+      // Position correction happens during layout, before the scaled canvas
+      // paints. Only clear the queued anchor here; never jump after painting.
       _pendingZoomCenter = null;
     });
   }
@@ -182,6 +173,15 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
         );
       },
     );
+  }
+
+  double? _zoomOffsetForAxis(ScrollMetrics metrics, Axis axis) {
+    final center = _pendingZoomCenter;
+    if (center == null) return null;
+    final dimension = metrics.viewportDimension;
+    final normalizedCenter = axis == Axis.horizontal ? center.dx : center.dy;
+    final origin = _zoom < 1 ? dimension * (1 - _zoom) / 2 : 0;
+    return normalizedCenter * dimension * _zoom + origin - dimension / 2;
   }
 
   Widget _buildZoomBar({required bool showLabel}) {
@@ -355,5 +355,60 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
         );
       },
     );
+  }
+}
+
+/// Applies the zoom anchor while the scroll extents are being laid out, so
+/// the first painted frame already has the correct scale and pan position.
+class _PreviewCanvasZoomScrollController extends ScrollController {
+  _PreviewCanvasZoomScrollController({required this.pendingOffset});
+
+  final double? Function(ScrollMetrics) pendingOffset;
+
+  @override
+  ScrollPosition createScrollPosition(
+    ScrollPhysics physics,
+    ScrollContext context,
+    ScrollPosition? oldPosition,
+  ) => _PreviewCanvasZoomScrollPosition(
+    physics: physics,
+    context: context,
+    initialPixels: initialScrollOffset,
+    keepScrollOffset: keepScrollOffset,
+    oldPosition: oldPosition,
+    debugLabel: debugLabel,
+    pendingOffset: pendingOffset,
+  );
+}
+
+class _PreviewCanvasZoomScrollPosition extends ScrollPositionWithSingleContext {
+  _PreviewCanvasZoomScrollPosition({
+    required super.physics,
+    required super.context,
+    required super.initialPixels,
+    required super.keepScrollOffset,
+    super.oldPosition,
+    super.debugLabel,
+    required this.pendingOffset,
+  });
+
+  final double? Function(ScrollMetrics) pendingOffset;
+
+  @override
+  bool correctForNewDimensions(
+    ScrollMetrics oldPosition,
+    ScrollMetrics newPosition,
+  ) {
+    final offset = pendingOffset(newPosition);
+    if (offset != null) {
+      correctPixels(
+        offset.clamp(newPosition.minScrollExtent, newPosition.maxScrollExtent),
+      );
+      // SingleChildScrollView paints directly from pixels and ignores the
+      // request to repeat layout. Accept these dimensions so scrollbar
+      // metrics and drag gestures are updated in the same layout pass.
+      return true;
+    }
+    return super.correctForNewDimensions(oldPosition, newPosition);
   }
 }

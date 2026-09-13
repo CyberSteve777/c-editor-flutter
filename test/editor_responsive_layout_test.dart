@@ -120,6 +120,80 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final draft in ['', '-']) {
+    for (final startsWide in [true, false]) {
+      testWidgets(
+        'uncontrolled ${draft.isEmpty ? 'empty' : 'unfinished numeric'} draft '
+        'keeps content and focus through ${startsWide ? 'wide-narrow-wide' : 'narrow-wide-narrow'} label layouts',
+        (tester) async {
+          const fieldKey = Key('uncontrolled-numeric-draft');
+          const label = 'Value draft';
+          var parsedValue = 1;
+
+          Future<void> pumpAtWidth(double width) async {
+            await tester.pumpWidget(
+              _testApp(
+                width: width,
+                child: EditorResponsiveInputField(
+                  label: label,
+                  builder: (context, decoration) => TextFormField(
+                    key: fieldKey,
+                    initialValue: '$parsedValue',
+                    keyboardType: const TextInputType.numberWithOptions(
+                      signed: true,
+                    ),
+                    decoration: decoration,
+                    onChanged: (value) {
+                      final parsed = int.tryParse(value);
+                      if (parsed != null) parsedValue = parsed;
+                    },
+                  ),
+                ),
+              ),
+            );
+            await tester.pumpAndSettle();
+            final input = tester.widget<TextField>(
+              find.descendant(
+                of: find.byKey(fieldKey),
+                matching: find.byType(TextField),
+              ),
+            );
+            expect(input.decoration?.labelText, width == 700 ? label : null);
+          }
+
+          final firstWidth = startsWide ? 700.0 : 250.0;
+          final secondWidth = startsWide ? 250.0 : 700.0;
+          await pumpAtWidth(firstWidth);
+          expect(
+            tester.widget<TextFormField>(find.byKey(fieldKey)).controller,
+            isNull,
+          );
+          await tester.enterText(find.byKey(fieldKey), draft);
+          await tester.pump();
+          final editableFinder = find.descendant(
+            of: find.byKey(fieldKey),
+            matching: find.byType(EditableText),
+          );
+          final originalEditable = tester.widget<EditableText>(editableFinder);
+          expect(originalEditable.controller.text, draft);
+          expect(originalEditable.focusNode.hasFocus, isTrue);
+
+          for (final width in [secondWidth, firstWidth]) {
+            await pumpAtWidth(width);
+            final editable = tester.widget<EditableText>(editableFinder);
+            expect(editable.controller, same(originalEditable.controller));
+            expect(editable.focusNode, same(originalEditable.focusNode));
+            expect(editable.controller.text, draft);
+            expect(editable.controller.selection.baseOffset, draft.length);
+            expect(editable.focusNode.hasFocus, isTrue);
+            expect(parsedValue, 1);
+            expect(tester.takeException(), isNull);
+          }
+        },
+      );
+    }
+  }
+
   testWidgets('one oversized label moves every field on the page above', (
     tester,
   ) async {

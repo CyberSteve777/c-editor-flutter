@@ -876,17 +876,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptyFavorites => 'You don\'t have any favorite levels yet';
 
   @override
-  String get copyEventTarget => 'Target wave';
+  String get copyEventTarget => 'Select target waves';
 
   @override
   String get targetWaveIndex => 'Target wave number';
 
   @override
-  String get targetWaveIndexHint => 'e.g. 1, 3, 5-8, 10-2:-2';
+  String get targetWaveAlreadyContainsEvent => 'Already contains this event';
 
   @override
   String get targetWaveIndexHelper =>
-      'Separate waves or ranges with commas (1, 3, 5-8).\nRanges are inclusive. Default step is 1 if start <= end, otherwise -1.\nAdd :step after a range (1-10:2, 10-1:-2). Step sign must match the direction.\nCopy reference skips waves that already have this event.\nDeep copy creates a unique copy per wave.';
+      'Waves that already contain this event are automatically skipped when copying references.';
 
   @override
   String get moveToWaveIndex => 'Move to wave number';
@@ -5335,7 +5335,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moonExpertHelpOverview =>
-      'This module is commonly used in Moon BaseZ Expert Mode. When enabled, every zombie in the level uses the specified level, and all plants are forced to level 1. These settings override other plant and zombie level settings, including those in the Tier Definition module. Note that this module has no effect in Creative Courtyard.';
+      'This module is commonly used in Moon BaseZ Expert Mode. When enabled, every zombie in the level uses the specified level, and all plants are forced to Level 1. \nThese settings override other plant and zombie level settings, including those in the Tier Definition module. Note that this module has no effect in Creative Courtyard.';
 
   @override
   String get enterMoonExpertZombieLevelHint => 'Enter zombie level (0–10)';

@@ -291,6 +291,7 @@ class _LevelPreviewDialogState extends State<LevelPreviewDialog> {
 
     if (levelDef == null) {
       return AlertDialog(
+        scrollable: true,
         title: Text(widget.fileName),
         content: Text(l10n.noLevelDefinitionHint),
         actions: [TextButton(onPressed: widget.onBack, child: Text(l10n.back))],

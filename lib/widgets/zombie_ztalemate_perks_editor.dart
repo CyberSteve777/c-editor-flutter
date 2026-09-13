@@ -5,6 +5,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/anchored_floating_panel.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 class ZombieZtalematePerksEditor extends StatelessWidget {
   const ZombieZtalematePerksEditor({
@@ -25,45 +26,41 @@ class ZombieZtalematePerksEditor extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n?.ztPerksSectionTitle ?? 'Ztalemate perks',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n?.ztPerksSectionHint ??
-                        'Each perk type can only be applied once per zombie.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+        EditorResponsiveActionRow(
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n?.ztPerksSectionTitle ?? 'Ztalemate perks',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              const SizedBox(height: 4),
+              Text(
+                l10n?.ztPerksSectionHint ??
+                    'Each perk type can only be applied once per zombie.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          action: TextButton.icon(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            TextButton.icon(
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              onPressed: () => _showAddPerkDialog(
-                context,
-                selectedTitles: selected,
-                onSelected: onChanged,
-              ),
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(l10n?.ztPerksAdd ?? 'Add perk'),
+            onPressed: () => _showAddPerkDialog(
+              context,
+              selectedTitles: selected,
+              onSelected: onChanged,
             ),
-          ],
+            icon: const Icon(Icons.add, size: 18),
+            label: Text(l10n?.ztPerksAdd ?? 'Add perk'),
+          ),
+          breakpoint: 520 * (MediaQuery.textScalerOf(context).scale(14) / 14),
         ),
         const SizedBox(height: 12),
         if (selected.isEmpty)
@@ -113,87 +110,92 @@ class ZombieZtalematePerksEditor extends StatelessWidget {
     final picked = await showDialog<String>(
       context: context,
       builder: (ctx) {
-        final size = MediaQuery.sizeOf(ctx);
         final theme = Theme.of(ctx);
-        // Explicit box: avoids AlertDialog/Dialog intrinsic sizing, which was
-        // collapsing width (~66px) and overflowing height.
-        final width = (size.width - 32).clamp(280.0, 560.0);
-        final height = (size.height * 0.75).clamp(320.0, 640.0);
-
         return SafeArea(
-          child: Center(
-            child: Material(
-              color:
-                  theme.dialogTheme.backgroundColor ??
-                  theme.colorScheme.surface,
-              elevation: theme.dialogTheme.elevation ?? 6,
-              shape:
-                  theme.dialogTheme.shape ??
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-              clipBehavior: Clip.antiAlias,
-              child: SizedBox(
-                width: width,
-                height: height,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
-                      child: Text(
-                        l10n?.ztPerksAddTitle ?? 'Add Zombie Perks',
-                        style: theme.textTheme.headlineSmall,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: LayoutBuilder(
+              builder: (context, constraints) => Center(
+                child: Material(
+                  color:
+                      theme.dialogTheme.backgroundColor ??
+                      theme.colorScheme.surface,
+                  elevation: theme.dialogTheme.elevation ?? 6,
+                  shape:
+                      theme.dialogTheme.shape ??
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ),
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        children: [
-                          for (final type in typeOrder) ...[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
-                              child: _TextWithInfoRow(
-                                text: _categoryLabel(ctx, type),
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                  clipBehavior: Clip.antiAlias,
+                  child: SizedBox(
+                    width: constraints.maxWidth.clamp(0.0, 560.0),
+                    height: (constraints.maxHeight * 0.85).clamp(0.0, 640.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: ListView(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
+                                child: Text(
+                                  l10n?.ztPerksAddTitle ?? 'Add Zombie Perks',
+                                  style: theme.textTheme.headlineSmall,
                                 ),
-                                infoTooltip:
-                                    l10n?.ztPerksCategoryInfoTitle ??
-                                    'Perk descriptions',
-                                onInfoPressed: (infoContext) =>
-                                    _showCategoryDescriptions(
-                                      infoContext,
-                                      type,
+                              ),
+                              for (final type in typeOrder) ...[
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    8,
+                                    0,
+                                    4,
+                                  ),
+                                  child: _TextWithInfoRow(
+                                    text: _categoryLabel(ctx, type),
+                                    style: theme.textTheme.labelLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
                                     ),
-                              ),
-                            ),
-                            for (final entry in grouped[type]!)
-                              _PerkPickerTile(
-                                entry: entry,
-                                isSelected: selectedTitles.contains(
-                                  entry.alias,
+                                    infoTooltip:
+                                        l10n?.ztPerksCategoryInfoTitle ??
+                                        'Perk descriptions',
+                                    onInfoPressed: (infoContext) =>
+                                        _showCategoryDescriptions(
+                                          infoContext,
+                                          type,
+                                        ),
+                                  ),
                                 ),
-                                isTypeBlocked:
-                                    selectedTypes.contains(entry.type) &&
-                                    !selectedTitles.contains(entry.alias),
-                                onTap: () => Navigator.pop(ctx, entry.alias),
-                              ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
-                      child: Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: Text(l10n?.cancel ?? 'Cancel'),
+                                for (final entry in grouped[type]!)
+                                  _PerkPickerTile(
+                                    entry: entry,
+                                    isSelected: selectedTitles.contains(
+                                      entry.alias,
+                                    ),
+                                    isTypeBlocked:
+                                        selectedTypes.contains(entry.type) &&
+                                        !selectedTitles.contains(entry.alias),
+                                    onTap: () =>
+                                        Navigator.pop(ctx, entry.alias),
+                                  ),
+                              ],
+                            ],
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                          child: Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: Text(l10n?.cancel ?? 'Cancel'),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -231,37 +233,40 @@ class ZombieZtalematePerksEditor extends StatelessWidget {
       maxHeight: 200,
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _categoryLabel(anchorContext, type),
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              description,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                height: 1.35,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n?.ztPerkCategoryDescNumericHint ??
-                  'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.75,
+        child: SingleChildScrollView(
+          key: ValueKey('zombiePerkCategoryScroll_$type'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _categoryLabel(anchorContext, type),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                fontStyle: FontStyle.italic,
-                height: 1.3,
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                description,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.35,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n?.ztPerkCategoryDescNumericHint ??
+                    'Letters such as A, B, X, N, and P stand for numeric values that vary by tier.',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.75,
+                  ),
+                  fontStyle: FontStyle.italic,
+                  height: 1.3,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -340,48 +345,46 @@ class _PerkPickerTile extends StatelessWidget {
         ? theme.colorScheme.onSurface.withValues(alpha: 0.45)
         : null;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: isTypeBlocked ? null : onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: AssetImageWidget(
-                  assetPath: iconPath,
-                  width: 36,
-                  height: 36,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _TextWithInfoRow(
-                  text: name,
-                  style: theme.textTheme.bodyLarge?.copyWith(color: nameColor),
-                  infoTooltip: l10n?.ztPerksViewStats ?? 'View stats',
-                  infoEnabled: hasStats,
-                  onInfoPressed: hasStats
-                      ? (infoContext) =>
-                            _showPerkNumericProperties(infoContext, entry)
-                      : null,
-                ),
-              ),
-              if (isSelected) ...[
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.check_circle,
-                  color: theme.colorScheme.primary,
-                  size: 22,
-                ),
-              ],
-            ],
-          ),
+    return EditorOptionTile(
+      key: ValueKey('zombiePerkOption_${entry.alias}'),
+      enabled: !isTypeBlocked,
+      selected: isSelected,
+      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: AssetImageWidget(
+          assetPath: iconPath,
+          width: 36,
+          height: 36,
+          fit: BoxFit.cover,
         ),
       ),
+      title: Text(
+        name,
+        style: theme.textTheme.bodyLarge?.copyWith(color: nameColor),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _PerkInfoButton(
+            tooltip: l10n?.ztPerksViewStats ?? 'View stats',
+            enabled: hasStats,
+            onPressed: hasStats
+                ? (infoContext) =>
+                      _showPerkNumericProperties(infoContext, entry)
+                : null,
+          ),
+          if (isSelected) ...[
+            const SizedBox(width: 8),
+            Icon(
+              Icons.check_circle,
+              color: theme.colorScheme.primary,
+              size: 22,
+            ),
+          ],
+        ],
+      ),
+      onTap: onTap,
     );
   }
 
@@ -405,23 +408,26 @@ class _PerkPickerTile extends StatelessWidget {
       maxHeight: 220,
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              ResourceNames.lookup(anchorContext, entry.nameKey),
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          key: ValueKey('zombiePerkStatsScroll_${entry.alias}'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                ResourceNames.lookup(anchorContext, entry.nameKey),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            for (final line in lines)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(line, style: theme.textTheme.bodySmall),
-              ),
-          ],
+              const SizedBox(height: 8),
+              for (final line in lines)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(line, style: theme.textTheme.bodySmall),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -458,98 +464,69 @@ class _PerkPickerTile extends StatelessWidget {
   }
 }
 
-/// Label with a trailing info button that hugs the text (wrap-content width).
-///
-/// Children are always sized to fit [constraints]; never asserts on overflow,
-/// including during dialog open animations when width is briefly tiny.
+/// A readable label with an info control that moves above text on narrow screens.
 class _TextWithInfoRow extends StatelessWidget {
   const _TextWithInfoRow({
     required this.text,
     required this.style,
     required this.infoTooltip,
-    this.infoEnabled = true,
     this.onInfoPressed,
   });
 
   final String text;
   final TextStyle? style;
   final String infoTooltip;
-  final bool infoEnabled;
   final void Function(BuildContext infoContext)? onInfoPressed;
 
-  static const double _infoExtent = 28;
+  @override
+  Widget build(BuildContext context) => EditorOptionTile(
+    title: Text(text, style: style),
+    trailing: _PerkInfoButton(
+      tooltip: infoTooltip,
+      enabled: true,
+      onPressed: onInfoPressed,
+    ),
+    contentPadding: EdgeInsets.zero,
+  );
+}
+
+class _PerkInfoButton extends StatelessWidget {
+  const _PerkInfoButton({
+    required this.tooltip,
+    required this.enabled,
+    this.onPressed,
+  });
+
+  final String tooltip;
+  final bool enabled;
+  final void Function(BuildContext infoContext)? onPressed;
+
+  static const double _extent = 28;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final infoColor = infoEnabled
+    final color = enabled
         ? theme.colorScheme.primary
         : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4);
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final maxWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : MediaQuery.sizeOf(context).width;
-
-        // Scale the info control down if the slot is narrower than 28px.
-        final infoWidth = maxWidth <= 0
-            ? 0.0
-            : (maxWidth < _infoExtent ? maxWidth : _infoExtent);
-        final textMaxWidth = (maxWidth - infoWidth).clamp(0.0, double.infinity);
-
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (textMaxWidth > 0)
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: textMaxWidth),
-                  child: Text(
-                    text,
-                    style: style,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: false,
-                  ),
-                ),
-              if (infoWidth > 0)
-                SizedBox(
-                  width: infoWidth,
-                  height: infoWidth,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: SizedBox(
-                      width: _infoExtent,
-                      height: _infoExtent,
-                      child: Builder(
-                        builder: (infoContext) => IconButton(
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(
-                            minWidth: _infoExtent,
-                            minHeight: _infoExtent,
-                          ),
-                          tooltip: infoTooltip,
-                          onPressed: infoEnabled && onInfoPressed != null
-                              ? () => onInfoPressed!(infoContext)
-                              : null,
-                          icon: Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: infoColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+    return SizedBox(
+      width: _extent,
+      height: _extent,
+      child: Builder(
+        builder: (infoContext) => IconButton(
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(
+            minWidth: _extent,
+            minHeight: _extent,
           ),
-        );
-      },
+          tooltip: tooltip,
+          onPressed: enabled && onPressed != null
+              ? () => onPressed!(infoContext)
+              : null,
+          icon: Icon(Icons.info_outline, size: 18, color: color),
+        ),
+      ),
     );
   }
 }

@@ -263,64 +263,76 @@ class _SchoolBusEventScreenState extends State<SchoolBusEventScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      DropdownButtonFormField<int>(
-                        isExpanded: true,
-                        initialValue: des.row.clamp(1, _maxRow),
-                        items: List.generate(_maxRow, (i) => i + 1)
-                            .map(
-                              (r) =>
-                                  DropdownMenuItem(value: r, child: Text('$r')),
-                            )
-                            .toList(),
-                        onChanged: (v) {
-                          if (v != null) {
-                            _updateDes(
-                              SchoolBusDesData(
-                                row: v,
-                                type: des.type,
-                                params: params,
-                              ),
-                            );
-                          }
-                        },
+                      EditorResponsiveInputField(
+                        label: l10n?.schoolBusRow ?? 'Row',
                         decoration: InputDecoration(
-                          labelText: l10n?.schoolBusRow ?? 'Row',
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
+                        builder: (context, decoration) =>
+                            DropdownButtonFormField<int>(
+                              isExpanded: true,
+                              initialValue: des.row.clamp(1, _maxRow),
+                              items: List.generate(_maxRow, (i) => i + 1)
+                                  .map(
+                                    (r) => DropdownMenuItem(
+                                      value: r,
+                                      child: Text('$r'),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (v) {
+                                if (v != null) {
+                                  _updateDes(
+                                    SchoolBusDesData(
+                                      row: v,
+                                      type: des.type,
+                                      params: params,
+                                    ),
+                                  );
+                                }
+                              },
+                              decoration: decoration,
+                            ),
                       ),
                       const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: busType,
-                        items: [
-                          DropdownMenuItem(
-                            value: schoolBusNormalType,
-                            child: Text(l10n?.schoolBusTypeNormal ?? 'Normal'),
-                          ),
-                          DropdownMenuItem(
-                            value: schoolBusSpecialType,
-                            child: Text(
-                              l10n?.schoolBusTypeSpecial ?? 'Special',
-                            ),
-                          ),
-                        ],
-                        onChanged: (v) {
-                          if (v != null) {
-                            _updateDes(
-                              SchoolBusDesData(
-                                row: des.row,
-                                type: v,
-                                params: params,
-                              ),
-                            );
-                          }
-                        },
+                      EditorResponsiveInputField(
+                        label: l10n?.schoolBusType ?? 'Type',
                         decoration: InputDecoration(
-                          labelText: l10n?.schoolBusType ?? 'Type',
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
+                        builder: (context, decoration) =>
+                            DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              initialValue: busType,
+                              items: [
+                                DropdownMenuItem(
+                                  value: schoolBusNormalType,
+                                  child: Text(
+                                    l10n?.schoolBusTypeNormal ?? 'Normal',
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: schoolBusSpecialType,
+                                  child: Text(
+                                    l10n?.schoolBusTypeSpecial ?? 'Special',
+                                  ),
+                                ),
+                              ],
+                              onChanged: (v) {
+                                if (v != null) {
+                                  _updateDes(
+                                    SchoolBusDesData(
+                                      row: des.row,
+                                      type: v,
+                                      params: params,
+                                    ),
+                                  );
+                                }
+                              },
+                              decoration: decoration,
+                            ),
                       ),
                       const SizedBox(height: 12),
                       EditorResponsiveInputField(

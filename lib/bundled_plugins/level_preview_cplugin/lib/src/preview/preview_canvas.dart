@@ -48,13 +48,18 @@ class PreviewCanvas extends StatefulWidget {
     this.tool = PreviewEditTool.select,
     this.selectedLayerId,
     this.selectedIconSectionIndex,
+    this.selectedIconRowIndex,
     this.selectedTextPart,
     this.drawColor = Colors.white,
     this.drawStrokeWidth = 4,
     this.onSelectLayer,
     this.onSelectIconSection,
+    this.onSelectIconRow,
     this.onSelectTextPart,
     this.onIconSectionScaled,
+    this.onIconRowScaled,
+    this.onIconRowResizeStarted,
+    this.iconRowResizeLabel,
     this.onLayerMoved,
     this.onLayerScaled,
     this.onLayerRotated,
@@ -77,16 +82,28 @@ class PreviewCanvas extends StatefulWidget {
   final PreviewEditTool tool;
   final String? selectedLayerId;
   final int? selectedIconSectionIndex;
+  final int? selectedIconRowIndex;
   final PreviewTextPartSelection? selectedTextPart;
   final Color drawColor;
   final double drawStrokeWidth;
   final ValueChanged<String?>? onSelectLayer;
   final void Function(String layerId, int sectionIndex)? onSelectIconSection;
+  final void Function(String layerId, int sectionIndex, int rowIndex)?
+  onSelectIconRow;
   final ValueChanged<PreviewTextPartSelection>? onSelectTextPart;
 
   /// Icon size (not cumulative layer scale) for a selected section.
   final void Function(String layerId, int sectionIndex, double iconSize)?
   onIconSectionScaled;
+  final void Function(
+    String layerId,
+    int sectionIndex,
+    int rowIndex,
+    double iconSize,
+  )?
+  onIconRowScaled;
+  final VoidCallback? onIconRowResizeStarted;
+  final String? iconRowResizeLabel;
   final void Function(String id, Rect newBounds)? onLayerMoved;
   final void Function(String id, double newScale)? onLayerScaled;
   final void Function(String id, double rotation)? onLayerRotated;
@@ -249,7 +266,6 @@ class PreviewCanvasState extends State<PreviewCanvas> {
             fit: StackFit.expand,
             clipBehavior: Clip.none,
             children: [
-              _buildBanner(doc),
               if (widget.interactive && widget.tool == PreviewEditTool.select)
                 Positioned.fill(
                   child: GestureDetector(
@@ -260,52 +276,90 @@ class PreviewCanvasState extends State<PreviewCanvas> {
                     },
                   ),
                 ),
-              for (final layer in doc.sortedLayers)
-                if (layer.visible)
-                  _LayerWidget(
-                    layer: layer,
-                    canvasSize: kPreviewCanvasSize,
-                    interactive:
-                        widget.interactive &&
-                        widget.tool == PreviewEditTool.select,
-                    selected: widget.selectedLayerId == layer.id,
-                    editingText: widget.editingTextLayerId == layer.id,
-                    selectedIconSectionIndex: widget.selectedLayerId == layer.id
-                        ? widget.selectedIconSectionIndex
-                        : null,
-                    selectedTextPart: widget.selectedLayerId == layer.id
-                        ? widget.selectedTextPart
-                        : null,
-                    gifFrames: _gifFrames,
-                    textEditingController:
-                        widget.selectedLayerId == layer.id &&
-                            layer.kind == PreviewLayerKind.text
-                        ? widget.textEditingController
-                        : null,
-                    textFocusNode:
-                        widget.selectedLayerId == layer.id &&
-                            layer.kind == PreviewLayerKind.text
-                        ? widget.textFocusNode
-                        : null,
-                    onTextEdited: widget.onTextEdited,
-                    onSelect: () => widget.onSelectLayer?.call(layer.id),
-                    onBeginTextEdit: () =>
-                        widget.onBeginTextEdit?.call(layer.id),
-                    onSelectIconSection: (index) =>
-                        widget.onSelectIconSection?.call(layer.id, index),
-                    onSelectTextPart: widget.onSelectTextPart,
-                    onIconSectionScaled: widget.onIconSectionScaled == null
-                        ? null
-                        : (index, size) => widget.onIconSectionScaled?.call(
-                            layer.id,
-                            index,
-                            size,
-                          ),
-                    onMoved: (bounds) =>
-                        widget.onLayerMoved?.call(layer.id, bounds),
-                    onScaled: (scale) =>
-                        widget.onLayerScaled?.call(layer.id, scale),
-                  ),
+              for (final entry in doc.orderedLayerEntries)
+                if (entry.isBackground)
+                  Positioned.fill(
+                    key: const ValueKey(kPreviewBackgroundLayerId),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap:
+                          widget.interactive &&
+                              widget.tool == PreviewEditTool.select
+                          ? () {
+                              widget.onEndTextEdit?.call();
+                              widget.onSelectLayer?.call(null);
+                            }
+                          : null,
+                      child: _buildBanner(doc),
+                    ),
+                  )
+                else
+                  for (final layer in [entry.layer!])
+                    if (layer.visible)
+                      _LayerWidget(
+                        key: ValueKey(layer.id),
+                        layer: layer,
+                        canvasSize: kPreviewCanvasSize,
+                        interactive:
+                            widget.interactive &&
+                            widget.tool == PreviewEditTool.select,
+                        selected: widget.selectedLayerId == layer.id,
+                        editingText: widget.editingTextLayerId == layer.id,
+                        selectedIconSectionIndex:
+                            widget.selectedLayerId == layer.id
+                            ? widget.selectedIconSectionIndex
+                            : null,
+                        selectedIconRowIndex: widget.selectedLayerId == layer.id
+                            ? widget.selectedIconRowIndex
+                            : null,
+                        selectedTextPart: widget.selectedLayerId == layer.id
+                            ? widget.selectedTextPart
+                            : null,
+                        gifFrames: _gifFrames,
+                        textEditingController:
+                            widget.selectedLayerId == layer.id &&
+                                layer.kind == PreviewLayerKind.text
+                            ? widget.textEditingController
+                            : null,
+                        textFocusNode:
+                            widget.selectedLayerId == layer.id &&
+                                layer.kind == PreviewLayerKind.text
+                            ? widget.textFocusNode
+                            : null,
+                        onTextEdited: widget.onTextEdited,
+                        onSelect: () => widget.onSelectLayer?.call(layer.id),
+                        onBeginTextEdit: () =>
+                            widget.onBeginTextEdit?.call(layer.id),
+                        onSelectIconSection: (index) =>
+                            widget.onSelectIconSection?.call(layer.id, index),
+                        onSelectIconRow: widget.onSelectIconRow == null
+                            ? null
+                            : (sectionIndex, rowIndex) => widget.onSelectIconRow
+                                  ?.call(layer.id, sectionIndex, rowIndex),
+                        onSelectTextPart: widget.onSelectTextPart,
+                        onIconSectionScaled: widget.onIconSectionScaled == null
+                            ? null
+                            : (index, size) => widget.onIconSectionScaled?.call(
+                                layer.id,
+                                index,
+                                size,
+                              ),
+                        onIconRowScaled: widget.onIconRowScaled == null
+                            ? null
+                            : (sectionIndex, rowIndex, size) =>
+                                  widget.onIconRowScaled?.call(
+                                    layer.id,
+                                    sectionIndex,
+                                    rowIndex,
+                                    size,
+                                  ),
+                        iconRowResizeLabel: widget.iconRowResizeLabel,
+                        onIconRowResizeStarted: widget.onIconRowResizeStarted,
+                        onMoved: (bounds) =>
+                            widget.onLayerMoved?.call(layer.id, bounds),
+                        onScaled: (scale) =>
+                            widget.onLayerScaled?.call(layer.id, scale),
+                      ),
             ],
           ),
         ),
@@ -351,7 +405,7 @@ class PreviewCanvasState extends State<PreviewCanvas> {
                       top: pad,
                       width: w,
                       height: h,
-                      child: design,
+                      child: MediaQuery.withNoTextScaling(child: design),
                     ),
                     if (showHandles)
                       _SelectionHandlesOverlay(
@@ -393,6 +447,28 @@ class PreviewCanvasState extends State<PreviewCanvas> {
     if (layer.kind == PreviewLayerKind.iconGrid && sectionIndex != null) {
       final sections = previewEffectiveSections(layer);
       if (sectionIndex < 0 || sectionIndex >= sections.length) return;
+      final rowIndex = widget.selectedIconRowIndex;
+      if (rowIndex != null && widget.onIconRowScaled != null) {
+        final rows = previewIconSectionRows(
+          sections[sectionIndex],
+          maxWidth:
+              layer.bounds.width * kPreviewCanvasSize.width -
+              (layer.showChrome ? kPreviewIconGridChromeInset : 0),
+          spacing: layer.iconAlign == TextAlign.justify ? 0 : 4,
+        );
+        if (rowIndex < 0 || rowIndex >= rows.length) return;
+        widget.onIconRowResizeStarted?.call();
+        widget.onIconRowScaled?.call(
+          layer.id,
+          sectionIndex,
+          rowIndex,
+          (rows[rowIndex].iconSize * (delta > 0 ? 0.92 : 1.08)).clamp(
+            20.0,
+            152.0,
+          ),
+        );
+        return;
+      }
       final next = (sections[sectionIndex].iconSize * (delta > 0 ? 0.92 : 1.08))
           .clamp(20.0, 152.0);
       widget.onIconSectionScaled?.call(layer.id, sectionIndex, next.toDouble());
@@ -444,30 +520,38 @@ Rect _growIconGridBoundsIfNeeded(
     sections: previewEffectiveSections(layer),
     showChrome: layer.showChrome,
     gridTitle: layer.gridTitle,
+    gridTitleStyle: layer.gridTitleStyle,
     sourceLabel: layer.sourceLabel,
+    sourceLabelStyle: layer.sourceLabelStyle,
     lawnRows: layer.lawnRows,
     lawnCols: layer.lawnCols,
+    iconAlign: layer.iconAlign,
   );
-  final needH = (intrinsic.height / canvas.height).clamp(
-    0.04,
-    1.0 - proposed.top,
-  );
-  final h = math.max(proposed.height, needH);
+  final maxHeight = ((1.0 - proposed.top) / layer.scale.clamp(0.25, 4.0))
+      .clamp(0.0, double.infinity)
+      .toDouble();
+  final needH = (intrinsic.height / canvas.height)
+      .clamp(math.min(0.04, maxHeight), maxHeight)
+      .toDouble();
+  final h = math.max(proposed.height, needH).toDouble();
   return Rect.fromLTWH(proposed.left, proposed.top, proposed.width, h);
 }
 
 class _LayerWidget extends StatefulWidget {
   const _LayerWidget({
+    super.key,
     required this.layer,
     required this.canvasSize,
     required this.interactive,
     required this.selected,
     required this.editingText,
     required this.selectedIconSectionIndex,
+    required this.selectedIconRowIndex,
     required this.selectedTextPart,
     required this.gifFrames,
     required this.onSelect,
     required this.onSelectIconSection,
+    this.onSelectIconRow,
     required this.onSelectTextPart,
     required this.onMoved,
     required this.onScaled,
@@ -476,6 +560,9 @@ class _LayerWidget extends StatefulWidget {
     this.textFocusNode,
     this.onTextEdited,
     this.onIconSectionScaled,
+    this.onIconRowScaled,
+    this.onIconRowResizeStarted,
+    this.iconRowResizeLabel,
   });
 
   final PreviewLayer layer;
@@ -484,15 +571,21 @@ class _LayerWidget extends StatefulWidget {
   final bool selected;
   final bool editingText;
   final int? selectedIconSectionIndex;
+  final int? selectedIconRowIndex;
   final PreviewTextPartSelection? selectedTextPart;
   final Map<String, ui.Image> gifFrames;
   final VoidCallback onSelect;
   final VoidCallback? onBeginTextEdit;
   final ValueChanged<int> onSelectIconSection;
+  final void Function(int sectionIndex, int rowIndex)? onSelectIconRow;
   final ValueChanged<PreviewTextPartSelection>? onSelectTextPart;
   final ValueChanged<Rect> onMoved;
   final ValueChanged<double> onScaled;
   final void Function(int sectionIndex, double iconSize)? onIconSectionScaled;
+  final void Function(int sectionIndex, int rowIndex, double iconSize)?
+  onIconRowScaled;
+  final VoidCallback? onIconRowResizeStarted;
+  final String? iconRowResizeLabel;
   final TextEditingController? textEditingController;
   final FocusNode? textFocusNode;
   final ValueChanged<String>? onTextEdited;
@@ -504,6 +597,8 @@ class _LayerWidget extends StatefulWidget {
 class _LayerWidgetState extends State<_LayerWidget> {
   double _scaleAtStart = 1;
   double _iconSizeAtScaleStart = 36;
+  Offset _iconRowResizeOrigin = Offset.zero;
+  double _iconRowScreenScale = 1;
   static const _minScale = 0.25;
   static const _maxScale = 4.0;
   static const _dragSlop = 4.0;
@@ -555,7 +650,13 @@ class _LayerWidgetState extends State<_LayerWidget> {
 
   /// Move in canvas/parent space. [localDelta] is in the layer's local axes
   /// (GestureDetector sits under [Transform.rotate]), so rotate it forward.
-  void _moveByLocalDelta(Offset localDelta) {
+  void _moveByLocalDelta(Offset localDelta, {bool fromContent = false}) {
+    final scale =
+        (layer.kind == PreviewLayerKind.text ||
+            layer.kind == PreviewLayerKind.image)
+        ? 1.0
+        : layer.scale.clamp(_minScale, _maxScale);
+    if (fromContent) localDelta *= scale;
     final a = layer.rotation;
     final c = math.cos(a);
     final s = math.sin(a);
@@ -565,8 +666,12 @@ class _LayerWidgetState extends State<_LayerWidget> {
     );
     final dx = parent.dx / widget.canvasSize.width;
     final dy = parent.dy / widget.canvasSize.height;
-    final nl = (layer.bounds.left + dx).clamp(0.0, 1.0 - layer.bounds.width);
-    final nt = (layer.bounds.top + dy).clamp(0.0, 1.0 - layer.bounds.height);
+    final nl = (layer.bounds.left + dx)
+        .clamp(0.0, math.max(0.0, 1.0 - layer.bounds.width * scale))
+        .toDouble();
+    final nt = (layer.bounds.top + dy)
+        .clamp(0.0, math.max(0.0, 1.0 - layer.bounds.height * scale))
+        .toDouble();
     widget.onMoved(
       Rect.fromLTWH(nl, nt, layer.bounds.width, layer.bounds.height),
     );
@@ -575,24 +680,26 @@ class _LayerWidgetState extends State<_LayerWidget> {
   @override
   Widget build(BuildContext context) {
     if (layer.kind == PreviewLayerKind.stroke) {
+      final stroke = CustomPaint(
+        size: widget.canvasSize,
+        painter: _StrokePainter(
+          points: layer.points,
+          canvasSize: widget.canvasSize,
+          color: layer.strokeColor,
+          strokeWidth:
+              layer.strokeWidth * layer.scale.clamp(_minScale, _maxScale),
+          selected: widget.selected,
+        ),
+      );
       return Opacity(
         opacity: layer.opacity.clamp(0.0, 1.0),
-        child: CustomPaint(
-          size: widget.canvasSize,
-          painter: _StrokePainter(
-            points: layer.points,
-            color: layer.strokeColor,
-            strokeWidth:
-                layer.strokeWidth * layer.scale.clamp(_minScale, _maxScale),
-            selected: widget.selected,
-          ),
-          child: widget.interactive
-              ? GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: widget.onSelect,
-                )
-              : null,
-        ),
+        child: widget.interactive
+            ? GestureDetector(
+                behavior: HitTestBehavior.deferToChild,
+                onTap: widget.onSelect,
+                child: stroke,
+              )
+            : stroke,
       );
     }
 
@@ -738,18 +845,33 @@ class _LayerWidgetState extends State<_LayerWidget> {
             child: body,
           );
 
+    final cosine = math.cos(layer.rotation).abs();
+    final sine = math.sin(layer.rotation).abs();
+    final rotatedWidth = hitW * cosine + hitH * sine;
+    final rotatedHeight = hitW * sine + hitH * cosine;
+    final rotatedChild = Transform.rotate(
+      angle: layer.rotation,
+      alignment: Alignment.center,
+      child: child,
+    );
     return Positioned(
-      left: left,
-      top: top,
-      width: hitW,
-      height: hitH,
+      left: left + (hitW - rotatedWidth) / 2,
+      top: top + (hitH - rotatedHeight) / 2,
+      width: rotatedWidth,
+      height: rotatedHeight,
       child: Opacity(
         opacity: layer.opacity.clamp(0.0, 1.0),
-        child: Transform.rotate(
-          angle: layer.rotation,
-          alignment: Alignment.center,
-          child: child,
-        ),
+        // The outer hit box must cover the rotated footprint. Keep layout at
+        // its original size and center so neither painting nor export moves.
+        child: layer.rotation == 0
+            ? rotatedChild
+            : OverflowBox(
+                minWidth: hitW,
+                maxWidth: hitW,
+                minHeight: hitH,
+                maxHeight: hitH,
+                child: rotatedChild,
+              ),
       ),
     );
   }
@@ -890,18 +1012,21 @@ class _LayerWidgetState extends State<_LayerWidget> {
     final sections = previewEffectiveSections(layer);
     // Chrome padding is 8 all around; row content must fill that inner width so
     // justify/spaceBetween can stretch icon gaps when the layer is widened.
-    final rowWidth = math.max(0.0, width - (layer.showChrome ? 16 : 0));
+    final rowWidth = math.max(
+      0.0,
+      width - (layer.showChrome ? kPreviewIconGridChromeInset : 0),
+    );
     final cross = switch (layer.iconAlign) {
       TextAlign.justify => CrossAxisAlignment.stretch,
       TextAlign.center => CrossAxisAlignment.center,
       TextAlign.right || TextAlign.end => CrossAxisAlignment.end,
       _ => CrossAxisAlignment.start,
     };
-    final wrapAlign = switch (layer.iconAlign) {
-      TextAlign.center => WrapAlignment.center,
-      TextAlign.right || TextAlign.end => WrapAlignment.end,
-      TextAlign.justify => WrapAlignment.spaceBetween,
-      _ => WrapAlignment.start,
+    final rowAlign = switch (layer.iconAlign) {
+      TextAlign.center => MainAxisAlignment.center,
+      TextAlign.right || TextAlign.end => MainAxisAlignment.end,
+      TextAlign.justify => MainAxisAlignment.spaceBetween,
+      _ => MainAxisAlignment.start,
     };
     final titleAlign = layer.iconAlign;
     final useLawn =
@@ -911,7 +1036,7 @@ class _LayerWidgetState extends State<_LayerWidget> {
         layer.lawnCols! > 0 &&
         sections.any((s) => s.items.any((i) => i.hasCell));
 
-    Widget sectionBody(PreviewIconSection section) {
+    Widget sectionBody(int sectionIndex, PreviewIconSection section) {
       if (useLawn) {
         return _buildMiniLawn(
           width: rowWidth,
@@ -920,21 +1045,66 @@ class _LayerWidgetState extends State<_LayerWidget> {
           items: section.items,
         );
       }
-      return SizedBox(
-        width: rowWidth,
-        child: Wrap(
-          spacing: layer.iconAlign == TextAlign.justify ? 0 : 4,
-          runSpacing: 4,
-          alignment: wrapAlign,
-          children: [
-            for (final item in section.items.take(48))
-              _ItemIcon(
-                item: item,
-                gifFrames: widget.gifFrames,
-                size: section.iconSize,
+      final spacing = layer.iconAlign == TextAlign.justify ? 0.0 : 4.0;
+      final rows = previewIconSectionRows(
+        section,
+        maxWidth: rowWidth,
+        spacing: spacing,
+      );
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var rowIndex = 0; rowIndex < rows.length; rowIndex++) ...[
+            if (rowIndex > 0) const SizedBox(height: 4),
+            _selectableIconRow(
+              sectionIndex: sectionIndex,
+              rowIndex: rowIndex,
+              row: rows[rowIndex],
+              child: SizedBox(
+                width: rowWidth,
+                height: rows[rowIndex].iconSize,
+                child: OverflowBox(
+                  alignment: Alignment.topLeft,
+                  minWidth: math.max(
+                    rowWidth,
+                    rows[rowIndex].items.length * rows[rowIndex].iconSize +
+                        math.max(0, rows[rowIndex].items.length - 1) * spacing,
+                  ),
+                  maxWidth: math.max(
+                    rowWidth,
+                    rows[rowIndex].items.length * rows[rowIndex].iconSize +
+                        math.max(0, rows[rowIndex].items.length - 1) * spacing,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: rowAlign,
+                    children: [
+                      for (
+                        var itemIndex = 0;
+                        itemIndex < rows[rowIndex].items.length;
+                        itemIndex++
+                      ) ...[
+                        if (itemIndex > 0 && spacing > 0)
+                          SizedBox(width: spacing),
+                        SizedBox(
+                          key: ValueKey(
+                            'preview-icon-item-${layer.id}-$sectionIndex-$rowIndex-$itemIndex',
+                          ),
+                          width: rows[rowIndex].iconSize,
+                          height: rows[rowIndex].iconSize,
+                          child: _ItemIcon(
+                            item: rows[rowIndex].items[itemIndex],
+                            gifFrames: widget.gifFrames,
+                            size: rows[rowIndex].iconSize,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
+            ),
           ],
-        ),
+        ],
       );
     }
 
@@ -955,21 +1125,18 @@ class _LayerWidgetState extends State<_LayerWidget> {
                 ),
                 child: SizedBox(
                   width: rowWidth,
-                  child: Text(
+                  child: _panelText(
                     sections[i].title!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    kind: PreviewTextPartKind.sectionTitle,
+                    style: sections[i].titleStyle,
+                    sectionIconSize: sections[i].iconSize,
+                    legacyMaxLines: 2,
                     textAlign: titleAlign,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.95),
-                      fontSize: sections[i].iconSize >= 64 ? 15 : 13,
-                      fontWeight: FontWeight.w600,
-                    ),
                   ),
                 ),
               ),
             ),
-          _selectableIconSection(index: i, child: sectionBody(sections[i])),
+          _selectableIconSection(index: i, child: sectionBody(i, sections[i])),
         ],
       ],
     );
@@ -1015,16 +1182,12 @@ class _LayerWidgetState extends State<_LayerWidget> {
                 ),
                 child: SizedBox(
                   width: rowWidth,
-                  child: Text(
+                  child: _panelText(
                     layer.gridTitle!,
+                    kind: PreviewTextPartKind.gridTitle,
+                    style: layer.gridTitleStyle,
                     textAlign: titleAlign,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    legacyMaxLines: 1,
                   ),
                 ),
               ),
@@ -1036,16 +1199,12 @@ class _LayerWidgetState extends State<_LayerWidget> {
                 ),
                 child: SizedBox(
                   width: rowWidth,
-                  child: Text(
+                  child: _panelText(
                     layer.sourceLabel!,
-                    maxLines: 6,
-                    overflow: TextOverflow.ellipsis,
+                    kind: PreviewTextPartKind.sourceLabel,
+                    style: layer.sourceLabelStyle,
+                    legacyMaxLines: 6,
                     textAlign: titleAlign,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.85),
-                      fontSize: 11,
-                      height: 1.25,
-                    ),
                   ),
                 ),
               ),
@@ -1056,6 +1215,58 @@ class _LayerWidgetState extends State<_LayerWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _panelText(
+    String text, {
+    required PreviewTextPartKind kind,
+    required TextAlign textAlign,
+    required int legacyMaxLines,
+    PreviewTextStyleData? style,
+    double sectionIconSize = 36,
+  }) {
+    if (style == null) {
+      final legacy = previewDefaultPanelTextStyle(
+        kind,
+        sectionIconSize: sectionIconSize,
+      );
+      return Text(
+        text,
+        textAlign: textAlign,
+        maxLines: legacyMaxLines,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: legacy.color,
+          fontSize: legacy.fontSize,
+          fontWeight: kind == PreviewTextPartKind.sourceLabel
+              ? null
+              : legacy.fontWeight,
+          height: 1.25,
+        ),
+      );
+    }
+    final fill = Text(
+      text,
+      textAlign: textAlign,
+      style: PreviewFonts.resolve(style, fill: true),
+      softWrap: true,
+    );
+    return Padding(
+      padding: EdgeInsets.all(previewPanelTextOutlineInset(style)),
+      child: style.outline
+          ? Stack(
+              children: [
+                Text(
+                  text,
+                  textAlign: textAlign,
+                  style: PreviewFonts.resolve(style, fill: false),
+                  softWrap: true,
+                ),
+                fill,
+              ],
+            )
+          : fill,
     );
   }
 
@@ -1122,10 +1333,141 @@ class _LayerWidgetState extends State<_LayerWidget> {
     );
   }
 
+  Widget _selectableIconRow({
+    required int sectionIndex,
+    required int rowIndex,
+    required PreviewIconRow row,
+    required Widget child,
+  }) {
+    if (!widget.interactive || widget.onSelectIconRow == null) return child;
+    final selected =
+        widget.selected &&
+        widget.selectedIconSectionIndex == sectionIndex &&
+        widget.selectedIconRowIndex == rowIndex;
+    void select() => widget.onSelectIconRow?.call(sectionIndex, rowIndex);
+    void scale(double size) => widget.onIconRowScaled?.call(
+      sectionIndex,
+      rowIndex,
+      size.clamp(20.0, 152.0),
+    );
+    return GestureDetector(
+      key: ValueKey('preview-icon-row-${layer.id}-$sectionIndex-$rowIndex'),
+      behavior: HitTestBehavior.opaque,
+      onTap: select,
+      onScaleStart: (_) {
+        select();
+        widget.onIconRowResizeStarted?.call();
+        _iconSizeAtScaleStart = row.iconSize;
+      },
+      onScaleUpdate: (details) {
+        if (details.pointerCount >= 2) {
+          scale(_iconSizeAtScaleStart * details.scale);
+        } else {
+          _moveByLocalDelta(details.focalPointDelta, fromContent: true);
+        }
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          DecoratedBox(
+            position: DecorationPosition.foreground,
+            decoration: BoxDecoration(
+              border: selected
+                  ? Border.all(color: Colors.lightBlueAccent, width: 2)
+                  : null,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: child,
+          ),
+          if (selected && widget.onIconRowScaled != null)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              width: 24,
+              height: 24,
+              child: Builder(
+                builder: (handleContext) => MouseRegion(
+                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                  child: Tooltip(
+                    message: widget.iconRowResizeLabel ?? '',
+                    child: MediaQuery(
+                      data: MediaQuery.of(handleContext).copyWith(
+                        // A small precision handle should respond to short
+                        // drags, without changing the surrounding canvas slop.
+                        gestureSettings: const DeviceGestureSettings(
+                          touchSlop: 4,
+                        ),
+                      ),
+                      child: GestureDetector(
+                        key: ValueKey(
+                          'preview-icon-row-resize-${layer.id}-$sectionIndex-$rowIndex',
+                        ),
+                        behavior: HitTestBehavior.opaque,
+                        dragStartBehavior: DragStartBehavior.down,
+                        onPanDown: (details) {
+                          _iconSizeAtScaleStart = row.iconSize;
+                          _iconRowResizeOrigin = details.globalPosition;
+                          final box =
+                              handleContext.findRenderObject()! as RenderBox;
+                          final origin = box.localToGlobal(Offset.zero);
+                          _iconRowScreenScale =
+                              (box.localToGlobal(const Offset(1, 0)) - origin)
+                                  .distance;
+                        },
+                        onPanStart: (_) {
+                          select();
+                          widget.onIconRowResizeStarted?.call();
+                        },
+                        onPanUpdate: (details) {
+                          final delta =
+                              details.globalPosition - _iconRowResizeOrigin;
+                          final cosine = math.cos(layer.rotation);
+                          final sine = math.sin(layer.rotation);
+                          final localDelta = Offset(
+                            delta.dx * cosine + delta.dy * sine,
+                            -delta.dx * sine + delta.dy * cosine,
+                          );
+                          final screenScale = _iconRowScreenScale > 0
+                              ? _iconRowScreenScale
+                              : 1.0;
+                          scale(
+                            _iconSizeAtScaleStart +
+                                (localDelta.dx + localDelta.dy) /
+                                    (2 * screenScale),
+                          );
+                        },
+                        child: Semantics(
+                          label: widget.iconRowResizeLabel,
+                          button: true,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.lightBlueAccent,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.open_in_full,
+                              size: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _selectableIconSection({required int index, required Widget child}) {
     if (!widget.interactive) return child;
     final selected =
-        widget.selected && widget.selectedIconSectionIndex == index;
+        widget.selected &&
+        widget.selectedIconSectionIndex == index &&
+        widget.selectedIconRowIndex == null;
     return GestureDetector(
       key: ValueKey('preview-icon-section-${layer.id}-$index'),
       behavior: HitTestBehavior.opaque,
@@ -1147,7 +1489,7 @@ class _LayerWidgetState extends State<_LayerWidget> {
                   (_iconSizeAtScaleStart * details.scale).clamp(20.0, 152.0),
                 );
               } else {
-                _moveByLocalDelta(details.focalPointDelta);
+                _moveByLocalDelta(details.focalPointDelta, fromContent: true);
               }
             },
       child: DecoratedBox(
@@ -1670,15 +2012,45 @@ class _SelectionBorderPainter extends CustomPainter {
 class _StrokePainter extends CustomPainter {
   _StrokePainter({
     required this.points,
+    required this.canvasSize,
     required this.color,
     required this.strokeWidth,
     required this.selected,
   });
 
   final List<Offset> points;
+  final Size canvasSize;
   final Color color;
   final double strokeWidth;
   final bool selected;
+
+  @override
+  bool hitTest(Offset position) {
+    if (points.length < 2) return false;
+    final tolerance = math.max(strokeWidth / 2 + 6, 12.0);
+    final toleranceSquared = tolerance * tolerance;
+    Offset toDesign(Offset point) =>
+        Offset(point.dx * canvasSize.width, point.dy * canvasSize.height);
+    var start = toDesign(points.first);
+    for (var index = 1; index < points.length; index++) {
+      final end = toDesign(points[index]);
+      final segment = end - start;
+      final lengthSquared = segment.distanceSquared;
+      final relative = position - start;
+      final fraction = lengthSquared == 0
+          ? 0.0
+          : ((relative.dx * segment.dx + relative.dy * segment.dy) /
+                    lengthSquared)
+                .clamp(0.0, 1.0)
+                .toDouble();
+      final nearest = start + segment * fraction;
+      if ((position - nearest).distanceSquared <= toleranceSquared) {
+        return true;
+      }
+      start = end;
+    }
+    return false;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {

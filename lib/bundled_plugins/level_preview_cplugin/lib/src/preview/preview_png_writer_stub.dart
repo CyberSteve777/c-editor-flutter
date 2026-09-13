@@ -1,18 +1,21 @@
 import 'dart:typed_data';
 
 import 'package:c_editor/data/repository/level_repository.dart';
-import 'package:path/path.dart' as p;
+import 'preview_export_prefs.dart';
 
 Future<void> writeBytes(String path, Uint8List bytes) async {
-  // Web: store via level-library virtual FS using the file name only.
-  final name = p.basename(path);
-  final folder = p.basename(p.dirname(path));
-  final key = folder.isEmpty ? name : '$folder/$name';
-  await LevelRepository.prepareInternalCacheFromBytes(key, bytes);
+  final workspace = await LevelRepository.getSavedFolderPath();
+  if (workspace == null || workspace.isEmpty) {
+    throw StateError('Level library folder is not configured');
+  }
+  final key = previewExportLibraryRelativePath(path, workspace);
+  if (!await LevelRepository.prepareInternalCacheFromBytes(key, bytes)) {
+    throw StateError('Failed to save preview PNG');
+  }
 }
 
 Future<bool> fileExists(String path) async {
-  final name = p.basename(path);
-  final folder = p.dirname(path);
+  final name = previewExportFileName(path);
+  final folder = previewExportParentDirectory(path);
   return LevelRepository.fileExistsInDirectory(folder, name);
 }

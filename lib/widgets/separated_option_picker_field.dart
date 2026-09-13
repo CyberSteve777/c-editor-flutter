@@ -52,60 +52,49 @@ class SeparatedOptionPickerField<T> extends StatelessWidget {
         return SafeArea(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeight),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
-                  child: Semantics(
-                    header: true,
-                    child: Text(
-                      labelText,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(sheetContext).textTheme.titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold),
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: items.length + 1,
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
+                    child: Semantics(
+                      header: true,
+                      child: Text(
+                        labelText,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(sheetContext).textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
+                  );
+                }
+                final item = items[index - 1];
+                final selected = item.value == value;
+                return EditorOptionTile(
+                  selected: selected,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
                   ),
-                ),
-                const Divider(height: 1),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: items.length,
-                    separatorBuilder: (_, _) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      final selected = item.value == value;
-                      return ListTile(
-                        selected: selected,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 8,
+                  title: Text(item.label),
+                  subtitle: item.subtitle == null
+                      ? null
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 3),
+                          child: Text(item.subtitle!),
                         ),
-                        title: Text(item.label, maxLines: 3),
-                        subtitle: item.subtitle == null
-                            ? null
-                            : Padding(
-                                padding: const EdgeInsets.only(top: 3),
-                                child: Text(
-                                  item.subtitle!,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                        trailing: selected
-                            ? Icon(
-                                Icons.check,
-                                color: Theme.of(context).colorScheme.primary,
-                              )
-                            : null,
-                        onTap: () => Navigator.pop(context, item.value),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                  trailing: selected
+                      ? Icon(
+                          Icons.check,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () => Navigator.pop(context, item.value),
+                );
+              },
             ),
           ),
         );

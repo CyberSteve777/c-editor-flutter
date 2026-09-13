@@ -279,53 +279,55 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
             const SizedBox(height: 12),
             EditorResponsiveFieldRow(
               children: [
-                TextFormField(
-                  initialValue: _data.zombieCount.toString(),
-                  decoration: InputDecoration(
-                    labelText: l10n?.zombieCount ?? 'Zombie count',
-                    border: OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: l10n?.zombieCount ?? 'Zombie count',
+                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  builder: (context, decoration) => TextFormField(
+                    initialValue: _data.zombieCount.toString(),
+                    decoration: decoration,
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null) {
+                        _data = BeachStageEventData(
+                          columnStart: _data.columnStart,
+                          columnEnd: _data.columnEnd,
+                          groupSize: _data.groupSize,
+                          zombieCount: n,
+                          zombieName: _data.zombieName,
+                          timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
+                          timeBetweenGroups: _data.timeBetweenGroups,
+                          waveStartMessage: _data.waveStartMessage,
+                        );
+                        _sync();
+                      }
+                    },
                   ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data = BeachStageEventData(
-                        columnStart: _data.columnStart,
-                        columnEnd: _data.columnEnd,
-                        groupSize: _data.groupSize,
-                        zombieCount: n,
-                        zombieName: _data.zombieName,
-                        timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
-                        timeBetweenGroups: _data.timeBetweenGroups,
-                        waveStartMessage: _data.waveStartMessage,
-                      );
-                      _sync();
-                    }
-                  },
                 ),
-                TextFormField(
-                  initialValue: _data.groupSize.toString(),
-                  decoration: InputDecoration(
-                    labelText: l10n?.groupSize ?? 'Group size',
-                    border: OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: l10n?.groupSize ?? 'Group size',
+                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  builder: (context, decoration) => TextFormField(
+                    initialValue: _data.groupSize.toString(),
+                    decoration: decoration,
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null) {
+                        _data = BeachStageEventData(
+                          columnStart: _data.columnStart,
+                          columnEnd: _data.columnEnd,
+                          groupSize: n,
+                          zombieCount: _data.zombieCount,
+                          zombieName: _data.zombieName,
+                          timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
+                          timeBetweenGroups: _data.timeBetweenGroups,
+                          waveStartMessage: _data.waveStartMessage,
+                        );
+                        _sync();
+                      }
+                    },
                   ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data = BeachStageEventData(
-                        columnStart: _data.columnStart,
-                        columnEnd: _data.columnEnd,
-                        groupSize: n,
-                        zombieCount: _data.zombieCount,
-                        zombieName: _data.zombieName,
-                        timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
-                        timeBetweenGroups: _data.timeBetweenGroups,
-                        waveStartMessage: _data.waveStartMessage,
-                      );
-                      _sync();
-                    }
-                  },
                 ),
               ],
             ),
@@ -355,53 +357,55 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
             const SizedBox(height: 12),
             EditorResponsiveFieldRow(
               children: [
-                TextFormField(
-                  initialValue: _data.columnStart.toString(),
-                  decoration: InputDecoration(
-                    labelText: l10n?.startColumn ?? 'Start column',
-                    border: OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: l10n?.startColumn ?? 'Start column',
+                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  builder: (context, decoration) => TextFormField(
+                    initialValue: _data.columnStart.toString(),
+                    decoration: decoration,
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null) {
+                        _data = BeachStageEventData(
+                          columnStart: n,
+                          columnEnd: _data.columnEnd,
+                          groupSize: _data.groupSize,
+                          zombieCount: _data.zombieCount,
+                          zombieName: _data.zombieName,
+                          timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
+                          timeBetweenGroups: _data.timeBetweenGroups,
+                          waveStartMessage: _data.waveStartMessage,
+                        );
+                        _sync();
+                      }
+                    },
                   ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data = BeachStageEventData(
-                        columnStart: n,
-                        columnEnd: _data.columnEnd,
-                        groupSize: _data.groupSize,
-                        zombieCount: _data.zombieCount,
-                        zombieName: _data.zombieName,
-                        timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
-                        timeBetweenGroups: _data.timeBetweenGroups,
-                        waveStartMessage: _data.waveStartMessage,
-                      );
-                      _sync();
-                    }
-                  },
                 ),
-                TextFormField(
-                  initialValue: _data.columnEnd.toString(),
-                  decoration: InputDecoration(
-                    labelText: l10n?.endColumn ?? 'End column',
-                    border: OutlineInputBorder(),
+                EditorResponsiveInputField(
+                  label: l10n?.endColumn ?? 'End column',
+                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  builder: (context, decoration) => TextFormField(
+                    initialValue: _data.columnEnd.toString(),
+                    decoration: decoration,
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null) {
+                        _data = BeachStageEventData(
+                          columnStart: _data.columnStart,
+                          columnEnd: n,
+                          groupSize: _data.groupSize,
+                          zombieCount: _data.zombieCount,
+                          zombieName: _data.zombieName,
+                          timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
+                          timeBetweenGroups: _data.timeBetweenGroups,
+                          waveStartMessage: _data.waveStartMessage,
+                        );
+                        _sync();
+                      }
+                    },
                   ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data = BeachStageEventData(
-                        columnStart: _data.columnStart,
-                        columnEnd: n,
-                        groupSize: _data.groupSize,
-                        zombieCount: _data.zombieCount,
-                        zombieName: _data.zombieName,
-                        timeBeforeFullSpawn: _data.timeBeforeFullSpawn,
-                        timeBetweenGroups: _data.timeBetweenGroups,
-                        waveStartMessage: _data.waveStartMessage,
-                      );
-                      _sync();
-                    }
-                  },
                 ),
               ],
             ),

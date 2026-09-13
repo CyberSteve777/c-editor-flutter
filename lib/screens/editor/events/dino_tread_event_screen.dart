@@ -273,28 +273,31 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.timeInterval.toString(),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.dinoTreadTimeIntervalLabel ??
+                            'Time interval [TimeInterval]',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.dinoTreadTimeIntervalLabel ??
-                              'Time interval [TimeInterval]',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = DinoTreadActionPropsData(
-                              gridY: _data.gridY,
-                              gridXMin: _data.gridXMin,
-                              gridXMax: _data.gridXMax,
-                              timeInterval: n,
-                              waveStartMessage: _data.waveStartMessage,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.timeInterval.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = DinoTreadActionPropsData(
+                                gridY: _data.gridY,
+                                gridXMin: _data.gridXMin,
+                                gridXMax: _data.gridXMax,
+                                timeInterval: n,
+                                waveStartMessage: _data.waveStartMessage,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

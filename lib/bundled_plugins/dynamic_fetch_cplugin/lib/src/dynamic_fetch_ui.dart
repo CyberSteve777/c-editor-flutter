@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/widgets/editor_components.dart' show EditorOptionTile;
 import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/download.dart';
 import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/releases_api.dart';
 
@@ -58,21 +59,23 @@ String localizeDynamicDownloadError(
 /// Shows the GitHub release picker and returns the chosen option (or null).
 Future<DynamicReleaseOption?> showDynamicReleasePicker(
   BuildContext context,
-  CPluginHost host,
-) {
+  CPluginHost host, {
+  Future<List<DynamicReleaseOption>> Function()? loadReleases,
+}) {
   return showDialog<DynamicReleaseOption>(
     context: context,
     barrierDismissible: false,
     builder: (ctx) => EscapeClosesModal(
-      child: _ReleasePickerDialog(host: host),
+      child: _ReleasePickerDialog(host: host, loadReleases: loadReleases),
     ),
   );
 }
 
 class _ReleasePickerDialog extends StatefulWidget {
-  const _ReleasePickerDialog({required this.host});
+  const _ReleasePickerDialog({required this.host, this.loadReleases});
 
   final CPluginHost host;
+  final Future<List<DynamicReleaseOption>> Function()? loadReleases;
 
   @override
   State<_ReleasePickerDialog> createState() => _ReleasePickerDialogState();
@@ -87,21 +90,27 @@ class _ReleasePickerDialogState extends State<_ReleasePickerDialog> {
     _future = _load();
   }
 
-  Future<List<DynamicReleaseOption>> _load() => Pvz2cDynamicReleases().list();
+  Future<List<DynamicReleaseOption>> _load() =>
+      widget.loadReleases?.call() ?? Pvz2cDynamicReleases().list();
 
   @override
   Widget build(BuildContext context) {
     final host = widget.host;
     return AlertDialog(
+      key: const ValueKey('dynamicReleasePickerDialog'),
+      scrollable: true,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       title: Text(host.localize(context, 'dynamicSelectTitle')),
       content: SizedBox(
-        width: 420,
-        height: 360,
+        width: double.maxFinite,
         child: FutureBuilder<List<DynamicReleaseOption>>(
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
+              return const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              );
             }
             if (snapshot.hasError) {
               final message = localizeDynamicDownloadError(
@@ -110,14 +119,13 @@ class _ReleasePickerDialogState extends State<_ReleasePickerDialog> {
                 snapshot.error!,
               );
               return Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: Text(
-                      message,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                   Align(
@@ -138,30 +146,38 @@ class _ReleasePickerDialogState extends State<_ReleasePickerDialog> {
             if (items.isEmpty) {
               return Text(host.localize(context, 'dynamicEmpty'));
             }
-            return ListView.separated(
-              itemCount: items.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final item = items[index];
-                final sizeLabel = item.sizeBytes > 0
-                    ? formatDynamicBytes(item.sizeBytes)
-                    : '';
-                return ListTile(
-                  leading: item.isLatest
-                      ? const Icon(Icons.star, color: Colors.amber)
-                      : const Icon(Icons.inventory_2_outlined),
-                  title: Text(item.name),
-                  subtitle: Text(
-                    [
-                      item.tagName,
-                      if (sizeLabel.isNotEmpty) sizeLabel,
-                      if (item.isLatest)
-                        host.localize(context, 'dynamicLatestBadge'),
-                    ].join(' · '),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < items.length; index++) ...[
+                  if (index > 0) const Divider(height: 1),
+                  Builder(
+                    builder: (context) {
+                      final item = items[index];
+                      final sizeLabel = item.sizeBytes > 0
+                          ? formatDynamicBytes(item.sizeBytes)
+                          : '';
+                      return EditorOptionTile(
+                        key: ValueKey('dynamicReleaseOption-${item.tagName}'),
+                        leading: item.isLatest
+                            ? const Icon(Icons.star, color: Colors.amber)
+                            : const Icon(Icons.inventory_2_outlined),
+                        title: Text(item.name),
+                        subtitle: Text(
+                          [
+                            item.tagName,
+                            if (sizeLabel.isNotEmpty) sizeLabel,
+                            if (item.isLatest)
+                              host.localize(context, 'dynamicLatestBadge'),
+                          ].join(' · '),
+                        ),
+                        onTap: () => Navigator.of(context).pop(item),
+                      );
+                    },
                   ),
-                  onTap: () => Navigator.of(context).pop(item),
-                );
-              },
+                ],
+              ],
             );
           },
         ),

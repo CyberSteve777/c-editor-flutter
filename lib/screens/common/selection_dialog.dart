@@ -51,10 +51,24 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final media = MediaQuery.of(context);
+    final compact = media.size.width < 480;
+    final availableHeight = media.size.height - media.viewInsets.bottom;
+    final contentHeight = (availableHeight - 200).clamp(160.0, 500.0);
     return AlertDialog(
+      scrollable: true,
+      constraints: const BoxConstraints(maxWidth: 640),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: compact ? 12 : 40,
+        vertical: compact ? 16 : 24,
+      ),
+      titlePadding: compact ? const EdgeInsets.fromLTRB(16, 16, 16, 12) : null,
+      contentPadding: compact ? const EdgeInsets.fromLTRB(16, 0, 16, 8) : null,
+      actionsPadding: compact ? const EdgeInsets.fromLTRB(16, 8, 16, 16) : null,
       title: Text(widget.title),
       content: SizedBox(
         width: double.maxFinite,
+        height: contentHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

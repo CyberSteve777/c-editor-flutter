@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_components.dart';
+
+import 'preview_sticker_catalog.dart';
+import 'preview_sticker_picker_session.dart';
+
+export 'preview_sticker_picker_session.dart';
 
 class _PreviewBannerPresentation {
   const _PreviewBannerPresentation({required this.name, this.iconAssetPath});
@@ -29,7 +34,7 @@ _PreviewBannerPresentation _bannerPresentationFor({
 }) {
   if (stem == banners.defaultStem || stem.toLowerCase() == 'unknown') {
     return _PreviewBannerPresentation(
-      name: t('previewGenUnknownBanner', 'Unknown background'),
+      name: t('previewGenUnknownBanner', 'Spacetime Main Menu'),
       iconAssetPath: 'assets/images/others/unknown.webp',
     );
   }
@@ -85,13 +90,19 @@ _PreviewBannerPresentation _bannerPresentationFor({
   }
 
   return _PreviewBannerPresentation(
-    name: t('previewGenUnknownBanner', 'Unknown background'),
+    name: t('previewGenUnknownBanner', 'Spacetime Main Menu'),
     iconAssetPath: 'assets/images/others/unknown.webp',
   );
 }
 
+/// Catalog-ordered banner stems, with the main menu just before custom images.
+List<String> previewBannerPickerEntries({
+  required StageBannerResolver banners,
+  required Iterable<String> stageAliases,
+}) => [...banners.orderedStemsForStageAliases(stageAliases), '__custom__'];
+
 /// Banner picker: catalog-ordered localized cards, round icons, custom entry.
-/// The unknown/fallback banner is always the last list item.
+/// The main-menu banner is followed by the custom-image action at the end.
 Future<String?> showPreviewBannerPicker({
   required BuildContext context,
   required StageBannerResolver banners,
@@ -108,31 +119,36 @@ Future<String?> showPreviewBannerPicker({
     context: context,
     builder: (ctx) {
       final theme = Theme.of(ctx);
-      final height = (MediaQuery.sizeOf(ctx).height - 180).clamp(140.0, 620.0);
-      final stems = banners.orderedStemsForStageAliases(
-        StageRepository.allItems.map((stage) => stage.alias),
+      final entries = previewBannerPickerEntries(
+        banners: banners,
+        stageAliases: StageRepository.allItems.map((stage) => stage.alias),
       );
-      final entries = [
-        ...stems.take(stems.length - 1),
-        '__custom__',
-        stems.last,
-      ];
       return AlertDialog(
-        title: Text(t('previewGenChooseBanner', 'Choose banner')),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         content: SizedBox(
           width: 520,
-          height: height,
+          height: 620,
           child: ListView.builder(
-            itemCount: entries.length,
+            key: const ValueKey('previewBannerPickerScroll'),
+            itemCount: entries.length + 1,
             itemBuilder: (_, i) {
-              final stem = entries[i];
+              if (i == 0) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    t('previewGenChooseBanner', 'Choose banner'),
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                );
+              }
+              final stem = entries[i - 1];
               if (stem == '__custom__') {
                 return Card(
                   key: const ValueKey('preview-banner-custom'),
                   margin: const EdgeInsets.only(bottom: 8),
                   clipBehavior: Clip.antiAlias,
-                  child: ListTile(
+                  child: EditorOptionTile(
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
@@ -142,8 +158,6 @@ Future<String?> showPreviewBannerPicker({
                     ),
                     title: Text(
                       t('previewGenCustomBanner', 'Custom image'),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -175,64 +189,45 @@ Future<String?> showPreviewBannerPicker({
                   ),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: InkWell(
+                child: EditorOptionTile(
                   onTap: () => Navigator.pop(ctx, stem),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: AssetImageWidget(
-                            assetPath:
-                                info.iconAssetPath ??
-                                banners.roundIconAssetForStem(stem),
-                            altCandidates: banners
-                                .roundIconAltCandidatesForStem(stem),
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                info.name,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                stem,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (isSelected) ...[
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.check_circle,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ],
-                      ],
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  leading: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: AssetImageWidget(
+                      assetPath:
+                          info.iconAssetPath ??
+                          banners.roundIconAssetForStem(stem),
+                      altCandidates: banners.roundIconAltCandidatesForStem(
+                        stem,
+                      ),
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.contain,
                     ),
                   ),
+                  title: Text(
+                    info.name,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    stem,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  trailing: isSelected
+                      ? Icon(
+                          Icons.check_circle,
+                          color: theme.colorScheme.primary,
+                        )
+                      : null,
                 ),
               );
             },
@@ -249,16 +244,8 @@ Future<String?> showPreviewBannerPicker({
   );
 }
 
-/// Top-level folders under assets/images that we expose in the picker.
-const kPreviewImageFolders = <String>[
-  'plants',
-  'zombies',
-  'griditems',
-  'round_icons',
-  'others',
-  'ui',
-  'worlds',
-];
+/// Kept for callers that use the original image-picker category identifiers.
+const kPreviewImageFolders = kPreviewStickerTags;
 
 class PreviewAssetImageChoice {
   const PreviewAssetImageChoice.asset(this.assetPath) : isCustom = false;
@@ -271,69 +258,134 @@ class PreviewAssetImageChoice {
 Future<PreviewAssetImageChoice?> showPreviewAssetImagePicker({
   required BuildContext context,
   required String Function(String key, [String? fallback]) t,
+  PreviewStickerPickerSession? session,
 }) async {
-  final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-  final all =
-      manifest.listAssets().where((p) => p.startsWith('assets/images/')).where((
-        p,
-      ) {
-        final lower = p.toLowerCase();
-        return lower.endsWith('.png') ||
-            lower.endsWith('.webp') ||
-            lower.endsWith('.jpg') ||
-            lower.endsWith('.jpeg') ||
-            lower.endsWith('.gif');
-      }).toList()..sort();
+  final stickers = await loadPreviewStickerCatalog();
 
   if (!context.mounted) return null;
 
   return showDialog<PreviewAssetImageChoice>(
     context: context,
-    builder: (ctx) => _AssetImagePickerDialog(assets: all, t: t),
+    builder: (ctx) =>
+        PreviewStickerPickerDialog(stickers: stickers, t: t, session: session),
   );
 }
 
-class _AssetImagePickerDialog extends StatefulWidget {
-  const _AssetImagePickerDialog({required this.assets, required this.t});
+class PreviewStickerPickerDialog extends StatefulWidget {
+  const PreviewStickerPickerDialog({
+    super.key,
+    required this.stickers,
+    required this.t,
+    this.session,
+  });
 
-  final List<String> assets;
+  final List<PreviewSticker> stickers;
   final String Function(String key, [String? fallback]) t;
+  final PreviewStickerPickerSession? session;
 
   @override
-  State<_AssetImagePickerDialog> createState() =>
-      _AssetImagePickerDialogState();
+  State<PreviewStickerPickerDialog> createState() =>
+      _PreviewStickerPickerDialogState();
 }
 
-class _AssetImagePickerDialogState extends State<_AssetImagePickerDialog> {
+class _PreviewStickerPickerDialogState
+    extends State<PreviewStickerPickerDialog> {
+  late final PreviewStickerPickerSession _session;
+  late final ScrollController _scrollController;
+  late final TextEditingController _searchController;
+  bool _restoringPosition = true;
   String? _folder;
   String _query = '';
 
-  List<String> get _folders {
-    final found = <String>{};
-    for (final a in widget.assets) {
-      final rest = a.substring('assets/images/'.length);
-      final slash = rest.indexOf('/');
-      if (slash > 0) found.add(rest.substring(0, slash));
-    }
-    final ordered = [
-      for (final f in kPreviewImageFolders)
-        if (found.contains(f)) f,
-      ...found.where((f) => !kPreviewImageFolders.contains(f)).toList()..sort(),
-    ];
-    return ordered;
+  @override
+  void initState() {
+    super.initState();
+    _session = widget.session ?? PreviewStickerPickerSession();
+    _folder = _session.selectedTag;
+    if (!_folders.contains(_folder)) _folder = null;
+    _query = _session.query;
+    _searchController = TextEditingController(text: _query);
+    _scrollController = ScrollController(
+      initialScrollOffset: _session.scrollOffsetFor(_folder, _query),
+      keepScrollOffset: false,
+    )..addListener(_rememberPosition);
+    _restorePosition();
   }
 
-  List<String> get _filtered {
-    var list = widget.assets;
-    if (_folder != null) {
-      final prefix = 'assets/images/$_folder/';
-      list = list.where((a) => a.startsWith(prefix)).toList();
+  void _rememberPosition() {
+    _session.selectedTag = _folder;
+    _session.query = _query;
+    if (_restoringPosition) return;
+    if (_scrollController.hasClients) {
+      _session.rememberScrollOffset(_folder, _query, _scrollController.offset);
     }
+  }
+
+  void _restorePosition() {
+    _restoringPosition = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(
+          _session
+              .scrollOffsetFor(_folder, _query)
+              .clamp(0.0, _scrollController.position.maxScrollExtent),
+        );
+      }
+      _restoringPosition = false;
+      _rememberPosition();
+    });
+  }
+
+  void _setFilter(String? folder, String query) {
+    _rememberPosition();
+    setState(() {
+      _folder = folder;
+      _query = query;
+      _session.selectedTag = folder;
+      _session.query = query;
+    });
+    _restorePosition();
+  }
+
+  @override
+  void dispose() {
+    _rememberPosition();
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  List<String> get _folders {
+    final found = widget.stickers.map((sticker) => sticker.tag).toSet();
+    return [
+      for (final f in kPreviewImageFolders)
+        if (found.contains(f)) f,
+    ];
+  }
+
+  List<PreviewSticker> get _filtered {
     final q = _query.trim().toLowerCase();
-    if (q.isNotEmpty) {
-      list = list.where((a) => a.toLowerCase().contains(q)).toList();
-    }
-    return list;
+    return widget.stickers.where((sticker) {
+      if (_folder != null && sticker.tag != _folder) return false;
+      return q.isEmpty ||
+          sticker.localizedName(context, widget.t).toLowerCase().contains(q) ||
+          sticker.searchTerms.any((term) => term.toLowerCase().contains(q));
+    }).toList();
+  }
+
+  String _tagLabel(String tag) {
+    const labels = {
+      'plants': ('previewStickerTagPlants', 'Plants'),
+      'zombies': ('previewStickerTagZombies', 'Zombies'),
+      'griditems': ('previewStickerTagGridItems', 'Grid items'),
+      'round_icons': ('previewStickerTagMapAndMusic', 'Maps and music'),
+      'ui': ('previewStickerTagUI', 'Tags and themes'),
+      'worlds': ('previewStickerTagWorlds', 'Worlds'),
+      'others': ('previewStickerTagOthers', 'Others'),
+    };
+    final label = labels[tag] ?? labels['others']!;
+    return widget.t(label.$1, label.$2);
   }
 
   @override
@@ -341,102 +393,171 @@ class _AssetImagePickerDialogState extends State<_AssetImagePickerDialog> {
     final t = widget.t;
     final folders = _folders;
     final items = _filtered;
-    return AlertDialog(
-      title: Text(t('previewGenAddImage', 'Add image')),
-      content: SizedBox(
-        width: 520,
-        height: 440,
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: SizedBox(
+        width: 640,
+        height: 560,
         child: Column(
           children: [
-            TextField(
-              decoration: InputDecoration(
-                isDense: true,
-                prefixIcon: const Icon(Icons.search),
-                hintText: t('previewGenImageSearch', 'Search images'),
-              ),
-              onChanged: (v) => setState(() => _query = v),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: ChoiceChip(
-                      label: Text(t('previewGenImageAll', 'All')),
-                      selected: _folder == null,
-                      onSelected: (_) => setState(() => _folder = null),
-                    ),
-                  ),
-                  for (final f in folders)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: ChoiceChip(
-                        label: Text(f),
-                        selected: _folder == f,
-                        onSelected: (_) => setState(() => _folder = f),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
             Expanded(
-              child: items.isEmpty
-                  ? Center(child: Text(t('previewGenImageEmpty', 'No images')))
-                  : GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 5,
-                            mainAxisSpacing: 6,
-                            crossAxisSpacing: 6,
-                          ),
-                      itemCount: items.length,
-                      itemBuilder: (_, i) {
-                        final path = items[i];
-                        final name = path.split('/').last;
-                        return InkWell(
-                          onTap: () => Navigator.pop(
-                            context,
-                            PreviewAssetImageChoice.asset(path),
-                          ),
-                          child: Tooltip(
-                            message: name,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: Colors.black26,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: Colors.white24),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: AssetImageWidget(
-                                  assetPath: path,
-                                  fit: BoxFit.contain,
+              child: Scrollbar(
+                controller: _scrollController,
+                thumbVisibility: true,
+                child: CustomScrollView(
+                  key: const ValueKey('preview-sticker-scroll'),
+                  controller: _scrollController,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                      sliver: SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              t('previewGenStickersTitle', 'Add stickers'),
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              key: const ValueKey('preview-sticker-search'),
+                              controller: _searchController,
+                              textAlignVertical: TextAlignVertical.center,
+                              decoration: InputDecoration(
+                                isDense: false,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                prefixIcon: const Icon(Icons.search),
+                                hintText: t(
+                                  'previewGenImageSearch',
+                                  'Search stickers',
                                 ),
                               ),
+                              onChanged: (v) => _setFilter(_folder, v),
                             ),
-                          ),
-                        );
-                      },
+                            const SizedBox(height: 8),
+                            HorizontalTagScroller(
+                              key: const ValueKey(
+                                'preview-sticker-tags-scroll',
+                              ),
+                              padding: EdgeInsets.zero,
+                              initialScrollOffset: _session.tagStripOffset,
+                              onScrollOffsetChanged: (offset) =>
+                                  _session.tagStripOffset = offset,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: ChoiceChip(
+                                    key: const ValueKey(
+                                      'preview-sticker-tag-all',
+                                    ),
+                                    label: Text(t('previewGenImageAll', 'All')),
+                                    selected: _folder == null,
+                                    onSelected: (_) => _setFilter(null, _query),
+                                  ),
+                                ),
+                                for (final f in folders)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 6),
+                                    child: ChoiceChip(
+                                      key: ValueKey('preview-sticker-tag-$f'),
+                                      label: Text(_tagLabel(f)),
+                                      selected: _folder == f,
+                                      onSelected: (_) => _setFilter(f, _query),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
+                    if (items.isEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Text(t('previewGenImageEmpty', 'No images')),
+                        ),
+                      )
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                        sliver: SliverGrid.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 100,
+                                mainAxisSpacing: 6,
+                                crossAxisSpacing: 6,
+                              ),
+                          itemCount: items.length,
+                          itemBuilder: (_, i) {
+                            final sticker = items[i];
+                            return InkWell(
+                              key: ValueKey(
+                                'preview-sticker-${sticker.assetPath}',
+                              ),
+                              onTap: () => Navigator.pop(
+                                context,
+                                PreviewAssetImageChoice.asset(
+                                  sticker.assetPath,
+                                ),
+                              ),
+                              child: Tooltip(
+                                message: sticker.localizedName(context, t),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black26,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(color: Colors.white24),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: AssetImageWidget(
+                                      assetPath: sticker.assetPath,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: OverflowBar(
+                  spacing: 8,
+                  overflowSpacing: 4,
+                  overflowAlignment: OverflowBarAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(t('previewGenCancel', 'Cancel')),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(
+                        context,
+                        const PreviewAssetImageChoice.custom(),
+                      ),
+                      child: Text(t('previewGenCustomImage', 'Custom file')),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(t('previewGenCancel', 'Cancel')),
-        ),
-        TextButton(
-          onPressed: () =>
-              Navigator.pop(context, const PreviewAssetImageChoice.custom()),
-          child: Text(t('previewGenCustomImage', 'Custom file')),
-        ),
-      ],
     );
   }
 }

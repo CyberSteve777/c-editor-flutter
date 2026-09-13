@@ -886,17 +886,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get emptyFavorites => 'У вас пока нет избранных уровней';
 
   @override
-  String get copyEventTarget => 'Целевая волна';
+  String get copyEventTarget => 'Выберите целевые волны';
 
   @override
   String get targetWaveIndex => 'Номер целевой волны';
 
   @override
-  String get targetWaveIndexHint => 'напр. 1, 3, 5-8, 10-2:-2';
+  String get targetWaveAlreadyContainsEvent => 'Уже содержит это событие';
 
   @override
   String get targetWaveIndexHelper =>
-      'Несколько волн или диапазонов разделяйте запятыми (1, 3, 5-8).\nДиапазон включает границы. Если шаг не указан: 1 при start <= end, иначе -1.\nШаг задаётся как :шаг (1-10:2, 10-1:-2). Знак шага должен совпадать с направлением.\nКопирование ссылки пропускает волны, где событие уже есть.\nГлубокая копия создаёт уникальную копию для каждой волны.';
+      'При копировании ссылок волны, уже содержащие это событие, автоматически пропускаются.';
 
   @override
   String get moveToWaveIndex => 'Переместить в волну №';

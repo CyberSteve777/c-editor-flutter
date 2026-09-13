@@ -18,11 +18,15 @@ import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/screens/select/existing_wave_event_selection_screen.dart';
-import 'package:c_editor/screens/common/wave_target_parser.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
-    show EventChipWidget, isDesktopPlatform;
+    show
+        EventChipWidget,
+        isDesktopPlatform,
+        EditorOptionTile,
+        EditorChoiceDialogOption,
+        showEditorChoiceDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
 import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
@@ -731,6 +735,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 )
               : Text(
                   _waveEmptyRowHintForPlatform(context, l10n),
+                  key: ValueKey('waveTimelineEmptyHint-$waveIndex'),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -765,133 +770,178 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         ],
       ],
     );
-    final rowStack = Stack(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(width: 52),
-            Expanded(
-              child: DragTarget<_WaveEventDragData>(
-                key: ValueKey('waveTimelineDropTarget-$waveIndex'),
-                onWillAcceptWithDetails: (details) {
-                  return details.data.sourceWaveIndex != waveIndex;
-                },
-                onMove: (_) {
-                  if (_dragHoverWaveIndex != waveIndex) {
-                    setState(() => _dragHoverWaveIndex = waveIndex);
-                  }
-                },
-                onLeave: (_) {
-                  if (_dragHoverWaveIndex == waveIndex) {
-                    setState(() => _dragHoverWaveIndex = null);
-                  }
-                },
-                onAcceptWithDetails: (details) {
-                  setState(() {
-                    _dragHoverWaveIndex = null;
-                    _draggingEvent = null;
-                  });
-                  _placeWaveEvent(
-                    sourceWaveIndex: details.data.sourceWaveIndex,
-                    sourceIndex: details.data.sourceIndex,
-                    targetWaveIndex: waveIndex,
-                    insertBeforeIndex: null,
-                  );
-                },
-                builder: (context, candidateData, rejectedData) {
-                  final highlighted = isDropTarget || candidateData.isNotEmpty;
-                  return Material(
-                    color: highlighted
-                        ? theme.colorScheme.primary.withValues(alpha: 0.12)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    child: InkWell(
-                      onTap: _draggingEvent == null ? onRowTap : null,
-                      borderRadius: BorderRadius.circular(8),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 120),
-                        curve: Curves.easeOut,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: highlighted
-                              ? Border.all(
-                                  color: theme.colorScheme.primary,
-                                  width: 1.5,
-                                )
-                              : null,
-                        ),
-                        child: eventsColumn,
-                      ),
-                    ),
-                  );
-                },
+    final eventDropTarget = DragTarget<_WaveEventDragData>(
+      key: ValueKey('waveTimelineDropTarget-$waveIndex'),
+      onWillAcceptWithDetails: (details) {
+        return details.data.sourceWaveIndex != waveIndex;
+      },
+      onMove: (_) {
+        if (_dragHoverWaveIndex != waveIndex) {
+          setState(() => _dragHoverWaveIndex = waveIndex);
+        }
+      },
+      onLeave: (_) {
+        if (_dragHoverWaveIndex == waveIndex) {
+          setState(() => _dragHoverWaveIndex = null);
+        }
+      },
+      onAcceptWithDetails: (details) {
+        setState(() {
+          _dragHoverWaveIndex = null;
+          _draggingEvent = null;
+        });
+        _placeWaveEvent(
+          sourceWaveIndex: details.data.sourceWaveIndex,
+          sourceIndex: details.data.sourceIndex,
+          targetWaveIndex: waveIndex,
+          insertBeforeIndex: null,
+        );
+      },
+      builder: (context, candidateData, rejectedData) {
+        final highlighted = isDropTarget || candidateData.isNotEmpty;
+        return Material(
+          color: highlighted
+              ? theme.colorScheme.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            onTap: _draggingEvent == null ? onRowTap : null,
+            borderRadius: BorderRadius.circular(8),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              curve: Curves.easeOut,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: highlighted
+                    ? Border.all(color: theme.colorScheme.primary, width: 1.5)
+                    : null,
               ),
+              child: eventsColumn,
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (var i = 0; i < actionButtons.length; i++) ...[
-                  if (i > 0) const SizedBox(height: 6),
-                  InkWell(
-                    onTap: actionButtons[i].onTap,
-                    borderRadius: BorderRadius.circular(6),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              actionButtons[i].label,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: color,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(Icons.info_outline, size: 18, color: color),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-        Positioned(
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: 52,
-          child: Semantics(
-            button: onRowTap != null,
-            label: l10n?.waveEventsTitle(waveIndex) ?? 'Wave $waveIndex events',
-            child: Material(
-              type: MaterialType.transparency,
+          ),
+        );
+      },
+    );
+
+    Widget moduleActions(double maxWidth, WrapAlignment alignment) {
+      return Wrap(
+        key: ValueKey('waveTimelineModuleActions-$waveIndex'),
+        alignment: alignment,
+        spacing: 6,
+        runSpacing: 6,
+        children: [
+          for (var i = 0; i < actionButtons.length; i++)
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
               child: InkWell(
-                key: ValueKey('waveTimelineWaveNumberTap-$waveIndex'),
-                onTap: _draggingEvent == null ? onRowTap : null,
+                key: ValueKey('waveTimelineExpectation-$waveIndex-$i'),
+                onTap: actionButtons[i].onTap,
+                borderRadius: BorderRadius.circular(6),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  child: waveNumber,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          actionButtons[i].label,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: color,
+                          ),
+                          softWrap: true,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.info_outline, size: 18, color: color),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ],
+        ],
+      );
+    }
+
+    final rowStack = LayoutBuilder(
+      builder: (context, constraints) {
+        const numberWidth = 52.0;
+        const maxActionWidth = 260.0;
+        const gap = 8.0;
+        final contentWidth = (constraints.maxWidth - numberWidth).clamp(
+          0.0,
+          double.infinity,
+        );
+        final actionWidth = contentWidth.clamp(0.0, maxActionWidth);
+        final textScale = MediaQuery.textScalerOf(context).scale(14) / 14;
+        // Badges must not take their unconstrained intrinsic width before the
+        // event area is laid out. Stack them below when doing so would leave
+        // less than a readable text area, including accessibility text scaling.
+        final actionsBesideEvents =
+            actionButtons.isNotEmpty &&
+            contentWidth >= 240 * textScale + maxActionWidth + gap;
+        final content = actionsBesideEvents
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: eventDropTarget),
+                  const SizedBox(width: gap),
+                  SizedBox(
+                    width: actionWidth,
+                    child: moduleActions(actionWidth, WrapAlignment.end),
+                  ),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  eventDropTarget,
+                  if (actionButtons.isNotEmpty) ...[
+                    const SizedBox(height: gap),
+                    moduleActions(actionWidth, WrapAlignment.start),
+                    const SizedBox(height: 8),
+                  ],
+                ],
+              );
+        return Stack(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(width: numberWidth),
+                Expanded(child: content),
+              ],
+            ),
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: numberWidth,
+              child: Semantics(
+                button: onRowTap != null,
+                label:
+                    l10n?.waveEventsTitle(waveIndex) ??
+                    'Wave $waveIndex events',
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    key: ValueKey('waveTimelineWaveNumberTap-$waveIndex'),
+                    onTap: _draggingEvent == null ? onRowTap : null,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: waveNumber,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
     final rowContent = ConstrainedBox(
       // Empty waves have less intrinsic content than event waves. Keep enough
@@ -1275,110 +1325,122 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (ctx) => EscapeClosesModal(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: SafeArea(
+          top: false,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(ctx).height * 0.9,
+            ),
+            child: SingleChildScrollView(
+              key: const ValueKey('waveCustomZombieSheetScroll'),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (iconPath != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: AssetImageWidget(
-                        assetPath: iconPath,
-                        altCandidates: imageAltCandidates(iconPath),
-                        width: 36,
-                        height: 36,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: Text(
+                  EditorOptionTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: iconPath != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: AssetImageWidget(
+                              assetPath: iconPath,
+                              altCandidates: imageAltCandidates(iconPath),
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : null,
+                    title: Text(
                       info.alias,
                       style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n?.customZombieAppearanceLocation ??
+                        'Appearance location:',
+                    style: Theme.of(ctx).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    info.waveIndices.isEmpty
+                        ? (l10n?.customZombieNotUsed ??
+                              'This custom zombie is not used by any wave or module.')
+                        : info.waveIndices
+                              .map(
+                                (n) =>
+                                    l10n?.customZombieWaveItem(n) ?? 'Wave $n',
+                              )
+                              .join(', '),
+                    style: Theme.of(ctx).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  if (widget.onEditCustomZombie != null)
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        widget.onEditCustomZombie!(info.rtid);
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(ctx).brightness == Brightness.dark
+                            ? pvzYellowDark
+                            : pvzYellowLight,
+                        foregroundColor: Colors.black87,
+                      ),
+                      icon: const Icon(Icons.edit),
+                      label: Text(l10n?.editProperties ?? 'Edit properties'),
+                    ),
+                  if (widget.onEditCustomZombie != null)
+                    const SizedBox(height: 8),
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Theme.of(ctx).colorScheme.error,
+                    ),
+                    onPressed: canDelete
+                        ? () async {
+                            Navigator.pop(ctx);
+                            final ok = await showDialog<bool>(
+                              context: context,
+                              builder: (dctx) => AlertDialog(
+                                title: Text(
+                                  l10n?.deleteEntity ?? 'Delete entity',
+                                ),
+                                content: Text(
+                                  l10n?.customZombieDeleteConfirm ??
+                                      'Remove this custom zombie entity and its property data.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dctx, false),
+                                    child: Text(l10n?.cancel ?? 'Cancel'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () => Navigator.pop(dctx, true),
+                                    child: Text(l10n?.confirm ?? 'Confirm'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (ok == true) {
+                              _deleteCustomZombie(info);
+                            }
+                          }
+                        : null,
+                    icon: const Icon(Icons.delete),
+                    label: Text(l10n?.deleteEntity ?? 'Delete entity'),
+                  ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.customZombieAppearanceLocation ?? 'Appearance location:',
-                style: Theme.of(ctx).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                info.waveIndices.isEmpty
-                    ? (l10n?.customZombieNotUsed ??
-                          'This custom zombie is not used by any wave or module.')
-                    : info.waveIndices
-                          .map(
-                            (n) => l10n?.customZombieWaveItem(n) ?? 'Wave $n',
-                          )
-                          .join(', '),
-                style: Theme.of(ctx).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 12),
-              if (widget.onEditCustomZombie != null)
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    widget.onEditCustomZombie!(info.rtid);
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(ctx).brightness == Brightness.dark
-                        ? pvzYellowDark
-                        : pvzYellowLight,
-                    foregroundColor: Colors.black87,
-                  ),
-                  icon: const Icon(Icons.edit),
-                  label: Text(l10n?.editProperties ?? 'Edit properties'),
-                ),
-              if (widget.onEditCustomZombie != null) const SizedBox(height: 8),
-              FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(ctx).colorScheme.error,
-                ),
-                onPressed: canDelete
-                    ? () async {
-                        Navigator.pop(ctx);
-                        final ok = await showDialog<bool>(
-                          context: context,
-                          builder: (dctx) => AlertDialog(
-                            title: Text(l10n?.deleteEntity ?? 'Delete entity'),
-                            content: Text(
-                              l10n?.customZombieDeleteConfirm ??
-                                  'Remove this custom zombie entity and its property data.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(dctx, false),
-                                child: Text(l10n?.cancel ?? 'Cancel'),
-                              ),
-                              FilledButton(
-                                onPressed: () => Navigator.pop(dctx, true),
-                                child: Text(l10n?.confirm ?? 'Confirm'),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (ok == true) {
-                          _deleteCustomZombie(info);
-                        }
-                      }
-                    : null,
-                icon: const Icon(Icons.delete),
-                label: Text(l10n?.deleteEntity ?? 'Delete entity'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -1397,112 +1459,126 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (ctx) => EscapeClosesModal(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: SafeArea(
+          top: false,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(ctx).height * 0.9,
+            ),
+            child: SingleChildScrollView(
+              key: const ValueKey('waveCustomFishSheetScroll'),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (iconPath != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: AssetImageWidget(
-                        assetPath: iconPath,
-                        altCandidates: imageAltCandidates(iconPath),
-                        width: 36,
-                        height: 36,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: Text(
+                  EditorOptionTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: iconPath != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: AssetImageWidget(
+                              assetPath: iconPath,
+                              altCandidates: imageAltCandidates(iconPath),
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : null,
+                    title: Text(
                       info.alias,
                       style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n?.customFishAppearanceLocation ??
+                        'Appearance location:',
+                    style: Theme.of(ctx).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    info.waveIndices.isEmpty
+                        ? (l10n?.customFishNotUsed ??
+                              'This custom fish is not used by any wave.')
+                        : info.waveIndices
+                              .map(
+                                (n) => l10n?.customFishWaveItem(n) ?? 'Wave $n',
+                              )
+                              .join(', '),
+                    style: Theme.of(ctx).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  if (widget.onEditCustomFish != null)
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        widget.onEditCustomFish!(info.rtid);
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(ctx).brightness == Brightness.dark
+                            ? pvzFishDark
+                            : pvzFishLight,
+                        foregroundColor:
+                            Theme.of(ctx).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                      ),
+                      icon: const Icon(Icons.edit),
+                      label: Text(
+                        l10n?.editCustomFishProperties ?? 'Edit properties',
+                      ),
+                    ),
+                  if (widget.onEditCustomFish != null)
+                    const SizedBox(height: 8),
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Theme.of(ctx).colorScheme.error,
+                    ),
+                    onPressed: canDelete
+                        ? () async {
+                            Navigator.pop(ctx);
+                            final ok = await showDialog<bool>(
+                              context: context,
+                              builder: (dctx) => AlertDialog(
+                                title: Text(
+                                  l10n?.deleteEntity ?? 'Delete entity',
+                                ),
+                                content: Text(
+                                  l10n?.customFishDeleteConfirm ??
+                                      'Remove this custom fish and its property data.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dctx, false),
+                                    child: Text(l10n?.cancel ?? 'Cancel'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () => Navigator.pop(dctx, true),
+                                    child: Text(l10n?.confirm ?? 'Confirm'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (ok == true) {
+                              _deleteCustomFish(info);
+                            }
+                          }
+                        : null,
+                    icon: const Icon(Icons.delete),
+                    label: Text(l10n?.deleteEntity ?? 'Delete entity'),
+                  ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.customFishAppearanceLocation ?? 'Appearance location:',
-                style: Theme.of(ctx).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                info.waveIndices.isEmpty
-                    ? (l10n?.customFishNotUsed ??
-                          'This custom fish is not used by any wave.')
-                    : info.waveIndices
-                          .map((n) => l10n?.customFishWaveItem(n) ?? 'Wave $n')
-                          .join(', '),
-                style: Theme.of(ctx).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 12),
-              if (widget.onEditCustomFish != null)
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    widget.onEditCustomFish!(info.rtid);
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(ctx).brightness == Brightness.dark
-                        ? pvzFishDark
-                        : pvzFishLight,
-                    foregroundColor: Theme.of(ctx).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black87,
-                  ),
-                  icon: const Icon(Icons.edit),
-                  label: Text(
-                    l10n?.editCustomFishProperties ?? 'Edit properties',
-                  ),
-                ),
-              if (widget.onEditCustomFish != null) const SizedBox(height: 8),
-              FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(ctx).colorScheme.error,
-                ),
-                onPressed: canDelete
-                    ? () async {
-                        Navigator.pop(ctx);
-                        final ok = await showDialog<bool>(
-                          context: context,
-                          builder: (dctx) => AlertDialog(
-                            title: Text(l10n?.deleteEntity ?? 'Delete entity'),
-                            content: Text(
-                              l10n?.customFishDeleteConfirm ??
-                                  'Remove this custom fish and its property data.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(dctx, false),
-                                child: Text(l10n?.cancel ?? 'Cancel'),
-                              ),
-                              FilledButton(
-                                onPressed: () => Navigator.pop(dctx, true),
-                                child: Text(l10n?.confirm ?? 'Confirm'),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (ok == true) {
-                          _deleteCustomFish(info);
-                        }
-                      }
-                    : null,
-                icon: const Icon(Icons.delete),
-                label: Text(l10n?.deleteEntity ?? 'Delete entity'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -1858,64 +1934,38 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     );
   }
 
-  void _showCopyChoiceDialog(
+  Future<void> _showCopyChoiceDialog(
     BuildContext context,
     String rtid,
     String alias,
     int waveIndex,
     VoidCallback? onEditFinished,
-  ) {
+  ) async {
     final l10n = AppLocalizations.of(context);
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.copy ?? 'Copy'),
-        content: Text(
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.copy ?? 'Copy',
+      message:
           l10n?.copyReferenceOrDeep ?? 'Copy reference or make a deep copy?',
+      options: [
+        EditorChoiceDialogOption(
+          value: 'reference',
+          icon: Icons.link,
+          title: l10n?.copyReference ?? 'Copy reference',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(ctx).colorScheme.error,
-            ),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _showCopyTargetWaveDialog(
-                context,
-                rtid,
-                null,
-                waveIndex,
-                onEditFinished,
-              );
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(ctx).colorScheme.primary,
-            ),
-            child: Text(l10n?.copyReference ?? 'Copy reference'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _showDeepCopyNameDialog(
-                context,
-                rtid,
-                alias,
-                waveIndex,
-                onEditFinished,
-              );
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(ctx).colorScheme.primary,
-            ),
-            child: Text(l10n?.deepCopy ?? 'Deep copy'),
-          ),
-        ],
-      ),
+        EditorChoiceDialogOption(
+          value: 'independent',
+          icon: Icons.copy,
+          title: l10n?.deepCopy ?? 'Deep copy',
+        ),
+      ],
     );
+    if (!mounted || !context.mounted || choice == null) return;
+    if (choice == 'reference') {
+      _showCopyTargetWaveDialog(context, rtid, null, waveIndex, onEditFinished);
+    } else {
+      _showDeepCopyNameDialog(context, rtid, alias, waveIndex, onEditFinished);
+    }
   }
 
   void _showDeepCopyNameDialog(
@@ -1990,85 +2040,98 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final l10n = AppLocalizations.of(context);
     final wm = widget.parsed.waveManager;
     if (wm is! WaveManagerData) return;
-    final ctrl = TextEditingController(text: '1');
+    final selectedWaves = <int>{};
     final helperText =
         l10n?.targetWaveIndexHelper ??
-        'Separate waves or ranges with commas (1, 3, 5-8).\n'
-            'Ranges are inclusive. Default step is 1 if start <= end, otherwise -1.\n'
-            'Add :step after a range (1-10:2, 10-1:-2). Step sign must match the direction.\n'
-            'Copy reference skips waves that already have this event.\n'
-            'Deep copy creates a unique copy per wave.';
+        'Waves that already contain this event are automatically skipped when copying references.';
     showDialog<void>(
       context: context,
-      builder: (ctx) {
-        final theme = Theme.of(ctx);
-        return AlertDialog(
-          title: Text(l10n?.copyEventTarget ?? 'Target wave'),
-          content: SizedBox(
-            width: 420,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextField(
-                  controller: ctrl,
-                  decoration: InputDecoration(
-                    labelText: l10n?.targetWaveIndex ?? 'Target wave number',
-                    hintText:
-                        l10n?.targetWaveIndexHint ?? 'e.g. 1, 3, 5-8, 10-2:-2',
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          final theme = Theme.of(ctx);
+          return AlertDialog(
+            key: const ValueKey('waveCopyTargetDialog'),
+            scrollable: true,
+            title: Text(l10n?.copyEventTarget ?? 'Select target waves'),
+            content: SizedBox(
+              width: 420,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    helperText,
+                    softWrap: true,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  keyboardType: TextInputType.text,
-                  autofocus: true,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  helperText,
-                  softWrap: true,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-              ),
-              child: Text(l10n?.cancel ?? 'Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                final targets = parseWaveTargetSpec(ctrl.text, wm.waves.length);
-                Navigator.pop(ctx);
-                if (targets == null || targets.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        l10n?.invalidWaveIndex ?? 'Invalid wave number',
+                  const SizedBox(height: 8),
+                  for (var index = 0; index < wm.waves.length; index++)
+                    CheckboxListTile(
+                      key: ValueKey('waveCopyTarget-${index + 1}'),
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      value: selectedWaves.contains(index + 1),
+                      onChanged: (selected) => setDialogState(() {
+                        if (selected == true) {
+                          selectedWaves.add(index + 1);
+                        } else {
+                          selectedWaves.remove(index + 1);
+                        }
+                      }),
+                      title: Wrap(
+                        spacing: 12,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text('${index + 1}'),
+                          if (wm.waves[index].contains(rtid))
+                            Text(
+                              l10n?.targetWaveAlreadyContainsEvent ??
+                                  'Already contains this event',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  );
-                  return;
-                }
-                if (newAlias != null) {
-                  _performDeepCopy(rtid, newAlias, targets);
-                } else {
-                  _performCopyReference(rtid, targets);
-                }
-                onEditFinished?.call();
-              },
-              style: FilledButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: Colors.white,
+                ],
               ),
-              child: Text(l10n?.copy ?? 'Copy'),
             ),
-          ],
-        );
-      },
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colorScheme.error,
+                ),
+                child: Text(l10n?.cancel ?? 'Cancel'),
+              ),
+              FilledButton(
+                key: const ValueKey('waveCopyTargetConfirm'),
+                onPressed: selectedWaves.isEmpty
+                    ? null
+                    : () {
+                        final targets = selectedWaves.toList()..sort();
+                        Navigator.pop(ctx);
+                        if (newAlias != null) {
+                          _performDeepCopy(rtid, newAlias, targets);
+                        } else {
+                          _performCopyReference(rtid, targets);
+                        }
+                        onEditFinished?.call();
+                      },
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(l10n?.copy ?? 'Copy'),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -2499,7 +2562,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               return Card(
                 key: ValueKey('waveManageEvent-$i'),
                 margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
+                child: EditorOptionTile(
                   leading: Icon(meta?.icon ?? Icons.event, color: color),
                   title: Text(alias),
                   subtitle: Text(
@@ -2736,15 +2799,10 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                     0,
                     (sum, height) => sum + height,
                   );
+            final fixedInnerContentHeight =
+                titleHeight + 12 + 8 + actionHeight + 12 + deleteHeight;
             final fixedContentHeight =
-                titleHeight +
-                12 +
-                8 +
-                actionHeight +
-                12 +
-                deleteHeight +
-                24 +
-                MediaQuery.paddingOf(ctx).bottom;
+                fixedInnerContentHeight + 24 + MediaQuery.paddingOf(ctx).bottom;
             final availableHeight = viewport.maxHeight;
             final desiredHeight = fixedContentHeight + desiredEventHeight;
             final initialSize = (desiredHeight / availableHeight).clamp(
@@ -2774,8 +2832,10 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                       // On a short landscape window, keeping the action area
                       // fixed would leave no usable event list. Let all content
                       // scroll together while retaining the sheet's controller.
+                      // The inner constraints already exclude bottom padding
+                      // and SafeArea, so only compare against inner content.
                       if (contentConstraints.maxHeight <
-                          fixedContentHeight + firstEventHeight) {
+                          fixedInnerContentHeight + firstEventHeight) {
                         return CustomScrollView(
                           key: const ValueKey('waveManageSheetScroll'),
                           controller: scrollController,
@@ -2795,10 +2855,14 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                                 itemCount: rtidList.length,
                                 itemBuilder: (_, i) => eventCard(i),
                               ),
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: actions,
+                            SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: actions,
+                                ),
                               ),
                             ),
                           ],

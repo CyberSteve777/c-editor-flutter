@@ -13,7 +13,7 @@ import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Kongfu World bronze statue (铜人阵) placement editor. Revival uses spawn time, not waves.
 
-/// Shared height so [AddItemCard] aligns with [_BronzeStatueCard] in the wrap.
+/// Minimum height shared by the add card and content-sized statue cards.
 const double _kBronzeStatueCardHeight = 175;
 
 class BronzeModuleScreen extends StatefulWidget {
@@ -576,9 +576,17 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
     await showDialog<void>(
       context: context,
       builder: (ctx) {
+        final compact = MediaQuery.sizeOf(ctx).width < 400;
         return AlertDialog(
+          scrollable: true,
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: compact ? 16 : 40,
+            vertical: 24,
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: compact ? 12 : 24),
           title: Text(l10n?.bronzeModuleAddTitle ?? 'Add bronze type'),
-          content: SingleChildScrollView(
+          content: SizedBox(
+            width: double.maxFinite,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -717,22 +725,11 @@ class _AddBronzeKindRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          child: Row(
-            children: [
-              _BronzeZombieIcon(kind: kind, size: 48),
-              const SizedBox(width: 16),
-              Expanded(child: Text(label)),
-            ],
-          ),
-        ),
-      ),
+    return EditorOptionTile(
+      leading: _BronzeZombieIcon(kind: kind, size: 48),
+      title: Text(label),
+      onTap: onTap,
+      contentPadding: const EdgeInsets.all(4),
     );
   }
 }
@@ -790,10 +787,11 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
+      child: Container(
         width: EditorItemCardLayout.cardWidth(context, base: 140),
-        height: _kBronzeStatueCardHeight,
+        constraints: const BoxConstraints(minHeight: _kBronzeStatueCardHeight),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             EditorDeletableIconHeader(
@@ -803,71 +801,69 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
               height: 88,
               icon: _BronzeZombieIcon(kind: item.kind, size: 77),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      name,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize:
-                            (theme.textTheme.titleSmall?.fontSize ?? 14) * 1.08,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize:
+                          (theme.textTheme.titleSmall?.fontSize ?? 14) * 1.08,
                     ),
-                    if (widget.showCoordinates)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              editorWarningIcon,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                  if (widget.showCoordinates)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            editorWarningIcon,
+                            color: editorWarningBannerForeground(
+                              theme.brightness,
+                            ),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'R${widget.item.mY + 1}:C${widget.item.mX + 1}',
+                            style: theme.textTheme.bodySmall?.copyWith(
                               color: editorWarningBannerForeground(
                                 theme.brightness,
                               ),
-                              size: 16,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'R${widget.item.mY + 1}:C${widget.item.mX + 1}',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: editorWarningBannerForeground(
-                                  theme.brightness,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    const Spacer(),
-                    EditorResponsiveInputField(
-                      label:
-                          l10n?.bronzeModuleSpawnTimeLabel ??
-                          'Revival time (s)',
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                      builder: (context, decoration) => TextField(
-                        controller: _spawnCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: decoration,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null && n >= 0) {
-                            widget.onSpawnTimeChanged(n);
-                          }
-                        },
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  const SizedBox(height: 8),
+                  EditorResponsiveInputField(
+                    label:
+                        l10n?.bronzeModuleSpawnTimeLabel ?? 'Revival time (s)',
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    builder: (context, decoration) => TextField(
+                      controller: _spawnCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: decoration,
+                      onChanged: (v) {
+                        final n = int.tryParse(v);
+                        if (n != null && n >= 0) {
+                          widget.onSpawnTimeChanged(n);
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

@@ -857,17 +857,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get emptyFavorites => '您还没有收藏的关卡';
 
   @override
-  String get copyEventTarget => '目标波次';
+  String get copyEventTarget => '选择目标波次';
 
   @override
   String get targetWaveIndex => '目标波次序号';
 
   @override
-  String get targetWaveIndexHint => '例如 1, 3, 5-8, 10-2:-2';
+  String get targetWaveAlreadyContainsEvent => '已包含该事件';
 
   @override
-  String get targetWaveIndexHelper =>
-      '用逗号分隔波次或范围（1, 3, 5-8）。\n范围含两端。未写步长时，起点不大于终点则为 1，否则为 -1。\n可在范围后加 :步长（1-10:2、10-1:-2），步长符号须与方向一致。\n复制引用会跳过已有该事件的波次。\n深拷贝会为每个波次生成唯一副本。';
+  String get targetWaveIndexHelper => '已包含该事件的波次在复制引用时会自动跳过。';
 
   @override
   String get moveToWaveIndex => '移动至波次序号';
@@ -5077,7 +5076,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moonExpertHelpOverview =>
-      '该模块常见于月球基地专家模式。启用后，关卡中的所有僵尸都会统一使用指定阶级，所有植物都会被强制设为1阶。上述设置会覆盖包括「阶级定义」模块在内的其他植物与僵尸阶级设置。注意在庭院环境下该模块不生效。';
+      '该模块常见于月球基地专家模式。启用后，关卡中的所有僵尸都会统一使用指定阶级，所有植物都会被强制设为1阶。\n上述设置会覆盖包括「阶级定义」模块在内的其他植物与僵尸阶级设置。注意在庭院环境下该模块不生效。';
 
   @override
   String get enterMoonExpertZombieLevelHint => '输入僵尸阶级（0–10）';

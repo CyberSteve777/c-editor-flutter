@@ -160,14 +160,6 @@ class _MoonExpertModuleScreenState extends State<MoonExpertModuleScreen> {
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),
-                      Tooltip(
-                        message: zombieLevelTooltip,
-                        child: Icon(
-                          Icons.help_outline,
-                          size: 18,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),

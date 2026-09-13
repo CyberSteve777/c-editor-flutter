@@ -189,51 +189,58 @@ void main() {
     expect(waveManager.waves[0], [rtidB, rtidA]);
   });
 
-  testWidgets('copy reference to a range skips waves that already have it', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(900, 1200);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets(
+    'copy reference to selected waves skips waves that already have it',
+    (tester) async {
+      tester.view.physicalSize = const Size(900, 1200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-    const alias = 'SharedEvent';
-    final event = _event(alias);
-    final rtid = RtidParser.build(alias, 'CurrentLevel');
-    final waveManager = WaveManagerData(
-      waveCount: 3,
-      waves: [
-        [rtid],
-        <String>[],
-        [rtid],
-      ],
-    );
+      const alias = 'SharedEvent';
+      final event = _event(alias);
+      final rtid = RtidParser.build(alias, 'CurrentLevel');
+      final waveManager = WaveManagerData(
+        waveCount: 3,
+        waves: [
+          [rtid],
+          <String>[],
+          [rtid],
+        ],
+      );
 
-    await tester.pumpWidget(
-      _buildTab(
-        waveManager: waveManager,
-        objects: [event],
-        objectMap: {alias: event},
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        _buildTab(
+          waveManager: waveManager,
+          objects: [event],
+          objectMap: {alias: event},
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const ValueKey('waveTimelineWaveNumberTap-1')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(alias).last);
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('waveEventCopyButton')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Copy reference'));
-    await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('waveTimelineWaveNumberTap-1')),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(alias).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('waveEventCopyButton')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Copy reference'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Target wave'), findsOneWidget);
-    await tester.enterText(find.byType(TextField).last, '1-3');
-    await tester.tap(find.text('Copy').last);
-    await tester.pumpAndSettle();
+      expect(find.text('Select target waves'), findsOneWidget);
+      expect(find.text('Already contains this event'), findsNWidgets(2));
+      for (var wave = 1; wave <= 3; wave++) {
+        await tester.tap(find.byKey(ValueKey('waveCopyTarget-$wave')));
+        await tester.pump();
+      }
+      await tester.tap(find.byKey(const ValueKey('waveCopyTargetConfirm')));
+      await tester.pumpAndSettle();
 
-    expect(waveManager.waves[0], [rtid]);
-    expect(waveManager.waves[1], [rtid]);
-    expect(waveManager.waves[2], [rtid]);
-  });
+      expect(waveManager.waves[0], [rtid]);
+      expect(waveManager.waves[1], [rtid]);
+      expect(waveManager.waves[2], [rtid]);
+    },
+  );
 }

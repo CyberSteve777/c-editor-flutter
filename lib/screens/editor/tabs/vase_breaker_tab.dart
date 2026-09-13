@@ -652,17 +652,25 @@ class _VaseBreakerTabState extends State<VaseBreakerTab> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n?.itemLabel ?? 'Item'),
         content: SizedBox(
           width: 320,
           child: ListView.separated(
             shrinkWrap: true,
-            itemCount: _collectableTypes.length,
+            itemCount: _collectableTypes.length + 1,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (_, index) {
-              final item = _collectableTypes[index];
+              if (index == 0) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    l10n?.itemLabel ?? 'Item',
+                    style: Theme.of(ctx).textTheme.headlineSmall,
+                  ),
+                );
+              }
+              final item = _collectableTypes[index - 1];
               final iconPath = 'assets/images/others/${item.iconName}';
-              return ListTile(
+              return EditorOptionTile(
                 leading: AssetImageWidget(
                   assetPath: iconPath,
                   altCandidates: imageAltCandidates(iconPath),

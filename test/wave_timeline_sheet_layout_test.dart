@@ -10,6 +10,7 @@ Future<void> _openSheet(
   required Size size,
   int eventCount = 10,
   double textScale = 1,
+  double bottomSafeArea = 0,
   ThemeData? theme,
   void Function(int)? onAddEvent,
 }) async {
@@ -44,9 +45,11 @@ Future<void> _openSheet(
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        data: MediaQuery.of(context).copyWith(
+          textScaler: TextScaler.linear(textScale),
+          padding: EdgeInsets.only(bottom: bottomSafeArea),
+          viewPadding: EdgeInsets.only(bottom: bottomSafeArea),
+        ),
         child: child!,
       ),
       home: Scaffold(
@@ -191,6 +194,61 @@ void main() {
     );
     expect(tester.getSize(find.text('Add event')).height, lessThan(30));
     expect(tester.getSize(find.text('Reuse event')).height, lessThan(30));
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final scenario in [
+    (size: const Size(360, 800), textScale: 1.0, safeArea: 0.0),
+    (size: const Size(360, 900), textScale: 1.8, safeArea: 0.0),
+    (size: const Size(360, 900), textScale: 1.4, safeArea: 34.0),
+    (size: const Size(900, 800), textScale: 1.0, safeArea: 0.0),
+  ]) {
+    testWidgets('empty wave footer stays at the bottom ${scenario.size} '
+        'scale ${scenario.textScale} safe area ${scenario.safeArea}', (
+      tester,
+    ) async {
+      await _openSheet(
+        tester,
+        size: scenario.size,
+        eventCount: 0,
+        textScale: scenario.textScale,
+        bottomSafeArea: scenario.safeArea,
+      );
+      final sheet = tester.getRect(
+        find.byKey(const ValueKey('waveManageSheet')),
+      );
+      final delete = tester.getRect(
+        find.byKey(const ValueKey('waveManageDeleteWaveButton')),
+      );
+      expect(
+        sheet.bottom - delete.bottom,
+        closeTo(24 + scenario.safeArea, 1),
+        reason: 'Unused sheet height belongs above the actions, not below.',
+      );
+      expect(delete.bottom, lessThanOrEqualTo(scenario.size.height));
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('short empty wave can scroll its footer to the bottom', (
+    tester,
+  ) async {
+    await _openSheet(
+      tester,
+      size: const Size(360, 300),
+      eventCount: 0,
+      textScale: 1.4,
+    );
+    final scroll = find.byKey(const ValueKey('waveManageSheetScroll'));
+    expect(scroll, findsOneWidget);
+    final delete = find.byKey(const ValueKey('waveManageDeleteWaveButton'));
+    await tester.drag(scroll, const Offset(0, -1000));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getRect(scroll).bottom - tester.getRect(delete).bottom,
+      closeTo(0, 1),
+    );
+    expect(delete.hitTestable(), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

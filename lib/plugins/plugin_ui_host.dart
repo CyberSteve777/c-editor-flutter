@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show EditorPopupMenuTile;
 
 /// Opens a plugin-contributed UI element as a full-screen route.
 void openPluginUiElement(BuildContext context, PluginUiElement element) {
   Navigator.of(context).push(
-    MaterialPageRoute<void>(
-      builder: (context) => element.builder(context),
-    ),
+    MaterialPageRoute<void>(builder: (context) => element.builder(context)),
   );
 }
 
@@ -51,7 +51,7 @@ List<PopupMenuEntry<String>> pluginOverflowMenuItems({
     for (final action in actions)
       PopupMenuItem<String>(
         value: '$valuePrefix${action.key}',
-        child: ListTile(
+        child: EditorPopupMenuTile(
           leading: Icon(action.icon),
           title: Text(action.titleBuilder(context)),
           contentPadding: EdgeInsets.zero,
@@ -60,7 +60,7 @@ List<PopupMenuEntry<String>> pluginOverflowMenuItems({
     for (final element in elements)
       PopupMenuItem<String>(
         value: '$valuePrefix${element.key}',
-        child: ListTile(
+        child: EditorPopupMenuTile(
           leading: Icon(element.icon),
           title: Text(element.title),
           contentPadding: EdgeInsets.zero,
@@ -81,15 +81,17 @@ bool handlePluginOverflowSelection(
   final key = value.substring(valuePrefix.length);
   final registry = PluginManager.instance.screenRegistry;
 
-  final actionMatch =
-      registry.editorActionsForSlot(slot).where((e) => e.key == key);
+  final actionMatch = registry
+      .editorActionsForSlot(slot)
+      .where((e) => e.key == key);
   if (actionMatch.isNotEmpty) {
     actionMatch.first.onActivate(context);
     return true;
   }
 
-  final elementMatch =
-      registry.elementsForSlot(slot).where((e) => e.key == key);
+  final elementMatch = registry
+      .elementsForSlot(slot)
+      .where((e) => e.key == key);
   if (elementMatch.isEmpty) return false;
   openPluginUiElement(context, elementMatch.first);
   return true;
@@ -102,18 +104,18 @@ List<PopupMenuEntry<String>> pluginLevelFileMenuItems({
   required String valuePrefix,
 }) {
   if (!PluginManager.isInitialized) return const [];
-  final actions =
-      PluginManager.instance.screenRegistry.levelFileActionsFor(fileName);
+  final actions = PluginManager.instance.screenRegistry.levelFileActionsFor(
+    fileName,
+  );
   if (actions.isEmpty) return const [];
   return [
     for (final action in actions)
       PopupMenuItem<String>(
         value: '$valuePrefix${action.key}',
-        child: ListTile(
+        child: EditorPopupMenuTile(
           leading: Icon(action.icon, size: 22),
           title: Text(action.titleBuilder(context)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-          visualDensity: VisualDensity.compact,
         ),
       ),
   ];

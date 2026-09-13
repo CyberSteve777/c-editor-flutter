@@ -15,6 +15,7 @@ import 'package:c_editor/screens/plugins_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/locale_flag_icon.dart';
+import 'package:c_editor/widgets/editor_components.dart' show EditorOptionTile;
 
 /// Wraps child and handles Escape key on desktop to trigger back/pop.
 /// Uses HardwareKeyboard.addHandler for immediate, global Escape handling.
@@ -259,14 +260,26 @@ class _ZEditorAppState extends State<ZEditorApp> {
   }
 
   void _showLanguageSelector(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final languageTitle = l10n?.language ?? 'Language';
-    final languageEnglish = l10n?.languageEnglish ?? 'English';
-    final languageChinese = l10n?.languageChinese ?? '中文';
-    final languageRussian = l10n?.languageRussian ?? 'Русский';
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (ctx) => SafeArea(
+    showAppLanguageSelector(context);
+  }
+}
+
+/// The language choices remain scrollable even on a short landscape screen.
+Future<void> showAppLanguageSelector(BuildContext context) async {
+  final l10n = AppLocalizations.of(context);
+  final languageTitle = l10n?.language ?? 'Language';
+  final languageEnglish = l10n?.languageEnglish ?? 'English';
+  final languageChinese = l10n?.languageChinese ?? '中文';
+  final languageRussian = l10n?.languageRussian ?? 'Русский';
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.sizeOf(context).height * 0.9,
+    ),
+    builder: (ctx) => SafeArea(
+      child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -277,7 +290,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 style: Theme.of(ctx).textTheme.titleLarge,
               ),
             ),
-            ListTile(
+            EditorOptionTile(
+              key: const ValueKey('appLanguage_en'),
               leading: const LocaleFlagIcon('en'),
               title: Text(languageEnglish),
               onTap: () {
@@ -285,7 +299,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 Navigator.pop(ctx);
               },
             ),
-            ListTile(
+            EditorOptionTile(
+              key: const ValueKey('appLanguage_zh'),
               leading: const LocaleFlagIcon('zh'),
               title: Text(languageChinese),
               onTap: () {
@@ -293,7 +308,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 Navigator.pop(ctx);
               },
             ),
-            ListTile(
+            EditorOptionTile(
+              key: const ValueKey('appLanguage_ru'),
               leading: const LocaleFlagIcon('ru'),
               title: Text(languageRussian),
               onTap: () {
@@ -304,8 +320,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 /// Binds [EditorCubit] to [ActiveEditorSession] for the plugin host API.

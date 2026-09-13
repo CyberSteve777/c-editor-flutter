@@ -86,6 +86,7 @@ class StageBannerResolver {
 
   /// Banner stems ordered by the supplied stage catalog, followed by banners
   /// that only belong to custom stages. The fallback banner is always last.
+  /// Picker actions such as adding a custom image are not part of this list.
   List<String> orderedStemsForStageAliases(Iterable<String> stageAliases) {
     final stems = <String>{};
     for (final alias in stageAliases) {
@@ -159,18 +160,14 @@ class StageBannerResolver {
     }
     final primary = roundIconAssetForStem(stem);
     final aliases = aliasesForStem(stem);
-    final paths = <String>{
-      'assets/images/others/unknown.webp',
-    };
+    final paths = <String>{'assets/images/others/unknown.webp'};
     for (final alias in aliases) {
       final icon = StageRepository.allItems
           .firstWhereOrNull((s) => s.alias == alias)
           ?.iconName;
       if (icon != null && icon.isNotEmpty) {
         paths.add(
-          icon.startsWith('assets/')
-              ? icon
-              : 'assets/images/round_icons/$icon',
+          icon.startsWith('assets/') ? icon : 'assets/images/round_icons/$icon',
         );
       }
       final short = alias.replaceAll(RegExp(r'(Stage|Custom)$'), '');

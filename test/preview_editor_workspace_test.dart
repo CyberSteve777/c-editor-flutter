@@ -4,6 +4,7 @@ import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/p
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _toolbarViewportKey = ValueKey('previewToolbarViewport');
@@ -36,16 +37,20 @@ Widget _workspace({
   void Function(String id, Rect bounds)? onLayerMoved,
   void Function(String id, double scale)? onLayerScaled,
   VoidCallback? onToolbarResizeStarted,
+  VoidCallback? onCanvasPaint,
 }) => PreviewEditorWorkspace(
   toolbar: toolbar,
-  canvas: PreviewCanvas(
-    document: document,
-    interactive: true,
-    boundaryKey: boundaryKey,
-    selectedLayerId: selectedLayerId,
-    onSelectLayer: onSelectLayer,
-    onLayerMoved: onLayerMoved,
-    onLayerScaled: onLayerScaled,
+  canvas: _CanvasPaintProbe(
+    onPaint: onCanvasPaint,
+    child: PreviewCanvas(
+      document: document,
+      interactive: true,
+      boundaryKey: boundaryKey,
+      selectedLayerId: selectedLayerId,
+      onSelectLayer: onSelectLayer,
+      onLayerMoved: onLayerMoved,
+      onLayerScaled: onLayerScaled,
+    ),
   ),
   canvasZoomLabel: 'Canvas zoom',
   fitCanvasLabel: 'Fit canvas',
@@ -68,7 +73,189 @@ Future<void> _setZoom(WidgetTester tester, double zoom) async {
   await tester.pumpAndSettle();
 }
 
+class _CanvasPaintProbe extends SingleChildRenderObjectWidget {
+  const _CanvasPaintProbe({required this.onPaint, required super.child});
+
+  final VoidCallback? onPaint;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _CanvasPaintProbeRenderObject(onPaint);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _CanvasPaintProbeRenderObject renderObject,
+  ) => renderObject.onPaint = onPaint;
+}
+
+class _CanvasPaintProbeRenderObject extends RenderProxyBox {
+  _CanvasPaintProbeRenderObject(this.onPaint);
+
+  VoidCallback? onPaint;
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    super.paint(context, offset);
+    onPaint?.call();
+  }
+}
+
 void main() {
+  testWidgets('every zoom frame paints with its center already anchored', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(800, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final boundaryKey = GlobalKey();
+    final paintedCenters = <Offset>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: _workspace(
+            toolbar: const Text('Controls'),
+            document: _document(),
+            boundaryKey: boundaryKey,
+            onCanvasPaint: () {
+              paintedCenters.add(_paintedCanvasRect(boundaryKey).center);
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final center = tester.getCenter(find.byKey(_canvasViewportKey));
+    for (final zoom in [1.1, 1.4, 2.4, 1.8, 0.8, 0.5, 1.0, 3.0]) {
+      paintedCenters.clear();
+      tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(zoom);
+      await tester.pump();
+      expect(paintedCenters, isNotEmpty, reason: 'Zoom $zoom must paint');
+      for (final paintedCenter in paintedCenters) {
+        expect(
+          (paintedCenter - center).distance,
+          lessThan(0.01),
+          reason: 'Zoom $zoom must anchor before its first paint',
+        );
+      }
+      await tester.pump();
+      expect(
+        (_paintedCanvasRect(boundaryKey).center - center).distance,
+        lessThan(0.01),
+      );
+      expect(tester.takeException(), isNull);
+    }
+    // Multiple input updates before one frame must use the same view anchor.
+    final slider = tester.widget<Slider>(find.byKey(_zoomSliderKey));
+    paintedCenters.clear();
+    for (final zoom in [2.7, 2.2, 1.6]) {
+      slider.onChanged!(zoom);
+    }
+    await tester.pump();
+    expect(paintedCenters, isNotEmpty);
+    expect(
+      paintedCenters.every((point) => (point - center).distance < 0.01),
+      isTrue,
+    );
+    paintedCenters.clear();
+    await tester.tap(find.byKey(const ValueKey('previewCanvasFitButton')));
+    await tester.pump();
+    expect(paintedCenters, isNotEmpty);
+    expect(
+      paintedCenters.every((point) => (point - center).distance < 0.01),
+      isTrue,
+    );
+    expect(tester.takeException(), isNull);
+
+    paintedCenters.clear();
+    await tester.binding.setSurfaceSize(const Size(1000, 650));
+    tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(2.2);
+    await tester.pump();
+    final resizedCenter = tester.getCenter(find.byKey(_canvasViewportKey));
+    expect(paintedCenters, isNotEmpty);
+    expect(
+      paintedCenters.every((point) => (point - resizedCenter).distance < 0.01),
+      isTrue,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'zooming a panned view preserves its visible point on first paint',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(800, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final boundaryKey = GlobalKey();
+      Offset? documentPoint;
+      final paintedPoints = <Offset>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: _workspace(
+              toolbar: const Text('Controls'),
+              document: _document(),
+              boundaryKey: boundaryKey,
+              onCanvasPaint: () {
+                if (documentPoint == null) return;
+                final box =
+                    boundaryKey.currentContext!.findRenderObject()!
+                        as RenderBox;
+                paintedPoints.add(box.localToGlobal(documentPoint));
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _setZoom(tester, 2);
+      final scrollbars = tester.widgetList<Scrollbar>(
+        find.descendant(
+          of: find.byKey(_canvasViewportKey),
+          matching: find.byType(Scrollbar),
+        ),
+      );
+      for (final scrollbar in scrollbars) {
+        final controller = scrollbar.controller!;
+        controller.jumpTo(controller.position.maxScrollExtent * 0.6);
+      }
+      await tester.pumpAndSettle();
+      final center = tester.getCenter(find.byKey(_canvasViewportKey));
+      final box = boundaryKey.currentContext!.findRenderObject()! as RenderBox;
+      documentPoint = box.globalToLocal(center);
+      for (final zoom in [2.3, 2.7, 2.4, 1.8]) {
+        paintedPoints.clear();
+        tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(zoom);
+        await tester.pump();
+        expect(paintedPoints, isNotEmpty);
+        for (final point in paintedPoints) {
+          expect((point - center).distance, lessThan(0.01));
+        }
+        await tester.pump();
+        expect(
+          (box.localToGlobal(documentPoint) - center).distance,
+          lessThan(0.01),
+        );
+        expect(tester.takeException(), isNull);
+      }
+
+      // Fit followed by another zoom in one frame must discard the panned anchor.
+      documentPoint = kPreviewCanvasSize.center(Offset.zero);
+      paintedPoints.clear();
+      tester
+          .widget<IconButton>(
+            find.byKey(const ValueKey('previewCanvasFitButton')),
+          )
+          .onPressed!();
+      tester.widget<Slider>(find.byKey(_zoomSliderKey)).onChanged!(2.5);
+      await tester.pump();
+      expect(paintedPoints, isNotEmpty);
+      expect(
+        paintedPoints.every((point) => (point - center).distance < 0.01),
+        isTrue,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('additional controls scroll without shrinking the fitted image', (
     tester,
   ) async {
@@ -283,6 +470,31 @@ void main() {
     expect(vertical.thumbVisibility, isTrue);
     final originalHorizontalOffset = horizontal.controller!.offset;
     final originalVerticalOffset = vertical.controller!.offset;
+
+    final horizontalPainter = find.descendant(
+      of: find.byKey(_canvasViewportKey),
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is CustomPaint &&
+            widget.foregroundPainter is ScrollbarPainter &&
+            (widget.foregroundPainter! as ScrollbarPainter)
+                    .scrollbarOrientation ==
+                ScrollbarOrientation.bottom,
+      ),
+    );
+    final thumbPainter =
+        tester.widget<CustomPaint>(horizontalPainter).foregroundPainter!
+            as ScrollbarPainter;
+    final thumbBox = tester.renderObject<RenderBox>(horizontalPainter);
+    expect(
+      thumbPainter.hitTestOnlyThumbInteractive(
+        thumbBox.globalToLocal(Offset(viewport.center.dx, viewport.bottom - 3)),
+        PointerDeviceKind.touch,
+      ),
+      isTrue,
+      reason:
+          'The centered zoom must update the draggable thumb before panning',
+    );
 
     await tester.dragFrom(
       Offset(viewport.center.dx, viewport.bottom - 3),
