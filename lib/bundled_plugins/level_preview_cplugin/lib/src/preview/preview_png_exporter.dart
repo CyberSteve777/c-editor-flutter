@@ -6,11 +6,7 @@ import 'package:c_editor/data/repository/level_repository.dart';
 
 import 'preview_png_writer.dart' as writer;
 
-enum PreviewPngExportFailure {
-  encoding,
-  libraryNotConfigured,
-  animationTooLarge,
-}
+enum PreviewPngExportFailure { encoding, libraryNotConfigured }
 
 /// A known export failure that the interface can describe with localization.
 /// Filesystem and unexpected encoding errors retain their original exceptions.
@@ -31,7 +27,7 @@ class PreviewExportResult {
 }
 
 class PreviewPngExporter {
-  /// Renders [boundary] to PNG and writes under the level library export folder.
+  /// Encodes [image] as PNG and writes under the level library export folder.
   static Future<PreviewExportResult> export({
     required ui.Image image,
     required String levelFileName,
@@ -46,16 +42,7 @@ class PreviewPngExporter {
       byteData.lengthInBytes,
     );
 
-    return exportEncoded(bytes: bytes, levelFileName: levelFileName);
-  }
-
-  /// Shared workspace saving for PNG and already-composited animated GIF data.
-  static Future<PreviewExportResult> exportEncoded({
-    required Uint8List bytes,
-    required String levelFileName,
-    String extension = 'png',
-  }) async {
-    if ((extension != 'png' && extension != 'gif') || bytes.isEmpty) {
+    if (bytes.isEmpty) {
       throw const PreviewPngExportException(PreviewPngExportFailure.encoding);
     }
     final libraryPath = await LevelRepository.getSavedFolderPath();
@@ -68,11 +55,11 @@ class PreviewPngExporter {
     final folderName = await PreviewExportPrefs.getFolderName();
     final base = sanitizePreviewFileBaseName(levelFileName);
     final dirPath = previewExportDirectoryPath(libraryPath, folderName);
-    var fileName = '$base.$extension';
+    var fileName = '$base.png';
     var outPath = previewExportFilePath(dirPath, fileName);
     var n = 2;
     while (await writer.fileExists(outPath)) {
-      fileName = '${base}_$n.$extension';
+      fileName = '${base}_$n.png';
       outPath = previewExportFilePath(dirPath, fileName);
       n++;
     }

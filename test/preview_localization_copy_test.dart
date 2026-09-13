@@ -156,6 +156,18 @@ void main() {
     final appZh = _messages('assets/l10n/app_zh.arb');
     final appEn = _messages('assets/l10n/app_en.arb');
 
+    expect(zh['previewGenWaves'], '随波次生成');
+    expect(zh['previewGenGridItems'], '障碍物');
+    expect(en['previewGenGridItems'], 'Grid Items');
+    for (final entry in const {
+      'previewStickerTagCreatures': ('中立生物', 'Creatures'),
+      'previewStickerTagToolPackets': ('工具卡', 'Tool Packets'),
+      'previewStickerTagComponents': ('场地组件', 'Components'),
+    }.entries) {
+      expect(zh[entry.key], entry.value.$1);
+      expect(en[entry.key], entry.value.$2);
+    }
+
     expect(zh['previewGenBronzeCount'], contains(appZh['bronzeModuleTitle']!));
     expect(en['previewGenBronzeCount'], contains('Bronze Matrix'));
     expect(appEn['bronzeModuleTitle'], contains('Bronze Matrix'));

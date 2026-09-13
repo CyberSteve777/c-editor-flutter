@@ -18,10 +18,14 @@ class PreviewEditorWorkspace extends StatefulWidget {
     required this.resizeToolbarLabel,
     required this.zoomInLabel,
     required this.zoomOutLabel,
+    this.toolbarHeader,
     this.onToolbarResizeStarted,
   });
 
   final Widget toolbar;
+
+  /// Shares the controls' viewport instead of taking a fixed strip of screen.
+  final PreferredSizeWidget? toolbarHeader;
   final Widget canvas;
   final String canvasZoomLabel;
   final String fitCanvasLabel;
@@ -267,7 +271,11 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
         final bodyHeight = constraints.maxHeight - footerHeight;
         final handleHeight = math.min(20.0, bodyHeight * 0.08);
         final adjustableHeight = bodyHeight - handleHeight;
-        final minToolbarHeight = math.min(56.0, adjustableHeight * 0.2);
+        final headerHeight = widget.toolbarHeader?.preferredSize.height ?? 0;
+        final minToolbarHeight = math.min(
+          headerHeight > 0 ? headerHeight : 56.0,
+          adjustableHeight * 0.2,
+        );
         final maxToolbarHeight = adjustableHeight * 0.6;
         final toolbarHeight = (adjustableHeight * _toolbarFraction).clamp(
           minToolbarHeight,
@@ -305,7 +313,17 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
                     child: SingleChildScrollView(
                       controller: _toolbarScroll,
                       primary: false,
-                      child: widget.toolbar,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (widget.toolbarHeader != null)
+                            SizedBox(
+                              height: headerHeight,
+                              child: widget.toolbarHeader,
+                            ),
+                          widget.toolbar,
+                        ],
+                      ),
                     ),
                   ),
                 ),

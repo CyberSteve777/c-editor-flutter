@@ -43,15 +43,11 @@ class _CanvasHarness extends StatefulWidget {
     super.key,
     required this.document,
     this.initialLayer = 'title',
-    this.initialSection,
-    this.onSectionScaled,
     this.onLayerScaled,
   });
 
   final PreviewDocument document;
   final String initialLayer;
-  final int? initialSection;
-  final ValueChanged<double>? onSectionScaled;
   final ValueChanged<double>? onLayerScaled;
 
   @override
@@ -62,14 +58,12 @@ class _CanvasHarnessState extends State<_CanvasHarness> {
   final _controller = PreviewRichTextController();
   final _focus = FocusNode();
   late String? selectedLayer;
-  int? selectedSection;
   String? editingLayer;
 
   @override
   void initState() {
     super.initState();
     selectedLayer = widget.initialLayer;
-    selectedSection = widget.initialSection;
     _controller.loadFromLayer(widget.document.layerById('title')!);
   }
 
@@ -87,13 +81,11 @@ class _CanvasHarnessState extends State<_CanvasHarness> {
         document: widget.document,
         interactive: true,
         selectedLayerId: selectedLayer,
-        selectedIconSectionIndex: selectedSection,
         editingTextLayerId: editingLayer,
         textEditingController: _controller,
         textFocusNode: _focus,
         onSelectLayer: (id) => setState(() {
           selectedLayer = id;
-          selectedSection = null;
           editingLayer = null;
         }),
         onBeginTextEdit: (id) => setState(() => editingLayer = id),
@@ -104,22 +96,10 @@ class _CanvasHarnessState extends State<_CanvasHarness> {
         onTextEdited: (_) => setState(() {
           _controller.applyToLayer(widget.document.layerById(editingLayer!)!);
         }),
-        onSelectIconSection: (id, index) {
-          _focus.unfocus();
-          setState(() {
-            selectedLayer = id;
-            selectedSection = index;
-            editingLayer = null;
-          });
+        onLayerScaled: (id, scale) {
+          widget.onLayerScaled?.call(scale);
+          setState(() => widget.document.layerById(id)!.scale = scale);
         },
-        onIconSectionScaled: (id, index, size) {
-          widget.onSectionScaled?.call(size);
-          setState(
-            () =>
-                widget.document.layerById(id)!.sections[index].iconSize = size,
-          );
-        },
-        onLayerScaled: (_, scale) => widget.onLayerScaled?.call(scale),
       ),
     ),
   );
@@ -127,7 +107,7 @@ class _CanvasHarnessState extends State<_CanvasHarness> {
 
 void main() {
   testWidgets(
-    'direct text editing and handles coexist with section selection',
+    'direct text editing and handles coexist with icon group selection',
     (tester) async {
       final document = _document();
       final harnessKey = GlobalKey<_CanvasHarnessState>();
@@ -152,35 +132,31 @@ void main() {
       expect(document.layerById('title')!.plainText, 'Edited directly');
 
       await tester.tap(
-        find.byKey(const ValueKey('preview-icon-section-icons-0')),
+        find.byKey(const ValueKey('preview-icon-item-icons-0-0-0')),
       );
       await tester.pump();
       expect(harnessKey.currentState!.selectedLayer, 'icons');
-      expect(harnessKey.currentState!.selectedSection, 0);
       expect(harnessKey.currentState!.editingLayer, isNull);
       expect(find.byType(TextField), findsNothing);
-      expect(find.byIcon(Icons.rotate_right), findsNothing);
+      expect(find.byIcon(Icons.rotate_right), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
 
-  testWidgets('Ctrl wheel scales the selected section, not the whole layer', (
+  testWidgets('Ctrl wheel scales the whole selected icon group', (
     tester,
   ) async {
-    final sectionSizes = <double>[];
     final layerScales = <double>[];
     await tester.pumpWidget(
       _CanvasHarness(
         document: _document(),
         initialLayer: 'icons',
-        initialSection: 0,
-        onSectionScaled: sectionSizes.add,
         onLayerScaled: layerScales.add,
       ),
     );
     await tester.pump();
     final position = tester.getCenter(
-      find.byKey(const ValueKey('preview-icon-section-icons-0')),
+      find.byKey(const ValueKey('preview-icon-item-icons-0-0-0')),
     );
 
     await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
@@ -192,33 +168,29 @@ void main() {
         ),
       );
       await tester.pump();
-      expect(sectionSizes, hasLength(1));
-      expect(sectionSizes.single, closeTo(54, 0.001));
-      expect(layerScales, isEmpty);
+      expect(layerScales, hasLength(1));
+      expect(layerScales.single, closeTo(1.08, 0.001));
     } finally {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
     }
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('section pinch uses its starting icon size for every update', (
+  testWidgets('group pinch uses its starting scale for every update', (
     tester,
   ) async {
     final document = _document();
-    final sectionSizes = <double>[];
     final layerScales = <double>[];
     await tester.pumpWidget(
       _CanvasHarness(
         document: document,
         initialLayer: 'icons',
-        initialSection: 0,
-        onSectionScaled: sectionSizes.add,
         onLayerScaled: layerScales.add,
       ),
     );
     await tester.pump();
-    final section = find.byKey(const ValueKey('preview-icon-section-icons-0'));
-    final gesture = tester.widget<GestureDetector>(section);
+    final group = find.byKey(const ValueKey('preview-layer-gesture-icons'));
+    final gesture = tester.widget<GestureDetector>(group);
     expect(gesture.onScaleStart, isNotNull);
     expect(gesture.onScaleUpdate, isNotNull);
     gesture.onScaleStart!(ScaleStartDetails(pointerCount: 2));
@@ -226,14 +198,14 @@ void main() {
 
     gesture.onScaleUpdate!(ScaleUpdateDetails(scale: 1.5, pointerCount: 2));
     await tester.pump();
-    expect(document.layerById('icons')!.sections.single.iconSize, 75);
-    tester.widget<GestureDetector>(section).onScaleUpdate!(
+    expect(document.layerById('icons')!.scale, 1.5);
+    tester.widget<GestureDetector>(group).onScaleUpdate!(
       ScaleUpdateDetails(scale: 2, pointerCount: 2),
     );
     await tester.pump();
-    expect(sectionSizes, [75, 100]);
-    expect(document.layerById('icons')!.sections.single.iconSize, 100);
-    expect(layerScales, isEmpty);
+    expect(layerScales, [1.5, 2]);
+    expect(document.layerById('icons')!.scale, 2);
+    expect(document.layerById('icons')!.sections.single.iconSize, 50);
     expect(tester.takeException(), isNull);
   });
 }

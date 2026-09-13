@@ -415,8 +415,11 @@ class _PreviewStickerPickerDialogState
     const labels = {
       'plants': ('previewStickerTagPlants', 'Plants'),
       'zombies': ('previewStickerTagZombies', 'Zombies'),
-      'griditems': ('previewStickerTagGridItems', 'Grid items'),
-      'round_icons': ('previewStickerTagMapAndMusic', 'Maps and music'),
+      'griditems': ('previewStickerTagGridItems', 'Grid Items'),
+      'creatures': ('previewStickerTagCreatures', 'Creatures'),
+      'tool_packets': ('previewStickerTagToolPackets', 'Tool Packets'),
+      'components': ('previewStickerTagComponents', 'Components'),
+      'round_icons': ('previewStickerTagMapAndMusic', 'Lawns and music'),
       'ui': ('previewStickerTagUI', 'Tags and themes'),
       'worlds': ('previewStickerTagWorlds', 'Worlds'),
       'others': ('previewStickerTagOthers', 'Others'),

@@ -250,7 +250,7 @@ class PreviewAutoComposer {
     this.moduleTitle,
     this.plantsSourceLabel = 'Plants',
     this.zombiesSourceLabel = 'Zombies',
-    this.gridItemsSourceLabel = 'Initial grid items',
+    this.gridItemsSourceLabel = 'Grid Items',
     this.seedBankLabel = 'Seed Bank',
     this.zombieSeedBankLabel = 'Seed Bank (I, Zombie)',
     this.conveyorLabel = 'Conveyor',

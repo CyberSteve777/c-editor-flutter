@@ -866,8 +866,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get targetWaveAlreadyContainsEvent => '已包含该事件';
 
   @override
-  String get targetWaveIndexHelper =>
-      '沿空框一列滑动可快速多选，从已勾选的方框开始滑动可连续取消选择。复制引用时，已包含该事件的波次会自动跳过。';
+  String get targetWaveIndexHelper => '复制引用时，已包含该事件的波次会自动跳过。';
 
   @override
   String get moveToWaveIndex => '移动至波次序号';

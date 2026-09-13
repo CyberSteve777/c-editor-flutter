@@ -21,6 +21,15 @@ class _Host extends Fake implements CPluginHost {
 PreviewCanvas _canvas(WidgetTester tester) =>
     tester.widget<PreviewCanvas>(find.byType(PreviewCanvas));
 
+Future<void> _tapToolbarControl(WidgetTester tester, String key) async {
+  final control = find.byKey(ValueKey(key));
+  await tester.ensureVisible(control);
+  await tester.pumpAndSettle();
+  expect(control.hitTestable(), findsOneWidget);
+  await tester.tap(control);
+  await tester.pumpAndSettle();
+}
+
 Future<void> _waitForCanvas(WidgetTester tester) async {
   for (
     var attempt = 0;
@@ -170,12 +179,8 @@ void main() {
     );
     final document = _canvas(tester).document;
     final initialLayerCount = document.layers.length;
-    await tester.tap(
-      find.byKey(const ValueKey('previewToolbarAction-previewGenAddText')),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('previewToolbarTool-select')));
-    await tester.pumpAndSettle();
+    await _tapToolbarControl(tester, 'previewToolbarAction-previewGenAddText');
+    await _tapToolbarControl(tester, 'previewToolbarTool-select');
     expect(_canvas(tester).document.layers.length, initialLayerCount + 1);
     final editedLayer = document.layers.last;
 
@@ -292,10 +297,12 @@ void main() {
       );
       final state = tester.state(find.byType(PreviewGeneratorScreen));
       final document = _canvas(tester).document;
-      await tester.tap(
-        find.byKey(const ValueKey('previewToolbarAction-previewGenAddText')),
+      final initialLayerCount = document.layers.length;
+      await _tapToolbarControl(
+        tester,
+        'previewToolbarAction-previewGenAddText',
       );
-      await tester.pumpAndSettle();
+      expect(document.layers.length, initialLayerCount + 1);
       final editedLayer = document.layers.last;
       tester.view.physicalSize = const Size(700, 760) * 3;
       await tester.pumpAndSettle();

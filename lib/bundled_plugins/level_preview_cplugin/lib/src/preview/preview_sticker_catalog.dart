@@ -32,6 +32,9 @@ const kPreviewStickerTags = <String>[
   'plants',
   'zombies',
   'griditems',
+  'creatures',
+  'tool_packets',
+  'components',
   'round_icons',
   'ui',
   'worlds',
@@ -105,6 +108,7 @@ String _resourceAlias(String raw, String tag) {
     'plants' => 'plant_',
     'zombies' => 'zombie_',
     'griditems' => 'griditem_',
+    'tool_packets' => 'tool_',
     _ => '',
   };
   alias = alias.toLowerCase();
@@ -140,6 +144,15 @@ Set<String> previewCurrentLevelStickerAssetPaths({
       case 'zombies':
         final path = ZombieRepository().getZombieById(alias)?.iconAssetPath;
         if (path != null) assets.add(path);
+      case 'tool_packets':
+        final tool =
+            ToolRepository.get(alias) ?? ToolRepository.get('tool_$alias');
+        final icon = tool?.icon;
+        if (icon != null) {
+          assets.add(
+            icon.startsWith('assets/') ? icon : 'assets/images/tools/$icon',
+          );
+        }
       case 'griditems':
         final clean = raw.startsWith('RTID(')
             ? LevelParser.extractAlias(raw)
@@ -238,7 +251,8 @@ Set<String> previewCurrentLevelStickerAssetPaths({
           _ when field.contains('griditem') => 'griditems',
           _ when field.contains('collectable') => 'others',
           _ when field.contains('plant') => seedScope,
-          'tooltype' => 'griditems',
+          'tooltype' => 'tool_packets',
+          'dinotype' || 'fishes' || 'creaturetype' => 'creatures',
           _ => scope,
         };
         final isResourceField =
@@ -251,6 +265,11 @@ Set<String> previewCurrentLevelStickerAssetPaths({
             field == 'stagemodule' ||
             field == 'musicsuffix' ||
             field == 'tooltype' ||
+            field == 'dinotype' ||
+            field == 'fishes' ||
+            field == 'creaturetype' ||
+            (scope == 'components' &&
+                (field == 'orientation' || field == 'img')) ||
             field == 'type' ||
             field == 'typename' ||
             field == 'whitelist' ||
@@ -277,7 +296,11 @@ Set<String> previewCurrentLevelStickerAssetPaths({
       }
     }
     final className = obj.objClass.toLowerCase();
-    final scope = className.contains('griditem')
+    final scope = className.contains('tunnel')
+        ? 'components'
+        : obj.objClass == 'CreatureType'
+        ? 'creatures'
+        : className.contains('griditem')
         ? 'griditems'
         : className.contains('zombie')
         ? 'zombies'
@@ -309,9 +332,18 @@ Set<String> previewCurrentLevelStickerAssetPaths({
     }
   }
   for (final sticker in stickers) {
+    // These are presentation tags, not new resource namespaces. Modules still
+    // refer to tools and some components through grid-item fields.
+    final referenceTags = switch (sticker.tag) {
+      'tool_packets' => const ['tool_packets', 'plants', 'griditems'],
+      'creatures' => const ['creatures', 'griditems'],
+      'components' => const ['components', 'griditems', 'others'],
+      _ => [sticker.tag],
+    };
     if (sticker.searchTerms.any(
-      (term) =>
-          references[sticker.tag]!.contains(_resourceAlias(term, sticker.tag)),
+      (term) => referenceTags.any(
+        (tag) => references[tag]!.contains(_resourceAlias(term, tag)),
+      ),
     )) {
       assets.add(sticker.assetPath);
     }
@@ -516,7 +548,7 @@ Future<List<PreviewSticker>> loadPreviewStickerCatalog() async {
     ordered.add(
       PreviewSticker(
         assetPath: 'assets/images/tools/${card.icon}',
-        tag: 'griditems',
+        tag: 'tool_packets',
         resourceNameKey: card.id,
         searchTerms: [card.id],
       ),
@@ -526,7 +558,7 @@ Future<List<PreviewSticker>> loadPreviewStickerCatalog() async {
     ordered.add(
       PreviewSticker(
         assetPath: dinoSpawnImageAsset(id),
-        tag: 'griditems',
+        tag: 'creatures',
         resourceNameKey: 'dinoType_$id',
         searchTerms: [id],
       ),
@@ -537,7 +569,7 @@ Future<List<PreviewSticker>> loadPreviewStickerCatalog() async {
     ordered.add(
       PreviewSticker(
         assetPath: fish.iconAssetPath,
-        tag: 'griditems',
+        tag: 'creatures',
         resourceNameKey: 'creature_${FishInfo.normalizeFishAlias(fish.alias)}',
         searchTerms: [fish.alias, fish.typeName],
       ),
@@ -667,7 +699,7 @@ Iterable<PreviewSticker> _supplementalStickers() sync* {
   for (final entry in labels.entries) {
     yield PreviewSticker(
       assetPath: 'assets/images/${entry.key}.webp',
-      tag: entry.key.startsWith('tunnels/') ? 'griditems' : 'others',
+      tag: entry.value == 'Unknown' ? 'others' : 'components',
       labelKey: 'previewStickerName${entry.value}',
       searchTerms: [entry.key.split('/').last],
     );
@@ -694,9 +726,10 @@ Iterable<PreviewSticker> _supplementalStickers() sync* {
       yield PreviewSticker(
         assetPath:
             'assets/images/tunnels/IMAGE_UI_MAUSOLEUM_TUNNEL_${direction.key}$suffix.webp',
-        tag: 'griditems',
+        tag: 'components',
         labelKey:
             'previewStickerNameTunnel${direction.key.replaceAll('_', '')}$variant',
+        searchTerms: ['IMAGE_UI_MAUSOLEUM_TUNNEL_${direction.key}$suffix'],
       );
     }
   }

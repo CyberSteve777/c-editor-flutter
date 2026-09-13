@@ -30,6 +30,7 @@ PreviewDocument _document() => PreviewDocument(
 
 Widget _workspace({
   required Widget toolbar,
+  PreferredSizeWidget? toolbarHeader,
   required PreviewDocument document,
   required GlobalKey boundaryKey,
   PreviewEditTool tool = PreviewEditTool.select,
@@ -42,6 +43,7 @@ Widget _workspace({
   ValueChanged<Offset>? onStrokeStarted,
 }) => PreviewEditorWorkspace(
   toolbar: toolbar,
+  toolbarHeader: toolbarHeader,
   canvas: _CanvasPaintProbe(
     onPaint: onCanvasPaint,
     child: PreviewCanvas(
@@ -177,6 +179,202 @@ class _CanvasPaintProbeRenderObject extends RenderProxyBox {
 }
 
 void main() {
+  for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
+    testWidgets('toolbar header scrolls away without resizing canvas ($kind)', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1000, 700));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final boundaryKey = GlobalKey();
+      var backPressed = 0;
+      var exportPressed = 0;
+      const headerKey = ValueKey('workspaceTestTitleBar');
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: _workspace(
+              toolbarHeader: AppBar(
+                key: headerKey,
+                primary: false,
+                leading: BackButton(onPressed: () => backPressed++),
+                title: const Text('Preview Image Generator'),
+                actions: [
+                  IconButton(
+                    tooltip: 'Export preview',
+                    onPressed: () => exportPressed++,
+                    icon: const Icon(Icons.save_alt),
+                  ),
+                ],
+              ),
+              toolbar: const SizedBox(height: 1200, child: Text('Controls')),
+              document: _document(),
+              boundaryKey: boundaryKey,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final viewport = find.byKey(_toolbarViewportKey);
+      final originalCanvasRect = _paintedCanvasRect(boundaryKey);
+      final originalToolbarRect = tester.getRect(viewport);
+      expect(find.byType(BackButton).hitTestable(), findsOneWidget);
+      if (kind == PointerDeviceKind.touch) {
+        await tester.dragFrom(
+          tester.getCenter(viewport),
+          const Offset(0, -180),
+        );
+      } else {
+        await tester.sendEventToBinding(
+          PointerScrollEvent(
+            position: tester.getCenter(viewport),
+            scrollDelta: const Offset(0, 180),
+          ),
+        );
+      }
+      await tester.pumpAndSettle();
+      expect(
+        tester.getRect(find.byKey(headerKey)).bottom,
+        lessThanOrEqualTo(originalToolbarRect.top),
+      );
+      expect(find.byType(BackButton).hitTestable(), findsNothing);
+      expect(tester.getRect(viewport), originalToolbarRect);
+      expect(_paintedCanvasRect(boundaryKey), originalCanvasRect);
+
+      await tester.scrollUntilVisible(
+        find.byType(BackButton),
+        -160,
+        scrollable: find.descendant(
+          of: viewport,
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(BackButton));
+      await tester.tap(find.byTooltip('Export preview'));
+      expect(backPressed, 1);
+      expect(exportPressed, 1);
+      expect(_paintedCanvasRect(boundaryKey), originalCanvasRect);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('divider can collapse shared toolbar to exactly one title row', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final boundaryKey = GlobalKey();
+    final header = AppBar(
+      primary: false,
+      toolbarHeight: 64,
+      title: const Text('Preview Image Generator'),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: _workspace(
+            toolbarHeader: header,
+            toolbar: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [Text('Controls'), SizedBox(height: 1200)],
+            ),
+            document: _document(),
+            boundaryKey: boundaryKey,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final oldCanvasRect = tester.getRect(find.byKey(_canvasViewportKey));
+    final handle = find.byKey(const ValueKey('previewToolbarResizeHandle'));
+    await tester.drag(handle, const Offset(0, -800));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSize(find.byKey(_toolbarViewportKey)).height,
+      header.preferredSize.height,
+    );
+    expect(
+      tester.getRect(find.byType(AppBar)),
+      tester.getRect(find.byKey(_toolbarViewportKey)),
+    );
+    expect(
+      tester.getSize(find.byKey(_canvasViewportKey)).height,
+      greaterThan(oldCanvasRect.height),
+    );
+    expect(find.text('Preview Image Generator').hitTestable(), findsOneWidget);
+
+    await tester.drag(handle, const Offset(0, 180));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSize(find.byKey(_toolbarViewportKey)).height,
+      greaterThan(header.preferredSize.height),
+    );
+    expect(find.text('Controls').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('shared title respects safe areas and short keyboard viewports', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final boundaryKey = GlobalKey();
+    var keyboardHeight = 0.0;
+    late StateSetter updateInsets;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            updateInsets = setState;
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                padding: const EdgeInsets.fromLTRB(16, 24, 20, 0),
+                viewPadding: const EdgeInsets.fromLTRB(16, 24, 20, 0),
+                viewInsets: EdgeInsets.only(bottom: keyboardHeight),
+                textScaler: const TextScaler.linear(1.6),
+              ),
+              child: Scaffold(
+                body: SafeArea(
+                  bottom: false,
+                  child: _workspace(
+                    toolbarHeader: AppBar(
+                      primary: false,
+                      title: const Text('Preview Image Generator'),
+                    ),
+                    toolbar: const SizedBox(height: 1200, child: TextField()),
+                    document: _document(),
+                    boundaryKey: boundaryKey,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final initialToolbar = tester.getRect(find.byKey(_toolbarViewportKey));
+    expect(initialToolbar.top, 24);
+    expect(initialToolbar.left, 16);
+    expect(initialToolbar.right, 980);
+
+    for (final (size, inset) in [
+      (const Size(1000, 700), 320.0),
+      (const Size(600, 240), 100.0),
+      (const Size(300, 100), 0.0),
+      (const Size(1000, 700), 0.0),
+    ]) {
+      updateInsets(() => keyboardHeight = inset);
+      await tester.binding.setSurfaceSize(size);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final viewport = tester.getRect(find.byKey(_canvasViewportKey));
+      expect(viewport.height, greaterThan(0));
+      expect(viewport.bottom, lessThanOrEqualTo(size.height - inset));
+      expect(tester.getSize(find.byKey(boundaryKey)), kPreviewCanvasSize);
+    }
+  });
+
   for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
     testWidgets('thumb dragging in pen mode does not draw ($kind)', (
       tester,

@@ -14,7 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 PreviewItem _item(int index) =>
     PreviewItem(id: 'item_$index', assetPath: 'assets/meta/icon.png');
 
-PreviewDocument _document({bool showChrome = true}) => PreviewDocument(
+PreviewDocument _document({
+  bool showChrome = true,
+  PreviewAutoStyle autoStyle = PreviewAutoStyle.simple,
+}) => PreviewDocument(
+  autoStyle: autoStyle,
   banner: PreviewBannerRef(
     kind: PreviewBannerSourceKind.assetStem,
     assetPath: 'assets/meta/icon.png',
@@ -43,104 +47,21 @@ PreviewDocument _document({bool showChrome = true}) => PreviewDocument(
   ],
 );
 
-PreviewDocument _rotatedDocument(
-  double rotation, {
-  double scale = 1,
-  bool extraHeight = false,
-}) {
-  final document = _document(showChrome: false);
-  final layer = document.layers.single;
-  layer.rotation = rotation;
-  layer.scale = scale;
-  layer.sections = [
-    PreviewIconSection(
-      iconSize: 40,
-      items: [for (var i = 0; i < 3; i++) _item(i)],
-    ),
-  ];
-  layer.bounds = Rect.fromLTWH(
-    400 / kPreviewCanvasSize.width,
-    (extraHeight ? 10 : 100) / kPreviewCanvasSize.height,
-    140 / kPreviewCanvasSize.width,
-    (extraHeight ? 150 : 56) / kPreviewCanvasSize.height,
-  );
-  return document;
-}
-
-void _fitIconGridHeight(PreviewLayer layer) {
-  final intrinsic = previewIconGridIntrinsicSize(
-    maxWidth: layer.bounds.width * kPreviewCanvasSize.width,
-    sections: layer.sections,
-    showChrome: layer.showChrome,
-    gridTitle: layer.gridTitle,
-    sourceLabel: layer.sourceLabel,
-    iconAlign: layer.iconAlign,
-  );
-  var height = intrinsic.height / kPreviewCanvasSize.height;
-  if (layer.rotation != 0) height = math.max(layer.bounds.height, height);
-  layer.bounds = Rect.fromLTWH(
-    layer.bounds.left,
-    layer.bounds.top,
-    layer.bounds.width,
-    height,
-  );
-}
-
-Rect _rotatedFootprint(PreviewLayer layer) {
-  final width = layer.bounds.width * kPreviewCanvasSize.width * layer.scale;
-  final height = layer.bounds.height * kPreviewCanvasSize.height * layer.scale;
-  final cosine = math.cos(layer.rotation).abs();
-  final sine = math.sin(layer.rotation).abs();
-  return Rect.fromCenter(
-    center: Offset(
-      layer.bounds.left * kPreviewCanvasSize.width + width / 2,
-      layer.bounds.top * kPreviewCanvasSize.height + height / 2,
-    ),
-    width: cosine * width + sine * height,
-    height: sine * width + cosine * height,
-  );
-}
-
-void _expectFootprintInsideCanvas(PreviewLayer layer) {
-  final footprint = _rotatedFootprint(layer);
-  expect(footprint.left, greaterThanOrEqualTo(-0.0001));
-  expect(footprint.top, greaterThanOrEqualTo(-0.0001));
-  expect(footprint.right, lessThanOrEqualTo(kPreviewCanvasSize.width + 0.0001));
-  expect(
-    footprint.bottom,
-    lessThanOrEqualTo(kPreviewCanvasSize.height + 0.0001),
-  );
-}
-
-void _expectHitTarget(WidgetTester tester, Finder target) {
-  final point = tester.getCenter(target);
-  final renderObject = tester.renderObject(target);
-  expect(
-    tester
-        .hitTestOnBinding(point)
-        .path
-        .any((entry) => identical(entry.target, renderObject)),
-    isTrue,
-    reason: 'An icon or row handle must receive hits at its painted center',
-  );
-}
-
-class _RowHarness extends StatefulWidget {
-  const _RowHarness({super.key, required this.document, this.textScale = 1});
+class _GroupHarness extends StatefulWidget {
+  const _GroupHarness({super.key, required this.document, this.textScale = 1});
 
   final PreviewDocument document;
   final double textScale;
 
   @override
-  State<_RowHarness> createState() => _RowHarnessState();
+  State<_GroupHarness> createState() => _GroupHarnessState();
 }
 
-class _RowHarnessState extends State<_RowHarness> {
+class _GroupHarnessState extends State<_GroupHarness> {
   String? selectedLayer;
+  PreviewTextPartSelection? selectedText;
   int? selectedSection;
   int? selectedRow;
-  PreviewTextPartSelection? selectedText;
-  final scaledRows = <(int, int, double)>[];
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -154,18 +75,11 @@ class _RowHarnessState extends State<_RowHarness> {
           selectedIconSectionIndex: selectedSection,
           selectedIconRowIndex: selectedRow,
           selectedTextPart: selectedText,
-          iconRowResizeLabel: 'Icon size',
           onSelectLayer: (id) => setState(() {
             selectedLayer = id;
+            selectedText = null;
             selectedSection = null;
             selectedRow = null;
-            selectedText = null;
-          }),
-          onSelectIconSection: (id, section) => setState(() {
-            selectedLayer = id;
-            selectedSection = section;
-            selectedRow = null;
-            selectedText = null;
           }),
           onSelectIconRow: (id, section, row) => setState(() {
             selectedLayer = id;
@@ -173,20 +87,25 @@ class _RowHarnessState extends State<_RowHarness> {
             selectedRow = row;
             selectedText = null;
           }),
+          onIconRowScaled: (id, section, row, size) => setState(() {
+            resizePreviewIconRow(
+              widget.document.layerById(id)!,
+              section,
+              row,
+              size,
+            );
+          }),
+          iconRowResizeLabel: 'Icon size',
           onSelectTextPart: (selection) => setState(() {
             selectedLayer = selection.layerId;
+            selectedText = selection;
             selectedSection = null;
             selectedRow = null;
-            selectedText = selection;
-          }),
-          onIconRowScaled: (id, section, row, size) => setState(() {
-            scaledRows.add((section, row, size));
-            final layer = widget.document.layerById(id)!;
-            resizePreviewIconRow(layer, section, row, size);
-            _fitIconGridHeight(layer);
           }),
           onLayerMoved: (id, bounds) =>
               setState(() => widget.document.layerById(id)!.bounds = bounds),
+          onLayerScaled: (id, scale) =>
+              setState(() => widget.document.layerById(id)!.scale = scale),
         ),
       ),
     ),
@@ -205,61 +124,70 @@ class _Host extends Fake implements CPluginHost {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() {
+    // Asset-cache Futures belong to the previous test's fake-async zone.
+    // Each generator fixture must load them in its own zone.
+    rootBundle.clear();
+  });
+
+  test('whole-group icon sizing updates every section and keeps reflow', () {
+    final layer = _document(showChrome: false).layers.single;
+    final sections = layer.sections;
+    final originalIds = [
+      for (final section in sections)
+        [for (final item in section.items) item.id],
+    ];
+    final originalBounds = layer.bounds;
+
+    resizePreviewIconGroup(layer, 40);
+
+    expect(sections.map((section) => section.iconSize), [40, 40]);
+    expect(sections.every((section) => section.rows.isEmpty), isTrue);
+    expect([
+      for (final section in sections)
+        [for (final item in section.items) item.id],
+    ], originalIds);
+    expect(layer.bounds, originalBounds);
+    expect(previewIconSectionRows(sections.first, maxWidth: 180), hasLength(2));
+    expect(previewIconSectionRows(sections.first, maxWidth: 400), hasLength(1));
+  });
 
   test(
-    'unmodified sections reflow, row edits fix membership and grow width',
-    () {
-      final layer = _document(showChrome: false).layers.single;
-      final section = layer.sections.first;
-      expect(previewIconSectionRows(section, maxWidth: 180), hasLength(3));
-      expect(previewIconSectionRows(section, maxWidth: 300), hasLength(2));
-      expect(section.rows, isEmpty);
-      final initialWidth = layer.bounds.width;
-      final initialRows = previewIconSectionRows(
-        section,
-        maxWidth: initialWidth * kPreviewCanvasSize.width,
-      );
-      final members = [
-        for (final row in initialRows) [for (final item in row.items) item.id],
-      ];
-
-      resizePreviewIconRow(layer, 0, 0, 80);
-      expect(section.rows, hasLength(2));
-      expect(section.rows[0].iconSize, 80);
-      expect(section.rows[1].iconSize, 56);
-      expect(layer.sections[1].iconSize, 28);
-      expect(layer.bounds.width, greaterThan(initialWidth));
-      expect(layer.bounds.right, lessThanOrEqualTo(1));
-      expect([
-        for (final row in section.rows) [for (final item in row.items) item.id],
-      ], members);
-      expect(
-        previewIconSectionRows(section, maxWidth: 180),
-        same(section.rows),
-      );
-    },
-  );
-
-  test(
-    'row snapshots are independent and whole-section compatibility reflows',
+    'group sizing migrates old explicit rows and preserves undo snapshots',
     () {
       final document = _document();
-      final layer = document.layers.single;
-      resizePreviewIconRow(layer, 0, 1, 90);
+      final section = document.layers.single.sections.first;
+      section.rows = [
+        PreviewIconRow(items: [_item(2), _item(4)], iconSize: 60),
+        PreviewIconRow(items: [_item(6)], iconSize: 80),
+      ];
       final snapshot = document.copy();
-      layer.sections[0].rows[1].iconSize = 100;
-      layer.sections[0].rows[0].items.removeLast();
-      expect(snapshot.layers.single.sections[0].rows[1].iconSize, 90);
-      expect(snapshot.layers.single.sections[0].rows[0].items, hasLength(7));
-      expect(snapshot.layers.single.sections[0].title, 'Wave zombies');
-      resizePreviewIconSection(layer, 0, 40);
-      expect(layer.sections[0].rows, isEmpty);
-      expect(layer.sections[0].iconSize, 40);
-      expect(layer.sections[1].iconSize, 28);
+
+      resizePreviewIconGroup(document.layers.single, 32);
+
+      expect(section.items.map((item) => item.id), [
+        'item_2',
+        'item_4',
+        'item_6',
+      ]);
+      expect(section.rows, isEmpty);
+      expect(section.iconSize, 32);
+      expect(document.layers.single.sections.last.iconSize, 32);
+      expect(section.title, 'Wave zombies');
+      expect(
+        snapshot.layers.single.sections.first.rows.map((row) => row.iconSize),
+        [60, 80],
+      );
+      expect(snapshot.layers.single.sections.last.iconSize, 28);
+      section.items.removeAt(0);
+      expect(
+        snapshot.layers.single.sections.first.rows.first.items.first.id,
+        'item_2',
+      );
     },
   );
 
-  test('legacy item-only grids persist independent row changes', () {
+  test('legacy item-only groups materialize one uniformly sized section', () {
     final layer = PreviewLayer(
       id: 'legacy',
       kind: PreviewLayerKind.iconGrid,
@@ -267,177 +195,108 @@ void main() {
       showChrome: false,
       items: [for (var i = 0; i < 8; i++) _item(i)],
     );
-    resizePreviewIconRow(layer, 0, 0, 32);
+
+    resizePreviewIconGroup(layer, 32);
+
     expect(layer.sections, hasLength(1));
-    expect(layer.sections.single.rows[0].iconSize, 32);
-    expect(previewEffectiveSections(layer).single.rows[0].iconSize, 32);
+    expect(layer.sections.single.iconSize, 32);
+    expect(layer.sections.single.rows, isEmpty);
+    expect(layer.sections.single.items, hasLength(8));
     expect(layer.items, hasLength(8));
   });
 
-  for (final rotation in [math.pi / 2, -math.pi / 2, math.pi / 4]) {
-    test('rotated row enlargement stays inside canvas at $rotation', () {
-      final layer = _rotatedDocument(rotation).layers.single;
-      _expectFootprintInsideCanvas(layer);
-      final row = previewIconSectionRows(
-        layer.sections.single,
-        maxWidth: layer.bounds.width * kPreviewCanvasSize.width,
-      ).single;
-      final maximum = previewIconRowMaximumSizeInLayer(layer, row);
-      expect(maximum, greaterThan(40));
-      expect(maximum, lessThan(152));
-      resizePreviewIconRow(layer, 0, 0, 152);
-      _fitIconGridHeight(layer);
-      expect(
-        layer.sections.single.rows.single.iconSize,
-        closeTo(maximum, 0.001),
-      );
-      _expectFootprintInsideCanvas(layer);
-    });
-  }
+  test('row sizing preserves row membership and other section sizes', () {
+    final document = _document(autoStyle: PreviewAutoStyle.normal);
+    final layer = document.layers.single;
+    final section = layer.sections.first;
+    final originalRows = previewIconSectionRows(
+      section,
+      maxWidth:
+          layer.bounds.width * kPreviewCanvasSize.width -
+          kPreviewIconGridChromeInset,
+    );
+    final snapshot = document.copy();
 
-  test('rotated row resizing preserves existing empty panel height', () {
-    final layer = _rotatedDocument(
-      math.pi / 2,
-      extraHeight: true,
-    ).layers.single;
-    _expectFootprintInsideCanvas(layer);
-    final originalHeight = layer.bounds.height;
-    resizePreviewIconRow(layer, 0, 0, 100);
-    _fitIconGridHeight(layer);
-    expect(layer.sections.single.rows.single.iconSize, greaterThan(40));
-    expect(layer.sections.single.rows.single.iconSize, lessThan(100));
-    expect(layer.bounds.height, originalHeight);
-    _expectFootprintInsideCanvas(layer);
+    resizePreviewIconRow(layer, 0, 1, 72);
+
+    expect(section.rows, hasLength(originalRows.length));
+    expect(section.rows[0].iconSize, 56);
+    expect(section.rows[1].iconSize, 72);
+    expect(
+      section.rows[1].items.map((item) => item.id),
+      originalRows[1].items.map((item) => item.id),
+    );
+    expect(layer.sections.last.iconSize, 28);
+    expect(snapshot.layers.single.sections.first.rows, isEmpty);
+
+    resizePreviewIconGroup(layer, 40);
+    expect(section.rows, isEmpty);
+    expect(layer.sections.map((section) => section.iconSize), [40, 40]);
+    expect(section.items, hasLength(8));
   });
 
-  for (final showChrome in [false, true]) {
-    testWidgets(
-      'visual row selection and visible resize handle work with chrome=$showChrome',
-      (tester) async {
-        final document = _document(showChrome: showChrome);
-        final key = GlobalKey<_RowHarnessState>();
-        await tester.pumpWidget(_RowHarness(key: key, document: document));
-        await tester.pump();
-        final firstRow = find.byKey(
-          const ValueKey('preview-icon-row-icons-0-0'),
-        );
-        final secondRow = find.byKey(
-          const ValueKey('preview-icon-row-icons-0-1'),
-        );
-        expect(firstRow, findsOneWidget);
-        expect(secondRow, findsOneWidget);
-        await tester.tap(
-          find.byKey(const ValueKey('preview-icon-item-icons-0-0-0')),
-        );
-        await tester.pump();
-        expect(key.currentState!.selectedSection, 0);
-        expect(key.currentState!.selectedRow, 0);
-        final handle = find.byKey(
-          const ValueKey('preview-icon-row-resize-icons-0-0'),
-        );
-        expect(handle, findsOneWidget);
-        _expectHitTarget(tester, handle);
-        final initialWidth = document.layers.single.bounds.width;
-        await tester.drag(handle, const Offset(25, 25));
-        await tester.pump();
-        final section = document.layers.single.sections[0];
-        expect(section.rows, hasLength(2));
-        expect(section.rows[0].iconSize, greaterThan(56));
-        expect(section.rows[1].iconSize, 56);
-        expect(document.layers.single.bounds.width, greaterThan(initialWidth));
-        expect(document.layers.single.sections[1].iconSize, 28);
-        expect(
-          tester.getSize(
-            find.byKey(const ValueKey('preview-icon-item-icons-0-1-0')),
-          ),
-          const Size(56, 56),
-        );
-        await tester.tap(
-          find.byKey(const ValueKey('preview-icon-item-icons-0-1-0')),
-        );
-        await tester.pump();
-        expect(key.currentState!.selectedRow, 1);
-        expect(
-          find.byKey(const ValueKey('preview-icon-row-resize-icons-0-0')),
-          findsNothing,
-        );
-        expect(
-          find.byKey(const ValueKey('preview-icon-row-resize-icons-0-1')),
-          findsOneWidget,
-        );
-        if (showChrome) {
-          await tester.tap(
-            find.byKey(
-              const ValueKey('preview-text-part-icons-section-title-0'),
-            ),
-          );
-          await tester.pump();
-          expect(
-            key.currentState!.selectedText?.kind,
-            PreviewTextPartKind.sectionTitle,
-          );
-          expect(key.currentState!.selectedText?.sectionIndex, 0);
-          expect(key.currentState!.selectedRow, isNull);
-        }
-        expect(tester.takeException(), isNull);
-      },
-    );
-  }
-
-  testWidgets('rotated short row-handle drag uses the row local axes', (
+  testWidgets('detailed rows resize independently and can return to group', (
     tester,
   ) async {
-    final document = _rotatedDocument(math.pi / 2);
-    final key = GlobalKey<_RowHarnessState>();
-    await tester.pumpWidget(_RowHarness(key: key, document: document));
+    final document = _document(autoStyle: PreviewAutoStyle.normal);
+    final key = GlobalKey<_GroupHarnessState>();
+    await tester.pumpWidget(_GroupHarness(key: key, document: document));
     await tester.pump();
-    final boundaryFinder = find.descendant(
-      of: find.byType(PreviewCanvas),
-      matching: find.byType(RepaintBoundary),
-    );
-    expect(boundaryFinder, findsOneWidget);
-    final boundary = tester.renderObject<RenderBox>(boundaryFinder);
-    expect(boundary.size, kPreviewCanvasSize);
     final icon = find.byKey(const ValueKey('preview-icon-item-icons-0-0-0'));
-    // The expanded hit box must not move the original rotated design point.
-    expect(
-      (tester.getCenter(icon) - boundary.localToGlobal(const Offset(478, 78)))
-          .distance,
-      lessThan(0.001),
-    );
-    _expectHitTarget(tester, icon);
-    await tester.tap(
-      find.byKey(const ValueKey('preview-icon-item-icons-0-0-0')),
-    );
+    await tester.tap(icon);
     await tester.pump();
+    expect(key.currentState!.selectedSection, 0);
+    expect(key.currentState!.selectedRow, 0);
     final handle = find.byKey(
       const ValueKey('preview-icon-row-resize-icons-0-0'),
     );
-    _expectHitTarget(tester, handle);
-    final originalBounds = document.layers.single.bounds;
-    await tester.drag(handle, const Offset(-25, 25));
+    expect(handle, findsOneWidget);
+    // Whole-group handles stay available even while a row is selected.
+    expect(find.byIcon(Icons.rotate_right), findsOneWidget);
+    await tester.drag(handle, const Offset(25, 25));
     await tester.pump();
-    final layer = document.layers.single;
-    expect(layer.sections.single.rows, hasLength(1));
-    expect(layer.sections.single.rows.single.iconSize, greaterThan(40));
-    expect(key.currentState!.scaledRows, isNotEmpty);
-    expect(layer.bounds.topLeft, originalBounds.topLeft);
-    _expectFootprintInsideCanvas(layer);
+    final section = document.layers.single.sections.first;
+    expect(section.rows[0].iconSize, greaterThan(56));
+    expect(section.rows[1].iconSize, 56);
+    expect(document.layers.single.sections.last.iconSize, 28);
+
+    await tester.tap(icon);
+    await tester.pump();
+    expect(key.currentState!.selectedLayer, 'icons');
+    expect(key.currentState!.selectedRow, isNull);
+    expect(handle, findsNothing);
+
+    await tester.tap(icon);
+    await tester.pump();
+    expect(key.currentState!.selectedRow, 0);
+    await tester.tap(find.byIcon(Icons.rotate_right));
+    await tester.pump();
+    expect(key.currentState!.selectedRow, isNull);
+    expect(key.currentState!.selectedLayer, 'icons');
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Ctrl and Command wheel resize only the selected visual row', (
+  testWidgets('detailed row pinch and modifier wheel resize only that row', (
     tester,
   ) async {
-    final document = _document();
-    final key = GlobalKey<_RowHarnessState>();
-    await tester.pumpWidget(_RowHarness(key: key, document: document));
+    final document = _document(autoStyle: PreviewAutoStyle.normal);
+    final key = GlobalKey<_GroupHarnessState>();
+    await tester.pumpWidget(_GroupHarness(key: key, document: document));
     await tester.pump();
     final row = find.byKey(const ValueKey('preview-icon-row-icons-0-1'));
-    await tester.tap(
-      find.byKey(const ValueKey('preview-icon-item-icons-0-1-0')),
+    final gesture = tester.widget<GestureDetector>(row);
+    gesture.onScaleStart!(ScaleStartDetails(pointerCount: 2));
+    gesture.onScaleUpdate!(ScaleUpdateDetails(scale: 1.2, pointerCount: 2));
+    await tester.pump();
+    expect(
+      document.layers.single.sections.first.rows[1].iconSize,
+      closeTo(56 * 1.2, 0.001),
+    );
+    tester.widget<GestureDetector>(row).onScaleUpdate!(
+      ScaleUpdateDetails(scale: 1.5, pointerCount: 2),
     );
     await tester.pump();
+    expect(document.layers.single.sections.first.rows[1].iconSize, 84);
     for (final modifier in [
       LogicalKeyboardKey.controlLeft,
       LogicalKeyboardKey.metaLeft,
@@ -455,66 +314,124 @@ void main() {
         await tester.sendKeyUpEvent(modifier);
       }
     }
-    expect(document.layers.single.sections[0].rows[0].iconSize, 56);
+    expect(document.layers.single.sections.first.rows[0].iconSize, 56);
     expect(
-      document.layers.single.sections[0].rows[1].iconSize,
-      closeTo(56 * 1.08 * 1.08, 0.001),
+      document.layers.single.sections.first.rows[1].iconSize,
+      closeTo(84 * 1.08 * 1.08, 0.001),
     );
-    expect(document.layers.single.sections[1].iconSize, 28);
-    expect(key.currentState!.scaledRows, hasLength(2));
+    expect(document.layers.single.sections.last.iconSize, 28);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('visual row pinch stays anchored to its starting size', (
+  for (final showChrome in [false, true]) {
+    testWidgets('any icon selects the entire group with chrome=$showChrome', (
+      tester,
+    ) async {
+      final document = _document(showChrome: showChrome);
+      final key = GlobalKey<_GroupHarnessState>();
+      await tester.pumpWidget(_GroupHarness(key: key, document: document));
+      await tester.pump();
+      for (final suffix in ['0-0-0', '0-1-0', '1-0-0']) {
+        await tester.tap(
+          find.byKey(ValueKey('preview-icon-item-icons-$suffix')),
+        );
+        await tester.pump();
+        expect(key.currentState!.selectedLayer, 'icons');
+        expect(key.currentState!.selectedText, isNull);
+        expect(find.byIcon(Icons.rotate_right), findsOneWidget);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget.key.toString().contains('preview-icon-row-resize-'),
+          ),
+          findsNothing,
+        );
+      }
+
+      if (showChrome) {
+        for (final entry in {
+          'grid-title': PreviewTextPartKind.gridTitle,
+          'source-label': PreviewTextPartKind.sourceLabel,
+          'section-title-0': PreviewTextPartKind.sectionTitle,
+        }.entries) {
+          await tester.tap(
+            find.byKey(ValueKey('preview-text-part-icons-${entry.key}')),
+          );
+          await tester.pump();
+          expect(key.currentState!.selectedText?.kind, entry.value);
+          expect(find.byIcon(Icons.rotate_right), findsNothing);
+          await tester.tap(
+            find.byKey(const ValueKey('preview-icon-item-icons-0-1-0')),
+          );
+          await tester.pump();
+          expect(key.currentState!.selectedText, isNull);
+          expect(find.byIcon(Icons.rotate_right), findsOneWidget);
+        }
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('rotated icon hit area still selects and drags the whole group', (
     tester,
   ) async {
     final document = _document(showChrome: false);
-    await tester.pumpWidget(_RowHarness(document: document));
+    final layer = document.layers.single;
+    layer.rotation = math.pi / 2;
+    layer.sections = [
+      PreviewIconSection(
+        iconSize: 40,
+        items: [for (var i = 0; i < 3; i++) _item(i)],
+      ),
+    ];
+    layer.bounds = Rect.fromLTWH(400 / 1144, 100 / 439, 140 / 1144, 56 / 439);
+    final key = GlobalKey<_GroupHarnessState>();
+    await tester.pumpWidget(_GroupHarness(key: key, document: document));
     await tester.pump();
-    final row = find.byKey(const ValueKey('preview-icon-row-icons-0-1'));
-    final gesture = tester.widget<GestureDetector>(row);
-    gesture.onScaleStart!(ScaleStartDetails(pointerCount: 2));
-    gesture.onScaleUpdate!(ScaleUpdateDetails(scale: 1.5, pointerCount: 2));
+
+    final icon = find.byKey(const ValueKey('preview-icon-item-icons-0-0-0'));
+    await tester.tap(icon);
     await tester.pump();
-    expect(document.layers.single.sections[0].rows[1].iconSize, 84);
-    tester.widget<GestureDetector>(row).onScaleUpdate!(
-      ScaleUpdateDetails(scale: 2, pointerCount: 2),
-    );
+    expect(key.currentState!.selectedLayer, 'icons');
+    final before = layer.bounds.topLeft;
+    await tester.drag(icon, const Offset(30, 25));
     await tester.pump();
-    expect(document.layers.single.sections[0].rows[1].iconSize, 112);
-    expect(document.layers.single.sections[0].rows[0].iconSize, 56);
+    expect(layer.bounds.topLeft, isNot(before));
+    expect(layer.sections.single.iconSize, 40);
+    expect(layer.sections.single.rows, isEmpty);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets(
-    'scaled tall grid dragging clamps the visible rather than base box',
-    (tester) async {
-      final document = _document(showChrome: false);
-      final layer = document.layers.single;
-      layer.bounds = const Rect.fromLTWH(0.1, 0.1, 0.8, 1.4);
-      layer.scale = 0.5;
-      await tester.pumpWidget(_RowHarness(document: document));
-      await tester.pump();
-      final row = find.byKey(const ValueKey('preview-icon-row-icons-0-0'));
-      final gesture = tester.widget<GestureDetector>(row);
-      gesture.onScaleStart!(ScaleStartDetails(pointerCount: 1));
-      gesture.onScaleUpdate!(
-        ScaleUpdateDetails(
-          focalPointDelta: const Offset(20, 10),
-          pointerCount: 1,
-        ),
-      );
-      await tester.pump();
-      expect(layer.bounds.left, closeTo(0.1 + 10 / 1144, 0.001));
-      expect(layer.bounds.top, closeTo(0.1 + 5 / 439, 0.001));
-      expect(layer.bounds.height, 1.4);
-      expect(
-        layer.bounds.top + layer.bounds.height * layer.scale,
-        lessThanOrEqualTo(1),
-      );
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('scaled tall grid dragging clamps its visible footprint', (
+    tester,
+  ) async {
+    final document = _document(showChrome: false);
+    final layer = document.layers.single;
+    layer.bounds = const Rect.fromLTWH(0.1, 0.1, 0.8, 1.4);
+    layer.scale = 0.5;
+    await tester.pumpWidget(_GroupHarness(document: document));
+    await tester.pump();
+    final gesture = tester.widget<GestureDetector>(
+      find.byKey(const ValueKey('preview-layer-gesture-icons')),
+    );
+    gesture.onScaleStart!(ScaleStartDetails(pointerCount: 1));
+    gesture.onScaleUpdate!(
+      ScaleUpdateDetails(
+        focalPointDelta: const Offset(20, 10),
+        pointerCount: 1,
+      ),
+    );
+    await tester.pump();
+
+    expect(layer.bounds.left, closeTo(0.1 + 20 / 1144, 0.001));
+    expect(layer.bounds.top, closeTo(0.1 + 10 / 439, 0.001));
+    expect(layer.bounds.height, 1.4);
+    expect(
+      layer.bounds.top + layer.bounds.height * layer.scale,
+      lessThanOrEqualTo(1),
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'source measurement includes wrapping and ignores system text scale',
@@ -525,8 +442,8 @@ void main() {
         30,
         'Long localized source label',
       ).join(' ');
-      final key = GlobalKey<_RowHarnessState>();
-      await tester.pumpWidget(_RowHarness(key: key, document: document));
+      final key = GlobalKey<_GroupHarnessState>();
+      await tester.pumpWidget(_GroupHarness(key: key, document: document));
       await tester.pump();
       final source = find.byKey(
         const ValueKey('preview-text-part-icons-source-label'),
@@ -541,7 +458,7 @@ void main() {
       );
       expect(intrinsic.height, greaterThan(normalHeight + 56 * 2 + 28));
       await tester.pumpWidget(
-        _RowHarness(key: key, document: document, textScale: 3),
+        _GroupHarness(key: key, document: document, textScale: 3),
       );
       await tester.pump();
       expect(tester.getSize(source).height, normalHeight);
@@ -549,97 +466,143 @@ void main() {
     },
   );
 
-  testWidgets(
-    'generator exposes row controls and deletes only that row with undo',
-    (tester) async {
-      SharedPreferences.setMockInitialValues({});
-      await tester.binding.setSurfaceSize(const Size(1100, 800));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
-      final seedBank = PvzObject(
-        aliases: const ['SeedBank'],
-        objClass: 'SeedBankProperties',
-        objData: {
-          'PresetPlantList': [for (var i = 0; i < 30; i++) 'test_plant_$i'],
-        },
-      );
-      await tester.pumpWidget(
-        MaterialApp(
-          home: PreviewGeneratorScreen(
-            host: _Host(),
-            levelFile: PvzLevelFile(objects: [seedBank]),
-            parsed: ParsedLevelData(objectMap: {'SeedBank': seedBank}),
-            fileName: 'row-edit.json',
-          ),
-        ),
-      );
-      for (
-        var attempt = 0;
-        attempt < 200 && find.byType(PreviewCanvas).evaluate().isEmpty;
-        attempt++
-      ) {
-        await tester.runAsync(
-          () => Future<void>.delayed(const Duration(milliseconds: 25)),
+  for (final style in PreviewAutoStyle.values) {
+    testWidgets(
+      'generator row/group controls preserve whole-group editing: $style',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        await tester.binding.setSurfaceSize(const Size(1100, 800));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final seedBank = PvzObject(
+          aliases: const ['SeedBank'],
+          objClass: 'SeedBankProperties',
+          objData: {
+            'PresetPlantList': [for (var i = 0; i < 30; i++) 'test_plant_$i'],
+          },
         );
-        await tester.pump();
-      }
-      expect(find.byType(PreviewCanvas), findsOneWidget);
-      await tester.pumpAndSettle();
-      final initialCanvas = tester.widget<PreviewCanvas>(
-        find.byType(PreviewCanvas),
-      );
-      final plants = initialCanvas.document.layerById('plants')!;
-      final section = plants.sections[0];
-      final initialRows = previewIconSectionRows(
-        section,
-        maxWidth: plants.bounds.width * kPreviewCanvasSize.width,
-      );
-      expect(initialRows.length, greaterThan(1));
-      final oldTitle = section.title;
-      final itemCount = section.items.length;
-      final removedCount = initialRows[1].items.length;
-      await tester.tap(
-        find.byKey(const ValueKey('preview-icon-item-plants-0-1-0')),
-      );
-      await tester.pumpAndSettle();
-      final toolbar = find.byKey(const ValueKey('previewToolbarViewport'));
-      final label = find.descendant(
-        of: toolbar,
-        matching: find.text('Icon size'),
-      );
-      expect(label, findsOneWidget);
-      expect(tester.getRect(toolbar).contains(tester.getCenter(label)), isTrue);
-      final control = find
-          .ancestor(of: label, matching: find.byType(SizedBox))
-          .first;
-      final slider = tester.widget<Slider>(
-        find.descendant(of: control, matching: find.byType(Slider)),
-      );
-      final targetSize = math.min(slider.max, slider.value + 12);
-      expect(targetSize, greaterThan(slider.value));
-      slider.onChangeStart!(slider.value);
-      slider.onChanged!(targetSize);
-      await tester.pumpAndSettle();
-      expect(section.rows[1].iconSize, closeTo(targetSize, 0.001));
-      expect(section.rows[0].iconSize, initialRows[0].iconSize);
-      expect(section.title, oldTitle);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: PreviewGeneratorScreen(
+              host: _Host(),
+              levelFile: PvzLevelFile(objects: [seedBank]),
+              parsed: ParsedLevelData(objectMap: {'SeedBank': seedBank}),
+              fileName: 'group-edit.json',
+              initialStyle: style,
+            ),
+          ),
+        );
+        for (
+          var attempt = 0;
+          attempt < 200 && find.byType(PreviewCanvas).evaluate().isEmpty;
+          attempt++
+        ) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 25)),
+          );
+          await tester.pump();
+        }
+        expect(find.byType(PreviewCanvas), findsOneWidget);
+        await tester.pumpAndSettle();
+        final plants = tester
+            .widget<PreviewCanvas>(find.byType(PreviewCanvas))
+            .document
+            .layerById('plants')!;
+        final itemCount = plants.sections.first.items.length;
+        await tester.tap(
+          find.byKey(const ValueKey('preview-icon-item-plants-0-1-0')),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<PreviewCanvas>(find.byType(PreviewCanvas))
+              .selectedLayerId,
+          'plants',
+        );
+        expect(find.byIcon(Icons.rotate_right), findsOneWidget);
 
-      final delete = find.text('Delete element (Del)');
-      await tester.ensureVisible(delete);
-      await tester.tap(delete);
-      await tester.pumpAndSettle();
-      expect(plants.sections, hasLength(1));
-      expect(section.items, hasLength(itemCount - removedCount));
-      expect(section.title, oldTitle);
-      await tester.tap(find.byIcon(Icons.undo));
-      await tester.pumpAndSettle();
-      final restored = tester
-          .widget<PreviewCanvas>(find.byType(PreviewCanvas))
-          .document
-          .layerById('plants')!;
-      expect(restored.sections[0].items, hasLength(itemCount));
-      expect(restored.sections[0].rows[1].iconSize, closeTo(targetSize, 0.001));
-      expect(restored.sections[0].title, oldTitle);
-      expect(tester.takeException(), isNull);
-    },
-  );
+        final toolbar = find.byKey(const ValueKey('previewToolbarViewport'));
+        var canvas = tester.widget<PreviewCanvas>(find.byType(PreviewCanvas));
+        if (style == PreviewAutoStyle.normal) {
+          expect(canvas.selectedIconSectionIndex, 0);
+          expect(canvas.selectedIconRowIndex, 1);
+          final firstSize = plants.sections.first.iconSize;
+          final rowLabel = find.descendant(
+            of: toolbar,
+            matching: find.text('Icon size'),
+          );
+          final rowControl = find
+              .ancestor(of: rowLabel, matching: find.byType(SizedBox))
+              .first;
+          final rowSlider = tester.widget<Slider>(
+            find.descendant(of: rowControl, matching: find.byType(Slider)),
+          );
+          final rowSize = math.min(rowSlider.max, rowSlider.value + 4);
+          expect(rowSize, greaterThan(rowSlider.value));
+          rowSlider.onChangeStart!(rowSlider.value);
+          rowSlider.onChanged!(rowSize);
+          rowSlider.onChangeEnd?.call(rowSize);
+          await tester.pumpAndSettle();
+          expect(plants.sections.first.rows[1].iconSize, rowSize);
+          expect(plants.sections.first.rows[0].iconSize, firstSize);
+          expect(plants.sections.first.items, hasLength(itemCount));
+
+          await tester.tap(
+            find.byKey(const ValueKey('preview-icon-item-plants-0-1-0')),
+          );
+          await tester.pumpAndSettle();
+          canvas = tester.widget<PreviewCanvas>(find.byType(PreviewCanvas));
+        }
+        expect(canvas.selectedIconRowIndex, isNull);
+        expect(
+          find.byKey(const ValueKey('previewIconGroupSize')),
+          findsOneWidget,
+        );
+        final label = find.descendant(
+          of: toolbar,
+          matching: find.text('Icon size'),
+        );
+        expect(label, findsOneWidget);
+        final control = find
+            .ancestor(of: label, matching: find.byType(SizedBox))
+            .first;
+        final slider = tester.widget<Slider>(
+          find.descendant(of: control, matching: find.byType(Slider)),
+        );
+        final targetSize = math.min(slider.max, slider.value + 12);
+        slider.onChangeStart!(slider.value);
+        slider.onChanged!(targetSize);
+        await tester.pumpAndSettle();
+        expect(
+          plants.sections.every((section) => section.iconSize == targetSize),
+          isTrue,
+        );
+        expect(
+          plants.sections.every((section) => section.rows.isEmpty),
+          isTrue,
+        );
+
+        final delete = find.text('Delete element (Del)');
+        await tester.ensureVisible(delete);
+        await tester.tap(delete);
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<PreviewCanvas>(find.byType(PreviewCanvas))
+              .document
+              .layerById('plants'),
+          isNull,
+        );
+        await tester.ensureVisible(find.byIcon(Icons.undo));
+        await tester.tap(find.byIcon(Icons.undo));
+        await tester.pumpAndSettle();
+        final restored = tester
+            .widget<PreviewCanvas>(find.byType(PreviewCanvas))
+            .document
+            .layerById('plants')!;
+        expect(restored.sections.first.items, hasLength(itemCount));
+        expect(restored.sections.first.iconSize, targetSize);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 }

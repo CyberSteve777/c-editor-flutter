@@ -4,6 +4,7 @@ import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/p
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_generator_screen.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_rich_text_controller.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,11 +24,15 @@ class _Host extends Fake implements CPluginHost {
 PreviewCanvas _canvas(WidgetTester tester) =>
     tester.widget<PreviewCanvas>(find.byType(PreviewCanvas));
 
-Future<void> _open(WidgetTester tester) async {
+Future<void> _open(
+  WidgetTester tester, {
+  TargetPlatform platform = TargetPlatform.android,
+  Size size = const Size(1400, 1100),
+}) async {
   SharedPreferences.setMockInitialValues({});
   rootBundle.clear();
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = const Size(1400, 1100);
+  tester.view.physicalSize = size;
   addTearDown(tester.view.reset);
   final bank = PvzObject(
     aliases: ['SeedBank'],
@@ -36,12 +41,22 @@ Future<void> _open(WidgetTester tester) async {
       'PresetPlantList': ['peashooter'],
     },
   );
+  final lastStand = PvzObject(
+    aliases: ['LastStand'],
+    objClass: 'LastStandMinigameProperties',
+    objData: {},
+  );
   await tester.pumpWidget(
     MaterialApp(
+      theme: ThemeData(platform: platform),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: PreviewGeneratorScreen(
         host: _Host(),
-        levelFile: PvzLevelFile(objects: [bank]),
-        parsed: ParsedLevelData(objectMap: {'SeedBank': bank}),
+        levelFile: PvzLevelFile(objects: [bank, lastStand]),
+        parsed: ParsedLevelData(
+          objectMap: {'SeedBank': bank, 'LastStand': lastStand},
+        ),
         fileName: 'font-test.json',
         initialStyle: PreviewAutoStyle.normal,
       ),
@@ -73,6 +88,120 @@ Future<void> _font(WidgetTester tester, String label) async {
 }
 
 void main() {
+  testWidgets(
+    'generated Features content is editable in a plain toolbar field',
+    (tester) async {
+      await _open(tester);
+      final subtitle = _canvas(tester).document.layerById('subtitle')!;
+      expect(subtitle.plainText, startsWith('Features:'));
+      final original = subtitle.textStyle!.copy();
+      _canvas(tester).onSelectLayer!(subtitle.id);
+      await tester.pumpAndSettle();
+      final field = find.byKey(const ValueKey('previewTextContentField'));
+      final input = tester.widget<TextField>(field);
+      expect(input.controller!.text, subtitle.plainText);
+      expect(input.controller, isNot(isA<PreviewRichTextController>()));
+      expect(input.style!.fontFamily, isNot(original.fontFamily));
+      expect(input.style!.foreground, isNull);
+      expect(input.style!.shadows, isNull);
+      expect(input.style!.color, isNot(original.color));
+      await tester.ensureVisible(field);
+      await tester.pumpAndSettle();
+      await tester.enterText(field, 'Features: Custom feature');
+      await tester.pumpAndSettle();
+      expect(subtitle.plainText, 'Features: Custom feature');
+      expect(subtitle.textStyle!.fontFamily, original.fontFamily);
+      expect(subtitle.textStyle!.fontSize, original.fontSize);
+      expect(subtitle.textStyle!.color, original.color);
+      expect(subtitle.textStyle!.outline, original.outline);
+      expect(subtitle.textStyle!.outlineWidth, original.outlineWidth);
+      expect(tester.widget<TextField>(field).focusNode!.hasFocus, isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'mobile generated text scrolls into the toolbar and stays above keyboard',
+    (tester) async {
+      await _open(tester, size: const Size(1000, 700));
+      _canvas(tester).onBeginTextEdit!('subtitle');
+      await tester.pumpAndSettle();
+      final field = find.byKey(const ValueKey('previewTextContentField'));
+      expect(field.hitTestable(), findsOneWidget);
+      expect(tester.widget<TextField>(field).focusNode!.hasFocus, isTrue);
+      expect(_canvas(tester).editingTextLayerId, isNull);
+      tester.view.viewInsets = const FakeViewPadding(bottom: 240);
+      await tester.pumpAndSettle();
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: 'Features: Mobile editing',
+          selection: TextSelection.collapsed(offset: 24),
+          composing: TextRange(start: 10, end: 24),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(field.hitTestable(), findsOneWidget);
+      expect(tester.getBottomRight(field).dy, lessThanOrEqualTo(460));
+      expect(
+        _canvas(tester).document.layerById('subtitle')!.plainText,
+        'Features: Mobile editing',
+      );
+      expect(tester.widget<TextField>(field).focusNode!.hasFocus, isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'canvas edits mirror plain toolbar content and preserve mixed styles',
+    (tester) async {
+      await _open(tester, platform: TargetPlatform.windows);
+      final subtitle = _canvas(tester).document.layerById('subtitle')!;
+      subtitle.textRuns = [
+        PreviewTextRun(
+          text: 'Features: ',
+          style: PreviewTextStyleData(
+            fontFamily: PreviewFonts.familyPvZ,
+            color: Colors.yellow,
+            outline: true,
+          ),
+        ),
+        PreviewTextRun(
+          text: 'Custom',
+          style: PreviewTextStyleData(
+            fontFamily: null,
+            color: Colors.cyan,
+            italic: true,
+            outline: false,
+          ),
+        ),
+      ];
+      _canvas(tester).onBeginTextEdit!('subtitle');
+      await tester.pumpAndSettle();
+      final rich = _canvas(tester).textEditingController!;
+      rich.value = const TextEditingValue(
+        text: 'Features: Custom mode',
+        selection: TextSelection.collapsed(offset: 21),
+      );
+      await tester.pumpAndSettle();
+      final field = find.byKey(const ValueKey('previewTextContentField'));
+      expect(tester.widget<TextField>(field).controller!.text, rich.text);
+      await tester.ensureVisible(field);
+      await tester.pumpAndSettle();
+      await tester.enterText(field, 'Features: Custom mode updated');
+      await tester.pumpAndSettle();
+      expect(subtitle.plainText, 'Features: Custom mode updated');
+      expect(subtitle.textRuns.first.text, 'Features: ');
+      expect(subtitle.textRuns.first.style.fontFamily, PreviewFonts.familyPvZ);
+      expect(subtitle.textRuns.first.style.color, Colors.yellow);
+      expect(subtitle.textRuns.last.style.fontFamily, isNull);
+      expect(subtitle.textRuns.last.style.color, Colors.cyan);
+      expect(subtitle.textRuns.last.style.italic, isTrue);
+      expect(_canvas(tester).editingTextLayerId, isNull);
+      expect(tester.widget<TextField>(field).focusNode!.hasFocus, isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets(
     'generated panel labels have independent fonts and plain content fields',
     (tester) async {
@@ -194,7 +323,9 @@ void main() {
       _canvas(tester).onBeginTextEdit!('title');
       await tester.pumpAndSettle();
       final controller = tester
-          .widget<TextField>(find.byType(TextField))
+          .widget<TextField>(
+            find.byKey(const ValueKey('previewTextContentField')),
+          )
           .controller!;
       controller.selection = const TextSelection(
         baseOffset: 0,

@@ -16,6 +16,9 @@ const _labels = <String, String>{
   'previewStickerTagPlants': '植物',
   'previewStickerTagZombies': '僵尸',
   'previewStickerTagGridItems': '障碍物',
+  'previewStickerTagCreatures': '中立生物',
+  'previewStickerTagToolPackets': '工具卡',
+  'previewStickerTagComponents': '场地组件',
   'previewStickerTagMapAndMusic': '地图与音乐',
   'previewStickerTagUI': '标记与主题',
   'previewStickerTagWorlds': '世界',
@@ -102,6 +105,42 @@ void main() {
       expect(en[key], matches(RegExp(r'^[A-Z]')));
     }
     expect(kPreviewImageFolders.last, 'others');
+  });
+
+  testWidgets('new localized tags filter their stickers independently', (
+    tester,
+  ) async {
+    final stickers = [
+      for (final tag in [
+        'griditems',
+        'creatures',
+        'tool_packets',
+        'components',
+      ])
+        PreviewSticker(
+          assetPath: 'assets/images/others/fixture_$tag.webp',
+          tag: tag,
+          labelKey: 'fixtureSunflower',
+        ),
+    ];
+    await _open(tester, size: const Size(1100, 700), stickers: stickers);
+    for (final (tag, label) in [
+      ('creatures', '中立生物'),
+      ('tool_packets', '工具卡'),
+      ('components', '场地组件'),
+      ('griditems', '障碍物'),
+    ]) {
+      await tester.ensureVisible(find.text(label));
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+      for (final sticker in stickers) {
+        expect(
+          find.byKey(ValueKey('preview-sticker-${sticker.assetPath}')),
+          sticker.tag == tag ? findsOneWidget : findsNothing,
+        );
+      }
+      expect(tester.takeException(), isNull);
+    }
   });
 
   for (final keyboardHeight in [0.0, 120.0]) {
@@ -379,6 +418,11 @@ void main() {
       final tags = find.byKey(const ValueKey('preview-sticker-tags-scroll'));
       await tester.drag(tags, const Offset(-600, 0));
       await tester.pumpAndSettle();
+      final othersTag = find.byKey(
+        const ValueKey('preview-sticker-tag-others'),
+      );
+      await tester.ensureVisible(othersTag);
+      await tester.pumpAndSettle();
       final tagScrollView = find.descendant(
         of: tags,
         matching: find.byKey(const ValueKey('horizontalTagScrollerScrollView')),
@@ -396,9 +440,7 @@ void main() {
             .thumbVisibility,
         isTrue,
       );
-      await tester.tap(
-        find.byKey(const ValueKey('preview-sticker-tag-others')),
-      );
+      await tester.tap(othersTag);
       await tester.pumpAndSettle();
       await tester.tap(find.text('取消'));
       await tester.pumpAndSettle();

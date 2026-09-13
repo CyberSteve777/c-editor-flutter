@@ -258,10 +258,10 @@ void main() {
       expect(shape.cornerRadius, 12);
     });
 
-    testWidgets('selects an icon row and panel text independently', (
+    testWidgets('selects an icon group and panel text independently', (
       tester,
     ) async {
-      int? selectedSection;
+      String? selectedLayer;
       PreviewTextPartSelection? selectedText;
       final layer = PreviewLayer(
         id: 'plants',
@@ -290,7 +290,7 @@ void main() {
               document: document,
               interactive: true,
               selectedLayerId: layer.id,
-              onSelectIconSection: (_, index) => selectedSection = index,
+              onSelectLayer: (id) => selectedLayer = id,
               onSelectTextPart: (selection) => selectedText = selection,
             ),
           ),
@@ -299,9 +299,9 @@ void main() {
       await tester.pump();
 
       await tester.tap(
-        find.byKey(const ValueKey('preview-icon-section-plants-0')),
+        find.byKey(const ValueKey('preview-icon-item-plants-0-0-0')),
       );
-      expect(selectedSection, 0);
+      expect(selectedLayer, 'plants');
 
       await tester.tap(
         find.byKey(const ValueKey('preview-text-part-plants-grid-title')),

@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_canvas.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_generator_screen.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_png_exporter.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -125,11 +124,6 @@ void main() {
       await _openGenerator(tester);
       final initial = _canvas(tester).document.layerById('plants')!;
       final itemCount = initial.sections.single.items.length;
-      final rows = previewIconSectionRows(
-        initial.sections.single,
-        maxWidth: initial.bounds.width * kPreviewCanvasSize.width,
-      );
-      final removedCount = rows[1].items.length;
       await tester.tap(
         find.byKey(const ValueKey('preview-icon-item-plants-0-1-0')),
       );
@@ -138,18 +132,19 @@ void main() {
       await tester.pumpAndSettle();
       await tester.sendKeyEvent(LogicalKeyboardKey.delete);
       await tester.pumpAndSettle();
-      int count() => _canvas(
+      int? count() => _canvas(
         tester,
-      ).document.layerById('plants')!.sections.single.items.length;
-      expect(count(), itemCount - removedCount);
+      ).document.layerById('plants')?.sections.single.items.length;
+      // Clicking an icon now selects the whole group, not its visual row.
+      expect(count(), isNull);
       await _shortcut(tester, LogicalKeyboardKey.keyZ);
       expect(count(), itemCount);
       await _shortcut(tester, LogicalKeyboardKey.keyY);
-      expect(count(), itemCount - removedCount);
+      expect(count(), isNull);
       await _shortcut(tester, LogicalKeyboardKey.keyZ);
       expect(count(), itemCount);
       await _shortcut(tester, LogicalKeyboardKey.keyZ, shift: true);
-      expect(count(), itemCount - removedCount);
+      expect(count(), isNull);
       await _shortcut(tester, LogicalKeyboardKey.keyZ, command: true);
       expect(count(), itemCount);
       await _shortcut(
@@ -158,7 +153,7 @@ void main() {
         command: true,
         shift: true,
       );
-      expect(count(), itemCount - removedCount);
+      expect(count(), isNull);
       expect(tester.takeException(), isNull);
     },
   );
@@ -362,12 +357,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.sendKeyEvent(LogicalKeyboardKey.delete);
       await tester.pumpAndSettle();
-      expect(
-        _canvas(
-          tester,
-        ).document.layerById('plants')!.sections.single.items.length,
-        lessThan(initialCount),
-      );
+      expect(_canvas(tester).document.layerById('plants'), isNull);
       await _shortcut(tester, LogicalKeyboardKey.keyZ);
       expect(
         _canvas(tester).document.layerById('plants')!.sections.single.items,

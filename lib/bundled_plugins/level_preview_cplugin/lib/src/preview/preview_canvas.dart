@@ -53,13 +53,11 @@ class PreviewCanvas extends StatefulWidget {
     this.drawColor = Colors.white,
     this.drawStrokeWidth = 4,
     this.onSelectLayer,
-    this.onSelectIconSection,
     this.onSelectIconRow,
-    this.onSelectTextPart,
-    this.onIconSectionScaled,
     this.onIconRowScaled,
     this.onIconRowResizeStarted,
     this.iconRowResizeLabel,
+    this.onSelectTextPart,
     this.onLayerMoved,
     this.onLayerScaled,
     this.onLayerRotated,
@@ -88,14 +86,8 @@ class PreviewCanvas extends StatefulWidget {
   final Color drawColor;
   final double drawStrokeWidth;
   final ValueChanged<String?>? onSelectLayer;
-  final void Function(String layerId, int sectionIndex)? onSelectIconSection;
   final void Function(String layerId, int sectionIndex, int rowIndex)?
   onSelectIconRow;
-  final ValueChanged<PreviewTextPartSelection>? onSelectTextPart;
-
-  /// Icon size (not cumulative layer scale) for a selected section.
-  final void Function(String layerId, int sectionIndex, double iconSize)?
-  onIconSectionScaled;
   final void Function(
     String layerId,
     int sectionIndex,
@@ -105,6 +97,7 @@ class PreviewCanvas extends StatefulWidget {
   onIconRowScaled;
   final VoidCallback? onIconRowResizeStarted;
   final String? iconRowResizeLabel;
+  final ValueChanged<PreviewTextPartSelection>? onSelectTextPart;
   final void Function(String id, Rect newBounds)? onLayerMoved;
   final void Function(String id, double newScale)? onLayerScaled;
   final void Function(String id, double rotation)? onLayerRotated;
@@ -127,7 +120,7 @@ class PreviewCanvas extends StatefulWidget {
   final ValueChanged<String>? onTextEdited;
   final GlobalKey? boundaryKey;
 
-  /// Deterministic frames during animated export, keyed by asset/file path.
+  /// First frames during PNG export, keyed by asset/file path.
   /// Normal layout, layer order and clipping are unchanged.
   final Map<String, ui.Image> imageFrameOverrides;
 
@@ -333,22 +326,12 @@ class PreviewCanvasState extends State<PreviewCanvas> {
                             : null,
                         onTextEdited: widget.onTextEdited,
                         onSelect: () => widget.onSelectLayer?.call(layer.id),
-                        onBeginTextEdit: () =>
-                            widget.onBeginTextEdit?.call(layer.id),
-                        onSelectIconSection: (index) =>
-                            widget.onSelectIconSection?.call(layer.id, index),
-                        onSelectIconRow: widget.onSelectIconRow == null
-                            ? null
-                            : (sectionIndex, rowIndex) => widget.onSelectIconRow
-                                  ?.call(layer.id, sectionIndex, rowIndex),
-                        onSelectTextPart: widget.onSelectTextPart,
-                        onIconSectionScaled: widget.onIconSectionScaled == null
-                            ? null
-                            : (index, size) => widget.onIconSectionScaled?.call(
-                                layer.id,
-                                index,
-                                size,
-                              ),
+                        onSelectIconRow:
+                            doc.autoStyle == PreviewAutoStyle.normal &&
+                                widget.onSelectIconRow != null
+                            ? (sectionIndex, rowIndex) => widget.onSelectIconRow
+                                  ?.call(layer.id, sectionIndex, rowIndex)
+                            : null,
                         onIconRowScaled: widget.onIconRowScaled == null
                             ? null
                             : (sectionIndex, rowIndex, size) =>
@@ -358,8 +341,11 @@ class PreviewCanvasState extends State<PreviewCanvas> {
                                     rowIndex,
                                     size,
                                   ),
-                        iconRowResizeLabel: widget.iconRowResizeLabel,
                         onIconRowResizeStarted: widget.onIconRowResizeStarted,
+                        iconRowResizeLabel: widget.iconRowResizeLabel,
+                        onBeginTextEdit: () =>
+                            widget.onBeginTextEdit?.call(layer.id),
+                        onSelectTextPart: widget.onSelectTextPart,
                         onMoved: (bounds) =>
                             widget.onLayerMoved?.call(layer.id, bounds),
                         onScaled: (scale) =>
@@ -376,7 +362,6 @@ class PreviewCanvasState extends State<PreviewCanvas> {
         widget.tool == PreviewEditTool.select &&
         selected != null &&
         selected.kind != PreviewLayerKind.stroke &&
-        widget.selectedIconSectionIndex == null &&
         widget.selectedTextPart == null;
     final editingText =
         widget.editingTextLayerId != null &&
@@ -449,34 +434,32 @@ class PreviewCanvasState extends State<PreviewCanvas> {
     final delta = event.scrollDelta.dy;
     if (delta == 0) return;
     final sectionIndex = widget.selectedIconSectionIndex;
-    if (layer.kind == PreviewLayerKind.iconGrid && sectionIndex != null) {
+    final rowIndex = widget.selectedIconRowIndex;
+    if (widget.document.autoStyle == PreviewAutoStyle.normal &&
+        layer.kind == PreviewLayerKind.iconGrid &&
+        sectionIndex != null &&
+        rowIndex != null &&
+        widget.onIconRowScaled != null) {
       final sections = previewEffectiveSections(layer);
       if (sectionIndex < 0 || sectionIndex >= sections.length) return;
-      final rowIndex = widget.selectedIconRowIndex;
-      if (rowIndex != null && widget.onIconRowScaled != null) {
-        final rows = previewIconSectionRows(
-          sections[sectionIndex],
-          maxWidth:
-              layer.bounds.width * kPreviewCanvasSize.width -
-              (layer.showChrome ? kPreviewIconGridChromeInset : 0),
-          spacing: layer.iconAlign == TextAlign.justify ? 0 : 4,
-        );
-        if (rowIndex < 0 || rowIndex >= rows.length) return;
-        widget.onIconRowResizeStarted?.call();
-        widget.onIconRowScaled?.call(
-          layer.id,
-          sectionIndex,
-          rowIndex,
-          (rows[rowIndex].iconSize * (delta > 0 ? 0.92 : 1.08)).clamp(
-            20.0,
-            152.0,
-          ),
-        );
-        return;
-      }
-      final next = (sections[sectionIndex].iconSize * (delta > 0 ? 0.92 : 1.08))
-          .clamp(20.0, 152.0);
-      widget.onIconSectionScaled?.call(layer.id, sectionIndex, next.toDouble());
+      final rows = previewIconSectionRows(
+        sections[sectionIndex],
+        maxWidth:
+            layer.bounds.width * kPreviewCanvasSize.width -
+            (layer.showChrome ? kPreviewIconGridChromeInset : 0),
+        spacing: layer.iconAlign == TextAlign.justify ? 0 : 4,
+      );
+      if (rowIndex < 0 || rowIndex >= rows.length) return;
+      widget.onIconRowResizeStarted?.call();
+      widget.onIconRowScaled?.call(
+        layer.id,
+        sectionIndex,
+        rowIndex,
+        (rows[rowIndex].iconSize * (delta > 0 ? 0.92 : 1.08)).clamp(
+          20.0,
+          152.0,
+        ),
+      );
       return;
     }
     if (layer.kind == PreviewLayerKind.text ||
@@ -569,8 +552,10 @@ class _LayerWidget extends StatefulWidget {
     required this.selectedTextPart,
     required this.gifFrames,
     required this.onSelect,
-    required this.onSelectIconSection,
     this.onSelectIconRow,
+    this.onIconRowScaled,
+    this.onIconRowResizeStarted,
+    this.iconRowResizeLabel,
     required this.onSelectTextPart,
     required this.onMoved,
     required this.onScaled,
@@ -578,10 +563,6 @@ class _LayerWidget extends StatefulWidget {
     this.textEditingController,
     this.textFocusNode,
     this.onTextEdited,
-    this.onIconSectionScaled,
-    this.onIconRowScaled,
-    this.onIconRowResizeStarted,
-    this.iconRowResizeLabel,
   });
 
   final PreviewLayer layer;
@@ -594,17 +575,15 @@ class _LayerWidget extends StatefulWidget {
   final PreviewTextPartSelection? selectedTextPart;
   final Map<String, ui.Image> gifFrames;
   final VoidCallback onSelect;
-  final VoidCallback? onBeginTextEdit;
-  final ValueChanged<int> onSelectIconSection;
   final void Function(int sectionIndex, int rowIndex)? onSelectIconRow;
-  final ValueChanged<PreviewTextPartSelection>? onSelectTextPart;
-  final ValueChanged<Rect> onMoved;
-  final ValueChanged<double> onScaled;
-  final void Function(int sectionIndex, double iconSize)? onIconSectionScaled;
   final void Function(int sectionIndex, int rowIndex, double iconSize)?
   onIconRowScaled;
   final VoidCallback? onIconRowResizeStarted;
   final String? iconRowResizeLabel;
+  final VoidCallback? onBeginTextEdit;
+  final ValueChanged<PreviewTextPartSelection>? onSelectTextPart;
+  final ValueChanged<Rect> onMoved;
+  final ValueChanged<double> onScaled;
   final TextEditingController? textEditingController;
   final FocusNode? textFocusNode;
   final ValueChanged<String>? onTextEdited;
@@ -846,6 +825,7 @@ class _LayerWidgetState extends State<_LayerWidget> {
             ),
           )
         : GestureDetector(
+            key: ValueKey('preview-layer-gesture-${layer.id}'),
             behavior: HitTestBehavior.opaque,
             onTap: widget.onSelect,
             onScaleStart: (_) {
@@ -1155,7 +1135,7 @@ class _LayerWidgetState extends State<_LayerWidget> {
                 ),
               ),
             ),
-          _selectableIconSection(index: i, child: sectionBody(i, sections[i])),
+          sectionBody(i, sections[i]),
         ],
       ],
     );
@@ -1358,7 +1338,12 @@ class _LayerWidgetState extends State<_LayerWidget> {
     required PreviewIconRow row,
     required Widget child,
   }) {
-    if (!widget.interactive || widget.onSelectIconRow == null) return child;
+    if (!widget.interactive || widget.onSelectIconRow == null) {
+      return SizedBox(
+        key: ValueKey('preview-icon-row-${layer.id}-$sectionIndex-$rowIndex'),
+        child: child,
+      );
+    }
     final selected =
         widget.selected &&
         widget.selectedIconSectionIndex == sectionIndex &&
@@ -1372,7 +1357,8 @@ class _LayerWidgetState extends State<_LayerWidget> {
     return GestureDetector(
       key: ValueKey('preview-icon-row-${layer.id}-$sectionIndex-$rowIndex'),
       behavior: HitTestBehavior.opaque,
-      onTap: select,
+      // Tapping the selected row again returns to the whole icon group.
+      onTap: selected ? widget.onSelect : select,
       onScaleStart: (_) {
         select();
         widget.onIconRowResizeStarted?.call();
@@ -1477,48 +1463,6 @@ class _LayerWidgetState extends State<_LayerWidget> {
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _selectableIconSection({required int index, required Widget child}) {
-    if (!widget.interactive) return child;
-    final selected =
-        widget.selected &&
-        widget.selectedIconSectionIndex == index &&
-        widget.selectedIconRowIndex == null;
-    return GestureDetector(
-      key: ValueKey('preview-icon-section-${layer.id}-$index'),
-      behavior: HitTestBehavior.opaque,
-      onTap: () => widget.onSelectIconSection(index),
-      onScaleStart: widget.onIconSectionScaled == null
-          ? null
-          : (_) {
-              widget.onSelectIconSection(index);
-              _iconSizeAtScaleStart = previewEffectiveSections(
-                layer,
-              )[index].iconSize;
-            },
-      onScaleUpdate: widget.onIconSectionScaled == null
-          ? null
-          : (details) {
-              if (details.pointerCount >= 2) {
-                widget.onIconSectionScaled?.call(
-                  index,
-                  (_iconSizeAtScaleStart * details.scale).clamp(20.0, 152.0),
-                );
-              } else {
-                _moveByLocalDelta(details.focalPointDelta, fromContent: true);
-              }
-            },
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: selected
-              ? Border.all(color: Colors.lightBlueAccent, width: 2)
-              : null,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: child,
       ),
     );
   }

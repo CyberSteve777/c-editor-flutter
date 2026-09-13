@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_sticker_catalog.dart';
+import 'package:c_editor/data/dino_type_catalog.dart';
+import 'package:c_editor/data/repository/fish_type_repository.dart';
+import 'package:c_editor/data/repository/tool_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +67,15 @@ void main() {
         'assets/images/others/last.webp',
       ]);
       expect(kPreviewStickerTags.last, 'others');
+      expect(kPreviewStickerTags.take(7), [
+        'plants',
+        'zombies',
+        'griditems',
+        'creatures',
+        'tool_packets',
+        'components',
+        'round_icons',
+      ]);
     },
   );
 
@@ -160,6 +172,83 @@ void main() {
           )
           .map((sticker) => sticker.assetPath),
       expectedTunnels,
+    );
+  });
+
+  test('creatures and tool packets follow their dedicated editor catalogs', () {
+    String stem(String path) => path.replaceFirst(RegExp(r'\.[^/.]+$'), '');
+    final creatures = stickers.where((sticker) => sticker.tag == 'creatures');
+    expect(creatures.map((sticker) => stem(sticker.assetPath)), [
+      for (final id in kDinoSpawnTypeIds) stem(dinoSpawnImageAsset(id)),
+      for (final fish in FishTypeRepository().allFishes)
+        if (FishInfo.hasEditorIcon(fish.alias)) stem(fish.iconAssetPath),
+    ]);
+    expect(
+      creatures.first.resourceNameKey,
+      'dinoType_${kDinoSpawnTypeIds.first}',
+    );
+    final tools = stickers.where((sticker) => sticker.tag == 'tool_packets');
+    expect(tools.map((sticker) => sticker.resourceNameKey), [
+      for (final tool in ToolRepository.toolCards)
+        if (tool.icon != null) tool.id,
+    ]);
+    expect(tools.map((sticker) => stem(sticker.assetPath)), [
+      for (final tool in ToolRepository.toolCards)
+        if (tool.icon != null) stem('assets/images/tools/${tool.icon}'),
+    ]);
+    expect(
+      stickers
+          .where((sticker) => sticker.tag == 'griditems')
+          .any(
+            (sticker) =>
+                sticker.assetPath.startsWith('assets/images/tools/') ||
+                sticker.assetPath.startsWith('assets/images/dinos/') ||
+                sticker.assetPath.startsWith('assets/images/fishes/'),
+          ),
+      isFalse,
+    );
+  });
+
+  test('lawn components keep their module labels and internal ordering', () {
+    final components = stickers
+        .where((sticker) => sticker.tag == 'components')
+        .toList();
+    expect(components.take(11).map((sticker) => sticker.labelKey), [
+      'previewStickerNameRails',
+      'previewStickerNameRailcart',
+      'previewStickerNamePiratePlanks',
+      'previewStickerNameKongfuTracks',
+      'previewStickerNameKongfuCartLeft',
+      'previewStickerNameKongfuCartMiddle',
+      'previewStickerNameKongfuCartRight',
+      'previewStickerNameGulliverLeft',
+      'previewStickerNameGulliverRight',
+      'previewStickerNameExpeditionRoad',
+      'previewStickerNameExpeditionRoadBlocked',
+    ]);
+    expect(
+      stickers
+          .where(
+            (sticker) => sticker.assetPath.startsWith('assets/images/tunnels/'),
+          )
+          .every((sticker) => sticker.tag == 'components'),
+      isTrue,
+    );
+    expect(
+      components
+          .where((sticker) => sticker.assetPath.contains('MAUSOLEUM'))
+          .every((sticker) => sticker.searchTerms.isNotEmpty),
+      isTrue,
+    );
+    expect(
+      stickers
+          .firstWhere(
+            (sticker) =>
+                sticker.searchTerms.contains('cosmoss') &&
+                sticker.assetPath.startsWith('assets/images/griditems/'),
+          )
+          .tag,
+      'griditems',
     );
   });
 

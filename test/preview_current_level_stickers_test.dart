@@ -200,6 +200,68 @@ void main() {
   });
 
   test(
+    'split tags keep current-level tool, creature and component priority',
+    () {
+      final level = PvzLevelFile(
+        objects: [
+          _object('DinoWaveActionProps', {'DinoType': 'raptor'}),
+          _object('SpawnZombiesFishWaveActionProps', {
+            'Fishes': [
+              {'Type': 'RTID(hermitcrab@CreatureTypes)'},
+            ],
+          }),
+          _object('ConveyorBeltProperties', {
+            'InitialPlantList': [
+              {'PlantType': 'tool_projectile_wallnut'},
+              {'ToolType': 'powertile_alpha'},
+            ],
+          }),
+          _object('InitialGridItemGulliverTunnelProperties', {
+            'TunnelPlacements': [
+              {'Orientation': 'GULLIVERTUNNEL_ORIENTATION_BIG_ON_RIGHT'},
+            ],
+          }),
+          _object('TunnelDefendModuleProperties', {
+            'Roads': [
+              {'Img': 'IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT_2'},
+            ],
+          }),
+        ],
+      );
+      final priority = previewCurrentLevelStickerAssetPaths(
+        stickers: catalog,
+        levelFile: level,
+        parsed: LevelParser.parseLevel(level),
+      );
+      for (final (tag, term) in [
+        ('creatures', 'raptor'),
+        ('creatures', 'hermitcrab'),
+        ('tool_packets', 'tool_projectile_wallnut'),
+        ('tool_packets', 'tool_powertile_alpha'),
+        ('components', 'GULLIVERTUNNEL_ORIENTATION_BIG_ON_RIGHT'),
+        ('components', 'IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT_2'),
+      ]) {
+        final sticker = catalog.firstWhere(
+          (sticker) =>
+              sticker.tag == tag &&
+              sticker.searchTerms.any(
+                (value) => value.toLowerCase() == term.toLowerCase(),
+              ),
+        );
+        expect(priority, contains(sticker.assetPath), reason: '$tag: $term');
+      }
+      final ordered = prioritizePreviewStickers(
+        stickers: catalog,
+        priorityAssetPaths: priority,
+      );
+      final current = catalog.where(
+        (sticker) => priority.contains(sticker.assetPath),
+      );
+      expect(ordered.take(current.length), current);
+    },
+  );
+
+  test(
     'a GIF or shared icon resolved by the document keeps catalog position',
     () {
       final level = PvzLevelFile(objects: []);

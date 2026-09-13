@@ -129,7 +129,7 @@ class PreviewIconSection {
   List<PreviewItem> items;
   double iconSize;
 
-  /// Empty until first row edit; automatic layouts can continue to reflow.
+  /// Empty until a row edit; resizing the whole group resumes automatic reflow.
   List<PreviewIconRow> rows;
 
   PreviewIconSection copy() => PreviewIconSection(
@@ -305,12 +305,17 @@ List<PreviewIconSection> previewEditableSections(PreviewLayer layer) {
   return layer.sections;
 }
 
-/// Whole-section editing deliberately returns that section to uniform reflow.
-void resizePreviewIconSection(PreviewLayer layer, int index, double iconSize) {
-  final sections = previewEditableSections(layer);
-  if (index < 0 || index >= sections.length) return;
-  sections[index].iconSize = iconSize.clamp(20.0, 152.0);
-  sections[index].rows.clear();
+/// Sets the icon size for the entire group and resumes automatic row wrapping.
+/// Explicit rows from earlier edits are flattened without losing visible items.
+void resizePreviewIconGroup(PreviewLayer layer, double iconSize) {
+  if (layer.kind != PreviewLayerKind.iconGrid || !iconSize.isFinite) return;
+  for (final section in previewEditableSections(layer)) {
+    if (section.rows.isNotEmpty) {
+      section.items = [for (final row in section.rows) ...row.items];
+      section.rows.clear();
+    }
+    section.iconSize = iconSize.clamp(20.0, 152.0);
+  }
 }
 
 /// Changes only the chosen visual row and persists its original row membership.
@@ -320,6 +325,7 @@ void resizePreviewIconRow(
   int rowIndex,
   double iconSize,
 ) {
+  if (layer.kind != PreviewLayerKind.iconGrid || !iconSize.isFinite) return;
   final sections = previewEditableSections(layer);
   if (sectionIndex < 0 || sectionIndex >= sections.length) return;
   final section = sections[sectionIndex];

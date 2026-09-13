@@ -263,12 +263,24 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'animated GIF export composites the actual canvas and restores editing',
+    'GIF notice can be cancelled and confirmed PNG contains only the first frame',
     (tester) async {
       var pngExports = 0;
-      await _open(tester, (_, _) async {
+      var sawFrameOverride = false;
+      await _open(tester, (image, name) async {
         pngExports++;
-        throw StateError('GIF must use the animated export path');
+        final canvas = _canvas(tester);
+        sawFrameOverride = canvas.imageFrameOverrides.isNotEmpty;
+        expect(canvas.selectedLayerId, isNull);
+        expect(
+          tester
+              .widget<AbsorbPointer>(
+                find.byKey(const ValueKey('previewExportInputBarrier')),
+              )
+              .absorbing,
+          isTrue,
+        );
+        return PreviewPngExporter.export(image: image, levelFileName: name);
       });
       final temp = await tester.runAsync(
         () => Directory.systemTemp.createTemp('preview_gif_generator_'),
@@ -306,51 +318,52 @@ void main() {
           .last;
       await tester.tap(export);
       await tester.pumpAndSettle();
-      final dialog = find.byKey(const ValueKey('previewExportFormatDialog'));
+      final dialog = find.byKey(const ValueKey('previewGifPngNoticeDialog'));
       expect(dialog, findsOneWidget);
-      await tester.tap(find.byKey(const ValueKey('previewExportGifOption')));
-      await tester.pump();
-      var sawFrameOverride = false;
-      // Real engine image decoding and palette conversion run asynchronously.
-      for (var attempt = 0; attempt < 600; attempt++) {
-        await tester.runAsync(
-          () => Future<void>.delayed(const Duration(milliseconds: 25)),
-        );
-        await tester.pump(const Duration(milliseconds: 25));
-        final canvas = _canvas(tester);
-        if (canvas.imageFrameOverrides.isNotEmpty) {
-          sawFrameOverride = true;
-          expect(canvas.selectedLayerId, isNull);
-          expect(
-            tester
-                .widget<AbsorbPointer>(
-                  find.byKey(const ValueKey('previewExportInputBarrier')),
-                )
-                .absorbing,
-            isTrue,
-          );
-        }
-        if (find.byType(SnackBar).evaluate().isNotEmpty) break;
-      }
-      expect(find.byType(SnackBar), findsOneWidget);
-      final output = File('${temp.path}/previews/selected-stroke.gif');
+      expect(pngExports, 0);
+      await tester.tap(find.byKey(const ValueKey('previewGifPngNoticeCancel')));
+      await tester.pumpAndSettle();
+      expect(dialog, findsNothing);
+      expect(pngExports, 0);
+      expect(_canvas(tester).selectedLayerId, strokeId);
+      expect(_canvas(tester).imageFrameOverrides, isEmpty);
+      expect(
+        tester
+            .widget<AbsorbPointer>(
+              find.byKey(const ValueKey('previewExportInputBarrier')),
+            )
+            .absorbing,
+        isFalse,
+      );
+      final outputDirectory = Directory('${temp.path}/previews');
+      expect(await tester.runAsync(outputDirectory.exists), isFalse);
+
+      await tester.tap(export);
+      await tester.pumpAndSettle();
+      expect(dialog, findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('previewGifPngNoticeExport')));
+      await _finishExport(tester);
+      final output = File('${outputDirectory.path}/selected-stroke.png');
       final bytes = await tester.runAsync(output.readAsBytes);
-      final animation = gif.decodeGif(bytes!);
-      expect(animation, isNotNull);
-      expect(animation!.numFrames, 2);
-      expect(animation.frames.map((frame) => frame.frameDuration), [70, 110]);
-      expect(animation.width, (kPreviewCanvasSize.width * 2).round());
-      expect(animation.height, (kPreviewCanvasSize.height * 2).round());
-      final x = (animation.width * .3).round();
-      final y = (animation.height * .3).round();
-      final first = animation.frames[0].getPixel(x, y);
-      final second = animation.frames[1].getPixel(x, y);
+      final preview = gif.decodePng(bytes!);
+      expect(preview, isNotNull);
+      expect(preview!.numFrames, 1);
+      expect(preview.width, (kPreviewCanvasSize.width * 2).round());
+      expect(preview.height, (kPreviewCanvasSize.height * 2).round());
+      final x = (preview.width * .3).round();
+      final y = (preview.height * .3).round();
+      final first = preview.getPixel(x, y);
       expect(first.r, greaterThan(220));
       expect(first.b, lessThan(35));
-      expect(second.b, greaterThan(220));
-      expect(second.r, lessThan(35));
+      final exportedFiles = await tester.runAsync(
+        () => outputDirectory
+            .list()
+            .map((entry) => entry.uri.pathSegments.last)
+            .toList(),
+      );
+      expect(exportedFiles, ['selected-stroke.png']);
       expect(sawFrameOverride, isTrue);
-      expect(pngExports, 0);
+      expect(pngExports, 1);
       expect(_canvas(tester).imageFrameOverrides, isEmpty);
       expect(_canvas(tester).selectedLayerId, strokeId);
       expect(

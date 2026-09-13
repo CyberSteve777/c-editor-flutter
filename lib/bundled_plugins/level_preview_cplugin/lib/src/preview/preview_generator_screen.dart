@@ -13,6 +13,7 @@ import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/p
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_feature_groups.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_fonts.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_module_info.dart';
+import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_module_resource_names.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_pickers.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_png_exporter.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_rich_text_controller.dart';
@@ -21,9 +22,8 @@ import 'preview_toolbar_action.dart';
 import 'preview_generator_pickers.dart';
 import 'preview_layers_dialog.dart';
 import 'preview_sticker_catalog.dart';
-import 'preview_export_format_dialog.dart';
-import 'preview_gif_animation.dart';
-import 'preview_gif_encoder.dart';
+import 'preview_gif_first_frames.dart';
+import 'preview_gif_png_notice_dialog.dart';
 import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
@@ -171,11 +171,14 @@ class PreviewGeneratorScreen extends StatefulWidget {
 
 class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   final _boundaryKey = GlobalKey();
-  final _iconRowControlKey = GlobalKey();
   final _stickerPickerSession = PreviewStickerPickerSession();
   final _textController = PreviewRichTextController();
-  // Panel text is edited as plain content; preview styling belongs on the canvas.
+  // Content fields use UI text; preview styling belongs only on the canvas.
   final _textContentController = TextEditingController();
+  final _textContentKey = GlobalKey();
+  final _textContentFocusNode = FocusNode();
+  bool _syncingTextContent = false;
+  bool _editingTextInToolbar = false;
   final _focusNode = FocusNode();
   final _textFocusNode = FocusNode();
   String _lastControllerText = '';
@@ -194,9 +197,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   bool _figureFilled = false;
   String? _selectedLayerId;
   String? _editingTextLayerId;
+  PreviewTextPartSelection? _selectedTextPart;
   int? _selectedIconSectionIndex;
   int? _selectedIconRowIndex;
-  PreviewTextPartSelection? _selectedTextPart;
+  final _iconRowControlKey = GlobalKey();
   String? _activeStrokeId;
   String? _draftShapeId;
   Color _drawColor = Colors.white;
@@ -204,7 +208,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   int _idSeq = 0;
   bool _loading = true;
   bool _exporting = false;
-  bool _choosingExportFormat = false;
+  bool _confirmingGifExport = false;
   Map<String, ui.Image> _exportImageFrames = const {};
   bool _widthAvailable = false;
   bool _confirmingExit = false;
@@ -233,7 +237,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   void initState() {
     super.initState();
     _textController.addListener(_onTextControllerTick);
+    _textContentController.addListener(_onTextContentControllerTick);
     _textFocusNode.addListener(_onTextFocusChanged);
+    _textContentFocusNode.addListener(_onTextContentFocusChanged);
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
     _loadToolbarStyle();
     _compose();
@@ -246,6 +252,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
 
   void _onTextControllerTick() {
     if (!mounted) return;
+    _syncPlainTextContent();
     if (_textController.isApplyingProgrammaticValue) {
       _lastControllerText = _textController.text;
       return;
@@ -268,18 +275,57 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     _ensureTextFocus();
   }
 
+  void _syncPlainTextContent() {
+    if (_selectedTextLayer() == null ||
+        _textContentController.value == _textController.value) {
+      return;
+    }
+    _syncingTextContent = true;
+    _textContentController.value = _textController.value;
+    _syncingTextContent = false;
+  }
+
+  void _onTextContentControllerTick() {
+    if (!mounted || _syncingTextContent || !_editingTextInToolbar) return;
+    final layer = _selectedTextLayer();
+    if (layer == null || _editingTextLayerId != layer.id) return;
+    // Keep rich runs, selection and composing ranges in sync without rendering
+    // their font, colour, size or outline inside the toolbar input.
+    _textController.value = _textContentController.value;
+  }
+
+  void _onTextContentFocusChanged() {
+    if (!mounted) return;
+    final layer = _selectedTextLayer();
+    if (_textContentFocusNode.hasFocus && layer != null) {
+      setState(() {
+        if (_editingTextLayerId != layer.id) _clearTextHistory();
+        _editingTextLayerId = layer.id;
+        _editingTextInToolbar = true;
+      });
+      _textController.value = _textContentController.value;
+      _ensureTextFocus();
+    } else {
+      _onTextFocusChanged();
+    }
+  }
+
   void _onTextFocusChanged() {
     if (!mounted) return;
     setState(() {});
-    if (_textFocusNode.hasFocus || _editingTextLayerId == null) return;
+    if (_textFocusNode.hasFocus ||
+        _textContentFocusNode.hasFocus ||
+        _editingTextLayerId == null) {
+      return;
+    }
     // Focus left the field while still in edit mode (e.g. parent Focus stole
     // it on rebuild). Restore unless another control intentionally took it.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _editingTextLayerId == null) return;
-      if (_textFocusNode.hasFocus) return;
+      if (_textFocusNode.hasFocus || _textContentFocusNode.hasFocus) return;
       final primary = FocusManager.instance.primaryFocus;
       if (primary == null || primary == _focusNode) {
-        _textFocusNode.requestFocus();
+        _ensureTextFocus();
       }
     });
   }
@@ -287,8 +333,15 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   void _ensureTextFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _editingTextLayerId == null) return;
-      if (!_textFocusNode.hasFocus) {
-        _textFocusNode.requestFocus();
+      final target = _editingTextInToolbar
+          ? _textContentFocusNode
+          : _textFocusNode;
+      if (!target.hasFocus) target.requestFocus();
+      if (_editingTextInToolbar) {
+        final contentContext = _textContentKey.currentContext;
+        if (contentContext != null) {
+          Scrollable.ensureVisible(contentContext, alignment: 0);
+        }
       }
     });
   }
@@ -321,10 +374,13 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   @override
   void dispose() {
     _textController.removeListener(_onTextControllerTick);
+    _textContentController.removeListener(_onTextContentControllerTick);
     _textFocusNode.removeListener(_onTextFocusChanged);
+    _textContentFocusNode.removeListener(_onTextContentFocusChanged);
     HardwareKeyboard.instance.removeHandler(_onHardwareKey);
     _textController.dispose();
     _textContentController.dispose();
+    _textContentFocusNode.dispose();
     _textFocusNode.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -426,8 +482,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       _undoSnapshot = null;
       _selectedLayerId = null;
       _editingTextLayerId = null;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
       _activeStrokeId = null;
       _draftShapeId = null;
@@ -450,8 +504,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       _redoSnapshot = null;
       _selectedLayerId = null;
       _editingTextLayerId = null;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
       _activeStrokeId = null;
       _draftShapeId = null;
@@ -481,7 +533,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
             ModuleRegistry.getMetadata(objClass).getTitle(context),
         plantsSourceLabel: _t('previewGenPlants', 'Plants'),
         zombiesSourceLabel: _t('previewGenZombies', 'Zombies'),
-        gridItemsSourceLabel: _t('previewGenGridItems', 'Initial grid items'),
+        gridItemsSourceLabel: _t('previewGenGridItems', 'Grid Items'),
         seedBankLabel: _t('previewSeedBank', 'Seed Bank'),
         zombieSeedBankLabel: _t(
           'previewIZombieSeedBank',
@@ -509,8 +561,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         _loading = false;
         _selectedLayerId = null;
         _editingTextLayerId = null;
-        _selectedIconSectionIndex = null;
-        _selectedIconRowIndex = null;
         _selectedTextPart = null;
         _activeStrokeId = null;
         _draftShapeId = null;
@@ -549,6 +599,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   void _syncTextController() {
+    _selectedIconSectionIndex = null;
+    _selectedIconRowIndex = null;
     final layer = _selectedTextLayer();
     if (layer != null) {
       _textController.loadFromLayer(layer);
@@ -567,10 +619,12 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     }
     _lastControllerText = _textController.text;
     final content = _selectedTextValue() ?? '';
+    _syncingTextContent = true;
     _textContentController.value = TextEditingValue(
       text: content,
       selection: TextSelection.collapsed(offset: content.length),
     );
+    _syncingTextContent = false;
   }
 
   static const _fontSizeChoices = <double>[
@@ -781,12 +835,15 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
 
   void _beginTextEdit(String id) {
     if (_document?.layerById(id)?.kind != PreviewLayerKind.text) return;
+    final platform = Theme.of(context).platform;
     setState(() {
       _selectedLayerId = id;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
       _editingTextLayerId = id;
+      // A toolbar field remains readable above a phone's software keyboard.
+      // Desktop users can still edit directly on the canvas.
+      _editingTextInToolbar =
+          platform == TargetPlatform.android || platform == TargetPlatform.iOS;
       _draftShapeId = null;
       _clearTextHistory();
       _syncTextController();
@@ -795,18 +852,24 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   void _endTextEdit() {
-    if (_editingTextLayerId == null && !_textFocusNode.hasFocus) return;
+    if (_editingTextLayerId == null &&
+        !_textFocusNode.hasFocus &&
+        !_textContentFocusNode.hasFocus) {
+      return;
+    }
     final layer = _selectedTextLayer();
     if (layer != null) {
       _textController.applyToLayer(layer);
     }
     setState(() {
       _editingTextLayerId = null;
+      _editingTextInToolbar = false;
       _textController.typingStyle = null;
       _clearTextHistory();
     });
-    if (_textFocusNode.hasFocus) {
+    if (_textFocusNode.hasFocus || _textContentFocusNode.hasFocus) {
       _textFocusNode.unfocus();
+      _textContentFocusNode.unfocus();
       _focusNode.requestFocus();
     }
   }
@@ -946,26 +1009,19 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     if (contained != null) contained.textAlign = align;
   }
 
-  PreviewIconSection? _selectedIconSection() {
-    final layer = _selectedLayer();
-    final index = _selectedIconSectionIndex;
-    if (layer == null ||
-        layer.kind != PreviewLayerKind.iconGrid ||
-        index == null) {
+  PreviewIconRow? _selectedIconRow() {
+    if (_document?.autoStyle != PreviewAutoStyle.normal ||
+        _selectedTextPart != null) {
       return null;
     }
-    final sections = previewEffectiveSections(layer);
-    if (index < 0 || index >= sections.length) return null;
-    return sections[index];
-  }
-
-  PreviewIconRow? _selectedIconRow() {
     final layer = _selectedIconGridLayer();
-    final section = _selectedIconSection();
+    final sectionIndex = _selectedIconSectionIndex;
     final rowIndex = _selectedIconRowIndex;
-    if (layer == null || section == null || rowIndex == null) return null;
+    if (layer == null || sectionIndex == null || rowIndex == null) return null;
+    final sections = previewEffectiveSections(layer);
+    if (sectionIndex < 0 || sectionIndex >= sections.length) return null;
     final rows = previewIconSectionRows(
-      section,
+      sections[sectionIndex],
       maxWidth:
           layer.bounds.width * kPreviewCanvasSize.width -
           (layer.showChrome ? kPreviewIconGridChromeInset : 0),
@@ -975,42 +1031,28 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     return rows[rowIndex];
   }
 
-  void _showIconRowControls() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final context = _iconRowControlKey.currentContext;
-      if (!mounted || context == null) return;
-      Scrollable.ensureVisible(
-        context,
-        alignment: 0,
-        duration: const Duration(milliseconds: 150),
-      );
-    });
-  }
-
   void _resizeIconRow(
     String layerId,
     int sectionIndex,
     int rowIndex,
     double size,
   ) {
+    if (_document?.autoStyle != PreviewAutoStyle.normal) return;
     final layer = _document?.layerById(layerId);
     if (layer == null) return;
     if (_undoSnapshot == null) _pushHistory();
     setState(() {
       resizePreviewIconRow(layer, sectionIndex, rowIndex, size);
-      _resizeIconGridToContent(
-        layer,
-        preserveExistingHeight: layer.rotation != 0,
-      );
+      _resizeIconGridToContent(layer);
     });
   }
 
-  void _resizeIconSection(String layerId, int sectionIndex, double size) {
+  void _resizeIconGroup(String layerId, double size) {
     final layer = _document?.layerById(layerId);
     if (layer == null) return;
     if (_undoSnapshot == null) _pushHistory();
     setState(() {
-      resizePreviewIconSection(layer, sectionIndex, size);
+      resizePreviewIconGroup(layer, size);
       _resizeIconGridToContent(layer);
     });
   }
@@ -1213,8 +1255,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       );
       _selectedLayerId = id;
       _tool = PreviewEditTool.select;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
     });
   }
@@ -1282,8 +1322,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       onSelected: (id) {
         setState(() {
           _selectedLayerId = id;
-          _selectedIconSectionIndex = null;
-          _selectedIconRowIndex = null;
           _selectedTextPart = null;
           _syncTextController();
         });
@@ -1337,6 +1375,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     );
     if (objClass == null || !mounted) return;
 
+    await loadPreviewModuleResourceNames();
+    if (!mounted) return;
+
     final meta = ModuleRegistry.getMetadata(objClass);
     final title = meta.getTitle(context);
     String l10n(String key, String fallback, [Map<String, Object?>? args]) =>
@@ -1345,6 +1386,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       levelFile: widget.levelFile,
       objClass: objClass,
       t: l10n,
+      resourceName: (kind, id) =>
+          previewModuleResourceName(context, widget.levelFile, kind, id),
     );
     final summary = payload.textBody;
     final bodyText = summary.isEmpty ? title : '$title\n$summary';
@@ -1404,8 +1447,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         );
         _selectedLayerId = id;
         _tool = PreviewEditTool.select;
-        _selectedIconSectionIndex = null;
-        _selectedIconRowIndex = null;
         _selectedTextPart = null;
         _syncTextController();
       });
@@ -1436,10 +1477,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ),
       );
       _selectedLayerId = id;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
       _tool = PreviewEditTool.select;
+      _syncTextController();
     });
   }
 
@@ -1472,8 +1512,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
           kind: PreviewTextPartKind.contained,
           containedTextId: id,
         );
-        _selectedIconSectionIndex = null;
-        _selectedIconRowIndex = null;
         _tool = PreviewEditTool.select;
         _syncTextController();
         return;
@@ -1491,8 +1529,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ),
       );
       _selectedLayerId = id;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
       _tool = PreviewEditTool.select;
       _syncTextController();
@@ -1531,135 +1567,63 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         return;
       }
 
-      final sectionIndex = _selectedIconSectionIndex;
-      final rowIndex = _selectedIconRowIndex;
-      if (sectionIndex != null &&
-          rowIndex != null &&
-          layer.kind == PreviewLayerKind.iconGrid) {
-        final sections = previewEditableSections(layer);
-        if (sectionIndex >= 0 && sectionIndex < sections.length) {
-          final section = sections[sectionIndex];
-          if (section.rows.isEmpty) {
-            section.rows = previewIconSectionRows(
-              section,
-              maxWidth:
-                  layer.bounds.width * kPreviewCanvasSize.width -
-                  (layer.showChrome ? kPreviewIconGridChromeInset : 0),
-              spacing: layer.iconAlign == TextAlign.justify ? 0 : 4,
-            );
-          }
-          if (rowIndex >= 0 && rowIndex < section.rows.length) {
-            section.rows.removeAt(rowIndex);
-            section.items = [for (final row in section.rows) ...row.items];
-            layer.items = [for (final section in sections) ...section.items];
-            _selectedIconSectionIndex = null;
-            _selectedIconRowIndex = null;
-            _resizeIconGridToContent(layer);
-            return;
-          }
-        }
-      }
-      if (sectionIndex != null &&
-          layer.kind == PreviewLayerKind.iconGrid &&
-          layer.sections.isNotEmpty &&
-          sectionIndex >= 0 &&
-          sectionIndex < layer.sections.length) {
-        layer.sections.removeAt(sectionIndex);
-        layer.items = [for (final section in layer.sections) ...section.items];
-        _selectedIconSectionIndex = null;
-        _selectedIconRowIndex = null;
-        _resizeIconGridToContent(layer);
-        return;
-      }
-
       doc.layers.removeWhere((l) => l.id == id);
       _selectedLayerId = null;
       _editingTextLayerId = null;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
       _textController.clear();
     });
   }
 
   Future<bool> _export() async {
-    if (_exporting || _choosingExportFormat || _document == null) return false;
+    if (_exporting || _confirmingGifExport || _document == null) return false;
     _endTextEdit();
     final document = _document!;
-    var format = PreviewImageExportFormat.png;
-    if (previewDocumentGifSources(document).isNotEmpty) {
-      _choosingExportFormat = true;
-      PreviewImageExportFormat? choice;
+    final hasGif = previewDocumentGifSources(document).isNotEmpty;
+    if (hasGif) {
+      _confirmingGifExport = true;
+      bool? confirmed;
       try {
-        choice = await showPreviewExportFormatDialog(context: context, t: _t);
+        confirmed = await showPreviewGifPngNoticeDialog(
+          context: context,
+          t: _t,
+        );
       } finally {
-        _choosingExportFormat = false;
+        _confirmingGifExport = false;
       }
-      if (choice == null || !mounted) return false;
-      format = choice;
+      if (confirmed != true || !mounted) return false;
     }
-    final selectedIconSectionIndex = _selectedIconSectionIndex;
-    final selectedIconRowIndex = _selectedIconRowIndex;
     final selectedTextPart = _selectedTextPart;
     setState(() {
       _exporting = true;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
     });
-    PreviewGifAnimation? animation;
+    PreviewGifFirstFrames? firstFrames;
     try {
-      PreviewExportResult result;
-      if (format == PreviewImageExportFormat.gif) {
-        animation = await PreviewGifAnimation.load(document);
-        final encoder = PreviewGifEncoder();
-        for (var i = 0; i < animation.frameTimes.length - 1; i++) {
-          if (!mounted) return false;
-          setState(
-            () => _exportImageFrames = animation!.imagesAt(
-              animation.frameTimes[i],
-            ),
-          );
-          await WidgetsBinding.instance.endOfFrame;
-          if (!mounted) return false;
-          final box =
-              _boundaryKey.currentContext?.findRenderObject()
-                  as RenderRepaintBoundary?;
-          if (box == null) throw StateError('Preview canvas is not ready');
-          final image = await box.toImage(pixelRatio: 2);
-          try {
-            await encoder.addFrame(
-              image,
-              duration: animation.frameTimes[i + 1] - animation.frameTimes[i],
-            );
-          } finally {
-            image.dispose();
-          }
-        }
-        result = await PreviewPngExporter.exportEncoded(
-          bytes: encoder.finish(),
-          levelFileName: widget.fileName,
-          extension: 'gif',
-        );
-      } else {
-        // Capture only after the non-interactive, unselected canvas has painted.
-        await WidgetsBinding.instance.endOfFrame;
+      if (hasGif) {
+        firstFrames = await PreviewGifFirstFrames.load(document);
         if (!mounted) return false;
-        final box =
-            _boundaryKey.currentContext?.findRenderObject()
-                as RenderRepaintBoundary?;
-        if (box == null) throw StateError('Preview canvas is not ready');
-        final image = await box.toImage(pixelRatio: 2.0);
-        try {
-          result = widget.imageExporter != null
-              ? await widget.imageExporter!(image, widget.fileName)
-              : await PreviewPngExporter.export(
-                  image: image,
-                  levelFileName: widget.fileName,
-                );
-        } finally {
-          image.dispose();
-        }
+        setState(() => _exportImageFrames = firstFrames!.images);
+      }
+      // Capture once, after first-frame overrides and the unselected canvas
+      // have painted. Never capture whichever GIF frame is currently playing.
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return false;
+      final box =
+          _boundaryKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
+      if (box == null) throw StateError('Preview canvas is not ready');
+      final image = await box.toImage(pixelRatio: 2.0);
+      final PreviewExportResult result;
+      try {
+        result = widget.imageExporter != null
+            ? await widget.imageExporter!(image, widget.fileName)
+            : await PreviewPngExporter.export(
+                image: image,
+                levelFileName: widget.fileName,
+              );
+      } finally {
+        image.dispose();
       }
       if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1686,10 +1650,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                 'previewGenExportLibraryNotConfigured',
                 'Please configure the level library folder before exporting a preview.',
               ),
-              PreviewPngExportFailure.animationTooLarge => _t(
-                'previewGenExportAnimationTooLarge',
-                'The animation is too large to export as GIF. Remove some GIF stickers or export as PNG.',
-              ),
             }
           : _t('previewGenExportFail', 'Export failed');
       ScaffoldMessenger.of(
@@ -1701,19 +1661,17 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         setState(() {
           _exporting = false;
           _exportImageFrames = const {};
-          _selectedIconSectionIndex = selectedIconSectionIndex;
-          _selectedIconRowIndex = selectedIconRowIndex;
           _selectedTextPart = selectedTextPart;
         });
         // Replace RawImage references before releasing their decoded frames.
-        if (animation != null) await WidgetsBinding.instance.endOfFrame;
+        if (firstFrames != null) await WidgetsBinding.instance.endOfFrame;
       }
-      animation?.dispose();
+      firstFrames?.dispose();
     }
   }
 
   Future<void> _requestExit() async {
-    if (_confirmingExit || _exporting || _choosingExportFormat || _allowExit) {
+    if (_confirmingExit || _exporting || _confirmingGifExport || _allowExit) {
       return;
     }
     _confirmingExit = true;
@@ -1783,8 +1741,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         ),
       );
       _selectedLayerId = id;
-      _selectedIconSectionIndex = null;
-      _selectedIconRowIndex = null;
       _selectedTextPart = null;
     });
   }
@@ -1849,8 +1805,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
           ),
         );
         _selectedLayerId = _draftShapeId;
-        _selectedIconSectionIndex = null;
-        _selectedIconRowIndex = null;
         _selectedTextPart = null;
       } else {
         final layer = doc.layerById(_draftShapeId!);
@@ -1881,6 +1835,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     // This also protects fields in any inline or future editor controls.
     if (_editingTextLayerId != null ||
         primaryFocus == _textFocusNode ||
+        primaryFocus == _textContentFocusNode ||
         primaryFocus?.context?.findAncestorWidgetOfExactType<EditableText>() !=
             null) {
       return false;
@@ -1905,7 +1860,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         !HardwareKeyboard.instance.isControlPressed &&
         !HardwareKeyboard.instance.isMetaPressed &&
         !HardwareKeyboard.instance.isAltPressed) {
-      if (_editingTextLayerId != null || _textFocusNode.hasFocus) {
+      if (_editingTextLayerId != null ||
+          _textFocusNode.hasFocus ||
+          _textContentFocusNode.hasFocus) {
         return KeyEventResult.ignored;
       }
       if (_selectedLayerId == null) return KeyEventResult.ignored;
@@ -1966,6 +1923,8 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         final useMobilePrompt = useMobilePreviewGeneratorNarrowPrompt(
           platform: theme.platform,
         );
+        final showWorkspace =
+            widthAvailable && !_loading && _error == null && _document != null;
 
         return PopScope<Object?>(
           canPop: _allowExit,
@@ -2006,50 +1965,12 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
               focusNode: _focusNode,
               autofocus: true,
               child: Scaffold(
-                appBar: AppBar(
-                  leading: BackButton(
-                    key: const ValueKey('previewGeneratorBackButton'),
-                    onPressed: _requestExit,
-                  ),
-                  title: Text(
-                    _t('previewGenerator', 'Image Preview Generator'),
-                  ),
-                  actions: widthAvailable
-                      ? [
-                          IconButton(
-                            tooltip: '${_t('previewGenUndo', 'Undo')} (Ctrl+Z)',
-                            onPressed: (_canUndoText || _undoSnapshot != null)
-                                ? _undo
-                                : null,
-                            icon: const Icon(Icons.undo),
-                          ),
-                          IconButton(
-                            tooltip: '${_t('previewGenRedo', 'Redo')} (Ctrl+Y)',
-                            onPressed: (_canRedoText || _redoSnapshot != null)
-                                ? _redo
-                                : null,
-                            icon: const Icon(Icons.redo),
-                          ),
-                          IconButton(
-                            tooltip: _t('previewGenExport', 'Export image'),
-                            onPressed:
-                                (_loading || _exporting || _document == null)
-                                ? null
-                                : _export,
-                            icon: _exporting
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : const Icon(Icons.save_alt),
-                          ),
-                        ]
-                      : null,
-                ),
-                body: widthAvailable
+                appBar: showWorkspace
+                    ? null
+                    : _buildGeneratorAppBar(showActions: widthAvailable),
+                body: showWorkspace
+                    ? SafeArea(bottom: false, child: _buildGeneratorBody(theme))
+                    : widthAvailable
                     ? _buildGeneratorBody(theme)
                     : _buildNarrowWidthNotice(
                         theme,
@@ -2064,9 +1985,54 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
   }
 
   void _finishEditingForTransform() {
-    if (_editingTextLayerId != null || _textFocusNode.hasFocus) {
+    if (_editingTextLayerId != null ||
+        _textFocusNode.hasFocus ||
+        _textContentFocusNode.hasFocus) {
       _endTextEdit();
     }
+  }
+
+  AppBar _buildGeneratorAppBar({bool primary = true, bool showActions = true}) {
+    return AppBar(
+      key: const ValueKey('previewGeneratorTitleBar'),
+      primary: primary,
+      leading: BackButton(
+        key: const ValueKey('previewGeneratorBackButton'),
+        onPressed: _requestExit,
+      ),
+      title: Text(_t('previewGenerator', 'Image Preview Generator')),
+      actions: showActions
+          ? [
+              IconButton(
+                tooltip: '${_t('previewGenUndo', 'Undo')} (Ctrl+Z)',
+                onPressed: (_canUndoText || _undoSnapshot != null)
+                    ? _undo
+                    : null,
+                icon: const Icon(Icons.undo),
+              ),
+              IconButton(
+                tooltip: '${_t('previewGenRedo', 'Redo')} (Ctrl+Y)',
+                onPressed: (_canRedoText || _redoSnapshot != null)
+                    ? _redo
+                    : null,
+                icon: const Icon(Icons.redo),
+              ),
+              IconButton(
+                tooltip: _t('previewGenExport', 'Export image'),
+                onPressed: (_loading || _exporting || _document == null)
+                    ? null
+                    : _export,
+                icon: _exporting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save_alt),
+              ),
+            ]
+          : null,
+    );
   }
 
   Widget _buildGeneratorBody(ThemeData theme) {
@@ -2075,6 +2041,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     if (_document == null) return const SizedBox.shrink();
 
     return PreviewEditorWorkspace(
+      toolbarHeader: _buildGeneratorAppBar(primary: false),
       toolbar: _buildManualToolbar(theme),
       canvasZoomLabel: _t('previewGenCanvasZoom'),
       fitCanvasLabel: _t('previewGenFitCanvas'),
@@ -2096,11 +2063,34 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
               interactive: true,
               tool: _tool,
               selectedLayerId: _exporting ? null : _selectedLayerId,
-              editingTextLayerId: _editingTextLayerId,
-              selectedIconSectionIndex: _selectedIconSectionIndex,
-              selectedIconRowIndex: _selectedIconRowIndex,
-              iconRowResizeLabel: _t('previewGenIconSize', 'Icon size'),
+              editingTextLayerId: _editingTextInToolbar
+                  ? null
+                  : _editingTextLayerId,
               selectedTextPart: _selectedTextPart,
+              selectedIconSectionIndex: _exporting
+                  ? null
+                  : _selectedIconSectionIndex,
+              selectedIconRowIndex: _exporting ? null : _selectedIconRowIndex,
+              iconRowResizeLabel: _t('previewGenIconSize', 'Icon size'),
+              onSelectIconRow: (layerId, sectionIndex, rowIndex) {
+                _endTextEdit();
+                setState(() {
+                  _selectedLayerId = layerId;
+                  _selectedTextPart = null;
+                  _draftShapeId = null;
+                  _syncTextController();
+                  _selectedIconSectionIndex = sectionIndex;
+                  _selectedIconRowIndex = rowIndex;
+                });
+                _restoreCanvasFocus();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final controlContext = _iconRowControlKey.currentContext;
+                  if (!mounted || controlContext == null) return;
+                  Scrollable.ensureVisible(controlContext, alignment: 0);
+                });
+              },
+              onIconRowScaled: _resizeIconRow,
+              onIconRowResizeStarted: _pushHistory,
               drawColor: _drawColor,
               drawStrokeWidth: _drawStrokeWidth,
               boundaryKey: _boundaryKey,
@@ -2118,20 +2108,6 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                 }
                 setState(() {
                   _selectedLayerId = id;
-                  _selectedIconSectionIndex = null;
-                  _selectedIconRowIndex = null;
-                  _selectedTextPart = null;
-                  _draftShapeId = null;
-                  _syncTextController();
-                });
-                _restoreCanvasFocus();
-              },
-              onSelectIconSection: (layerId, index) {
-                _endTextEdit();
-                setState(() {
-                  _selectedLayerId = layerId;
-                  _selectedIconSectionIndex = index;
-                  _selectedIconRowIndex = null;
                   _selectedTextPart = null;
                   _draftShapeId = null;
                   _syncTextController();
@@ -2142,31 +2118,11 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                 _endTextEdit();
                 setState(() {
                   _selectedLayerId = selection.layerId;
-                  _selectedIconSectionIndex = null;
-                  _selectedIconRowIndex = null;
                   _selectedTextPart = selection;
                   _draftShapeId = null;
                   _syncTextController();
                 });
                 _restoreCanvasFocus();
-              },
-              onSelectIconRow: (layerId, sectionIndex, rowIndex) {
-                _endTextEdit();
-                setState(() {
-                  _selectedLayerId = layerId;
-                  _selectedIconSectionIndex = sectionIndex;
-                  _selectedIconRowIndex = rowIndex;
-                  _selectedTextPart = null;
-                  _draftShapeId = null;
-                  _syncTextController();
-                });
-                _restoreCanvasFocus();
-                _showIconRowControls();
-              },
-              onIconRowScaled: _resizeIconRow,
-              onIconRowResizeStarted: _pushHistory,
-              onIconSectionScaled: (layerId, index, iconSize) {
-                _resizeIconSection(layerId, index, iconSize);
               },
               onLayerMoved: (id, bounds) {
                 final layer = _document?.layerById(id);
@@ -2254,8 +2210,13 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     final selected = _selectedLayer();
     final textLayer = _selectedTextLayer();
     final iconGrid = _selectedIconGridLayer();
-    final selectedIconSection = _selectedIconSection();
     final selectedIconRow = _selectedIconRow();
+    final iconSections = selected?.kind == PreviewLayerKind.iconGrid
+        ? previewEffectiveSections(selected!)
+        : const <PreviewIconSection>[];
+    final selectedIconSize = iconSections.isEmpty
+        ? 48.0
+        : iconSections.first.iconSize;
     final selectedText = _selectedTextValue();
     final activeTextStyle = _activeSelectedTextStyle();
     final selectedTextAlign = _selectedTextAlign();
@@ -2495,25 +2456,21 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                   ),
                 ),
                 if (selected != null) ...[
-                  if (selectedIconSection != null && selectedIconRow == null)
+                  if (selected.kind == PreviewLayerKind.iconGrid &&
+                      selectedIconRow == null &&
+                      selectedText == null)
                     _labeledSlider(
+                      key: const ValueKey('previewIconGroupSize'),
                       label: _t('previewGenIconSize', 'Icon size'),
-                      value: selectedIconSection.iconSize.clamp(20, 152),
+                      value: selectedIconSize.clamp(20, 152),
                       min: 20,
                       max: 152,
                       divisions: 66,
-                      valueLabel: selectedIconSection.iconSize
-                          .round()
-                          .toString(),
-                      onChanged: (value) {
-                        _resizeIconSection(
-                          selected.id,
-                          _selectedIconSectionIndex!,
-                          value,
-                        );
-                      },
-                    )
-                  else if (selectedIconRow == null &&
+                      valueLabel: selectedIconSize.round().toString(),
+                      onChanged: (value) =>
+                          _resizeIconGroup(selected.id, value),
+                    ),
+                  if (selectedIconRow == null &&
                       selectedText == null &&
                       selected.kind != PreviewLayerKind.text &&
                       selected.kind != PreviewLayerKind.image)
@@ -2604,20 +2561,27 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                 ],
               ],
             ),
-            if (selectedText != null && textLayer == null) ...[
+            if (selectedText != null) ...[
               const SizedBox(height: 8),
-              TextField(
-                key: const ValueKey('previewTextContentField'),
-                controller: _textContentController,
-                focusNode: _textFocusNode,
-                decoration: InputDecoration(
-                  labelText: _t('previewGenTextContent', 'Text'),
-                  isDense: true,
+              SizedBox(
+                key: _textContentKey,
+                child: TextField(
+                  key: const ValueKey('previewTextContentField'),
+                  controller: _textContentController,
+                  focusNode: _textContentFocusNode,
+                  style: theme.textTheme.bodyLarge,
+                  minLines: 1,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: _t('previewGenTextContent', 'Text'),
+                    isDense: true,
+                  ),
+                  onChanged: (value) {
+                    if (textLayer != null) return;
+                    if (_undoSnapshot == null) _pushHistory();
+                    setState(() => _setSelectedText(value));
+                  },
                 ),
-                onChanged: (value) {
-                  if (_undoSnapshot == null) _pushHistory();
-                  setState(() => _setSelectedText(value));
-                },
               ),
             ],
             if (iconGrid != null) ...[

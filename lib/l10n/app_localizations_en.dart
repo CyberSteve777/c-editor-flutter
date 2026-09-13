@@ -886,7 +886,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get targetWaveIndexHelper =>
-      'Drag along the column of unchecked boxes to quickly select multiple waves. Start dragging from a checked box to deselect multiple waves. When copying references, waves that already contain this event are automatically skipped.';
+      'When copying references, waves that already contain this event are automatically skipped.';
 
   @override
   String get moveToWaveIndex => 'Move to wave number';
