@@ -30,6 +30,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previewTabGridItems => 'Grid Items';
 
   @override
+  String get overviewPresetPlants => 'Preset plants';
+
+  @override
+  String get overviewPresetZombies => 'Preset zombies';
+
+  @override
+  String get overviewConveyorPlants => 'Conveyor plants';
+
+  @override
+  String get overviewLawn => 'Lawn';
+
+  @override
   String get sunBombFalling => 'Sun Bombs';
 
   @override

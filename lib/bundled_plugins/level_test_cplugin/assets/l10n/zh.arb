@@ -1,7 +1,7 @@
 {
   "@@locale": "zh",
-  "pluginName": "关卡测试包制作器",
-  "pluginDescription": "从关卡制作测试包；若未找到 .rsb.smf 文件，可从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf。",
+  "pluginName": "关卡测试包",
+  "pluginDescription": "将自制关卡导入游戏数据包，以便在游戏内进行测试\n若工作区内未找到数据包 (.rsb.smf) 文件，也可直接从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf",
   "levelTestingMod": "关卡测试包",
   "dynamicOfferTitle": "要下载数据包吗？",
   "dynamicOfferBody": "工作区中未找到 .rsb.smf 文件。\n\n是否从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf？",

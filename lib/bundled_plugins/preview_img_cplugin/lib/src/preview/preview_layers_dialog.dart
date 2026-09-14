@@ -2,6 +2,7 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 
 import 'preview_document.dart';
+import 'preview_picker_scroll_area.dart';
 
 /// Lists the complete render order front-to-back, including the background.
 /// [onReorder] receives a bottom-to-top permutation and should apply it to [doc]
@@ -100,12 +101,12 @@ class _PreviewLayersDialogState extends State<_PreviewLayersDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Flexible(
-                child: Scrollbar(
+                child: PreviewPickerScrollArea(
+                  scrollbarKey: const ValueKey('previewLayersScrollbar'),
                   controller: _scrollController,
-                  thumbVisibility: true,
-                  child: ReorderableListView.builder(
+                  builder: (controller) => ReorderableListView.builder(
                     key: const ValueKey('previewLayersList'),
-                    scrollController: _scrollController,
+                    scrollController: controller,
                     shrinkWrap: true,
                     buildDefaultDragHandles: false,
                     padding: const EdgeInsets.all(12),

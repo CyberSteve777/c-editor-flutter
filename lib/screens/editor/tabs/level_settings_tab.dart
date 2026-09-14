@@ -840,11 +840,14 @@ class _ReorderableModuleTile extends StatelessWidget {
                       style: titleStyle,
                     ),
                     if (isCore) ...[
-                      Text(
-                        info.description,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall,
+                      Tooltip(
+                        message: info.description,
+                        child: Text(
+                          info.description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall,
+                        ),
                       ),
                       Text(info.alias, style: theme.textTheme.bodySmall),
                     ],

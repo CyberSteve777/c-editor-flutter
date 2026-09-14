@@ -6,8 +6,8 @@ class PreviewStickerPickerSession {
 
   final _scrollOffsets = <(String?, String), double>{};
 
-  double scrollOffsetFor(String? tag, String query) =>
-      _scrollOffsets[(tag, query)] ?? 0;
+  double scrollOffsetFor(String? tag, String query, {double fallback = 0}) =>
+      _scrollOffsets[(tag, query)] ?? fallback;
 
   void rememberScrollOffset(String? tag, String query, double offset) {
     if (offset.isFinite) {

@@ -196,7 +196,8 @@ void main() {
       'previewGenProtect': 'Endangered targets',
       'previewGenPresetLayout': 'Preset layout',
       'previewFeature_vasebreaker': 'Vasebreaker',
-      'previewPrePlaced': 'Preset Layout',
+      'previewSeedBank': 'Seed Bank',
+      'previewIZombieSeedBank': 'Seed Bank (I, Zombie)',
     };
     for (final entry in expectedEnglish.entries) {
       expect(lookupPluginArbMessage(readAsset, 'en', entry.key), entry.value);
@@ -204,7 +205,10 @@ void main() {
     for (final locale in _locales) {
       for (final key in const [
         'previewGenVaseContent',
+        'previewGenProtect',
         'previewGenPresetLayout',
+        'previewSeedBank',
+        'previewIZombieSeedBank',
       ]) {
         expect(
           lookupPluginArbMessage(readAsset, locale, key),
@@ -214,6 +218,25 @@ void main() {
       }
     }
   });
+
+  test(
+    'seed bank source labels follow main app terminology in all locales',
+    () {
+      for (final locale in _locales) {
+        final appMessages = parsePluginArb(
+          File('assets/l10n/app_$locale.arb').readAsStringSync(),
+        );
+        for (final key in const ['previewSeedBank', 'previewIZombieSeedBank']) {
+          expect(appMessages[key], isNotNull, reason: '$locale: $key');
+          expect(
+            lookupPluginArbMessage(readAsset, locale, key),
+            appMessages[key],
+            reason: '$locale: $key must retain the app seed bank terminology',
+          );
+        }
+      }
+    },
+  );
 
   test('composer defaults use the same source subtitles as localized UI', () {
     final composer = PreviewAutoComposer(
@@ -226,6 +249,11 @@ void main() {
     expect(composer.vasebreakerLabel, messages['en']!['previewGenVaseContent']);
     expect(composer.protectLabel, messages['en']!['previewGenProtect']);
     expect(composer.prePlacedLabel, messages['en']!['previewGenPresetLayout']);
+    expect(composer.seedBankLabel, messages['en']!['previewSeedBank']);
+    expect(
+      composer.zombieSeedBankLabel,
+      messages['en']!['previewIZombieSeedBank'],
+    );
   });
 
   test(

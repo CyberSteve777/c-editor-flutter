@@ -469,6 +469,11 @@ class _EventSelectionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final accentColor = isDark ? meta.darkColor : meta.color;
+    final description = EventSelectionScreen.resolveEventDescription(
+      context,
+      meta,
+      l10n,
+    );
 
     return Card(
       elevation: 2,
@@ -515,17 +520,16 @@ class _EventSelectionCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      EventSelectionScreen.resolveEventDescription(
-                        context,
-                        meta,
-                        l10n,
+                    Tooltip(
+                      message: description,
+                      child: Text(
+                        description,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

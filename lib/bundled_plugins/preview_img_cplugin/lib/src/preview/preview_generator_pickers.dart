@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/widgets/editor_components.dart' show EditorOptionTile;
 
 import 'preview_document.dart';
+import 'preview_picker_scroll_area.dart';
 
 /// Keeps every figure reachable on short landscape displays.
 Future<(PreviewShapeKind, bool)?> showPreviewFiguresPicker({
@@ -16,39 +17,43 @@ Future<(PreviewShapeKind, bool)?> showPreviewFiguresPicker({
   ),
   builder: (ctx) => SafeArea(
     top: false,
-    child: SingleChildScrollView(
-      key: const ValueKey('previewFiguresScroll'),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Text(
-              t('previewTool_figures', 'Figures'),
-              style: Theme.of(ctx).textTheme.titleLarge,
-            ),
-          ),
-          for (final figure in [
-            (PreviewShapeKind.rect, false, Icons.crop_square, 'Rectangle'),
-            (PreviewShapeKind.oval, false, Icons.circle_outlined, 'Oval'),
-            (PreviewShapeKind.line, false, Icons.show_chart, 'Line'),
-            (PreviewShapeKind.star, false, Icons.star_border, 'Star'),
-            (PreviewShapeKind.rect, true, Icons.square, 'Filled rectangle'),
-            (PreviewShapeKind.oval, true, Icons.circle, 'Filled oval'),
-            (PreviewShapeKind.star, true, Icons.star, 'Filled star'),
-          ])
-            EditorOptionTile(
-              key: ValueKey('previewFigure-${figure.$1.name}-${figure.$2}'),
-              leading: Icon(figure.$3),
-              title: Text(
-                t(
-                  'previewFigure_${figure.$1.name}${figure.$2 ? '_filled' : ''}',
-                  figure.$4,
-                ),
+    child: PreviewPickerScrollArea(
+      scrollbarKey: const ValueKey('previewFiguresScrollbar'),
+      builder: (controller) => SingleChildScrollView(
+        key: const ValueKey('previewFiguresScroll'),
+        controller: controller,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Text(
+                t('previewTool_figures', 'Figures'),
+                style: Theme.of(ctx).textTheme.titleLarge,
               ),
-              onTap: () => Navigator.pop(ctx, (figure.$1, figure.$2)),
             ),
-        ],
+            for (final figure in [
+              (PreviewShapeKind.rect, false, Icons.crop_square, 'Rectangle'),
+              (PreviewShapeKind.oval, false, Icons.circle_outlined, 'Oval'),
+              (PreviewShapeKind.line, false, Icons.show_chart, 'Line'),
+              (PreviewShapeKind.star, false, Icons.star_border, 'Star'),
+              (PreviewShapeKind.rect, true, Icons.square, 'Filled rectangle'),
+              (PreviewShapeKind.oval, true, Icons.circle, 'Filled oval'),
+              (PreviewShapeKind.star, true, Icons.star, 'Filled star'),
+            ])
+              EditorOptionTile(
+                key: ValueKey('previewFigure-${figure.$1.name}-${figure.$2}'),
+                leading: Icon(figure.$3),
+                title: Text(
+                  t(
+                    'previewFigure_${figure.$1.name}${figure.$2 ? '_filled' : ''}',
+                    figure.$4,
+                  ),
+                ),
+                onTap: () => Navigator.pop(ctx, (figure.$1, figure.$2)),
+              ),
+          ],
+        ),
       ),
     ),
   ),
@@ -103,41 +108,57 @@ class _PreviewModuleInfoPickerDialogState
     });
     return AlertDialog(
       key: const ValueKey('previewModuleInfoPicker'),
-      scrollable: true,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      title: Text(widget.t('previewGenModuleInfo', 'Module info')),
       content: SizedBox(
         width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              key: const ValueKey('previewModuleInfoSearch'),
-              textAlignVertical: TextAlignVertical.center,
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
+        child: PreviewPickerScrollArea(
+          scrollbarKey: const ValueKey('previewModuleInfoScrollbar'),
+          builder: (controller) => SingleChildScrollView(
+            key: const ValueKey('previewModuleInfoScroll'),
+            controller: controller,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Text(
+                    widget.t('previewGenModuleInfo', 'Module info'),
+                    style: Theme.of(ctx).textTheme.headlineSmall,
+                  ),
                 ),
-                prefixIcon: const Icon(Icons.search),
-                prefixIconConstraints: const BoxConstraints(
-                  minWidth: 48,
-                  minHeight: 48,
+                TextField(
+                  key: const ValueKey('previewModuleInfoSearch'),
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                    prefixIcon: const Icon(Icons.search),
+                    prefixIconConstraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
+                    hintText: widget.t('previewGenModuleInfoSearch', 'Search'),
+                  ),
+                  onChanged: (value) => setState(() => _query = value),
                 ),
-                hintText: widget.t('previewGenModuleInfoSearch', 'Search'),
-              ),
-              onChanged: (value) => setState(() => _query = value),
+                const SizedBox(height: 8),
+                for (final objClass in filtered)
+                  EditorOptionTile(
+                    key: ValueKey('previewModuleInfo-$objClass'),
+                    title: Text(widget.titleForClass(ctx, objClass)),
+                    subtitle: Text(
+                      objClass,
+                      style: const TextStyle(fontSize: 11),
+                    ),
+                    onTap: () => Navigator.pop(ctx, objClass),
+                  ),
+              ],
             ),
-            const SizedBox(height: 8),
-            for (final objClass in filtered)
-              EditorOptionTile(
-                key: ValueKey('previewModuleInfo-$objClass'),
-                title: Text(widget.titleForClass(ctx, objClass)),
-                subtitle: Text(objClass, style: const TextStyle(fontSize: 11)),
-                onTap: () => Navigator.pop(ctx, objClass),
-              ),
-          ],
+          ),
         ),
       ),
       actions: [
