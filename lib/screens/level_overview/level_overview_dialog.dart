@@ -1213,7 +1213,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             if (isDataEmpty) ...[
               if (method == 'preset')
                 Text(
-                  l10n.chooser,
+                  l10n.overviewSeedChooser,
                   style: TextStyle(
                     fontSize: 16,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -1221,7 +1221,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 )
               else if (!isZombieMode)
                 Text(
-                  l10n.chooser,
+                  l10n.overviewSeedChooser,
                   style: TextStyle(
                     fontSize: 16,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -1242,7 +1242,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             if (whiteList.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildPlantListSection(
-                l10n.whiteList,
+                l10n.overviewWhitelist,
                 whiteList,
                 _whiteListExpanded,
                 onToggle: () =>
@@ -1252,7 +1252,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             if (blackList.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildPlantListSection(
-                l10n.blackList,
+                l10n.overviewBlacklist,
                 blackList,
                 _blackListExpanded,
                 onToggle: () =>
@@ -1610,8 +1610,16 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 .where((id) => id.isNotEmpty)
                 .map(
                   (id) => showGridItemIcons
-                      ? GridItemIcon(id: id, size: 40)
-                      : UniversalIcon(id: id, size: 40, levelFile: levelFile),
+                      ? GridItemIcon(
+                          id: id,
+                          size: 40,
+                          levelFile: levelFile ?? widget.levelFile,
+                        )
+                      : UniversalIcon(
+                          id: id,
+                          size: 40,
+                          levelFile: levelFile ?? widget.levelFile,
+                        ),
                 ),
             if (canExpand && onToggle != null)
               IconButton(
@@ -1669,6 +1677,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                     id: entry.id,
                     size: 40,
                     suppressCustomBadge: entry.isDedicatedModuleItem,
+                    levelFile: widget.levelFile,
                   ),
                 ),
             if (canExpand && onToggle != null)
@@ -2924,8 +2933,13 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             col <= data.flowerPotEndColumn) {
           return Container(
             color: Colors.brown.withValues(alpha: 0.3),
-            child: const Center(
-              child: GridItemIcon(id: 'flowerpot', size: 18, isGrid: true),
+            child: Center(
+              child: GridItemIcon(
+                id: 'flowerpot',
+                size: 18,
+                isGrid: true,
+                levelFile: widget.levelFile,
+              ),
             ),
           );
         }
@@ -3272,7 +3286,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                   children: [
                     _legendDot(Colors.red),
                     Text(
-                      l10n.blackList,
+                      l10n.overviewBlacklist,
                       style: TextStyle(
                         fontSize: 11,
                         color: theme.colorScheme.onSurface.withValues(
@@ -3542,8 +3556,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     if (data == null) return const SizedBox.shrink();
 
     final title = l10n.guessWhoIAm;
-    final blackListTitle = l10n.plantBlackList;
-    final whiteListTitle = l10n.zombieWhiteList;
+    final blackListTitle = l10n.overviewPlantBlacklist;
+    final whiteListTitle = l10n.overviewZombieWhitelist;
     final weightLabel = l10n.zombieWeight;
     final levelLabel = l10n.plantLevelLabel;
 
@@ -5092,12 +5106,24 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 SizedBox(
                   width: 40,
                   height: 40,
-                  child: GridItemIcon(id: itemType, size: 40, isGrid: true),
+                  child: GridItemIcon(
+                    id: itemType,
+                    size: 40,
+                    isGrid: true,
+                    levelFile: widget.levelFile,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    ResourceNames.lookup(context, 'griditem_$itemType'),
+                    GridItemRepository.getByTypeName(itemType)?.source ==
+                                GridItemSource.custom &&
+                            !GridItemRepository.isRecognizedCustomGridItem(
+                              itemType,
+                              widget.levelFile,
+                            )
+                        ? itemType
+                        : ResourceNames.lookup(context, 'griditem_$itemType'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -5343,7 +5369,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         Padding(
           padding: const EdgeInsets.only(left: 4),
           child: Text(
-            '${l10n.reservedColumnCount}: ${data.reservedColumnCount}',
+            '${l10n.overviewReservedColumns}: ${data.reservedColumnCount}',
             style: TextStyle(
               fontSize: 12,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
@@ -5448,7 +5474,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         Padding(
           padding: const EdgeInsets.only(left: 4),
           child: Text(
-            '${l10n.reservedColumnCount}: ${data.reservedColumnCount}',
+            '${l10n.overviewReservedColumns}: ${data.reservedColumnCount}',
             style: TextStyle(
               fontSize: 12,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
@@ -6148,7 +6174,12 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     PvzLevelFile? levelFile,
   }) {
     if (activeTabIndex == 2) {
-      return GridItemIcon(id: id, size: size, isGrid: isGrid);
+      return GridItemIcon(
+        id: id,
+        size: size,
+        isGrid: isGrid,
+        levelFile: levelFile ?? widget.levelFile,
+      );
     }
     return UniversalIcon(
       id: id,

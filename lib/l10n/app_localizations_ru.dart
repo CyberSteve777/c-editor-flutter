@@ -42,6 +42,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get overviewLawn => 'Поле';
 
   @override
+  String get overviewWhitelist => 'Белый список';
+
+  @override
+  String get overviewBlacklist => 'Чёрный список';
+
+  @override
+  String get overviewPlantBlacklist => 'Чёрный список растений';
+
+  @override
+  String get overviewZombieWhitelist => 'Белый список зомби';
+
+  @override
+  String get overviewSeedChooser => 'Выбор семян';
+
+  @override
+  String get overviewReservedColumns => 'Зарезервированные столбцы';
+
+  @override
   String get sunBombFalling => 'Падают солнечные бомбы';
 
   @override

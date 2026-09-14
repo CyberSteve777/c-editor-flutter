@@ -54,7 +54,7 @@ void main() {
     expect(record.isBundled, isTrue);
   });
 
-  test('bundled plugins use manifest icon images like imported plugins', () {
+  test('bundled records retain the image declared in their manifest', () {
     final withIcon = bundledPluginRecord(
       manifest: CPluginManifest(
         format: CPluginManifest.expectedFormat,
