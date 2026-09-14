@@ -24,6 +24,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_overview/level_overview.dart';
+import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
@@ -156,10 +157,6 @@ import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 
-class _EditorEscapeIntent extends Intent {
-  const _EditorEscapeIntent();
-}
-
 typedef _EditorTopTabEntry = ({
   EditorTabType type,
   String? moduleRtid,
@@ -199,12 +196,7 @@ class _EditorScreenState extends State<EditorScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      widget.onRegisterBackHandler(() async {
-        if (context.read<EditorCubit>().state.hasChanges) {
-          return await _confirmLeave();
-        }
-        return true;
-      });
+      widget.onRegisterBackHandler(_onEditorBackRequested);
     });
   }
 
@@ -212,6 +204,28 @@ class _EditorScreenState extends State<EditorScreen> {
   void dispose() {
     widget.onRegisterBackHandler(null);
     super.dispose();
+  }
+
+  /// Shared by AppBar back and the app PopScope / Escape leave path.
+  /// Closes Overview / other modals before leaving the editor.
+  Future<bool> _onEditorBackRequested() async {
+    if (EscapeOverride.tryHandle?.call() == true) return false;
+    if (ModalGate.tryAbsorb()) return false;
+    if (popRouteAbove(context)) return false;
+    final navigator = Navigator.of(context, rootNavigator: true);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return false;
+    }
+    if (context.read<EditorCubit>().state.hasChanges) {
+      return await _confirmLeave();
+    }
+    return true;
+  }
+
+  Future<void> _leaveEditorIfAllowed() async {
+    final leave = await _onEditorBackRequested();
+    if (leave && mounted) widget.onBack();
   }
 
   static const _internalTagToModule = <String, String>{
@@ -3864,23 +3878,12 @@ class _EditorScreenState extends State<EditorScreen> {
         builder: (context, editorState) {
           final l10n = AppLocalizations.of(context);
           final editorTopTabs = _editorTopTabEntries();
-          final isDesktop =
-              Theme.of(context).platform == TargetPlatform.windows ||
-              Theme.of(context).platform == TargetPlatform.macOS ||
-              Theme.of(context).platform == TargetPlatform.linux;
           Widget body = Scaffold(
             appBar: AppBar(
               title: Text(_ec.fileName, overflow: TextOverflow.ellipsis),
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: () async {
-                  if (_ec.state.hasChanges) {
-                    final leave = await _confirmLeave();
-                    if (leave && mounted) widget.onBack();
-                  } else {
-                    widget.onBack();
-                  }
-                },
+                onPressed: _leaveEditorIfAllowed,
               ),
               actions: [
                 if (!useCompactActions) ...[
@@ -3976,7 +3979,7 @@ class _EditorScreenState extends State<EditorScreen> {
                       enabled: _ec.state.levelFile != null,
                       child: EditorPopupMenuTile(
                         enabled: _ec.state.levelFile != null,
-                        leading: const Icon(Icons.info_outline),
+                        leading: const Icon(Icons.visibility),
                         title: Text(l10n?.levelOverview ?? 'Level Overview'),
                       ),
                     ),
@@ -4280,30 +4283,9 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                   ),
           );
-          if (isDesktop) {
-            body = Shortcuts(
-              shortcuts: const {
-                SingleActivator(LogicalKeyboardKey.escape):
-                    _EditorEscapeIntent(),
-              },
-              child: Actions(
-                actions: {
-                  _EditorEscapeIntent: CallbackAction<_EditorEscapeIntent>(
-                    onInvoke: (_) async {
-                      if (_ec.state.hasChanges) {
-                        final leave = await _confirmLeave();
-                        if (leave && mounted) widget.onBack();
-                      } else {
-                        widget.onBack();
-                      }
-                      return null;
-                    },
-                  ),
-                },
-                child: body,
-              ),
-            );
-          }
+          // Desktop Escape is handled globally by _DesktopEscapeHandler in
+          // app.dart. A local Shortcuts binding here used to also fire and
+          // leave the editor in the same keypress after Overview closed.
           return body;
         },
       ),

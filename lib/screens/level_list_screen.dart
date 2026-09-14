@@ -3231,7 +3231,7 @@ class _FileItemRow extends StatelessWidget {
           PopupMenuItem(
             value: 'level_overview',
             child: _popupMenuTile(
-              icon: Icons.info_outline,
+              icon: Icons.visibility,
               label: l10n.levelOverview,
             ),
           ),

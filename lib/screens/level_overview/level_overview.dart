@@ -56,6 +56,7 @@ Future<void> showLevelOverviewDialog(
   if (!context.mounted) return;
   await showDialog<void>(
     context: context,
+    useRootNavigator: true,
     builder: (ctx) => EscapeClosesModal(
       child: LevelOverviewDialog(
         levelFile: levelFile,
@@ -63,7 +64,7 @@ Future<void> showLevelOverviewDialog(
         fileName: fileName,
         filePath: filePath,
         showOpenLevel: showOpenLevel,
-        onClose: () => Navigator.pop(ctx),
+        onClose: () => safeNavPop(ctx),
       ),
     ),
   );

@@ -65,6 +65,7 @@ class _DesktopEscapeHandlerState extends State<_DesktopEscapeHandler> {
     }
 
     if (EscapeOverride.tryHandle?.call() == true) return true;
+    if (ModalGate.tryAbsorb()) return true;
 
     // Credits/about/plugins use cubit navigation, not the Navigator stack.
     if (widget.currentScreen == AppScreen.about ||
@@ -73,7 +74,9 @@ class _DesktopEscapeHandlerState extends State<_DesktopEscapeHandler> {
       return true;
     }
 
-    final nav = Navigator.maybeOf(context);
+    if (popRouteAbove(context)) return true;
+
+    final nav = Navigator.maybeOf(context, rootNavigator: true);
     if (nav != null && nav.canPop()) {
       nav.pop();
       return true;
@@ -181,6 +184,17 @@ class _ZEditorAppState extends State<ZEditorApp> {
                   canPop: false,
                   onPopInvokedWithResult: (didPop, _) async {
                     if (didPop) return;
+                    if (EscapeOverride.tryHandle?.call() == true) return;
+                    if (ModalGate.tryAbsorb()) return;
+                    if (popRouteAbove(context)) return;
+                    final navigator = Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    );
+                    if (navigator.canPop()) {
+                      navigator.pop();
+                      return;
+                    }
                     if (nav.screen == AppScreen.levelList) {
                       SystemNavigator.pop();
                     } else if (nav.screen == AppScreen.editor &&
