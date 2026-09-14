@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
 import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugins/c_plugin_validator.dart';
@@ -986,14 +987,24 @@ class _PluginIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = plugin.iconImageProvider();
+    final bundledIcon = plugin.isBundled ? bundledPluginIcon(plugin.id) : null;
+    final image = bundledIcon == null ? plugin.iconImageProvider() : null;
     final scheme = Theme.of(context).colorScheme;
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: SizedBox(
         width: size,
         height: size,
-        child: image != null
+        child: bundledIcon != null
+            ? ColoredBox(
+                color: scheme.primaryContainer,
+                child: Icon(
+                  bundledIcon,
+                  size: size * 0.55,
+                  color: scheme.primary,
+                ),
+              )
+            : image != null
             ? Image(image: image, fit: BoxFit.cover)
             : ColoredBox(
                 color: scheme.surfaceContainerHighest,
