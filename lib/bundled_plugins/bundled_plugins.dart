@@ -21,7 +21,7 @@ List<CPluginPackageSpec> get bundledPlugins => [
   ),
   CPluginPackageSpec(
     id: kLevelTestingModPluginId,
-    packageRoot: 'lib/bundled_plugins/dynamic_fetch_cplugin',
+    packageRoot: 'lib/bundled_plugins/level_test_cplugin',
     initialize: level_test.initialize,
   ),
 ];
