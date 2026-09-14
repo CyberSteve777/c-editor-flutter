@@ -42,6 +42,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overviewLawn => 'Lawn';
 
   @override
+  String get overviewWhitelist => 'Whitelist';
+
+  @override
+  String get overviewBlacklist => 'Blacklist';
+
+  @override
+  String get overviewPlantBlacklist => 'Plant blacklist';
+
+  @override
+  String get overviewZombieWhitelist => 'Zombie whitelist';
+
+  @override
+  String get overviewSeedChooser => 'Choose your seeds';
+
+  @override
+  String get overviewReservedColumns => 'Reserved columns';
+
+  @override
   String get sunBombFalling => 'Sun Bombs';
 
   @override

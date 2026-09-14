@@ -154,7 +154,12 @@ class UniversalIcon extends StatelessWidget {
         (ReferenceRepository.instance.isLoaded &&
             ReferenceRepository.instance.isValidGridItem(clean));
     if (isKnownGridItem) {
-      return GridItemIcon(id: clean, size: size, isGrid: isGrid);
+      return GridItemIcon(
+        id: clean,
+        size: size,
+        isGrid: isGrid,
+        levelFile: levelFile,
+      );
     }
 
     // A resource that is not recognized as a plant, zombie, tool, boss, or
@@ -316,6 +321,7 @@ class GridItemIcon extends StatelessWidget {
   final double size;
   final bool isGrid;
   final bool suppressCustomBadge;
+  final PvzLevelFile? levelFile;
 
   const GridItemIcon({
     super.key,
@@ -323,25 +329,39 @@ class GridItemIcon extends StatelessWidget {
     this.size = 42,
     this.isGrid = false,
     this.suppressCustomBadge = false,
+    this.levelFile,
   });
 
   @override
   Widget build(BuildContext context) {
-    final path = GridItemRepository.getIconPath(id);
+    final item = GridItemRepository.getByTypeName(id);
+    // Custom presets can share their game type name with unrelated level
+    // definitions. Only use preset art when the actual properties match.
+    final isUnknownPreset =
+        levelFile != null &&
+        item?.source == GridItemSource.custom &&
+        !GridItemRepository.isRecognizedCustomGridItem(id, levelFile!);
+    final path = isUnknownPreset
+        ? 'assets/images/others/unknown.webp'
+        : GridItemRepository.getIconPath(id);
     final resourceKey = id.startsWith('Armrack')
         ? 'armrack_$id'
         : 'griditem_$id';
-    final tooltip = ResourceNames.lookup(context, resourceKey);
+    final tooltip = isUnknownPreset
+        ? id
+        : ResourceNames.lookup(context, resourceKey);
     final isPreset =
         !suppressCustomBadge &&
         !isGrid &&
-        GridItemRepository.getByTypeName(id)?.source == GridItemSource.custom;
+        !isUnknownPreset &&
+        item?.source == GridItemSource.custom;
 
     return SizedBox(
       width: size,
       height: size,
       child: Stack(
         clipBehavior: Clip.none,
+        alignment: Alignment.center,
         children: [
           _IconWrapper(
             id: id,
