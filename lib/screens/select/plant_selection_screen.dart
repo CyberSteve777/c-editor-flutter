@@ -811,6 +811,7 @@ class _PlantGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final iconPath = plant.iconAssetPath;
+    final name = ResourceNames.lookup(context, plant.name);
     final hasIcon = iconPath != null && iconPath.isNotEmpty;
 
     final borderColor = isSelected
@@ -894,25 +895,31 @@ class _PlantGridItem extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
-              Text(
-                ResourceNames.lookup(context, plant.name),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 9,
+              Tooltip(
+                message: name,
+                child: Text(
+                  name,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 9,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-              Text(
-                plant.id,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 8,
+              Tooltip(
+                message: plant.id,
+                child: Text(
+                  plant.id,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 8,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
