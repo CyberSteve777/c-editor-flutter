@@ -4,6 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
+import 'package:c_editor/widgets/selection_grid_confirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -113,6 +114,7 @@ Future<void> _open(
   );
   await tester.pumpAndSettle();
   expect(find.byType(GridView), findsOneWidget);
+  _expectFullViewport(tester);
   expect(tester.takeException(), isNull);
 }
 
@@ -124,6 +126,63 @@ Future<void> _scrollToEnd(WidgetTester tester) async {
   controller.jumpTo(controller.position.maxScrollExtent);
   await tester.pumpAndSettle();
   expect(controller.offset, closeTo(controller.position.maxScrollExtent, .01));
+}
+
+Finder _gridScrollable() => find.descendant(
+  of: find.byType(GridView),
+  matching: find.byType(Scrollable),
+);
+
+void _expectFullViewport(WidgetTester tester) {
+  final grid = tester.getRect(find.byType(GridView));
+  final available = tester.getRect(find.byType(SelectionGridConfirmation));
+  expect(grid, available, reason: 'Confirmation must not reserve a fixed row');
+  expect(
+    _gridController(tester).position.viewportDimension,
+    closeTo(grid.height, .01),
+  );
+  expect(find.byKey(_confirmationRow), findsNothing);
+  final button = find.byType(FloatingActionButton);
+  if (button.evaluate().isNotEmpty) {
+    expect(button.hitTestable(), findsOneWidget);
+    expect(grid.contains(tester.getRect(button).center), isTrue);
+  }
+  expect(tester.takeException(), isNull);
+}
+
+Future<void> _exerciseScrollingViewport(WidgetTester tester) async {
+  final controller = _gridController(tester);
+  controller.jumpTo(0);
+  await tester.pumpAndSettle();
+  final viewport = tester.getRect(find.byType(GridView));
+  final scrollState = tester.state<ScrollableState>(_gridScrollable());
+  final button = find.byType(FloatingActionButton);
+  final buttonRect = button.evaluate().isEmpty ? null : tester.getRect(button);
+  _expectFullViewport(tester);
+  // Reach the middle and end, scroll back up, then finish at the end again.
+  // None of these movements may consume viewport height or move the button.
+  for (final fraction in [.5, 1.0, .5, 1.0]) {
+    if (fraction == 1) {
+      await _scrollToEnd(tester);
+    } else {
+      controller.jumpTo(controller.position.maxScrollExtent * fraction);
+      await tester.pumpAndSettle();
+    }
+    _expectFullViewport(tester);
+    expect(tester.getRect(find.byType(GridView)), viewport);
+    expect(tester.state<ScrollableState>(_gridScrollable()), same(scrollState));
+    if (buttonRect != null) expect(tester.getRect(button), buttonRect);
+  }
+}
+
+void _expectTailBelowButton(WidgetTester tester, int count) {
+  expect(
+    tester.getRect(_lastCard(count)).bottom,
+    lessThanOrEqualTo(
+      tester.getRect(find.byType(FloatingActionButton)).top - 16 + .01,
+    ),
+    reason: 'The final content must finish above the floating confirmation',
+  );
 }
 
 Finder _lastCard(int count) => find
@@ -181,7 +240,7 @@ void main() {
   for (final isPlant in [true, false]) {
     final kind = isPlant ? 'plant' : 'zombie';
     testWidgets(
-      '$kind complete final row puts confirmation below the grid and submits the last icon',
+      '$kind complete final row clears confirmation at the end without shrinking the viewport',
       (tester) async {
         List<String>? submitted;
         await _open(
@@ -192,17 +251,13 @@ void main() {
           onMultiSelected: (ids) => submitted = ids,
         );
         // At 360 dp this grid has five columns, so 50 ends at the right edge.
-        expect(find.byKey(_confirmationRow), findsOneWidget);
         expect(
           _gridController(tester).position.maxScrollExtent,
           greaterThan(0),
         );
-        await _scrollToEnd(tester);
+        await _exerciseScrollingViewport(tester);
         _expectLastItemClear(tester, isPlant: isPlant, count: 50);
-        expect(
-          tester.getRect(find.byKey(_confirmationRow)).top,
-          greaterThanOrEqualTo(tester.getRect(find.byType(GridView)).bottom),
-        );
+        _expectTailBelowButton(tester, 50);
         await _selectAndConfirm(tester, isPlant: isPlant, count: 50);
         expect(submitted, [_id(isPlant, 49)]);
       },
@@ -222,10 +277,15 @@ void main() {
           );
           expect(find.byKey(_confirmationRow), findsNothing);
           expect(
+            tester.widget<GridView>(find.byType(GridView)).padding,
+            const EdgeInsets.all(12),
+            reason: 'A clear final row must not add trailing empty space',
+          );
+          expect(
             _gridController(tester).position.maxScrollExtent,
             count == 1 ? equals(0) : greaterThan(0),
           );
-          await _scrollToEnd(tester);
+          await _exerciseScrollingViewport(tester);
           _expectLastItemClear(tester, isPlant: isPlant, count: count);
           final gridRect = tester.getRect(find.byType(GridView));
           final confirmationRect = tester.getRect(
@@ -254,7 +314,11 @@ void main() {
             onMultiSelected: (ids) => submitted = ids,
           );
           expect(find.byKey(_confirmationRow), findsNothing);
-          await _scrollToEnd(tester);
+          expect(
+            tester.widget<GridView>(find.byType(GridView)).padding,
+            const EdgeInsets.all(12),
+          );
+          await _exerciseScrollingViewport(tester);
           _expectLastItemClear(tester, isPlant: isPlant, count: 41);
           final button = tester.getRect(find.byType(FloatingActionButton));
           expect(button.left, greaterThanOrEqualTo(44));
@@ -270,7 +334,7 @@ void main() {
       );
 
       testWidgets(
-        '$kind $direction safe-area offset moves confirmation into an occupied final-row cell',
+        '$kind $direction safe-area offset clears the occupied final row without a fixed row',
         (tester) async {
           List<String>? submitted;
           await _open(
@@ -286,13 +350,10 @@ void main() {
           );
           // The final row leaves the outermost cell empty. A 44 dp safe area
           // shifts the would-be floating button into the adjacent occupied cell.
-          expect(find.byKey(_confirmationRow), findsOneWidget);
-          await _scrollToEnd(tester);
+          await _exerciseScrollingViewport(tester);
           _expectLastItemClear(tester, isPlant: isPlant, count: 49);
-          final row = tester.getRect(find.byKey(_confirmationRow));
-          final grid = tester.getRect(find.byType(GridView));
+          _expectTailBelowButton(tester, 49);
           final button = tester.getRect(find.byType(FloatingActionButton));
-          expect(row.top, greaterThanOrEqualTo(grid.bottom));
           expect(
             rtl ? button.left : 360 - button.right,
             greaterThanOrEqualTo(44),
@@ -317,10 +378,11 @@ void main() {
         );
         // Only the leftmost final-row cell is occupied. The bottom safe area
         // raises the floating button far enough to cover the preceding full row.
-        expect(find.byKey(_confirmationRow), findsOneWidget);
-        await _scrollToEnd(tester);
+        await _exerciseScrollingViewport(tester);
         _expectLastItemClear(tester, isPlant: isPlant, count: 41);
         _expectLastItemClear(tester, isPlant: isPlant, count: 40);
+        _expectTailBelowButton(tester, 41);
+        _expectTailBelowButton(tester, 40);
         final button = tester.getRect(find.byType(FloatingActionButton));
         expect(button.bottom, lessThanOrEqualTo(760 - 68));
         await _selectAndConfirm(tester, isPlant: isPlant, count: 40);
@@ -347,11 +409,11 @@ void main() {
         final originalScrollState = tester.state<ScrollableState>(
           gridScrollable,
         );
-        await _scrollToEnd(tester);
+        await _exerciseScrollingViewport(tester);
         for (final scenario in [
-          (size: const Size(720, 420), needsRow: false),
-          (size: const Size(430, 760), needsRow: false),
-          (size: const Size(360, 760), needsRow: true),
+          (size: const Size(720, 420), needsClearance: false),
+          (size: const Size(430, 760), needsClearance: false),
+          (size: const Size(360, 760), needsClearance: true),
         ]) {
           tester.view.physicalSize = scenario.size;
           await tester.pumpAndSettle();
@@ -360,12 +422,20 @@ void main() {
             tester.state<ScrollableState>(gridScrollable),
             same(originalScrollState),
           );
+          final padding = tester
+              .widget<GridView>(find.byType(GridView))
+              .padding!;
           expect(
-            find.byKey(_confirmationRow),
-            scenario.needsRow ? findsOneWidget : findsNothing,
+            padding
+                .resolve(
+                  Directionality.of(tester.element(find.byType(GridView))),
+                )
+                .bottom,
+            scenario.needsClearance ? greaterThan(12) : equals(12),
           );
-          await _scrollToEnd(tester);
+          await _exerciseScrollingViewport(tester);
           _expectLastItemClear(tester, isPlant: isPlant, count: 50);
+          if (scenario.needsClearance) _expectTailBelowButton(tester, 50);
         }
         await _selectAndConfirm(tester, isPlant: isPlant, count: 50);
         expect(submitted, [_id(isPlant, 49)]);
@@ -386,7 +456,11 @@ void main() {
       );
       expect(find.byKey(_confirmationRow), findsNothing);
       expect(find.byType(FloatingActionButton), findsNothing);
-      await _scrollToEnd(tester);
+      expect(
+        tester.widget<GridView>(find.byType(GridView)).padding,
+        const EdgeInsets.all(12),
+      );
+      await _exerciseScrollingViewport(tester);
       final lastIcon = _lastIcon(isPlant, 50);
       expect(lastIcon.hitTestable(), findsOneWidget);
       await tester.tap(lastIcon);

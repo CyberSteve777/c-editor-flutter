@@ -721,7 +721,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
               itemCount: plants.length,
               gridDelegate: gridDelegate,
               confirmation: confirmation,
-              child: !_isLoaded
+              builder: (context, gridPadding) => !_isLoaded
                   ? const Center(child: CircularProgressIndicator())
                   : plants.isEmpty
                   ? Center(
@@ -748,7 +748,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                     )
                   : GridView.builder(
                       controller: _scrollController,
-                      padding: const EdgeInsets.all(12),
+                      padding: gridPadding,
                       gridDelegate: gridDelegate,
                       itemCount: plants.length,
                       itemBuilder: (_, i) {

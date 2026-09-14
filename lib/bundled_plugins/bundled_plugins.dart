@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/main.dart'
     as level_test;
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/main.dart'
@@ -26,11 +24,3 @@ List<CPluginPackageSpec> get bundledPlugins => [
     initialize: level_test.initialize,
   ),
 ];
-
-/// Built-in plugins use Flutter icons matching their editor entries.
-/// Imported plugins use the image declared in their own manifest.
-IconData? bundledPluginIcon(String pluginId) => switch (pluginId) {
-  kLevelPreviewPluginId => Icons.image,
-  kLevelTestingModPluginId => Icons.inventory_2,
-  _ => null,
-};

@@ -528,7 +528,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
               itemCount: zombies.length,
               gridDelegate: gridDelegate,
               confirmation: confirmation,
-              child: !_isLoaded
+              builder: (context, gridPadding) => !_isLoaded
                   ? const Center(child: CircularProgressIndicator())
                   : zombies.isEmpty
                   ? Center(
@@ -555,7 +555,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                     )
                   : GridView.builder(
                       controller: _scrollController,
-                      padding: const EdgeInsets.all(12),
+                      padding: gridPadding,
                       gridDelegate: gridDelegate,
                       itemCount: zombies.length,
                       itemBuilder: (_, i) {

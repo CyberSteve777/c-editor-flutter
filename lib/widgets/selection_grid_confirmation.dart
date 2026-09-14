@@ -3,18 +3,18 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-/// Gives confirmation its own row when it would cover items at the grid's end.
+/// Keeps confirmation floating and clears covered items at the grid's end.
 class SelectionGridConfirmation extends StatelessWidget {
   const SelectionGridConfirmation({
     super.key,
-    required this.child,
+    required this.builder,
     required this.itemCount,
     required this.gridDelegate,
     this.gridPadding = const EdgeInsets.all(12),
     this.confirmation,
   });
 
-  final Widget child;
+  final Widget Function(BuildContext context, EdgeInsets gridPadding) builder;
   final int itemCount;
   final SliverGridDelegate gridDelegate;
   final EdgeInsets gridPadding;
@@ -26,7 +26,7 @@ class SelectionGridConfirmation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final button = confirmation;
-    if (button == null) return child;
+    if (button == null) return builder(context, gridPadding);
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = constraints.biggest;
@@ -41,7 +41,7 @@ class SelectionGridConfirmation extends StatelessWidget {
           _buttonSize,
           _buttonSize,
         );
-        var needsRow = false;
+        var needsClearance = false;
         if (itemCount > 0 && size.isFinite) {
           // Use the same sliver geometry as the grid, including its RTL layout.
           final layout = gridDelegate.getLayout(
@@ -77,41 +77,33 @@ class SelectionGridConfirmation extends StatelessWidget {
             );
             if (itemRect.bottom <= buttonRect.top) break;
             if (itemRect.overlaps(buttonRect)) {
-              needsRow = true;
+              needsClearance = true;
               break;
             }
           }
         }
+        // Add clearance inside the scrollable content, so it enters view only
+        // at the end and never reduces the grid's viewport. Always detect
+        // collisions using the original padding to avoid layout feedback.
+        final extraBottom = needsClearance
+            ? math.max(
+                0.0,
+                size.height - buttonRect.top + _margin - gridPadding.bottom,
+              )
+            : 0.0;
+        final effectivePadding = gridPadding.copyWith(
+          bottom: gridPadding.bottom + extraBottom,
+        );
         return Stack(
           fit: StackFit.expand,
           children: [
-            // Keep the grid under the same parents when resizing switches the
-            // confirmation position, so its scroll state remains attached.
-            Column(
-              children: [
-                Expanded(child: child),
-                if (needsRow)
-                  SafeArea(
-                    key: const ValueKey('selectionConfirmationRow'),
-                    top: false,
-                    minimum: const EdgeInsets.all(_margin),
-                    child: Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: SizedBox.square(
-                        dimension: _buttonSize,
-                        child: button,
-                      ),
-                    ),
-                  ),
-              ],
+            builder(context, effectivePadding),
+            Positioned.directional(
+              textDirection: Directionality.of(context),
+              end: endMargin,
+              bottom: _margin + bottomInset,
+              child: SizedBox.square(dimension: _buttonSize, child: button),
             ),
-            if (!needsRow)
-              Positioned.directional(
-                textDirection: Directionality.of(context),
-                end: endMargin,
-                bottom: _margin + bottomInset,
-                child: SizedBox.square(dimension: _buttonSize, child: button),
-              ),
           ],
         );
       },
