@@ -293,7 +293,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pluginsFolderReserved =>
-      'Имена папок \".plugins\" и \".plugin_config\" зарезервированы для плагинов редактора. Выберите другое имя.';
+      'Имя папки \".plugins\" зарезервировано для плагинов редактора. Выберите другое имя.';
 
   @override
   String get pluginNoLibraryForInstall =>
