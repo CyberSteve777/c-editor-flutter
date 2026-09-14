@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/main.dart'
-    as dynamic_fetch;
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/main.dart'
+    as level_test;
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/main.dart'
     as preview_img;
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/registration.dart'
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/registration.dart'
     show kLevelTestingModPluginId;
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/registration.dart'
     show kLevelPreviewPluginId;
@@ -13,7 +11,8 @@ import 'package:c_editor/plugins/plugin_package.dart';
 /// First-party plugins shipped with C-Editor (disable-only).
 ///
 /// Each entry uses the same package contract as an external `.cplugin`:
-/// `manifest.json`, `initialize(CPluginHost)`, and `assets/` (including l10n).
+/// `manifest.json`, `initialize(CPluginHost)`, and `assets/` (including l10n
+/// and `icon.png` from the manifest `icon` field).
 List<CPluginPackageSpec> get bundledPlugins => [
   CPluginPackageSpec(
     id: kLevelPreviewPluginId,
@@ -22,16 +21,7 @@ List<CPluginPackageSpec> get bundledPlugins => [
   ),
   CPluginPackageSpec(
     id: kLevelTestingModPluginId,
-    packageRoot: 'lib/bundled_plugins/dynamic_fetch_cplugin',
-    initialize: dynamic_fetch.initialize,
+    packageRoot: 'lib/bundled_plugins/level_test_cplugin',
+    initialize: level_test.initialize,
   ),
 ];
-
-/// Uses the same Flutter icons as the editor entries provided by each bundled
-/// plugin. Imported plugins continue to use the image declared in their own
-/// manifest.
-IconData? bundledPluginIcon(String pluginId) => switch (pluginId) {
-  kLevelPreviewPluginId => Icons.image,
-  kLevelTestingModPluginId => Icons.inventory_2,
-  _ => null,
-};

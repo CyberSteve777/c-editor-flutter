@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/download.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/dynamic_fetch_ui.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/dynamic_offer_flow_web.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/releases_api.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/download.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/dynamic_fetch_ui.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/dynamic_offer_flow_web.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/releases_api.dart';
 import 'package:c_editor/widgets/labeled_progress_bar.dart';
 import 'package:path/path.dart' as p;
 

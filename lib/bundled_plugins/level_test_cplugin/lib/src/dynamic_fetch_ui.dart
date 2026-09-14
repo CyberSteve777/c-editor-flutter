@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/widgets/editor_components.dart' show EditorOptionTile;
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/download.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/releases_api.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/download.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/releases_api.dart';
 
 /// Shared, platform-agnostic UI helpers for the dynamic-fetch plugin. Used by
 /// both the native (`dart:io`) and web offer flows.

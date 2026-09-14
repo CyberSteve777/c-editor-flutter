@@ -97,11 +97,11 @@ flutter:
     - lib/bundled_plugins/preview_img_cplugin/assets/l10n/en.arb
     - lib/bundled_plugins/preview_img_cplugin/assets/l10n/ru.arb
     - lib/bundled_plugins/preview_img_cplugin/assets/l10n/zh.arb
-    - lib/bundled_plugins/dynamic_fetch_cplugin/manifest.json
-    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/icon.png
-    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/en.arb
-    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/ru.arb
-    - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/zh.arb
+    - lib/bundled_plugins/level_test_cplugin/manifest.json
+    - lib/bundled_plugins/level_test_cplugin/assets/icon.png
+    - lib/bundled_plugins/level_test_cplugin/assets/l10n/en.arb
+    - lib/bundled_plugins/level_test_cplugin/assets/l10n/ru.arb
+    - lib/bundled_plugins/level_test_cplugin/assets/l10n/zh.arb
 
   fonts:
     - family: PvZPreview

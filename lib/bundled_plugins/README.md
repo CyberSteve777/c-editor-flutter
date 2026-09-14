@@ -20,10 +20,10 @@ Catalog: [`bundled_plugins.dart`](bundled_plugins.dart) via `CPluginPackageSpec`
 Ids use the `team.international2c.*` prefix. Users can disable bundled plugins,
 but cannot uninstall them.
 
-| Plugin | Id | Path |
-|--------|----|------|
+| Plugin | Id | Path                                         |
+|--------|----|----------------------------------------------|
 | Level preview image generator | `team.international2c.preview_img` | [preview_img_cplugin/](preview_img_cplugin/) |
-| Level testing mod creator | `team.international2c.level_testing_mod` | [dynamic_fetch_cplugin/](dynamic_fetch_cplugin/) |
+| Level testing mod creator | `team.international2c.level_testing_mod` | [level_test_cplugin/](level_test_cplugin/)   |
 
 Pack an eval-safe external build (where supported):
 

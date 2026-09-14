@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/registration.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/registration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
@@ -54,13 +54,35 @@ void main() {
     expect(record.isBundled, isTrue);
   });
 
-  test('bundled plugin icons match their editor actions', () {
-    expect(bundledPluginIcon(kLevelPreviewPluginId), Icons.image);
-    expect(
-      bundledPluginIcon(kLevelTestingModPluginId),
-      Icons.inventory_2,
+  test('bundled plugins use manifest icon images like imported plugins', () {
+    final withIcon = bundledPluginRecord(
+      manifest: CPluginManifest(
+        format: CPluginManifest.expectedFormat,
+        formatVersion: CPluginManifest.supportedFormatVersion,
+        id: kLevelPreviewPluginId,
+        name: 'Level preview image generator',
+        version: '1.0.0',
+        icon: 'icon.png',
+        entryLibrary:
+            'package:c_editor/bundled_plugins/preview_img_cplugin/lib/main.dart',
+        entryFunction: 'initialize',
+      ),
+      assets: <String, Uint8List>{
+        // Minimal valid 1x1 PNG.
+        'icon.png': Uint8List.fromList(<int>[
+          0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00,
+          0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
+          0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89,
+          0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63,
+          0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4,
+          0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60,
+          0x82,
+        ]),
+      },
+      enabled: true,
     );
-    expect(bundledPluginIcon('example.imported'), isNull);
+    expect(withIcon.isBundled, isTrue);
+    expect(withIcon.iconImageProvider(), isA<MemoryImage>());
   });
 
   testWidgets(
