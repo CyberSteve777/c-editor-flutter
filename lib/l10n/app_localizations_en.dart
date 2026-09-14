@@ -1944,6 +1944,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
+  String get levelOverview => 'Level Overview';
+
+  @override
+  String get levelOverviewOpenLevel => 'Open level';
+
+  @override
+  String get previewStartingPlantFood => 'Starting Plant Food';
+
+  @override
+  String get previewPrePlaced => 'Preset Layout';
+
+  @override
+  String get previewRegularPlants => 'Regular Plants';
+
+  @override
+  String get previewFrozenPlants => 'Frozen Plants';
+
+  @override
+  String get previewLevelContent => 'Level Content';
+
+  @override
+  String get previewSeedBank => 'Seed Bank';
+
+  @override
+  String get previewIZombieSeedBank => 'Seed Bank (I, Zombie)';
+
+  @override
+  String get previewFeatures => 'Level Features';
+
+  @override
+  String get previewActiveModules => 'Active Modules';
+
+  @override
+  String get previewInitial => 'Initial Grid Items';
+
+  @override
+  String get previewGenerateImagePreview => 'Generate preview image';
+
+  @override
   String get editProperties => 'Edit properties';
 
   @override

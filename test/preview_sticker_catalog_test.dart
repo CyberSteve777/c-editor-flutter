@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_sticker_catalog.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_sticker_catalog.dart';
 import 'package:c_editor/data/dino_type_catalog.dart';
 import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/data/repository/tool_repository.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _localeRoot = 'lib/bundled_plugins/level_preview_cplugin/assets/l10n';
+const _localeRoot = 'lib/bundled_plugins/preview_img_cplugin/assets/l10n';
 
 Map<String, dynamic> _messages(String locale) =>
     jsonDecode(File('$_localeRoot/$locale.arb').readAsStringSync())

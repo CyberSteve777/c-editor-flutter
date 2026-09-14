@@ -1958,6 +1958,45 @@ class AppLocalizationsRu extends AppLocalizations {
   String get close => 'Закрыть';
 
   @override
+  String get levelOverview => 'Обзор уровня';
+
+  @override
+  String get levelOverviewOpenLevel => 'Открыть уровень';
+
+  @override
+  String get previewStartingPlantFood => 'Начальная подкормка';
+
+  @override
+  String get previewPrePlaced => 'Расстановка';
+
+  @override
+  String get previewRegularPlants => 'Обычные';
+
+  @override
+  String get previewFrozenPlants => 'Замороженные';
+
+  @override
+  String get previewLevelContent => 'Содержимое уровня';
+
+  @override
+  String get previewSeedBank => 'Банк семян';
+
+  @override
+  String get previewIZombieSeedBank => 'Банк зомби';
+
+  @override
+  String get previewFeatures => 'Особенности';
+
+  @override
+  String get previewActiveModules => 'Активные модули';
+
+  @override
+  String get previewInitial => 'Начальные';
+
+  @override
+  String get previewGenerateImagePreview => 'Создать превью изображения';
+
+  @override
   String get editProperties => 'Редактировать свойства';
 
   @override

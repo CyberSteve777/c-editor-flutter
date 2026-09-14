@@ -33,6 +33,7 @@ class PluginUiElement {
     required this.slot,
     required this.builder,
     this.iconCodePoint,
+    this.titleBuilder,
   });
 
   final String pluginId;
@@ -41,10 +42,14 @@ class PluginUiElement {
   final String slot;
   final CPluginScreenBuilder builder;
   final int? iconCodePoint;
+  final PluginTitleBuilder? titleBuilder;
 
   String get key => '$pluginId::$slot::$id';
 
   IconData get icon => pluginMaterialIcon(iconCodePoint);
+
+  String resolvedTitle(BuildContext context) =>
+      titleBuilder?.call(context) ?? title;
 }
 
 /// Localized title for bundled plugin actions.

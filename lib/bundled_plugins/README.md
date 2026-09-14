@@ -22,11 +22,11 @@ but cannot uninstall them.
 
 | Plugin | Id | Path |
 |--------|----|------|
-| Level Overview | `team.international2c.level_preview` | [level_preview_cplugin/](level_preview_cplugin/) |
-| Data Package Download | `team.international2c.dynamic_fetch` | [dynamic_fetch_cplugin/](dynamic_fetch_cplugin/) |
+| Level preview image generator | `team.international2c.preview_img` | [preview_img_cplugin/](preview_img_cplugin/) |
+| Level testing mod creator | `team.international2c.level_testing_mod` | [dynamic_fetch_cplugin/](dynamic_fetch_cplugin/) |
 
 Pack an eval-safe external build (where supported):
 
 ```bash
-flutter test test/tools/compile_level_preview_cplugin_test.dart
+flutter test test/tools/compile_preview_img_cplugin_test.dart
 ```

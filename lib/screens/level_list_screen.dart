@@ -23,6 +23,7 @@ import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/screens/image_viewer_screen.dart';
+import 'package:c_editor/screens/level_overview/level_overview.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/editor_components.dart'
     show
@@ -30,7 +31,6 @@ import 'package:c_editor/widgets/editor_components.dart'
         EditorOptionTile,
         EditorPopupMenuTile,
         showEditorChoiceDialog;
-import 'package:c_editor/screens/export/export_screen.dart';
 import 'package:c_editor/widgets/web_transfer_progress_dialog.dart';
 
 enum LevelViewMode { all, favorites }
@@ -1858,15 +1858,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              if (kIsWeb || !Platform.isIOS)
-                PopupMenuItem(
-                  value: 'export',
-                  child: EditorPopupMenuTile(
-                    leading: const Icon(Icons.output_rounded),
-                    title: Text(l10n.exportLevels),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
               PopupMenuItem(
                 value: 'plugins',
                 child: EditorPopupMenuTile(
@@ -1917,13 +1908,6 @@ class _LevelListScreenState extends State<LevelListScreen> {
                   if (!context.mounted) return;
                   widget.onLanguageTap(context);
                 });
-              } else if (value == 'export') {
-                await Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const ExportScreen()));
-                if (mounted) {
-                  _loadCurrentDirectory();
-                }
               } else if (value == 'plugins') {
                 widget.onPluginsClick();
               } else if (value == 'about') {
@@ -2320,6 +2304,24 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                 )
                                             ? null
                                             : () => _openCpluginInstall(item),
+                                        onLevelOverview:
+                                            actionsDisabled ||
+                                                item.isDirectory ||
+                                                LevelRepository.isSupportedImageFileName(
+                                                  item.name,
+                                                ) ||
+                                                LevelRepository.isSupportedPluginFileName(
+                                                  item.name,
+                                                ) ||
+                                                item.name
+                                                    .toLowerCase()
+                                                    .endsWith('.smf')
+                                            ? null
+                                            : () => openLevelOverviewFromPath(
+                                                context,
+                                                fileName: item.name,
+                                                filePath: item.path,
+                                              ),
                                         showMove: !item.isDirectory && !kIsWeb,
                                       ),
                                     );
@@ -3095,6 +3097,7 @@ class _FileItemRow extends StatelessWidget {
     this.onToggleFavorite,
     this.onShare,
     this.onInstallPlugin,
+    this.onLevelOverview,
   });
 
   final FileItem item;
@@ -3112,6 +3115,7 @@ class _FileItemRow extends StatelessWidget {
   final VoidCallback? onToggleFavorite;
   final VoidCallback? onShare;
   final VoidCallback? onInstallPlugin;
+  final VoidCallback? onLevelOverview;
 
   /// Must stay in sync with the non-compact layout in [build].
   static const _marginBottom = 12.0;
@@ -3219,6 +3223,18 @@ class _FileItemRow extends StatelessWidget {
               label: l10n.pluginInstallAction,
             ),
           ),
+        if (!item.isDirectory &&
+            onLevelOverview != null &&
+            !LevelRepository.isSupportedImageFileName(item.name) &&
+            !LevelRepository.isSupportedPluginFileName(item.name) &&
+            !item.name.toLowerCase().endsWith('.smf'))
+          PopupMenuItem(
+            value: 'level_overview',
+            child: _popupMenuTile(
+              icon: Icons.info_outline,
+              label: l10n.levelOverview,
+            ),
+          ),
         if (onToggleFavorite != null)
           PopupMenuItem(
             value: 'favorite',
@@ -3290,6 +3306,8 @@ class _FileItemRow extends StatelessWidget {
         switch (v) {
           case 'install_plugin':
             onInstallPlugin?.call();
+          case 'level_overview':
+            onLevelOverview?.call();
           case 'favorite':
             onToggleFavorite?.call();
           case 'rename':

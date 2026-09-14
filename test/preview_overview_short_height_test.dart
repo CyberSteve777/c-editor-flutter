@@ -1,4 +1,3 @@
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_dialog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
@@ -8,20 +7,10 @@ import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/screens/level_overview/level_overview_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class _Host extends Fake implements CPluginHost {
-  @override
-  String localize(
-    BuildContext context,
-    String key, [
-    String? fallback,
-    Map<String, Object?>? args,
-  ]) => fallback ?? key;
-}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -58,12 +47,11 @@ void main() {
             ).copyWith(textScaler: const TextScaler.linear(2)),
             child: child!,
           ),
-          home: LevelPreviewDialog(
-            host: _Host(),
+          home: LevelOverviewDialog(
             levelFile: PvzLevelFile(objects: []),
             parsed: ParsedLevelData(objectMap: {}),
             fileName: fileName,
-            onBack: () => closed = true,
+            onClose: () => closed = true,
           ),
         ),
       );
@@ -82,9 +70,9 @@ void main() {
         80,
         scrollable: find.byType(Scrollable),
       );
-      final back = find.text(lookupAppLocalizations(const Locale('en')).back);
-      expect(tester.getRect(back).bottom, lessThanOrEqualTo(height));
-      await tester.tap(back);
+      final close = find.text(lookupAppLocalizations(const Locale('en')).close);
+      expect(tester.getRect(close).bottom, lessThanOrEqualTo(height));
+      await tester.tap(close);
       expect(closed, isTrue);
       expect(tester.takeException(), isNull);
     });

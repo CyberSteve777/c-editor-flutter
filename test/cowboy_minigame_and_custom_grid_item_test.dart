@@ -7,7 +7,7 @@ import 'package:c_editor/data/level_validator.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_widgets.dart'
+import 'package:c_editor/screens/level_overview/level_overview_widgets.dart'
     as level_preview;
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/modules/conveyor_seedbank_properties_screen.dart';

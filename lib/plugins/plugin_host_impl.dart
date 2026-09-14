@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/active_editor_session.dart';
-import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/plugins/plugin_level_io.dart';
 import 'package:c_editor/plugins/plugin_arb.dart';
 import 'package:c_editor/plugins/plugin_l10n.dart';
 import 'package:c_editor/plugins/plugin_material_icon.dart';
 import 'package:c_editor/plugins/plugin_config_store.dart';
 import 'package:c_editor/plugins/plugin_screen_registry.dart';
+import 'package:c_editor/screens/level_overview/level_overview.dart';
 
 /// In-memory asset accessor for a loaded plugin.
 class MemoryCPluginAssets implements CPluginAssets {
@@ -113,6 +113,8 @@ class PluginHostImpl implements CPluginHost {
         pluginId: pluginId,
         id: id,
         title: title.isEmpty ? id : title,
+        titleBuilder: (context) =>
+            localize(context, title.isEmpty ? id : title, title.isEmpty ? id : title),
         slot: slot,
         builder: builder,
         iconCodePoint: iconCodePoint,
@@ -201,14 +203,16 @@ class PluginHostImpl implements CPluginHost {
     String? filePath,
     String? fileName,
   ]) async {
-    final opener = PluginHostHooks.openLevelPreview;
-    if (opener == null) {
-      throw StateError(
-        'Level preview is not available in this host build '
-        '(PluginHostHooks.openLevelPreview is unset).',
+    // Host-owned Level Overview (image generator remains a plugin hook).
+    if (filePath != null && filePath.isNotEmpty) {
+      await openLevelOverviewFromPath(
+        context,
+        fileName: fileName ?? filePath.split(RegExp(r'[\\/]')).last,
+        filePath: filePath,
       );
+      return;
     }
-    await opener(context, host: this, filePath: filePath, fileName: fileName);
+    await openLevelOverviewFromOpenSession(context);
   }
 
   @override

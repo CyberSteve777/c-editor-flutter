@@ -22,7 +22,7 @@ class CPluginPackageSpec {
   final String id;
 
   /// Repo / Flutter asset root, e.g.
-  /// `lib/bundled_plugins/level_preview_cplugin`.
+  /// `lib/bundled_plugins/preview_img_cplugin`.
   ///
   /// Expected children (same layout as `plugin_example/hello_cplugin`):
   /// - `manifest.json`

@@ -6,7 +6,7 @@ import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/zombie_discovery.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_widgets.dart';
+import 'package:c_editor/screens/level_overview/level_overview_widgets.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/events/hamster_zombie_event_screen.dart';
 import 'package:flutter/material.dart';
