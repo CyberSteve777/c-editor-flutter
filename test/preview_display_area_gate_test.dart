@@ -164,7 +164,7 @@ void main() {
   ) async {
     await _openGenerator(
       tester,
-      size: const Size(400, 1000),
+      size: const Size(320, 1000),
       platform: TargetPlatform.android,
     );
     _expectBlocked(tester, mobile: true);
@@ -184,7 +184,7 @@ void main() {
     expect(_canvas(tester).document.layers.length, initialLayerCount + 1);
     final editedLayer = document.layers.last;
 
-    tester.view.physicalSize = const Size(400, 1000);
+    tester.view.physicalSize = const Size(320, 1000);
     await tester.pumpAndSettle();
     _expectBlocked(tester, mobile: true);
     expect(
@@ -329,9 +329,11 @@ void main() {
     'mobile budgets and minimum layout dimensions have explicit boundaries',
     () {
       for (final scenario in [
-        (size: const Size(399.9, 200), allowed: false),
+        (size: const Size(359.9, 900), allowed: false),
+        (size: const Size(360, 900), allowed: true),
+        (size: const Size(399.9, 200), allowed: true),
         (size: const Size(400, 200), allowed: true),
-        (size: const Size(479.9, 900), allowed: false),
+        (size: const Size(479.9, 900), allowed: true),
         (size: const Size(480, 900), allowed: true),
         (size: const Size(319.9, 200), allowed: false),
         (size: const Size(600, 159.9), allowed: false),
@@ -353,6 +355,24 @@ void main() {
           uiScale: 1.5,
         ),
         isTrue,
+      );
+      expect(
+        isPreviewGeneratorDisplayAreaAvailable(
+          availableSize: const Size(500, 900),
+          platform: TargetPlatform.iOS,
+          uiScale: 0.7,
+        ),
+        isFalse,
+        reason: 'UI zoom must not exempt a window narrower than 360',
+      );
+      expect(
+        isPreviewGeneratorDisplayAreaAvailable(
+          availableSize: const Size(390 / 1.275, 844 / 1.275),
+          platform: TargetPlatform.iOS,
+          uiScale: 1.275,
+        ),
+        isFalse,
+        reason: 'Large UI controls still need a layout at least 320 wide',
       );
     },
   );

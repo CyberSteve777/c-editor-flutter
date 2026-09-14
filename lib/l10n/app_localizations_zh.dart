@@ -30,6 +30,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get previewTabGridItems => '物品';
 
   @override
+  String get overviewPresetPlants => '预选植物';
+
+  @override
+  String get overviewPresetZombies => '预选僵尸';
+
+  @override
+  String get overviewConveyorPlants => '传送带植物';
+
+  @override
+  String get overviewLawn => '草坪';
+
+  @override
+  String get overviewWhitelist => '白名单';
+
+  @override
+  String get overviewBlacklist => '黑名单';
+
+  @override
+  String get overviewPlantBlacklist => '植物黑名单';
+
+  @override
+  String get overviewZombieWhitelist => '僵尸白名单';
+
+  @override
+  String get overviewSeedChooser => '自选种子';
+
+  @override
+  String get overviewReservedColumns => '预留列数';
+
+  @override
   String get sunBombFalling => '阳光炸弹';
 
   @override

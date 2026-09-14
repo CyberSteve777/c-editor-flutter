@@ -36,6 +36,25 @@ import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/widgets/rift_theme_widgets.dart';
 import 'package:c_editor/widgets/explosive_barrels_preview_grid.dart';
+import 'package:c_editor/widgets/local_scrollbar_region.dart';
+
+/// Keeps card margins from consuming the text column in a scaled mobile view.
+class _OverviewCardPadding extends StatelessWidget {
+  const _OverviewCardPadding({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: (constraints.maxWidth * 0.06).clamp(0.0, 20.0),
+        vertical: 20,
+      ),
+      child: child,
+    ),
+  );
+}
 
 class LevelOverviewDialog extends StatefulWidget {
   final PvzLevelFile levelFile;
@@ -144,6 +163,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
 
   final ScrollController _subCategoryScrollController = ScrollController();
   final ScrollController _sidebarScrollController = ScrollController();
+  final ScrollController _contentScrollController = ScrollController();
   final ScrollController _prePlacedTabScrollController = ScrollController();
   final ScrollController _plantTypeTabScrollController = ScrollController();
 
@@ -151,6 +171,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
   void dispose() {
     _subCategoryScrollController.dispose();
     _sidebarScrollController.dispose();
+    _contentScrollController.dispose();
     _prePlacedTabScrollController.dispose();
     _plantTypeTabScrollController.dispose();
     super.dispose();
@@ -312,7 +333,6 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     final theme = Theme.of(context);
     final levelDef = widget.parsed.levelDef;
     final isDesktop = isDesktopPlatform(context);
-    final isNarrow = MediaQuery.sizeOf(context).width < 600;
 
     if (_isLoadingRepos) {
       return const AlertDialog(
@@ -334,157 +354,224 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       );
     }
 
-    final canGenerate =
-        PluginHostHooks.openPreviewImageGenerator != null;
-    final hPad = isNarrow ? 12.0 : 20.0;
+    final bodyCards =
+        [
+          _buildSummaryCard(context, levelDef, theme, l10n),
+          _buildSeedBankCard(context, theme, l10n),
+          _buildConveyorCard(context, theme, l10n),
+          _buildCopycatCard(context, theme, l10n),
+          _buildSingleHandedCard(context, theme, l10n),
+          _buildSeedRainCard(context, theme, l10n),
+          _buildHeianWindCard(context, theme, l10n),
+          _buildPrePlacedCard(context, theme, l10n),
+          _buildEncounterCard(context, theme, l10n),
+          _buildModulesCard(context, theme, l10n),
+        ].fold<List<Widget>>([], (list, card) {
+          if (card is SizedBox &&
+              (card.height ?? 0) == 0 &&
+              card.child == null) {
+            return list;
+          }
+          if (list.isNotEmpty) {
+            list.add(const SizedBox(height: 12));
+          }
+          list.add(card);
+          return list;
+        });
 
-    final bodyCards = [
-      _buildSummaryCard(context, levelDef, theme, l10n),
-      _buildSeedBankCard(context, theme, l10n),
-      _buildConveyorCard(context, theme, l10n),
-      _buildCopycatCard(context, theme, l10n),
-      _buildSingleHandedCard(context, theme, l10n),
-      _buildSeedRainCard(context, theme, l10n),
-      _buildHeianWindCard(context, theme, l10n),
-      _buildPrePlacedCard(context, theme, l10n),
-      _buildEncounterCard(context, theme, l10n),
-      _buildModulesCard(context, theme, l10n),
-    ].fold<List<Widget>>([], (list, card) {
-      if (card is SizedBox &&
-          (card.height ?? 0) == 0 &&
-          card.child == null) {
-        return list;
-      }
-      if (list.isNotEmpty) {
-        list.add(const SizedBox(height: 12));
-      }
-      list.add(card);
-      return list;
-    });
-
-    return Dialog(
-      backgroundColor: theme.colorScheme.surface,
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 40 : 12,
-        vertical: isDesktop ? 40 : 12,
-      ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: isDesktop ? 900 : double.infinity,
-          maxHeight: MediaQuery.of(context).size.height * 0.9,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(hPad, 16, hPad, 8),
-              child: isNarrow
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          '${l10n.levelOverview}: ${widget.fileName}',
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+    return LayoutBuilder(
+      builder: (context, available) {
+        final media = MediaQuery.of(context);
+        final availableWidth = available.hasBoundedWidth
+            ? available.maxWidth
+            : media.size.width;
+        final availableHeight = available.hasBoundedHeight
+            ? available.maxHeight
+            : media.size.height;
+        final horizontalInset = (availableWidth * 0.04).clamp(
+          0.0,
+          isDesktop ? 40.0 : 12.0,
+        );
+        final usableHeight = (availableHeight - media.viewInsets.vertical)
+            .clamp(0.0, availableHeight);
+        final verticalInset = (usableHeight * 0.04).clamp(
+          0.0,
+          isDesktop ? 40.0 : 12.0,
+        );
+        return Dialog(
+          backgroundColor: theme.colorScheme.surface,
+          constraints: const BoxConstraints(minWidth: 0),
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: horizontalInset,
+            vertical: verticalInset,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: isDesktop ? 900 : double.infinity,
+              maxHeight: (usableHeight - verticalInset * 2).clamp(
+                0.0,
+                usableHeight * 0.9,
+              ),
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final hPad = (constraints.maxWidth * 0.04).clamp(0.0, 20.0);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Scrollbar(
+                          key: const ValueKey('levelOverviewScrollbar'),
+                          controller: _contentScrollController,
+                          thumbVisibility: true,
+                          interactive: true,
+                          scrollbarOrientation: ScrollbarOrientation.right,
+                          child: ScrollConfiguration(
+                            behavior: ScrollConfiguration.of(
+                              context,
+                            ).copyWith(scrollbars: false),
+                            child: SingleChildScrollView(
+                              key: const ValueKey('levelOverviewScroll'),
+                              controller: _contentScrollController,
+                              primary: false,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(
+                                      hPad,
+                                      16,
+                                      hPad,
+                                      8,
+                                    ),
+                                    child: _buildOverviewHeader(
+                                      context,
+                                      theme,
+                                      l10n,
+                                    ),
+                                  ),
+                                  const Divider(height: 1),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(
+                                      hPad,
+                                      12,
+                                      hPad,
+                                      12,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: bodyCards,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                        if (canGenerate) ...[
-                          const SizedBox(height: 4),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton.icon(
-                              onPressed: () =>
-                                  _openPreviewGenerator(context),
-                              icon: const Icon(
-                                Icons.image_outlined,
-                                size: 20,
-                              ),
-                              label: Text(
-                                l10n.previewGenerateImagePreview,
-                              ),
+                      ),
+                      const Divider(height: 1),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 12),
+                        child: Wrap(
+                          alignment: WrapAlignment.end,
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: [
+                            TextButton(
+                              onPressed: widget.onClose,
                               style: TextButton.styleFrom(
                                 foregroundColor: theme.colorScheme.primary,
-                                visualDensity: VisualDensity.compact,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                ),
                               ),
+                              child: Text(l10n.close),
                             ),
-                          ),
-                        ],
-                      ],
-                    )
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${l10n.levelOverview}: ${widget.fileName}',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                            if (widget.showOpenLevel &&
+                                widget.filePath != null &&
+                                widget.filePath!.isNotEmpty) ...[
+                              FilledButton(
+                                onPressed: _openLevel,
+                                child: Text(l10n.levelOverviewOpenLevel),
+                              ),
+                            ],
+                          ],
                         ),
-                        if (canGenerate)
-                          TextButton.icon(
-                            onPressed: () =>
-                                _openPreviewGenerator(context),
-                            icon: const Icon(
-                              Icons.image_outlined,
-                              size: 20,
-                            ),
-                            label: Text(l10n.previewGenerateImagePreview),
-                            style: TextButton.styleFrom(
-                              foregroundColor: theme.colorScheme.primary,
-                              visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: bodyCards,
-                ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-            const Divider(height: 1),
-            Padding(
-              padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: widget.onClose,
-                    style: TextButton.styleFrom(
-                      foregroundColor: theme.colorScheme.primary,
-                    ),
-                    child: Text(l10n.close),
-                  ),
-                  if (widget.showOpenLevel &&
-                      widget.filePath != null &&
-                      widget.filePath!.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      onPressed: _openLevel,
-                      child: Text(l10n.levelOverviewOpenLevel),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOverviewHeader(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale = MediaQuery.textScalerOf(context).scale(24) / 24;
+        final isNarrow = constraints.maxWidth / textScale < 600;
+        final title = Text(
+          '${l10n.levelOverview}: ${widget.fileName}',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        );
+        final canGenerate = PluginHostHooks.openPreviewImageGenerator != null;
+        final buttonStyle = TextButton.styleFrom(
+          foregroundColor: theme.colorScheme.primary,
+          visualDensity: VisualDensity.compact,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        );
+        final Widget generateButton = constraints.maxWidth / textScale < 240
+            ? TextButton(
+                onPressed: () => _openPreviewGenerator(context),
+                style: buttonStyle,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.image_outlined, size: 20),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.previewGenerateImagePreview,
+                      textAlign: TextAlign.center,
                     ),
                   ],
-                ],
-              ),
-            ),
+                ),
+              )
+            : TextButton.icon(
+                onPressed: () => _openPreviewGenerator(context),
+                style: buttonStyle,
+                icon: const Icon(Icons.image_outlined, size: 20),
+                label: Text(l10n.previewGenerateImagePreview),
+              );
+        if (isNarrow) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              title,
+              if (canGenerate) ...[const SizedBox(height: 4), generateButton],
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(flex: 3, child: title),
+            if (canGenerate) ...[
+              const SizedBox(width: 12),
+              Flexible(flex: 2, child: generateButton),
+            ],
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -756,8 +843,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -789,8 +875,6 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     if (def.description.isNotEmpty) ...[
                       const SizedBox(height: 4),
@@ -802,21 +886,17 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                           ),
                           fontSize: 14,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                     const SizedBox(height: 6),
                     Text(
-                      '${l10n.stageModule}: $worldName$customSuffix',
+                      '${l10n.overviewLawn}: $worldName$customSuffix',
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.8,
                         ),
                         fontSize: 14,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -1108,8 +1188,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1134,7 +1213,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             if (isDataEmpty) ...[
               if (method == 'preset')
                 Text(
-                  l10n.chooser,
+                  l10n.overviewSeedChooser,
                   style: TextStyle(
                     fontSize: 16,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -1142,7 +1221,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 )
               else if (!isZombieMode)
                 Text(
-                  l10n.chooser,
+                  l10n.overviewSeedChooser,
                   style: TextStyle(
                     fontSize: 16,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -1154,8 +1233,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
               const SizedBox(height: 8),
               _buildPlantListSection(
                 isZombieMode
-                    ? l10n.availableZombies
-                    : l10n.plantsAvailableAtStart,
+                    ? l10n.overviewPresetZombies
+                    : l10n.overviewPresetPlants,
                 presetPlants,
                 true,
               ),
@@ -1163,7 +1242,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             if (whiteList.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildPlantListSection(
-                l10n.whiteList,
+                l10n.overviewWhitelist,
                 whiteList,
                 _whiteListExpanded,
                 onToggle: () =>
@@ -1173,7 +1252,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             if (blackList.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildPlantListSection(
-                l10n.blackList,
+                l10n.overviewBlacklist,
                 blackList,
                 _blackListExpanded,
                 onToggle: () =>
@@ -1324,8 +1403,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1351,7 +1429,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             ),
 
             if (plants.isNotEmpty)
-              _buildPlantListSection(l10n.presetPlants, plants, true),
+              _buildPlantListSection(l10n.overviewConveyorPlants, plants, true),
 
             if (changes.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -1532,8 +1610,16 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 .where((id) => id.isNotEmpty)
                 .map(
                   (id) => showGridItemIcons
-                      ? GridItemIcon(id: id, size: 40)
-                      : UniversalIcon(id: id, size: 40, levelFile: levelFile),
+                      ? GridItemIcon(
+                          id: id,
+                          size: 40,
+                          levelFile: levelFile ?? widget.levelFile,
+                        )
+                      : UniversalIcon(
+                          id: id,
+                          size: 40,
+                          levelFile: levelFile ?? widget.levelFile,
+                        ),
                 ),
             if (canExpand && onToggle != null)
               IconButton(
@@ -1591,6 +1677,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                     id: entry.id,
                     size: 40,
                     suppressCustomBadge: entry.isDedicatedModuleItem,
+                    levelFile: widget.levelFile,
                   ),
                 ),
             if (canExpand && onToggle != null)
@@ -2018,13 +2105,15 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       ),
     );
 
-    return Scrollbar(
-      key: const ValueKey('prePlacedTabScrollbar'),
-      controller: _prePlacedTabScrollController,
-      thumbVisibility: true,
-      interactive: true,
-      scrollbarOrientation: ScrollbarOrientation.bottom,
-      child: content,
+    return LocalScrollbarRegion(
+      child: Scrollbar(
+        key: const ValueKey('prePlacedTabScrollbar'),
+        controller: _prePlacedTabScrollController,
+        thumbVisibility: true,
+        interactive: true,
+        scrollbarOrientation: ScrollbarOrientation.bottom,
+        child: content,
+      ),
     );
   }
 
@@ -2114,13 +2203,15 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       ),
     );
 
-    return Scrollbar(
-      key: const ValueKey('plantTypeTabScrollbar'),
-      controller: _plantTypeTabScrollController,
-      thumbVisibility: true,
-      interactive: true,
-      scrollbarOrientation: ScrollbarOrientation.bottom,
-      child: content,
+    return LocalScrollbarRegion(
+      child: Scrollbar(
+        key: const ValueKey('plantTypeTabScrollbar'),
+        controller: _plantTypeTabScrollController,
+        thumbVisibility: true,
+        interactive: true,
+        scrollbarOrientation: ScrollbarOrientation.bottom,
+        child: content,
+      ),
     );
   }
 
@@ -2226,6 +2317,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       child: Scrollbar(
         controller: _sidebarScrollController,
         thumbVisibility: !isMobile,
+        interactive: true,
         child: ListView.builder(
           controller: _sidebarScrollController,
           padding: EdgeInsets.zero,
@@ -2362,13 +2454,15 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Scrollbar(
-            key: const ValueKey('gridSubCategoryScrollbar'),
-            controller: _subCategoryScrollController,
-            thumbVisibility: true,
-            interactive: true,
-            scrollbarOrientation: ScrollbarOrientation.bottom,
-            child: content,
+          LocalScrollbarRegion(
+            child: Scrollbar(
+              key: const ValueKey('gridSubCategoryScrollbar'),
+              controller: _subCategoryScrollController,
+              thumbVisibility: true,
+              interactive: true,
+              scrollbarOrientation: ScrollbarOrientation.bottom,
+              child: content,
+            ),
           ),
         ],
       ),
@@ -2839,8 +2933,13 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             col <= data.flowerPotEndColumn) {
           return Container(
             color: Colors.brown.withValues(alpha: 0.3),
-            child: const Center(
-              child: GridItemIcon(id: 'flowerpot', size: 18, isGrid: true),
+            child: Center(
+              child: GridItemIcon(
+                id: 'flowerpot',
+                size: 18,
+                isGrid: true,
+                levelFile: widget.levelFile,
+              ),
             ),
           );
         }
@@ -3187,7 +3286,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                   children: [
                     _legendDot(Colors.red),
                     Text(
-                      l10n.blackList,
+                      l10n.overviewBlacklist,
                       style: TextStyle(
                         fontSize: 11,
                         color: theme.colorScheme.onSurface.withValues(
@@ -3356,8 +3455,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3458,8 +3556,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     if (data == null) return const SizedBox.shrink();
 
     final title = l10n.guessWhoIAm;
-    final blackListTitle = l10n.plantBlackList;
-    final whiteListTitle = l10n.zombieWhiteList;
+    final blackListTitle = l10n.overviewPlantBlacklist;
+    final whiteListTitle = l10n.overviewZombieWhitelist;
     final weightLabel = l10n.zombieWeight;
     final levelLabel = l10n.plantLevelLabel;
 
@@ -3471,8 +3569,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3590,8 +3687,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3822,8 +3918,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -3878,8 +3973,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -4290,8 +4384,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: _OverviewCardPadding(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -5013,12 +5106,24 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 SizedBox(
                   width: 40,
                   height: 40,
-                  child: GridItemIcon(id: itemType, size: 40, isGrid: true),
+                  child: GridItemIcon(
+                    id: itemType,
+                    size: 40,
+                    isGrid: true,
+                    levelFile: widget.levelFile,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    ResourceNames.lookup(context, 'griditem_$itemType'),
+                    GridItemRepository.getByTypeName(itemType)?.source ==
+                                GridItemSource.custom &&
+                            !GridItemRepository.isRecognizedCustomGridItem(
+                              itemType,
+                              widget.levelFile,
+                            )
+                        ? itemType
+                        : ResourceNames.lookup(context, 'griditem_$itemType'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -5264,7 +5369,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         Padding(
           padding: const EdgeInsets.only(left: 4),
           child: Text(
-            '${l10n.reservedColumnCount}: ${data.reservedColumnCount}',
+            '${l10n.overviewReservedColumns}: ${data.reservedColumnCount}',
             style: TextStyle(
               fontSize: 12,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
@@ -5369,7 +5474,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         Padding(
           padding: const EdgeInsets.only(left: 4),
           child: Text(
-            '${l10n.reservedColumnCount}: ${data.reservedColumnCount}',
+            '${l10n.overviewReservedColumns}: ${data.reservedColumnCount}',
             style: TextStyle(
               fontSize: 12,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
@@ -6069,7 +6174,12 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     PvzLevelFile? levelFile,
   }) {
     if (activeTabIndex == 2) {
-      return GridItemIcon(id: id, size: size, isGrid: isGrid);
+      return GridItemIcon(
+        id: id,
+        size: size,
+        isGrid: isGrid,
+        levelFile: levelFile ?? widget.levelFile,
+      );
     }
     return UniversalIcon(
       id: id,

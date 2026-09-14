@@ -4,6 +4,8 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/preview_scrollbar_gesture.dart';
+
 String _t(String key, [String? fallback]) => switch (key) {
   'previewGenLayers' => 'Layers',
   'previewGenLayersHint' =>
@@ -55,12 +57,14 @@ Future<void> _open(
   String Function(PreviewLayerOrderEntry)? title,
   Size size = const Size(600, 900),
   double textScale = 1,
+  TargetPlatform platform = TargetPlatform.android,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
+      theme: ThemeData(platform: platform),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(
           context,
@@ -96,6 +100,46 @@ Future<void> _open(
 }
 
 void main() {
+  for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
+    testWidgets('layer thumb drags without reordering on ${platform.name}', (
+      tester,
+    ) async {
+      final doc = _document(
+        List.generate(30, (index) => _layer('layer$index', index)),
+      );
+      final originalOrder = doc.orderedLayerEntries
+          .map((entry) => entry.id)
+          .toList();
+      var selected = false;
+      var reordered = false;
+      await _open(
+        tester,
+        doc,
+        size: const Size(390, 700),
+        platform: platform,
+        onSelected: (_) => selected = true,
+        onReorder: (_) => reordered = true,
+      );
+      final scroll = tester
+          .widget<ReorderableListView>(
+            find.byKey(const ValueKey('previewLayersList')),
+          )
+          .scrollController!;
+      await dragPreviewVerticalScrollbar(
+        tester,
+        const ValueKey('previewLayersScrollbar'),
+      );
+      expect(scroll.offset, greaterThan(200));
+      expect(selected, isFalse);
+      expect(reordered, isFalse);
+      expect(doc.orderedLayerEntries.map((entry) => entry.id), originalOrder);
+      expect(
+        find.byKey(const ValueKey('previewLayersClose')).hitTestable(),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
   testWidgets(
     'layers are front-to-back and selection includes the background',
     (tester) async {

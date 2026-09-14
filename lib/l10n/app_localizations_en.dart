@@ -30,6 +30,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previewTabGridItems => 'Grid Items';
 
   @override
+  String get overviewPresetPlants => 'Preset plants';
+
+  @override
+  String get overviewPresetZombies => 'Preset zombies';
+
+  @override
+  String get overviewConveyorPlants => 'Conveyor plants';
+
+  @override
+  String get overviewLawn => 'Lawn';
+
+  @override
+  String get overviewWhitelist => 'Whitelist';
+
+  @override
+  String get overviewBlacklist => 'Blacklist';
+
+  @override
+  String get overviewPlantBlacklist => 'Plant blacklist';
+
+  @override
+  String get overviewZombieWhitelist => 'Zombie whitelist';
+
+  @override
+  String get overviewSeedChooser => 'Choose your seeds';
+
+  @override
+  String get overviewReservedColumns => 'Reserved columns';
+
+  @override
   String get sunBombFalling => 'Sun Bombs';
 
   @override

@@ -4,6 +4,8 @@ import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/pre
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/preview_scrollbar_gesture.dart';
+
 String _t(String key, [String? fallback]) => fallback ?? key;
 
 Future<void> _pumpLandscape(
@@ -11,6 +13,7 @@ Future<void> _pumpLandscape(
   void Function(BuildContext context) open, {
   double height = 300,
   double scale = 1.6,
+  TargetPlatform platform = TargetPlatform.android,
 }) async {
   tester.view.physicalSize = Size(900, height);
   tester.view.devicePixelRatio = 1;
@@ -18,7 +21,7 @@ Future<void> _pumpLandscape(
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
     MaterialApp(
-      theme: ThemeData(platform: TargetPlatform.android),
+      theme: ThemeData(platform: platform),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(
           context,
@@ -42,6 +45,70 @@ Future<void> _pumpLandscape(
 }
 
 void main() {
+  for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
+    testWidgets('figure thumb reaches its last item on ${platform.name}', (
+      tester,
+    ) async {
+      (PreviewShapeKind, bool)? selected;
+      await _pumpLandscape(tester, (context) async {
+        selected = await showPreviewFiguresPicker(context: context, t: _t);
+      }, platform: platform);
+      final scroll = tester
+          .widget<SingleChildScrollView>(
+            find.byKey(const ValueKey('previewFiguresScroll')),
+          )
+          .controller!;
+      await dragPreviewVerticalScrollbar(
+        tester,
+        const ValueKey('previewFiguresScrollbar'),
+        distance: 180,
+      );
+      expect(scroll.offset, greaterThan(100));
+      final last = find.byKey(const ValueKey('previewFigure-star-true'));
+      expect(last.hitTestable(), findsOneWidget);
+      expect(selected, isNull);
+      await tester.tap(last);
+      await tester.pumpAndSettle();
+      expect(selected, (PreviewShapeKind.star, true));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      'module thumb scrolls while cancel remains visible on ${platform.name}',
+      (tester) async {
+        await _pumpLandscape(tester, (context) {
+          showPreviewModuleInfoPicker(
+            context: context,
+            classes: List.generate(25, (index) => 'Module$index'),
+            titleForClass: (_, objClass) => 'Long localized title $objClass',
+            t: _t,
+          );
+        }, platform: platform);
+        final scroll = tester
+            .widget<SingleChildScrollView>(
+              find.byKey(const ValueKey('previewModuleInfoScroll')),
+            )
+            .controller!;
+        await dragPreviewVerticalScrollbar(
+          tester,
+          const ValueKey('previewModuleInfoScrollbar'),
+          distance: 80,
+        );
+        expect(scroll.offset, greaterThan(100));
+        expect(
+          find.byKey(const ValueKey('previewModuleInfoCancel')).hitTestable(),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(const ValueKey('previewModuleInfoCancel')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('previewModuleInfoPicker')),
+          findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
   testWidgets('figure sheet scrolls to and selects its last landscape item', (
     tester,
   ) async {

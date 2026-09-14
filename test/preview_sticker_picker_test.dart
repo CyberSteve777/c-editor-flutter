@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/preview_scrollbar_gesture.dart';
+
 const _labels = <String, String>{
   'previewGenStickersTitle': '添加贴纸',
   'previewGenImageSearch': '搜索贴纸',
@@ -48,6 +50,7 @@ Future<void> _open(
   ValueChanged<PreviewAssetImageChoice?>? onSelected,
   PreviewStickerPickerSession? session,
   Iterable<String> priorityAssetPaths = const [],
+  TargetPlatform platform = TargetPlatform.android,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
@@ -55,7 +58,7 @@ Future<void> _open(
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
-      theme: ThemeData(platform: TargetPlatform.android),
+      theme: ThemeData(platform: platform),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(
           context,
@@ -89,6 +92,115 @@ Future<void> _open(
 
 void main() {
   setUp(rootBundle.clear);
+
+  testWidgets(
+    'new tags retain the viewport and visited tags retain their own position',
+    (tester) async {
+      await _open(
+        tester,
+        size: const Size(900, 600),
+        stickers: [
+          ..._stickers(80),
+          for (var i = 0; i < 80; i++)
+            PreviewSticker(
+              assetPath: 'assets/images/zombies/fixture_$i.webp',
+              tag: 'zombies',
+              labelKey: 'fixtureZombie',
+            ),
+          const PreviewSticker(
+            assetPath: 'assets/images/others/fixture.webp',
+            tag: 'others',
+            labelKey: 'fixtureSunflower',
+          ),
+        ],
+      );
+      final controller = tester
+          .widget<CustomScrollView>(
+            find.byKey(const ValueKey('preview-sticker-scroll')),
+          )
+          .controller!;
+      controller.jumpTo(90);
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('preview-sticker-tag-plants')),
+      );
+      await tester.pumpAndSettle();
+      expect(controller.offset, closeTo(90, 1));
+
+      controller.jumpTo(110);
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('preview-sticker-tag-zombies')),
+      );
+      await tester.pumpAndSettle();
+      expect(controller.offset, closeTo(110, 1));
+
+      controller.jumpTo(80);
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('preview-sticker-tag-plants')),
+      );
+      await tester.pumpAndSettle();
+      expect(controller.offset, closeTo(110, 1));
+
+      await tester.tap(
+        find.byKey(const ValueKey('preview-sticker-tag-others')),
+      );
+      await tester.pumpAndSettle();
+      expect(controller.offset, controller.position.maxScrollExtent);
+      expect(controller.offset, 0);
+      await tester.tap(
+        find.byKey(const ValueKey('preview-sticker-tag-zombies')),
+      );
+      await tester.pumpAndSettle();
+      expect(controller.offset, closeTo(80, 1));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
+    testWidgets(
+      'vertical sticker thumb drags on ${platform.name} without choosing a sticker',
+      (tester) async {
+        var selected = false;
+        await _open(
+          tester,
+          size: const Size(390, 700),
+          stickers: [
+            for (final tag in kPreviewImageFolders)
+              for (var i = 0; i < 20; i++)
+                PreviewSticker(
+                  assetPath: 'assets/images/$tag/fixture_$i.webp',
+                  tag: tag,
+                  labelKey: 'fixtureSunflower',
+                ),
+          ],
+          platform: platform,
+          onSelected: (_) => selected = true,
+        );
+        final controller = tester
+            .widget<CustomScrollView>(
+              find.byKey(const ValueKey('preview-sticker-scroll')),
+            )
+            .controller!;
+        expect(controller.offset, 0);
+        await tester.drag(
+          find.byKey(const ValueKey('preview-sticker-tags-scroll')),
+          const Offset(-120, 0),
+        );
+        await tester.pumpAndSettle();
+        expect(controller.offset, 0);
+        await dragPreviewVerticalScrollbar(
+          tester,
+          const ValueKey('preview-sticker-scrollbar'),
+        );
+        expect(controller.offset, greaterThan(200));
+        expect(selected, isFalse);
+        expect(find.byType(PreviewStickerPickerDialog), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   test('toolbar and tag names use matching, capitalized locale keys', () {
     const path = 'lib/bundled_plugins/preview_img_cplugin/assets/l10n';

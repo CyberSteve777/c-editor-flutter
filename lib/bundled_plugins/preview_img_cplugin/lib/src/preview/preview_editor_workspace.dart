@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:c_editor/widgets/local_scrollbar_region.dart';
 
 /// Keeps editing controls from changing the fitted canvas size as they grow.
 /// Canvas zoom is view-only: the canvas keeps its original layout constraints
@@ -132,61 +133,63 @@ class _PreviewEditorWorkspaceState extends State<PreviewEditorWorkspace> {
             scrollbarOrientation: ScrollbarOrientation.right,
             notificationPredicate: (notification) =>
                 notification.metrics.axis == Axis.vertical,
-            child: Scrollbar(
-              controller: _canvasHorizontalScroll,
-              thumbVisibility: _zoom > 1,
-              trackVisibility: _zoom > 1,
-              interactive: true,
-              scrollbarOrientation: ScrollbarOrientation.bottom,
-              notificationPredicate: (notification) =>
-                  notification.metrics.axis == Axis.horizontal,
-              child: _ScrollbarThumbInputGuard(
-                enabled: _zoom > 1,
-                child: SingleChildScrollView(
-                  controller: _canvasVerticalScroll,
-                  primary: false,
-                  physics: const ClampingScrollPhysics(),
+            child: LocalScrollbarRegion(
+              child: Scrollbar(
+                controller: _canvasHorizontalScroll,
+                thumbVisibility: _zoom > 1,
+                trackVisibility: _zoom > 1,
+                interactive: true,
+                scrollbarOrientation: ScrollbarOrientation.bottom,
+                notificationPredicate: (notification) =>
+                    notification.metrics.axis == Axis.horizontal,
+                child: _ScrollbarThumbInputGuard(
+                  enabled: _zoom > 1,
                   child: SingleChildScrollView(
-                    controller: _canvasHorizontalScroll,
+                    controller: _canvasVerticalScroll,
                     primary: false,
-                    scrollDirection: Axis.horizontal,
                     physics: const ClampingScrollPhysics(),
-                    child: SizedBox(
-                      width: _canvasViewport.width * math.max(1, _zoom),
-                      height: _canvasViewport.height * math.max(1, _zoom),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: origin.dx,
-                            top: origin.dy,
-                            width: _canvasViewport.width,
-                            height: _canvasViewport.height,
-                            child: Transform.scale(
-                              scale: _zoom,
-                              alignment: Alignment.topLeft,
-                              child: Listener(
-                                onPointerSignal: (event) {
-                                  if (event is PointerScrollEvent &&
-                                      (HardwareKeyboard
-                                              .instance
-                                              .isControlPressed ||
-                                          HardwareKeyboard
-                                              .instance
-                                              .isMetaPressed)) {
-                                    // The editor uses Ctrl/Command-wheel to scale
-                                    // selected elements. Keep that gesture from
-                                    // also scrolling the surrounding canvas view.
-                                    GestureBinding
-                                        .instance
-                                        .pointerSignalResolver
-                                        .register(event, (_) {});
-                                  }
-                                },
-                                child: widget.canvas,
+                    child: SingleChildScrollView(
+                      controller: _canvasHorizontalScroll,
+                      primary: false,
+                      scrollDirection: Axis.horizontal,
+                      physics: const ClampingScrollPhysics(),
+                      child: SizedBox(
+                        width: _canvasViewport.width * math.max(1, _zoom),
+                        height: _canvasViewport.height * math.max(1, _zoom),
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              left: origin.dx,
+                              top: origin.dy,
+                              width: _canvasViewport.width,
+                              height: _canvasViewport.height,
+                              child: Transform.scale(
+                                scale: _zoom,
+                                alignment: Alignment.topLeft,
+                                child: Listener(
+                                  onPointerSignal: (event) {
+                                    if (event is PointerScrollEvent &&
+                                        (HardwareKeyboard
+                                                .instance
+                                                .isControlPressed ||
+                                            HardwareKeyboard
+                                                .instance
+                                                .isMetaPressed)) {
+                                      // The editor uses Ctrl/Command-wheel to scale
+                                      // selected elements. Keep that gesture from
+                                      // also scrolling the surrounding canvas view.
+                                      GestureBinding
+                                          .instance
+                                          .pointerSignalResolver
+                                          .register(event, (_) {});
+                                    }
+                                  },
+                                  child: widget.canvas,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

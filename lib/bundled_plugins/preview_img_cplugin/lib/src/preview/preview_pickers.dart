@@ -10,6 +10,7 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'preview_sticker_catalog.dart';
 import 'preview_sticker_picker_session.dart';
 import 'preview_document.dart';
+import 'preview_picker_scroll_area.dart';
 
 export 'preview_sticker_picker_session.dart';
 
@@ -131,108 +132,112 @@ Future<String?> showPreviewBannerPicker({
         content: SizedBox(
           width: 520,
           height: 620,
-          child: ListView.builder(
-            key: const ValueKey('previewBannerPickerScroll'),
-            itemCount: entries.length + 1,
-            itemBuilder: (_, i) {
-              if (i == 0) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    t('previewGenChooseBanner', 'Choose banner'),
-                    style: theme.textTheme.headlineSmall,
-                  ),
+          child: PreviewPickerScrollArea(
+            scrollbarKey: const ValueKey('previewBannerPickerScrollbar'),
+            builder: (controller) => ListView.builder(
+              key: const ValueKey('previewBannerPickerScroll'),
+              controller: controller,
+              itemCount: entries.length + 1,
+              itemBuilder: (_, i) {
+                if (i == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      t('previewGenChooseBanner', 'Choose banner'),
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                  );
+                }
+                final stem = entries[i - 1];
+                if (stem == '__custom__') {
+                  return Card(
+                    key: const ValueKey('preview-banner-custom'),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    clipBehavior: Clip.antiAlias,
+                    child: EditorOptionTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      leading: const CircleAvatar(
+                        child: Icon(Icons.folder_open, size: 22),
+                      ),
+                      title: Text(
+                        t('previewGenCustomBanner', 'Custom image'),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onTap: () => Navigator.pop(ctx, '__custom__'),
+                    ),
+                  );
+                }
+                final info = _bannerPresentationFor(
+                  context: ctx,
+                  stem: stem,
+                  banners: banners,
+                  t: t,
                 );
-              }
-              final stem = entries[i - 1];
-              if (stem == '__custom__') {
+                final isSelected = stem == currentStem;
                 return Card(
-                  key: const ValueKey('preview-banner-custom'),
+                  key: ValueKey('preview-banner-$stem'),
                   margin: const EdgeInsets.only(bottom: 8),
+                  color: isSelected
+                      ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                      : null,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: isSelected
+                          ? theme.colorScheme.primary
+                          : theme.dividerColor.withValues(alpha: 0.3),
+                      width: isSelected ? 2 : 1,
+                    ),
+                  ),
                   clipBehavior: Clip.antiAlias,
                   child: EditorOptionTile(
+                    onTap: () => Navigator.pop(ctx, stem),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 10,
+                      vertical: 12,
                     ),
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.folder_open, size: 22),
+                    leading: SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: AssetImageWidget(
+                        assetPath:
+                            info.iconAssetPath ??
+                            banners.roundIconAssetForStem(stem),
+                        altCandidates: banners.roundIconAltCandidatesForStem(
+                          stem,
+                        ),
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                     title: Text(
-                      t('previewGenCustomBanner', 'Custom image'),
+                      info.name,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    onTap: () => Navigator.pop(ctx, '__custom__'),
+                    subtitle: Text(
+                      stem,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    trailing: isSelected
+                        ? Icon(
+                            Icons.check_circle,
+                            color: theme.colorScheme.primary,
+                          )
+                        : null,
                   ),
                 );
-              }
-              final info = _bannerPresentationFor(
-                context: ctx,
-                stem: stem,
-                banners: banners,
-                t: t,
-              );
-              final isSelected = stem == currentStem;
-              return Card(
-                key: ValueKey('preview-banner-$stem'),
-                margin: const EdgeInsets.only(bottom: 8),
-                color: isSelected
-                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
-                    : null,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: isSelected
-                        ? theme.colorScheme.primary
-                        : theme.dividerColor.withValues(alpha: 0.3),
-                    width: isSelected ? 2 : 1,
-                  ),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: EditorOptionTile(
-                  onTap: () => Navigator.pop(ctx, stem),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  leading: SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: AssetImageWidget(
-                      assetPath:
-                          info.iconAssetPath ??
-                          banners.roundIconAssetForStem(stem),
-                      altCandidates: banners.roundIconAltCandidatesForStem(
-                        stem,
-                      ),
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  title: Text(
-                    info.name,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text(
-                    stem,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  trailing: isSelected
-                      ? Icon(
-                          Icons.check_circle,
-                          color: theme.colorScheme.primary,
-                        )
-                      : null,
-                ),
-              );
-            },
+              },
+            ),
           ),
         ),
         actions: [
@@ -314,6 +319,7 @@ class _PreviewStickerPickerDialogState
   late final TextEditingController _searchController;
   late List<PreviewSticker> _orderedStickers;
   bool _restoringPosition = true;
+  int _positionRevision = 0;
   String? _folder;
   String _query = '';
 
@@ -358,15 +364,19 @@ class _PreviewStickerPickerDialogState
     }
   }
 
-  void _restorePosition() {
+  void _restorePosition({double fallback = 0}) {
     _restoringPosition = true;
+    final revision = ++_positionRevision;
+    final target = _session.scrollOffsetFor(
+      _folder,
+      _query,
+      fallback: fallback,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted || revision != _positionRevision) return;
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(
-          _session
-              .scrollOffsetFor(_folder, _query)
-              .clamp(0.0, _scrollController.position.maxScrollExtent),
+          target.clamp(0.0, _scrollController.position.maxScrollExtent),
         );
       }
       _restoringPosition = false;
@@ -375,6 +385,10 @@ class _PreviewStickerPickerDialogState
   }
 
   void _setFilter(String? folder, String query) {
+    if (_folder == folder && _query == query) return;
+    final fallback = query == _query && _scrollController.hasClients
+        ? _scrollController.offset
+        : 0.0;
     _rememberPosition();
     setState(() {
       _folder = folder;
@@ -382,7 +396,9 @@ class _PreviewStickerPickerDialogState
       _session.selectedTag = folder;
       _session.query = query;
     });
-    _restorePosition();
+    // Keep the visible part of the header when first visiting a tag. Returning
+    // to a tag still restores its own position; a new search starts at the top.
+    _restorePosition(fallback: fallback);
   }
 
   @override
@@ -441,12 +457,12 @@ class _PreviewStickerPickerDialogState
         child: Column(
           children: [
             Expanded(
-              child: Scrollbar(
+              child: PreviewPickerScrollArea(
+                scrollbarKey: const ValueKey('preview-sticker-scrollbar'),
                 controller: _scrollController,
-                thumbVisibility: true,
-                child: CustomScrollView(
+                builder: (controller) => CustomScrollView(
                   key: const ValueKey('preview-sticker-scroll'),
-                  controller: _scrollController,
+                  controller: controller,
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [

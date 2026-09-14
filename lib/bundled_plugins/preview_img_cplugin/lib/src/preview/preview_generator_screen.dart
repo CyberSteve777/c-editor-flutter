@@ -9,6 +9,7 @@ import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/gif
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_auto_composer.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_canvas.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_document.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_document_snapshot.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_editor_workspace.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_feature_groups.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_fonts.dart';
@@ -36,6 +37,7 @@ import 'dart:ui' as ui;
 /// Desktop windows keep the full-width budget. Mobile screens can use the
 /// scrollable toolbar and view-only canvas zoom at a smaller allocation.
 const double kPreviewGeneratorMinimumWidth = 600;
+const double kPreviewGeneratorMinimumMobileWidth = 360;
 
 @visibleForTesting
 bool isPreviewGeneratorWidthAvailable(double availableWidth) =>
@@ -65,12 +67,10 @@ bool isPreviewGeneratorDisplayAreaAvailable({
   if (!nativeMobile) {
     return isPreviewGeneratorWidthAvailable(windowAllocation.width);
   }
-  // Wide portrait tablets/foldables do not need to rotate. Smaller phones can
-  // also edit in a wide allocation, without an orientation-only exemption for
-  // genuinely narrow split-screen windows. UI zoom does not change this budget.
-  return windowAllocation.width >= 480 ||
-      (windowAllocation.width >= 400 &&
-          windowAllocation.width >= windowAllocation.height);
+  // Phones can edit in either orientation with the scrollable toolbar and
+  // canvas zoom. Keep a minimum window width for narrow split-screen regions;
+  // zooming the UI out must not bypass this allocation budget.
+  return windowAllocation.width >= kPreviewGeneratorMinimumMobileWidth;
 }
 
 @visibleForTesting
@@ -218,6 +218,14 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
 
   PreviewDocument? _undoSnapshot;
   PreviewDocument? _redoSnapshot;
+  PreviewDocumentSnapshot? _savedDocumentSnapshot;
+
+  bool get _hasUnsavedChanges {
+    final document = _document;
+    return document != null &&
+        (_savedDocumentSnapshot == null ||
+            !_savedDocumentSnapshot!.matches(document));
+  }
 
   static const _palette = <Color>[
     Colors.white,
@@ -1613,6 +1621,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
           _boundaryKey.currentContext?.findRenderObject()
               as RenderRepaintBoundary?;
       if (box == null) throw StateError('Preview canvas is not ready');
+      // Save the content represented by this frame, before the asynchronous
+      // image write. Later edits must not become saved merely because it succeeds.
+      final exportedSnapshot = PreviewDocumentSnapshot.capture(_document!);
       final image = await box.toImage(pixelRatio: 2.0);
       final PreviewExportResult result;
       try {
@@ -1626,6 +1637,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
         image.dispose();
       }
       if (!mounted) return false;
+      _savedDocumentSnapshot = exportedSnapshot;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -1677,7 +1689,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     _confirmingExit = true;
     try {
       _endTextEdit();
-      final choice = !_widthAvailable || _document == null
+      final choice = !_widthAvailable || !_hasUnsavedChanges
           ? _PreviewExitChoice.discard
           : await showDialog<_PreviewExitChoice>(
               context: context,
@@ -1710,7 +1722,10 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
               ),
             );
       if (!mounted || choice == null) return;
-      if (choice == _PreviewExitChoice.save && !await _export()) return;
+      if (choice == _PreviewExitChoice.save &&
+          (!await _export() || _hasUnsavedChanges)) {
+        return;
+      }
       if (!mounted) return;
       setState(() => _allowExit = true);
       await WidgetsBinding.instance.endOfFrame;
@@ -2018,6 +2033,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
                 icon: const Icon(Icons.redo),
               ),
               IconButton(
+                key: const ValueKey('previewGeneratorExportButton'),
                 tooltip: _t('previewGenExport', 'Export image'),
                 onPressed: (_loading || _exporting || _document == null)
                     ? null
