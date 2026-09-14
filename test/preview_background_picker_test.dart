@@ -9,6 +9,8 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/preview_scrollbar_gesture.dart';
+
 Map<String, dynamic> _pluginLocale(String locale) =>
     jsonDecode(
           File(
@@ -194,6 +196,18 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
     final custom = find.byKey(const ValueKey('preview-banner-custom'));
+    final controller = tester
+        .widget<ListView>(
+          find.byKey(const ValueKey('previewBannerPickerScroll')),
+        )
+        .controller!;
+    await dragPreviewVerticalScrollbar(
+      tester,
+      const ValueKey('previewBannerPickerScrollbar'),
+      distance: 80,
+    );
+    expect(controller.offset, greaterThan(100));
+    expect(selected, isNull);
     final scrollable = find
         .descendant(
           of: find.byType(AlertDialog),

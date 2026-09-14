@@ -8,6 +8,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/select/magic_hat_spawn_preview_screen.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/widgets/selection_grid_confirmation.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
@@ -575,6 +576,27 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     final themeColor = theme.colorScheme.primary;
     final filterMaxHeight = MediaQuery.sizeOf(context).height * 0.42;
     final tabColors = AccentBarTabBarStyle.colors(context);
+    const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
+      maxCrossAxisExtent: 72,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 8,
+      childAspectRatio: 0.65,
+    );
+    final confirmation = widget.isMultiSelect
+        ? FloatingActionButton(
+            onPressed: _isLoaded
+                ? () {
+                    final ids = _filterChooserSelectablePlantIds(
+                      widget.allowDuplicateSelection
+                          ? List<String>.from(_selectedIdsWithDuplicates)
+                          : _selectedIds.toList(),
+                    );
+                    widget.onMultiPlantSelected?.call(ids);
+                  }
+                : null,
+            child: const Icon(Icons.check),
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -588,21 +610,6 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
         ),
         title: Text(l10n?.selectPlant ?? 'Select plant'),
       ),
-      floatingActionButton: widget.isMultiSelect
-          ? FloatingActionButton(
-              onPressed: _isLoaded
-                  ? () {
-                      final ids = _filterChooserSelectablePlantIds(
-                        widget.allowDuplicateSelection
-                            ? List<String>.from(_selectedIdsWithDuplicates)
-                            : _selectedIds.toList(),
-                      );
-                      widget.onMultiPlantSelected?.call(ids);
-                    }
-                  : null,
-              child: const Icon(Icons.check),
-            )
-          : null,
       body: Column(
         children: [
           Container(
@@ -710,75 +717,75 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
             ),
           ),
           Expanded(
-            child: !_isLoaded
-                ? const Center(child: CircularProgressIndicator())
-                : plants.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 64,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _selectedCategory == PlantCategory.collection
-                              ? (l10n?.noFavoritesLongPress ??
-                                    'No favorites. Long-press to favorite.')
-                              : (l10n?.noPlantFound ?? 'No plant found'),
-                          style: theme.textTheme.bodyMedium?.copyWith(
+            child: SelectionGridConfirmation(
+              itemCount: plants.length,
+              gridDelegate: gridDelegate,
+              confirmation: confirmation,
+              builder: (context, gridPadding) => !_isLoaded
+                  ? const Center(child: CircularProgressIndicator())
+                  : plants.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search,
+                            size: 64,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          Text(
+                            _selectedCategory == PlantCategory.collection
+                                ? (l10n?.noFavoritesLongPress ??
+                                      'No favorites. Long-press to favorite.')
+                                : (l10n?.noPlantFound ?? 'No plant found'),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      controller: _scrollController,
+                      padding: gridPadding,
+                      gridDelegate: gridDelegate,
+                      itemCount: plants.length,
+                      itemBuilder: (_, i) {
+                        final plant = plants[i];
+                        final selectionCount = widget.allowDuplicateSelection
+                            ? _selectedIdsWithDuplicates
+                                  .where((id) => id == plant.id)
+                                  .length
+                            : (_selectedIds.contains(plant.id) ? 1 : 0);
+                        final isSelected = selectionCount > 0;
+                        final isFavorite = repo.isFavorite(plant.id);
+                        final blockedReason = _plantBlockedReason(
+                          plant,
+                          levelModuleObjClasses,
+                        );
+                        final isEnabled = blockedReason == null;
+                        final isHat = _isMagicHatPlant(plant);
+                        return _PlantGridItem(
+                          plant: plant,
+                          isSelected: isSelected,
+                          isFavorite: isFavorite,
+                          isEnabled: isEnabled,
+                          onTap: () =>
+                              _onPlantTap(context, plant, blockedReason),
+                          onSelectedIconTap: widget.isMultiSelect && isSelected
+                              ? () => _deselectPlant(plant.id)
+                              : null,
+                          onSecondaryTap: isHat
+                              ? () => _openMagicHatPreview(context, plant.id)
+                              : null,
+                          onLongPress: isHat
+                              ? () => _openMagicHatPreview(context, plant.id)
+                              : () => _toggleFavorite(context, plant.id),
+                        );
+                      },
                     ),
-                  )
-                : GridView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(12),
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 72,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 8,
-                          childAspectRatio: 0.65,
-                        ),
-                    itemCount: plants.length,
-                    itemBuilder: (_, i) {
-                      final plant = plants[i];
-                      final selectionCount = widget.allowDuplicateSelection
-                          ? _selectedIdsWithDuplicates
-                                .where((id) => id == plant.id)
-                                .length
-                          : (_selectedIds.contains(plant.id) ? 1 : 0);
-                      final isSelected = selectionCount > 0;
-                      final isFavorite = repo.isFavorite(plant.id);
-                      final blockedReason = _plantBlockedReason(
-                        plant,
-                        levelModuleObjClasses,
-                      );
-                      final isEnabled = blockedReason == null;
-                      final isHat = _isMagicHatPlant(plant);
-                      return _PlantGridItem(
-                        plant: plant,
-                        isSelected: isSelected,
-                        isFavorite: isFavorite,
-                        isEnabled: isEnabled,
-                        onTap: () => _onPlantTap(context, plant, blockedReason),
-                        onSelectedIconTap: widget.isMultiSelect && isSelected
-                            ? () => _deselectPlant(plant.id)
-                            : null,
-                        onSecondaryTap: isHat
-                            ? () => _openMagicHatPreview(context, plant.id)
-                            : null,
-                        onLongPress: isHat
-                            ? () => _openMagicHatPreview(context, plant.id)
-                            : () => _toggleFavorite(context, plant.id),
-                      );
-                    },
-                  ),
+            ),
           ),
         ],
       ),
@@ -811,6 +818,7 @@ class _PlantGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final iconPath = plant.iconAssetPath;
+    final name = ResourceNames.lookup(context, plant.name);
     final hasIcon = iconPath != null && iconPath.isNotEmpty;
 
     final borderColor = isSelected
@@ -894,25 +902,31 @@ class _PlantGridItem extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
-              Text(
-                ResourceNames.lookup(context, plant.name),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 9,
+              Tooltip(
+                message: name,
+                child: Text(
+                  name,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 9,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-              Text(
-                plant.id,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 8,
+              Tooltip(
+                message: plant.id,
+                child: Text(
+                  plant.id,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 8,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

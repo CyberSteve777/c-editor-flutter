@@ -11,8 +11,7 @@ import 'package:c_editor/plugins/plugin_package.dart';
 /// First-party plugins shipped with C-Editor (disable-only).
 ///
 /// Each entry uses the same package contract as an external `.cplugin`:
-/// `manifest.json`, `initialize(CPluginHost)`, and `assets/` (including l10n
-/// and `icon.png` from the manifest `icon` field).
+/// `manifest.json`, `initialize(CPluginHost)`, and `assets/` (including l10n).
 List<CPluginPackageSpec> get bundledPlugins => [
   CPluginPackageSpec(
     id: kLevelPreviewPluginId,

@@ -142,6 +142,66 @@ abstract class AppLocalizations {
   /// **'Grid Items'**
   String get previewTabGridItems;
 
+  /// No description provided for @overviewPresetPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset plants'**
+  String get overviewPresetPlants;
+
+  /// No description provided for @overviewPresetZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset zombies'**
+  String get overviewPresetZombies;
+
+  /// No description provided for @overviewConveyorPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Conveyor plants'**
+  String get overviewConveyorPlants;
+
+  /// No description provided for @overviewLawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Lawn'**
+  String get overviewLawn;
+
+  /// No description provided for @overviewWhitelist.
+  ///
+  /// In en, this message translates to:
+  /// **'Whitelist'**
+  String get overviewWhitelist;
+
+  /// No description provided for @overviewBlacklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Blacklist'**
+  String get overviewBlacklist;
+
+  /// No description provided for @overviewPlantBlacklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant blacklist'**
+  String get overviewPlantBlacklist;
+
+  /// No description provided for @overviewZombieWhitelist.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie whitelist'**
+  String get overviewZombieWhitelist;
+
+  /// No description provided for @overviewSeedChooser.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your seeds'**
+  String get overviewSeedChooser;
+
+  /// No description provided for @overviewReservedColumns.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved columns'**
+  String get overviewReservedColumns;
+
   /// No description provided for @sunBombFalling.
   ///
   /// In en, this message translates to:

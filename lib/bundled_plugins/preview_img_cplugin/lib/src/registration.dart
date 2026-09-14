@@ -31,6 +31,11 @@ void installLevelPreviewHostHooks(CPluginHost host) {
         required String fileName,
       }) async {
         if (!context.mounted) return;
+        final style = await showPreviewLayoutStyleDialog(
+          context: context,
+          t: (key, [fallback]) => host.localize(context, key, fallback),
+        );
+        if (style == null || !context.mounted) return;
         await Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => PreviewGeneratorScreen(
@@ -38,6 +43,7 @@ void installLevelPreviewHostHooks(CPluginHost host) {
               levelFile: levelFile,
               parsed: parsed,
               fileName: fileName,
+              initialStyle: style,
             ),
           ),
         );

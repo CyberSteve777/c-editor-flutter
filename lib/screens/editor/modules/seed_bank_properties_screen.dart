@@ -481,19 +481,17 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                FilterChip(
+                _buildSelectionModeChip(
                   key: const ValueKey('seedBankChooserModeChip'),
-                  label: Text(
-                    AppLocalizations.of(context)?.chooser ?? 'Chooser',
-                  ),
+                  label: l10n?.chooser ?? 'Chooser',
                   selected: _data.selectionMethod == 'chooser' && !isZombieMode,
                   onSelected: isZombieMode
                       ? null
                       : (_) => _switchToChooserMode(),
                 ),
-                FilterChip(
+                _buildSelectionModeChip(
                   key: const ValueKey('seedBankPresetModeChip'),
-                  label: Text(AppLocalizations.of(context)?.preset ?? 'Preset'),
+                  label: l10n?.preset ?? 'Preset',
                   selected: _data.selectionMethod == 'preset' || isZombieMode,
                   onSelected: isZombieMode
                       ? null
@@ -562,6 +560,60 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSelectionModeChip({
+    required Key key,
+    required String label,
+    required bool selected,
+    required ValueChanged<bool>? onSelected,
+  }) {
+    const padding = EdgeInsets.all(8);
+    const labelPadding = EdgeInsets.symmetric(horizontal: 8);
+    return LayoutBuilder(
+      builder: (context, constraints) => FilterChip(
+        key: key,
+        selected: selected,
+        onSelected: onSelected,
+        padding: padding,
+        labelPadding: labelPadding,
+        showCheckmark: false,
+        // Chip measures label height before subtracting its padding and native
+        // checkmark width. Limit both label layouts to the same available width
+        // and include the checkmark in the label so wrapped lines set the height.
+        label: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: constraints.deflate(padding + labelPadding).maxWidth,
+          ),
+          child: _buildSelectionModeLabel(label, selected: selected),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectionModeLabel(String label, {required bool selected}) {
+    // Preserve the chip's resolved text and disabled colors for both children.
+    return Builder(
+      builder: (context) {
+        final style = DefaultTextStyle.of(context);
+        return DefaultTextStyle(
+          style: style.style,
+          textAlign: style.textAlign,
+          softWrap: true,
+          overflow: TextOverflow.visible,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (selected) ...[
+                Icon(Icons.check, size: 18, color: style.style.color),
+                const SizedBox(width: 8),
+              ],
+              Flexible(child: Text(label)),
+            ],
+          ),
+        );
+      },
     );
   }
 

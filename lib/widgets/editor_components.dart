@@ -12,6 +12,7 @@ import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/theme/app_theme.dart';
+import 'package:c_editor/widgets/local_scrollbar_region.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 
@@ -1244,25 +1245,27 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
           : requestedPadding.bottom,
     );
 
-    return ScrollbarTheme(
-      data: _scrollbarTheme(context),
-      child: Scrollbar(
-        key: const ValueKey('horizontalTagScrollerScrollbar'),
-        controller: _scrollController,
-        thumbVisibility: keepThumbVisible,
-        interactive: true,
-        scrollbarOrientation: ScrollbarOrientation.bottom,
-        child: Listener(
-          onPointerSignal: (event) {
-            if (event is PointerScrollEvent) _onPointerScroll(event);
-          },
-          child: ScrollableWithMouseDrag(
-            child: SingleChildScrollView(
-              key: const ValueKey('horizontalTagScrollerScrollView'),
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              padding: effectivePadding,
-              child: Row(children: widget.children),
+    return LocalScrollbarRegion(
+      child: ScrollbarTheme(
+        data: _scrollbarTheme(context),
+        child: Scrollbar(
+          key: const ValueKey('horizontalTagScrollerScrollbar'),
+          controller: _scrollController,
+          thumbVisibility: keepThumbVisible,
+          interactive: true,
+          scrollbarOrientation: ScrollbarOrientation.bottom,
+          child: Listener(
+            onPointerSignal: (event) {
+              if (event is PointerScrollEvent) _onPointerScroll(event);
+            },
+            child: ScrollableWithMouseDrag(
+              child: SingleChildScrollView(
+                key: const ValueKey('horizontalTagScrollerScrollView'),
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                padding: effectivePadding,
+                child: Row(children: widget.children),
+              ),
             ),
           ),
         ),
@@ -1531,17 +1534,19 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
       indicator: widget.indicatorColor ?? defaults.indicator,
     );
 
-    return SizedBox(
-      height: widget.height + widget.scrollbarSlotHeight,
-      child: ScrollbarTheme(
-        data: _scrollbarTheme(context),
-        child: Scrollbar(
-          key: const ValueKey('accentBarFilterScrollbar'),
-          controller: _scrollController,
-          thumbVisibility: true,
-          interactive: true,
-          scrollbarOrientation: ScrollbarOrientation.bottom,
-          child: _buildScrollableRow(tabColors, alignTabsToBottom: true),
+    return LocalScrollbarRegion(
+      child: SizedBox(
+        height: widget.height + widget.scrollbarSlotHeight,
+        child: ScrollbarTheme(
+          data: _scrollbarTheme(context),
+          child: Scrollbar(
+            key: const ValueKey('accentBarFilterScrollbar'),
+            controller: _scrollController,
+            thumbVisibility: true,
+            interactive: true,
+            scrollbarOrientation: ScrollbarOrientation.bottom,
+            child: _buildScrollableRow(tabColors, alignTabsToBottom: true),
+          ),
         ),
       ),
     );

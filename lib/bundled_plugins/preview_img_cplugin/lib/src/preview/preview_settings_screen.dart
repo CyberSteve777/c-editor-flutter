@@ -101,7 +101,7 @@ class _PreviewSettingsScreenState extends State<PreviewSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_t('previewSettings', 'Level Overview settings')),
+        title: Text(_t('previewSettings', 'Preview Image Generator settings')),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

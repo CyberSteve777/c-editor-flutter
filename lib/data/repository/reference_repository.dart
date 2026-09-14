@@ -61,5 +61,9 @@ class ReferenceRepository {
     return _validGridItemAliases.contains(alias);
   }
 
+  /// Positive resource evidence; unlike picker validation, unavailable catalogs
+  /// must not classify every unknown name as a grid item.
+  bool isKnownGridItem(String alias) => _validGridItemAliases.contains(alias);
+
   bool get isLoaded => _moduleCache != null;
 }

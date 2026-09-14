@@ -367,6 +367,7 @@ class _ModuleSelectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isVisuallyEnabled = isEnabled && !isDependencyMissing;
+    final description = meta.getDescription(context);
     return Opacity(
       opacity: isVisuallyEnabled ? 1 : 0.6,
       child: Card(
@@ -426,13 +427,16 @@ class _ModuleSelectionCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        meta.getDescription(context),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                      Tooltip(
+                        message: description,
+                        child: Text(
+                          description,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
