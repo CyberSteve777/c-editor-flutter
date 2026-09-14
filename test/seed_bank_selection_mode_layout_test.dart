@@ -65,20 +65,46 @@ void _expectCompleteLabels(
   double windowWidth, {
   bool expectWrapping = false,
 }) {
+  final buttonBorders = <Rect>[];
   for (final (key, label) in [
     (_chooserKey, l10n.chooser),
     (_presetKey, l10n.preset),
   ]) {
     final chip = find.byKey(key);
+    final chipWidget = tester.widget<FilterChip>(chip);
     final text = find.descendant(of: chip, matching: find.text(label));
     expect(text, findsOneWidget);
     final paragraph = tester.renderObject<RenderParagraph>(text);
+    final colors = Theme.of(tester.element(chip)).colorScheme;
+    final expectedLabelColor = chipWidget.onSelected == null
+        ? colors.onSurface
+        : chipWidget.selected
+        ? colors.onSecondaryContainer
+        : colors.onSurfaceVariant;
+    expect(
+      paragraph.text.style?.color,
+      expectedLabelColor,
+      reason: '$label must inherit the selected or disabled chip label color',
+    );
     expect(
       paragraph.didExceedMaxLines,
       isFalse,
       reason: 'The complete selection mode must be visible: $label',
     );
     final chipRect = tester.getRect(chip);
+    final materialFinder = find
+        .descendant(of: chip, matching: find.byType(Material))
+        .first;
+    final material = tester.widget<Material>(materialFinder);
+    final borderBox = tester.renderObject<RenderBox>(materialFinder);
+    final borderRect = tester.getRect(materialFinder);
+    buttonBorders.add(borderRect);
+    final borderShape = material.shape;
+    expect(borderShape, isNotNull);
+    final insideBorder = borderShape!.getInnerPath(
+      Offset.zero & borderBox.size,
+      textDirection: Directionality.of(tester.element(materialFinder)),
+    );
     final labelRect = tester.getRect(text);
     expect(chipRect.left, greaterThanOrEqualTo(0));
     expect(chipRect.right, lessThanOrEqualTo(windowWidth));
@@ -86,6 +112,76 @@ void _expectCompleteLabels(
     expect(labelRect.right, lessThanOrEqualTo(chipRect.right));
     expect(labelRect.top, greaterThanOrEqualTo(chipRect.top));
     expect(labelRect.bottom, lessThanOrEqualTo(chipRect.bottom));
+    // A wrapped line's trailing space may have a selection box beyond its ink.
+    // Check every painted word so those empty boxes do not hide real overflow.
+    final textBoxes = [
+      for (final word in RegExp(r'\S+').allMatches(label))
+        ...paragraph.getBoxesForSelection(
+          TextSelection(baseOffset: word.start, extentOffset: word.end),
+        ),
+    ];
+    expect(textBoxes, isNotEmpty);
+    for (final box in textBoxes) {
+      final glyphRect = Rect.fromPoints(
+        paragraph.localToGlobal(box.toRect().topLeft),
+        paragraph.localToGlobal(box.toRect().bottomRight),
+      );
+      expect(
+        glyphRect.top,
+        greaterThanOrEqualTo(borderRect.top - .01),
+        reason: '$label glyphs must start inside the painted button border',
+      );
+      expect(
+        glyphRect.bottom,
+        lessThanOrEqualTo(borderRect.bottom + .01),
+        reason: '$label glyphs must finish inside the painted button border',
+      );
+      expect(glyphRect.left, greaterThanOrEqualTo(borderRect.left - .01));
+      expect(
+        glyphRect.right,
+        lessThanOrEqualTo(borderRect.right + .01),
+        reason: '$label glyphs must stay inside the painted button border',
+      );
+      final interior = glyphRect.deflate(.1);
+      for (final point in [
+        interior.topLeft,
+        interior.topRight,
+        interior.bottomLeft,
+        interior.bottomRight,
+      ]) {
+        expect(
+          insideBorder.contains(borderBox.globalToLocal(point)),
+          isTrue,
+          reason:
+              '$label glyph box $glyphRect must stay within the button shape',
+        );
+      }
+    }
+    final check = find.descendant(of: chip, matching: find.byIcon(Icons.check));
+    if (chipWidget.selected) {
+      expect(check, findsOneWidget);
+      final checkWidget = tester.widget<Icon>(check);
+      expect(
+        checkWidget.color ?? IconTheme.of(tester.element(check)).color,
+        expectedLabelColor,
+        reason: 'The check must inherit the same chip state color as its label',
+      );
+      final checkRect = tester.getRect(check).deflate(.1);
+      for (final point in [
+        checkRect.topLeft,
+        checkRect.topRight,
+        checkRect.bottomLeft,
+        checkRect.bottomRight,
+      ]) {
+        expect(
+          insideBorder.contains(borderBox.globalToLocal(point)),
+          isTrue,
+          reason: 'The selected check must stay inside the painted chip border',
+        );
+      }
+    } else {
+      expect(check, findsNothing);
+    }
     if (expectWrapping) {
       final lines = paragraph
           .getBoxesForSelection(
@@ -100,6 +196,11 @@ void _expectCompleteLabels(
       );
     }
   }
+  expect(
+    buttonBorders[0].overlaps(buttonBorders[1]),
+    isFalse,
+    reason: 'The two painted selection buttons must not overlap',
+  );
 }
 
 Future<void> _tapMode(WidgetTester tester, Key key) async {
@@ -112,10 +213,15 @@ Future<void> _tapMode(WidgetTester tester, Key key) async {
 
 void main() {
   for (final locale in ['en', 'zh', 'ru']) {
-    for (final textScale in [1.0, 2.0]) {
+    for (final (width, textScale) in [
+      (320.0, 1.0),
+      (320.0, 2.0),
+      (360.0, 2.0),
+      (390.0, 2.0),
+    ]) {
       testWidgets('$locale seed bank modes show full labels and save selection '
-          'at 320px with text scale $textScale', (tester) async {
-        tester.view.physicalSize = const Size(320, 720);
+          'at ${width.toInt()}px with text scale $textScale', (tester) async {
+        tester.view.physicalSize = Size(width, 720);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
         final level = _level();
@@ -133,7 +239,7 @@ void main() {
         _expectCompleteLabels(
           tester,
           l10n,
-          320,
+          width,
           expectWrapping: locale == 'en' && textScale > 1,
         );
         expect(
@@ -159,7 +265,7 @@ void main() {
         _expectCompleteLabels(
           tester,
           l10n,
-          320,
+          width,
           expectWrapping: locale == 'en' && textScale > 1,
         );
 
@@ -174,51 +280,75 @@ void main() {
           tester.widget<FilterChip>(find.byKey(_presetKey)).selected,
           isFalse,
         );
+        _expectCompleteLabels(
+          tester,
+          l10n,
+          width,
+          expectWrapping: locale == 'en' && textScale > 1,
+        );
         expect(tester.takeException(), isNull);
       });
     }
   }
 
-  testWidgets(
-    'wrapped mode chips remain disabled and preset in I, Zombie mode',
-    (tester) async {
-      tester.view.physicalSize = const Size(320, 720);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      final level = _level(zombieMode: true);
-      var writes = 0;
-      await tester.pumpWidget(
-        _app(level, locale: 'en', textScale: 2, onChanged: () => writes++),
+  for (final locale in ['en', 'zh', 'ru']) {
+    for (final width in [320.0, 390.0]) {
+      testWidgets(
+        locale == 'en' && width == 320
+            ? 'wrapped mode chips remain disabled and preset in I, Zombie mode'
+            : '$locale wrapped mode chips remain disabled and preset '
+                  'in I, Zombie mode at ${width.toInt()}px',
+        (tester) async {
+          tester.view.physicalSize = Size(width, 720);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.reset);
+          final level = _level(zombieMode: true);
+          var writes = 0;
+          await tester.pumpWidget(
+            _app(
+              level,
+              locale: locale,
+              textScale: 2,
+              onChanged: () => writes++,
+            ),
+          );
+          await tester.pumpAndSettle();
+          _expectCompleteLabels(
+            tester,
+            lookupAppLocalizations(Locale(locale)),
+            width,
+            expectWrapping: locale == 'en',
+          );
+          expect(
+            tester.widget<FilterChip>(find.byKey(_chooserKey)).onSelected,
+            isNull,
+          );
+          expect(
+            tester.widget<FilterChip>(find.byKey(_presetKey)).onSelected,
+            isNull,
+          );
+          await _tapMode(tester, _chooserKey);
+          await _tapMode(tester, _presetKey);
+          expect(_saved(level).selectionMethod, 'preset');
+          expect(_saved(level).zombieMode, isTrue);
+          expect(writes, 0);
+          expect(
+            tester.widget<FilterChip>(find.byKey(_chooserKey)).selected,
+            isFalse,
+          );
+          expect(
+            tester.widget<FilterChip>(find.byKey(_presetKey)).selected,
+            isTrue,
+          );
+          _expectCompleteLabels(
+            tester,
+            lookupAppLocalizations(Locale(locale)),
+            width,
+            expectWrapping: locale == 'en',
+          );
+          expect(tester.takeException(), isNull);
+        },
       );
-      await tester.pumpAndSettle();
-      _expectCompleteLabels(
-        tester,
-        lookupAppLocalizations(const Locale('en')),
-        320,
-        expectWrapping: true,
-      );
-      expect(
-        tester.widget<FilterChip>(find.byKey(_chooserKey)).onSelected,
-        isNull,
-      );
-      expect(
-        tester.widget<FilterChip>(find.byKey(_presetKey)).onSelected,
-        isNull,
-      );
-      await _tapMode(tester, _chooserKey);
-      await _tapMode(tester, _presetKey);
-      expect(_saved(level).selectionMethod, 'preset');
-      expect(_saved(level).zombieMode, isTrue);
-      expect(writes, 0);
-      expect(
-        tester.widget<FilterChip>(find.byKey(_chooserKey)).selected,
-        isFalse,
-      );
-      expect(
-        tester.widget<FilterChip>(find.byKey(_presetKey)).selected,
-        isTrue,
-      );
-      expect(tester.takeException(), isNull);
-    },
-  );
+    }
+  }
 }
