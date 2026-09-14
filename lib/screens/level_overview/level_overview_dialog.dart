@@ -461,6 +461,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             Padding(
               padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 12),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: widget.onClose,
@@ -469,14 +470,15 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                     ),
                     child: Text(l10n.close),
                   ),
-                  const Spacer(),
                   if (widget.showOpenLevel &&
                       widget.filePath != null &&
-                      widget.filePath!.isNotEmpty)
+                      widget.filePath!.isNotEmpty) ...[
+                    const SizedBox(width: 8),
                     FilledButton(
                       onPressed: _openLevel,
                       child: Text(l10n.levelOverviewOpenLevel),
                     ),
+                  ],
                 ],
               ),
             ),
