@@ -1,8 +1,11 @@
-# Data Package Download (bundled)
+# Level testing mod creator (bundled)
 
-Offers downloading `dynamic.rsb.smf` from
+Creates level testing mods from the level library. Also offers downloading
+`dynamic.rsb.smf` from
 [Archiver2c/pvz2c-dynamic releases](https://github.com/Archiver2c/pvz2c-dynamic/releases)
 when RSB export finds no `.rsb.smf` files in the level library.
+
+Plugin id: `team.international2c.level_testing_mod`
 
 ## Layout
 
@@ -15,4 +18,4 @@ assets/icon.png
 ```
 
 Uses host packages (`nice_downloader`, `http`) — bundled in-process only.
-Disable from Plugins if you do not want the export prompt.
+Disable from Plugins if you do not want the export menu entry or dynamic prompt.

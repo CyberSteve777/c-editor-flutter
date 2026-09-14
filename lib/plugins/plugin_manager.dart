@@ -73,7 +73,12 @@ class PluginManager extends ChangeNotifier {
 
   Set<String> _disabledIds() {
     final list = _prefs.getStringList(_prefsDisabledKey) ?? const [];
-    return list.toSet();
+    final ids = list.toSet();
+    // Migrate pre-rename Data Package Download plugin id.
+    if (ids.remove('team.international2c.dynamic_fetch')) {
+      ids.add('team.international2c.level_testing_mod');
+    }
+    return ids;
   }
 
   Future<void> _setDisabledIds(Set<String> ids) async {
@@ -83,7 +88,7 @@ class PluginManager extends ChangeNotifier {
   Future<void> reload() async {
     screenRegistry.clearAll();
     _runtimes.clear();
-    PluginHostHooks.openLevelPreview = null;
+    PluginHostHooks.openPreviewImageGenerator = null;
     PluginHostHooks.offerExternalDynamic = null;
 
     final disabled = _disabledIds();

@@ -26,7 +26,7 @@ String _format(String message, Map<String, Object> arguments) {
 }
 
 void main() {
-  const pluginRoot = 'lib/bundled_plugins/level_preview_cplugin/assets/l10n';
+  const pluginRoot = 'lib/bundled_plugins/preview_img_cplugin/assets/l10n';
   final zh = _messages('$pluginRoot/zh.arb');
   final en = _messages('$pluginRoot/en.arb');
 

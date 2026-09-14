@@ -1,6 +1,4 @@
-import 'dart:typed_data';
-
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/level_preview_dialog.dart';
+import 'package:c_editor/screens/level_overview/level_overview_dialog.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
@@ -11,8 +9,6 @@ import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/plugins/plugin_host_impl.dart';
-import 'package:c_editor/plugins/plugin_screen_registry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,21 +77,15 @@ PvzLevelFile _level({
 }
 
 Widget _preview(PvzLevelFile level) {
-  final host = PluginHostImpl(
-    pluginId: 'team.international2c.level_preview',
-    assets: MemoryCPluginAssets(const <String, Uint8List>{}),
-    registry: PluginScreenRegistry(),
-  );
   return MaterialApp(
     locale: const Locale('en'),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: LevelPreviewDialog(
-      host: host,
+    home: LevelOverviewDialog(
       levelFile: level,
       parsed: LevelParser.parseLevel(level),
       fileName: 'single_handed.json',
-      onBack: () {},
+      onClose: () {},
     ),
   );
 }

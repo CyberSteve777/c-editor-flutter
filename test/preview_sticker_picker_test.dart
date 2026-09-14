@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_pickers.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_sticker_catalog.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_pickers.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_sticker_catalog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -91,7 +91,7 @@ void main() {
   setUp(rootBundle.clear);
 
   test('toolbar and tag names use matching, capitalized locale keys', () {
-    const path = 'lib/bundled_plugins/level_preview_cplugin/assets/l10n';
+    const path = 'lib/bundled_plugins/preview_img_cplugin/assets/l10n';
     final en = jsonDecode(File('$path/en.arb').readAsStringSync()) as Map;
     final zh = jsonDecode(File('$path/zh.arb').readAsStringSync()) as Map;
     expect(en['previewGenAddText'], 'Text');

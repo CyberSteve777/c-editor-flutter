@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_module_info.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_module_info.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 

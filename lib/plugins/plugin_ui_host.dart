@@ -29,7 +29,7 @@ List<Widget> pluginEditorAppBarActions(BuildContext context) {
     for (final element in elements)
       IconButton(
         icon: Icon(element.icon),
-        tooltip: element.title,
+        tooltip: element.resolvedTitle(context),
         onPressed: () => openPluginUiElement(context, element),
       ),
   ];
@@ -62,7 +62,7 @@ List<PopupMenuEntry<String>> pluginOverflowMenuItems({
         value: '$valuePrefix${element.key}',
         child: EditorPopupMenuTile(
           leading: Icon(element.icon),
-          title: Text(element.title),
+          title: Text(element.resolvedTitle(context)),
           contentPadding: EdgeInsets.zero,
         ),
       ),

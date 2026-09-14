@@ -1895,6 +1895,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get close => '关闭';
 
   @override
+  String get levelOverview => '关卡总览';
+
+  @override
+  String get levelOverviewOpenLevel => '打开关卡';
+
+  @override
+  String get previewStartingPlantFood => '初始能量豆';
+
+  @override
+  String get previewPrePlaced => '预置布局';
+
+  @override
+  String get previewRegularPlants => '常规植物';
+
+  @override
+  String get previewFrozenPlants => '冰冻植物';
+
+  @override
+  String get previewLevelContent => '关卡内容';
+
+  @override
+  String get previewSeedBank => '卡槽植物';
+
+  @override
+  String get previewIZombieSeedBank => '卡槽僵尸';
+
+  @override
+  String get previewFeatures => '关卡特性';
+
+  @override
+  String get previewActiveModules => '启用模块';
+
+  @override
+  String get previewInitial => '初始障碍物';
+
+  @override
+  String get previewGenerateImagePreview => '生成预览图';
+
+  @override
   String get editProperties => '编辑属性';
 
   @override

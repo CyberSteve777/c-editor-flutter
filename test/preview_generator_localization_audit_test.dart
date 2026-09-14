@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_auto_composer.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_document.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_feature_groups.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_fonts.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/stage_banner_resolver.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_auto_composer.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_document.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_feature_groups.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_fonts.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/stage_banner_resolver.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/plugins/plugin_arb.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _pluginRoot = 'lib/bundled_plugins/level_preview_cplugin';
+const _pluginRoot = 'lib/bundled_plugins/preview_img_cplugin';
 const _locales = ['zh', 'en', 'ru'];
 
 Map<String, String> _messages(String locale) => parsePluginArb(

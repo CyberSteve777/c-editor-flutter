@@ -88,15 +88,15 @@ flutter:
     - assets/images/ztalemate_perks/
     - assets/images/fishes/
     - assets/images/tunnels/
-    - lib/bundled_plugins/level_preview_cplugin/manifest.json
-    - lib/bundled_plugins/level_preview_cplugin/assets/icon.png
-    - lib/bundled_plugins/level_preview_cplugin/assets/stage_banners.json
-    - lib/bundled_plugins/level_preview_cplugin/assets/feature_groups.json
-    - lib/bundled_plugins/level_preview_cplugin/assets/config_schema.json
-    - lib/bundled_plugins/level_preview_cplugin/assets/banners/
-    - lib/bundled_plugins/level_preview_cplugin/assets/l10n/en.arb
-    - lib/bundled_plugins/level_preview_cplugin/assets/l10n/ru.arb
-    - lib/bundled_plugins/level_preview_cplugin/assets/l10n/zh.arb
+    - lib/bundled_plugins/preview_img_cplugin/manifest.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/icon.png
+    - lib/bundled_plugins/preview_img_cplugin/assets/stage_banners.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/feature_groups.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/config_schema.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/banners/
+    - lib/bundled_plugins/preview_img_cplugin/assets/l10n/en.arb
+    - lib/bundled_plugins/preview_img_cplugin/assets/l10n/ru.arb
+    - lib/bundled_plugins/preview_img_cplugin/assets/l10n/zh.arb
     - lib/bundled_plugins/dynamic_fetch_cplugin/manifest.json
     - lib/bundled_plugins/dynamic_fetch_cplugin/assets/icon.png
     - lib/bundled_plugins/dynamic_fetch_cplugin/assets/l10n/en.arb
@@ -106,7 +106,7 @@ flutter:
   fonts:
     - family: PvZPreview
       fonts:
-        - asset: lib/bundled_plugins/level_preview_cplugin/assets/fonts/FBUSV8C5EI.ttf
+        - asset: lib/bundled_plugins/preview_img_cplugin/assets/fonts/FBUSV8C5EI.ttf
 
 flutter_launcher_icons:
   android: true

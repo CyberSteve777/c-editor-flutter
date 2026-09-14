@@ -3586,6 +3586,84 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get close;
 
+  /// No description provided for @levelOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Overview'**
+  String get levelOverview;
+
+  /// No description provided for @levelOverviewOpenLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Open level'**
+  String get levelOverviewOpenLevel;
+
+  /// No description provided for @previewStartingPlantFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Plant Food'**
+  String get previewStartingPlantFood;
+
+  /// No description provided for @previewPrePlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset Layout'**
+  String get previewPrePlaced;
+
+  /// No description provided for @previewRegularPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular Plants'**
+  String get previewRegularPlants;
+
+  /// No description provided for @previewFrozenPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Frozen Plants'**
+  String get previewFrozenPlants;
+
+  /// No description provided for @previewLevelContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Content'**
+  String get previewLevelContent;
+
+  /// No description provided for @previewSeedBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Seed Bank'**
+  String get previewSeedBank;
+
+  /// No description provided for @previewIZombieSeedBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Seed Bank (I, Zombie)'**
+  String get previewIZombieSeedBank;
+
+  /// No description provided for @previewFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Features'**
+  String get previewFeatures;
+
+  /// No description provided for @previewActiveModules.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Modules'**
+  String get previewActiveModules;
+
+  /// No description provided for @previewInitial.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial Grid Items'**
+  String get previewInitial;
+
+  /// No description provided for @previewGenerateImagePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate preview image'**
+  String get previewGenerateImagePreview;
+
   /// No description provided for @editProperties.
   ///
   /// In en, this message translates to:

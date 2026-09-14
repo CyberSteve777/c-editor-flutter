@@ -5,8 +5,9 @@ import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/registrat
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:c_editor/bundled_plugins/bundled_plugins.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/level_preview_cplugin.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/preview_img_cplugin.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/c_plugin_manifest.dart';
 import 'package:c_editor/plugins/plugin_constants.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
@@ -32,17 +33,17 @@ void main() {
       (p) => p.id == kLevelPreviewPluginId,
     );
     expect(spec, isA<CPluginPackageSpec>());
-    expect(spec.packageRoot, 'lib/bundled_plugins/level_preview_cplugin');
+    expect(spec.packageRoot, 'lib/bundled_plugins/preview_img_cplugin');
 
     final record = bundledPluginRecord(
       manifest: CPluginManifest(
         format: CPluginManifest.expectedFormat,
         formatVersion: CPluginManifest.supportedFormatVersion,
         id: kLevelPreviewPluginId,
-        name: 'Level Overview',
+        name: 'Level preview image generator',
         version: '1.0.0',
         entryLibrary:
-            'package:c_editor/bundled_plugins/level_preview_cplugin/lib/main.dart',
+            'package:c_editor/bundled_plugins/preview_img_cplugin/lib/main.dart',
         entryFunction: 'initialize',
       ),
       assets: const <String, Uint8List>{},
@@ -54,20 +55,20 @@ void main() {
   });
 
   test('bundled plugin icons match their editor actions', () {
-    expect(bundledPluginIcon(kLevelPreviewPluginId), Icons.remove_red_eye);
+    expect(bundledPluginIcon(kLevelPreviewPluginId), Icons.image);
     expect(
-      bundledPluginIcon(kDynamicFetchPluginId),
-      Icons.cloud_download_outlined,
+      bundledPluginIcon(kLevelTestingModPluginId),
+      Icons.inventory_2,
     );
     expect(bundledPluginIcon('example.imported'), isNull);
   });
 
   testWidgets(
-    'data package download exposes the level testing mod as a localized screen',
+    'level testing mod creator exposes the export screen and level-list overflow',
     (tester) async {
       final registry = PluginScreenRegistry();
       final host = PluginHostImpl(
-        pluginId: kDynamicFetchPluginId,
+        pluginId: kLevelTestingModPluginId,
         assets: MemoryCPluginAssets({
           'l10n/en.arb': Uint8List.fromList(
             utf8.encode('{"levelTestingMod":"Level testing mod"}'),
@@ -80,10 +81,16 @@ void main() {
       );
       addTearDown(() => PluginHostHooks.offerExternalDynamic = null);
 
-      registerDynamicFetch(host);
+      registerLevelTestingMod(host);
 
       final screen = registry.screens.single;
       expect(screen.screenId, 'level_testing_mod');
+
+      final overflow = registry
+          .elementsForSlot(CPluginUiSlots.levelListOverflow)
+          .single;
+      expect(overflow.id, 'level_testing_mod_overflow');
+      expect(overflow.iconCodePoint, Icons.inventory_2.codePoint);
 
       late BuildContext context;
       await tester.pumpWidget(
@@ -101,7 +108,9 @@ void main() {
       );
 
       expect(screen.resolvedTitle(context), '关卡测试包');
+      expect(overflow.resolvedTitle(context), '关卡测试包');
       expect(screen.builder(context), isA<ExportScreen>());
+      expect(overflow.builder(context), isA<ExportScreen>());
     },
   );
 }

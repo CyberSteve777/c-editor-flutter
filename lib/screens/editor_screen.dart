@@ -23,6 +23,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/plugin_ui_host.dart';
+import 'package:c_editor/screens/level_overview/level_overview.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
@@ -3970,6 +3971,15 @@ class _EditorScreenState extends State<EditorScreen> {
                         title: Text(l10n?.toggleTheme ?? 'Toggle theme'),
                       ),
                     ),
+                    PopupMenuItem(
+                      value: 'level_overview',
+                      enabled: _ec.state.levelFile != null,
+                      child: EditorPopupMenuTile(
+                        enabled: _ec.state.levelFile != null,
+                        leading: const Icon(Icons.info_outline),
+                        title: Text(l10n?.levelOverview ?? 'Level Overview'),
+                      ),
+                    ),
                     ...pluginOverflowMenuItems(
                       context: context,
                       slot: CPluginUiSlots.editorOverflow,
@@ -4008,6 +4018,8 @@ class _EditorScreenState extends State<EditorScreen> {
                       _showUiScaleDialog(context);
                     } else if (value == 'theme') {
                       context.read<SettingsCubit>().cycleTheme();
+                    } else if (value == 'level_overview') {
+                      await openLevelOverviewFromOpenSession(context);
                     } else {
                       handlePluginOverflowSelection(
                         context,

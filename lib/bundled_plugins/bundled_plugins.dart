@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/main.dart'
     as dynamic_fetch;
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/main.dart'
-    as level_preview;
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/main.dart'
+    as preview_img;
 import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/registration.dart'
-    show kDynamicFetchPluginId;
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/registration.dart'
+    show kLevelTestingModPluginId;
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/registration.dart'
     show kLevelPreviewPluginId;
 import 'package:c_editor/plugins/plugin_package.dart';
 
@@ -17,11 +17,11 @@ import 'package:c_editor/plugins/plugin_package.dart';
 List<CPluginPackageSpec> get bundledPlugins => [
   CPluginPackageSpec(
     id: kLevelPreviewPluginId,
-    packageRoot: 'lib/bundled_plugins/level_preview_cplugin',
-    initialize: level_preview.initialize,
+    packageRoot: 'lib/bundled_plugins/preview_img_cplugin',
+    initialize: preview_img.initialize,
   ),
   CPluginPackageSpec(
-    id: kDynamicFetchPluginId,
+    id: kLevelTestingModPluginId,
     packageRoot: 'lib/bundled_plugins/dynamic_fetch_cplugin',
     initialize: dynamic_fetch.initialize,
   ),
@@ -31,7 +31,7 @@ List<CPluginPackageSpec> get bundledPlugins => [
 /// plugin. Imported plugins continue to use the image declared in their own
 /// manifest.
 IconData? bundledPluginIcon(String pluginId) => switch (pluginId) {
-  kLevelPreviewPluginId => Icons.remove_red_eye,
-  kDynamicFetchPluginId => Icons.cloud_download_outlined,
+  kLevelPreviewPluginId => Icons.image,
+  kLevelTestingModPluginId => Icons.inventory_2,
   _ => null,
 };

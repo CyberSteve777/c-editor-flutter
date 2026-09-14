@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_module_info.dart';
-import 'package:c_editor/bundled_plugins/level_preview_cplugin/lib/src/preview/preview_module_resource_names.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_module_info.dart';
+import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_module_resource_names.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
