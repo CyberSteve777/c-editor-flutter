@@ -1,6 +1,6 @@
 # Documentary package metadata — mirrors plugin_example/hello_cplugin layout.
 # Embedded under package:c_editor (lib/bundled_plugins/...) for in-process load.
-name: dynamic_fetch_cplugin
+name: level_test_cplugin
 description: Bundled C-Editor plugin — level testing mod creator (optional dynamic.rsb.smf download)
 publish_to: "none"
 version: 1.0.0

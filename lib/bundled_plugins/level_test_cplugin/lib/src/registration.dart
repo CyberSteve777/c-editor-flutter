@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/screens/export/export_screen.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/dynamic_offer_flow.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/dynamic_offer_flow.dart';
 
 /// Built-in level-testing-mod plugin id (must match `manifest.json`).
 const kLevelTestingModPluginId = 'team.international2c.level_testing_mod';

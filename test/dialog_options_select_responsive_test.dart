@@ -1,5 +1,5 @@
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/dynamic_fetch_ui.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/releases_api.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/dynamic_fetch_ui.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/releases_api.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_document.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_generator_pickers.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_pickers.dart';
