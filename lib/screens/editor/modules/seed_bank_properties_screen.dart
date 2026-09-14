@@ -483,9 +483,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
               children: [
                 FilterChip(
                   key: const ValueKey('seedBankChooserModeChip'),
-                  label: Text(
-                    AppLocalizations.of(context)?.chooser ?? 'Chooser',
-                  ),
+                  label: _buildSelectionModeLabel(l10n?.chooser ?? 'Chooser'),
                   selected: _data.selectionMethod == 'chooser' && !isZombieMode,
                   onSelected: isZombieMode
                       ? null
@@ -493,7 +491,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
                 ),
                 FilterChip(
                   key: const ValueKey('seedBankPresetModeChip'),
-                  label: Text(AppLocalizations.of(context)?.preset ?? 'Preset'),
+                  label: _buildSelectionModeLabel(l10n?.preset ?? 'Preset'),
                   selected: _data.selectionMethod == 'preset' || isZombieMode,
                   onSelected: isZombieMode
                       ? null
@@ -562,6 +560,23 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSelectionModeLabel(String label) {
+    // Chip's inherited label style forces a single unwrapped line. Preserve
+    // its resolved colors and typography while allowing all label lines.
+    return Builder(
+      builder: (context) {
+        final style = DefaultTextStyle.of(context);
+        return DefaultTextStyle(
+          style: style.style,
+          textAlign: style.textAlign,
+          softWrap: true,
+          overflow: TextOverflow.visible,
+          child: Text(label),
+        );
+      },
     );
   }
 

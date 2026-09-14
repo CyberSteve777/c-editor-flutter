@@ -6,6 +6,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/select/kongfu_rocket_flick_prompt.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/widgets/selection_grid_confirmation.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
@@ -378,6 +379,35 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         : pvzPurpleLight;
     final filterMaxHeight = MediaQuery.sizeOf(context).height * 0.42;
     final tabColors = AccentBarTabBarStyle.colors(context);
+    const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
+      maxCrossAxisExtent: 72,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 8,
+      childAspectRatio: 0.65,
+    );
+    final confirmation = widget.multiSelect
+        ? FloatingActionButton(
+            backgroundColor: themeColor,
+            foregroundColor: theme.colorScheme.surface,
+            onPressed: _isLoaded
+                ? () async {
+                    final ids = _filterSelectableZombieIds(
+                      widget.allowDuplicateSelection
+                          ? List<String>.from(_selectedIdsWithDuplicates)
+                          : _selectedIds.toList(),
+                    );
+                    await maybeShowKongfuRocketFlickPrompt(
+                      context,
+                      ids,
+                      editorCubit: widget.editorCubit,
+                    );
+                    if (!context.mounted) return;
+                    widget.onMultiZombieSelected?.call(ids);
+                  }
+                : null,
+            child: const Icon(Icons.check),
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -391,29 +421,6 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         ),
         title: Text(l10n?.selectZombie ?? 'Select zombie'),
       ),
-      floatingActionButton: widget.multiSelect
-          ? FloatingActionButton(
-              backgroundColor: themeColor,
-              foregroundColor: theme.colorScheme.surface,
-              onPressed: _isLoaded
-                  ? () async {
-                      final ids = _filterSelectableZombieIds(
-                        widget.allowDuplicateSelection
-                            ? List<String>.from(_selectedIdsWithDuplicates)
-                            : _selectedIds.toList(),
-                      );
-                      await maybeShowKongfuRocketFlickPrompt(
-                        context,
-                        ids,
-                        editorCubit: widget.editorCubit,
-                      );
-                      if (!context.mounted) return;
-                      widget.onMultiZombieSelected?.call(ids);
-                    }
-                  : null,
-              child: const Icon(Icons.check),
-            )
-          : null,
       body: Column(
         children: [
           Container(
@@ -517,89 +524,91 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
             ),
           ),
           Expanded(
-            child: !_isLoaded
-                ? const Center(child: CircularProgressIndicator())
-                : zombies.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 64,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _selectedCategory == ZombieCategory.collection
-                              ? (l10n?.noFavoritesLongPress ??
-                                    'No favorites. Long-press to favorite.')
-                              : (l10n?.noZombieFound ?? 'No zombie found'),
-                          style: theme.textTheme.bodyMedium?.copyWith(
+            child: SelectionGridConfirmation(
+              itemCount: zombies.length,
+              gridDelegate: gridDelegate,
+              confirmation: confirmation,
+              child: !_isLoaded
+                  ? const Center(child: CircularProgressIndicator())
+                  : zombies.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search,
+                            size: 64,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          Text(
+                            _selectedCategory == ZombieCategory.collection
+                                ? (l10n?.noFavoritesLongPress ??
+                                      'No favorites. Long-press to favorite.')
+                                : (l10n?.noZombieFound ?? 'No zombie found'),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(12),
+                      gridDelegate: gridDelegate,
+                      itemCount: zombies.length,
+                      itemBuilder: (_, i) {
+                        final zombie = zombies[i];
+                        final selectionCount = widget.allowDuplicateSelection
+                            ? _selectedIdsWithDuplicates
+                                  .where((id) => id == zombie.id)
+                                  .length
+                            : (_selectedIds.contains(zombie.id) ? 1 : 0);
+                        final isSelected = selectionCount > 0;
+                        final isFavorite = repo.isFavorite(zombie.id);
+                        final blockedReason = _zombieBlockedReason(zombie);
+                        final isEnabled = blockedReason == null;
+                        return _ZombieGridItem(
+                          zombie: zombie,
+                          isSelected: isSelected,
+                          isFavorite: isFavorite,
+                          isEnabled: isEnabled,
+                          selectionColor: widget.multiSelect
+                              ? themeColor
+                              : null,
+                          onTap: () async {
+                            if (blockedReason != null) {
+                              await _showZombieBlockedDialog(
+                                context,
+                                blockedReason,
+                              );
+                              return;
+                            }
+                            if (widget.multiSelect) {
+                              setState(() {
+                                if (widget.allowDuplicateSelection) {
+                                  _selectedIdsWithDuplicates.add(zombie.id);
+                                } else if (isSelected) {
+                                  _selectedIds.remove(zombie.id);
+                                } else {
+                                  _selectedIds.add(zombie.id);
+                                }
+                              });
+                            } else {
+                              await maybeShowKongfuRocketFlickPrompt(context, [
+                                zombie.id,
+                              ], editorCubit: widget.editorCubit);
+                              if (!context.mounted) return;
+                              widget.onZombieSelected(zombie.id);
+                            }
+                          },
+                          onLongPress: () =>
+                              _toggleFavorite(context, zombie.id),
+                        );
+                      },
                     ),
-                  )
-                : GridView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(12),
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 72,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 8,
-                          childAspectRatio: 0.65,
-                        ),
-                    itemCount: zombies.length,
-                    itemBuilder: (_, i) {
-                      final zombie = zombies[i];
-                      final selectionCount = widget.allowDuplicateSelection
-                          ? _selectedIdsWithDuplicates
-                                .where((id) => id == zombie.id)
-                                .length
-                          : (_selectedIds.contains(zombie.id) ? 1 : 0);
-                      final isSelected = selectionCount > 0;
-                      final isFavorite = repo.isFavorite(zombie.id);
-                      final blockedReason = _zombieBlockedReason(zombie);
-                      final isEnabled = blockedReason == null;
-                      return _ZombieGridItem(
-                        zombie: zombie,
-                        isSelected: isSelected,
-                        isFavorite: isFavorite,
-                        isEnabled: isEnabled,
-                        selectionColor: widget.multiSelect ? themeColor : null,
-                        onTap: () async {
-                          if (blockedReason != null) {
-                            await _showZombieBlockedDialog(
-                              context,
-                              blockedReason,
-                            );
-                            return;
-                          }
-                          if (widget.multiSelect) {
-                            setState(() {
-                              if (widget.allowDuplicateSelection) {
-                                _selectedIdsWithDuplicates.add(zombie.id);
-                              } else if (isSelected) {
-                                _selectedIds.remove(zombie.id);
-                              } else {
-                                _selectedIds.add(zombie.id);
-                              }
-                            });
-                          } else {
-                            await maybeShowKongfuRocketFlickPrompt(context, [
-                              zombie.id,
-                            ], editorCubit: widget.editorCubit);
-                            if (!context.mounted) return;
-                            widget.onZombieSelected(zombie.id);
-                          }
-                        },
-                        onLongPress: () => _toggleFavorite(context, zombie.id),
-                      );
-                    },
-                  ),
+            ),
           ),
         ],
       ),
