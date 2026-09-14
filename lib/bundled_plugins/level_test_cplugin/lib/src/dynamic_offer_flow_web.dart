@@ -6,8 +6,8 @@ import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/data/launch_external_url.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/dynamic_fetch_ui.dart';
-import 'package:c_editor/bundled_plugins/dynamic_fetch_cplugin/lib/src/releases_api.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin//lib/src/dynamic_fetch_ui.dart';
+import 'package:c_editor/bundled_plugins/level_test_cplugin/lib/src/releases_api.dart';
 
 const _kDefaultDynamicFileName = 'dynamic.rsb.smf';
 
