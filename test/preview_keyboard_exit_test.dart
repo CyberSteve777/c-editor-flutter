@@ -105,9 +105,30 @@ Future<void> _finishExport(WidgetTester tester) async {
     );
     await tester.pump(const Duration(milliseconds: 20));
     final screens = find.byType(PreviewGeneratorScreen).evaluate();
-    if (screens.isEmpty || find.byType(SnackBar).evaluate().isNotEmpty) break;
+    final export = find.byKey(const ValueKey('previewGeneratorExportButton'));
+    if (screens.isEmpty ||
+        (export.evaluate().isNotEmpty &&
+            tester.widget<IconButton>(export).onPressed != null)) {
+      break;
+    }
   }
+  expect(find.byType(CircularProgressIndicator), findsNothing);
   await tester.pumpAndSettle();
+}
+
+Future<void> _savePreview(WidgetTester tester) async {
+  await tester.tap(find.byTooltip('Export image'));
+  await _finishExport(tester);
+}
+
+Future<void> _deletePlants(WidgetTester tester) async {
+  await tester.tap(
+    find.byKey(const ValueKey('preview-icon-item-plants-0-1-0')),
+  );
+  await tester.pumpAndSettle();
+  await tester.sendKeyEvent(LogicalKeyboardKey.delete);
+  await tester.pumpAndSettle();
+  expect(_canvas(tester).document.layerById('plants'), isNull);
 }
 
 void main() {
@@ -256,7 +277,7 @@ void main() {
         );
         // A composed document must not trigger a save dialog when its editor is
         // hidden by the display-area guard.
-        await tester.binding.setSurfaceSize(const Size(400, 800));
+        await tester.binding.setSurfaceSize(const Size(320, 800));
         await tester.pumpAndSettle();
         expect(find.text('previewGenDisplayTooNarrowTitle'), findsOneWidget);
         if (systemBack) {
@@ -338,6 +359,172 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
+
+  for (final systemBack in [false, true]) {
+    testWidgets(
+      'saved preview leaves without confirmation via ${systemBack ? 'system' : 'app-bar'} back after viewport and selection changes',
+      (tester) async {
+        var exports = 0;
+        await _openGenerator(
+          tester,
+          exporter: (_, _) async {
+            exports++;
+            return PreviewExportResult(path: 'saved.png', bytes: Uint8List(0));
+          },
+        );
+        await _savePreview(tester);
+        final zoom = tester.widget<Slider>(
+          find.byKey(const ValueKey('previewCanvasZoomSlider')),
+        );
+        zoom.onChanged!(2.5);
+        await tester.pumpAndSettle();
+        await tester.binding.setSurfaceSize(const Size(900, 1200));
+        await tester.pumpAndSettle();
+        // Merely entering text editing materializes rich-text runs. It must
+        // not turn unchanged saved text into an unsaved document.
+        _canvas(tester).onBeginTextEdit!('theme');
+        await tester.pumpAndSettle();
+        if (systemBack) {
+          await tester.binding.handlePopRoute();
+        } else {
+          final back = find.byKey(const ValueKey('previewGeneratorBackButton'));
+          await tester.ensureVisible(back);
+          await tester.pumpAndSettle();
+          expect(back.hitTestable(), findsOneWidget);
+          await tester.tap(back);
+        }
+        await tester.pumpAndSettle();
+        expect(find.byType(PreviewGeneratorScreen), findsNothing);
+        expect(
+          find.byKey(const ValueKey('previewGeneratorExitDialog')),
+          findsNothing,
+        );
+        expect(exports, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('editing saved content asks before leaving', (tester) async {
+    await _openGenerator(
+      tester,
+      exporter: (_, _) async =>
+          PreviewExportResult(path: 'saved.png', bytes: Uint8List(0)),
+    );
+    await _savePreview(tester);
+    await _deletePlants(tester);
+    await tester.tap(find.byKey(const ValueKey('previewGeneratorBackButton')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('previewGeneratorExitDialog')),
+      findsOneWidget,
+    );
+    await tester.tap(
+      find.byKey(const ValueKey('previewGeneratorCancelExitButton')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(PreviewGeneratorScreen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('undo back to the saved content leaves without another save', (
+    tester,
+  ) async {
+    await _openGenerator(
+      tester,
+      exporter: (_, _) async =>
+          PreviewExportResult(path: 'saved.png', bytes: Uint8List(0)),
+    );
+    await _savePreview(tester);
+    await _deletePlants(tester);
+    await _shortcut(tester, LogicalKeyboardKey.keyZ);
+    expect(_canvas(tester).document.layerById('plants'), isNotNull);
+    await tester.tap(find.byKey(const ValueKey('previewGeneratorBackButton')));
+    await tester.pumpAndSettle();
+    expect(find.byType(PreviewGeneratorScreen), findsNothing);
+    expect(
+      find.byKey(const ValueKey('previewGeneratorExitDialog')),
+      findsNothing,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('failed re-export retains the earlier successful save baseline', (
+    tester,
+  ) async {
+    var exports = 0;
+    await _openGenerator(
+      tester,
+      exporter: (_, _) async {
+        if (++exports > 1) throw StateError('Test re-export failure');
+        return PreviewExportResult(path: 'saved.png', bytes: Uint8List(0));
+      },
+    );
+    await _savePreview(tester);
+    await _deletePlants(tester);
+    await _savePreview(tester);
+    await tester.tap(find.byKey(const ValueKey('previewGeneratorBackButton')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('previewGeneratorExitDialog')),
+      findsOneWidget,
+    );
+    await tester.tap(
+      find.byKey(const ValueKey('previewGeneratorCancelExitButton')),
+    );
+    await tester.pumpAndSettle();
+    await _shortcut(tester, LogicalKeyboardKey.keyZ);
+    await tester.tap(find.byKey(const ValueKey('previewGeneratorBackButton')));
+    await tester.pumpAndSettle();
+    expect(exports, 2);
+    expect(find.byType(PreviewGeneratorScreen), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final saveAndLeave in [false, true]) {
+    testWidgets(
+      'changes during ${saveAndLeave ? 'save and leave' : 'export'} are not marked saved',
+      (tester) async {
+        await _openGenerator(
+          tester,
+          exporter: (_, _) async {
+            // The image has already been captured. A later document change
+            // is not represented by the successfully written image.
+            _canvas(
+              tester,
+            ).document.layerById('theme')!.setPlainText('Changed during write');
+            return PreviewExportResult(path: 'saved.png', bytes: Uint8List(0));
+          },
+        );
+        if (saveAndLeave) {
+          await tester.tap(
+            find.byKey(const ValueKey('previewGeneratorBackButton')),
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(
+            find.byKey(const ValueKey('previewGeneratorSaveExitButton')),
+          );
+          await _finishExport(tester);
+        } else {
+          await _savePreview(tester);
+        }
+        expect(find.byType(PreviewGeneratorScreen), findsOneWidget);
+        await tester.tap(
+          find.byKey(const ValueKey('previewGeneratorBackButton')),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('previewGeneratorExitDialog')),
+          findsOneWidget,
+        );
+        await tester.tap(
+          find.byKey(const ValueKey('previewGeneratorCancelExitButton')),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   testWidgets('one application can enter and leave the generator repeatedly', (
     tester,

@@ -30,6 +30,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get previewTabGridItems => 'Объекты';
 
   @override
+  String get overviewPresetPlants => 'Предустановленные растения';
+
+  @override
+  String get overviewPresetZombies => 'Предустановленные зомби';
+
+  @override
+  String get overviewConveyorPlants => 'Растения конвейера';
+
+  @override
+  String get overviewLawn => 'Поле';
+
+  @override
   String get sunBombFalling => 'Падают солнечные бомбы';
 
   @override

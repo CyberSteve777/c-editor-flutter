@@ -161,7 +161,7 @@ void main() {
     expect(en['previewGenGridItems'], 'Grid Items');
     for (final entry in const {
       'previewStickerTagCreatures': ('中立生物', 'Creatures'),
-      'previewStickerTagToolPackets': ('工具卡', 'Tool Packets'),
+      'previewStickerTagToolPackets': ('工具卡', 'Tool packets'),
       'previewStickerTagComponents': ('场地组件', 'Components'),
     }.entries) {
       expect(zh[entry.key], entry.value.$1);

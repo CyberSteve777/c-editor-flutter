@@ -179,6 +179,94 @@ class _CanvasPaintProbeRenderObject extends RenderProxyBox {
 }
 
 void main() {
+  testWidgets(
+    'iOS canvas thumb stays at local bottom with home indicator inset',
+    (tester) async {
+      _setDeviceViewport(tester, const Size(390, 844));
+      final boundaryKey = GlobalKey();
+      const safeAreaKey = ValueKey('workspaceTestSafeArea');
+      var strokes = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(platform: TargetPlatform.iOS),
+          home: MediaQuery(
+            data: const MediaQueryData(
+              size: Size(390, 844),
+              padding: EdgeInsets.fromLTRB(0, 47, 0, 34),
+              viewPadding: EdgeInsets.fromLTRB(0, 47, 0, 34),
+            ),
+            child: Scaffold(
+              body: SafeArea(
+                key: safeAreaKey,
+                bottom: false,
+                child: _workspace(
+                  toolbar: const Text('Controls'),
+                  document: _document(),
+                  boundaryKey: boundaryKey,
+                  tool: PreviewEditTool.pen,
+                  onStrokeStarted: (_) => strokes++,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _setZoom(tester, 3);
+      final viewport = find.byKey(_canvasViewportKey);
+      final paint = _scrollbarPaint(viewport, ScrollbarOrientation.bottom);
+      final painter =
+          tester.widget<CustomPaint>(paint).foregroundPainter!
+              as ScrollbarPainter;
+      expect(painter.padding, EdgeInsets.zero);
+      expect(
+        MediaQuery.paddingOf(tester.element(find.byKey(safeAreaKey))).bottom,
+        34,
+      );
+      final bars = tester.widgetList<Scrollbar>(
+        find.descendant(of: viewport, matching: find.byType(Scrollbar)),
+      );
+      final horizontal = bars
+          .singleWhere(
+            (bar) => bar.scrollbarOrientation == ScrollbarOrientation.bottom,
+          )
+          .controller!;
+      final vertical = bars
+          .singleWhere(
+            (bar) => bar.scrollbarOrientation == ScrollbarOrientation.right,
+          )
+          .controller!;
+      final oldHorizontalOffset = horizontal.offset;
+      final oldVerticalOffset = vertical.offset;
+      final oldCanvasRect = _paintedCanvasRect(boundaryKey);
+      final thumb = _thumbCenter(
+        tester,
+        paint,
+        ScrollbarOrientation.bottom,
+        PointerDeviceKind.touch,
+      );
+      expect(tester.getRect(viewport).contains(thumb), isTrue);
+      final gesture = await tester.startGesture(
+        thumb,
+        kind: PointerDeviceKind.touch,
+      );
+      // Cupertino's native thumb recognizer activates after a short press.
+      await tester.pump(const Duration(milliseconds: 150));
+      await gesture.moveBy(const Offset(60, 0));
+      await tester.pump();
+      expect(horizontal.offset, greaterThan(oldHorizontalOffset));
+      expect(vertical.offset, oldVerticalOffset);
+      expect(
+        _paintedCanvasRect(boundaryKey).left,
+        lessThan(oldCanvasRect.left),
+      );
+      expect(strokes, 0, reason: 'The canvas must not consume thumb dragging');
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
     testWidgets('toolbar header scrolls away without resizing canvas ($kind)', (
       tester,

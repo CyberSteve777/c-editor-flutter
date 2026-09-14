@@ -142,6 +142,30 @@ abstract class AppLocalizations {
   /// **'Grid Items'**
   String get previewTabGridItems;
 
+  /// No description provided for @overviewPresetPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset plants'**
+  String get overviewPresetPlants;
+
+  /// No description provided for @overviewPresetZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset zombies'**
+  String get overviewPresetZombies;
+
+  /// No description provided for @overviewConveyorPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Conveyor plants'**
+  String get overviewConveyorPlants;
+
+  /// No description provided for @overviewLawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Lawn'**
+  String get overviewLawn;
+
   /// No description provided for @sunBombFalling.
   ///
   /// In en, this message translates to:
