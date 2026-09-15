@@ -517,34 +517,38 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
               opacity: isZombieMode ? 0.5 : 1,
               child: EditorResponsiveFieldRow(
                 children: [
-                  TextFormField(
-                    initialValue: '${_data.globalLevel ?? 0}',
+                  EditorResponsiveInputField(
+                    label: l10n?.seedBankPlantLevelLabel ?? 'Plant level (0-5)',
                     decoration: InputDecoration(
-                      labelText:
-                          l10n?.seedBankPlantLevelLabel ?? 'Plant level (0-5)',
                       border: const OutlineInputBorder(),
                     ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (s) {
-                      final v = int.tryParse(s) ?? 0;
-                      final clamped = v.clamp(0, 5);
-                      _data.globalLevel = clamped == 0 ? null : clamped;
-                      _sync();
-                    },
+                    builder: (context, decoration) => TextFormField(
+                      initialValue: '${_data.globalLevel ?? 0}',
+                      decoration: decoration,
+                      keyboardType: TextInputType.number,
+                      onChanged: (s) {
+                        final v = int.tryParse(s) ?? 0;
+                        final clamped = v.clamp(0, 5);
+                        _data.globalLevel = clamped == 0 ? null : clamped;
+                        _sync();
+                      },
+                    ),
                   ),
-                  TextFormField(
-                    initialValue: '${_data.overrideSeedSlotsCount ?? 0}',
+                  EditorResponsiveInputField(
+                    label: l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
                     decoration: InputDecoration(
-                      labelText:
-                          l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
                       border: const OutlineInputBorder(),
                     ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (s) {
-                      final v = int.tryParse(s) ?? 0;
-                      _data.overrideSeedSlotsCount = v.clamp(0, 9);
-                      _sync();
-                    },
+                    builder: (context, decoration) => TextFormField(
+                      initialValue: '${_data.overrideSeedSlotsCount ?? 0}',
+                      decoration: decoration,
+                      keyboardType: TextInputType.number,
+                      onChanged: (s) {
+                        final v = int.tryParse(s) ?? 0;
+                        _data.overrideSeedSlotsCount = v.clamp(0, 9);
+                        _sync();
+                      },
+                    ),
                   ),
                 ],
               ),

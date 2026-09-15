@@ -316,23 +316,27 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
         const SizedBox(height: 8),
         Tooltip(
           message: l10n?.zombossBattleStartingSunHint ?? '',
-          child: TextField(
-            controller: _startingSunController,
-            focusNode: _startingSunFocus,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          child: EditorResponsiveInputField(
+            label: l10n?.zombossBattleStartingSunLabel ?? 'Starting sun',
             decoration: editorInputDecoration(
               context,
-              labelText: l10n?.zombossBattleStartingSunLabel ?? 'Starting sun',
+
               isFocused: _startingSunFocus.hasFocus,
             ),
-            onChanged: (text) {
-              final value = int.tryParse(text.trim());
-              if (value != null && value >= 0 && value <= 9990) {
-                _data.startingSun = value;
-                _saveData();
-              }
-            },
+            builder: (context, decoration) => TextField(
+              controller: _startingSunController,
+              focusNode: _startingSunFocus,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: decoration,
+              onChanged: (text) {
+                final value = int.tryParse(text.trim());
+                if (value != null && value >= 0 && value <= 9990) {
+                  _data.startingSun = value;
+                  _saveData();
+                }
+              },
+            ),
           ),
         ),
         const SizedBox(height: 12),

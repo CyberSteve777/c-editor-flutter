@@ -205,25 +205,28 @@ class _LunarMineVeinModuleScreenState extends State<LunarMineVeinModuleScreen> {
                     ),
                     if (selected != null) ...[
                       const SizedBox(height: 16),
-                      TextFormField(
-                        key: ValueKey(
-                          'vein-wave-${selected.gridX}-${selected.gridY}',
-                        ),
-                        initialValue: '${selected.emergenceWave}',
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.lunarMineEmergenceWave ??
+                            'Growth wave (EmergenceWave, numbered from 1)',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.lunarMineEmergenceWave ??
-                              'Growth wave (EmergenceWave, numbered from 1)',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          final parsed = int.tryParse(value);
-                          if (parsed != null && parsed >= 1) {
-                            selected.emergenceWave = parsed;
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          key: ValueKey(
+                            'vein-wave-${selected.gridX}-${selected.gridY}',
+                          ),
+                          initialValue: '${selected.emergenceWave}',
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            final parsed = int.tryParse(value);
+                            if (parsed != null && parsed >= 1) {
+                              selected.emergenceWave = parsed;
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ],

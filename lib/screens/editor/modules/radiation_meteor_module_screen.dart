@@ -397,25 +397,28 @@ class _RadiationMeteorModuleScreenState
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        // Keep the editor mounted while the wave number changes
-                        // so each keystroke preserves focus, caret and draft text.
-                        key: ValueKey('meteor-wave-$_selectedGroupIndex'),
-                        controller: _waveCtrl,
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.radiationMeteorWave ??
+                            'Wave (Wave, starts at 0)',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.radiationMeteorWave ??
-                              'Wave (Wave, starts at 0)',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        onChanged: (value) {
-                          final parsed = int.tryParse(value);
-                          if (parsed != null) _updateSelectedWave(parsed);
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          // Keep the editor mounted while the wave number changes
+                          // so each keystroke preserves focus, caret and draft text.
+                          key: ValueKey('meteor-wave-$_selectedGroupIndex'),
+                          controller: _waveCtrl,
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: (value) {
+                            final parsed = int.tryParse(value);
+                            if (parsed != null) _updateSelectedWave(parsed);
+                          },
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Text(

@@ -16,6 +16,7 @@ import 'package:c_editor/widgets/local_scrollbar_region.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 
+export 'package:c_editor/widgets/editor_filled_button.dart';
 export 'package:c_editor/theme/app_theme.dart'
     show
         editorWarningIcon,
@@ -206,13 +207,14 @@ class PvzAddButton extends StatelessWidget {
           btn,
           if (label!.isNotEmpty) ...[
             const SizedBox(width: 8),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 160),
-              child: Text(
-                label!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelLarge,
+            Flexible(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 160),
+                child: Text(
+                  label!,
+                  softWrap: true,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
               ),
             ),
           ],
@@ -1155,6 +1157,7 @@ class HorizontalTagScroller extends StatefulWidget {
 class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
   late final ScrollController _scrollController;
   bool _hasOverflow = false;
+  bool _overflowCheckScheduled = false;
 
   @override
   void initState() {
@@ -1184,7 +1187,10 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
   }
 
   void _scheduleOverflowCheck() {
+    if (_overflowCheckScheduled) return;
+    _overflowCheckScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _overflowCheckScheduled = false;
       if (!mounted || !_scrollController.hasClients) return;
       final hasOverflow =
           _scrollController.position.maxScrollExtent >
@@ -1193,6 +1199,16 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
         setState(() => _hasOverflow = hasOverflow);
       }
     });
+  }
+
+  bool _handleScrollMetricsNotification(
+    ScrollMetricsNotification notification,
+  ) {
+    if (notification.depth == 0 &&
+        notification.metrics.axis == Axis.horizontal) {
+      _scheduleOverflowCheck();
+    }
+    return false;
   }
 
   void _onPointerScroll(PointerScrollEvent event) {
@@ -1245,26 +1261,29 @@ class _HorizontalTagScrollerState extends State<HorizontalTagScroller> {
           : requestedPadding.bottom,
     );
 
-    return LocalScrollbarRegion(
-      child: ScrollbarTheme(
-        data: _scrollbarTheme(context),
-        child: Scrollbar(
-          key: const ValueKey('horizontalTagScrollerScrollbar'),
-          controller: _scrollController,
-          thumbVisibility: keepThumbVisible,
-          interactive: true,
-          scrollbarOrientation: ScrollbarOrientation.bottom,
-          child: Listener(
-            onPointerSignal: (event) {
-              if (event is PointerScrollEvent) _onPointerScroll(event);
-            },
-            child: ScrollableWithMouseDrag(
-              child: SingleChildScrollView(
-                key: const ValueKey('horizontalTagScrollerScrollView'),
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                padding: effectivePadding,
-                child: Row(children: widget.children),
+    return NotificationListener<ScrollMetricsNotification>(
+      onNotification: _handleScrollMetricsNotification,
+      child: LocalScrollbarRegion(
+        child: ScrollbarTheme(
+          data: _scrollbarTheme(context),
+          child: Scrollbar(
+            key: const ValueKey('horizontalTagScrollerScrollbar'),
+            controller: _scrollController,
+            thumbVisibility: keepThumbVisible,
+            interactive: true,
+            scrollbarOrientation: ScrollbarOrientation.bottom,
+            child: Listener(
+              onPointerSignal: (event) {
+                if (event is PointerScrollEvent) _onPointerScroll(event);
+              },
+              child: ScrollableWithMouseDrag(
+                child: SingleChildScrollView(
+                  key: const ValueKey('horizontalTagScrollerScrollView'),
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  padding: effectivePadding,
+                  child: Row(children: widget.children),
+                ),
               ),
             ),
           ),
@@ -1317,6 +1336,10 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
 
   late final ScrollController _scrollController;
   final List<GlobalKey> _tabKeys = [];
+  final GlobalKey _scrollViewKey = GlobalKey();
+  bool _selectedVisibilityScheduled = false;
+  bool _pendingVisibilityOnlyIfNeeded = true;
+  bool _pendingCancelActiveScroll = false;
 
   @override
   void initState() {
@@ -1360,8 +1383,26 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
     }
   }
 
-  void _scheduleSelectedTabVisibility() {
+  void _scheduleSelectedTabVisibility({
+    bool onlyIfNeeded = false,
+    bool cancelActiveScroll = false,
+  }) {
+    if (_selectedVisibilityScheduled) {
+      _pendingVisibilityOnlyIfNeeded =
+          _pendingVisibilityOnlyIfNeeded && onlyIfNeeded;
+      _pendingCancelActiveScroll =
+          _pendingCancelActiveScroll || cancelActiveScroll;
+      return;
+    }
+    _selectedVisibilityScheduled = true;
+    _pendingVisibilityOnlyIfNeeded = onlyIfNeeded;
+    _pendingCancelActiveScroll = cancelActiveScroll;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final onlyIfNeeded = _pendingVisibilityOnlyIfNeeded;
+      final cancelActiveScroll = _pendingCancelActiveScroll;
+      _selectedVisibilityScheduled = false;
+      _pendingVisibilityOnlyIfNeeded = true;
+      _pendingCancelActiveScroll = false;
       if (!mounted || !_scrollController.hasClients) return;
       if (widget.selectedIndex < 0 || widget.selectedIndex >= _tabKeys.length) {
         return;
@@ -1369,6 +1410,17 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
       final renderObject = _tabKeys[widget.selectedIndex].currentContext
           ?.findRenderObject();
       if (renderObject == null) return;
+      final position = _scrollController.position;
+      if (cancelActiveScroll) {
+        final safeOffset = position.pixels
+            .clamp(position.minScrollExtent, position.maxScrollExtent)
+            .toDouble();
+        if (position.isScrollingNotifier.value ||
+            safeOffset != position.pixels) {
+          _scrollController.jumpTo(safeOffset);
+        }
+      }
+      if (onlyIfNeeded && _isFullyVisible(renderObject)) return;
       _scrollController.position.ensureVisible(
         renderObject,
         alignment: 0.5,
@@ -1376,6 +1428,42 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
         curve: Curves.easeOut,
       );
     });
+  }
+
+  bool _isFullyVisible(RenderObject tabRenderObject) {
+    final scrollRenderObject = _scrollViewKey.currentContext
+        ?.findRenderObject();
+    if (tabRenderObject is! RenderBox || scrollRenderObject is! RenderBox) {
+      return false;
+    }
+    final tabRect = Rect.fromPoints(
+      tabRenderObject.localToGlobal(Offset.zero),
+      tabRenderObject.localToGlobal(
+        tabRenderObject.size.bottomRight(Offset.zero),
+      ),
+    );
+    final viewportRect = Rect.fromPoints(
+      scrollRenderObject.localToGlobal(Offset.zero),
+      scrollRenderObject.localToGlobal(
+        scrollRenderObject.size.bottomRight(Offset.zero),
+      ),
+    );
+    const tolerance = 0.5;
+    return tabRect.left >= viewportRect.left - tolerance &&
+        tabRect.right <= viewportRect.right + tolerance;
+  }
+
+  bool _handleScrollMetricsNotification(
+    ScrollMetricsNotification notification,
+  ) {
+    if (notification.depth == 0 &&
+        notification.metrics.axis == Axis.horizontal) {
+      _scheduleSelectedTabVisibility(
+        onlyIfNeeded: true,
+        cancelActiveScroll: true,
+      );
+    }
+    return false;
   }
 
   void _onPointerScroll(PointerScrollEvent event) {
@@ -1511,6 +1599,7 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
       },
       child: ScrollableWithMouseDrag(
         child: SingleChildScrollView(
+          key: _scrollViewKey,
           controller: _scrollController,
           scrollDirection: Axis.horizontal,
           child: row,
@@ -1534,18 +1623,21 @@ class _AccentBarFilterTabRowState extends State<AccentBarFilterTabRow> {
       indicator: widget.indicatorColor ?? defaults.indicator,
     );
 
-    return LocalScrollbarRegion(
-      child: SizedBox(
-        height: widget.height + widget.scrollbarSlotHeight,
-        child: ScrollbarTheme(
-          data: _scrollbarTheme(context),
-          child: Scrollbar(
-            key: const ValueKey('accentBarFilterScrollbar'),
-            controller: _scrollController,
-            thumbVisibility: true,
-            interactive: true,
-            scrollbarOrientation: ScrollbarOrientation.bottom,
-            child: _buildScrollableRow(tabColors, alignTabsToBottom: true),
+    return NotificationListener<ScrollMetricsNotification>(
+      onNotification: _handleScrollMetricsNotification,
+      child: LocalScrollbarRegion(
+        child: SizedBox(
+          height: widget.height + widget.scrollbarSlotHeight,
+          child: ScrollbarTheme(
+            data: _scrollbarTheme(context),
+            child: Scrollbar(
+              key: const ValueKey('accentBarFilterScrollbar'),
+              controller: _scrollController,
+              thumbVisibility: true,
+              interactive: true,
+              scrollbarOrientation: ScrollbarOrientation.bottom,
+              child: _buildScrollableRow(tabColors, alignTabsToBottom: true),
+            ),
           ),
         ),
       ),

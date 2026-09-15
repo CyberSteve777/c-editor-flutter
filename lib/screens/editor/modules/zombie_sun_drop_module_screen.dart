@@ -388,75 +388,88 @@ class _SunValuesEditDialogState extends State<_SunValuesEditDialog> {
     final l10n = AppLocalizations.of(context);
 
     return AlertDialog(
+      scrollable: true,
+      constraints: const BoxConstraints.tightFor(width: 560),
       title: Text(
         l10n?.zombieSunDropEditTitle ?? 'Edit values',
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
       content: SizedBox(
-        width: 560,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n?.zombieSunDropEditHint ??
-                    'Configure sun drops for tiers 1–6. Tiers above 6 use the tier 1 value.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+        width: double.maxFinite,
+        child: SizedBox(
+          width: 560,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n?.zombieSunDropEditHint ??
+                      'Configure sun drops for tiers 1–6. Tiers above 6 use the tier 1 value.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              ...List.generate(_editableTierCount ~/ 2, (row) {
-                final i = row * 2;
-                final j = i + 1;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: EditorResponsiveFieldRow(
-                    children: [
-                      TextField(
-                        focusNode: _focusNodes[i],
-                        controller: _controllers[i],
-                        decoration: editorInputDecoration(
-                          context,
-                          labelText:
+                const SizedBox(height: 16),
+                ...List.generate(_editableTierCount ~/ 2, (row) {
+                  final i = row * 2;
+                  final j = i + 1;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: EditorResponsiveFieldRow(
+                      children: [
+                        EditorResponsiveInputField(
+                          label:
                               l10n?.zombieSunDropTierLabel(i + 1) ??
                               'Tier ${i + 1}',
-                          focusColor: widget.themeColor,
-                          isFocused: _focusNodes[i].hasFocus,
+                          decoration: editorInputDecoration(
+                            context,
+
+                            focusColor: widget.themeColor,
+                            isFocused: _focusNodes[i].hasFocus,
+                          ),
+                          builder: (context, decoration) => TextField(
+                            focusNode: _focusNodes[i],
+                            controller: _controllers[i],
+                            decoration: decoration,
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              final n = int.tryParse(v);
+                              if (n != null && n >= 0) {
+                                setState(() => _values[i] = n);
+                              }
+                            },
+                          ),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null && n >= 0) {
-                            setState(() => _values[i] = n);
-                          }
-                        },
-                      ),
-                      TextField(
-                        focusNode: _focusNodes[j],
-                        controller: _controllers[j],
-                        decoration: editorInputDecoration(
-                          context,
-                          labelText:
+                        EditorResponsiveInputField(
+                          label:
                               l10n?.zombieSunDropTierLabel(j + 1) ??
                               'Tier ${j + 1}',
-                          focusColor: widget.themeColor,
-                          isFocused: _focusNodes[j].hasFocus,
+                          decoration: editorInputDecoration(
+                            context,
+
+                            focusColor: widget.themeColor,
+                            isFocused: _focusNodes[j].hasFocus,
+                          ),
+                          builder: (context, decoration) => TextField(
+                            focusNode: _focusNodes[j],
+                            controller: _controllers[j],
+                            decoration: decoration,
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              final n = int.tryParse(v);
+                              if (n != null && n >= 0) {
+                                setState(() => _values[j] = n);
+                              }
+                            },
+                          ),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null && n >= 0) {
-                            setState(() => _values[j] = n);
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ],
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
         ),
       ),

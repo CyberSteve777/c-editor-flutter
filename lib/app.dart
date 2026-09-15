@@ -122,12 +122,11 @@ class _ZEditorAppState extends State<ZEditorApp> {
             GlobalCupertinoLocalizations.delegate,
           ],
           builder: (context, child) {
-            var scale = settings.uiScale;
-            final shortest = MediaQuery.sizeOf(context).shortestSide;
-            if (shortest < 600) {
-              scale *= 0.85;
-            }
-            return AppUiScaler(scale: scale, child: child!);
+            return AppUiScaler(
+              scale: settings.uiScale,
+              applyCompactViewportScale: true,
+              child: child!,
+            );
           },
           home: BlocBuilder<AppNavigationCubit, AppNavigationState>(
             builder: (context, nav) {

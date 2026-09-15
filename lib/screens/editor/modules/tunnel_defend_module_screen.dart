@@ -840,40 +840,41 @@ class _TunnelDefendModuleScreenState extends State<TunnelDefendModuleScreen> {
               ),
             ] else ...[
               _buildSettingsWidth(
-                InputDecorator(
-                  key: const ValueKey('tunnelTileStylePresetField'),
-                  decoration: InputDecoration(
-                    labelText:
-                        l10n?.tunnelDefendTileStylePreset ??
-                        'Tile style preset',
-                    filled: false,
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<int>(
-                      isExpanded: true,
-                      value: _data.brickMapIndex == 2 ? 2 : 1,
-                      items: [
-                        DropdownMenuItem(
-                          value: 1,
-                          child: Text(
-                            l10n?.tunnelDefendTileStylePart1 ?? 'part 1',
+                EditorResponsiveInputField(
+                  label:
+                      l10n?.tunnelDefendTileStylePreset ?? 'Tile style preset',
+                  decoration: const InputDecoration(filled: false),
+                  builder: (context, decoration) => InputDecorator(
+                    key: const ValueKey('tunnelTileStylePresetField'),
+                    decoration: decoration,
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        isExpanded: true,
+                        itemHeight: null,
+                        value: _data.brickMapIndex == 2 ? 2 : 1,
+                        items: [
+                          DropdownMenuItem(
+                            value: 1,
+                            child: Text(
+                              l10n?.tunnelDefendTileStylePart1 ?? 'part 1',
+                            ),
                           ),
-                        ),
-                        DropdownMenuItem(
-                          value: 2,
-                          child: Text(
-                            l10n?.tunnelDefendTileStylePart2 ?? 'part 2',
+                          DropdownMenuItem(
+                            value: 2,
+                            child: Text(
+                              l10n?.tunnelDefendTileStylePart2 ?? 'part 2',
+                            ),
                           ),
-                        ),
-                      ],
-                      onChanged: (v) {
-                        if (v == null) return;
-                        setState(() {
-                          _data.brickMapIndex = v;
-                          _moduleObj.objData = _data.toJson();
-                        });
-                        widget.onChanged();
-                      },
+                        ],
+                        onChanged: (v) {
+                          if (v == null) return;
+                          setState(() {
+                            _data.brickMapIndex = v;
+                            _moduleObj.objData = _data.toJson();
+                          });
+                          widget.onChanged();
+                        },
+                      ),
                     ),
                   ),
                 ),

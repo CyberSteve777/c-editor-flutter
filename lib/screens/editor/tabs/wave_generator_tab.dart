@@ -8,7 +8,8 @@ import 'package:c_editor/data/wave_generator_level_utils.dart';
 import 'package:c_editor/data/wave_generator_point_analysis.dart';
 import 'package:c_editor/data/zombie_display_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/widgets/editor_components.dart' show isDesktopPlatform;
+import 'package:c_editor/widgets/editor_components.dart'
+    show EditorFilledButton, isDesktopPlatform;
 import 'package:c_editor/widgets/grid_override_preview_dialog.dart';
 import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
 import 'package:c_editor/widgets/wave_generator_expectation_dialog.dart';
@@ -537,7 +538,7 @@ class _WaveGeneratorTabState extends State<WaveGeneratorTab> {
             }),
           const SizedBox(height: 16),
           Center(
-            child: FilledButton.icon(
+            child: EditorFilledButton(
               onPressed: _addWave,
               icon: const Icon(Icons.add),
               label: Text(l10n?.addWave ?? 'Add wave'),
