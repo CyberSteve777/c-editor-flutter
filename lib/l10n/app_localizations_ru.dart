@@ -108,10 +108,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get spermWhaleLabel => 'Приближение кита';
 
   @override
-  String get witchLabel => 'Испуганная ведьма';
+  String get witchLabel => 'Появление тыквенных ведьм';
 
   @override
-  String get lawnMowerLabel => 'Газонокосилка';
+  String get lawnMowerLabel => 'Газонокосилки';
 
   @override
   String get lawnMowerTypeLabel => 'Тип газонокосилок';
@@ -120,13 +120,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get renaissanceStatues => 'Статуи Ренессанса';
 
   @override
-  String get zomboss => 'Зомбосс';
+  String get zomboss => 'Зомбот';
 
   @override
-  String get boss => 'Босс';
+  String get boss => 'Зомбосс';
 
   @override
-  String get zombossData => 'Данные Зомбосса';
+  String get zombossData => 'Данные Зомбота';
 
   @override
   String get contentsLabel => 'Содержимое:';
@@ -1316,7 +1316,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get levelBasicInfo => 'Основные данные уровня';
 
   @override
-  String get levelBasicInfoSubtitle => 'Название, номер, описание, стадия';
+  String get levelBasicInfoSubtitle => 'Название, номер, описание, лужайка';
 
   @override
   String get removeModule => 'Удалить модуль';
@@ -1600,16 +1600,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get timeline => 'Волны';
 
   @override
-  String get iZombie => 'Я зомби';
+  String get iZombie => 'Я-зомби';
 
   @override
   String get vaseBreaker => 'Вазобой';
 
   @override
-  String get zombossMech => 'Бой с Зомбоссом';
+  String get zombossMech => 'Бой с Зомботом';
 
   @override
-  String get zombossBattle => 'Бой с Боссом';
+  String get zombossBattle => 'Бой с Зомбоссом';
 
   @override
   String get moveSourceSameAsDest => 'Исходная и целевая папки совпадают';
@@ -1891,14 +1891,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get waveManagerSpecial => 'Особое';
 
   @override
-  String get waveManagerSuppressFlagZombieTitle => 'Отключить флаг-зомби';
+  String get waveManagerSuppressFlagZombieTitle => 'Отключить зомби с флагом';
 
   @override
   String get waveManagerSuppressFlagZombieField => 'SuppressFlagZombie';
 
   @override
   String get waveManagerSuppressFlagZombieHint =>
-      'При включении флаговые волны не спавнят флаг-зомби.';
+      'При включении флаговые волны не спавнят зомби с флагом.';
 
   @override
   String get waveManagerLevelJam => 'Фоновая музыка Неонового Микстейп Тура';
@@ -2168,7 +2168,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get conflictDesc_ZombossDeathDrop =>
-      'Уничтожение всех зомби до последнего в режиме ZombossMech помешают корректному завершению уровня.';
+      'Уничтожение всех зомби до последнего в режиме зомбот помешают корректному завершению уровня.';
 
   @override
   String get conflictDesc_WinConditionExclusive =>
@@ -2220,13 +2220,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addNewModule => 'Добавить модуль';
 
   @override
-  String get selectStage => 'Выбрать стадию';
+  String get selectStage => 'Выбрать лужайку';
 
   @override
-  String get searchStage => 'Поиск стадии';
+  String get searchStage => 'Поиск лужайки';
 
   @override
-  String get noStageFound => 'Стадия не найдена';
+  String get noStageFound => 'Лужайка не найдена';
 
   @override
   String get stageTypeAll => 'Все';
@@ -2250,10 +2250,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get search => 'Поиск';
 
   @override
-  String get disablePeavine => 'Отключить плющ';
+  String get disablePeavine => 'Отключить гороховую лозу';
 
   @override
-  String get disableArtifact => 'Отключить артефакт';
+  String get disableArtifact => 'Отключить артефакты';
 
   @override
   String get selectPlant => 'Выбрать растение';
@@ -2304,7 +2304,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get noDynamicZombies => 'Нет динамических зомби';
+  String get noDynamicZombies => 'Нет динамически-заданных зомби';
 
   @override
   String get moduleTitle_WaveManagerModuleProperties => 'Менеджер волн';
@@ -2678,24 +2678,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleDesc_EvilDaveProperties => 'Включить режим «Я зомби»';
 
   @override
-  String get moduleTitle_ZombossBattleModuleProperties => 'Бой с Зомбоссом';
+  String get moduleTitle_ZombossBattleModuleProperties => 'Бой с Зомботом';
 
   @override
-  String get moduleDesc_ZombossBattleModuleProperties => 'Параметры Зомбоссов';
+  String get moduleDesc_ZombossBattleModuleProperties => 'Параметры Зомбота';
 
   @override
-  String get moduleTitle_ZombossBattleIntroProperties => 'Заставка Зомбосса';
+  String get moduleTitle_ZombossBattleIntroProperties => 'Заставка Зомбота';
 
   @override
   String get moduleDesc_ZombossBattleIntroProperties =>
-      'Заставка и полоска здоровья Зомбосса';
+      'Заставка и полоска здоровья Зомбота';
 
   @override
-  String get moduleTitle_ZombossLastStandMinigameProperties => 'Бой с Боссом';
+  String get moduleTitle_ZombossLastStandMinigameProperties =>
+      'Бой с Зомбоссом';
 
   @override
   String get moduleDesc_ZombossLastStandMinigameProperties =>
-      'Параметры боя с Боссами (Мастер Цигун, Пиродьявол и т.д.)';
+      'Параметры боя с Зомбоссами (Мастер Цигун, Пиродьявол и т.д.)';
 
   @override
   String get moduleTitle_SeedRainProperties => 'Дождь из семян';
@@ -3041,24 +3042,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bronzeModuleAddTitle => 'Добавить тип статуи';
 
   @override
-  String get bronzeKindStrength => 'Гаргантюа с Битой';
-
-  @override
-  String get bronzeKindMage => 'Гаргантюа-Цигун';
-
-  @override
-  String get bronzeKindAgile => 'Гаргантюа с Крюком';
-
-  @override
-  String get bronzeKindStrengthShort => 'Сила';
-
-  @override
-  String get bronzeKindMageShort => 'Магия';
-
-  @override
-  String get bronzeKindAgileShort => 'Ловкость';
-
-  @override
   String get bronzeModuleTypeLabel => 'Тип';
 
   @override
@@ -3078,7 +3061,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventTitle_SpawnZombiesFromGroundSpawnerProps =>
-      'Вылезание из-под земли';
+      'Спавн из-под земли';
 
   @override
   String get eventDesc_SpawnZombiesFromGroundSpawnerProps =>
@@ -3139,7 +3122,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get eventDesc_DinoWaveActionProps => 'Призвать динозавра на ряд';
 
   @override
-  String get eventTitle_DinoTreadActionProps => 'Шаг динозавра';
+  String get eventTitle_DinoTreadActionProps => 'Топот динозавра';
 
   @override
   String get eventDesc_DinoTreadActionProps =>
@@ -3160,7 +3143,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Создать порталы с зомби из других эпох';
 
   @override
-  String get eventTitle_StormZombieSpawnerProps => 'Штормовой налёт';
+  String get eventTitle_StormZombieSpawnerProps => 'Буря';
 
   @override
   String get eventDesc_StormZombieSpawnerProps => 'Песчаная буря или метель';
@@ -3220,11 +3203,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get eventDesc_FairyTaleWindWaveActionProps => 'Сдуть туман';
 
   @override
-  String get eventTitle_SpiderRainZombieSpawnerProps => 'Бесячий дождь';
+  String get eventTitle_SpiderRainZombieSpawnerProps =>
+      'Дождь из зомби (импов)';
 
   @override
   String get eventDesc_SpiderRainZombieSpawnerProps =>
-      'Бесята (импы) падают с неба';
+      'Зомби (импы) падают с неба';
 
   @override
   String get eventTitle_ParachuteRainZombieSpawnerProps => 'Парашютный дождь';
@@ -3234,12 +3218,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Зомби падают с парашютами';
 
   @override
-  String get eventTitle_BassRainZombieSpawnerProps =>
-      'Дождь басистов/джетпаков';
+  String get eventTitle_BassRainZombieSpawnerProps => 'Дождь из басистов';
 
   @override
-  String get eventDesc_BassRainZombieSpawnerProps =>
-      'Падают басисты/зомби на джетпаках';
+  String get eventDesc_BassRainZombieSpawnerProps => 'Падают басисты';
 
   @override
   String get eventTitle_BlackHoleWaveActionProps => 'Чёрная дыра';
@@ -3253,7 +3235,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventDesc_BarrelWaveActionProps =>
-      'Катящиеся бочки по рядам (пустые, зомби, взрывные)';
+      'Катящиеся бочки по рядам (пустые, с зомби, взрывные)';
 
   @override
   String get eventTitle_SchoolBusWaveActionProps => 'Фургон с мороженым';
@@ -3281,7 +3263,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventDesc_ThunderWaveActionProps =>
-      'Молнии во время волны (положительные/отрицательные)';
+      'Молнии во время волны (с положительными/отрицательными зарядами)';
 
   @override
   String get eventTitle_MagicMirrorWaveActionProps => 'Волшебное зеркало';
@@ -3311,7 +3293,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get iZombiePlantReserveLabel =>
-      'Колонна резерва растений (PlantDistance)';
+      'Граница, зарезервированная под растения (PlantDistance)';
 
   @override
   String get column => 'Колонна';
@@ -4057,7 +4039,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tideWaveDuration => 'Длительность (секунды)';
 
   @override
-  String get tideWaveSubmarineMovingDistance => 'Расстояние подлодки';
+  String get tideWaveSubmarineMovingDistance => 'Длина перемещения';
 
   @override
   String get tideWaveSpeedUpDuration => 'Длительность ускорения (секунды)';
@@ -4072,7 +4054,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tideWaveZombieMovingSpeed => 'Скорость зомби';
 
   @override
-  String get eventZombieFishWave => 'Зомби-рыбы';
+  String get eventZombieFishWave => 'Cпавн зомби и рыб';
 
   @override
   String get eventHelpZombieFishWaveBody =>
@@ -4200,7 +4182,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get fishPropSpeed => 'Скорость';
 
   @override
-  String get fishPropScareSpeed => 'Скорость испуга';
+  String get fishPropScareSpeed => 'Скорость при испуге';
 
   @override
   String get fishPropDamage => 'Урон';
@@ -4424,7 +4406,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpBarrelWaveTypes =>
-      'Пустая: бочка без зомби. Зомби (монстр): бочка с зомби; используйте выбор зомби. Взрывная: бочка взрывается при попадании; задайте урон взрыва.';
+      'Пустая: бочка без зомби. Бочка с зомби: при поломке выпускает зомбиж; используйте выбор зомби. Взрывная: бочка взрывается при попадании; задайте урон взрыва.';
 
   @override
   String get barrelWaveHelpRows => 'Ряды';
@@ -4934,7 +4916,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cowboyMinigameBeginStringHint =>
-      'При добавлении модуля «Неудачный загон» в модуле конвейера автоматически включается переключатель «Ручное создание карточек».';
+      'При добавлении модуля «Электрический загон» (Not ok corral) в модуле конвейера автоматически включается переключатель «Ручное создание карточек».';
 
   @override
   String get cowboyMinigameHelpTitle =>
@@ -4962,7 +4944,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get singleHandedOverviewBasicConfiguration => 'Базовая конфигурация';
 
   @override
-  String get singleHandedMissileCount => 'Ракет за запуск';
+  String get singleHandedMissileCount => 'Количество ракет за запуск';
 
   @override
   String get singleHandedMissileInterval => 'Интервал запуска ракет';
@@ -5959,28 +5941,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpJitteredZtPerks =>
-      'Назначайте баффы Побега из Тупика отдельным зомби. Они сохраняются в массиве Titles. На одного зомби можно назначить только один бафф каждого типа (например, Crystal I и Crystal II вместе нельзя).';
+      'Назначайте баффы Побега из Тупика отдельным зомби. Они сохраняются в массиве Titles. На одного зомби можно назначить только один бафф каждого типа (например, Кристаллизация I и Кристаллизация II вместе нельзя).';
 
   @override
-  String get ztPerkCategoryCrystal => 'Кристалл';
+  String get ztPerkCategoryCrystal => 'Кристаллизация';
 
   @override
-  String get ztPerkCategoryAttack => 'Атака';
+  String get ztPerkCategoryAttack => 'Сила';
 
   @override
-  String get ztPerkCategorySpeed => 'Скорость';
+  String get ztPerkCategorySpeed => 'Стремительность';
 
   @override
-  String get ztPerkCategoryShield => 'Щит';
+  String get ztPerkCategoryShield => 'Энергощит';
 
   @override
-  String get ztPerkCategoryGravity => 'Гравитация';
+  String get ztPerkCategoryGravity => 'Гипергравитация';
 
   @override
-  String get ztPerkCategoryImmuneControl => 'Иммунитет к контролю';
+  String get ztPerkCategoryImmuneControl => 'Непреклонность';
 
   @override
-  String get ztPerkCategoryAntiControl => 'Сопротивление контролю';
+  String get ztPerkCategoryAntiControl => 'Концентрация';
 
   @override
   String get ztPerksViewStats => 'Показать параметры';
@@ -5993,25 +5975,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ztPerkPropDamageTotalTaken => 'Суммарное число получений урона';
 
   @override
-  String get ztPerkPropDamageTakenPerTime => 'Урон за интервал';
+  String get ztPerkPropDamageTakenPerTime => 'Урон за удар';
 
   @override
-  String get ztPerkPropHpReduced => 'Снижение HP';
+  String get ztPerkPropHpReduced => 'Снижение здоровья';
 
   @override
-  String get ztPerkPropShieldNum => 'Слоёв щита';
+  String get ztPerkPropShieldNum => 'Заряды щита';
 
   @override
-  String get ztPerkPropReducedControlPercent => 'Снижение контроля';
+  String get ztPerkPropReducedControlPercent => 'Снижение эффектов контроля';
 
   @override
   String get ztPerkPropReducedDamagePercent => 'Снижение урона';
 
   @override
-  String get ztPerkPropImprovedDamagePercent => 'Усиление урона';
+  String get ztPerkPropImprovedDamagePercent => 'Усиление силы атаки';
 
   @override
-  String get ztPerkPropImprovedSpeedPercent => 'Усиление скорости';
+  String get ztPerkPropImprovedSpeedPercent => 'Усиление скорости передвижения';
 
   @override
   String ztPerkDescCrystal(
@@ -6020,26 +6002,26 @@ class AppLocalizationsRu extends AppLocalizations {
     String damagePerHit,
     String hpReduced,
   ) {
-    return 'Не даёт зомби умирать от летальных атак, позволяет получать урон не более $damageCount раз за каждые $interval с, снижает каждый полученный урон до $damagePerHit и уменьшает здоровье на $hpReduced.';
+    return 'Даёт иммунитет к мгновенному убийству, позволяет получать урон не более $damageCount раз за каждые $interval с, снижает каждый полученный урон до $damagePerHit и уменьшает здоровье на $hpReduced.';
   }
 
   @override
   String get ztPerkDescGravity =>
-      'Отбрасывание и подбрасывание больше не действуют.';
+      'Иммунитет к эффектам отбрасывания и подбрасывания.';
 
   @override
   String ztPerkDescShield(String shieldNum) {
-    return 'Первые $shieldNum получения урона игнорируются; иммунитет к летальным атакам на всё время действия баффа.';
+    return 'Аннулирует первые $shieldNum получения урона и даёт иммунитет к мгновенному убийству на всё время действия баффа.';
   }
 
   @override
   String ztPerkDescImmuneControl(String percent) {
-    return 'Сопротивление контролю увеличено на $percent.';
+    return 'Сопротивление эффектам контроля увеличено на $percent.';
   }
 
   @override
   String ztPerkDescAntiControl(String percent) {
-    return 'Под контролем получаемый урон снижается на $percent.';
+    return 'Под действием эффекта контроля получаемый урон снижается на $percent.';
   }
 
   @override
@@ -6061,23 +6043,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ztPerkCategoryDescCrystal =>
-      'Даёт иммунитет к летальным атакам, позволяет получать урон не более N раз за каждые A секунд, снижает каждый полученный урон до B и уменьшает здоровье на X.';
+      'Даёт иммунитет к мгновенному убийству, позволяет получать урон не более N раз за каждые A секунд, снижает каждый полученный урон до B и уменьшает здоровье на X.';
 
   @override
   String get ztPerkCategoryDescGravity =>
-      'Отбрасывание и подбрасывание больше не действуют.';
+      'Иммунитет к эффектам отбрасывания и подбрасывания.';
 
   @override
   String get ztPerkCategoryDescShield =>
-      'Первые N получения урона игнорируются; иммунитет к летальным атакам сохраняется на всё время действия баффа.';
+      'Аннулирует первые N получений урона и даёт иммунитет к мгновенному убийству на всё время действия баффа.';
 
   @override
   String get ztPerkCategoryDescImmuneControl =>
-      'Сопротивление контролю увеличено на P%.';
+      'Сопротивление эффектам контроля увеличено на P%.';
 
   @override
   String get ztPerkCategoryDescAntiControl =>
-      'Под контролем получаемый урон снижается на P%.';
+      'Под действием эффекта контроля получаемый урон снижается на P%.';
 
   @override
   String get ztPerkCategoryDescAttack => 'Сила атаки увеличена на P%.';
@@ -6120,29 +6102,29 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get missingIntroModuleHint =>
-      'Уровню не хватает ZombossBattleIntroProperties. Добавьте модуль и выберите ZombossMech снова.';
+      'Уровню не хватает ZombossBattleIntroProperties. Добавьте модуль и выберите зомботf снова.';
 
   @override
-  String get zombossMechType => 'Тип ZombossMech';
+  String get zombossMechType => 'Тип зомбота';
 
   @override
-  String get unknownZombossMech => 'Неизвестный ZombossMech';
+  String get unknownZombossMech => 'Неизвестный зомбот';
 
   @override
-  String get zombossMechSelection => 'Выбор ZombossMech';
+  String get zombossMechSelection => 'Выбор зомбота';
 
   @override
-  String get zombossMechBaseLabel => 'Базовый ZombossMech';
+  String get zombossMechBaseLabel => 'Базовый зомбот';
 
   @override
   String get zombossMechBaseHint =>
-      'Семейство мех-боссов (Древний Египет, Далёкое Будущее, зомбот PvZ 1 и т.д.). При смене обновляется список вариантов ниже.';
+      'Семейство зомботов (Древний Египет, Далёкое Будущее, зомбот PvZ 1 и т.д.). При смене обновляется список вариантов ниже.';
 
   @override
-  String get zombossMechSelectBaseTitle => 'Выбор базового ZombossMech';
+  String get zombossMechSelectBaseTitle => 'Выбор базового зомбота';
 
   @override
-  String get zombossMechChangeBase => 'Сменить базовый ZombossMech';
+  String get zombossMechChangeBase => 'Сменить базовый зомбота';
 
   @override
   String get zombossMechUsedProperties => 'Используемые свойства';
@@ -6152,7 +6134,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombossMechVariationHint =>
-      'Конкретный тип меха в уровне (ZombossMechType). Список зависит от выбранного базового ZombossMech. Фазы и позиция появления синхронизируются автоматически.';
+      'Конкретный тип меха в уровне (ZombossMechType). Список зависит от выбранного базового зомбота. Фазы и позиция появления синхронизируются автоматически.';
 
   @override
   String get zombossBattleSelection => 'Выбор Зомбосса';
@@ -6372,9 +6354,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String lvN(int n) {
     return 'Ур. $n';
   }
-
-  @override
-  String get pennyClassroom => 'Класс Пенни';
 
   @override
   String get protectGridItems => 'Защищать объекты сетки';
@@ -6911,7 +6890,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'По умолчанию используются игровые значения. Можно включить пользовательский режим для редактирования.';
 
   @override
-  String get noZombossMechFound => 'ZombossMech не найден';
+  String get noZombossMechFound => 'зомбот не найден';
 
   @override
   String get noZombossBattleFound => 'Данные Зомбосса не найдены';
@@ -7411,7 +7390,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleDesc_ZombieRushModuleProperties => 'Обратный отсчёт уровня';
 
   @override
-  String get moduleTitle_PVZ1PassageModuleProperties => 'Бой с порталами';
+  String get moduleTitle_PVZ1PassageModuleProperties => 'Порталы PvZ1';
 
   @override
   String get moduleDesc_PVZ1PassageModuleProperties =>
@@ -7492,7 +7471,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get magicHatSpawnPreviewEmpty => 'Нет растений для этого списка.';
 
   @override
-  String get pvz1PassageModuleTitle => 'Бой с порталами';
+  String get pvz1PassageModuleTitle => 'Порталы PvZ1';
 
   @override
   String get pvz1PassageSectionParams => 'Параметры порталов';
@@ -8254,7 +8233,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editCustomZombossMech => 'Изменить';
 
   @override
-  String get customZombossMechProperties => 'Свои свойства ZombossMech';
+  String get customZombossMechProperties => 'Свои свойства зомбот';
 
   @override
   String get customZombossMechScalars => 'Параметры перемещения';
@@ -8454,7 +8433,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombossMechActionFields => 'Поля действия';
 
   @override
-  String get zombossMechPropertiesViewTitle => 'Свойства ZombossMech';
+  String get zombossMechPropertiesViewTitle => 'Свойства зомбот';
 
   @override
   String get viewZombossMechProperties => 'Просмотреть свойства';
@@ -9507,37 +9486,37 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editCustomStage => 'Редактировать пользовательскую лужайку';
 
   @override
-  String get startupLoadingLocalization => 'Локализация';
+  String get startupLoadingLocalization => 'локализаций';
 
   @override
-  String get startupLoadingStages => 'Карты';
+  String get startupLoadingStages => 'данных о лужайках';
 
   @override
-  String get startupLoadingAudio => 'Музыка';
+  String get startupLoadingAudio => 'данных о музыке';
 
   @override
-  String get startupLoadingGridItems => 'Объекты сетки';
+  String get startupLoadingGridItems => 'данных о препятствиях';
 
   @override
-  String get startupLoadingZomboss => 'Зомбосс';
+  String get startupLoadingZomboss => 'данных о боссах';
 
   @override
-  String get startupLoadingReference => 'Справочные данные';
+  String get startupLoadingReference => 'справочных данных';
 
   @override
-  String get startupLoadingZombies => 'Зомби';
+  String get startupLoadingZombies => 'данных о зомби';
 
   @override
-  String get startupLoadingPlants => 'Растения';
+  String get startupLoadingPlants => 'данных о растениях';
 
   @override
-  String get startupLoadingFish => 'Рыбы';
+  String get startupLoadingFish => 'данных о морских обитателях';
 
   @override
-  String get startupLoadingImages => 'Изображения';
+  String get startupLoadingImages => 'изображений';
 
   @override
-  String get startupLoadingPlugins => 'Плагины';
+  String get startupLoadingPlugins => 'плагинов';
 
   @override
   String startupLoadingCategoryProgress(String category) {

@@ -107,6 +107,11 @@ ThemeData get lightTheme {
     chipTheme: ChipThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
+    // Avoid Material's default dialog minWidth (280); keep dialogs flexible
+    // under the app UI scaler.
+    dialogTheme: const DialogThemeData(
+      constraints: BoxConstraints(minWidth: 0),
+    ),
   );
 }
 
@@ -134,6 +139,11 @@ ThemeData get darkTheme {
     ),
     chipTheme: ChipThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ),
+    // Avoid Material's default dialog minWidth (280); keep dialogs flexible
+    // under the app UI scaler.
+    dialogTheme: const DialogThemeData(
+      constraints: BoxConstraints(minWidth: 0),
     ),
   );
 }

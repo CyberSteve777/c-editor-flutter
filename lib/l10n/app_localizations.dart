@@ -5476,42 +5476,6 @@ abstract class AppLocalizations {
   /// **'Add bronze statue'**
   String get bronzeModuleAddTitle;
 
-  /// No description provided for @bronzeKindStrength.
-  ///
-  /// In en, this message translates to:
-  /// **'Han Bronze (strength)'**
-  String get bronzeKindStrength;
-
-  /// No description provided for @bronzeKindMage.
-  ///
-  /// In en, this message translates to:
-  /// **'Qigong Bronze (mage)'**
-  String get bronzeKindMage;
-
-  /// No description provided for @bronzeKindAgile.
-  ///
-  /// In en, this message translates to:
-  /// **'Xiake Bronze (agile)'**
-  String get bronzeKindAgile;
-
-  /// No description provided for @bronzeKindStrengthShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Han Bronze'**
-  String get bronzeKindStrengthShort;
-
-  /// No description provided for @bronzeKindMageShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Qigong Bronze'**
-  String get bronzeKindMageShort;
-
-  /// No description provided for @bronzeKindAgileShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Xiake Bronze'**
-  String get bronzeKindAgileShort;
-
   /// No description provided for @bronzeModuleTypeLabel.
   ///
   /// In en, this message translates to:
@@ -11390,12 +11354,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Level {n}'**
   String lvN(int n);
-
-  /// No description provided for @pennyClassroom.
-  ///
-  /// In en, this message translates to:
-  /// **'Penny Classroom module'**
-  String get pennyClassroom;
 
   /// No description provided for @protectGridItems.
   ///

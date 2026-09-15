@@ -735,35 +735,10 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   Future<String?> _promptCustomStageAlias(String suggested) async {
-    final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController(text: suggested);
-    final result = await showDialog<String>(
+    return showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.customStageAliasPromptTitle ?? 'Custom stage alias'),
-        content: EditorResponsiveInputField(
-          label: l10n?.customStageAlias ?? 'Stage alias',
-          decoration: const InputDecoration(),
-          builder: (context, decoration) => TextField(
-            controller: controller,
-            decoration: decoration,
-            autofocus: true,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text(l10n?.confirm ?? 'Confirm'),
-          ),
-        ],
-      ),
+      builder: (ctx) => _CustomStageAliasPromptDialog(initialAlias: suggested),
     );
-    controller.dispose();
-    return result;
   }
 
   Future<bool> _handleDeleteCustomStage({
@@ -4374,6 +4349,95 @@ class EditorUiScalePresetLabels extends StatelessWidget {
           onSelected: onPresetSelected,
         ),
       ],
+    );
+  }
+}
+
+/// Owns its [TextEditingController] so dispose cannot race dialog route teardown.
+/// Uses [Dialog] (not [AlertDialog]) to avoid IntrinsicWidth + LayoutBuilder crashes.
+class _CustomStageAliasPromptDialog extends StatefulWidget {
+  const _CustomStageAliasPromptDialog({required this.initialAlias});
+
+  final String initialAlias;
+
+  @override
+  State<_CustomStageAliasPromptDialog> createState() =>
+      _CustomStageAliasPromptDialogState();
+}
+
+class _CustomStageAliasPromptDialogState
+    extends State<_CustomStageAliasPromptDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialAlias);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.pop(context, _controller.text.trim());
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final available = MediaQuery.sizeOf(context).width - 48;
+    final dialogW = available < 420
+        ? (available < 1 ? 1.0 : available)
+        : 420.0;
+
+    return EscapeClosesModal(
+      child: Dialog(
+        constraints: const BoxConstraints(minWidth: 0),
+        child: SizedBox(
+          width: dialogW,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n?.customStageAliasPromptTitle ?? 'Custom stage alias',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _controller,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: l10n?.customStageAlias ?? 'Stage alias',
+                    border: const OutlineInputBorder(),
+                  ),
+                  onSubmitted: (_) => _submit(),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Wrap(
+                    spacing: 8,
+                    children: [
+                      TextButton(
+                        onPressed: () => safeNavPop(context),
+                        child: Text(l10n?.cancel ?? 'Cancel'),
+                      ),
+                      FilledButton(
+                        onPressed: _submit,
+                        child: Text(l10n?.confirm ?? 'Confirm'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

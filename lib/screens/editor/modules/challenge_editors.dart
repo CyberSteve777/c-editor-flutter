@@ -195,8 +195,6 @@ String _friendlyTitleFor(
       return l10n?.sunBomb ?? 'Sun bomb';
     case 'ZombiePotionModuleProperties':
       return l10n?.zombiePotion ?? 'Zombie potion';
-    case 'PennyClassroomModuleProperties':
-      return l10n?.pennyClassroom ?? 'Penny classroom';
     case 'ManholePipelineModuleProperties':
       return l10n?.manholePipeline ?? 'Manhole pipeline';
     default:
@@ -447,12 +445,6 @@ class ChallengeEditorContent extends StatelessWidget {
         return _SunBombEditor(l10n: l10n, object: object, onChanged: onChanged);
       case 'ZombiePotionModuleProperties':
         return _ZombiePotionModuleEditor(
-          l10n: l10n,
-          object: object,
-          onChanged: onChanged,
-        );
-      case 'PennyClassroomModuleProperties':
-        return _PennyClassroomEditor(
           l10n: l10n,
           object: object,
           onChanged: onChanged,
@@ -1166,62 +1158,6 @@ class _ZombiePotionModuleEditorState extends State<_ZombiePotionModuleEditor> {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
-      ],
-    );
-  }
-}
-
-class _PennyClassroomEditor extends StatefulWidget {
-  const _PennyClassroomEditor({
-    required this.l10n,
-    required this.object,
-    required this.onChanged,
-  });
-  final AppLocalizations? l10n;
-  final PvzObject object;
-  final VoidCallback onChanged;
-
-  @override
-  State<_PennyClassroomEditor> createState() => _PennyClassroomEditorState();
-}
-
-class _PennyClassroomEditorState extends State<_PennyClassroomEditor> {
-  late PennyClassroomModuleData _data;
-
-  @override
-  void initState() {
-    super.initState();
-    _data = PennyClassroomModuleData.fromJson(
-      widget.object.objData as Map<String, dynamic>,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = widget.l10n ?? AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n?.plantLevelsCount(_data.plantMap.length) ??
-              'Plant levels: ${_data.plantMap.length}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        ..._data.plantMap.entries.map((e) {
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Expanded(child: Text(e.key)),
-                  Text(l10n?.lvN(e.value) ?? 'Lv ${e.value}'),
-                ],
-              ),
-            ),
-          );
-        }),
       ],
     );
   }

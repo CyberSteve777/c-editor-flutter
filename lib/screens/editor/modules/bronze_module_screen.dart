@@ -45,6 +45,12 @@ String _zombieIdForBronzeKind(BronzeStatueKind kind) {
   }
 }
 
+String _bronzeZombieDisplayName(BuildContext context, BronzeStatueKind kind) {
+  final zid = _zombieIdForBronzeKind(kind);
+  final displayName = ResourceNames.lookup(context, 'zombie_$zid');
+  return displayName != 'zombie_$zid' ? displayName : zid;
+}
+
 class _BronzeItemRef {
   const _BronzeItemRef({required this.batchIndex, required this.itemIndex});
 
@@ -593,7 +599,10 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
               children: [
                 _AddBronzeKindRow(
                   kind: BronzeStatueKind.strength,
-                  label: l10n?.bronzeKindStrength ?? 'Han (strong)',
+                  label: _bronzeZombieDisplayName(
+                    ctx,
+                    BronzeStatueKind.strength,
+                  ),
                   onTap: () {
                     Navigator.pop(ctx);
                     _addBronze(BronzeStatueKind.strength);
@@ -602,7 +611,7 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
                 const SizedBox(height: 16),
                 _AddBronzeKindRow(
                   kind: BronzeStatueKind.mage,
-                  label: l10n?.bronzeKindMage ?? 'Qigong (mage)',
+                  label: _bronzeZombieDisplayName(ctx, BronzeStatueKind.mage),
                   onTap: () {
                     Navigator.pop(ctx);
                     _addBronze(BronzeStatueKind.mage);
@@ -611,7 +620,7 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
                 const SizedBox(height: 16),
                 _AddBronzeKindRow(
                   kind: BronzeStatueKind.agile,
-                  label: l10n?.bronzeKindAgile ?? 'Knight (agile)',
+                  label: _bronzeZombieDisplayName(ctx, BronzeStatueKind.agile),
                   onTap: () {
                     Navigator.pop(ctx);
                     _addBronze(BronzeStatueKind.agile);
@@ -648,9 +657,7 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
       });
       return const SizedBox.shrink();
     }
-    final zid = _zombieIdForBronzeKind(item.kind);
-    final displayName = ResourceNames.lookup(context, 'zombie_$zid');
-    final name = displayName != 'zombie_$zid' ? displayName : zid;
+    final name = _bronzeZombieDisplayName(context, item.kind);
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
@@ -781,9 +788,7 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final item = widget.item;
-    final zid = _zombieIdForBronzeKind(item.kind);
-    final displayName = ResourceNames.lookup(context, 'zombie_$zid');
-    final name = displayName != 'zombie_$zid' ? displayName : zid;
+    final name = _bronzeZombieDisplayName(context, item.kind);
 
     return Card(
       clipBehavior: Clip.antiAlias,

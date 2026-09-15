@@ -2892,24 +2892,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bronzeModuleAddTitle => '添加铜人像';
 
   @override
-  String get bronzeKindStrength => '大汉铜人像 (strength)';
-
-  @override
-  String get bronzeKindMage => '气功铜人像 (mage)';
-
-  @override
-  String get bronzeKindAgile => '侠客铜人像 (agile)';
-
-  @override
-  String get bronzeKindStrengthShort => '大汉铜人';
-
-  @override
-  String get bronzeKindMageShort => '气功铜人';
-
-  @override
-  String get bronzeKindAgileShort => '侠客铜人';
-
-  @override
   String get bronzeModuleTypeLabel => '类型';
 
   @override
@@ -6106,9 +6088,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String lvN(int n) {
     return '$n阶';
   }
-
-  @override
-  String get pennyClassroom => '潘妮课堂模块';
 
   @override
   String get protectGridItems => '保护物品挑战';
