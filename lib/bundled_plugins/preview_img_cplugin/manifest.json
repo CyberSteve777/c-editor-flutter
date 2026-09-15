@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "authors": ["CyberSteve777"],
   "contributors": ["Devourdoom"],
-  "minEditorVersion": "0.1.0",
+  "minEditorVersion": "1.0.0",
   "license": "MIT",
   "icon": "icon.png",
   "configurable": true,

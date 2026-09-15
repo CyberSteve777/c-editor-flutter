@@ -10,7 +10,7 @@ Release builds are published on [GitHub Releases](https://github.com/CyberSteve7
 
 C-Editor can also be accessed from web:
 
-- **Latest stable version available at:** [pvz2c-level-editor.vercel.app](https://pvz2c-level-editor.vercel.app/) (from `main`)
+- **Latest stable version available at** [pvz2c-level-editor.vercel.app](https://pvz2c-level-editor.vercel.app/) and mirror at [https://international2c.github.io/c-editor-flutter](https://international2c.github.io/c-editor-flutter) (from `main`)
 
 - **Preview available at:** [c-editor-git-dev-international2c.vercel.app](https://c-editor-git-dev-international2c.vercel.app/) — unstable, built from `dev`.
 
