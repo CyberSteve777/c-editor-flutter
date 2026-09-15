@@ -76,6 +76,7 @@ enum PlantTag {
   parallel,
   special,
   hidden,
+  tier4,
   chinese,
   international,
 }
@@ -174,6 +175,8 @@ extension PlantTagExtension on PlantTag {
         return s.plantTagSpecial;
       case PlantTag.hidden:
         return s.plantTagHidden;
+      case PlantTag.tier4:
+        return s.plantTagTier4;
       case PlantTag.international:
         return s.plantTagInternational;
       case PlantTag.chinese:
@@ -290,6 +293,7 @@ extension PlantTagExtension on PlantTag {
       case PlantTag.parallel:
       case PlantTag.special:
       case PlantTag.hidden:
+      case PlantTag.tier4:
       case PlantTag.international:
       case PlantTag.chinese:
         return PlantCategory.other;

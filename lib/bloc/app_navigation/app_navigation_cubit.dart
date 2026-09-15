@@ -53,10 +53,8 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
         editorFileName: '',
         editorFilePath: '',
         showUploadAfterLevelReturn: returningFromEditor,
-        // Keep upload FAB and scroll position consistent after leaving the editor.
-        levelListScrollOffset: returningFromEditor
-            ? 0
-            : state.levelListScrollOffset,
+        // Keep the exact list position captured before opening the level.
+        levelListScrollOffset: state.levelListScrollOffset,
       ),
     );
   }

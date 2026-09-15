@@ -2950,6 +2950,12 @@ abstract class AppLocalizations {
   /// **'Hidden Plants'**
   String get plantTagHidden;
 
+  /// No description provided for @plantTagTier4.
+  ///
+  /// In en, this message translates to:
+  /// **'Level 4 Village'**
+  String get plantTagTier4;
+
   /// No description provided for @plantTagInternational.
   ///
   /// In en, this message translates to:

@@ -606,6 +606,7 @@
   "plantTagParallel": "Parallel Universe",
   "plantTagSpecial": "Magic Hats",
   "plantTagHidden": "Hidden Plants",
+  "plantTagTier4": "Level 4 Village",
   "plantTagInternational": "International",
   "plantTagChinese": "China Only",
   "removeModuleConfirm": "Remove this module? Local custom modules (@CurrentLevel) and their data will be deleted permanently.",

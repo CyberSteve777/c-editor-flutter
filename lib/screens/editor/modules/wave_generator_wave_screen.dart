@@ -133,7 +133,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       rowInsertIndex: rowInsertIndex,
       parallelLevels: parallelLevels,
     );
-    // Обновляем уровни в памяти после перемещения
+    // 袨斜薪芯胁谢褟械屑 褍褉芯胁薪懈 胁 锌邪屑褟褌懈 锌芯褋谢械 锌械褉械屑械褖械薪懈褟
     _zombieLevels = {};
     for (var i = 0; i < parallelLevels.length; i++) {
       final level = parallelLevels[i];
@@ -1347,30 +1347,35 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    DropdownButtonFormField<int>(
-                      isExpanded: true,
-                      initialValue: rowValue,
+                    EditorResponsiveInputField(
+                      label: l10n?.row ?? 'Row',
                       decoration: InputDecoration(
-                        labelText: l10n?.row ?? 'Row',
                         border: const OutlineInputBorder(),
                       ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 0,
-                          child: Text(l10n?.random ?? 'Random'),
-                        ),
-                        ...List.generate(_rowCount, (i) => i + 1).map(
-                          (v) => DropdownMenuItem(
-                            value: v,
-                            child: Text(l10n?.rowN(v) ?? 'Row $v'),
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<int>(
+                            itemHeight: null,
+                            isExpanded: true,
+                            initialValue: rowValue,
+                            decoration: decoration,
+                            items: [
+                              DropdownMenuItem(
+                                value: 0,
+                                child: Text(l10n?.random ?? 'Random'),
+                              ),
+                              ...List.generate(_rowCount, (i) => i + 1).map(
+                                (v) => DropdownMenuItem(
+                                  value: v,
+                                  child: Text(l10n?.rowN(v) ?? 'Row $v'),
+                                ),
+                              ),
+                            ],
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setModalState(() => rowValue = v);
+                              _setZombieRow(index, v);
+                            },
                           ),
-                        ),
-                      ],
-                      onChanged: (v) {
-                        if (v == null) return;
-                        setModalState(() => rowValue = v);
-                        _setZombieRow(index, v);
-                      },
                     ),
                     const SizedBox(height: 12),
                     if (isElite)

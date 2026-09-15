@@ -75,7 +75,6 @@ class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -143,7 +142,7 @@ class _ZombieRushModuleScreenState extends State<ZombieRushModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -167,22 +166,25 @@ ModuleAliasInputField(
                       ),
                     ),
                     const SizedBox(height: 12),
-                    TextField(
-                      controller: _timeController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
+                    EditorResponsiveInputField(
+                      label: l10n?.levelCountdown ?? 'Level countdown',
                       decoration: InputDecoration(
-                        labelText: l10n?.levelCountdown ?? 'Level countdown',
                         border: const OutlineInputBorder(),
                       ),
-                      onChanged: (v) {
-                        final n = double.tryParse(v);
-                        if (n != null) {
-                          _data.timeCountDown = n;
-                          _sync();
-                        }
-                      },
+                      builder: (context, decoration) => TextField(
+                        controller: _timeController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = double.tryParse(v);
+                          if (n != null) {
+                            _data.timeCountDown = n;
+                            _sync();
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),

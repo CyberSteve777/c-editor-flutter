@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('level return target is session-only navigation state', () async {
+  test('level return preserves session scroll offset', () async {
     final navigation = AppNavigationCubit();
     addTearDown(navigation.close);
 
@@ -20,7 +20,7 @@ void main() {
 
     expect(navigation.state.lastOpenedLevelPath, r'C:\levels\world\level.json');
     expect(navigation.state.screen, AppScreen.levelList);
-    expect(navigation.state.levelListScrollOffset, 0);
+    expect(navigation.state.levelListScrollOffset, 347.5);
     expect(navigation.state.levelListFavoritesView, isTrue);
     expect(navigation.state.levelListSearchQuery, 'moon boss');
     expect(navigation.state.showUploadAfterLevelReturn, isTrue);

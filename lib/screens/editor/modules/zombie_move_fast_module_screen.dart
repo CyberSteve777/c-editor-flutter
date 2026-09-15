@@ -152,46 +152,52 @@ class _ZombieMoveFastModuleScreenState
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _stopColCtrl,
-                  keyboardType: TextInputType.number,
+                EditorResponsiveInputField(
+                  label: localizedPropertyLabel(
+                    context,
+                    l10n?.stopColumn ?? 'Stop Column',
+                    _stopColumnField,
+                  ),
                   decoration: InputDecoration(
-                    labelText: localizedPropertyLabel(
-                      context,
-                      l10n?.stopColumn ?? 'Stop Column',
-                      _stopColumnField,
-                    ),
                     border: const OutlineInputBorder(),
                   ),
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.stopColumn = n;
-                      _sync();
-                    }
-                  },
+                  builder: (context, decoration) => TextField(
+                    controller: _stopColCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: decoration,
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null) {
+                        _data.stopColumn = n;
+                        _sync();
+                      }
+                    },
+                  ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _speedUpCtrl,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+                EditorResponsiveInputField(
+                  label: localizedPropertyLabel(
+                    context,
+                    l10n?.speedUp ?? 'Speed Multiplier',
+                    _speedUpField,
                   ),
                   decoration: InputDecoration(
-                    labelText: localizedPropertyLabel(
-                      context,
-                      l10n?.speedUp ?? 'Speed Multiplier',
-                      _speedUpField,
-                    ),
                     border: const OutlineInputBorder(),
                   ),
-                  onChanged: (v) {
-                    final n = double.tryParse(v);
-                    if (n != null) {
-                      _data.speedUp = n;
-                      _sync();
-                    }
-                  },
+                  builder: (context, decoration) => TextField(
+                    controller: _speedUpCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: decoration,
+                    onChanged: (v) {
+                      final n = double.tryParse(v);
+                      if (n != null) {
+                        _data.speedUp = n;
+                        _sync();
+                      }
+                    },
+                  ),
                 ),
               ],
             ),

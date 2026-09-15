@@ -1578,6 +1578,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get plantTagHidden => 'Скрытые';
 
   @override
+  String get plantTagTier4 => 'Деревня 4-го уровня';
+
+  @override
   String get plantTagInternational => 'Интернациональные';
 
   @override

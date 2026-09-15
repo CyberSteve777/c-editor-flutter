@@ -202,27 +202,31 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.tidalChange.changeAmount.toString(),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.waterBoundaryColumn ??
+                            'Water boundary column',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.waterBoundaryColumn ??
-                              'Water boundary column',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = TidalChangeWaveActionData(
-                              tidalChange: TidalChangeInternalData(
-                                changeAmount: n,
-                                changeType: _data.tidalChange.changeType,
-                              ),
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.tidalChange.changeAmount
+                              .toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = TidalChangeWaveActionData(
+                                tidalChange: TidalChangeInternalData(
+                                  changeAmount: n,
+                                  changeType: _data.tidalChange.changeType,
+                                ),
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

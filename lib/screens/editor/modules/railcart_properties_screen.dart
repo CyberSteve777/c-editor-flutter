@@ -304,35 +304,42 @@ class _RailcartPropertiesScreenState extends State<RailcartPropertiesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      key: ValueKey(_data.railcartType),
-                      initialValue:
-                          _cartTypeOptions.contains(_data.railcartType)
-                          ? _data.railcartType
-                          : _cartTypeOptions.first,
+                    EditorResponsiveInputField(
+                      label: l10n?.railcartType ?? 'Railcart type',
                       decoration: InputDecoration(
-                        labelText: l10n?.railcartType ?? 'Railcart type',
                         border: const OutlineInputBorder(),
                       ),
-                      items: _cartTypeOptions
-                          .map(
-                            (e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(_railcartDisplayName(context, e)),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (v) {
-                        if (v != null) {
-                          _data = RailcartPropertiesData(
-                            railcartType: v,
-                            rails: _data.rails,
-                            railcarts: _data.railcarts,
-                          );
-                          _sync();
-                        }
-                      },
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<String>(
+                            itemHeight: null,
+                            isExpanded: true,
+                            key: ValueKey(_data.railcartType),
+                            initialValue:
+                                _cartTypeOptions.contains(_data.railcartType)
+                                ? _data.railcartType
+                                : _cartTypeOptions.first,
+                            decoration: decoration,
+                            items: _cartTypeOptions
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(
+                                      _railcartDisplayName(context, e),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (v) {
+                              if (v != null) {
+                                _data = RailcartPropertiesData(
+                                  railcartType: v,
+                                  rails: _data.rails,
+                                  railcarts: _data.railcarts,
+                                );
+                                _sync();
+                              }
+                            },
+                          ),
                     ),
                     const SizedBox(height: 16),
                     LayoutBuilder(

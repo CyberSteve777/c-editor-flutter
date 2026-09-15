@@ -825,7 +825,7 @@ class _ProtectThePlantEditorState extends State<_ProtectThePlantEditor> {
             );
           },
         ),
-        FilledButton.icon(
+        EditorFilledButton(
           onPressed: _addPlant,
           icon: const Icon(Icons.add),
           label: Text(l10n?.addPlant ?? 'Add Plant'),
@@ -963,7 +963,7 @@ class _ProtectTheGridItemEditorState extends State<_ProtectTheGridItemEditor> {
             );
           },
         ),
-        FilledButton.icon(
+        EditorFilledButton(
           onPressed: _addItem,
           icon: const Icon(Icons.add),
           label: Text(l10n?.addGridItem ?? 'Add Grid Item'),

@@ -298,7 +298,7 @@ class _FrostWindEventScreenState extends State<FrostWindEventScreen> {
                   ),
                 );
               }),
-              FilledButton.icon(
+              EditorFilledButton(
                 onPressed: _addWind,
                 icon: const Icon(Icons.add),
                 label: Text(l10n?.addWind ?? 'Add wind'),

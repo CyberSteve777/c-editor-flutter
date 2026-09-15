@@ -388,6 +388,9 @@ class _LevelListScreenState extends State<LevelListScreen> {
   late bool _listScrollAtTop;
   bool _showUploadFabAfterLevelReturn = false;
   String? _pendingReturnLevelPath;
+  final GlobalKey _levelListHeaderKey = GlobalKey(
+    debugLabel: 'levelListHeader',
+  );
 
   bool get _canGoBack => _pathStack.length > 1;
 
@@ -1586,6 +1589,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: TextField(
+          key: const ValueKey('levelListSearchField'),
           controller: _searchController,
           onChanged: (value) => setState(() => _searchQuery = value),
           decoration: InputDecoration(
@@ -1988,21 +1992,28 @@ class _LevelListScreenState extends State<LevelListScreen> {
                     fabBgColor: fabBgColor,
                     fabFgColor: fabFgColor,
                   );
+                  final header = KeyedSubtree(
+                    key: _levelListHeaderKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: headerChildren,
+                    ),
+                  );
 
                   return Column(
                     children: [
                       if (useScrollableHeader)
                         Flexible(
                           fit: FlexFit.loose,
-                          child: ListView(
+                          child: SingleChildScrollView(
                             padding: EdgeInsets.zero,
-                            shrinkWrap: true,
                             physics: const ClampingScrollPhysics(),
-                            children: headerChildren,
+                            child: header,
                           ),
                         )
                       else
-                        ...headerChildren,
+                        header,
                       Expanded(
                         child: _isLoading
                             ? const Center(child: CircularProgressIndicator())

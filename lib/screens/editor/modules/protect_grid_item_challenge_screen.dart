@@ -285,7 +285,7 @@ class _ProtectGridItemChallengeScreenState
                           ),
                         ],
                       ),
-                      action: FilledButton.icon(
+                      action: EditorFilledButton(
                         onPressed: _addItem,
                         icon: const Icon(Icons.add, size: 18),
                         label: Text(l10n?.addItem ?? 'Add Target'),

@@ -22,6 +22,8 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
     show
+        EditorResponsiveInputField,
+        EditorFilledButton,
         EventChipWidget,
         isDesktopPlatform,
         EditorOptionTile,
@@ -1889,11 +1891,20 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
+        constraints: const BoxConstraints.tightFor(width: 560),
         title: Text(l10n?.rename ?? 'Rename'),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(labelText: l10n?.newName ?? 'New name'),
-          onChanged: (_) {},
+        content: SizedBox(
+          width: double.maxFinite,
+          child: EditorResponsiveInputField(
+            label: l10n?.newName ?? 'New name',
+            decoration: InputDecoration(),
+            builder: (context, decoration) => TextField(
+              controller: ctrl,
+              decoration: decoration,
+              onChanged: (_) {},
+            ),
+          ),
         ),
         actions: [
           TextButton(
@@ -1981,10 +1992,17 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
+        constraints: const BoxConstraints.tightFor(width: 560),
         title: Text(l10n?.deepCopy ?? 'Deep copy'),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(labelText: l10n?.newName ?? 'New name'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: EditorResponsiveInputField(
+            label: l10n?.newName ?? 'New name',
+            decoration: InputDecoration(),
+            builder: (context, decoration) =>
+                TextField(controller: ctrl, decoration: decoration),
+          ),
         ),
         actions: [
           TextButton(
@@ -2148,13 +2166,20 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
+        constraints: const BoxConstraints.tightFor(width: 560),
         title: Text(l10n?.move ?? 'Move'),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            labelText: l10n?.moveToWaveIndex ?? 'Move to wave index',
+        content: SizedBox(
+          width: double.maxFinite,
+          child: EditorResponsiveInputField(
+            label: l10n?.moveToWaveIndex ?? 'Move to wave index',
+            decoration: InputDecoration(),
+            builder: (context, decoration) => TextField(
+              controller: ctrl,
+              decoration: decoration,
+              keyboardType: TextInputType.number,
+            ),
           ),
-          keyboardType: TextInputType.number,
         ),
         actions: [
           TextButton(
@@ -2941,7 +2966,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               ),
               if (widget.onCreateContainer != null) ...[
                 const SizedBox(height: 24),
-                FilledButton.icon(
+                EditorFilledButton(
                   onPressed: widget.onCreateContainer,
                   icon: const Icon(Icons.add),
                   label: Text(
@@ -3055,7 +3080,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         Padding(
           padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
           child: Center(
-            child: FilledButton.icon(
+            child: EditorFilledButton(
               onPressed: _addWave,
               icon: const Icon(Icons.add),
               label: Text(l10n?.addWave ?? 'Add wave'),

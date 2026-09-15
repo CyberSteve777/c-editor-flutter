@@ -1565,6 +1565,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plantTagHidden => 'Hidden Plants';
 
   @override
+  String get plantTagTier4 => 'Level 4 Village';
+
+  @override
   String get plantTagInternational => 'International';
 
   @override

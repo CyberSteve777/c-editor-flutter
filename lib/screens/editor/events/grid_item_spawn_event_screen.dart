@@ -424,45 +424,50 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.waveStartMessage ?? '',
+                      EditorResponsiveInputField(
+                        label: l10n?.waveStartMessage ?? 'Wave start message',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.waveStartMessage ?? 'Wave start message',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (v) {
-                          _data = SpawnZombiesFromGridItemData(
-                            waveStartMessage: v.isEmpty ? null : v,
-                            zombieSpawnWaitTime: _data.zombieSpawnWaitTime,
-                            gridTypes: _data.gridTypes,
-                            zombies: _data.zombies,
-                          );
-                          _sync();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.zombieSpawnWaitTime.toString(),
-                        decoration: InputDecoration(
-                          labelText:
-                              l10n?.zombieSpawnWaitSec ??
-                              'Zombie spawn wait (seconds)',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.waveStartMessage ?? '',
+                          decoration: decoration,
+                          onChanged: (v) {
                             _data = SpawnZombiesFromGridItemData(
-                              waveStartMessage: _data.waveStartMessage,
-                              zombieSpawnWaitTime: n,
+                              waveStartMessage: v.isEmpty ? null : v,
+                              zombieSpawnWaitTime: _data.zombieSpawnWaitTime,
                               gridTypes: _data.gridTypes,
                               zombies: _data.zombies,
                             );
                             _sync();
-                          }
-                        },
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.zombieSpawnWaitSec ??
+                            'Zombie spawn wait (seconds)',
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.zombieSpawnWaitTime.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = SpawnZombiesFromGridItemData(
+                                waveStartMessage: _data.waveStartMessage,
+                                zombieSpawnWaitTime: n,
+                                gridTypes: _data.gridTypes,
+                                zombies: _data.zombies,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

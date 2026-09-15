@@ -326,26 +326,29 @@ class _ArmrackModuleScreenState extends State<ArmrackModuleScreen> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          TextFormField(
-                            initialValue: '${selected.wave}',
+                          EditorResponsiveInputField(
+                            label:
+                                l10n?.gridOverrideModuleWaveFieldOneBased ??
+                                'Wave (1 = first wave)',
                             decoration: InputDecoration(
-                              labelText:
-                                  l10n?.gridOverrideModuleWaveFieldOneBased ??
-                                  'Wave (1 = first wave)',
                               border: const OutlineInputBorder(),
                             ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (v) {
-                              final n = int.tryParse(v);
-                              if (n != null && n >= 1) {
-                                _updateSelectedOverride(
-                                  ArmrackOverrideWaveData(
-                                    wave: n,
-                                    itemList: selected.itemList,
-                                  ),
-                                );
-                              }
-                            },
+                            builder: (context, decoration) => TextFormField(
+                              initialValue: '${selected.wave}',
+                              decoration: decoration,
+                              keyboardType: TextInputType.number,
+                              onChanged: (v) {
+                                final n = int.tryParse(v);
+                                if (n != null && n >= 1) {
+                                  _updateSelectedOverride(
+                                    ArmrackOverrideWaveData(
+                                      wave: n,
+                                      itemList: selected.itemList,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ),
                           if (selected.wave == gridOverrideInitialWave) ...[
                             const SizedBox(height: 8),

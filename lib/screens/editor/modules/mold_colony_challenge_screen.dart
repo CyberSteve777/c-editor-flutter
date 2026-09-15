@@ -204,8 +204,11 @@ class _MoldColonyChallengeScreenState extends State<MoldColonyChallengeScreen> {
                     const SizedBox(height: 16),
                     Center(child: _buildGrid(theme, l10n)),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 24,
+                      runSpacing: 12,
                       children: [
                         _LegendItem(
                           label: l10n.moldColonyEmpty,
@@ -220,7 +223,6 @@ class _MoldColonyChallengeScreenState extends State<MoldColonyChallengeScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 24),
                         _LegendItem(
                           label: l10n.moldColonies,
                           child: const AssetImageWidget(
@@ -299,6 +301,10 @@ class _MoldColonyChallengeScreenState extends State<MoldColonyChallengeScreen> {
                 style: FilledButton.styleFrom(
                   backgroundColor: theme.colorScheme.error,
                   foregroundColor: theme.colorScheme.onError,
+                  side: BorderSide(
+                    color: theme.colorScheme.onError,
+                    width: 1.5,
+                  ),
                 ),
                 icon: const Icon(Icons.build_circle_outlined),
                 label: Text(l10n.moldColonyRepairLink(_repairAlias)),
@@ -399,7 +405,11 @@ class _LegendItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [child, const SizedBox(width: 8), Text(label)],
+      children: [
+        child,
+        const SizedBox(width: 8),
+        Flexible(child: Text(label, softWrap: true)),
+      ],
     );
   }
 }

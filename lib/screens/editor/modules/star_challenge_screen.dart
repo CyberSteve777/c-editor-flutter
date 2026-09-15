@@ -467,7 +467,7 @@ class _StarChallengeModuleScreenState extends State<StarChallengeModuleScreen> {
               );
             }),
           const SizedBox(height: 16),
-          FilledButton.icon(
+          EditorFilledButton(
             onPressed: _addChallenge,
             style: FilledButton.styleFrom(
               backgroundColor: themeColor,

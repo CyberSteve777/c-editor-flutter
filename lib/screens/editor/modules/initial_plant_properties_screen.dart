@@ -674,42 +674,51 @@ class _PlacementEditDialogState extends State<_PlacementEditDialog> {
       PlantRepository().getName(widget.placement.typeName),
     );
     return AlertDialog(
+      scrollable: true,
+      constraints: const BoxConstraints.tightFor(width: 560),
       title: Text(l10n.frozenPlantPlacementEditPlant(name)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '${l10n.frozenPlantPlacementLevel}: $_level',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Slider(
-            value: _level.toDouble(),
-            min: 1,
-            max: 5,
-            divisions: 4,
-            onChanged: (v) => setState(() => _level = v.round()),
-          ),
-          const Divider(),
-          DropdownButtonFormField<String?>(
-            isExpanded: true,
-            initialValue: _condition,
-            decoration: InputDecoration(
-              labelText: l10n.frozenPlantPlacementCondition,
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${l10n.frozenPlantPlacementLevel}: $_level',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            items: [
-              DropdownMenuItem<String?>(
-                value: null,
-                child: Text(l10n.frozenPlantPlacementConditionNull),
-              ),
-              for (final id in PlantConditions.ids)
-                DropdownMenuItem<String?>(
-                  value: id,
-                  child: Text(ConditionL10n.plantLabel(context, id)),
-                ),
-            ],
-            onChanged: (v) => setState(() => _condition = v),
-          ),
-        ],
+            Slider(
+              value: _level.toDouble(),
+              min: 1,
+              max: 5,
+              divisions: 4,
+              onChanged: (v) => setState(() => _level = v.round()),
+            ),
+            const Divider(),
+            EditorResponsiveInputField(
+              label: l10n.frozenPlantPlacementCondition,
+              decoration: InputDecoration(),
+              builder: (context, decoration) =>
+                  DropdownButtonFormField<String?>(
+                    itemHeight: null,
+                    isExpanded: true,
+                    initialValue: _condition,
+                    decoration: decoration,
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(l10n.frozenPlantPlacementConditionNull),
+                      ),
+                      for (final id in PlantConditions.ids)
+                        DropdownMenuItem<String?>(
+                          value: id,
+                          child: Text(ConditionL10n.plantLabel(context, id)),
+                        ),
+                    ],
+                    onChanged: (v) => setState(() => _condition = v),
+                  ),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

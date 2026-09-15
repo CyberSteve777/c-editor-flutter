@@ -237,25 +237,28 @@ class _DinoEventScreenState extends State<DinoEventScreen> {
                         },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.dinoWaveDuration.toString(),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.dinoWaveDuration ?? 'Stay duration (waves)',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.dinoWaveDuration ?? 'Stay duration (waves)',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = DinoWaveActionPropsData(
-                              dinoRow: _data.dinoRow,
-                              dinoType: _data.dinoType,
-                              dinoWaveDuration: n,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.dinoWaveDuration.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = DinoWaveActionPropsData(
+                                dinoRow: _data.dinoRow,
+                                dinoType: _data.dinoType,
+                                dinoWaveDuration: n,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

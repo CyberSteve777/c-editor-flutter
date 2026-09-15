@@ -340,85 +340,99 @@ class _CustomZombossMechPropertiesScreenState
           data: zombossMechInputTheme(context),
           child: StatefulBuilder(
             builder: (context, setDialogState) => AlertDialog(
-            scrollable: true,
-            title: Text(
-              l10n?.zombossMechAddEightiesPhaseTitle ??
-                  'Choose phase music and animation',
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n?.zombossMechEightiesPhaseSelectionRequired ??
-                      'Select both entries before creating the phase.',
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  key: const ValueKey('eightiesPhaseJamDropdown'),
-                  isExpanded: true,
-                  initialValue: jam,
-                  decoration: editorInputDecoration(
-                    context,
-                    labelText:
-                        l10n?.zombossMechStageJamOrder ??
-                        'Music playback order (StageJamOrder)',
-                  ),
-                  items: [
-                    for (final value in _kStageJamOptions)
-                      DropdownMenuItem(
-                        value: value,
-                        child: Text(
-                          '${_stageJamLabel(l10n, value)} · $value',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+              constraints: const BoxConstraints.tightFor(width: 560),
+              scrollable: true,
+              title: Text(
+                l10n?.zombossMechAddEightiesPhaseTitle ??
+                    'Choose phase music and animation',
+              ),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n?.zombossMechEightiesPhaseSelectionRequired ??
+                          'Select both entries before creating the phase.',
+                    ),
+                    const SizedBox(height: 16),
+                    EditorResponsiveInputField(
+                      label:
+                          l10n?.zombossMechStageJamOrder ??
+                          'Music playback order (StageJamOrder)',
+                      decoration: editorInputDecoration(context),
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<String>(
+                            itemHeight: null,
+                            key: const ValueKey('eightiesPhaseJamDropdown'),
+                            isExpanded: true,
+                            initialValue: jam,
+                            decoration: decoration,
+                            items: [
+                              for (final value in _kStageJamOptions)
+                                DropdownMenuItem(
+                                  value: value,
+                                  child: Text(
+                                    '${_stageJamLabel(l10n, value)} · $value',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                            ],
+                            onChanged: (value) =>
+                                setDialogState(() => jam = value),
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    EditorResponsiveInputField(
+                      label:
+                          l10n?.zombossMechZombossAnimOrder ??
+                          'Zomboss animation order (ZombossAnimOrder)',
+                      decoration: editorInputDecoration(context),
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<String>(
+                            itemHeight: null,
+                            key: const ValueKey(
+                              'eightiesPhaseAnimationDropdown',
+                            ),
+                            isExpanded: true,
+                            initialValue: animation,
+                            decoration: decoration,
+                            items: [
+                              for (final value in _kZombossAnimOptions)
+                                DropdownMenuItem(
+                                  value: value,
+                                  child: Text(
+                                    '${_zombossAnimLabel(l10n, value)} · $value',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                            ],
+                            onChanged: (value) =>
+                                setDialogState(() => animation = value),
+                          ),
+                    ),
                   ],
-                  onChanged: (value) => setDialogState(() => jam = value),
                 ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  key: const ValueKey('eightiesPhaseAnimationDropdown'),
-                  isExpanded: true,
-                  initialValue: animation,
-                  decoration: editorInputDecoration(
-                    context,
-                    labelText:
-                        l10n?.zombossMechZombossAnimOrder ??
-                        'Zomboss animation order (ZombossAnimOrder)',
-                  ),
-                  items: [
-                    for (final value in _kZombossAnimOptions)
-                      DropdownMenuItem(
-                        value: value,
-                        child: Text(
-                          '${_zombossAnimLabel(l10n, value)} · $value',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                  ],
-                  onChanged: (value) => setDialogState(() => animation = value),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(l10n?.cancel ?? 'Cancel'),
+                ),
+                FilledButton(
+                  key: const ValueKey('confirmAddEightiesPhase'),
+                  onPressed: jam == null || animation == null
+                      ? null
+                      : () => Navigator.pop(dialogContext, (
+                          jam: jam!,
+                          animation: animation!,
+                        )),
+                  child: Text(l10n?.zombossMechCreatePhase ?? 'Create phase'),
                 ),
               ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n?.cancel ?? 'Cancel'),
-              ),
-              FilledButton(
-                key: const ValueKey('confirmAddEightiesPhase'),
-                onPressed: jam == null || animation == null
-                    ? null
-                    : () => Navigator.pop(dialogContext, (
-                        jam: jam!,
-                        animation: animation!,
-                      )),
-                child: Text(l10n?.zombossMechCreatePhase ?? 'Create phase'),
-              ),
-            ],
           ),
-        ),
         ),
       );
       if (selection == null || !mounted) return;
@@ -1320,15 +1334,19 @@ class _HitPointsFieldState extends State<_HitPointsField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _controller,
-      focusNode: _focusNode,
-      decoration: editorInputDecoration(context, labelText: widget.label),
-      keyboardType: TextInputType.number,
-      onChanged: (v) {
-        final parsed = int.tryParse(v);
-        if (parsed != null && parsed > 0) widget.onChanged(parsed);
-      },
+    return EditorResponsiveInputField(
+      label: widget.label,
+      decoration: editorInputDecoration(context),
+      builder: (context, decoration) => TextFormField(
+        controller: _controller,
+        focusNode: _focusNode,
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (v) {
+          final parsed = int.tryParse(v);
+          if (parsed != null && parsed > 0) widget.onChanged(parsed);
+        },
+      ),
     );
   }
 }

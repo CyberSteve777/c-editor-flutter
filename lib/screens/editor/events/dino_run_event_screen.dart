@@ -255,28 +255,31 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.timeInterval.toString(),
+                      EditorResponsiveInputField(
+                        label: localizedSecondsPropertyLabel(
+                          context,
+                          l10n?.timeInterval ?? 'Time interval',
+                          'TimeInterval',
+                        ),
                         decoration: InputDecoration(
-                          labelText: localizedSecondsPropertyLabel(
-                            context,
-                            l10n?.timeInterval ?? 'Time interval',
-                            'TimeInterval',
-                          ),
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = DinoRunActionPropsData(
-                              dinoRow: _data.dinoRow,
-                              timeInterval: n,
-                              waveStartMessage: _data.waveStartMessage,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.timeInterval.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = DinoRunActionPropsData(
+                                dinoRow: _data.dinoRow,
+                                timeInterval: n,
+                                waveStartMessage: _data.waveStartMessage,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

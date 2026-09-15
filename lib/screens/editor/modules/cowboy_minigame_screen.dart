@@ -170,44 +170,57 @@ class _CowboyMinigameScreenState extends State<CowboyMinigameScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<_BeginStringMode>(
-                      initialValue: _beginStringMode,
+                    EditorResponsiveInputField(
+                      label: localizedPropertyLabel(
+                        context,
+                        l10n.cowboyMinigameBeginString,
+                        'BeginString',
+                      ),
                       decoration: InputDecoration(
-                        labelText: localizedPropertyLabel(
-                          context,
-                          l10n.cowboyMinigameBeginString,
-                          'BeginString',
-                        ),
                         border: const OutlineInputBorder(),
                       ),
-                      items: [
-                        DropdownMenuItem(
-                          value: _BeginStringMode.defaultText,
-                          child: Text(l10n.cowboyMinigameBeginStringDefault),
-                        ),
-                        DropdownMenuItem(
-                          value: _BeginStringMode.custom,
-                          child: Text(l10n.cowboyMinigameBeginStringCustom),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) _setBeginStringMode(value);
-                      },
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<_BeginStringMode>(
+                            isExpanded: true,
+                            itemHeight: null,
+                            initialValue: _beginStringMode,
+                            decoration: decoration,
+                            items: [
+                              DropdownMenuItem(
+                                value: _BeginStringMode.defaultText,
+                                child: Text(
+                                  l10n.cowboyMinigameBeginStringDefault,
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: _BeginStringMode.custom,
+                                child: Text(
+                                  l10n.cowboyMinigameBeginStringCustom,
+                                ),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              if (value != null) _setBeginStringMode(value);
+                            },
+                          ),
                     ),
                     if (_beginStringMode == _BeginStringMode.custom) ...[
                       const SizedBox(height: 16),
-                      TextField(
-                        controller: _customTextController,
-                        minLines: 2,
-                        maxLines: 4,
+                      EditorResponsiveInputField(
+                        label: l10n.cowboyMinigameCustomTextInput,
                         decoration: InputDecoration(
-                          labelText: l10n.cowboyMinigameCustomTextInput,
                           border: const OutlineInputBorder(),
                         ),
-                        onChanged: (value) {
-                          _data.beginString = value;
-                          _sync();
-                        },
+                        builder: (context, decoration) => TextField(
+                          controller: _customTextController,
+                          minLines: 2,
+                          maxLines: 4,
+                          decoration: decoration,
+                          onChanged: (value) {
+                            _data.beginString = value;
+                            _sync();
+                          },
+                        ),
                       ),
                     ],
                     const SizedBox(height: 8),

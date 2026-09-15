@@ -81,6 +81,148 @@ void main() {
     );
   });
 
+  testWidgets(
+    'tag row updates its overflow chrome when only constraints change',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(700, 240);
+      addTearDown(tester.view.reset);
+
+      final width = ValueNotifier<double>(520);
+      addTearDown(width.dispose);
+      final unchangedScroller = HorizontalTagScroller(
+        children: List.generate(
+          3,
+          (index) => SizedBox(width: 120, child: Text('Tag $index')),
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: ValueListenableBuilder<double>(
+                valueListenable: width,
+                child: unchangedScroller,
+                builder: (context, value, child) =>
+                    SizedBox(width: value, child: child),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      Scrollbar scrollbar() => tester.widget<Scrollbar>(
+        find.byKey(const ValueKey('horizontalTagScrollerScrollbar')),
+      );
+      SingleChildScrollView scrollView() =>
+          tester.widget<SingleChildScrollView>(
+            find.byKey(const ValueKey('horizontalTagScrollerScrollView')),
+          );
+
+      expect(scrollbar().thumbVisibility, isFalse);
+      expect(
+        scrollView().padding,
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      );
+
+      // ValueListenableBuilder keeps the exact same scroller widget instance;
+      // only its parent's constraint changes. Scroll metrics must therefore
+      // drive the overflow update rather than a page-level rebuild.
+      width.value = 260;
+      await tester.pumpAndSettle();
+      expect(scrollbar().thumbVisibility, isTrue);
+      expect(scrollView().padding, const EdgeInsets.fromLTRB(12, 8, 12, 16));
+
+      width.value = 520;
+      await tester.pumpAndSettle();
+      expect(scrollbar().thumbVisibility, isFalse);
+      expect(
+        scrollView().padding,
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'accent filter keeps selected tab visible when resized during animation',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(900, 300);
+      addTearDown(tester.view.reset);
+
+      final width = ValueNotifier<double>(460);
+      final selectedIndex = ValueNotifier<int>(0);
+      addTearDown(width.dispose);
+      addTearDown(selectedIndex.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: ValueListenableBuilder<int>(
+                valueListenable: selectedIndex,
+                builder: (context, selected, _) {
+                  final unchangedForWidth = AccentBarFilterTabRow(
+                    tabs: List.generate(
+                      6,
+                      (index) =>
+                          SizedBox(width: 140, child: Text('Long tag $index')),
+                    ),
+                    selectedIndex: selected,
+                    onSelected: (index) => selectedIndex.value = index,
+                  );
+                  return ValueListenableBuilder<double>(
+                    valueListenable: width,
+                    child: unchangedForWidth,
+                    builder: (context, value, child) =>
+                        SizedBox(width: value, child: child),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      selectedIndex.value = 5;
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 40));
+
+      final scrollable = tester.state<ScrollableState>(
+        find.descendant(
+          of: find.byType(AccentBarFilterTabRow),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      expect(scrollable.position.isScrollingNotifier.value, isTrue);
+
+      // Shrink without rebuilding AccentBarFilterTabRow itself. Its previous
+      // animation target was calculated for the wider viewport.
+      width.value = 230;
+      await tester.pumpAndSettle();
+
+      final viewport = tester.getRect(
+        find.descendant(
+          of: find.byType(AccentBarFilterTabRow),
+          matching: find.byType(SingleChildScrollView),
+        ),
+      );
+      final selectedIndicator = tester.getRect(
+        find.byKey(const ValueKey('accentBarFilterSelectedIndicator')),
+      );
+      expect(selectedIndicator.left, greaterThanOrEqualTo(viewport.left - 0.5));
+      expect(selectedIndicator.right, lessThanOrEqualTo(viewport.right + 0.5));
+      expect(selectedIndex.value, 5);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('wide overflowing tag row also keeps its scrollbar visible', (
     tester,
   ) async {

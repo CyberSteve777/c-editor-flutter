@@ -152,44 +152,50 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _sunController,
-                      keyboardType: TextInputType.number,
+                    EditorResponsiveInputField(
+                      label: localizedPropertyLabel(
+                        context,
+                        l10n.startingSun,
+                        _startingSunField,
+                      ),
                       decoration: InputDecoration(
-                        labelText: localizedPropertyLabel(
-                          context,
-                          l10n.startingSun,
-                          _startingSunField,
-                        ),
                         border: const OutlineInputBorder(),
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          _data.startingSun = n;
-                          _save();
-                        }
-                      },
+                      builder: (context, decoration) => TextField(
+                        controller: _sunController,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            _data.startingSun = n;
+                            _save();
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _plantfoodController,
-                      keyboardType: TextInputType.number,
+                    EditorResponsiveInputField(
+                      label: localizedPropertyLabel(
+                        context,
+                        l10n.startingPlantfood,
+                        _startingPlantfoodField,
+                      ),
                       decoration: InputDecoration(
-                        labelText: localizedPropertyLabel(
-                          context,
-                          l10n.startingPlantfood,
-                          _startingPlantfoodField,
-                        ),
                         border: const OutlineInputBorder(),
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          _data.startingPlantfood = n;
-                          _save();
-                        }
-                      },
+                      builder: (context, decoration) => TextField(
+                        controller: _plantfoodController,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            _data.startingPlantfood = n;
+                            _save();
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),

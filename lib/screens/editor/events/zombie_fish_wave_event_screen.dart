@@ -342,7 +342,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      FilledButton.icon(
+                      EditorFilledButton(
                         onPressed: _openFishProperties,
                         icon: Icon(hasFishes ? Icons.edit : Icons.add),
                         label: Text(

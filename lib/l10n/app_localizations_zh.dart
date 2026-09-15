@@ -1534,6 +1534,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get plantTagHidden => '隐藏植物';
 
   @override
+  String get plantTagTier4 => '四阶村';
+
+  @override
   String get plantTagInternational => '国际版移植';
 
   @override

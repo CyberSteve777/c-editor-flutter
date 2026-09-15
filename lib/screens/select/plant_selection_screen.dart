@@ -351,6 +351,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: Text(
           l10n?.realmExclusivePlantChooserBlockedTitle ?? 'Cannot select plant',
         ),
@@ -377,6 +378,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: Text(
           l10n?.hiddenPlantChooserBlockedTitle ?? 'Cannot select plant',
         ),
@@ -401,6 +403,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: Text(
           isMoonTag
               ? (l10n?.stayTunedMoonPlantBlockedTitle ?? 'A Message from Space')
