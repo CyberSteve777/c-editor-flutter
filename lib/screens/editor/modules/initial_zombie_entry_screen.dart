@@ -193,42 +193,33 @@ class _InitialZombieEntryScreenState extends State<InitialZombieEntryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                EditorPlacementGridCard(
+                  header: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  AppLocalizations.of(
-                                        context,
-                                      )?.selectedPosition ??
-                                      'Selected position',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              AppLocalizations.of(context)?.selectedPosition ??
+                                  'Selected position',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'R${_selectedY + 1} : C${_selectedX + 1}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildGrid(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  grid: _buildGrid(),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -309,7 +300,9 @@ class _InitialZombieEntryScreenState extends State<InitialZombieEntryScreen> {
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: const BoxConstraints(
+          maxWidth: EditorItemCardLayout.placementGridMaxWidth,
+        ),
         child: AspectRatio(
           aspectRatio: _gridCols / _gridRows,
           child: Container(
@@ -510,10 +503,7 @@ class _InitialZombieCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      ConditionL10n.zombieLabel(
-                        context,
-                        item.condition,
-                      ),
+                      ConditionL10n.zombieLabel(context, item.condition),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -600,78 +590,97 @@ class _InitialZombieEditDialogState extends State<_InitialZombieEditDialog> {
     final nameKey = ZombieRepository().getName(typeId);
     final name = ResourceNames.lookup(context, nameKey);
     return AlertDialog(
+      scrollable: true,
+      constraints: const BoxConstraints.tightFor(width: 560),
       title: Text(
         AppLocalizations.of(context)?.editPresetZombie(name) ??
             'Edit preset zombie: $name',
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SwitchListTile(
-              title: Text(
-                AppLocalizations.of(context)?.manualInput ?? 'Manual input',
-              ),
-              value: _isCustomInput,
-              onChanged: (v) => setState(() => _isCustomInput = v),
-            ),
-            if (_isCustomInput) ...[
-              TextField(
-                decoration: InputDecoration(
-                  labelText:
-                      AppLocalizations.of(context)?.enterConditionValue ??
-                      'Enter condition value',
-                  border: const OutlineInputBorder(),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SwitchListTile(
+                  title: Text(
+                    AppLocalizations.of(context)?.manualInput ?? 'Manual input',
+                  ),
+                  value: _isCustomInput,
+                  onChanged: (v) => setState(() => _isCustomInput = v),
                 ),
-                controller: _conditionController,
-                onChanged: (v) => setState(() => _condition = v),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context)?.customInputHint ??
-                    'Custom input must be accurate',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ] else ...[
-              DropdownButtonFormField<String>(
-                initialValue:
-                    InitialZombieEntryScreen.presetConditionIds.contains(
-                      _condition,
-                    )
-                    ? _condition
-                    : InitialZombieEntryScreen.presetConditionIds.first,
-                decoration: InputDecoration(
-                  labelText:
-                      AppLocalizations.of(context)?.presetConditions ??
-                      'Preset conditions',
-                  border: const OutlineInputBorder(),
-                ),
-                items: [
-                  for (final id in InitialZombieEntryScreen.presetConditionIds)
-                    DropdownMenuItem(
-                      value: id,
-                      child: Text(
-                        ConditionL10n.zombieLabel(context, id),
-                      ),
+                if (_isCustomInput) ...[
+                  EditorResponsiveInputField(
+                    label:
+                        AppLocalizations.of(context)?.enterConditionValue ??
+                        'Enter condition value',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
                     ),
+                    builder: (context, decoration) => TextField(
+                      decoration: decoration,
+                      controller: _conditionController,
+                      onChanged: (v) => setState(() => _condition = v),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)?.customInputHint ??
+                        'Custom input must be accurate',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ] else ...[
+                  EditorResponsiveInputField(
+                    label:
+                        AppLocalizations.of(context)?.presetConditions ??
+                        'Preset conditions',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                    ),
+                    builder: (context, decoration) =>
+                        DropdownButtonFormField<String>(
+                          itemHeight: null,
+                          isExpanded: true,
+                          initialValue:
+                              InitialZombieEntryScreen.presetConditionIds
+                                  .contains(_condition)
+                              ? _condition
+                              : InitialZombieEntryScreen
+                                    .presetConditionIds
+                                    .first,
+                          decoration: decoration,
+                          items: [
+                            for (final id
+                                in InitialZombieEntryScreen.presetConditionIds)
+                              DropdownMenuItem(
+                                value: id,
+                                child: Text(
+                                  ConditionL10n.zombieLabel(context, id),
+                                ),
+                              ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) setState(() => _condition = v);
+                          },
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)?.selectFromPresetHint ??
+                        'Select from preset condition list',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
-                onChanged: (v) {
-                  if (v != null) setState(() => _condition = v);
-                },
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context)?.selectFromPresetHint ??
-                    'Select from preset condition list',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ],
+              ],
+            ),
+          ),
         ),
       ),
       actions: [

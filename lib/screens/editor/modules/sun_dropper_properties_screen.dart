@@ -139,7 +139,6 @@ class _SunDropperPropertiesScreenState
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -179,6 +178,7 @@ class _SunDropperPropertiesScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.sunDropperHelpTitle ?? 'Sun dropper module',
               themeColor: themeColor,
               sections: [
@@ -372,14 +372,14 @@ class _SunDropperPropertiesScreenState
     required String label,
     required void Function(String) onChanged,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
+        onChanged: onChanged,
       ),
-      onChanged: onChanged,
     );
   }
 }

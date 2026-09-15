@@ -5,6 +5,7 @@
         "tags": [
             "White",
             "Ranger",
+            "Physical",
             "Original",
             "International"
         ],
@@ -40,7 +41,8 @@
             "Trapper",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_potatomine.webp"
     },
@@ -63,7 +65,8 @@
             "White",
             "Trapper",
             "Ice",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_iceburg.webp"
     },
@@ -106,7 +109,8 @@
         "tags": [
             "White",
             "Trapper",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_springbean.webp"
     },
@@ -118,7 +122,8 @@
             "Trapper",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_spikeweed.webp"
     },
@@ -164,7 +169,8 @@
             "White",
             "Trapper",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_chilibean.webp"
     },
@@ -224,7 +230,8 @@
             "Support",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_torchwood.webp"
     },
@@ -236,7 +243,8 @@
             "Ranger",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_kernelpult.webp"
     },
@@ -317,7 +325,8 @@
             "Trapper",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_spikerock.webp"
     },
@@ -329,7 +338,8 @@
             "Defence",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_tallnut.webp"
     },
@@ -376,7 +386,8 @@
             "White",
             "Support",
             "Magic",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_peach.webp"
     },
@@ -387,7 +398,8 @@
             "White",
             "Vanguard",
             "Fire",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_firegourd.webp"
     },
@@ -398,7 +410,8 @@
             "White",
             "Defence",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_turnip.webp"
     },
@@ -409,7 +422,8 @@
             "White",
             "Trapper",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_bamboo.webp"
     },
@@ -420,7 +434,8 @@
             "Green",
             "Ranger",
             "Electric",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_magnifyinggrass.webp"
     },
@@ -509,7 +524,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_carrotlauncher.webp"
     },
@@ -521,7 +537,8 @@
             "Vanguard",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_puffshroom.webp"
     },
@@ -545,7 +562,8 @@
             "Trapper",
             "Magic",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_hypnoshroom.webp"
     },
@@ -589,7 +607,8 @@
             "White",
             "Trapper",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_magnetshroom.webp"
     },
@@ -669,7 +688,8 @@
             "Blue",
             "Defence",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_broccoli.webp"
     },
@@ -680,7 +700,8 @@
             "Green",
             "Vanguard",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_pamegranate.webp"
     },
@@ -714,7 +735,8 @@
             "White",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_tanglekelp.webp"
     },
@@ -736,7 +758,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_guacodile.webp"
     },
@@ -781,7 +804,8 @@
             "Purple",
             "Trapper",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_ghostpepper.webp"
     },
@@ -791,7 +815,8 @@
         "tags": [
             "Green",
             "Defence",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_sweetpotato.webp"
     },
@@ -813,7 +838,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_lotusshower.webp"
     },
@@ -824,7 +850,8 @@
             "Green",
             "Ranger",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_sapfling.webp"
     },
@@ -868,7 +895,8 @@
             "Blue",
             "Ranger",
             "Fire",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_pepperpult.webp"
     },
@@ -889,7 +917,8 @@
             "Green",
             "Trapper",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_stunion.webp"
     },
@@ -900,7 +929,8 @@
             "Green",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_rafflesia.webp"
     },
@@ -911,7 +941,8 @@
             "Green",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_acorn.webp"
     },
@@ -933,7 +964,8 @@
             "Green",
             "Defence",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_sugarcane.webp"
     },
@@ -944,7 +976,8 @@
             "Green",
             "Ranger",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_xshot.webp"
     },
@@ -966,7 +999,8 @@
             "Green",
             "Ranger",
             "Electric",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_anthurium.webp"
     },
@@ -977,7 +1011,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_asparagus.webp"
     },
@@ -988,7 +1023,8 @@
             "Green",
             "Trapper",
             "Magic",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_saucer.webp"
     },
@@ -1021,7 +1057,8 @@
             "Green",
             "Defence",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_pineapple.webp"
     },
@@ -1067,7 +1104,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_greenturnip.webp"
     },
@@ -1088,7 +1126,8 @@
             "Green",
             "Defence",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_endurian.webp"
     },
@@ -1121,7 +1160,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_akee.webp"
     },
@@ -1132,7 +1172,8 @@
             "Blue",
             "Trapper",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_redstinger.webp"
     },
@@ -1143,7 +1184,8 @@
             "White",
             "Trapper",
             "Poison",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_stallia.webp"
     },
@@ -1165,7 +1207,8 @@
             "Blue",
             "Vanguard",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_toadstool.webp"
     },
@@ -1177,7 +1220,8 @@
             "Ranger",
             "Magic",
             "Ice",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_cottonyeti.webp"
     },
@@ -1221,7 +1265,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_wintersweet.webp"
     },
@@ -1313,7 +1358,8 @@
             "Blue",
             "Trapper",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_celerystalker.webp"
     },
@@ -1324,7 +1370,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_sporeshroom.webp"
     },
@@ -1336,7 +1383,8 @@
             "Trapper",
             "Original",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_garlic.webp"
     },
@@ -1602,7 +1650,8 @@
             "Blue",
             "Trapper",
             "Poison",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_shadowshroom.webp"
     },
@@ -1613,7 +1662,8 @@
             "Green",
             "Support",
             "Magic",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_moonflower.webp"
     },
@@ -1636,7 +1686,8 @@
             "Purple",
             "Vanguard",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_nightshade.webp"
     },
@@ -1658,7 +1709,8 @@
             "Blue",
             "Ranger",
             "Physical",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_bloominghearts.webp"
     },
@@ -2189,7 +2241,8 @@
             "White",
             "Trapper",
             "Ice",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_icelotus.webp"
     },
@@ -3123,7 +3176,8 @@
             "White",
             "SunProducer",
             "Magic",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_oxygenalgae.webp"
     },
@@ -3135,7 +3189,8 @@
             "Vanguard",
             "Physical",
             "Original",
-            "International"
+            "International",
+            "Tier4"
         ],
         "icon": "icon_seashroom.webp"
     },
@@ -3146,7 +3201,8 @@
             "Purple",
             "Defence",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_kelpguard.webp"
     },
@@ -3449,7 +3505,200 @@
             "Electric",
             "Chinese"
         ],
-        "icon": "icon_pineclone.webp"
+        "icon": "icon_pineclone.gif"
+    },
+    {
+        "id": "cosmoss",
+        "name": "plant_cosmoss",
+        "tags": [
+            "White",
+            "Support",
+            "Chinese"
+        ],
+        "icon": "icon_cosmoss.webp"
+    },
+    {
+        "id": "cosmicpea",
+        "name": "plant_cosmicpea",
+        "tags": [
+            "Purple",
+            "Ranger",
+            "Chinese"
+        ],
+        "icon": "icon_cosmicpea.webp"
+    },
+    {
+        "id": "cosmicmushroom",
+        "name": "plant_cosmicmushroom",
+        "tags": [
+            "Blue",
+            "Vanguard",
+            "Chinese"
+        ],
+        "icon": "icon_cosmicmushroom.webp"
+    },
+    {
+        "id": "cosmicnut",
+        "name": "plant_cosmicnut",
+        "tags": [
+            "Green",
+            "Defence",
+            "Chinese"
+        ],
+        "icon": "icon_cosmicnut.webp"
+    },
+    {
+        "id": "gravitree",
+        "name": "plant_gravitree",
+        "tags": [
+            "Green",
+            "Vanguard",
+            "Chinese"
+        ],
+        "icon": "icon_gravitree.webp"
+    },
+    {
+        "id": "darkmatter_dragonfruit",
+        "name": "plant_darkmatter_dragonfruit",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Chinese"
+        ],
+        "icon": "icon_darkmatter_dragonfruit.webp"
+    },
+    {
+        "id": "phoenixfloat",
+        "name": "plant_phoenixfloat",
+        "tags": [
+            "Orange",
+            "Support",
+            "Chinese"
+        ],
+        "icon": "icon_phoenixfloat.webp"
+    },
+    {
+        "id": "smallcherry",
+        "name": "plant_smallcherry",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_smallcherry.webp"
+    },
+    {
+        "id": "carrotmissile",
+        "name": "plant_carrotmissile",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_carrotmissile.webp"
+    },
+    {
+        "id": "smallChestnut",
+        "name": "plant_smallChestnut",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_smallChestnut.webp"
+    },
+    {
+        "id": "smallcactus",
+        "name": "plant_smallcactus",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_smallcactus.webp"
+    },
+    {
+        "id": "minishroom",
+        "name": "plant_minishroom",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_minishroom.webp"
+    },
+    {
+        "id": "dragonbabybruit",
+        "name": "plant_dragonbabybruit",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_dragonbabybruit.webp"
+    },
+    {
+        "id": "bitpeashooter",
+        "name": "plant_bitpeashooter",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_bitpeashooter.webp"
+    },
+    {
+        "id": "magicbeans",
+        "name": "plant_magicbeans",
+        "tags": [
+            "White",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_magicbeans.webp"
+    },
+    {
+        "id": "frog",
+        "name": "plant_frog",
+        "tags": [
+            "White",
+            "Support",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_frog.webp"
+    },
+    {
+        "id": "sea_puffshroom",
+        "name": "plant_seapuffshroom",
+        "tags": [
+            "White",
+            "Vanguard",
+            "Physical",
+            "Hidden",
+            "Chinese",
+            "Tier4"
+        ],
+        "icon": "icon_puffshroom.webp"
+    },
+    {
+        "id": "armorflame",
+        "name": "plant_armorflame",
+        "tags": [
+            "Red",
+            "Ranger",
+            "Fire",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_armorflame.webp"
     },
     {
         "id": "moonflower_iz",
@@ -3458,9 +3707,47 @@
             "Green",
             "Support",
             "Magic",
-            "Chinese"
+            "Hidden",
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_moonflower.webp"
+    },
+    {
+        "id": "soudacheMegagatling",
+        "name": "plant_soudacheMegagatling",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Physical",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_soudacheMegagatling.webp"
+    },
+    {
+        "id": "soudacheMegagatling_Fire",
+        "name": "plant_soudacheMegagatlingFire",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Fire",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_soudacheMegagatlingFire.webp"
+    },
+    {
+        "id": "soudacheMegagatling_Electric",
+        "name": "plant_soudacheMegagatlingElectric",
+        "tags": [
+            "Orange",
+            "Ranger",
+            "Electric",
+            "Hidden",
+            "Chinese"
+        ],
+        "icon": "icon_soudacheMegagatlingElectric.webp"
     },
     {
         "id": "uncharted_phatbeet",
@@ -3573,7 +3860,8 @@
             "White",
             "Trapper",
             "Ice",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_iceburg.webp"
     },
@@ -3599,7 +3887,8 @@
             "Green",
             "Support",
             "Magic",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_moonflower.webp"
     },
@@ -3612,7 +3901,8 @@
             "Blue",
             "Trapper",
             "Poison",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_shadowshroom.webp"
     },
@@ -3638,7 +3928,8 @@
             "Purple",
             "Vanguard",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_nightshade.webp"
     },
@@ -3766,7 +4057,8 @@
             "White",
             "Ranger",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_kernelpult.webp"
     },
@@ -3792,7 +4084,8 @@
             "White",
             "Trapper",
             "Physical",
-            "Chinese"
+            "Chinese",
+            "Tier4"
         ],
         "icon": "icon_spikeweed.webp"
     },
@@ -4015,5 +4308,11 @@
             "Chinese"
         ],
         "icon": "icon_minigame_imitater_orange.png"
+    },
+    {
+        "id": "coming_soon",
+        "name": "plant_coming_soon",
+        "tags": [],
+        "icon": "to_be_continued.png"
     }
 ]

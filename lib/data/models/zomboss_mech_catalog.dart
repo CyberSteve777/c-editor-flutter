@@ -1,5 +1,31 @@
 import 'dart:convert';
 
+/// Objclasses for jump actions that can be used in both phase lists and retreat.
+const zombossJumpActionObjclasses = <String>{
+  'ZombossJumpActionDefinition',
+  'ZombossSteamJumpActionDefinition',
+  'ZombossSteamRandomJumpActionDefinition',
+  'ZombossQigongJumpActionDefinition',
+};
+
+bool isZombossJumpActionObjclass(String objclass) =>
+    zombossJumpActionObjclasses.contains(objclass);
+
+bool isRegularPhaseCatalogAction(ZombossMechCatalogAction action) =>
+    action.tag != 'retreat';
+
+bool isRetreatPhaseCatalogAction(ZombossMechCatalogAction action) =>
+    action.tag == 'retreat' || isZombossJumpActionObjclass(action.objclass);
+
+bool isRegularPhaseActionGroup(ZombossMechObjclassGroup group) =>
+    group.tag != 'retreat';
+
+bool isRetreatPhaseActionGroup(ZombossMechObjclassGroup group) =>
+    group.tag == 'retreat' || isZombossJumpActionObjclass(group.objclass);
+
+bool isZombossJumpActionField(ZombossMechFieldSpec field) =>
+    field.type == 'rtid' && field.name.endsWith('JumpAction');
+
 /// Field descriptor from [ZombossMechs.json] `fields` arrays.
 class ZombossMechFieldSpec {
   const ZombossMechFieldSpec({
@@ -161,13 +187,16 @@ class ZombossMechCatalogEntry {
   }
 
   List<ZombossMechCatalogAction> actionsByTag(String? tagFilter) {
-    final all = catalogActions.where((a) => a.tag != 'retreat');
+    final all = catalogActions.where(isRegularPhaseCatalogAction);
     if (tagFilter == null || tagFilter.isEmpty) return all.toList();
     return all.where((a) => a.tag == tagFilter).toList();
   }
 
   List<ZombossMechCatalogAction> get retreatCatalogActions =>
-      catalogActions.where((a) => a.tag == 'retreat').toList();
+      catalogActions.where(isRetreatPhaseCatalogAction).toList();
+
+  List<ZombossMechCatalogAction> get jumpCatalogActions =>
+      catalogActions.where((a) => isZombossJumpActionObjclass(a.objclass)).toList();
 
   ZombossMechObjclassGroup? groupForAlias(String alias) {
     for (final group in actions) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/module_instance_utils.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -8,6 +9,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/others/zomboss_battle_base_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/reserved_column_preview_grid.dart';
+import 'package:c_editor/widgets/separated_option_picker_field.dart';
 import 'package:c_editor/widgets/zomboss_mech_editor_widgets.dart';
 
 class ZombossBattleTab extends StatefulWidget {
@@ -15,10 +17,14 @@ class ZombossBattleTab extends StatefulWidget {
     super.key,
     required this.levelFile,
     required this.onChanged,
+    this.moduleRtid,
+    this.onAutoModulesEnsured,
   });
 
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
+  final String? moduleRtid;
+  final VoidCallback? onAutoModulesEnsured;
 
   @override
   State<ZombossBattleTab> createState() => _ZombossBattleTabState();
@@ -26,6 +32,7 @@ class ZombossBattleTab extends StatefulWidget {
 
 class _ZombossBattleTabState extends State<ZombossBattleTab> {
   PvzObject? _moduleObj;
+  bool _hasMultipleBattleModules = false;
   LevelDefinitionData? _levelDef;
   late ZombossLastStandMinigameData _data;
   String _selectedBaseId = '';
@@ -56,9 +63,17 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
   }
 
   void _loadData() {
-    _moduleObj = widget.levelFile.objects
+    final moduleObjects = widget.levelFile.objects
         .where((o) => o.objClass == 'ZombossLastStandMinigameProperties')
-        .firstOrNull;
+        .toList();
+    _hasMultipleBattleModules = moduleObjects.length > 1;
+    _moduleObj = widget.moduleRtid == null
+        ? (moduleObjects.length == 1 ? moduleObjects.single : null)
+        : ModuleInstanceUtils.findCurrentLevelObject(
+            levelFile: widget.levelFile,
+            rtid: widget.moduleRtid!,
+            expectedObjClass: 'ZombossLastStandMinigameProperties',
+          );
 
     if (_moduleObj != null && _moduleObj!.objData is Map) {
       _data = ZombossLastStandMinigameData.fromJson(
@@ -95,11 +110,16 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
     }
 
     if (_levelDef != null && _selectedBaseId.isNotEmpty) {
-      ZombossBattleRepository.ensureAutoModules(
+      final autoModulesAdded = ZombossBattleRepository.ensureAutoModules(
         levelFile: widget.levelFile,
         levelDef: _levelDef!,
         baseId: _selectedBaseId,
       );
+      if (autoModulesAdded) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) widget.onAutoModulesEnsured?.call();
+        });
+      }
     }
   }
 
@@ -136,15 +156,22 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
       ),
     );
     if (baseId != null && mounted) {
-      _onBaseChanged(baseId);
+      await _onBaseChanged(baseId);
     }
   }
 
-  void _onBaseChanged(String baseId) {
+  Future<void> _onBaseChanged(String baseId) async {
     if (baseId == _selectedBaseId) return;
     final base = ZombossBattleRepository.getBase(baseId);
     if (base == null) return;
     final previousBaseId = _selectedBaseId;
+    var removePreviousTunnelDefend = true;
+    if (ZombossBattleRepository.isUndergroundPalaceBase(previousBaseId) &&
+        !ZombossBattleRepository.isUndergroundPalaceBase(baseId)) {
+      final choice = await _confirmLeavingUndergroundPalace(previousBaseId);
+      if (choice == null || !mounted) return;
+      removePreviousTunnelDefend = choice;
+    }
     _sync(
       extra: () {
         _selectedBaseId = baseId;
@@ -158,9 +185,36 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
             levelDef: _levelDef!,
             previousBaseId: previousBaseId,
             newBaseId: baseId,
+            removePreviousTunnelDefend: removePreviousTunnelDefend,
           );
         }
       },
+    );
+  }
+
+  Future<bool?> _confirmLeavingUndergroundPalace(String previousBaseId) {
+    final l10n = AppLocalizations.of(context)!;
+    final previousName = _displayName(context, previousBaseId);
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.zombossBattleLeaveUndergroundTitle),
+        content: Text(l10n.zombossBattleLeaveUndergroundBody(previousName)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.zombossBattleKeepTunnelDefend),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.zombossBattleRemoveTunnelDefend),
+          ),
+        ],
+      ),
     );
   }
 
@@ -182,9 +236,16 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
 
     if (_moduleObj == null) {
       return Center(
-        child: Text(
-          l10n?.missingZombossBattleModule ??
-              'Missing ZombossLastStandMinigameProperties',
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            _hasMultipleBattleModules
+                ? (l10n?.zombossMultipleModuleSelectionHint ??
+                      'Multiple Boss modules were found. Select the instance to edit from the module list in Level Settings.')
+                : (l10n?.missingZombossBattleModule ??
+                      'Missing ZombossLastStandMinigameProperties'),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -227,24 +288,22 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
         const SizedBox(height: 12),
         Tooltip(
           message: l10n?.zombossBattleVariationHint ?? '',
-          child: DropdownButtonFormField<String>(
-            initialValue: variations.contains(_data.zombossTypeName)
+          child: SeparatedOptionPickerField<String>(
+            labelText: l10n?.zombossBattleVariationLabel ?? 'Zomboss variation',
+            value: variations.contains(_data.zombossTypeName)
                 ? _data.zombossTypeName
                 : (variations.isNotEmpty ? variations.first : null),
-            decoration: editorInputDecoration(
-              context,
-              labelText:
-                  l10n?.zombossBattleVariationLabel ?? 'Zomboss variation',
-            ),
             items: variations
                 .map(
-                  (v) => DropdownMenuItem(
+                  (v) => SeparatedOptionPickerItem(
                     value: v,
-                    child: Text(_displayName(context, v)),
+                    label: _displayName(context, v),
+                    subtitle: v,
                   ),
                 )
                 .toList(),
-            onChanged: variations.isEmpty ? null : _onVariationChanged,
+            enabled: variations.isNotEmpty,
+            onChanged: _onVariationChanged,
           ),
         ),
         const SizedBox(height: 24),
@@ -257,23 +316,27 @@ class _ZombossBattleTabState extends State<ZombossBattleTab> {
         const SizedBox(height: 8),
         Tooltip(
           message: l10n?.zombossBattleStartingSunHint ?? '',
-          child: TextField(
-            controller: _startingSunController,
-            focusNode: _startingSunFocus,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          child: EditorResponsiveInputField(
+            label: l10n?.zombossBattleStartingSunLabel ?? 'Starting sun',
             decoration: editorInputDecoration(
               context,
-              labelText: l10n?.zombossBattleStartingSunLabel ?? 'Starting sun',
+
               isFocused: _startingSunFocus.hasFocus,
             ),
-            onChanged: (text) {
-              final value = int.tryParse(text.trim());
-              if (value != null && value >= 0 && value <= 9990) {
-                _data.startingSun = value;
-                _saveData();
-              }
-            },
+            builder: (context, decoration) => TextField(
+              controller: _startingSunController,
+              focusNode: _startingSunFocus,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: decoration,
+              onChanged: (text) {
+                final value = int.tryParse(text.trim());
+                if (value != null && value >= 0 && value <= 9990) {
+                  _data.startingSun = value;
+                  _saveData();
+                }
+              },
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -375,24 +438,13 @@ class _StepperControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip.isNotEmpty ? tooltip : label,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-          ),
-          IconButton(
-            onPressed: value > min ? () => onChanged(value - 1) : null,
-            icon: const Icon(Icons.remove_circle_outline),
-          ),
-          Text('$value', style: Theme.of(context).textTheme.titleMedium),
-          IconButton(
-            onPressed: value < max ? () => onChanged(value + 1) : null,
-            icon: const Icon(Icons.add_circle_outline),
-          ),
-        ],
-      ),
+    return EditorResponsiveStepperRow(
+      label: label,
+      tooltip: tooltip,
+      value: value,
+      min: min,
+      max: max,
+      onChanged: onChanged,
     );
   }
 }

@@ -5,6 +5,9 @@ import 'package:c_editor/data/asset_loader.dart';
 import 'package:c_editor/data/tag_assets.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 
+const String _kToBeContinuedIconPath =
+    'assets/images/others/to_be_continued.webp';
+
 enum ZombieCategory { main, size, other, collection }
 
 extension ZombieCategoryExtension on ZombieCategory {
@@ -34,14 +37,15 @@ enum ZombieTag {
   modernPvz1,
   steamRenai,
   henaiAtlantis,
+  moon,
   taleZCorp,
   parkourSpeed,
   toTheWest,
+  roman,
   memory,
   universe,
   festival1,
   festival2,
-  roman,
   pet,
   imp,
   basic,
@@ -51,9 +55,33 @@ enum ZombieTag {
   elite,
   evildave,
   custom,
+  pvp,
+  expedition,
   chinese,
   international,
 }
+
+/// Display order for world-group tags in the zombie picker.
+const List<ZombieTag> zombieWorldTagOrder = [
+  ZombieTag.egyptPirate,
+  ZombieTag.westFuture,
+  ZombieTag.darkBeach,
+  ZombieTag.iceageLostcity,
+  ZombieTag.kongfuSkycity,
+  ZombieTag.eightiesDino,
+  ZombieTag.modernPvz1,
+  ZombieTag.steamRenai,
+  ZombieTag.henaiAtlantis,
+  ZombieTag.moon,
+  ZombieTag.taleZCorp,
+  ZombieTag.parkourSpeed,
+  ZombieTag.toTheWest,
+  ZombieTag.roman,
+  ZombieTag.memory,
+  ZombieTag.universe,
+  ZombieTag.festival1,
+  ZombieTag.festival2,
+];
 
 extension ZombieTagExtension on ZombieTag {
   String getLabel(BuildContext context) {
@@ -79,6 +107,8 @@ extension ZombieTagExtension on ZombieTag {
         return s.zombieTagSteamRenai;
       case ZombieTag.henaiAtlantis:
         return s.zombieTagHenaiAtlantis;
+      case ZombieTag.moon:
+        return s.zombieTagMoon;
       case ZombieTag.taleZCorp:
         return s.zombieTagTaleZCorp;
       case ZombieTag.parkourSpeed:
@@ -111,6 +141,10 @@ extension ZombieTagExtension on ZombieTag {
         return s.zombieTagElite;
       case ZombieTag.custom:
         return s.zombieTagCustom;
+      case ZombieTag.expedition:
+        return s.zombieTagExpedition;
+      case ZombieTag.pvp:
+        return s.zombieTagPvp;
       case ZombieTag.evildave:
         return s.zombieTagEvildave;
       case ZombieTag.international:
@@ -132,14 +166,15 @@ extension ZombieTagExtension on ZombieTag {
       case ZombieTag.modernPvz1:
       case ZombieTag.steamRenai:
       case ZombieTag.henaiAtlantis:
+      case ZombieTag.moon:
       case ZombieTag.taleZCorp:
       case ZombieTag.parkourSpeed:
       case ZombieTag.toTheWest:
+      case ZombieTag.roman:
       case ZombieTag.memory:
       case ZombieTag.universe:
       case ZombieTag.festival1:
       case ZombieTag.festival2:
-      case ZombieTag.roman:
         return ZombieCategory.main;
       case ZombieTag.pet:
       case ZombieTag.imp:
@@ -151,6 +186,8 @@ extension ZombieTagExtension on ZombieTag {
         return ZombieCategory.size;
       case ZombieTag.evildave:
       case ZombieTag.custom:
+      case ZombieTag.expedition:
+      case ZombieTag.pvp:
       case ZombieTag.international:
       case ZombieTag.chinese:
         return ZombieCategory.other;
@@ -199,6 +236,7 @@ class ZombieInfo {
   });
 
   String? get iconAssetPath {
+    if (id == 'stay_tuned') return _kToBeContinuedIconPath;
     if (icon == null) return null;
     final path = icon!;
     return 'assets/images/zombies/$path';
@@ -264,6 +302,8 @@ class ZombieRepository {
         );
       }
 
+      // Catalog order is intentional, including multi-world variants and the
+      // final stay_tuned entry. Filtering must not re-sort it by world tags.
       _isLoaded = true;
     } catch (e) {
       debugPrint('Error loading zombies: $e');

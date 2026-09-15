@@ -10,7 +10,7 @@ class ZombieTitleDescriptions {
     return switch (type) {
       'zombie_title_crystal' =>
         l10n?.ztPerkCategoryDescCrystal ??
-            'Grants immunity against instant-kill effects. Damage can only be received once every A seconds, each hit deals B damage, and health is reduced by X.',
+            'Grants immunity against instant-kill effects, allows damage to be taken only N times every A seconds, reduces each instance of damage taken to B, and reduces health by X.',
       'zombie_title_gravity' =>
         l10n?.ztPerkCategoryDescGravity ??
             'Knockback or knockoff effects are no longer effective.',
@@ -24,11 +24,9 @@ class ZombieTitleDescriptions {
         l10n?.ztPerkCategoryDescAntiControl ??
             'When under the influence of a control effect, received damage is reduced by P%.',
       'zombie_title_attack' =>
-        l10n?.ztPerkCategoryDescAttack ??
-            'Attack power increased by P%.',
+        l10n?.ztPerkCategoryDescAttack ?? 'Attack power increased by P%.',
       'zombie_title_speed' =>
-        l10n?.ztPerkCategoryDescSpeed ??
-            'Walking speed increased by P%.',
+        l10n?.ztPerkCategoryDescSpeed ?? 'Walking speed increased by P%.',
       _ => '',
     };
   }
@@ -38,35 +36,40 @@ class ZombieTitleDescriptions {
     final props = entry.numericProperties;
 
     return switch (entry.type) {
-      'zombie_title_crystal' => l10n?.ztPerkDescCrystal(
-            _formatValue(props['DamageTakenInterval'] ?? 0.1),
-            _formatValue(props['DamageTotalTaken'] ?? 1),
-            _formatHpReduced(props['HPReduced'] ?? 0),
-          ) ??
-          _fallbackCrystal(props),
+      'zombie_title_crystal' =>
+        l10n?.ztPerkDescCrystal(
+              _formatValue(props['DamageTakenInterval'] ?? 0.1),
+              _formatValue(props['DamageTotalTaken'] ?? 1),
+              _formatValue(props['DamageTakenPerTime'] ?? 1),
+              _formatHpReduced(props['HPReduced'] ?? 0),
+            ) ??
+            _fallbackCrystal(props),
       'zombie_title_gravity' =>
         l10n?.ztPerkDescGravity ??
             'Knockback or knockoff effects are no longer effective.',
-      'zombie_title_shield' => l10n?.ztPerkDescShield(
-            _formatValue(props['ShieldNum'] ?? 0),
-          ) ??
-          _fallbackShield(props),
-      'zombie_title_immunecontrol' => l10n?.ztPerkDescImmuneControl(
-            _formatPercent(props['ReducedControlPercent'] ?? 0),
-          ) ??
-          _fallbackImmuneControl(props),
-      'zombie_title_anticontrol' => l10n?.ztPerkDescAntiControl(
-            _formatPercent(props['ReducedDamagePercent'] ?? 0),
-          ) ??
-          _fallbackAntiControl(props),
-      'zombie_title_attack' => l10n?.ztPerkDescAttack(
-            _formatPercent(props['ImprovedDamagePercent'] ?? 0),
-          ) ??
-          _fallbackAttack(props),
-      'zombie_title_speed' => l10n?.ztPerkDescSpeed(
-            _formatPercent(props['ImprovedSpeedPercent'] ?? 0),
-          ) ??
-          _fallbackSpeed(props),
+      'zombie_title_shield' =>
+        l10n?.ztPerkDescShield(_formatValue(props['ShieldNum'] ?? 0)) ??
+            _fallbackShield(props),
+      'zombie_title_immunecontrol' =>
+        l10n?.ztPerkDescImmuneControl(
+              _formatPercent(props['ReducedControlPercent'] ?? 0),
+            ) ??
+            _fallbackImmuneControl(props),
+      'zombie_title_anticontrol' =>
+        l10n?.ztPerkDescAntiControl(
+              _formatPercent(props['ReducedDamagePercent'] ?? 0),
+            ) ??
+            _fallbackAntiControl(props),
+      'zombie_title_attack' =>
+        l10n?.ztPerkDescAttack(
+              _formatPercent(props['ImprovedDamagePercent'] ?? 0),
+            ) ??
+            _fallbackAttack(props),
+      'zombie_title_speed' =>
+        l10n?.ztPerkDescSpeed(
+              _formatPercent(props['ImprovedSpeedPercent'] ?? 0),
+            ) ??
+            _fallbackSpeed(props),
       _ => '',
     };
   }
@@ -93,7 +96,7 @@ class ZombieTitleDescriptions {
   }
 
   static String _fallbackCrystal(Map<String, num> props) {
-    return 'Grants immunity against instant-kill effects. Damage can only be received once every ${_formatValue(props['DamageTakenInterval'] ?? 0.1)} seconds, each hit deals ${_formatValue(props['DamageTotalTaken'] ?? 1)} damage, and health is reduced by ${_formatHpReduced(props['HPReduced'] ?? 0)}.';
+    return 'Grants immunity against instant-kill effects, allows damage to be taken only ${_formatValue(props['DamageTotalTaken'] ?? 1)} times every ${_formatValue(props['DamageTakenInterval'] ?? 0.1)} seconds, reduces each instance of damage taken to ${_formatValue(props['DamageTakenPerTime'] ?? 1)}, and reduces health by ${_formatHpReduced(props['HPReduced'] ?? 0)}.';
   }
 
   static String _fallbackShield(Map<String, num> props) {

@@ -11,7 +11,11 @@ import 'package:c_editor/widgets/asset_image.dart'
 import 'package:c_editor/theme/app_theme.dart'
     show pvzPurpleDark, pvzPurpleLight;
 import 'package:c_editor/widgets/editor_components.dart'
-    show showEditorHelpDialog, HelpSectionData, editorInputDecoration;
+    show
+        EditorResponsiveInputField,
+        showEditorHelpDialog,
+        HelpSectionData,
+        editorInputDecoration;
 
 class _LootTypeOption {
   const _LootTypeOption(this.value, this.labelKey, this.fallback);
@@ -103,9 +107,7 @@ class _PickupCollectableTutorialScreenState
     }
     if (_data.dropperZombieType.isEmpty) {
       _data = PickupCollectableTutorialData(
-        dropperZombieType: ZombieRepository().buildZombieAliases(
-          'zombie_tutorial',
-        ),
+        dropperZombieType: ZombieRepository().buildZombieAliases('mummy'),
         lootType: _data.lootType,
         pickupAdvice: _data.pickupAdvice,
         postPickupAdvice: _data.postPickupAdvice,
@@ -133,7 +135,6 @@ class _PickupCollectableTutorialScreenState
         return entry.fallback;
     }
   }
-
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -172,6 +173,7 @@ class _PickupCollectableTutorialScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title:
                   l10n?.pickupCollectableTutorialHelpTitle ?? 'Pickup tutorial',
               themeColor: appBarColor,
@@ -202,15 +204,15 @@ class _PickupCollectableTutorialScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: appBarColor,
-            ),
-            const SizedBox(height: 16),
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+                accentColor: appBarColor,
+              ),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -264,52 +266,60 @@ ModuleAliasInputField(
                         ),
                       ),
                       const SizedBox(height: 16),
-                      TextField(
-                        focusNode: _pickupFocusNode,
-                        controller: _pickupController,
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.pickupCollectableTutorialPickupAdvice ??
+                            'Before pickup (PickupAdvice)',
                         decoration: editorInputDecoration(
                           context,
-                          labelText:
-                              l10n?.pickupCollectableTutorialPickupAdvice ??
-                              'Before pickup (PickupAdvice)',
+
                           focusColor: appBarColor,
                           isFocused: _pickupFocusNode.hasFocus,
                         ),
-                        minLines: 2,
-                        maxLines: 3,
-                        onChanged: (v) {
-                          _data = PickupCollectableTutorialData(
-                            dropperZombieType: _data.dropperZombieType,
-                            lootType: _data.lootType,
-                            pickupAdvice: v,
-                            postPickupAdvice: _data.postPickupAdvice,
-                          );
-                          _sync();
-                        },
+                        builder: (context, decoration) => TextField(
+                          focusNode: _pickupFocusNode,
+                          controller: _pickupController,
+                          decoration: decoration,
+                          minLines: 2,
+                          maxLines: 3,
+                          onChanged: (v) {
+                            _data = PickupCollectableTutorialData(
+                              dropperZombieType: _data.dropperZombieType,
+                              lootType: _data.lootType,
+                              pickupAdvice: v,
+                              postPickupAdvice: _data.postPickupAdvice,
+                            );
+                            _sync();
+                          },
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      TextField(
-                        focusNode: _postPickupFocusNode,
-                        controller: _postPickupController,
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.pickupCollectableTutorialPostPickupAdvice ??
+                            'After pickup (PostPickupAdvice)',
                         decoration: editorInputDecoration(
                           context,
-                          labelText:
-                              l10n?.pickupCollectableTutorialPostPickupAdvice ??
-                              'After pickup (PostPickupAdvice)',
+
                           focusColor: appBarColor,
                           isFocused: _postPickupFocusNode.hasFocus,
                         ),
-                        minLines: 2,
-                        maxLines: 3,
-                        onChanged: (v) {
-                          _data = PickupCollectableTutorialData(
-                            dropperZombieType: _data.dropperZombieType,
-                            lootType: _data.lootType,
-                            pickupAdvice: _data.pickupAdvice,
-                            postPickupAdvice: v,
-                          );
-                          _sync();
-                        },
+                        builder: (context, decoration) => TextField(
+                          focusNode: _postPickupFocusNode,
+                          controller: _postPickupController,
+                          decoration: decoration,
+                          minLines: 2,
+                          maxLines: 3,
+                          onChanged: (v) {
+                            _data = PickupCollectableTutorialData(
+                              dropperZombieType: _data.dropperZombieType,
+                              lootType: _data.lootType,
+                              pickupAdvice: _data.pickupAdvice,
+                              postPickupAdvice: v,
+                            );
+                            _sync();
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -408,6 +418,7 @@ ModuleAliasInputField(
   ) {
     // final currentLabel = _lootLabel(_data.lootType, l10n);
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: _lootTypes.any((e) => e.value == _data.lootType)
           ? _data.lootType
           : _lootTypes.first.value,

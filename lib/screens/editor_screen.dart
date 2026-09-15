@@ -4,15 +4,27 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
+import 'package:c_editor/data/cowboy_minigame_utils.dart';
+import 'package:c_editor/data/glacier_module_presets.dart';
+import 'package:c_editor/data/zomboss_eighties_speaker_presets.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
+import 'package:c_editor/data/module_instance_display_name.dart';
+import 'package:c_editor/data/module_instance_utils.dart';
+import 'package:c_editor/data/mold_colony_module_utils.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/plugin_api/c_plugin_host.dart';
+import 'package:c_editor/plugins/plugin_ui_host.dart';
+import 'package:c_editor/screens/level_overview/level_overview.dart';
+import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
@@ -23,6 +35,7 @@ import 'package:c_editor/screens/editor/others/custom_fish_properties_screen.dar
 import 'package:c_editor/screens/editor/others/unknown_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/star_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/max_sun_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/moon_expert_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/rift_theme_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/death_hole_module_screen.dart';
@@ -34,6 +47,11 @@ import 'package:c_editor/screens/editor/modules/seed_rain_properties_screen.dart
 import 'package:c_editor/screens/editor/modules/conveyor_seedbank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/sun_dropper_properties_screen.dart';
+import 'package:c_editor/screens/editor/modules/moon_life_support_system_screen.dart';
+import 'package:c_editor/screens/editor/modules/lunar_terminal_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/level_powerup_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/lunar_mine_vein_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/radiation_meteor_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/witch_module_properties_screen.dart';
 import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/screens/editor/modules/starting_plantfood_module_screen.dart';
@@ -41,6 +59,8 @@ import 'package:c_editor/screens/editor/modules/tide_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/zombie_move_fast_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/wave_manager_settings_screen.dart';
 import 'package:c_editor/screens/editor/modules/last_stand_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/cowboy_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/intro_single_handed_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_plant_entry_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_plant_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/initial_zombie_entry_screen.dart';
@@ -49,6 +69,7 @@ import 'package:c_editor/screens/editor/modules/pickup_collectable_tutorial_scre
 import 'package:c_editor/screens/editor/modules/zombie_sun_drop_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/power_tile_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/protect_grid_item_challenge_screen.dart';
+import 'package:c_editor/screens/editor/modules/mold_colony_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/protect_plant_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/roof_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/rain_dark_properties_screen.dart';
@@ -78,6 +99,7 @@ import 'package:c_editor/screens/editor/modules/pvz1_copycats_module_screen.dart
 import 'package:c_editor/screens/editor/modules/pvz1_passage_module_screen.dart';
 import 'package:c_editor/screens/editor/tabs/izombie_tab.dart';
 import 'package:c_editor/screens/editor/tabs/level_settings_tab.dart';
+import 'package:c_editor/screens/editor/tabs/single_handed_tab.dart';
 import 'package:c_editor/screens/editor/tabs/vase_breaker_tab.dart';
 import 'package:c_editor/screens/editor/tabs/zomboss_battle_tab.dart';
 import 'package:c_editor/screens/editor/tabs/zomboss_mech_battle_tab.dart';
@@ -102,6 +124,7 @@ import 'package:c_editor/screens/editor/events/parachute_rain_event_screen.dart'
 import 'package:c_editor/screens/editor/events/raiding_party_event_screen.dart';
 import 'package:c_editor/screens/editor/events/barrel_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/school_bus_event_screen.dart';
+import 'package:c_editor/screens/editor/events/hamster_zombie_event_screen.dart';
 import 'package:c_editor/screens/editor/events/bungee_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/thunder_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/tide_wave_event_screen.dart';
@@ -112,6 +135,7 @@ import 'package:c_editor/screens/editor/events/tidal_change_event_screen.dart';
 import 'package:c_editor/screens/editor/events/zombie_potion_event_screen.dart';
 import 'package:c_editor/screens/editor/events/shell_event_screen.dart';
 import 'package:c_editor/screens/editor/events/pumpkin_house_event_screen.dart';
+import 'package:c_editor/screens/editor/events/rocket_landing_event_screen.dart';
 import 'package:c_editor/screens/editor/events/jittered_event_screen.dart';
 import 'package:c_editor/screens/editor/events/ground_spawn_event_screen.dart';
 import 'package:c_editor/data/pvz_alias_utils.dart';
@@ -130,11 +154,15 @@ import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/screens/editor/others/custom_stage_properties_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 
-class _EditorEscapeIntent extends Intent {
-  const _EditorEscapeIntent();
-}
+typedef _EditorTopTabEntry = ({
+  EditorTabType type,
+  String? moduleRtid,
+  int instanceIndex,
+  int instanceCount,
+});
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({
@@ -157,17 +185,18 @@ class _EditorScreenState extends State<EditorScreen> {
 
   EditorCubit get _ec => context.read<EditorCubit>();
 
+  String get _selectionStateBucketId {
+    final filePath = _ec.filePath;
+    if (filePath.isNotEmpty) return 'level:$filePath';
+    return 'level:${_ec.fileName}';
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      widget.onRegisterBackHandler(() async {
-        if (context.read<EditorCubit>().state.hasChanges) {
-          return await _confirmLeave();
-        }
-        return true;
-      });
+      widget.onRegisterBackHandler(_onEditorBackRequested);
     });
   }
 
@@ -175,6 +204,28 @@ class _EditorScreenState extends State<EditorScreen> {
   void dispose() {
     widget.onRegisterBackHandler(null);
     super.dispose();
+  }
+
+  /// Shared by AppBar back and the app PopScope / Escape leave path.
+  /// Closes Overview / other modals before leaving the editor.
+  Future<bool> _onEditorBackRequested() async {
+    if (EscapeOverride.tryHandle?.call() == true) return false;
+    if (ModalGate.tryAbsorb()) return false;
+    if (popRouteAbove(context)) return false;
+    final navigator = Navigator.of(context, rootNavigator: true);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return false;
+    }
+    if (context.read<EditorCubit>().state.hasChanges) {
+      return await _confirmLeave();
+    }
+    return true;
+  }
+
+  Future<void> _leaveEditorIfAllowed() async {
+    final leave = await _onEditorBackRequested();
+    if (leave && mounted) widget.onBack();
   }
 
   static const _internalTagToModule = <String, String>{
@@ -208,10 +259,11 @@ class _EditorScreenState extends State<EditorScreen> {
         if (k == 'PresetPlantList' ||
             k == 'PlantWhiteList' ||
             k == 'PlantBlackList') {
-          if (v is List)
+          if (v is List) {
             for (final e in v) {
               if (e is String && e.isNotEmpty) out.add(e);
             }
+          }
         } else if (k == 'PlantMap' && v is Map) {
           for (final key in v.keys) {
             if (key is String && key.isNotEmpty) out.add(key);
@@ -237,10 +289,11 @@ class _EditorScreenState extends State<EditorScreen> {
               final pt = e['PlantType'];
               if (pt is String && pt.isNotEmpty) out.add(pt);
               final pts = e['PlantTypes'];
-              if (pts is List)
+              if (pts is List) {
                 for (final p in pts) {
                   if (p is String && p.isNotEmpty) out.add(p);
                 }
+              }
             }
           }
         } else if (k == 'Vases' && v is List) {
@@ -310,8 +363,9 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   List<ModuleMetadata> _calculateMissingModules() {
-    if (_ec.state.levelFile == null || _ec.state.parsedData == null)
+    if (_ec.state.levelFile == null || _ec.state.parsedData == null) {
       return const [];
+    }
     final existingClasses = <String>{
       ..._ec.state.levelFile!.objects.map((o) => o.objClass),
       ...?_ec.state.parsedData!.levelDef?.modules.map((rtid) {
@@ -335,6 +389,13 @@ class _EditorScreenState extends State<EditorScreen> {
       'ZombossLastStandMinigameProperties',
     );
     final isLastStand = existingClasses.contains('LastStandMinigameProperties');
+    final isCowboyMinigame = existingClasses.contains(
+      'CowboyMinigameProperties',
+    );
+    final isSingleHanded = existingClasses.contains('SingleHandedProperties');
+    final isSingleHandedTutorial = existingClasses.contains(
+      'IntroSingleHandedProperties',
+    );
     final isEvilDave = existingClasses.contains('EvilDaveProperties');
 
     final missingList = <String>[];
@@ -353,6 +414,9 @@ class _EditorScreenState extends State<EditorScreen> {
     if (!existingClasses.contains('StandardLevelIntroProperties')) {
       if (!isVaseBreaker &&
           !isLastStand &&
+          !isCowboyMinigame &&
+          !isSingleHanded &&
+          !isSingleHandedTutorial &&
           !isZombossMechBattle &&
           !isZombossBattle) {
         missingList.add('StandardLevelIntroProperties');
@@ -395,7 +459,6 @@ class _EditorScreenState extends State<EditorScreen> {
         missingList.add('SeedBankProperties');
       }
     }
-
     final metas = missingList
         .map((cls) => ModuleRegistry.getMetadata(cls))
         .where((m) {
@@ -412,6 +475,35 @@ class _EditorScreenState extends State<EditorScreen> {
       levelFile: file,
       moduleObjClasses: _levelModuleObjClasses(),
     );
+  }
+
+  bool _showGlacierModuleUnderwaterWarning() {
+    final file = _ec.state.levelFile;
+    if (file == null) return false;
+    final hasGlacierModule =
+        _levelModuleObjClasses().contains('GlacierModuleProperties') ||
+        file.objects.any((o) => o.objClass == 'GlacierModuleProperties');
+    return hasGlacierModule && LevelParser.isDeepSeaLawnFromFile(file);
+  }
+
+  bool _showIceAgePlantPuzzleWarning() {
+    final file = _ec.state.levelFile;
+    if (file == null) return false;
+    final hasGlacierModule =
+        _levelModuleObjClasses().contains('GlacierModuleProperties') ||
+        file.objects.any((o) => o.objClass == 'GlacierModuleProperties');
+    if (!hasGlacierModule) return false;
+
+    final battle =
+        file.objects.firstWhereOrNull(
+          (o) => o.objClass == 'ZombossBattleModuleProperties',
+        ) ??
+        _ec.state.parsedData?.objectMap.values.firstWhereOrNull(
+          (o) => o.objClass == 'ZombossBattleModuleProperties',
+        );
+    if (battle?.objData is! Map) return false;
+    final variation = (battle!.objData as Map)['ZombossMechType'] as String?;
+    return GlacierModulePresets.isPlantPuzzleVariation(variation);
   }
 
   void _openGlacierModuleSettings() {
@@ -458,6 +550,7 @@ class _EditorScreenState extends State<EditorScreen> {
               context,
               MaterialPageRoute(
                 builder: (_) => ZombieSelectionScreen(
+                  stateBucketId: _selectionStateBucketId,
                   editorCubit: _ec,
                   multiSelect: false,
                   onZombieSelected: (id) {
@@ -470,6 +563,80 @@ class _EditorScreenState extends State<EditorScreen> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  void _openSingleHandedTutorialSettings() {
+    final levelFile = _ec.state.levelFile;
+    final parsed = _ec.state.parsedData;
+    if (levelFile == null || parsed?.levelDef == null) return;
+
+    const objClass = 'IntroSingleHandedProperties';
+
+    String? findTutorialRtid() {
+      for (final moduleRtid in parsed!.levelDef!.modules) {
+        final info = RtidParser.parse(moduleRtid);
+        if (info == null || info.source != 'CurrentLevel') continue;
+        final object = levelFile.objects.firstWhereOrNull(
+          (candidate) => candidate.aliases?.contains(info.alias) == true,
+        );
+        if (object?.objClass == objClass) return moduleRtid;
+      }
+      return null;
+    }
+
+    var rtid = findTutorialRtid();
+    if (rtid == null) {
+      _addModule(ModuleRegistry.getMetadata(objClass));
+      _ec.recalculateTabs();
+      rtid = findTutorialRtid();
+    }
+    if (rtid == null || !mounted) return;
+    _pushSingleHandedTutorialScreen(rtid);
+  }
+
+  void _pushSingleHandedTutorialScreen(String rtid) {
+    final levelFile = _ec.state.levelFile;
+    if (levelFile == null || !mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => IntroSingleHandedPropertiesScreen(
+          rtid: rtid,
+          levelFile: levelFile,
+          onChanged: _markDirty,
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openInitialGridItemSettings() {
+    final levelFile = _ec.state.levelFile;
+    if (levelFile == null) return;
+
+    final existing = ZombossEightiesSpeakerPresets.findModule(levelFile);
+    final module = ZombossEightiesSpeakerPresets.ensureModule(levelFile);
+    if (existing == null) {
+      _markDirty();
+      _ec.recalculateTabs();
+    }
+    if (!mounted) return;
+    final rtid = ZombossEightiesSpeakerPresets.moduleRtid(module);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InitialGridItemEntryScreen(
+          rtid: rtid,
+          levelFile: levelFile,
+          onChanged: _markDirty,
+          onBack: () => Navigator.pop(context),
+          onAddModule: (objClass) =>
+              _addModule(ModuleRegistry.getMetadata(objClass)),
+          onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
         ),
       ),
     );
@@ -568,33 +735,10 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   Future<String?> _promptCustomStageAlias(String suggested) async {
-    final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController(text: suggested);
-    final result = await showDialog<String>(
+    return showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.customStageAliasPromptTitle ?? 'Custom stage alias'),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n?.customStageAlias ?? 'Stage alias',
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.cancel ?? 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text(l10n?.confirm ?? 'Confirm'),
-          ),
-        ],
-      ),
+      builder: (ctx) => _CustomStageAliasPromptDialog(initialAlias: suggested),
     );
-    controller.dispose();
-    return result;
   }
 
   Future<bool> _handleDeleteCustomStage({
@@ -641,12 +785,7 @@ class _EditorScreenState extends State<EditorScreen> {
 
     if (wasActive) {
       levelDef.stageModule = CustomStageLevelUtils.defaultBuiltinStageRtid;
-      for (final o in _ec.state.levelFile!.objects) {
-        if (o.objClass == 'LevelDefinition') {
-          o.objData = levelDef.toJson();
-          break;
-        }
-      }
+      LevelParser.syncAndWriteLevelDefinition(levelDef, _ec.state.levelFile!);
     }
     _markDirty();
     return true;
@@ -675,6 +814,7 @@ class _EditorScreenState extends State<EditorScreen> {
       context,
       MaterialPageRoute(
         builder: (ctx) => StageBaseSelectionScreen(
+          stateBucketId: '$_selectionStateBucketId:stage-base',
           onStageBaseSelected: (option) {
             baseOption = option;
             Navigator.pop(ctx);
@@ -713,12 +853,7 @@ class _EditorScreenState extends State<EditorScreen> {
       baseOption: baseOption!,
     );
     levelDef.stageModule = rtid;
-    for (final o in _ec.state.levelFile!.objects) {
-      if (o.objClass == 'LevelDefinition') {
-        o.objData = levelDef.toJson();
-        break;
-      }
-    }
+    LevelParser.syncAndWriteLevelDefinition(levelDef, _ec.state.levelFile!);
     _markDirty();
     onStagePicked?.call();
     await _handleEditCustomStage(alias);
@@ -749,15 +884,14 @@ class _EditorScreenState extends State<EditorScreen> {
       alias: alias,
       objclass: preset.objclass,
       objdata: preset.objdata,
+      aliases: CustomStagePresetRepository.aliasesForPresetInstance(
+        primaryAlias: alias,
+        preset: preset,
+      ),
       prepend: true,
     );
     levelDef.stageModule = rtid;
-    for (final o in levelFile.objects) {
-      if (o.objClass == 'LevelDefinition') {
-        o.objData = levelDef.toJson();
-        break;
-      }
-    }
+    LevelParser.syncAndWriteLevelDefinition(levelDef, levelFile);
 
     final stageObj = CustomStageLevelUtils.findStageObject(levelFile, alias);
     if (stageObj != null) {
@@ -779,6 +913,7 @@ class _EditorScreenState extends State<EditorScreen> {
   Future<void> _openStageSelection({
     required LevelDefinitionData levelDef,
     VoidCallback? onStagePicked,
+    bool openCustomSection = false,
   }) async {
     if (_ec.state.levelFile == null) return;
     final current = levelDef.stageModule;
@@ -789,6 +924,7 @@ class _EditorScreenState extends State<EditorScreen> {
         builder: (stageRouteContext) => StageSelectionScreen(
           currentStageRtid: current,
           levelFile: _ec.state.levelFile!,
+          openCustomSection: openCustomSection,
           onCreateCustomStage: () {
             Navigator.pop(stageRouteContext);
             _createCustomStage(
@@ -809,12 +945,10 @@ class _EditorScreenState extends State<EditorScreen> {
             );
             if (levelDef.stageModule != rtid) {
               levelDef.stageModule = rtid;
-              for (final o in _ec.state.levelFile!.objects) {
-                if (o.objClass == 'LevelDefinition') {
-                  o.objData = levelDef.toJson();
-                  break;
-                }
-              }
+              LevelParser.syncAndWriteLevelDefinition(
+                levelDef,
+                _ec.state.levelFile!,
+              );
               _markDirty();
               onStagePicked?.call();
             }
@@ -900,21 +1034,28 @@ class _EditorScreenState extends State<EditorScreen> {
               }
             }
             levelDef.stageModule = newRtid;
-            for (final o in _ec.state.levelFile!.objects) {
-              if (o.objClass == 'LevelDefinition') {
-                o.objData = levelDef.toJson();
-                break;
-              }
-            }
+            LevelParser.syncAndWriteLevelDefinition(
+              levelDef,
+              _ec.state.levelFile!,
+            );
             _markDirty();
             onStagePicked?.call();
-            if (!mounted) return;
+            if (!stageRouteContext.mounted) return;
             Navigator.pop(stageRouteContext);
           },
-          onBack: () => Navigator.pop(stageRouteContext),
+          onBack: () {
+            if (!stageRouteContext.mounted) return;
+            Navigator.pop(stageRouteContext);
+          },
         ),
       ),
     );
+  }
+
+  Future<void> _openCustomStageSelectionFromGridItem() async {
+    final levelDef = _ec.state.parsedData?.levelDef;
+    if (levelDef == null) return;
+    await _openStageSelection(levelDef: levelDef, openCustomSection: true);
   }
 
   void _handleNavigateToAddModule() async {
@@ -926,30 +1067,45 @@ class _EditorScreenState extends State<EditorScreen> {
       if (info != null) {
         if (info.source == 'CurrentLevel') {
           final obj = _ec.state.parsedData!.objectMap[info.alias];
-          if (obj != null) existingObjClasses.add(obj.objClass);
+          if (obj != null) {
+            existingObjClasses.add(
+              ModuleRegistry.getMetadataForAlias(
+                info.alias,
+                obj.objClass,
+              ).selectionKey,
+            );
+          }
         } else {
           final cls = ReferenceRepository.instance.getObjClass(info.alias);
-          if (cls != null) existingObjClasses.add(cls);
+          if (cls != null) {
+            existingObjClasses.add(
+              ModuleRegistry.getMetadataForAlias(info.alias, cls).selectionKey,
+            );
+          }
         }
       }
     }
 
-    final meta = await Navigator.push<ModuleMetadata>(
+    final selection = await Navigator.push<ModuleSelectionResult>(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ModuleSelectionScreen(existingObjClasses: existingObjClasses),
+        builder: (context) => ModuleSelectionScreen(
+          existingObjClasses: existingObjClasses,
+          stateBucketId: '$_selectionStateBucketId:module-selection',
+        ),
       ),
     );
 
-    if (meta != null) {
+    if (selection != null) {
       if (!mounted) return;
+      final meta = selection.metadata;
       final l10n = AppLocalizations.of(context)!;
       String? chosenAlias;
       if (meta.defaultSource == 'CurrentLevel') {
         var suggestedAlias = PvzAliasUtils.uniqueAlias(
           _ec.state.levelFile!,
           meta.effectiveAlias,
+          numberSeparator: meta.duplicateAliasNumberSeparator,
         );
         chosenAlias = await showPvzAliasInputDialog(
           context,
@@ -959,6 +1115,10 @@ class _EditorScreenState extends State<EditorScreen> {
           levelFile: _ec.state.levelFile!,
         );
         if (chosenAlias == null || !mounted) return;
+      }
+      final requiredModuleObjClass = selection.requiredModuleObjClass;
+      if (requiredModuleObjClass != null) {
+        _addModule(ModuleRegistry.getMetadata(requiredModuleObjClass));
       }
       _addModule(meta, aliasOverride: chosenAlias);
     }
@@ -978,7 +1138,8 @@ class _EditorScreenState extends State<EditorScreen> {
           (o) => o.aliases?.contains(alias) == true,
         )) {
           count++;
-          alias = '${meta.effectiveAlias}_$count';
+          alias =
+              '${meta.effectiveAlias}${meta.duplicateAliasNumberSeparator}$count';
         }
       }
 
@@ -986,15 +1147,33 @@ class _EditorScreenState extends State<EditorScreen> {
       def.modules.add(rtid);
 
       final objData = Map<String, dynamic>.from(meta.initialData ?? {});
-      if (meta.objClass == 'TunnelDefendModuleProperties') {
+      if (meta.defaultAlias == 'SouDaCheTunnelDefendDefault') {
+        objData['BrickMapIndex'] = 3;
+        objData['reportError'] = false;
+        objData['Roads'] = objData['Roads'] ?? [];
+        objData.remove('TunnelSequenceInterval');
+      } else if (meta.objClass == 'TunnelDefendModuleProperties') {
         final stageAlias = RtidParser.parse(def.stageModule)?.alias ?? '';
         objData['BrickMapIndex'] = stageAlias == 'UnchartedMausoleum2Stage'
             ? 2
             : 1;
+        objData['reportError'] = objData['reportError'] ?? true;
       }
-      _ec.state.levelFile!.objects.add(
-        PvzObject(aliases: [alias], objClass: meta.objClass, objData: objData),
+      final moduleObject = PvzObject(
+        aliases: [alias],
+        objClass: meta.objClass,
+        objData: objData,
       );
+      _ec.state.levelFile!.objects.add(moduleObject);
+      if (meta.objClass == CowboyMinigameUtils.moduleObjClass) {
+        CowboyMinigameUtils.enableManualPacketSpawning(_ec.state.levelFile!);
+      }
+      if (meta.objClass == MoldColonyModuleUtils.moduleObjClass) {
+        MoldColonyModuleUtils.ensureCurrentLevelLayout(
+          levelFile: _ec.state.levelFile!,
+          moduleObject: moduleObject,
+        );
+      }
     } else {
       final rtid = RtidParser.build(alias, source);
       def.modules.add(rtid);
@@ -1008,11 +1187,32 @@ class _EditorScreenState extends State<EditorScreen> {
     final def = _ec.state.parsedData?.levelDef;
     if (def == null) return;
 
-    def.modules.remove(rtid);
     final info = RtidParser.parse(rtid);
+    String? moldLocations;
     if (info != null && info.source == 'CurrentLevel') {
-      _ec.state.levelFile!.objects.removeWhere(
-        (o) => o.aliases?.contains(info.alias) == true,
+      final moduleObject = _ec.state.levelFile!.objects.firstWhereOrNull(
+        (object) => object.aliases?.contains(info.alias) == true,
+      );
+      if (moduleObject?.objClass == MoldColonyModuleUtils.moduleObjClass &&
+          moduleObject?.objData is Map) {
+        moldLocations = MoldColonyChallengePropsData.fromJson(
+          Map<String, dynamic>.from(moduleObject!.objData as Map),
+        ).locations;
+      }
+    }
+
+    final removedModule = ModuleInstanceUtils.removeModule(
+      levelFile: _ec.state.levelFile!,
+      levelDef: def,
+      rtid: rtid,
+    );
+    if (removedModule?.objClass == CowboyMinigameUtils.moduleObjClass) {
+      CowboyMinigameUtils.removeManualPacketSpawning(_ec.state.levelFile!);
+    }
+    if (moldLocations != null) {
+      MoldColonyModuleUtils.removeUnreferencedLayout(
+        levelFile: _ec.state.levelFile!,
+        locations: moldLocations,
       );
     }
     if (info?.alias == FinalStageTimeLimitedModuleUtils.alias) {
@@ -1086,6 +1286,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1121,6 +1322,45 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
+                    editorCubit: _ec,
+                    multiSelect: false,
+                    onZombieSelected: (id) {
+                      Navigator.pop(context);
+                      onSelected(id);
+                    },
+                    onMultiZombieSelected: (_) {},
+                    onBack: () => Navigator.pop(context),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (objClass == 'HamsterZombieSpawnerProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HamsterZombieEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () {
+              _setActiveTab(EditorTabType.timeline);
+              Navigator.pop(context);
+            },
+            onEditCustomZombie: _handleEditCustomZombie,
+            onInjectCustomZombie: _injectCustomZombie,
+            onRequestZombieSelection: (onSelected) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1156,6 +1396,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1215,6 +1456,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     levelFile: _ec.state.levelFile,
                     onAddModule: (objClass) =>
                         _addModule(ModuleRegistry.getMetadata(objClass)),
+                    onOpenCustomStageSelection:
+                        _openCustomStageSelectionFromGridItem,
                   ),
                 ),
               );
@@ -1248,6 +1491,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1320,6 +1564,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1340,6 +1585,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1377,6 +1623,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1397,6 +1644,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1434,6 +1682,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1454,6 +1703,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1488,6 +1738,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -1508,6 +1759,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ToolSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     onToolSelected: (id) {
                       Navigator.pop(context);
                       onSelected(id);
@@ -1537,6 +1789,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1574,6 +1827,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1710,6 +1964,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     levelFile: _ec.state.levelFile,
                     onAddModule: (objClass) =>
                         _addModule(ModuleRegistry.getMetadata(objClass)),
+                    onOpenCustomStageSelection:
+                        _openCustomStageSelectionFromGridItem,
                   ),
                 ),
               );
@@ -1719,6 +1975,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -1760,6 +2017,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     levelFile: _ec.state.levelFile,
                     onAddModule: (objClass) =>
                         _addModule(ModuleRegistry.getMetadata(objClass)),
+                    onOpenCustomStageSelection:
+                        _openCustomStageSelectionFromGridItem,
                   ),
                 ),
               );
@@ -1851,6 +2110,21 @@ class _EditorScreenState extends State<EditorScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => ModernPortalsEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (objClass == 'SpawnRocketLandingWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RocketLandingEventScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
@@ -1979,6 +2253,7 @@ class _EditorScreenState extends State<EditorScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => ZombieSelectionScreen(
+          stateBucketId: _selectionStateBucketId,
           editorCubit: _ec,
           multiSelect: false,
           onZombieSelected: (id) {
@@ -2185,6 +2460,11 @@ class _EditorScreenState extends State<EditorScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
+          scrollable: true,
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.sizeOf(ctx).width < 480 ? 12 : 40,
+            vertical: 24,
+          ),
           title: Text(l10n.adjustUiSize),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -2196,7 +2476,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 max: 1.5,
                 onChanged: (v) => setDialogState(() => tempScale = v),
               ),
-              _UiScalePresetLabels(
+              EditorUiScalePresetLabels(
                 currentScale: tempScale,
                 onPresetSelected: (scale) =>
                     setDialogState(() => tempScale = scale),
@@ -2233,6 +2513,64 @@ class _EditorScreenState extends State<EditorScreen> {
     if (index >= 0) {
       _tabController?.animateTo(index);
     }
+  }
+
+  List<String> _moduleRtidsForEditorTab(EditorTabType type) {
+    final objClass = switch (type) {
+      EditorTabType.zombossMech => 'ZombossBattleModuleProperties',
+      EditorTabType.zombossBattle => 'ZombossLastStandMinigameProperties',
+      _ => null,
+    };
+    final def = _ec.state.parsedData?.levelDef;
+    final objectMap = _ec.state.parsedData?.objectMap;
+    if (objClass == null || def == null || objectMap == null) return const [];
+
+    return def.modules
+        .where((rtid) {
+          final info = RtidParser.parse(rtid);
+          if (info == null) return false;
+          final resolvedObjClass = info.source == 'CurrentLevel'
+              ? objectMap[info.alias]?.objClass
+              : ReferenceRepository.instance.getObjClass(info.alias);
+          return resolvedObjClass == objClass;
+        })
+        .toList(growable: false);
+  }
+
+  List<_EditorTopTabEntry> _editorTopTabEntries() {
+    final rtidsByType = <EditorTabType, List<String>>{
+      EditorTabType.zombossMech: _moduleRtidsForEditorTab(
+        EditorTabType.zombossMech,
+      ),
+      EditorTabType.zombossBattle: _moduleRtidsForEditorTab(
+        EditorTabType.zombossBattle,
+      ),
+    };
+    final occurrences = <EditorTabType, int>{};
+    return _ec.state.availableTabs
+        .map((type) {
+          final index = occurrences.update(
+            type,
+            (value) => value + 1,
+            ifAbsent: () => 0,
+          );
+          final rtids = rtidsByType[type] ?? const <String>[];
+          return (
+            type: type,
+            moduleRtid: index < rtids.length ? rtids[index] : null,
+            instanceIndex: index,
+            instanceCount: rtids.isEmpty ? 1 : rtids.length,
+          );
+        })
+        .toList(growable: false);
+  }
+
+  void _setActiveModuleTab(EditorTabType type, String rtid) {
+    final entries = _editorTopTabEntries();
+    final index = entries.indexWhere(
+      (entry) => entry.type == type && entry.moduleRtid == rtid,
+    );
+    if (index >= 0) _tabController?.animateTo(index);
   }
 
   dynamic _cloneJson(dynamic data) {
@@ -2323,6 +2661,9 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );
@@ -2334,6 +2675,20 @@ class _EditorScreenState extends State<EditorScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => MaxSunModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' && objClass == 'MoonExpertProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MoonExpertModuleScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
@@ -2388,6 +2743,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: true,
                     onZombieSelected: (_) {},
@@ -2420,6 +2776,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -2598,6 +2955,54 @@ class _EditorScreenState extends State<EditorScreen> {
       openSunDropper(rtid);
       return;
     }
+
+    if (objClass == 'MoonLifeSupportSystemProperties' &&
+        _ec.state.parsedData?.levelDef != null) {
+      void openLifeSupport(String rt) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MoonLifeSupportSystemScreen(
+              rtid: rt,
+              levelFile: _ec.state.levelFile!,
+              levelDef: _ec.state.parsedData!.levelDef!,
+              onChanged: _markDirty,
+              onBack: () => Navigator.pop(context),
+              onRequestPlantSelection: (initialIds, onSelected) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PlantSelectionScreen(
+                      stateBucketId: _selectionStateBucketId,
+                      isMultiSelect: true,
+                      initialSelectedIds: initialIds,
+                      onPlantSelected: (_) {},
+                      onMultiPlantSelected: (ids) {
+                        Navigator.pop(context);
+                        onSelected(ids);
+                      },
+                      onBack: () => Navigator.pop(context),
+                      levelFile: _ec.state.levelFile,
+                      onAddModule: (objClass) {
+                        _addModule(ModuleRegistry.getMetadata(objClass));
+                      },
+                    ),
+                  ),
+                );
+              },
+              onModeToggled: (newRtid) {
+                _markDirty();
+                Navigator.pop(context);
+                openLifeSupport(newRtid);
+              },
+            ),
+          ),
+        );
+      }
+
+      openLifeSupport(rtid);
+      return;
+    }
     if (objClass == 'WitchModuleProperties' &&
         _ec.state.parsedData?.levelDef != null) {
       void openWitchModule(String rt) {
@@ -2642,6 +3047,21 @@ class _EditorScreenState extends State<EditorScreen> {
       }
       return;
     }
+    if (info.source == 'CurrentLevel' &&
+        objClass == MoldColonyModuleUtils.moduleObjClass) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MoldColonyChallengeScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (info.source == 'CurrentLevel' && objClass == 'SeedRainProperties') {
       Navigator.push(
         context,
@@ -2676,6 +3096,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => PlantSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     isMultiSelect: false,
                     onPlantSelected: (id) {
                       Navigator.pop(context);
@@ -2695,6 +3116,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ToolSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     onToolSelected: (id) {
                       Navigator.pop(context);
                       onSelected(id);
@@ -2724,6 +3146,30 @@ class _EditorScreenState extends State<EditorScreen> {
       );
       return;
     }
+    if (info.source == 'CurrentLevel' &&
+        objClass == CowboyMinigameUtils.moduleObjClass) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CowboyMinigameScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'IntroSingleHandedProperties') {
+      _pushSingleHandedTutorialScreen(rtid);
+      return;
+    }
+    if (info.source == 'CurrentLevel' && objClass == 'SingleHandedProperties') {
+      _setActiveTab(EditorTabType.singleHanded);
+      return;
+    }
     if (info.source == 'CurrentLevel' && objClass == 'SeedBankProperties') {
       Navigator.push(
         context,
@@ -2739,17 +3185,20 @@ class _EditorScreenState extends State<EditorScreen> {
                   excludeIds,
                   initialSelectedIds,
                   blockRealmExclusiveInChooser = false,
+                  blockHiddenPlantsInChooser = false,
                   allowDuplicateSelection = false,
                 }) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => PlantSelectionScreen(
+                        stateBucketId: _selectionStateBucketId,
                         isMultiSelect: true,
                         excludeIds: excludeIds ?? const [],
                         initialSelectedIds: initialSelectedIds ?? const [],
                         blockRealmExclusiveInChooser:
                             blockRealmExclusiveInChooser,
+                        blockHiddenPlantsInChooser: blockHiddenPlantsInChooser,
                         allowDuplicateSelection: allowDuplicateSelection,
                         onPlantSelected: (_) {},
                         onMultiPlantSelected: (ids) {
@@ -2770,6 +3219,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: true,
                     onZombieSelected: (_) {},
@@ -2848,6 +3298,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );
@@ -2880,6 +3331,9 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );
@@ -2924,6 +3378,9 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
+            onOpenCustomStageSelection: _openCustomStageSelectionFromGridItem,
           ),
         ),
       );
@@ -2974,6 +3431,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
                     multiSelect: false,
                     onZombieSelected: (id) {
@@ -3081,13 +3539,86 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'LunarTerminalModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LunarTerminalModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'LevelPowerupModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LevelPowerupModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'LunarMineVeinModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LunarMineVeinModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'RadiationMeteorModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RadiationMeteorModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'ZombossBattleModuleProperties') {
+      _setActiveModuleTab(EditorTabType.zombossMech, rtid);
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'ZombossBattleIntroProperties') {
       _setActiveTab(EditorTabType.zombossMech);
       return;
     }
     if (info.source == 'CurrentLevel' &&
         objClass == 'ZombossLastStandMinigameProperties') {
-      _setActiveTab(EditorTabType.zombossBattle);
+      _setActiveModuleTab(EditorTabType.zombossBattle, rtid);
+      return;
+    }
+    if (const {
+      'VaseBreakerPresetProperties',
+      'VaseBreakerArcadeModuleProperties',
+      'VaseBreakerFlowModuleProperties',
+    }.contains(objClass)) {
+      _setActiveTab(EditorTabType.vaseBreaker);
       return;
     }
     if (info.source == 'CurrentLevel' &&
@@ -3301,43 +3832,151 @@ class _EditorScreenState extends State<EditorScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsCubit>().state;
-    return BlocBuilder<EditorCubit, EditorState>(
-      builder: (context, editorState) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final bool useCompactActions = screenWidth < 500;
+
+    return BlocListener<EditorCubit, EditorState>(
+      listenWhen: (previous, current) =>
+          current.loadErrorKind != null &&
+          previous.loadErrorKind != current.loadErrorKind,
+      listener: (context, state) {
+        final kind = state.loadErrorKind;
+        if (kind == null) return;
         final l10n = AppLocalizations.of(context);
-        final isDesktop =
-            Theme.of(context).platform == TargetPlatform.windows ||
-            Theme.of(context).platform == TargetPlatform.macOS ||
-            Theme.of(context).platform == TargetPlatform.linux;
-        Widget body = Scaffold(
-          appBar: AppBar(
-            title: Text(_ec.fileName, overflow: TextOverflow.ellipsis),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () async {
-                if (_ec.state.hasChanges) {
-                  final leave = await _confirmLeave();
-                  if (leave && mounted) widget.onBack();
-                } else {
-                  widget.onBack();
-                }
-              },
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.code),
-                tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',
-                onPressed: _ec.state.levelFile != null
-                    ? () async {
-                        final hadChanges = _ec.state.hasChanges;
-                        await _save();
+        AppMessage.show(
+          context,
+          _rtonErrorMessage(l10n, kind),
+          icon: Icons.error_outline,
+        );
+      },
+      child: BlocBuilder<EditorCubit, EditorState>(
+        builder: (context, editorState) {
+          final l10n = AppLocalizations.of(context);
+          final editorTopTabs = _editorTopTabEntries();
+          Widget body = Scaffold(
+            appBar: AppBar(
+              title: Text(_ec.fileName, overflow: TextOverflow.ellipsis),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: _leaveEditorIfAllowed,
+              ),
+              actions: [
+                if (!useCompactActions) ...[
+                  IconButton(
+                    icon: const Icon(Icons.code),
+                    tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',
+                    onPressed: _ec.state.levelFile != null
+                        ? () async {
+                            final hadChanges = _ec.state.hasChanges;
+                            await _save();
+                            if (!mounted) return;
+                            if (hadChanges) {
+                              // Let the banner start its fade-in before the route covers the frame.
+                              await Future<void>.delayed(
+                                const Duration(milliseconds: 32),
+                              );
+                              if (!mounted) return;
+                            }
+                            WidgetsBinding.instance.addPostFrameCallback((
+                              _,
+                            ) async {
+                              if (!context.mounted) return;
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => JsonViewerScreen(
+                                    fileName: _ec.fileName,
+                                    filePath: _ec.filePath,
+                                    levelFile: _ec.state.levelFile!,
+                                    onBack: () => Navigator.pop(context),
+                                    onSaved: () => _ec.onJsonViewerSaved(),
+                                  ),
+                                ),
+                              );
+                            });
+                          }
+                        : null,
+                  ),
+                ],
+                Builder(
+                  builder: (context) {
+                    return IconButton(
+                      icon: const Icon(Icons.save),
+                      tooltip: l10n?.tooltipSave ?? 'Save',
+                      onPressed: _ec.state.hasChanges ? _save : null,
+                    );
+                  },
+                ),
+                ...pluginEditorAppBarActions(context),
+                PopupMenuButton<String>(
+                  itemBuilder: (context) => [
+                    if (useCompactActions) ...[
+                      PopupMenuItem(
+                        value: 'json',
+                        enabled: _ec.state.levelFile != null,
+                        child: EditorPopupMenuTile(
+                          enabled: _ec.state.levelFile != null,
+                          leading: const Icon(Icons.code),
+                          title: Text(
+                            l10n?.tooltipJsonViewer ?? 'View/edit JSON',
+                          ),
+                        ),
+                      ),
+                      const PopupMenuDivider(),
+                    ],
+                    PopupMenuItem(
+                      value: 'lang',
+                      child: EditorPopupMenuTile(
+                        leading: const Icon(Icons.language),
+                        title: Text(l10n?.language ?? 'Language'),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'ui',
+                      child: EditorPopupMenuTile(
+                        leading: const Icon(Icons.aspect_ratio),
+                        title: Text(l10n?.uiSize ?? 'UI size'),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'theme',
+                      child: EditorPopupMenuTile(
+                        leading: Icon(
+                          settings.themeMode == ThemeMode.dark
+                              ? Icons.light_mode
+                              : Icons.dark_mode,
+                        ),
+                        title: Text(l10n?.toggleTheme ?? 'Toggle theme'),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'level_overview',
+                      enabled: _ec.state.levelFile != null,
+                      child: EditorPopupMenuTile(
+                        enabled: _ec.state.levelFile != null,
+                        leading: const Icon(Icons.visibility),
+                        title: Text(l10n?.levelOverview ?? 'Level Overview'),
+                      ),
+                    ),
+                    ...pluginOverflowMenuItems(
+                      context: context,
+                      slot: CPluginUiSlots.editorOverflow,
+                      valuePrefix: 'plugin:',
+                    ),
+                  ],
+                  onSelected: (value) async {
+                    if (value == 'json') {
+                      final hadChanges = _ec.state.hasChanges;
+                      await _save();
+                      if (!mounted) return;
+                      if (hadChanges) {
+                        await Future<void>.delayed(
+                          const Duration(milliseconds: 32),
+                        );
+                        if (!mounted) return;
+                      }
+                      WidgetsBinding.instance.addPostFrameCallback((_) async {
                         if (!context.mounted) return;
-                        if (hadChanges) {
-                          // Let the banner start its fade-in before the route covers the frame.
-                          await Future<void>.delayed(
-                            const Duration(milliseconds: 32),
-                          );
-                          if (!context.mounted) return;
-                        }
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -3350,78 +3989,53 @@ class _EditorScreenState extends State<EditorScreen> {
                             ),
                           ),
                         );
-                      }
-                    : null,
-              ),
-              IconButton(
-                icon: const Icon(Icons.save),
-                tooltip: l10n?.tooltipSave ?? 'Save',
-                onPressed: _ec.state.hasChanges ? _save : null,
-              ),
-              PopupMenuButton<String>(
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'lang',
-                    child: ListTile(
-                      leading: const Icon(Icons.language),
-                      title: Text(l10n?.language ?? 'Language'),
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'ui',
-                    child: ListTile(
-                      leading: const Icon(Icons.aspect_ratio),
-                      title: Text(l10n?.uiSize ?? 'UI size'),
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'theme',
-                    child: ListTile(
-                      leading: Icon(
-                        settings.themeMode == ThemeMode.dark
-                            ? Icons.light_mode
-                            : Icons.dark_mode,
+                      });
+                    } else if (value == 'lang') {
+                      widget.onLanguageTap(context);
+                    } else if (value == 'ui') {
+                      _showUiScaleDialog(context);
+                    } else if (value == 'theme') {
+                      context.read<SettingsCubit>().cycleTheme();
+                    } else if (value == 'level_overview') {
+                      await openLevelOverviewFromOpenSession(context);
+                    } else {
+                      handlePluginOverflowSelection(
+                        context,
+                        value: value,
+                        valuePrefix: 'plugin:',
+                        slot: CPluginUiSlots.editorOverflow,
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+            body: _ec.state.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _ec.state.levelFile == null || _ec.state.parsedData == null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 640),
+                        child: Text(
+                          l10n?.failedToLoadLevel ?? 'Failed to load level',
+                          key: const ValueKey('level-load-failure-message'),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      title: Text(l10n?.toggleTheme ?? 'Toggle theme'),
-                      contentPadding: EdgeInsets.zero,
                     ),
-                  ),
-                ],
-                onSelected: (value) {
-                  if (value == 'lang') {
-                    widget.onLanguageTap(context);
-                  } else if (value == 'ui') {
-                    _showUiScaleDialog(context);
-                  } else if (value == 'theme') {
-                    context.read<SettingsCubit>().cycleTheme();
-                  }
-                },
-              ),
-            ],
-          ),
-          body: _ec.state.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _ec.state.levelFile == null || _ec.state.parsedData == null
-              ? Center(
-                  child: Text(
-                    l10n?.failedToLoadLevel ?? 'Failed to load level',
-                  ),
-                )
-              : DefaultTabController(
-                  length: _ec.state.availableTabs.length,
-                  child: Builder(
-                    builder: (context) {
-                      _tabController = DefaultTabController.of(context);
-                      return Column(
-                        children: [
-                          TabBar(
-                            isScrollable: false,
-                            tabAlignment: TabAlignment.fill,
-                            dividerHeight: 0,
-                            indicatorSize: TabBarIndicatorSize.tab,
-                            tabs: _ec.state.availableTabs.map((t) {
+                  )
+                : DefaultTabController(
+                    length: editorTopTabs.length,
+                    child: Builder(
+                      builder: (context) {
+                        _tabController = DefaultTabController.of(context);
+                        return LayoutBuilder(
+                          builder: (context, constraints) {
+                            final topTabLabels = <String>[];
+                            final topTabWidgets = editorTopTabs.map((entry) {
+                              final t = entry.type;
                               IconData icon;
                               String label;
                               switch (t) {
@@ -3446,143 +4060,235 @@ class _EditorScreenState extends State<EditorScreen> {
                                   icon = Icons.inventory_2;
                                   label = l10n?.vaseBreaker ?? 'Vase breaker';
                                   break;
-                                case EditorTabType.zombossMech:
-                                  icon = Icons.warning_amber;
+                                case EditorTabType.singleHanded:
+                                  icon = Icons.sledding;
                                   label =
-                                      l10n?.zombossMech ?? 'ZombossMech Battle';
+                                      l10n?.singleHandedTabLabel ??
+                                      'All by Oneself';
+                                  break;
+                                case EditorTabType.zombossMech:
+                                  icon = Icons.smart_toy_outlined;
+                                  label = moduleInstanceDisplayName(
+                                    baseName:
+                                        l10n?.zombossMech ??
+                                        'ZombossMech Battle',
+                                    objClass: 'ZombossBattleModuleProperties',
+                                    instanceCount: entry.instanceCount,
+                                    instanceIndex: entry.instanceIndex,
+                                  );
                                   break;
                                 case EditorTabType.zombossBattle:
                                   icon = Icons.castle;
-                                  label =
-                                      l10n?.zombossBattle ?? 'Zomboss Battle';
+                                  label = moduleInstanceDisplayName(
+                                    baseName:
+                                        l10n?.zombossBattle ?? 'Zomboss Battle',
+                                    objClass:
+                                        'ZombossLastStandMinigameProperties',
+                                    instanceCount: entry.instanceCount,
+                                    instanceIndex: entry.instanceIndex,
+                                  );
                                   break;
                               }
+                              topTabLabels.add(label);
                               return Tab(text: label, icon: Icon(icon));
-                            }).toList(),
-                          ),
-                          Expanded(
-                            child: TabBarView(
-                              children: _ec.state.availableTabs.map<Widget>((
-                                t,
-                              ) {
-                                switch (t) {
-                                  case EditorTabType.settings:
-                                    return LevelSettingsTab(
-                                      levelDef: _ec.state.parsedData!.levelDef,
-                                      objectMap:
-                                          _ec.state.parsedData!.objectMap,
-                                      missingModules:
-                                          _calculateMissingModules(),
-                                      missingModuleWarnings:
-                                          _getMissingModuleWarnings(),
-                                      showGlacierModuleCompatibilityWarning:
-                                          _showGlacierModuleCompatibilityWarning(),
-                                      onEditBasicInfo: _handleEditBasicInfo,
-                                      onEditModule: _handleEditModule,
-                                      onRemoveModule: _handleRemoveModule,
-                                      onReorderModules: _handleReorderModules,
-                                      onNavigateToAddModule:
-                                          _handleNavigateToAddModule,
-                                    );
-                                  case EditorTabType.timeline:
-                                    return WaveTimelineTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      parsed: _ec.state.parsedData!,
-                                      onChanged: _markDirty,
-                                      onEditEvent: _handleEditEvent,
-                                      onAddEvent: _handleAddEvent,
-                                      onEditWaveManagerSettings:
-                                          _handleEditWaveManagerSettings,
-                                      onEditCustomZombie:
-                                          _handleEditCustomZombie,
-                                      onEditCustomFish: _handleEditCustomFish,
-                                      onOpenModule: _handleEditModule,
-                                      openWaveSheetNotifier:
-                                          _ec.openWaveSheetNotifier,
-                                      onCreateContainer: () =>
-                                          _handleCreateWaveContainer(),
-                                      onDeleteContainer: () =>
-                                          _handleDeleteWaveContainer(),
-                                    );
-                                  case EditorTabType.waveGenerator:
-                                    return WaveGeneratorTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      parsed: _ec.state.parsedData!,
-                                      onChanged: _markDirty,
-                                      onOpenModule: _handleEditModule,
-                                      onEditWaveGeneratorSettings:
-                                          _handleEditWaveGeneratorSettings,
-                                      onEditWave: _handleEditWaveGeneratorWave,
-                                    );
-                                  case EditorTabType.iZombie:
-                                    return IZombieTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                    );
-                                  case EditorTabType.vaseBreaker:
-                                    return VaseBreakerTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                      editorCubit: _ec,
-                                      onAddModule: (objClass) {
-                                        _addModule(
-                                          ModuleRegistry.getMetadata(objClass),
-                                        );
-                                      },
-                                    );
-                                  case EditorTabType.zombossMech:
-                                    return ZombossMechBattleTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                      onOpenGlacierModule:
-                                          _openGlacierModuleSettings,
-                                    );
-                                  case EditorTabType.zombossBattle:
-                                    return ZombossBattleTab(
-                                      levelFile: _ec.state.levelFile!,
-                                      onChanged: _markDirty,
-                                    );
-                                }
-                              }).toList(),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                            }).toList();
+                            final tabLabelStyle =
+                                Theme.of(context).tabBarTheme.labelStyle ??
+                                Theme.of(context).textTheme.titleSmall ??
+                                const TextStyle(fontSize: 14);
+                            final textScaler = MediaQuery.textScalerOf(context);
+                            final requiredTabWidth = topTabLabels.fold<double>(
+                              0,
+                              (width, label) {
+                                final painter = TextPainter(
+                                  text: TextSpan(
+                                    text: label,
+                                    style: tabLabelStyle,
+                                  ),
+                                  textDirection: Directionality.of(context),
+                                  textScaler: textScaler,
+                                  maxLines: 1,
+                                )..layout();
+                                return width + painter.width + 48;
+                              },
+                            );
+                            final shouldScroll =
+                                constraints.maxWidth < 600 ||
+                                requiredTabWidth > constraints.maxWidth;
+                            return Column(
+                              children: [
+                                if (shouldScroll)
+                                  PersistentScrollableTabBar(
+                                    controller: _tabController!,
+                                    tabs: topTabWidgets,
+                                  )
+                                else
+                                  TabBar(
+                                    isScrollable: false,
+                                    tabAlignment: TabAlignment.fill,
+                                    dividerHeight: 0,
+                                    indicatorSize: TabBarIndicatorSize.tab,
+                                    tabs: topTabWidgets,
+                                  ),
+                                Expanded(
+                                  child: TabBarView(
+                                    children: editorTopTabs.map<Widget>((
+                                      entry,
+                                    ) {
+                                      final t = entry.type;
+                                      switch (t) {
+                                        case EditorTabType.settings:
+                                          return LevelSettingsTab(
+                                            levelDef:
+                                                _ec.state.parsedData!.levelDef,
+                                            objectMap:
+                                                _ec.state.parsedData!.objectMap,
+                                            missingModules:
+                                                _calculateMissingModules(),
+                                            missingModuleWarnings:
+                                                _getMissingModuleWarnings(),
+                                            showGlacierModuleCompatibilityWarning:
+                                                _showGlacierModuleCompatibilityWarning(),
+                                            showGlacierModuleUnderwaterWarning:
+                                                _showGlacierModuleUnderwaterWarning(),
+                                            showIceAgePlantPuzzleWarning:
+                                                _showIceAgePlantPuzzleWarning(),
+                                            onEditBasicInfo:
+                                                _handleEditBasicInfo,
+                                            onEditModule: _handleEditModule,
+                                            onRemoveModule: _handleRemoveModule,
+                                            onReorderModules:
+                                                _handleReorderModules,
+                                            onNavigateToAddModule:
+                                                _handleNavigateToAddModule,
+                                          );
+                                        case EditorTabType.timeline:
+                                          return WaveTimelineTab(
+                                            levelFile: _ec.state.levelFile!,
+                                            parsed: _ec.state.parsedData!,
+                                            onChanged: _markDirty,
+                                            onEditEvent: _handleEditEvent,
+                                            onAddEvent: _handleAddEvent,
+                                            onEditWaveManagerSettings:
+                                                _handleEditWaveManagerSettings,
+                                            onEditCustomZombie:
+                                                _handleEditCustomZombie,
+                                            onEditCustomFish:
+                                                _handleEditCustomFish,
+                                            onOpenModule: _handleEditModule,
+                                            openWaveSheetNotifier:
+                                                _ec.openWaveSheetNotifier,
+                                            onCreateContainer: () =>
+                                                _handleCreateWaveContainer(),
+                                            onDeleteContainer: () =>
+                                                _handleDeleteWaveContainer(),
+                                          );
+                                        case EditorTabType.waveGenerator:
+                                          return WaveGeneratorTab(
+                                            levelFile: _ec.state.levelFile!,
+                                            parsed: _ec.state.parsedData!,
+                                            onChanged: _markDirty,
+                                            onOpenModule: _handleEditModule,
+                                            onEditWaveGeneratorSettings:
+                                                _handleEditWaveGeneratorSettings,
+                                            onEditWave:
+                                                _handleEditWaveGeneratorWave,
+                                          );
+                                        case EditorTabType.iZombie:
+                                          return IZombieTab(
+                                            levelFile: _ec.state.levelFile!,
+                                            onChanged: _markDirty,
+                                          );
+                                        case EditorTabType.vaseBreaker:
+                                          return VaseBreakerTab(
+                                            levelFile: _ec.state.levelFile!,
+                                            onChanged: _markDirty,
+                                            editorCubit: _ec,
+                                            onAddModule: (objClass) {
+                                              _addModule(
+                                                ModuleRegistry.getMetadata(
+                                                  objClass,
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        case EditorTabType.singleHanded:
+                                          return SingleHandedTab(
+                                            levelFile: _ec.state.levelFile!,
+                                            onChanged: _markDirty,
+                                            onAddModule: (objClass) {
+                                              _addModule(
+                                                ModuleRegistry.getMetadata(
+                                                  objClass,
+                                                ),
+                                              );
+                                            },
+                                            onOpenTutorialModule:
+                                                _openSingleHandedTutorialSettings,
+                                          );
+                                        case EditorTabType.zombossMech:
+                                          return ZombossMechBattleTab(
+                                            key: ValueKey(entry.moduleRtid),
+                                            levelFile: _ec.state.levelFile!,
+                                            onChanged: _markDirty,
+                                            moduleRtid: entry.moduleRtid,
+                                            onOpenGlacierModule:
+                                                _openGlacierModuleSettings,
+                                            onOpenInitialGridItems:
+                                                _openInitialGridItemSettings,
+                                          );
+                                        case EditorTabType.zombossBattle:
+                                          return ZombossBattleTab(
+                                            key: ValueKey(entry.moduleRtid),
+                                            levelFile: _ec.state.levelFile!,
+                                            onChanged: _markDirty,
+                                            onAutoModulesEnsured:
+                                                _ec.refreshParsedData,
+                                            moduleRtid: entry.moduleRtid,
+                                          );
+                                      }
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-        );
-        if (isDesktop) {
-          body = Shortcuts(
-            shortcuts: const {
-              SingleActivator(LogicalKeyboardKey.escape): _EditorEscapeIntent(),
-            },
-            child: Actions(
-              actions: {
-                _EditorEscapeIntent: CallbackAction<_EditorEscapeIntent>(
-                  onInvoke: (_) async {
-                    if (_ec.state.hasChanges) {
-                      final leave = await _confirmLeave();
-                      if (leave && mounted) widget.onBack();
-                    } else {
-                      widget.onBack();
-                    }
-                    return null;
-                  },
-                ),
-              },
-              child: body,
-            ),
           );
-        }
-        return body;
-      },
+          // Desktop Escape is handled globally by _DesktopEscapeHandler in
+          // app.dart. A local Shortcuts binding here used to also fire and
+          // leave the editor in the same keypress after Overview closed.
+          return body;
+        },
+      ),
     );
+  }
+
+  String _rtonErrorMessage(AppLocalizations? l10n, RtonErrorKind kind) {
+    if (l10n == null) return RtonFormatException(kind).message;
+    switch (kind) {
+      case RtonErrorKind.invalidMagic:
+        return l10n.invalidRtonMagic;
+      case RtonErrorKind.invalidVersion:
+        return l10n.invalidRtonVersion;
+      case RtonErrorKind.invalidEnd:
+        return l10n.invalidRtonEnd;
+      case RtonErrorKind.invalidArrayEnd:
+        return l10n.invalidRtonArrayEnd;
+      case RtonErrorKind.invalidRtid:
+        return l10n.invalidRtid;
+      case RtonErrorKind.invalidValueType:
+        return l10n.invalidValueType;
+    }
   }
 }
 
-class _UiScalePresetLabels extends StatelessWidget {
-  const _UiScalePresetLabels({
+class EditorUiScalePresetLabels extends StatelessWidget {
+  const EditorUiScalePresetLabels({
+    super.key,
     required this.currentScale,
     required this.onPresetSelected,
     required this.smallLabel,
@@ -3610,7 +4316,9 @@ class _UiScalePresetLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 12,
+      runSpacing: 4,
       children: [
         _UiScalePresetLabel(
           label: smallLabel,
@@ -3645,6 +4353,95 @@ class _UiScalePresetLabels extends StatelessWidget {
   }
 }
 
+/// Owns its [TextEditingController] so dispose cannot race dialog route teardown.
+/// Uses [Dialog] (not [AlertDialog]) to avoid IntrinsicWidth + LayoutBuilder crashes.
+class _CustomStageAliasPromptDialog extends StatefulWidget {
+  const _CustomStageAliasPromptDialog({required this.initialAlias});
+
+  final String initialAlias;
+
+  @override
+  State<_CustomStageAliasPromptDialog> createState() =>
+      _CustomStageAliasPromptDialogState();
+}
+
+class _CustomStageAliasPromptDialogState
+    extends State<_CustomStageAliasPromptDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialAlias);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.pop(context, _controller.text.trim());
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final available = MediaQuery.sizeOf(context).width - 48;
+    final dialogW = available < 420
+        ? (available < 1 ? 1.0 : available)
+        : 420.0;
+
+    return EscapeClosesModal(
+      child: Dialog(
+        constraints: const BoxConstraints(minWidth: 0),
+        child: SizedBox(
+          width: dialogW,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n?.customStageAliasPromptTitle ?? 'Custom stage alias',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _controller,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: l10n?.customStageAlias ?? 'Stage alias',
+                    border: const OutlineInputBorder(),
+                  ),
+                  onSubmitted: (_) => _submit(),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Wrap(
+                    spacing: 8,
+                    children: [
+                      TextButton(
+                        onPressed: () => safeNavPop(context),
+                        child: Text(l10n?.cancel ?? 'Cancel'),
+                      ),
+                      FilledButton(
+                        onPressed: _submit,
+                        child: Text(l10n?.confirm ?? 'Confirm'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _UiScalePresetLabel extends StatelessWidget {
   const _UiScalePresetLabel({
     required this.label,
@@ -3668,19 +4465,19 @@ class _UiScalePresetLabel extends StatelessWidget {
       fontWeight: isSelected ? FontWeight.bold : null,
     );
 
-    return Expanded(
-      child: Semantics(
-        button: true,
-        selected: isSelected,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(6),
-          onTap: () => onSelected(scale),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Align(
-              alignment: alignment,
-              child: Text(label, overflow: TextOverflow.ellipsis, style: style),
-            ),
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () => onSelected(scale),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Align(
+            alignment: alignment,
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Text(label, style: style),
           ),
         ),
       ),

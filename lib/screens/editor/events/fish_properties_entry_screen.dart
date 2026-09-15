@@ -86,6 +86,8 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => FishSelectionScreen(
+          stateBucketId:
+              'level:${identityHashCode(widget.levelFile)}:fish-selection',
           onFishSelected: (alias) {
             Navigator.pop(context);
             final rtid = FishTypeRepository().buildFishRtid(alias);
@@ -135,37 +137,45 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(ctx).width < 400 ? 16 : 40,
+          vertical: 24,
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(ctx).width < 400 ? 12 : 24,
+        ),
         title: Text(l10n?.selectCustomFish ?? 'Select custom fish'),
         content: SizedBox(
           width: double.maxFinite,
-          child: ListView.separated(
-            shrinkWrap: true,
-            itemCount: options.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
-            itemBuilder: (_, i) {
-              final opt = options[i];
-              final isCurrent = opt.rtid == currentRtid;
-              return ListTile(
-                title: Text(opt.alias),
-                trailing: isCurrent
-                    ? Text(
-                        l10n?.current ?? 'Current',
-                        style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(ctx).colorScheme.primary,
-                        ),
-                      )
-                    : null,
-                onTap: () {
-                  _fishes = List<FishSpawnData>.from(_fishes);
-                  _fishes[index] = FishSpawnData(
-                    type: opt.rtid,
-                    position: fish.position,
-                  );
-                  _sync();
-                  Navigator.pop(ctx);
-                },
-              );
-            },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final opt in options)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: EditorOptionTile(
+                    title: Text(opt.alias),
+                    trailing: opt.rtid == currentRtid
+                        ? Text(
+                            l10n?.current ?? 'Current',
+                            style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(ctx).colorScheme.primary,
+                            ),
+                          )
+                        : null,
+                    onTap: () {
+                      _fishes = List<FishSpawnData>.from(_fishes);
+                      _fishes[index] = FishSpawnData(
+                        type: opt.rtid,
+                        position: fish.position,
+                      );
+                      _sync();
+                      Navigator.pop(ctx);
+                    },
+                  ),
+                ),
+            ],
           ),
         ),
         actions: [
@@ -228,58 +238,59 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      isScrollControlled: true,
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (iconPath != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: AssetImageWidget(
-                      assetPath: iconPath,
-                      altCandidates: imageAltCandidates(iconPath),
-                      width: 36,
-                      height: 36,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                if (iconPath != null) const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _fishDisplayName(fish),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                Row(
+                  children: [
+                    if (iconPath != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: AssetImageWidget(
+                          assetPath: iconPath,
+                          altCandidates: imageAltCandidates(iconPath),
+                          width: 36,
+                          height: 36,
+                          fit: BoxFit.cover,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      if (isCustom)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            '${l10n?.customLabel ?? 'Custom'}: ${RtidParser.parse(fish.type)?.alias ?? fish.type}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                    if (iconPath != null) const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _fishDisplayName(fish),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                    ],
-                  ),
+                          if (isCustom)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                '${l10n?.customLabel ?? 'Custom'}: ${RtidParser.parse(fish.type)?.alias ?? fish.type}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
+                const SizedBox(height: 16),
+                _fishActionRow([
+                  OutlinedButton.icon(
                     onPressed: () {
                       _copyFish(fish);
                       Navigator.pop(ctx);
@@ -287,10 +298,7 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                     icon: const Icon(Icons.copy),
                     label: Text(l10n?.copy ?? 'Copy'),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: FilledButton.icon(
+                  FilledButton.icon(
                     style: FilledButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ),
@@ -301,25 +309,22 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                     icon: const Icon(Icons.delete),
                     label: Text(l10n?.delete ?? 'Delete'),
                   ),
-                ),
-              ],
-            ),
-            if (canSwitchCustom || canEditCustom || canMakeCustom) ...[
-              const SizedBox(height: 8),
-              Builder(
-                builder: (ctx) {
-                  final isDark = Theme.of(ctx).brightness == Brightness.dark;
-                  final primaryBlue = isDark
-                      ? const Color(0xFF1976D2)
-                      : const Color(0xFF42A5F5);
-                  final secondaryBlue = isDark
-                      ? const Color(0xFF1565C0)
-                      : const Color(0xFF64B5F6);
-                  return Row(
-                    children: [
-                      if (canSwitchCustom)
-                        Expanded(
-                          child: OutlinedButton.icon(
+                ]),
+                if (canSwitchCustom || canEditCustom || canMakeCustom) ...[
+                  const SizedBox(height: 8),
+                  Builder(
+                    builder: (ctx) {
+                      final isDark =
+                          Theme.of(ctx).brightness == Brightness.dark;
+                      final primaryBlue = isDark
+                          ? const Color(0xFF1976D2)
+                          : const Color(0xFF42A5F5);
+                      final secondaryBlue = isDark
+                          ? const Color(0xFF1565C0)
+                          : const Color(0xFF64B5F6);
+                      return _fishActionRow([
+                        if (canSwitchCustom)
+                          OutlinedButton.icon(
                             onPressed: () {
                               Navigator.pop(ctx);
                               _showCustomFishSwapDialog(
@@ -338,12 +343,8 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                               '${l10n?.switchCustomFish ?? 'Switch'} (${compatibleCustom.length})',
                             ),
                           ),
-                        ),
-                      if (canSwitchCustom && (canEditCustom || canMakeCustom))
-                        const SizedBox(width: 8),
-                      if (canEditCustom)
-                        Expanded(
-                          child: FilledButton.icon(
+                        if (canEditCustom)
+                          FilledButton.icon(
                             onPressed: () {
                               Navigator.pop(ctx);
                               widget.onEditCustomFish!(fish.type);
@@ -356,11 +357,9 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                               l10n?.editCustomFishProperties ??
                                   'Edit properties',
                             ),
-                          ),
-                        )
-                      else if (canMakeCustom)
-                        Expanded(
-                          child: FilledButton.icon(
+                          )
+                        else if (canMakeCustom)
+                          FilledButton.icon(
                             onPressed: () {
                               final newRtid = widget.onInjectCustomFish!(
                                 baseType,
@@ -383,15 +382,45 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                               l10n?.makeFishAsCustom ?? 'Make custom',
                             ),
                           ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ],
-          ],
+                      ]);
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _fishActionRow(List<Widget> buttons) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = (MediaQuery.textScalerOf(context).scale(14) / 14).clamp(
+          1.0,
+          2.0,
+        );
+        if (constraints.maxWidth < 520 * scale) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < buttons.length; i++) ...[
+                if (i > 0) const SizedBox(height: 8),
+                buttons[i],
+              ],
+            ],
+          );
+        }
+        return Row(
+          children: [
+            for (var i = 0; i < buttons.length; i++) ...[
+              if (i > 0) const SizedBox(width: 8),
+              Expanded(child: buttons[i]),
+            ],
+          ],
+        );
+      },
     );
   }
 
@@ -436,6 +465,7 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.fishPropertiesGrid ?? 'Fish placement',
               sections: [
                 HelpSectionData(
@@ -466,7 +496,10 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           l10n?.fishSelectedPosition ?? 'Selected:',
@@ -474,7 +507,6 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Text(
                           '${l10n?.fishRow ?? "Row"}=$_selectedRow, ${l10n?.fishColumn ?? "Column"}=$_selectedCol',
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -536,10 +568,7 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                                                 cellFishes.isNotEmpty &&
                                                     first != null
                                                 ? LayoutBuilder(
-                                                    builder: (
-                                                      context,
-                                                      constraints,
-                                                    ) {
+                                                    builder: (context, constraints) {
                                                       return Stack(
                                                         fit: StackFit.expand,
                                                         children: [
@@ -638,11 +667,15 @@ class _FishPropertiesEntryScreenState extends State<FishPropertiesEntryScreen> {
                     size: 20,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    l10n?.outsideLawnItems ?? 'Objects outside the lawn',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.error,
+                  Expanded(
+                    child: Text(
+                      l10n?.outsideLawnItems ?? 'Objects outside the lawn',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.error,
+                      ),
                     ),
                   ),
                 ],

@@ -112,6 +112,7 @@ class _StartingPlantfoodModuleScreenState
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title:
                     l10n?.startingPlantfoodHelpTitle ??
                     'Starting Plantfood Module',

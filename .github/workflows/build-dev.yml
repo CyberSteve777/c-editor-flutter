@@ -2,9 +2,9 @@ name: Build dev (Windows, Linux, Android)
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   pull_request:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   workflow_dispatch:
 
 concurrency:
@@ -12,13 +12,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FLUTTER_VERSION: stable
+  FLUTTER_VERSION: "3.44.0"
   ARTIFACT_CHANNEL: dev
 
 jobs:
   build-windows:
     name: Windows x64
     runs-on: windows-latest
+    env:
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
     steps:
       - uses: actions/checkout@v7
 
@@ -38,14 +40,19 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - run: flutter pub get
       - name: Build Windows release
+        shell: pwsh
         env:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
-        run: flutter build windows --release
+        run: |
+          $dartDefines = & .github/scripts/flutter-dart-defines.ps1
+          # Plugin system + flutter_eval construct IconData at runtime.
+          flutter build windows --release $dartDefines --no-tree-shake-icons
 
       - name: Package Windows portable
         shell: pwsh
@@ -56,9 +63,7 @@ jobs:
           $bundleDir = "dist/portable/c_editor"
           New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
           Copy-Item -Path "build/windows/x64/runner/Release/*" -Destination $bundleDir -Recurse -Force
-          $zipPath = "dist/$baseName.zip"
-          Compress-Archive -Path $bundleDir -DestinationPath $zipPath -Force
-          echo "ARTIFACT_PATH=$zipPath" >> $env:GITHUB_ENV
+          echo "ARTIFACT_PATH=dist/portable" >> $env:GITHUB_ENV
           echo "ARTIFACT_NAME=$baseName" >> $env:GITHUB_ENV
 
       - name: Install ImageMagick
@@ -149,6 +154,8 @@ jobs:
   build-linux:
     name: Linux x64
     runs-on: ubuntu-latest
+    env:
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
     steps:
       - uses: actions/checkout@v7
 
@@ -161,7 +168,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev \
-            libstdc++-14-dev zip
+            libstdc++-14-dev
           sudo ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6 \
             /usr/lib/x86_64-linux-gnu/libstdc++.so
 
@@ -176,42 +183,69 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - run: flutter pub get
-      - run: flutter build linux --release
+      # Plugin system + flutter_eval construct IconData at runtime.
+      - run: flutter build linux --release $(bash .github/scripts/flutter-dart-defines.sh) --no-tree-shake-icons
 
-      - name: Build AppImage
-        uses: AppImageCrafters/build-appimage@v1.3
-        env:
-          PATH: /opt/appimagetool.AppDir/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - name: Prepare Linux package root
+        run: bash .github/scripts/prepare-linux-package-root.sh
+
+      - name: Build Linux .deb
+        id: deb_build
+        uses: jiro4989/build-deb-action@v4
         with:
-          recipe: linux/AppImageBuilder.yml
-          args: --skip-test
+          package: c-editor
+          package_root: .linux-pkg-root
+          maintainer: team.international2c
+          version: ${{ steps.release.outputs.version }}
+          depends: libgtk-3-0, libblkid1, liblzma5
+          section: utils
+          priority: optional
+          desc: Level Editor for Plants vs. Zombies 2 Chinese
+          homepage: https://github.com/CyberSteve777/c-editor-flutter
 
-      - name: Package Linux AppImage
+      - name: Stage Linux .deb
+        id: deb
+        run: bash .github/scripts/stage-linux-package-artifact.sh dev linux-deb "${{ steps.deb_build.outputs.file_name }}"
+
+      - name: Load RPM postinstall script
+        id: rpm_post
         run: |
-          BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-executable dev)"
-          APPIMAGE="$(find . -maxdepth 1 -name '*.AppImage' -type f | head -1)"
-          if [ -z "$APPIMAGE" ]; then
-            echo "AppImage not found in workspace root."
-            ls -la
-            exit 1
-          fi
-          mkdir -p dist
-          cp "$APPIMAGE" "dist/${BASE_NAME}.AppImage"
-          chmod +x "dist/${BASE_NAME}.AppImage"
-          echo "APPIMAGE_PATH=dist/${BASE_NAME}.AppImage" >> "$GITHUB_ENV"
-          echo "APPIMAGE_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
+          delimiter="$(openssl rand -hex 16)"
+          echo "script<<${delimiter}" >> "$GITHUB_OUTPUT"
+          cat linux/packaging/postinstall.sh >> "$GITHUB_OUTPUT"
+          echo "${delimiter}" >> "$GITHUB_OUTPUT"
+
+      - name: Build Linux .rpm
+        id: rpm_build
+        uses: jiro4989/build-rpm-action@v2
+        with:
+          summary: Level Editor for Plants vs. Zombies 2 Chinese
+          package: c-editor
+          package_root: .linux-pkg-root
+          maintainer: team.international2c
+          vendor: team.international2c
+          version: ${{ steps.release.outputs.version }}
+          arch: x86_64
+          desc: Level Editor for Plants vs. Zombies 2 Chinese
+          license: MIT
+          requires: gtk3, liblzma
+          post: ${{ steps.rpm_post.outputs.script }}
+
+      - name: Stage Linux .rpm
+        id: rpm
+        run: bash .github/scripts/stage-linux-package-artifact.sh dev linux-rpm "${{ steps.rpm_build.outputs.file_name }}"
 
       - name: Package Linux portable
         run: |
           BASE_NAME="$(bash .github/scripts/artifact-name.sh linux-portable dev)"
           mkdir -p "dist/portable/c_editor"
           cp -a build/linux/x64/release/bundle/. "dist/portable/c_editor/"
-          (cd dist/portable && zip -r "../${BASE_NAME}.zip" c_editor)
-          echo "ARTIFACT_PATH=dist/${BASE_NAME}.zip" >> "$GITHUB_ENV"
+          echo "ARTIFACT_PATH=dist/portable" >> "$GITHUB_ENV"
           echo "ARTIFACT_NAME=${BASE_NAME}" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v7
@@ -222,20 +256,21 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.APPIMAGE_NAME }}
-          path: ${{ env.APPIMAGE_PATH }}
+          name: ${{ steps.deb.outputs.name }}
+          path: ${{ steps.deb.outputs.path }}
           if-no-files-found: error
 
-      - name: Clean up AppImage builder outputs
-        if: always()
-        run: |
-          sudo rm -rf AppDir .bundle.yml
-          sudo find . -maxdepth 1 -name '*.AppImage' -exec rm -f {} +
-          sudo chown -R "$(id -u):$(id -g)" "${{ github.workspace }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.rpm.outputs.name }}
+          path: ${{ steps.rpm.outputs.path }}
+          if-no-files-found: error
 
   build-android:
     name: Android APK (signed)
     runs-on: ubuntu-latest
+    env:
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@v7
@@ -270,7 +305,8 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Decode release keystore
@@ -291,7 +327,8 @@ jobs:
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
-        run: flutter build apk --release
+        # Plugin system + flutter_eval construct IconData at runtime.
+        run: flutter build apk --release $(bash .github/scripts/flutter-dart-defines.sh) --no-tree-shake-icons
 
       - name: Stage APK artifact
         run: |

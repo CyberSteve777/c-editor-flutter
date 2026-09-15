@@ -35,16 +35,6 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
   late TextEditingController _swallowDurationCtrl;
   late TextEditingController _poisonTriggerCountCtrl;
 
-  int get _gridRows {
-    final (rows, _) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
-    return rows;
-  }
-
-  int get _gridCols {
-    final (_, cols) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
-    return cols;
-  }
-
   bool get _isDeepSea => LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
 
   @override
@@ -108,7 +98,6 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -145,6 +134,7 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -169,7 +159,7 @@ class _SpermWhaleModuleScreenState extends State<SpermWhaleModuleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -238,18 +228,19 @@ ModuleAliasInputField(
               },
             ),
             const SizedBox(height: 12),
-            Tooltip(
-              message:
+            _externalLabelField(
+              context,
+              label:
+                  l10n?.spermWhaleModulePoisonTriggerCount ??
+                  'Poison trigger count (PoisonTriggerCount)',
+              tooltip:
                   l10n?.spermWhaleModuleHelpPoisonTriggerCount ??
                   'How many times the pufferfish poison debuff must stack before switching to poison swallow timing.',
-              child: TextField(
+              field: TextField(
                 controller: _poisonTriggerCountCtrl,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText:
-                      l10n?.spermWhaleModulePoisonTriggerCount ??
-                      'Poison trigger count (PoisonTriggerCount)',
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
                 ),
                 onChanged: (v) {
                   final n = int.tryParse(v);
@@ -261,56 +252,6 @@ ModuleAliasInputField(
               ),
             ),
             const SizedBox(height: 24),
-            Text(
-              l10n?.spermWhaleModuleLawnPreview ??
-                  'Lawn grid (for layout reference)',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n?.spermWhaleModuleLawnPreviewHint ??
-                  'Row/column count follows the level stage (Deep Sea: 6×10).',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 12),
-            scaleTableForDesktop(
-              context: context,
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: AspectRatio(
-                  aspectRatio: _gridCols / _gridRows,
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: _gridCols,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: _gridCols * _gridRows,
-                    itemBuilder: (context, i) {
-                      final col = i % _gridCols;
-                      final row = i ~/ _gridCols;
-                      final stripe = (col + row).isEven;
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: stripe
-                              ? theme.colorScheme.primaryContainer.withValues(
-                                  alpha: 0.35,
-                                )
-                              : theme.colorScheme.surfaceContainerHighest,
-                          border: Border.all(
-                            color: theme.colorScheme.outlineVariant,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -324,21 +265,45 @@ ModuleAliasInputField(
     required TextEditingController controller,
     required void Function(double v) onValid,
   }) {
-    return Tooltip(
-      message: tooltip,
-      child: TextField(
+    return _externalLabelField(
+      context,
+      label: label,
+      tooltip: tooltip,
+      field: TextField(
         controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
+        decoration: const InputDecoration(border: OutlineInputBorder()),
         onChanged: (v) {
           final n = double.tryParse(v);
           if (n != null && n >= 0) {
             onValid(n);
           }
         },
+      ),
+    );
+  }
+
+  Widget _externalLabelField(
+    BuildContext context, {
+    required String label,
+    required String tooltip,
+    required Widget field,
+  }) {
+    final theme = Theme.of(context);
+    return Tooltip(
+      message: tooltip,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          field,
+        ],
       ),
     );
   }

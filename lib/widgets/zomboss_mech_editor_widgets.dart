@@ -1,17 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/models/zomboss_custom_action_preset.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
+import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 import 'package:c_editor/data/zomboss_mech_l10n.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 
 /// Accent for custom zomboss mech editor (matches boss / custom tooling).
 Color zombossMechAccent(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   return isDark ? pvzPurpleDark : pvzPurpleLight;
+}
+
+InputDecoration zombossMechInputDecoration(
+  BuildContext context, {
+  String? labelText,
+  String? hintText,
+  bool isFocused = false,
+}) {
+  return editorInputDecoration(
+    context,
+    labelText: labelText,
+    hintText: hintText,
+    focusColor: zombossMechAccent(context),
+    isFocused: isFocused,
+  );
+}
+
+/// Theme for inputs/switches inside zomboss mech editors (purple accent).
+ThemeData zombossMechInputTheme(BuildContext context) {
+  final theme = Theme.of(context);
+  final accent = zombossMechAccent(context);
+  return theme.copyWith(
+    colorScheme: theme.colorScheme.copyWith(primary: accent),
+    inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: accent, width: 2),
+      ),
+      floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
+        if (states.contains(WidgetState.focused)) {
+          return TextStyle(color: accent);
+        }
+        return TextStyle(color: theme.colorScheme.onSurface);
+      }),
+      focusColor: accent,
+    ),
+    textSelectionTheme: theme.textSelectionTheme.copyWith(
+      cursorColor: accent,
+      selectionHandleColor: accent,
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return accent;
+        return null;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return accent.withValues(alpha: 0.5);
+        }
+        return null;
+      }),
+    ),
+  );
 }
 
 Color zombossMechActionTagColor(String tag, BuildContext context) {
@@ -24,6 +81,29 @@ Color zombossMechActionTagColor(String tag, BuildContext context) {
     'retreat' => isDark ? const Color(0xFFB0BEC5) : const Color(0xFF546E7A),
     _ => isDark ? const Color(0xFF90A4AE) : const Color(0xFF455A64),
   };
+}
+
+Widget? customActionOriginBadge({
+  required BuildContext context,
+  required PvzLevelFile levelFile,
+  required String rtid,
+}) {
+  if (!ZombossMechActionUtils.isCustomRtid(rtid)) return null;
+  final origin = ZombossCustomActionPresetRepository.originForRtid(
+    levelFile,
+    rtid,
+  );
+  final color = switch (origin) {
+    ZombossCustomActionOrigin.presetTemplate => presetCustomResourceBadgeColor(
+      context,
+    ),
+    ZombossCustomActionOrigin.presetDerived =>
+      presetDerivedCustomResourceBadgeColor(context),
+    ZombossCustomActionOrigin.userCreated => userCustomResourceBadgeColor(
+      context,
+    ),
+  };
+  return CustomResourceBadge(color: color);
 }
 
 TextStyle zombossMechActionTitleStyle(BuildContext context) {
@@ -171,9 +251,10 @@ class ZombossMechActionListTile extends StatelessWidget {
     required this.levelFile,
     required this.rtid,
     required this.tag,
-    required this.reorderIndex,
-    required this.onRemove,
+    this.reorderIndex,
+    this.onRemove,
     this.onEdit,
+    this.onInspect,
   });
 
   final String mechId;
@@ -181,12 +262,18 @@ class ZombossMechActionListTile extends StatelessWidget {
   final PvzLevelFile levelFile;
   final String rtid;
   final String tag;
-  final int reorderIndex;
-  final VoidCallback onRemove;
+  final int? reorderIndex;
+  final VoidCallback? onRemove;
   final VoidCallback? onEdit;
+  final VoidCallback? onInspect;
 
   @override
   Widget build(BuildContext context) {
+    final leading = customActionOriginBadge(
+      context: context,
+      levelFile: levelFile,
+      rtid: rtid,
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: ZombossMechActionRow(
@@ -200,7 +287,9 @@ class ZombossMechActionListTile extends StatelessWidget {
         tag: tag,
         onRemove: onRemove,
         onEdit: onEdit,
+        onInspect: onInspect,
         reorderIndex: reorderIndex,
+        leading: leading,
       ),
     );
   }
@@ -215,8 +304,9 @@ class ZombossMechRetreatActionTile extends StatelessWidget {
     required this.levelFile,
     required this.rtid,
     required this.tag,
-    required this.onSwap,
+    this.onSwap,
     this.onEdit,
+    this.onInspect,
   });
 
   final String mechId;
@@ -224,12 +314,18 @@ class ZombossMechRetreatActionTile extends StatelessWidget {
   final PvzLevelFile levelFile;
   final String rtid;
   final String tag;
-  final VoidCallback onSwap;
+  final VoidCallback? onSwap;
   final VoidCallback? onEdit;
+  final VoidCallback? onInspect;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final leading = customActionOriginBadge(
+      context: context,
+      levelFile: levelFile,
+      rtid: rtid,
+    );
     return ZombossMechActionRow(
       label: ZombossMechL10n.labelForStageRtid(
         context: context,
@@ -239,15 +335,20 @@ class ZombossMechRetreatActionTile extends StatelessWidget {
         rtid: rtid,
       ),
       tag: tag,
-      onRemove: () {},
+      onRemove: null,
       onEdit: onEdit,
+      onInspect: onInspect,
+      leading: leading,
       showRemoveButton: false,
-      trailing: IconButton(
-        visualDensity: VisualDensity.compact,
-        icon: const Icon(Icons.swap_horiz, size: 22),
-        tooltip: l10n?.zombossMechEditRetreatAction ?? 'Choose retreat action',
-        onPressed: onSwap,
-      ),
+      trailing: onSwap == null
+          ? null
+          : IconButton(
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.swap_horiz, size: 22),
+              tooltip:
+                  l10n?.zombossMechEditRetreatAction ?? 'Choose retreat action',
+              onPressed: onSwap,
+            ),
     );
   }
 }
@@ -258,22 +359,26 @@ class ZombossMechActionRow extends StatelessWidget {
     super.key,
     required this.label,
     required this.tag,
-    required this.onRemove,
+    this.onRemove,
     this.onEdit,
+    this.onInspect,
     this.reorderIndex,
     this.showRemoveButton = true,
     this.trailing,
     this.mutedLabel = false,
+    this.leading,
   });
 
   final String label;
   final String tag;
-  final VoidCallback onRemove;
+  final VoidCallback? onRemove;
   final VoidCallback? onEdit;
+  final VoidCallback? onInspect;
   final int? reorderIndex;
   final bool showRemoveButton;
   final Widget? trailing;
   final bool mutedLabel;
+  final Widget? leading;
 
   static const _controlHeight = 52.0;
 
@@ -306,6 +411,11 @@ class ZombossMechActionRow extends StatelessWidget {
               ),
             ),
             if (reorderIndex != null) _buildReorderHandle(accent, compact),
+            if (leading != null)
+              Padding(
+                padding: EdgeInsets.only(left: compact ? 6 : 8),
+                child: leading!,
+              ),
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -343,9 +453,21 @@ class ZombossMechActionRow extends StatelessWidget {
                       tooltip: l10n?.edit ?? 'Edit',
                       onPressed: onEdit,
                     ),
+                  if (onEdit == null && onInspect != null)
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: compact ? EdgeInsets.zero : null,
+                      constraints: compact
+                          ? const BoxConstraints(minWidth: 36, minHeight: 36)
+                          : null,
+                      icon: const Icon(Icons.info_outline, size: 22),
+                      tooltip:
+                          l10n?.zombossMechActionDetails ?? 'Action Details',
+                      onPressed: onInspect,
+                    ),
                   if (trailing != null)
                     Center(child: trailing)
-                  else if (showRemoveButton)
+                  else if (showRemoveButton && onRemove != null)
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       padding: compact ? EdgeInsets.zero : null,

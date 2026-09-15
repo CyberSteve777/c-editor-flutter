@@ -1,0 +1,72 @@
+{
+  "@@locale": "zh",
+  "pluginName": "关卡测试包",
+  "pluginDescription": "将自制关卡导入游戏数据包，以便在游戏内进行测试；\n若工作区内未找到数据包 (.rsb.smf) 文件，也可直接从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf",
+  "levelTestingMod": "关卡测试包",
+  "dynamicOfferTitle": "要下载数据包吗？",
+  "dynamicOfferBody": "工作区中未找到 .rsb.smf 文件。\n\n是否从 Archiver2c/pvz2c-dynamic 的 GitHub Releases 下载 dynamic.rsb.smf？",
+  "dynamicOfferYes": "选择版本",
+  "dynamicOfferNo": "暂不",
+  "dynamicSelectTitle": "选择 dynamic 版本",
+  "dynamicLatestBadge": "最新",
+  "dynamicEmpty": "未找到包含 .rsb.smf 的GitHub Releases。",
+  "dynamicDownloadTitle": "正在下载 dynamic",
+  "dynamicDownloading": "下载中…",
+  "dynamicDownloadDone": "已保存到 {path}",
+  "@dynamicDownloadDone": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "dynamicFetchError": "下载失败：{error}",
+  "@dynamicFetchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "dynamicCancelTitle": "取消下载？",
+  "dynamicCancelBody": "停止下载并删除未完成的文件？",
+  "dynamicCancelConfirm": "取消下载",
+  "dynamicCancelKeep": "继续下载",
+  "dynamicCanceling": "正在取消…",
+  "dynamicCanceled": "下载已取消。",
+  "dynamicNoConnection": "无网络连接。请检查网络后重试。",
+  "dynamicConnectionLost": "下载过程中连接中断，请重试。",
+  "dynamicServerError": "服务器错误（{code}）。请稍后再试。",
+  "@dynamicServerError": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "dynamicRetry": "重试",
+  "dynamicExistsTitle": "文件已存在",
+  "dynamicExistsBody": "工作区中已有 “{name}”。\n\n要覆盖它，还是另存为其他名称？",
+  "@dynamicExistsBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicExistsOverwrite": "覆盖",
+  "dynamicExistsRename": "其他名称…",
+  "dynamicRenameTitle": "另存为",
+  "dynamicRenameHint": "文件名",
+  "dynamicRenameConfirm": "保存",
+  "dynamicRenameInvalid": "请输入有效的文件名。",
+  "dynamicRenameExists": "该文件已存在，请换一个名称。",
+  "dynamicWebImportTitle": "导入 dynamic",
+  "dynamicWebImportBody": "1. 让浏览器下载完成 {asset}{size}。\n2. 点击“选择文件”并选中刚下载的文件，将其作为 {name} 添加到工作区。",
+  "@dynamicWebImportBody": {
+    "placeholders": {
+      "asset": { "type": "String" },
+      "size": { "type": "String" },
+      "name": { "type": "String" }
+    }
+  },
+  "dynamicWebOpen": "打开下载",
+  "dynamicWebOpenAgain": "重新打开链接",
+  "dynamicWebOpenFailed": "无法打开下载链接。请从GitHub Releases页面复制链接，或重试。",
+  "dynamicWebPick": "选择文件",
+  "dynamicWebPickTitle": "选择已下载的 dynamic.rsb.smf",
+  "dynamicWebPickEmpty": "无法读取所选文件。请重试。",
+  "dynamicWebImportFailed": "无法将文件保存到工作区。"
+}

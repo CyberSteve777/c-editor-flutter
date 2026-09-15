@@ -148,6 +148,7 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventDinoTread ?? 'Dino tread event',
               sections: [
                 HelpSectionData(
@@ -187,10 +188,14 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
                         children: [
                           Icon(Icons.pets, color: dinoColor),
                           const SizedBox(width: 8),
-                          Text(
-                            l10n?.positionAndArea ?? 'Position & area',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              l10n?.positionAndArea ?? 'Position & area',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -268,28 +273,31 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.timeInterval.toString(),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.dinoTreadTimeIntervalLabel ??
+                            'Time interval [TimeInterval]',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.dinoTreadTimeIntervalLabel ??
-                              'Time interval [TimeInterval]',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = DinoTreadActionPropsData(
-                              gridY: _data.gridY,
-                              gridXMin: _data.gridXMin,
-                              gridXMax: _data.gridXMax,
-                              timeInterval: n,
-                              waveStartMessage: _data.waveStartMessage,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.timeInterval.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = DinoTreadActionPropsData(
+                                gridY: _data.gridY,
+                                gridXMin: _data.gridXMin,
+                                gridXMax: _data.gridXMax,
+                                timeInterval: n,
+                                waveStartMessage: _data.waveStartMessage,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -347,18 +355,21 @@ class _DinoTreadEventScreenState extends State<DinoTreadEventScreen> {
     required int max,
     required ValueChanged<int> onChanged,
   }) {
-    return TextFormField(
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         isDense: true,
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (v) {
-        final n = int.tryParse(v);
-        if (n != null && n >= 0 && n <= max) onChanged(n);
-      },
+      builder: (context, decoration) => TextFormField(
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (v) {
+          final n = int.tryParse(v);
+          if (n != null && n >= 0 && n <= max) onChanged(n);
+        },
+      ),
     );
   }
 }

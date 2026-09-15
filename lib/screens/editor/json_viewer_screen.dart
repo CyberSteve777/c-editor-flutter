@@ -5,11 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/data/unused_level_object_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/utils/json_viewer_search.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show EditorPopupMenuTile;
 import 'package:c_editor/widgets/json_viewer_search_bar.dart';
 
 const _fontSizeKey = 'json_viewer_font_size';
@@ -30,6 +32,89 @@ double? _cachedFontSize;
 
 enum _JsonViewMode { rawText, structured }
 
+class _JsonEditController extends TextEditingController {
+  List<JsonViewerTextMatch> _searchMatches = const [];
+  int _activeMatchIndex = 0;
+  Color _highlightColor = const Color(0xFFFFF59D);
+  Color _highlightTextColor = const Color(0xFF1B1B1B);
+  Color _activeHighlightColor = const Color(0xFFFFC107);
+  Color _activeHighlightTextColor = const Color(0xFF1B1B1B);
+
+  void setHighlightColors({
+    required Color highlightColor,
+    required Color highlightTextColor,
+    required Color activeHighlightColor,
+    required Color activeHighlightTextColor,
+  }) {
+    _highlightColor = highlightColor;
+    _highlightTextColor = highlightTextColor;
+    _activeHighlightColor = activeHighlightColor;
+    _activeHighlightTextColor = activeHighlightTextColor;
+  }
+
+  void showSearchMatches(
+    List<JsonViewerTextMatch> matches,
+    int activeMatchIndex,
+  ) {
+    _searchMatches = List.unmodifiable(matches);
+    _activeMatchIndex = activeMatchIndex;
+    notifyListeners();
+  }
+
+  void clearSearchMatches() {
+    if (_searchMatches.isEmpty) return;
+    _searchMatches = const [];
+    _activeMatchIndex = 0;
+    notifyListeners();
+  }
+
+  @override
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
+    if (_searchMatches.isEmpty ||
+        text.isEmpty ||
+        (withComposing &&
+            value.composing.isValid &&
+            !value.composing.isCollapsed)) {
+      return super.buildTextSpan(
+        context: context,
+        style: style,
+        withComposing: withComposing,
+      );
+    }
+
+    final baseStyle = style ?? const TextStyle();
+    final activeMatch =
+        _activeMatchIndex >= 0 && _activeMatchIndex < _searchMatches.length
+        ? _searchMatches[_activeMatchIndex]
+        : null;
+    return TextSpan(
+      style: baseStyle,
+      children: buildHighlightedTextSpans(
+        text: text,
+        segmentStartInLine: 0,
+        segmentEndInLine: text.length,
+        baseStyle: baseStyle,
+        highlightStyle: baseStyle.copyWith(
+          color: _highlightTextColor,
+          backgroundColor: _highlightColor,
+        ),
+        activeHighlightStyle: baseStyle.copyWith(
+          color: _activeHighlightTextColor,
+          backgroundColor: _activeHighlightColor,
+          fontWeight: FontWeight.w600,
+        ),
+        lineMatches: _searchMatches,
+        activeMatch: activeMatch,
+        lineStartOffset: 0,
+      ),
+    );
+  }
+}
+
 /// JSON code viewer. Ported from Z-Editor-master JsonCodeViewerScreen.kt
 /// Includes font size slider, edit/save, and scrollbar.
 class JsonViewerScreen extends StatefulWidget {
@@ -40,6 +125,7 @@ class JsonViewerScreen extends StatefulWidget {
     required this.levelFile,
     required this.onBack,
     this.onSaved,
+    this.saveLevel,
   });
 
   final String fileName;
@@ -47,6 +133,8 @@ class JsonViewerScreen extends StatefulWidget {
   final PvzLevelFile levelFile;
   final VoidCallback onBack;
   final VoidCallback? onSaved;
+  final Future<void> Function(String filePath, PvzLevelFile levelFile)?
+  saveLevel;
 
   @override
   State<JsonViewerScreen> createState() => _JsonViewerScreenState();
@@ -56,7 +144,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   double _fontSize = _cachedFontSize ?? 12;
   final _verticalController = ScrollController();
   bool _isEditing = false;
-  final _editController = TextEditingController();
+  final _editController = _JsonEditController();
   final _searchController = TextEditingController();
   final _replaceController = TextEditingController();
   String? _syntaxError;
@@ -76,11 +164,20 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   final Map<int, List<JsonViewerTextMatch>> _objectMatches = {};
   double? _pinchBaseFontSize;
 
+  // Cache for gutter rows derived from the rendered document layout.
+  double _lastWidth = 0;
+  double _lastFontSize = 0;
+  int? _lastContentSignature;
+  _GutterLayout? _cachedGutterLayout;
+  int? _selectionPointer;
+  double? _selectionPointerScrollOffset;
+
   @override
   void initState() {
     super.initState();
     _loadFontSize();
     _loadSearchHistories();
+    _pushEscapeHandler();
   }
 
   JsonViewerSearchOptions get _searchOptions => JsonViewerSearchOptions(
@@ -178,7 +275,26 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
 
   String _rawPrettyText() => _jsonEncoder.convert(widget.levelFile.toJson());
 
-  Future<void> _copyTextToClipboard(String text, {required String successMessage}) async {
+  void _invalidateRenderedJson() {
+    _cachedGutterLayout = null;
+    _lastWidth = 0;
+    _lastFontSize = 0;
+    _lastContentSignature = null;
+    _jsonStringCache.clear();
+  }
+
+  double _jsonContentWidth({
+    required double rowWidth,
+    required double gutterW,
+    required double gutterTextGap,
+  }) {
+    return (rowWidth - gutterW - gutterTextGap).clamp(32.0, double.maxFinite);
+  }
+
+  Future<void> _copyTextToClipboard(
+    String text, {
+    required String successMessage,
+  }) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
     AppMessage.show(context, successMessage, icon: Icons.check_circle);
@@ -210,6 +326,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         _currentMatchIndex = 0;
         _regexError = false;
       });
+      _editController.clearSearchMatches();
       return;
     }
 
@@ -222,6 +339,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         _currentMatchIndex = 0;
         _regexError = true;
       });
+      _editController.clearSearchMatches();
       return;
     }
 
@@ -257,6 +375,8 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     });
     if (matches.isNotEmpty) {
       _goToMatch(0);
+    } else {
+      _editController.clearSearchMatches();
     }
   }
 
@@ -267,6 +387,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     final match = _matches[safeIndex];
 
     if (_isEditing) {
+      _editController.showSearchMatches(_matches, safeIndex);
       _editController.selection = TextSelection(
         baseOffset: match.start,
         extentOffset: match.end,
@@ -301,6 +422,80 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     );
   }
 
+  double? _currentScrollOffset() {
+    if (!_verticalController.hasClients) return null;
+    return _verticalController.offset;
+  }
+
+  void _restoreScrollOffsetAfterFrame(
+    double offset, {
+    bool repeatNextFrame = false,
+  }) {
+    void restore() {
+      if (!mounted || !_verticalController.hasClients) return;
+      final position = _verticalController.position;
+      final target = offset
+          .clamp(position.minScrollExtent, position.maxScrollExtent)
+          .toDouble();
+      if ((position.pixels - target).abs() > 0.5) {
+        position.jumpTo(target);
+      }
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      restore();
+      if (repeatNextFrame) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => restore());
+      }
+    });
+  }
+
+  void _handleReadViewPointerDown(PointerDownEvent event) {
+    if ((event.buttons & (kPrimaryButton | kSecondaryButton)) == 0) return;
+    final offset = _currentScrollOffset();
+    if (offset == null) return;
+    _selectionPointer = event.pointer;
+    _selectionPointerScrollOffset = offset;
+  }
+
+  void _finishReadViewSelectionPointer(PointerEvent event) {
+    if (_selectionPointer != event.pointer) return;
+    final offset = _selectionPointerScrollOffset;
+    _selectionPointer = null;
+    _selectionPointerScrollOffset = null;
+    if (offset != null) {
+      _restoreScrollOffsetAfterFrame(offset, repeatNextFrame: true);
+    }
+  }
+
+  Widget _buildReadSelectionContextMenu(
+    BuildContext context,
+    SelectableRegionState regionState,
+  ) {
+    final items = regionState.contextMenuButtonItems
+        .map((item) {
+          if (item.type != ContextMenuButtonType.selectAll ||
+              item.onPressed == null) {
+            return item;
+          }
+          return item.copyWith(
+            onPressed: () {
+              final offset = _currentScrollOffset();
+              item.onPressed!();
+              if (offset != null) {
+                _restoreScrollOffsetAfterFrame(offset, repeatNextFrame: true);
+              }
+            },
+          );
+        })
+        .toList(growable: false);
+    if (items.isEmpty) return const SizedBox.shrink();
+    return AdaptiveTextSelectionToolbar.buttonItems(
+      anchors: regionState.contextMenuAnchors,
+      buttonItems: items,
+    );
+  }
+
   void _onPreviousMatch() {
     if (_matches.isEmpty) return;
     final next = (_currentMatchIndex - 1 + _matches.length) % _matches.length;
@@ -322,7 +517,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       match,
       replacement,
     );
-    _editController.text = next;
+    _applyReplacementText(
+      next,
+      preferredCaretOffset: match.start + replacement.length,
+    );
     _pushHistory(_replaceHistoryKey, replacement, _replaceHistory);
     _runSearch();
   }
@@ -336,9 +534,23 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       replacement,
       _searchOptions,
     );
-    _editController.text = next;
+    final previousSelection = _editController.selection;
+    _applyReplacementText(
+      next,
+      preferredCaretOffset: previousSelection.isValid
+          ? previousSelection.extentOffset
+          : 0,
+    );
     _pushHistory(_replaceHistoryKey, replacement, _replaceHistory);
     _runSearch();
+  }
+
+  void _applyReplacementText(String text, {required int preferredCaretOffset}) {
+    final caretOffset = preferredCaretOffset.clamp(0, text.length);
+    _editController.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: caretOffset),
+    );
   }
 
   void _onSearchChanged(String value) {
@@ -377,7 +589,8 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         _cancelEdit();
         return true;
       }
-      return false;
+      widget.onBack();
+      return true;
     };
     EscapeOverride.push(_escapeHandler!);
   }
@@ -399,12 +612,16 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   void _startEdit() {
+    final previousScrollOffset = _currentScrollOffset();
     _editController.text = _rawPrettyText();
     setState(() {
       _isEditing = true;
       _syntaxError = null;
     });
     _runSearch();
+    if (previousScrollOffset != null) {
+      _restoreScrollOffsetAfterFrame(previousScrollOffset);
+    }
     _pushEscapeHandler();
   }
 
@@ -414,6 +631,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       _isEditing = false;
       _syntaxError = null;
     });
+    _editController.clearSearchMatches();
   }
 
   Future<void> _saveEdit() async {
@@ -422,13 +640,19 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       final newLevel = PvzLevelFile.fromJson(json);
       widget.levelFile.objects.clear();
       widget.levelFile.objects.addAll(newLevel.objects);
-      await LevelRepository.saveAndExport(widget.filePath, widget.levelFile);
+      widget.levelFile.version = newLevel.version;
+      await (widget.saveLevel ?? LevelRepository.saveAndExport)(
+        widget.filePath,
+        widget.levelFile,
+      );
       if (mounted) {
         _popEscapeHandler();
         setState(() {
           _isEditing = false;
           _syntaxError = null;
+          _invalidateRenderedJson();
         });
+        _editController.clearSearchMatches();
         widget.onSaved?.call();
         final l10n = AppLocalizations.of(context);
         AppMessage.show(
@@ -453,212 +677,270 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
     final isDesktop =
-        Theme.of(context).platform == TargetPlatform.windows ||
-        Theme.of(context).platform == TargetPlatform.macOS ||
-        Theme.of(context).platform == TargetPlatform.linux;
-    final pretty = _isEditing ? '' : _rawPrettyText();
+        theme.platform == TargetPlatform.windows ||
+        theme.platform == TargetPlatform.macOS ||
+        theme.platform == TargetPlatform.linux;
 
-    Widget child = PopScope(
-      canPop: !_isEditing,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (_isEditing) {
-          _cancelEdit();
-        } else {
-          widget.onBack();
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: Icon(_isEditing ? Icons.close : Icons.arrow_back),
-            tooltip: _isEditing
-                ? (l10n?.tooltipClose ?? 'Close')
-                : (l10n?.back ?? 'Back'),
-            onPressed: () {
-              if (_isEditing) {
-                _cancelEdit();
-              } else {
-                widget.onBack();
-              }
-            },
-          ),
-          title: Text(
-            _isEditing
-                ? '${widget.fileName} ${l10n?.jsonViewerModeEdit ?? '(edit mode)'}'
-                : _viewMode == _JsonViewMode.structured
-                ? '${widget.fileName} ${l10n?.jsonViewerModeObjectReading ?? '(object reading mode)'}'
-                : '${widget.fileName} ${l10n?.jsonViewerModeReading ?? '(reading mode)'}',
-            overflow: TextOverflow.ellipsis,
-          ),
-          actions: [
-            JsonViewerFontSizeButton(
-              currentSize: _fontSize,
-              sizes: _fontSizeOptions(isDesktop),
-              tooltip: l10n?.jsonViewerFontSize ?? 'Font size',
-              onSelected: _setFontSize,
-            ),
-            if (_isEditing)
-              IconButton(
-                icon: const Icon(Icons.save),
-                tooltip: l10n?.tooltipSave ?? 'Save',
-                onPressed: _saveEdit,
-              )
-            else ...[
-              IconButton(
-                icon: Icon(
-                  _viewMode == _JsonViewMode.structured
-                      ? Icons.list
-                      : Icons.data_object,
-                ),
-                tooltip:
-                    l10n?.tooltipToggleObjectView ?? 'Toggle object/raw view',
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isNarrow = constraints.maxWidth < 600;
+        final pretty = _isEditing ? '' : _rawPrettyText();
+
+        Widget child = PopScope(
+          canPop: !_isEditing,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            if (_isEditing) {
+              _cancelEdit();
+            } else {
+              widget.onBack();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              leading: IconButton(
+                icon: Icon(_isEditing ? Icons.close : Icons.arrow_back),
+                tooltip: _isEditing
+                    ? (l10n?.tooltipClose ?? 'Close')
+                    : (l10n?.back ?? 'Back'),
                 onPressed: () {
-                  setState(() {
-                    _viewMode = _viewMode == _JsonViewMode.rawText
-                        ? _JsonViewMode.structured
-                        : _JsonViewMode.rawText;
-                  });
-                  _runSearch();
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.copy),
-                tooltip: l10n?.tooltipCopyJson ?? 'Copy level JSON',
-                onPressed: _copyLevelJson,
-              ),
-              PopupMenuButton<String>(
-                tooltip: l10n?.tooltipMore ?? 'More',
-                icon: const Icon(Icons.more_vert),
-                onSelected: (value) {
-                  switch (value) {
-                    case 'clear_unused':
-                      _showClearUnusedDialog();
-                    case 'edit':
-                      _startEdit();
+                  if (_isEditing) {
+                    _cancelEdit();
+                  } else {
+                    widget.onBack();
                   }
                 },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'clear_unused',
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.cleaning_services),
-                      title: Text(
-                        l10n?.tooltipClearUnused ?? 'Clear unused objects',
+              ),
+              title: Text(
+                _isEditing
+                    ? '${widget.fileName} ${l10n?.jsonViewerModeEdit ?? '(edit mode)'}'
+                    : _viewMode == _JsonViewMode.structured
+                    ? '${widget.fileName} ${l10n?.jsonViewerModeObjectReading ?? '(object reading mode)'}'
+                    : '${widget.fileName} ${l10n?.jsonViewerModeReading ?? '(reading mode)'}',
+                overflow: TextOverflow.ellipsis,
+              ),
+              actions: [
+                JsonViewerFontSizeButton(
+                  currentSize: _fontSize,
+                  sizes: _fontSizeOptions(isDesktop),
+                  tooltip: l10n?.jsonViewerFontSize ?? 'Font size',
+                  onSelected: _setFontSize,
+                ),
+                if (_isEditing)
+                  IconButton(
+                    icon: const Icon(Icons.save),
+                    tooltip: l10n?.tooltipSave ?? 'Save',
+                    onPressed: _saveEdit,
+                  )
+                else ...[
+                  if (!isNarrow) ...[
+                    IconButton(
+                      icon: Icon(
+                        _viewMode == _JsonViewMode.structured
+                            ? Icons.list
+                            : Icons.data_object,
                       ),
+                      tooltip:
+                          l10n?.tooltipToggleObjectView ??
+                          'Toggle object/raw view',
+                      onPressed: () {
+                        setState(() {
+                          _viewMode = _viewMode == _JsonViewMode.rawText
+                              ? _JsonViewMode.structured
+                              : _JsonViewMode.rawText;
+                        });
+                        _runSearch();
+                      },
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.edit),
-                      title: Text(l10n?.tooltipEdit ?? 'Edit'),
+                    IconButton(
+                      icon: const Icon(Icons.copy),
+                      tooltip: l10n?.tooltipCopyJson ?? 'Copy level JSON',
+                      onPressed: _copyLevelJson,
                     ),
+                  ],
+                  PopupMenuButton<String>(
+                    tooltip: l10n?.tooltipMore ?? 'More',
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'toggle_view':
+                          setState(() {
+                            _viewMode = _viewMode == _JsonViewMode.rawText
+                                ? _JsonViewMode.structured
+                                : _JsonViewMode.rawText;
+                          });
+                          _runSearch();
+                        case 'copy':
+                          _copyLevelJson();
+                        case 'clear_unused':
+                          _showClearUnusedDialog();
+                        case 'edit':
+                          _startEdit();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      if (isNarrow) ...[
+                        PopupMenuItem(
+                          value: 'toggle_view',
+                          child: EditorPopupMenuTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(
+                              _viewMode == _JsonViewMode.structured
+                                  ? Icons.list
+                                  : Icons.data_object,
+                            ),
+                            title: Text(
+                              l10n?.tooltipToggleObjectView ??
+                                  'Toggle object/raw view',
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'copy',
+                          child: EditorPopupMenuTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.copy),
+                            title: Text(
+                              l10n?.tooltipCopyJson ?? 'Copy level JSON',
+                            ),
+                          ),
+                        ),
+                        const PopupMenuDivider(),
+                      ],
+                      PopupMenuItem(
+                        value: 'clear_unused',
+                        child: EditorPopupMenuTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.cleaning_services),
+                          title: Text(
+                            l10n?.tooltipClearUnused ?? 'Clear unused objects',
+                          ),
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: EditorPopupMenuTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.edit),
+                          title: Text(l10n?.tooltipEdit ?? 'Edit'),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ],
-          ],
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            JsonViewerSearchBar(
-              searchController: _searchController,
-              replaceController: _replaceController,
-              showReplace: _isEditing,
-              matchCase: _matchCase,
-              wholeWords: _wholeWords,
-              useRegex: _useRegex,
-              searchHistory: _searchHistory,
-              replaceHistory: _replaceHistory,
-              matchCount: _matches.length,
-              currentMatchIndex: _currentMatchIndex,
-              regexError: _regexError,
-              onSearchChanged: _onSearchChanged,
-              onReplaceChanged: (_) => setState(() {}),
-              onMatchCaseChanged: (v) {
-                setState(() => _matchCase = v);
-                _runSearch();
-              },
-              onWholeWordsChanged: (v) {
-                setState(() => _wholeWords = v);
-                _runSearch();
-              },
-              onRegexChanged: (v) {
-                setState(() => _useRegex = v);
-                _runSearch();
-              },
-              onPreviousMatch: _onPreviousMatch,
-              onNextMatch: _onNextMatch,
-              onReplaceOne: _replaceCurrentMatch,
-              onReplaceAll: _replaceAllMatches,
-              onHistorySelected: (v) =>
-                  _pushHistory(_searchHistoryKey, v, _searchHistory),
-              onReplaceHistorySelected: (v) =>
-                  _pushHistory(_replaceHistoryKey, v, _replaceHistory),
-              onSearchSubmitted: _commitSearchHistory,
+              ],
             ),
-            if (_syntaxError != null)
-              Container(
-                width: double.infinity,
-                color: Theme.of(context).colorScheme.error,
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  _syntaxError!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onError,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            Expanded(
-              child: _wrapWithFontSizeGestures(
-                isDesktop: isDesktop,
-                child: _isEditing
-                    ? _buildEditView()
-                    : _viewMode == _JsonViewMode.structured
-                    ? _buildObjectMode(isDesktop, l10n)
-                    : _buildViewMode(pretty, isDesktop, l10n),
-              ),
+            body: LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    JsonViewerSearchBar(
+                      searchController: _searchController,
+                      replaceController: _replaceController,
+                      showReplace: _isEditing,
+                      matchCase: _matchCase,
+                      wholeWords: _wholeWords,
+                      useRegex: _useRegex,
+                      searchHistory: _searchHistory,
+                      replaceHistory: _replaceHistory,
+                      matchCount: _matches.length,
+                      currentMatchIndex: _currentMatchIndex,
+                      regexError: _regexError,
+                      onSearchChanged: _onSearchChanged,
+                      onReplaceChanged: (_) => setState(() {}),
+                      onMatchCaseChanged: (v) {
+                        setState(() => _matchCase = v);
+                        _runSearch();
+                      },
+                      onWholeWordsChanged: (v) {
+                        setState(() => _wholeWords = v);
+                        _runSearch();
+                      },
+                      onRegexChanged: (v) {
+                        setState(() => _useRegex = v);
+                        _runSearch();
+                      },
+                      onPreviousMatch: _onPreviousMatch,
+                      onNextMatch: _onNextMatch,
+                      onReplaceOne: _replaceCurrentMatch,
+                      onReplaceAll: _replaceAllMatches,
+                      onHistorySelected: (v) =>
+                          _pushHistory(_searchHistoryKey, v, _searchHistory),
+                      onReplaceHistorySelected: (v) =>
+                          _pushHistory(_replaceHistoryKey, v, _replaceHistory),
+                      onSearchSubmitted: _commitSearchHistory,
+                    ),
+                    if (_syntaxError != null)
+                      Container(
+                        width: double.infinity,
+                        color: theme.colorScheme.error,
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          _syntaxError!,
+                          style: TextStyle(
+                            color: theme.colorScheme.onError,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    Expanded(
+                      child: _wrapWithFontSizeGestures(
+                        isDesktop: isDesktop,
+                        child: _isEditing
+                            ? _buildEditView()
+                            : _viewMode == _JsonViewMode.structured
+                            ? _buildObjectMode(isDesktop, l10n)
+                            : _buildViewMode(pretty, isDesktop, l10n),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
 
-    if (isDesktop) {
-      child = Shortcuts(
-        shortcuts: const {
-          SingleActivator(LogicalKeyboardKey.escape): _EscapeIntent(),
-        },
-        child: Actions(
-          actions: {
-            _EscapeIntent: CallbackAction<_EscapeIntent>(
-              onInvoke: (_) {
-                if (_isEditing) {
-                  _cancelEdit();
-                  return null;
-                }
-                widget.onBack();
-                return null;
+        if (isDesktop) {
+          child = Shortcuts(
+            shortcuts: const {
+              SingleActivator(LogicalKeyboardKey.escape): _EscapeIntent(),
+            },
+            child: Actions(
+              actions: {
+                _EscapeIntent: CallbackAction<_EscapeIntent>(
+                  onInvoke: (_) {
+                    if (_isEditing) {
+                      _cancelEdit();
+                      return null;
+                    }
+                    widget.onBack();
+                    return null;
+                  },
+                ),
               },
+              child: child,
             ),
-          },
-          child: child,
-        ),
-      );
-    }
-    return child;
+          );
+        }
+        return child;
+      },
+    );
   }
 
   static const _codeFontFamily = 'monospace';
 
   Widget _buildEditView() {
+    final colorScheme = Theme.of(context).colorScheme;
+    _editController.setHighlightColors(
+      highlightColor: colorScheme.tertiaryContainer,
+      highlightTextColor: colorScheme.onTertiaryContainer,
+      activeHighlightColor: colorScheme.primary,
+      activeHighlightTextColor: colorScheme.onPrimary,
+    );
     final baseStyle = TextStyle(
       fontFamily: _codeFontFamily,
       fontSize: _fontSize,
@@ -726,8 +1008,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   Widget _buildViewMode(String pretty, bool isDesktop, AppLocalizations? l10n) {
-    return SelectionArea(child: _buildScrollLayout(pretty, isDesktop, l10n));
+    return _buildScrollLayout(pretty, isDesktop, l10n);
   }
+
+  final Map<int, String> _jsonStringCache = {};
 
   Widget _buildObjectMode(bool isDesktop, AppLocalizations? l10n) {
     final objects = widget.levelFile.objects;
@@ -740,9 +1024,17 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         padding: const EdgeInsets.all(16),
         itemCount: objects.length,
         itemBuilder: (context, index) {
+          final obj = objects[index];
+          // Cache JSON string for performance during scroll
+          final jsonContent = _jsonStringCache.putIfAbsent(
+            index,
+            () => _jsonEncoder.convert(obj.objData),
+          );
+
           return _ObjectCodeCard(
             index: index,
-            obj: objects[index],
+            obj: obj,
+            jsonContent: jsonContent,
             fontSize: _fontSize,
             expanded: _expandedStates[index] ?? true,
             onToggle: () {
@@ -750,7 +1042,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                 _expandedStates[index] = !(_expandedStates[index] ?? false);
               });
             },
-            onCopy: () => _copyObjectJson(objects[index]),
+            onCopy: () => _copyObjectJson(obj),
             onDelete: () => _deleteObjectAtIndex(index),
             copyTooltip: l10n?.tooltipCopyObject ?? 'Copy object JSON',
             deleteTooltip: l10n?.delete ?? 'Delete',
@@ -762,47 +1054,11 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     );
   }
 
-  /// Collects all aliases referenced via RTID in the level file.
-  Set<String> _collectReferencedAliases() {
-    final used = <String>{};
-    void scan(dynamic value) {
-      if (value is Map) {
-        for (final entry in value.entries) {
-          if (entry.value is String) {
-            final rtid = entry.value as String;
-            final info = RtidParser.parse(rtid);
-            if (info != null) used.add(info.alias);
-          } else {
-            scan(entry.value);
-          }
-        }
-      } else if (value is List) {
-        for (final item in value) {
-          if (item is String) {
-            final info = RtidParser.parse(item);
-            if (info != null) used.add(info.alias);
-          } else {
-            scan(item);
-          }
-        }
-      }
-    }
-
-    for (final obj in widget.levelFile.objects) {
-      if (obj.objData != null) scan(obj.objData);
-    }
-    return used;
-  }
-
   void _showClearUnusedDialog() async {
-    final used = _collectReferencedAliases();
-    final toRemove = <PvzObject>[];
-    for (final obj in widget.levelFile.objects) {
-      if (obj.objClass == 'LevelDefinition') continue;
-      final aliases = obj.aliases ?? [];
-      final isUsed = aliases.any((a) => used.contains(a));
-      if (!isUsed) toRemove.add(obj);
-    }
+    final toRemove = await UnusedLevelObjectUtils.findUnusedObjects(
+      widget.levelFile,
+    );
+    if (!mounted) return;
     if (toRemove.isEmpty) {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
@@ -901,8 +1157,6 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     return objectMatches.indexOf(_matches[_currentMatchIndex]);
   }
 
-  /// Scrollable JSON view: wraps long logical lines; gutter shows a line number
-  /// only on the first visual row, and a continuation glyph on wrapped rows.
   Widget _buildScrollLayout(
     String pretty,
     bool isDesktop,
@@ -912,14 +1166,14 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     final baseStyle = TextStyle(
       fontFamily: _codeFontFamily,
       fontSize: _fontSize,
-      height: 1.3,
+      height: 1.5, // Predictable height for stability
       color: theme.colorScheme.onSurface,
     );
     final muted = theme.colorScheme.onSurface.withValues(alpha: 0.5);
     final logicalLines = pretty.split('\n');
     final logicalLineCount = logicalLines.isEmpty ? 1 : logicalLines.length;
     final digitCount = '$logicalLineCount'.length;
-    final gutterW = _fontSize * (digitCount * 0.62 + 0.6);
+    final gutterW = _fontSize * (digitCount * 0.65 + 0.8).clamp(2.5, 8.0);
     final contSymbol = l10n?.jsonViewerLineContinuation ?? '↳';
     final highlightStyle = baseStyle.copyWith(
       backgroundColor: theme.colorScheme.tertiary.withValues(alpha: 0.35),
@@ -936,113 +1190,162 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     final activeMatch = _matches.isEmpty
         ? null
         : _matches[_currentMatchIndex.clamp(0, _matches.length - 1)];
+    const textHeightBehavior = TextHeightBehavior(
+      applyHeightToFirstAscent: false,
+      applyHeightToLastDescent: false,
+    );
 
     return Scrollbar(
       controller: _verticalController,
       thumbVisibility: true,
       trackVisibility: isDesktop,
       interactive: isDesktop,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const pad = 16.0;
-          const gutterTextGap = 12.0;
-          final maxTextW =
-              constraints.maxWidth - pad * 2 - gutterW - gutterTextGap;
-          final safeMaxTextW = maxTextW.clamp(32.0, double.maxFinite);
+      child: SingleChildScrollView(
+        controller: _verticalController,
+        padding: const EdgeInsets.all(16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            const gutterTextGap = 12.0;
+            final rowWidth = constraints.maxWidth;
+            final contentWidth = _jsonContentWidth(
+              rowWidth: rowWidth,
+              gutterW: gutterW,
+              gutterTextGap: gutterTextGap,
+            );
+            final strutStyle = StrutStyle(
+              fontFamily: _codeFontFamily,
+              fontSize: _fontSize,
+              height: 1.5,
+              forceStrutHeight: true,
+            );
 
-          final visualRows = _wrapJsonLogicalLines(
-            logicalLines,
-            safeMaxTextW,
-            baseStyle,
-          );
+            // Keep the JSON as one selectable paragraph. The paragraph performs
+            // visual wrapping while its underlying text retains only the original
+            // logical newlines. Gutter rows are derived from the same layout pass
+            // so line numbers stay aligned with the rendered source.
+            final documentSpans = <InlineSpan>[];
+            for (var i = 0; i < logicalLines.length; i++) {
+              final line = logicalLines[i];
+              if (_matches.isEmpty) {
+                documentSpans.add(TextSpan(text: line));
+              } else {
+                documentSpans.addAll(
+                  buildHighlightedTextSpans(
+                    text: line,
+                    segmentStartInLine: 0,
+                    segmentEndInLine: line.length,
+                    baseStyle: baseStyle,
+                    highlightStyle: highlightStyle,
+                    activeHighlightStyle: activeHighlightStyle,
+                    lineMatches: _matches
+                        .where((match) => match.lineIndex == i)
+                        .toList(),
+                    activeMatch: activeMatch,
+                    lineStartOffset: lineStarts[i],
+                  ),
+                );
+              }
+              if (i != logicalLines.length - 1) {
+                documentSpans.add(const TextSpan(text: '\n'));
+              }
+            }
 
-          return SingleChildScrollView(
-            controller: _verticalController,
-            padding: const EdgeInsets.all(pad),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
+            final contentSignature = Object.hash(
+              pretty.hashCode,
+              _matches.length,
+              _currentMatchIndex,
+            );
+            final sizeDelta = (_fontSize - _lastFontSize).abs();
+            final widthDelta = (contentWidth - _lastWidth).abs();
+
+            if (_cachedGutterLayout == null ||
+                widthDelta > 1.0 ||
+                sizeDelta > 0.1 ||
+                _lastContentSignature != contentSignature) {
+              _cachedGutterLayout = _layoutGutter(
+                documentSpans: documentSpans,
+                baseStyle: baseStyle,
+                strutStyle: strutStyle,
+                maxWidth: contentWidth,
+                lineStarts: lineStarts,
+                textScaler: MediaQuery.textScalerOf(context),
+                textHeightBehavior: textHeightBehavior,
+              );
+              _lastWidth = contentWidth;
+              _lastFontSize = _fontSize;
+              _lastContentSignature = contentSignature;
+            }
+
+            final visualRows = _cachedGutterLayout!.rows;
+            final lineHeights = _cachedGutterLayout!.lineHeights;
+
+            final selectableJson = SelectionArea(
+              contextMenuBuilder: _buildReadSelectionContextMenu,
+              child: Text.rich(
+                TextSpan(children: documentSpans),
+                style: baseStyle,
+                strutStyle: strutStyle,
+                textHeightBehavior: textHeightBehavior,
+                softWrap: true,
+              ),
+            );
+
+            final jsonContent = isDesktop
+                ? Listener(
+                    behavior: HitTestBehavior.translucent,
+                    onPointerDown: _handleReadViewPointerDown,
+                    onPointerUp: _finishReadViewSelectionPointer,
+                    onPointerCancel: _finishReadViewSelectionPointer,
+                    child: selectableJson,
+                  )
+                : selectableJson;
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (final row in visualRows)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Exclude gutter from SelectionArea so copy is plain JSON.
-                        SelectionContainer.disabled(
-                          child: SizedBox(
-                            width: gutterW,
-                            child: row.isContinuation
-                                ? Text(
-                                    contSymbol,
-                                    textAlign: TextAlign.right,
-                                    style: baseStyle.copyWith(
-                                      fontFamily: _codeFontFamily,
-                                      color: muted,
-                                      fontSize: _fontSize * 0.92,
-                                    ),
-                                  )
-                                : Text(
-                                    '${row.logicalLineOneBased}',
-                                    textAlign: TextAlign.right,
-                                    style: baseStyle.copyWith(
-                                      fontFamily: _codeFontFamily,
-                                      color: muted,
-                                    ),
-                                  ),
+                SizedBox(
+                  width: gutterW,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var i = 0; i < visualRows.length; i++)
+                        SizedBox(
+                          height: lineHeights[i],
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              visualRows[i].isContinuation
+                                  ? contSymbol
+                                  : '${visualRows[i].logicalLineOneBased}',
+                              style: baseStyle.copyWith(
+                                fontFamily: _codeFontFamily,
+                                color: muted,
+                                fontSize: visualRows[i].isContinuation
+                                    ? _fontSize * 0.92
+                                    : _fontSize,
+                              ),
+                            ),
                           ),
                         ),
-                        SelectionContainer.disabled(
-                          child: SizedBox(width: gutterTextGap),
-                        ),
-                        Expanded(
-                          child: _matches.isEmpty
-                              ? Text(
-                                  row.text,
-                                  style: baseStyle,
-                                  softWrap: false,
-                                )
-                              : RichText(
-                                  text: TextSpan(
-                                    style: baseStyle,
-                                    children: buildHighlightedTextSpans(
-                                      text: row.text,
-                                      segmentStartInLine:
-                                          row.segmentStartInLine,
-                                      segmentEndInLine:
-                                          row.segmentStartInLine +
-                                          row.text.length,
-                                      baseStyle: baseStyle,
-                                      highlightStyle: highlightStyle,
-                                      activeHighlightStyle:
-                                          activeHighlightStyle,
-                                      lineMatches: _matches
-                                          .where(
-                                            (m) =>
-                                                m.lineIndex ==
-                                                row.logicalLineOneBased - 1,
-                                          )
-                                          .toList(),
-                                      activeMatch: activeMatch,
-                                      lineStartOffset:
-                                          lineStarts[row.logicalLineOneBased -
-                                              1],
-                                    ),
-                                  ),
-                                  softWrap: false,
-                                ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
+                ),
+                const SizedBox(width: gutterTextGap),
+                SizedBox(width: contentWidth, child: jsonContent),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
+}
+
+class _GutterLayout {
+  const _GutterLayout({required this.rows, required this.lineHeights});
+
+  final List<_WrappedJsonRow> rows;
+  final List<double> lineHeights;
 }
 
 class _WrappedJsonRow {
@@ -1059,71 +1362,78 @@ class _WrappedJsonRow {
   final int segmentStartInLine;
 }
 
-List<_WrappedJsonRow> _wrapJsonLogicalLines(
-  List<String> logicalLines,
-  double maxWidth,
-  TextStyle style,
-) {
-  final rows = <_WrappedJsonRow>[];
-  final w = maxWidth <= 8 ? 8.0 : maxWidth;
-  for (var i = 0; i < logicalLines.length; i++) {
-    final line = logicalLines[i];
-    final n = i + 1;
-    if (line.isEmpty) {
-      rows.add(
+_GutterLayout _layoutGutter({
+  required List<InlineSpan> documentSpans,
+  required TextStyle baseStyle,
+  required StrutStyle strutStyle,
+  required double maxWidth,
+  required List<int> lineStarts,
+  required TextScaler textScaler,
+  required TextHeightBehavior textHeightBehavior,
+}) {
+  final width = maxWidth <= 8 ? 8.0 : maxWidth;
+  final painter = TextPainter(
+    text: TextSpan(style: baseStyle, children: documentSpans),
+    textDirection: TextDirection.ltr,
+    strutStyle: strutStyle,
+    textScaler: textScaler,
+    textHeightBehavior: textHeightBehavior,
+  )..layout(maxWidth: width);
+
+  final metrics = painter.computeLineMetrics();
+  if (metrics.isEmpty) {
+    return const _GutterLayout(
+      rows: [
         _WrappedJsonRow(
-          logicalLineOneBased: n,
+          logicalLineOneBased: 1,
           isContinuation: false,
           text: '',
           segmentStartInLine: 0,
         ),
-      );
-      continue;
-    }
-    final tp = TextPainter(
-      text: TextSpan(text: line, style: style),
-      textDirection: TextDirection.ltr,
-    )..layout(maxWidth: w);
-    final metrics = tp.computeLineMetrics();
-    if (metrics.isEmpty) {
-      rows.add(
-        _WrappedJsonRow(
-          logicalLineOneBased: n,
-          isContinuation: false,
-          text: line,
-          segmentStartInLine: 0,
-        ),
-      );
-      continue;
-    }
-    for (var j = 0; j < metrics.length; j++) {
-      final m = metrics[j];
-      final dy = m.baseline - m.ascent;
-      final yMid = dy + m.height / 2;
-      final start = tp.getPositionForOffset(Offset(0, yMid)).offset;
-      final end = tp.getPositionForOffset(Offset(w, yMid)).offset;
-      var a = start;
-      var b = end;
-      if (a < 0) a = 0;
-      if (a > line.length) a = line.length;
-      if (b < 0) b = 0;
-      if (b > line.length) b = line.length;
-      if (b < a) {
-        final t = a;
-        a = b;
-        b = t;
-      }
-      rows.add(
-        _WrappedJsonRow(
-          logicalLineOneBased: n,
-          isContinuation: j > 0,
-          text: line.substring(a, b),
-          segmentStartInLine: a,
-        ),
-      );
+      ],
+      lineHeights: [18],
+    );
+  }
+
+  final plainTextLength = painter.text?.toPlainText().length ?? 0;
+  final rows = <_WrappedJsonRow>[];
+  final lineHeights = <double>[];
+  var previousLogicalLine = -1;
+  for (final metric in metrics) {
+    final yMid = metric.baseline - metric.ascent + metric.height / 2;
+    final offset = painter
+        .getPositionForOffset(Offset(0, yMid))
+        .offset
+        .clamp(0, plainTextLength);
+    final logicalIndex = _logicalLineIndexForOffset(offset, lineStarts);
+    final logicalLineOneBased = logicalIndex + 1;
+    rows.add(
+      _WrappedJsonRow(
+        logicalLineOneBased: logicalLineOneBased,
+        isContinuation: logicalLineOneBased == previousLogicalLine,
+        text: '',
+        segmentStartInLine: 0,
+      ),
+    );
+    lineHeights.add(metric.height);
+    previousLogicalLine = logicalLineOneBased;
+  }
+  return _GutterLayout(rows: rows, lineHeights: lineHeights);
+}
+
+int _logicalLineIndexForOffset(int offset, List<int> lineStarts) {
+  if (lineStarts.isEmpty) return 0;
+  var low = 0;
+  var high = lineStarts.length - 1;
+  while (low < high) {
+    final mid = (low + high + 1) >> 1;
+    if (lineStarts[mid] <= offset) {
+      low = mid;
+    } else {
+      high = mid - 1;
     }
   }
-  return rows;
+  return low;
 }
 
 class _ObjectCodeCard extends StatelessWidget {
@@ -1132,6 +1442,7 @@ class _ObjectCodeCard extends StatelessWidget {
   const _ObjectCodeCard({
     required this.index,
     required this.obj,
+    required this.jsonContent,
     required this.fontSize,
     required this.expanded,
     required this.onToggle,
@@ -1145,6 +1456,7 @@ class _ObjectCodeCard extends StatelessWidget {
 
   final int index;
   final PvzObject obj;
+  final String jsonContent;
   final double fontSize;
   final bool expanded;
   final VoidCallback onToggle;
@@ -1185,15 +1497,16 @@ class _ObjectCodeCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isLevelDef = obj.objClass == 'LevelDefinition';
-    // Display objdata only; copy uses full object (aliases/objclass/objdata).
-    final jsonContent = _jsonEncoder.convert(obj.objData);
+    // String processing moved out of build for performance.
     final headerBg = isDark ? const Color(0xFF2E7D32) : const Color(0xFF4CAF50);
     final deleteBtnBg = theme.colorScheme.error;
     // Light blue, tuned per theme so it stays readable on the green header.
-    final copyBtnBg =
-        isDark ? const Color(0xFF4FC3F7) : const Color(0xFF81D4FA);
-    final copyBtnFg =
-        isDark ? const Color(0xFF01579B) : const Color(0xFF0277BD);
+    final copyBtnBg = isDark
+        ? const Color(0xFF4FC3F7)
+        : const Color(0xFF81D4FA);
+    final copyBtnFg = isDark
+        ? const Color(0xFF01579B)
+        : const Color(0xFF0277BD);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -1268,20 +1581,18 @@ class _ObjectCodeCard extends StatelessWidget {
             ),
           ),
           if (expanded)
-            SelectionArea(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: _HighlightedJsonText(
-                  jsonContent: jsonContent,
-                  fontSize: fontSize,
-                  objectMatches: objectMatches,
-                  activeMatch:
-                      activeMatchIndex != null &&
-                          activeMatchIndex! >= 0 &&
-                          activeMatchIndex! < objectMatches.length
-                      ? objectMatches[activeMatchIndex!]
-                      : null,
-                ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: _HighlightedJsonText(
+                jsonContent: jsonContent,
+                fontSize: fontSize,
+                objectMatches: objectMatches,
+                activeMatch:
+                    activeMatchIndex != null &&
+                        activeMatchIndex! >= 0 &&
+                        activeMatchIndex! < objectMatches.length
+                    ? objectMatches[activeMatchIndex!]
+                    : null,
               ),
             ),
         ],

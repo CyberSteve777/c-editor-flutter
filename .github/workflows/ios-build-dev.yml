@@ -2,9 +2,9 @@ name: iOS Build (dev)
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   pull_request:
-    branches: [dev]
+    branches: [dev, dev-plugin-system]
   workflow_dispatch:
     inputs:
       build_id:
@@ -32,10 +32,10 @@ on:
         type: string
         default: 'Release'
       flutter_version:
-        description: 'Flutter version to use (e.g., 3.24.0). Empty means latest stable.'
+        description: 'Flutter version to use (minimum 3.44.0).'
         required: false
         type: string
-        default: ''
+        default: '3.44.0'
 
 jobs:
   build:
@@ -49,6 +49,7 @@ jobs:
       SCHEME: ${{ inputs.scheme }}
       CONFIGURATION: ${{ inputs.configuration || 'Release' }}
       USE_SIGNING: ${{ inputs.use_signing && 'true' || 'false' }}
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
 
     steps:
       - name: Checkout repository
@@ -89,8 +90,8 @@ jobs:
         if: steps.detect.outputs.type == 'flutter'
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ inputs.flutter_version || '' }}
-          channel: ${{ inputs.flutter_version && 'stable' || 'stable' }}
+          flutter-version: ${{ inputs.flutter_version || '3.44.0' }}
+          channel: stable
           cache: true
 
       - name: Flutter pub get
@@ -214,12 +215,15 @@ jobs:
 
           if [ "$PROJECT_TYPE" = "flutter" ]; then
             cd "$REPO_ROOT"
+            DART_DEFINES="$(bash .github/scripts/flutter-dart-defines.sh)"
+            # Plugin system + flutter_eval construct IconData at runtime.
+            EXTRA_FLAGS="--no-tree-shake-icons"
             if [ "$CONFIGURATION" = "Debug" ]; then
               echo "Building Flutter iOS Debug..."
-              flutter build ios --debug --no-codesign
+              flutter build ios --debug --no-codesign ${DART_DEFINES} ${EXTRA_FLAGS}
             else
               echo "Building Flutter iOS Release..."
-              flutter build ios --release --no-codesign
+              flutter build ios --release --no-codesign ${DART_DEFINES} ${EXTRA_FLAGS}
             fi
           elif [ "$PROJECT_TYPE" = "reactnative" ] || [ "$PROJECT_TYPE" = "expo" ]; then
             # Use xcodebuild directly for React Native/Expo

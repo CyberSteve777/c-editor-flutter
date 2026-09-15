@@ -38,6 +38,7 @@ class InvalidEventScreen extends StatelessWidget {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.invalidEventTitle ?? 'Invalid event',
               themeColor: theme.colorScheme.error,
               sections: [

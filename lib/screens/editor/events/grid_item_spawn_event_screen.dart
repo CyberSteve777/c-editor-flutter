@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
-import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
@@ -10,12 +9,13 @@ import 'package:c_editor/data/repository/zombie_repository.dart'
     show ZombieRepository, ZombieTag;
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
-import 'package:c_editor/theme/app_theme.dart';
-import 'package:c_editor/widgets/asset_image.dart'
-    show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_zombie_properties_actions.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/widgets/zombie_flat_lane_drag_drop_editor.dart';
+import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
+import 'package:c_editor/widgets/zombie_spawn_edit_sheet.dart';
 
 /// Spawn zombies from grid item event editor. Ported from Z-Editor-master GridItemSpawnerEventEP.kt.
 /// Uses jittered-style zombie icon cards, bottom sheet editing, and button handling.
@@ -54,10 +54,6 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
   late PvzObject _moduleObj;
   late SpawnZombiesFromGridItemData _data;
   late String _alias;
-
-  bool get _isDeepSeaLawn =>
-      LevelParser.isDeepSeaLawnFromFile(widget.levelFile);
-  int get _maxRow => _isDeepSeaLawn ? 6 : 5;
 
   @override
   void initState() {
@@ -243,270 +239,103 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
     _sync();
   }
 
+  void _handleZombieDragDropMove(int fromIndex, int insertIndex) {
+    final zombies = List<ZombieSpawnData>.from(_data.zombies);
+    reorderZombieFlatListByInsertIndex(
+      list: zombies,
+      fromIndex: fromIndex,
+      insertIndex: insertIndex,
+    );
+    _data = SpawnZombiesFromGridItemData(
+      waveStartMessage: _data.waveStartMessage,
+      zombieSpawnWaitTime: _data.zombieSpawnWaitTime,
+      gridTypes: _data.gridTypes,
+      zombies: zombies,
+    );
+    _sync();
+  }
+
   void _showZombieEditSheet(int index) {
-    final l10n = AppLocalizations.of(context);
     final zombie = _data.zombies[index];
     final isElite = _isElite(zombie);
     final baseType = _resolveBaseTypeName(zombie);
     final info = ZombieRepository().getZombieById(baseType);
-    final displayName = info?.name ?? baseType;
+    final displayName = ResourceNames.lookup(context, info?.name ?? baseType);
     final iconPath = info?.iconAssetPath;
     final isCustom = _isCustomZombie(zombie);
-    showModalBottomSheet<void>(
+
+    showZombieSpawnEditSheet(
       context: context,
-      showDragHandle: true,
-      builder: (ctx) {
-        int rowValue = zombie.row ?? 0;
-        int levelValue = zombie.level ?? 0;
-        return StatefulBuilder(
-          builder: (ctx, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      if (iconPath != null && iconPath.isNotEmpty)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: AssetImageWidget(
-                            assetPath: iconPath,
-                            altCandidates: imageAltCandidates(iconPath),
-                            width: 36,
-                            height: 36,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                ResourceNames.lookup(context, displayName),
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (isCustom) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: pvzOrangeLight,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  l10n?.customLabel ?? 'Custom',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<int>(
-                          initialValue: rowValue,
-                          decoration: InputDecoration(
-                            labelText: l10n?.row ?? 'Row',
-                            border: const OutlineInputBorder(),
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 0,
-                              child: Text(l10n?.random ?? 'Random'),
-                            ),
-                            ...List.generate(_maxRow, (i) => i + 1).map(
-                              (v) => DropdownMenuItem(
-                                value: v,
-                                child: Text(l10n?.rowN(v) ?? 'Row $v'),
-                              ),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setModalState(() => rowValue = v);
-                            _updateZombie(
-                              index,
-                              ZombieSpawnData(
-                                type: zombie.type,
-                                row: v == 0 ? null : v,
-                                level: zombie.level,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                            Future.microtask(() {
-                              widget.onRequestZombieSelection((id) {
-                                final aliases = ZombieRepository()
-                                    .buildZombieAliases(id);
-                                final rtid = RtidParser.build(
-                                  aliases,
-                                  'ZombieTypes',
-                                );
-                                _replaceZombieType(index, rtid);
-                              });
-                            });
-                          },
-                          icon: const Icon(Icons.swap_horiz),
-                          label: Text(l10n?.change ?? 'Change'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (isElite)
-                    Text(
-                      l10n?.eliteZombiesUseDefaultLevel ??
-                          'Elite zombies use default level.',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    )
-                  else ...[
-                    SwitchListTile(
-                      title: Text(l10n?.autoLevel ?? 'Auto level'),
-                      value: levelValue == 0,
-                      onChanged: (v) {
-                        setModalState(() => levelValue = v ? 0 : 1);
-                        _updateZombie(
-                          index,
-                          ZombieSpawnData(
-                            type: zombie.type,
-                            row: zombie.row,
-                            level: v ? null : 1,
-                          ),
-                        );
-                      },
-                    ),
-                    if (levelValue != 0)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n?.levelFormat(levelValue) ??
-                                'Level: $levelValue',
-                          ),
-                          Slider(
-                            value: levelValue.toDouble(),
-                            min: 1,
-                            max: 10,
-                            divisions: 9,
-                            label: '$levelValue',
-                            onChanged: (v) {
-                              final newLevel = v.round();
-                              setModalState(() => levelValue = newLevel);
-                              _updateZombie(
-                                index,
-                                ZombieSpawnData(
-                                  type: zombie.type,
-                                  row: zombie.row,
-                                  level: newLevel,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                  ],
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            final copy = ZombieSpawnData(
-                              type: zombie.type,
-                              row: rowValue == 0 ? null : rowValue,
-                              level: isElite
-                                  ? null
-                                  : (levelValue == 0 ? null : levelValue),
-                            );
-                            _data = SpawnZombiesFromGridItemData(
-                              waveStartMessage: _data.waveStartMessage,
-                              zombieSpawnWaitTime: _data.zombieSpawnWaitTime,
-                              gridTypes: _data.gridTypes,
-                              zombies: [..._data.zombies, copy],
-                            );
-                            _sync();
-                            Navigator.pop(ctx);
-                          },
-                          icon: const Icon(Icons.copy),
-                          label: Text(l10n?.copy ?? 'Copy'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                          ),
-                          onPressed: () {
-                            CustomZombieLevelUtils.handleDeleteFromBottomSheet(
-                              sheetContext: ctx,
-                              parentContext: context,
-                              levelFile: widget.levelFile,
-                              zombieTypeRtid: zombie.type,
-                              onRemove: (eraseOrphan) => _removeZombie(
-                                index,
-                                eraseOrphanProperties: eraseOrphan,
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.delete),
-                          label: Text(l10n?.delete ?? 'Delete'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (widget.onEditCustomZombie != null ||
-                      widget.onInjectCustomZombie != null)
-                    CustomZombiePropertiesSheetActions(
-                      levelFile: widget.levelFile,
-                      baseType: baseType,
-                      currentRtid: zombie.type,
-                      onEditCustomZombie: widget.onEditCustomZombie,
-                      onInjectCustomZombie: widget.onInjectCustomZombie,
-                      onCloseSheet: () => Navigator.pop(ctx),
-                      onRtidSelected: (rtid) {
-                        _updateZombie(
-                          index,
-                          ZombieSpawnData(
-                            type: rtid,
-                            row: zombie.row,
-                            level: zombie.level,
-                          ),
-                        );
-                      },
-                    ),
-                ],
-              ),
-            );
-          },
+      options: const ZombieSpawnEditSheetOptions(
+        showRow: false,
+        showLevel: true,
+      ),
+      iconPath: iconPath,
+      displayName: displayName,
+      isCustom: isCustom,
+      isElite: isElite,
+      levelValue: zombie.level ?? 0,
+      onChangeType: () {
+        Future.microtask(() {
+          widget.onRequestZombieSelection((id) {
+            final aliases = ZombieRepository().buildZombieAliases(id);
+            final rtid = RtidParser.build(aliases, 'ZombieTypes');
+            _replaceZombieType(index, rtid);
+          });
+        });
+      },
+      onLevelChanged: (level) {
+        _updateZombie(
+          index,
+          ZombieSpawnData(
+            type: zombie.type,
+            row: null,
+            level: level == 0 ? null : level,
+          ),
         );
       },
+      onCopy: () {
+        final copy = ZombieSpawnData(
+          type: zombie.type,
+          row: null,
+          level: isElite ? null : zombie.level,
+        );
+        _data = SpawnZombiesFromGridItemData(
+          waveStartMessage: _data.waveStartMessage,
+          zombieSpawnWaitTime: _data.zombieSpawnWaitTime,
+          gridTypes: _data.gridTypes,
+          zombies: [..._data.zombies, copy],
+        );
+        _sync();
+      },
+      onDelete: (sheetContext) {
+        CustomZombieLevelUtils.handleDeleteFromBottomSheet(
+          sheetContext: sheetContext,
+          parentContext: context,
+          levelFile: widget.levelFile,
+          zombieTypeRtid: zombie.type,
+          onRemove: (eraseOrphan) =>
+              _removeZombie(index, eraseOrphanProperties: eraseOrphan),
+        );
+      },
+      customPropertiesActions:
+          widget.onEditCustomZombie != null ||
+              widget.onInjectCustomZombie != null
+          ? CustomZombiePropertiesSheetActions(
+              levelFile: widget.levelFile,
+              baseType: baseType,
+              currentRtid: zombie.type,
+              onEditCustomZombie: widget.onEditCustomZombie,
+              onInjectCustomZombie: widget.onInjectCustomZombie,
+              onCloseSheet: () => Navigator.of(context).pop(),
+              onRtidSelected: (rtid) {
+                _updateZombie(
+                  index,
+                  ZombieSpawnData(type: rtid, row: null, level: zombie.level),
+                );
+              },
+            )
+          : null,
     );
   }
 
@@ -551,6 +380,7 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
               if (l10n == null) return;
               showEditorHelpDialog(
                 context,
+                isEvent: true,
                 title: l10n.eventGraveSpawn,
                 sections: [
                   HelpSectionData(
@@ -594,66 +424,70 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.waveStartMessage ?? '',
+                      EditorResponsiveInputField(
+                        label: l10n?.waveStartMessage ?? 'Wave start message',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.waveStartMessage ?? 'Wave start message',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (v) {
-                          _data = SpawnZombiesFromGridItemData(
-                            waveStartMessage: v.isEmpty ? null : v,
-                            zombieSpawnWaitTime: _data.zombieSpawnWaitTime,
-                            gridTypes: _data.gridTypes,
-                            zombies: _data.zombies,
-                          );
-                          _sync();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.zombieSpawnWaitTime.toString(),
-                        decoration: InputDecoration(
-                          labelText:
-                              l10n?.zombieSpawnWaitSec ??
-                              'Zombie spawn wait (seconds)',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.waveStartMessage ?? '',
+                          decoration: decoration,
+                          onChanged: (v) {
                             _data = SpawnZombiesFromGridItemData(
-                              waveStartMessage: _data.waveStartMessage,
-                              zombieSpawnWaitTime: n,
+                              waveStartMessage: v.isEmpty ? null : v,
+                              zombieSpawnWaitTime: _data.zombieSpawnWaitTime,
                               gridTypes: _data.gridTypes,
                               zombies: _data.zombies,
                             );
                             _sync();
-                          }
-                        },
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.zombieSpawnWaitSec ??
+                            'Zombie spawn wait (seconds)',
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.zombieSpawnWaitTime.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = SpawnZombiesFromGridItemData(
+                                waveStartMessage: _data.waveStartMessage,
+                                zombieSpawnWaitTime: n,
+                                gridTypes: _data.gridTypes,
+                                zombies: _data.zombies,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n?.gridTypes ?? 'Grid types',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+              EditorResponsiveActionRow(
+                content: Text(
+                  l10n?.gridTypes ?? 'Grid types',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                  PvzAddButton(
-                    onPressed: _addGridType,
-                    size: 40,
-                    label: l10n?.add ?? 'Add',
-                  ),
-                ],
+                ),
+                action: PvzAddButton(
+                  onPressed: _addGridType,
+                  size: 40,
+                  label: l10n?.add ?? 'Add',
+                ),
               ),
               const SizedBox(height: 8),
               ..._data.gridTypes.asMap().entries.map((e) {
@@ -661,26 +495,36 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                 final rtid = e.value;
                 final parsed = RtidParser.parse(rtid);
                 final gridAlias = parsed?.alias ?? rtid;
+                final displayTypeName =
+                    GridItemRepository.getByTypeName(
+                      gridAlias,
+                    )?.actualTypeName ??
+                    gridAlias;
                 final isValid = parsed?.source == 'CurrentLevel'
                     ? objectAliases.contains(gridAlias)
-                    : GridItemRepository.isValid(gridAlias);
+                    : GridItemRepository.isValid(displayTypeName);
                 return Card(
                   margin: const EdgeInsets.only(bottom: 8),
                   color: isValid ? null : theme.colorScheme.errorContainer,
                   child: ListTile(
-                    leading: GridItemIcon(
-                      typeName: gridAlias,
+                    leading: PresetAwareGridItemIcon(
+                      typeName: displayTypeName,
                       size: 40,
                       fit: BoxFit.contain,
                     ),
                     title: Text(() {
                       final d = ResourceNames.lookup(
                         context,
-                        'griditem_$gridAlias',
+                        'griditem_$displayTypeName',
                       );
-                      return d != 'griditem_$gridAlias' ? d : gridAlias;
+                      return d != 'griditem_$displayTypeName'
+                          ? d
+                          : displayTypeName;
                     }()),
-                    subtitle: Text(gridAlias, style: theme.textTheme.bodySmall),
+                    subtitle: Text(
+                      displayTypeName,
+                      style: theme.textTheme.bodySmall,
+                    ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
                       tooltip: l10n?.delete ?? 'Delete',
@@ -690,42 +534,38 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                 );
               }),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n?.zombiesCount(_data.zombies.length) ??
-                        'Zombies: ${_data.zombies.length}',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              Text(
+                l10n?.zombiesCount(_data.zombies.length) ??
+                    'Zombies: ${_data.zombies.length}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ..._data.zombies.asMap().entries.map((e) {
-                    final idx = e.key;
-                    final z = e.value;
-                    final baseType = _resolveBaseTypeName(z);
-                    final info = zombieRepo.getZombieById(baseType);
-                    final iconPath = info?.iconAssetPath;
-                    final isElite = _isElite(z);
-                    return ZombieIconCard(
-                      iconPath: iconPath,
-                      levelDisplay: isElite
-                          ? 'E'
-                          : (z.level == null ? '0' : '${z.level}'),
-                      isElite: isElite,
-                      isCustom: _isCustomZombie(z),
-                      onTap: () => _showZombieEditSheet(idx),
-                    );
-                  }),
-                  PvzAddButton(onPressed: _addZombie, size: 56),
-                ],
+              ZombieFlatLaneDragDropEditor(
+                items: _data.zombies.asMap().entries.map((e) {
+                  final idx = e.key;
+                  final z = e.value;
+                  final baseType = _resolveBaseTypeName(z);
+                  final info = zombieRepo.getZombieById(baseType);
+                  final isElite = _isElite(z);
+                  return ZombieLaneIconData(
+                    identity: z,
+                    listIndex: idx,
+                    rowValue: 0,
+                    iconPath: info?.iconAssetPath,
+                    levelDisplay: isElite
+                        ? 'E'
+                        : (z.level == null ? '0' : '${z.level}'),
+                    isElite: isElite,
+                    isCustom: _isCustomZombie(z),
+                  );
+                }).toList(),
+                onTap: _showZombieEditSheet,
+                onMove: _handleZombieDragDropMove,
+                onAdd: _addZombie,
               ),
               const SizedBox(height: 32),
             ],

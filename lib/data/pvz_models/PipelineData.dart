@@ -15,10 +15,10 @@ class PipelineData extends PvzModel {
 
   factory PipelineData.fromJson(Map<String, dynamic> json) {
     return PipelineData(
-      startX: json['StartX'] as int? ?? 0,
-      startY: json['StartY'] as int? ?? 0,
-      endX: json['EndX'] as int? ?? 0,
-      endY: json['EndY'] as int? ?? 0,
+      startX: (json['StartX'] as num?)?.toInt() ?? 0,
+      startY: (json['StartY'] as num?)?.toInt() ?? 0,
+      endX: (json['EndX'] as num?)?.toInt() ?? 0,
+      endY: (json['EndY'] as num?)?.toInt() ?? 0,
     );
   }
 

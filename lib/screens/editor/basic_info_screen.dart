@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
+import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
@@ -97,16 +98,16 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
     required VoidCallback onChanged,
   }) {
     final focusColor = Theme.of(context).colorScheme.primary;
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      decoration: editorInputDecoration(
-        context,
-        labelText: label,
-        focusColor: focusColor,
+    return EditorResponsiveInputField(
+      label: label,
+      decoration: editorInputDecoration(context, focusColor: focusColor),
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        decoration: decoration,
+        onChanged: (_) => onChanged(),
       ),
-      onChanged: (_) => onChanged(),
     );
   }
 
@@ -121,10 +122,7 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
   }
 
   void _writeLevelDefinition() {
-    final obj = widget.levelFile.objects
-        .where((o) => o.objClass == 'LevelDefinition')
-        .firstOrNull;
-    if (obj != null) obj.objData = widget.levelDef.toJson();
+    LevelParser.syncAndWriteLevelDefinition(widget.levelDef, widget.levelFile);
   }
 
   bool _resetMissingCustomStageReference() {
@@ -179,9 +177,9 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
         );
       }
     }
-    final isPresetCustomStage =
-        stageInfo != null &&
-        CustomStagePresetRepository.isPresetCustomStageAlias(stageInfo.alias);
+    final customStageOrigin = customStageObj == null
+        ? null
+        : CustomStagePresetRepository.originForObject(customStageObj);
     final customSuffix =
         l10n?.customStageNameSuffix ??
         CustomStageLevelUtils.displayNameSuffixDefault;
@@ -309,7 +307,9 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
                                     top: 4,
                                     left: 4,
                                     child: _CurrentCustomStageBadge(
-                                      fromPreset: isPresetCustomStage,
+                                      origin:
+                                          customStageOrigin ??
+                                          CustomStageOrigin.userCreated,
                                     ),
                                   ),
                                 ],
@@ -370,6 +370,14 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
                                 StageRepository.getName(stageInfo.alias),
                               );
                             }(), style: theme.textTheme.titleMedium),
+                            if (stageInfo != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                '${stageInfo.alias}@${stageInfo.source}',
+                                softWrap: true,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -383,29 +391,39 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: DropdownButtonFormField<String>(
-                  initialValue:
-                      _musicTypeOptions.map((e) => e.$1).contains(def.musicType)
-                      ? def.musicType
-                      : 'MainPath',
+                child: EditorResponsiveInputField(
+                  label: '${l10n?.musicType ?? 'Music type'} (MusicType)',
                   decoration: editorInputDecoration(
                     context,
-                    labelText: '${l10n?.musicType ?? 'Music type'} (MusicType)',
                     focusColor: theme.colorScheme.primary,
                   ),
-                  items: _musicTypeOptions
-                      .map(
-                        (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)),
-                      )
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) {
-                      setState(() {
-                        def.musicType = v;
-                        _sync();
-                      });
-                    }
-                  },
+                  builder: (context, decoration) =>
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue:
+                            _musicTypeOptions
+                                .map((e) => e.$1)
+                                .contains(def.musicType)
+                            ? def.musicType
+                            : 'MainPath',
+                        decoration: decoration,
+                        items: _musicTypeOptions
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.$1,
+                                child: Text(e.$2),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() {
+                              def.musicType = v;
+                              _sync();
+                            });
+                          }
+                        },
+                      ),
                 ),
               ),
             ),
@@ -413,28 +431,37 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: DropdownButtonFormField<String>(
-                  initialValue: _lootOptions.map((e) => e.$1).contains(def.loot)
-                      ? def.loot
-                      : _lootOptions.first.$1,
+                child: EditorResponsiveInputField(
+                  label: '${l10n?.loot ?? 'Loot'} (Loot)',
                   decoration: editorInputDecoration(
                     context,
-                    labelText: '${l10n?.loot ?? 'Loot'} (Loot)',
                     focusColor: theme.colorScheme.primary,
                   ),
-                  items: _lootOptions
-                      .map(
-                        (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)),
-                      )
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) {
-                      setState(() {
-                        def.loot = v;
-                        _sync();
-                      });
-                    }
-                  },
+                  builder: (context, decoration) =>
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue:
+                            _lootOptions.map((e) => e.$1).contains(def.loot)
+                            ? def.loot
+                            : _lootOptions.first.$1,
+                        decoration: decoration,
+                        items: _lootOptions
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.$1,
+                                child: Text(e.$2),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() {
+                              def.loot = v;
+                              _sync();
+                            });
+                          }
+                        },
+                      ),
                 ),
               ),
             ),
@@ -442,32 +469,40 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: DropdownButtonFormField<String>(
-                  initialValue:
-                      _victoryOptions
-                          .map((e) => e.$1)
-                          .contains(def.victoryModule)
-                      ? def.victoryModule
-                      : _victoryOptions.first.$1,
+                child: EditorResponsiveInputField(
+                  label:
+                      '${l10n?.victoryModule ?? 'Victory module'} (VictoryModule)',
                   decoration: editorInputDecoration(
                     context,
-                    labelText:
-                        '${l10n?.victoryModule ?? 'Victory module'} (VictoryModule)',
                     focusColor: theme.colorScheme.primary,
                   ),
-                  items: _victoryOptions
-                      .map(
-                        (e) => DropdownMenuItem(value: e.$1, child: Text(e.$2)),
-                      )
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) {
-                      setState(() {
-                        def.victoryModule = v;
-                        _sync();
-                      });
-                    }
-                  },
+                  builder: (context, decoration) =>
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue:
+                            _victoryOptions
+                                .map((e) => e.$1)
+                                .contains(def.victoryModule)
+                            ? def.victoryModule
+                            : _victoryOptions.first.$1,
+                        decoration: decoration,
+                        items: _victoryOptions
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.$1,
+                                child: Text(e.$2),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() {
+                              def.victoryModule = v;
+                              _sync();
+                            });
+                          }
+                        },
+                      ),
                 ),
               ),
             ),
@@ -542,36 +577,25 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
 }
 
 class _CurrentCustomStageBadge extends StatelessWidget {
-  const _CurrentCustomStageBadge({required this.fromPreset});
+  const _CurrentCustomStageBadge({required this.origin});
 
-  final bool fromPreset;
+  final CustomStageOrigin origin;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: customStageBadgePadding(context),
-      decoration: BoxDecoration(
-        color: _badgeColor(context),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        'C',
-        style: TextStyle(
-          fontSize: customStageBadgeFontSize(context),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
+    return CustomResourceBadge(color: _badgeColor(context));
   }
 
   Color _badgeColor(BuildContext context) {
-    if (fromPreset) {
-      return Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFF1B5E20)
-          : const Color(0xFF2E7D32);
-    }
-    return customStageBadgeColor(context);
+    return switch (origin) {
+      CustomStageOrigin.presetTemplate => presetCustomResourceBadgeColor(
+        context,
+      ),
+      CustomStageOrigin.presetDerived => presetDerivedCustomResourceBadgeColor(
+        context,
+      ),
+      CustomStageOrigin.userCreated => userCustomResourceBadgeColor(context),
+    };
   }
 }
 

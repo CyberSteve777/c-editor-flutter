@@ -3,10 +3,12 @@ import 'package:c_editor/data/models/stage_catalog.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/animated_extended_fab.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 /// Picker for [BackgroundImagePrefix] based on imported DelayLoad groups.
 class StageBackgroundSelectionScreen extends StatefulWidget {
@@ -17,6 +19,7 @@ class StageBackgroundSelectionScreen extends StatefulWidget {
     required this.onSelected,
     required this.onBack,
     this.onImportFromStage,
+    this.stateBucketId,
   });
 
   final List<StageBackgroundOption> Function() optionsBuilder;
@@ -24,6 +27,7 @@ class StageBackgroundSelectionScreen extends StatefulWidget {
   final void Function(StageBackgroundOption option) onSelected;
   final VoidCallback onBack;
   final Future<bool> Function()? onImportFromStage;
+  final String? stateBucketId;
 
   @override
   State<StageBackgroundSelectionScreen> createState() =>
@@ -33,17 +37,33 @@ class StageBackgroundSelectionScreen extends StatefulWidget {
 class _StageBackgroundSelectionScreenState
     extends State<StageBackgroundSelectionScreen> {
   String _searchQuery = '';
-  final ScrollController _listScrollController = ScrollController();
-  bool _listScrollAtTop = true;
+  late final SelectionViewMemory _memory;
+  late final ScrollController _listScrollController;
+  late bool _listScrollAtTop;
+
+  String get _viewStateKey => widget.stateBucketId?.isNotEmpty == true
+      ? widget.stateBucketId!
+      : 'global';
 
   @override
   void initState() {
     super.initState();
-    _listScrollController.addListener(_onListScroll);
+    _memory = SelectionViewMemoryStore.forKey(
+      '$_viewStateKey:stage-background',
+    );
+    _searchQuery = _memory.query;
+    final initialOffset = _memory.scrollOffset;
+    _listScrollAtTop = initialOffset <= 0;
+    _listScrollController = ScrollController(initialScrollOffset: initialOffset)
+      ..addListener(_onListScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
   }
 
   @override
   void dispose() {
+    _rememberScrollOffset();
     _listScrollController.removeListener(_onListScroll);
     _listScrollController.dispose();
     super.dispose();
@@ -51,8 +71,48 @@ class _StageBackgroundSelectionScreenState
 
   void _onListScroll() {
     if (!_listScrollController.hasClients) return;
+    _rememberScrollOffset();
     final atTop = _listScrollController.offset <= 0;
     if (atTop != _listScrollAtTop && mounted) {
+      setState(() => _listScrollAtTop = atTop);
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() {
+      _searchQuery = query;
+      _listScrollAtTop = true;
+    });
+    _memory.query = query;
+    _resetRememberedScrollOffset();
+  }
+
+  void _rememberScrollOffset() {
+    if (!_listScrollController.hasClients) return;
+    _memory.scrollOffset = _listScrollController.offset;
+  }
+
+  void _resetRememberedScrollOffset() {
+    _memory.scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_listScrollController.hasClients) return;
+      _listScrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_listScrollController.hasClients) return;
+    final offset = _memory.scrollOffset;
+    final position = _listScrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_listScrollController.offset != target) {
+      _listScrollController.jumpTo(target);
+    }
+    final atTop = target <= 0;
+    if (_listScrollAtTop != atTop) {
       setState(() => _listScrollAtTop = atTop);
     }
   }
@@ -108,11 +168,16 @@ class _StageBackgroundSelectionScreenState
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.selectStageBackground ?? 'Select lawn appearance'),
+        title: Text(
+          l10n?.selectStageBackground ?? 'Select lawn appearance',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(64),
           child: Padding(
@@ -120,8 +185,8 @@ class _StageBackgroundSelectionScreenState
             child: SelectionSearchField(
               hintText: l10n?.searchStageBackground ?? 'Search lawn',
               query: _searchQuery,
-              onChanged: (v) => setState(() => _searchQuery = v),
-              onClear: () => setState(() => _searchQuery = ''),
+              onChanged: _setSearchQuery,
+              onClear: () => _setSearchQuery(''),
             ),
           ),
         ),
@@ -138,11 +203,15 @@ class _StageBackgroundSelectionScreenState
               : GridView.builder(
                   controller: _listScrollController,
                   padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200,
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
-                    childAspectRatio: 0.88,
+                    mainAxisExtent: responsiveSelectionGridTileExtent(
+                      context,
+                      baseExtent: 170,
+                      scaledTextAllowance: 40,
+                    ),
                   ),
                   itemCount: items.length,
                   itemBuilder: (_, i) {

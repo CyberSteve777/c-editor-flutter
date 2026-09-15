@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/escape_override.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/bloc/app_navigation/app_navigation_cubit.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
+import 'package:c_editor/plugins/active_editor_session.dart';
 import 'package:c_editor/screens/about_screen.dart';
 import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/screens/level_list_screen.dart';
+import 'package:c_editor/screens/plugins_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
-import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/app_ui_scaler.dart';
 import 'package:c_editor/widgets/locale_flag_icon.dart';
+import 'package:c_editor/widgets/editor_components.dart' show EditorOptionTile;
 
 /// Wraps child and handles Escape key on desktop to trigger back/pop.
 /// Uses HardwareKeyboard.addHandler for immediate, global Escape handling.
@@ -63,14 +64,18 @@ class _DesktopEscapeHandlerState extends State<_DesktopEscapeHandler> {
     }
 
     if (EscapeOverride.tryHandle?.call() == true) return true;
+    if (ModalGate.tryAbsorb()) return true;
 
-    // Credits/about uses cubit navigation, not the Navigator stack.
-    if (widget.currentScreen == AppScreen.about) {
+    // Credits/about/plugins use cubit navigation, not the Navigator stack.
+    if (widget.currentScreen == AppScreen.about ||
+        widget.currentScreen == AppScreen.plugins) {
       widget.onEscapeNoRouteToPop?.call();
       return true;
     }
 
-    final nav = Navigator.maybeOf(context);
+    if (popRouteAbove(context)) return true;
+
+    final nav = Navigator.maybeOf(context, rootNavigator: true);
     if (nav != null && nav.canPop()) {
       nav.pop();
       return true;
@@ -117,39 +122,10 @@ class _ZEditorAppState extends State<ZEditorApp> {
             GlobalCupertinoLocalizations.delegate,
           ],
           builder: (context, child) {
-            var scale = settings.uiScale;
-            final mediaQuery = MediaQuery.of(context);
-            final viewportSize = mediaQuery.size;
-            if (mediaQuery.size.shortestSide < 600) {
-              scale *= 0.85;
-            }
-            final scaledSize = Size(
-              viewportSize.width / scale,
-              viewportSize.height / scale,
-            );
-            EdgeInsets scaleInsets(EdgeInsets e) => EdgeInsets.fromLTRB(
-              e.left / scale,
-              e.top / scale,
-              e.right / scale,
-              e.bottom / scale,
-            );
-            return MediaQuery(
-              data: mediaQuery.copyWith(
-                size: scaledSize,
-                padding: scaleInsets(mediaQuery.padding),
-                viewPadding: scaleInsets(mediaQuery.viewPadding),
-                viewInsets: scaleInsets(mediaQuery.viewInsets),
-                textScaler: TextScaler.linear(1.0),
-              ),
-              child: FittedBox(
-                fit: BoxFit.contain,
-                alignment: Alignment.topLeft,
-                child: SizedBox(
-                  width: scaledSize.width,
-                  height: scaledSize.height,
-                  child: AppMessageMessenger(child: child!),
-                ),
-              ),
+            return AppUiScaler(
+              scale: settings.uiScale,
+              applyCompactViewportScale: true,
+              child: child!,
             );
           },
           home: BlocBuilder<AppNavigationCubit, AppNavigationState>(
@@ -175,6 +151,17 @@ class _ZEditorAppState extends State<ZEditorApp> {
                   canPop: false,
                   onPopInvokedWithResult: (didPop, _) async {
                     if (didPop) return;
+                    if (EscapeOverride.tryHandle?.call() == true) return;
+                    if (ModalGate.tryAbsorb()) return;
+                    if (popRouteAbove(context)) return;
+                    final navigator = Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    );
+                    if (navigator.canPop()) {
+                      navigator.pop();
+                      return;
+                    }
                     if (nav.screen == AppScreen.levelList) {
                       SystemNavigator.pop();
                     } else if (nav.screen == AppScreen.editor &&
@@ -201,11 +188,26 @@ class _ZEditorAppState extends State<ZEditorApp> {
     switch (nav.screen) {
       case AppScreen.levelList:
         return LevelListScreen(
-          onLevelClick: (fileName, filePath) {
-            LevelRepository.setLastOpenedLevelDirectory(p.dirname(filePath));
-            context.read<AppNavigationCubit>().openLevel(fileName, filePath);
-          },
+          returnToLevelPath: nav.lastOpenedLevelPath,
+          returnToScrollOffset: nav.levelListScrollOffset,
+          returnToViewMode: nav.levelListFavoritesView
+              ? LevelViewMode.favorites
+              : LevelViewMode.all,
+          returnToSearchQuery: nav.levelListSearchQuery,
+          showUploadAfterLevelReturn: nav.showUploadAfterLevelReturn,
+          onLevelClick:
+              (fileName, filePath, scrollOffset, viewMode, searchQuery) {
+                context.read<AppNavigationCubit>().openLevel(
+                  fileName,
+                  filePath,
+                  levelListScrollOffset: scrollOffset,
+                  levelListFavoritesView: viewMode == LevelViewMode.favorites,
+                  levelListSearchQuery: searchQuery,
+                );
+              },
           onAboutClick: () => context.read<AppNavigationCubit>().openAbout(),
+          onPluginsClick: () =>
+              context.read<AppNavigationCubit>().openPlugins(),
           onLanguageTap: _showLanguageSelector,
         );
       case AppScreen.editor:
@@ -215,30 +217,54 @@ class _ZEditorAppState extends State<ZEditorApp> {
             fileName: nav.editorFileName,
             filePath: nav.editorFilePath,
           )..loadLevel(),
-          child: EditorScreen(
-            onBack: () => _backToLevelList(context),
-            onRegisterBackHandler: (handler) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) setState(() => _editorBackHandler = handler);
-              });
+          child: Builder(
+            builder: (context) {
+              final cubit = context.read<EditorCubit>();
+              return _BindActiveEditorSession(
+                cubit: cubit,
+                child: EditorScreen(
+                  onBack: () => _backToLevelList(context),
+                  onRegisterBackHandler: (handler) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() => _editorBackHandler = handler);
+                      }
+                    });
+                  },
+                  onLanguageTap: _showLanguageSelector,
+                ),
+              );
             },
-            onLanguageTap: _showLanguageSelector,
           ),
         );
       case AppScreen.about:
         return AboutScreen(onBack: () => _backToLevelList(context));
+      case AppScreen.plugins:
+        return PluginsScreen(onBack: () => _backToLevelList(context));
     }
   }
 
   void _showLanguageSelector(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final languageTitle = l10n?.language ?? 'Language';
-    final languageEnglish = l10n?.languageEnglish ?? 'English';
-    final languageChinese = l10n?.languageChinese ?? '中文';
-    final languageRussian = l10n?.languageRussian ?? 'Русский';
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (ctx) => SafeArea(
+    showAppLanguageSelector(context);
+  }
+}
+
+/// The language choices remain scrollable even on a short landscape screen.
+Future<void> showAppLanguageSelector(BuildContext context) async {
+  final l10n = AppLocalizations.of(context);
+  final languageTitle = l10n?.language ?? 'Language';
+  final languageEnglish = l10n?.languageEnglish ?? 'English';
+  final languageChinese = l10n?.languageChinese ?? '中文';
+  final languageRussian = l10n?.languageRussian ?? 'Русский';
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.sizeOf(context).height * 0.9,
+    ),
+    builder: (ctx) => SafeArea(
+      child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -249,7 +275,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 style: Theme.of(ctx).textTheme.titleLarge,
               ),
             ),
-            ListTile(
+            EditorOptionTile(
+              key: const ValueKey('appLanguage_en'),
               leading: const LocaleFlagIcon('en'),
               title: Text(languageEnglish),
               onTap: () {
@@ -257,7 +284,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 Navigator.pop(ctx);
               },
             ),
-            ListTile(
+            EditorOptionTile(
+              key: const ValueKey('appLanguage_zh'),
               leading: const LocaleFlagIcon('zh'),
               title: Text(languageChinese),
               onTap: () {
@@ -265,7 +293,8 @@ class _ZEditorAppState extends State<ZEditorApp> {
                 Navigator.pop(ctx);
               },
             ),
-            ListTile(
+            EditorOptionTile(
+              key: const ValueKey('appLanguage_ru'),
               leading: const LocaleFlagIcon('ru'),
               title: Text(languageRussian),
               onTap: () {
@@ -276,6 +305,44 @@ class _ZEditorAppState extends State<ZEditorApp> {
           ],
         ),
       ),
-    );
+    ),
+  );
+}
+
+/// Binds [EditorCubit] to [ActiveEditorSession] for the plugin host API.
+class _BindActiveEditorSession extends StatefulWidget {
+  const _BindActiveEditorSession({required this.cubit, required this.child});
+
+  final EditorCubit cubit;
+  final Widget child;
+
+  @override
+  State<_BindActiveEditorSession> createState() =>
+      _BindActiveEditorSessionState();
+}
+
+class _BindActiveEditorSessionState extends State<_BindActiveEditorSession> {
+  @override
+  void initState() {
+    super.initState();
+    ActiveEditorSession.instance.bind(widget.cubit);
   }
+
+  @override
+  void didUpdateWidget(covariant _BindActiveEditorSession oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.cubit != widget.cubit) {
+      ActiveEditorSession.instance.clearIf(oldWidget.cubit);
+      ActiveEditorSession.instance.bind(widget.cubit);
+    }
+  }
+
+  @override
+  void dispose() {
+    ActiveEditorSession.instance.clearIf(widget.cubit);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

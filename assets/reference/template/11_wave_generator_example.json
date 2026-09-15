@@ -1,0 +1,351 @@
+{
+	"objects": [
+		{
+			"objclass": "LevelDefinition",
+			"objdata": {
+				"Name": "波次生成器示例",
+				"LevelNumber": 11,
+				"Description": "本关为波次生成器示例关",
+				"StageModule": "RTID(KongfuStage@LevelModules)",
+				"Loot": "RTID(DefaultLoot@LevelModules)",
+				"StartingSun": 200,
+				"VictoryModule": "RTID(VictoryOutro@LevelModules)",
+				"MusicType": "MainPath",
+				"DisablePeavine": true,
+				"Modules": [
+					"RTID(StandardIntro@LevelModules)",
+					"RTID(BronzeDeadWinCon@LevelModules)",
+					"RTID(Kongfu1Waves@CurrentLevel)",
+					"RTID(DefaultZombieWinCondition@LevelModules)",
+					"RTID(Armrack@CurrentLevel)",
+					"RTID(MechanismPlank@CurrentLevel)",
+					"RTID(EnergyGrid@CurrentLevel)",
+					"RTID(ConveyorBelt@CurrentLevel)",
+					"RTID(Bronze@CurrentLevel)",
+					"RTID(DefaultCustomLevel@LevelModules)"
+				]
+			}
+		},
+		{
+			"aliases": [
+				"ConveyorBelt"
+			],
+			"objclass": "ConveyorSeedBankProperties",
+			"objdata": {
+				"DropDelayConditions": [
+					{
+						"Delay": 3,
+						"MaxPackets": 0
+					},
+					{
+						"Delay": 5,
+						"MaxPackets": 4
+					},
+					{
+						"Delay": 7,
+						"MaxPackets": 6
+					},
+					{
+						"Delay": 9,
+						"MaxPackets": 8
+					}
+				],
+				"InitialPlantList": [
+					{
+						"MaxCount": 10,
+						"MaxWeightFactor": 0,
+						"MinCount": 1,
+						"PlantType": "bamboo",
+						"Weight": 30
+					},
+					{
+						"MaxCount": 3,
+						"MaxWeightFactor": 0,
+						"PlantType": "peach",
+						"Weight": 5
+					},
+					{
+						"MaxCount": 5,
+						"MaxWeightFactor": 0,
+						"PlantType": "potatomine",
+						"Weight": 10
+					},
+					{
+						"MaxCount": 20,
+						"MaxWeightFactor": 0,
+						"PlantType": "peapod",
+						"Weight": 80
+					},
+					{
+						"MaxCount": 3,
+						"MaxWeightFactor": 0,
+						"PlantType": "snowpea",
+						"Weight": 20
+					},
+					{
+						"MaxCount": 5,
+						"MaxWeightFactor": 0,
+						"PlantType": "tallnut",
+						"Weight": 10
+					}
+				],
+				"SpeedConditions": [
+					{
+						"MaxPackets": 0,
+						"Speed": 50
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Kongfu1Waves"
+			],
+			"objclass": "WaveGeneratorProperties",
+			"objdata": {
+				"AddToZombiePool": [
+					{
+						"Type": "RTID(kongfu_basic@ZombieTypes)"
+					}
+				],
+				"FlagWaveInterval": 4,
+				"LevelXMLFilename": "pirate_challenge_laststand_a.xml",
+				"WaveCount": 8,
+				"WaveSpendingPointIncrement": 150,
+				"WaveSpendingPoints": 100,
+				"Waves": [
+					{
+						"DisableRandomSpawns": false,
+						"SpawnPlantFoodCount": 0,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_basic@ZombieTypes)"
+							}
+						]
+					},
+					{
+						"DisableRandomSpawns": false,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_basic@ZombieTypes)"
+							}
+						]
+					},
+					{
+						"DisableRandomSpawns": false,
+						"SpawnPlantFoodCount": 1,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_cone@ZombieTypes)"
+							}
+						]
+					},
+					{
+						"DisableRandomSpawns": false,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_drink@ZombieTypes)"
+							}
+						]
+					},
+					{
+						"DisableRandomSpawns": true,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_nunchaku@ZombieTypes)"
+							},
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_nunchaku@ZombieTypes)"
+							}
+						]
+					},
+					{
+						"DisableRandomSpawns": false,
+						"SpawnPlantFoodCount": 1,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_basic@ZombieTypes)"
+							}
+						]
+					},
+					{
+						"DisableRandomSpawns": false,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_imp@ZombieTypes)"
+							},
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_imp@ZombieTypes)"
+							}
+						]
+					},
+					{
+						"DisableRandomSpawns": false,
+						"SpawnPlantFoodCount": 1,
+						"Zombies": [
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_basic@ZombieTypes)"
+							},
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_cone@ZombieTypes)"
+							},
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_imp@ZombieTypes)"
+							},
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_imp@ZombieTypes)"
+							},
+							{
+								"Row": "?",
+								"Type": "RTID(kongfu_monk_drink@ZombieTypes)"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Bronze"
+			],
+			"objclass": "BronzeProperties",
+			"objdata": {
+				"data": [
+					{
+						"itemList": [
+							{
+								"mX": 7,
+								"mY": 2,
+								"spawnTime": 40,
+								"type": "strength"
+							}
+						],
+						"wave": 1
+					},
+					{
+						"itemList": [
+							{
+								"mX": 7,
+								"mY": 0,
+								"spawnTime": 70,
+								"type": "mage"
+							}
+						],
+						"wave": 1
+					},
+					{
+						"itemList": [
+							{
+								"mX": 7,
+								"mY": 4,
+								"spawnTime": 100,
+								"type": "agile"
+							}
+						],
+						"wave": 1
+					},
+					{
+						"itemList": [
+							{
+								"mX": 8,
+								"mY": 1,
+								"spawnTime": 130,
+								"type": "strength"
+							}
+						],
+						"wave": 1
+					},
+					{
+						"itemList": [
+							{
+								"mX": 8,
+								"mY": 3,
+								"spawnTime": 140,
+								"type": "agile"
+							}
+						],
+						"wave": 1
+					}
+				],
+				"shakeOffset": 0.6
+			}
+		},
+		{
+			"aliases": [
+				"Armrack"
+			],
+			"objclass": "ArmrackProperties",
+			"objdata": {
+				"Overrides": []
+			}
+		},
+		{
+			"aliases": [
+				"MechanismPlank"
+			],
+			"objclass": "MechanismPlankProperties",
+			"objdata": {
+				"MechanismGearsRect": {
+					"mHeight": 5,
+					"mWidth": 3,
+					"mX": 0,
+					"mY": 0
+				},
+				"MechanismPlankRows": [
+					"0",
+					"4"
+				]
+			}
+		},
+		{
+			"aliases": [
+				"EnergyGrid"
+			],
+			"objclass": "EnergyGridProperties",
+			"objdata": {
+				"Overrides": [
+					{
+						"itemList": [
+							{
+								"mX": 0,
+								"mY": 2
+							},
+							{
+								"mX": 2,
+								"mY": 2
+							}
+						],
+						"wave": 1
+					},
+					{
+						"itemList": [
+							{
+								"mX": 1,
+								"mY": 2
+							},
+							{
+								"mX": 3,
+								"mY": 2
+							}
+						],
+						"wave": 5
+					}
+				]
+			}
+		}
+	],
+	"version": 1
+}

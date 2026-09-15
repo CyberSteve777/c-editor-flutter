@@ -7,7 +7,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
-const _pumpkinHouseAsset = 'assets/images/griditems/pumpkin_house.png';
+const _pumpkinHouseAsset = 'assets/images/griditems/pumpkin_house.webp';
 const _pumpkinHouseType = 'pumpkin_house';
 
 /// Pumpkin house wave event editor (`PumpkinHouseActionProps`).
@@ -154,6 +154,7 @@ class _PumpkinHouseEventScreenState extends State<PumpkinHouseEventScreen> {
             tooltip: l10n?.tooltipAboutEvent ?? 'About this event',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventPumpkinHouseSpawn ?? 'Pumpkin house spawn',
               sections: [
                 HelpSectionData(
@@ -236,7 +237,10 @@ class _PumpkinHouseEventScreenState extends State<PumpkinHouseEventScreen> {
                           deleteTooltip: l10n?.delete ?? 'Delete',
                         ),
                       ),
-                      AddItemCard(onPressed: _addHouse, minHeight: 130),
+                      AddItemCard(
+                        onPressed: _addHouse,
+                        minHeight: EditorItemCardLayout.gridItemCardHeight,
+                      ),
                     ],
                   ),
                   if (itemsOutsideLawn.isNotEmpty) ...[
@@ -432,6 +436,7 @@ class _PumpkinHouseItemCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
         width: EditorItemCardLayout.cardWidth(context),
+        height: EditorItemCardLayout.gridItemCardHeight,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

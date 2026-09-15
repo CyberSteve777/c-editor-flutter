@@ -102,6 +102,7 @@ class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventRaidingParty ?? 'Raiding party event',
               sections: [
                 HelpSectionData(
@@ -207,17 +208,17 @@ class _RaidingPartyEventScreenState extends State<RaidingPartyEventScreen> {
     int value,
     void Function(int) onChanged,
   ) {
-    return TextFormField(
-      initialValue: value.toString(),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        initialValue: value.toString(),
+        decoration: decoration,
+        keyboardType: TextInputType.number,
+        onChanged: (v) {
+          final n = int.tryParse(v);
+          if (n != null) onChanged(n);
+        },
       ),
-      keyboardType: TextInputType.number,
-      onChanged: (v) {
-        final n = int.tryParse(v);
-        if (n != null) onChanged(n);
-      },
     );
   }
 }

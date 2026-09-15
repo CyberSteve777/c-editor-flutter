@@ -204,7 +204,6 @@ class _RailcartPropertiesScreenState extends State<RailcartPropertiesScreen> {
     _sync();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -238,13 +237,44 @@ class _RailcartPropertiesScreenState extends State<RailcartPropertiesScreen> {
           isEvent: false,
           objClass: _objClass,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title:
+                  l10n?.moduleTitle_RailcartProperties ?? 'Minecart and Rail',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpRailcartBody ??
+                      'Configure the positions of minecarts and rails and select the minecart style. Tap a tile once to place an item, and tap it again to remove it.',
+                ),
+                HelpSectionData(
+                  title: l10n?.layRails ?? 'Lay rails',
+                  body:
+                      l10n?.moduleHelpRailcartRailsBody ??
+                      'In Lay rails mode, tap tiles to lay rails. The editor automatically combines consecutive tiles in the same column into a single rail segment.',
+                ),
+                HelpSectionData(
+                  title: l10n?.placeCarts ?? 'Place minecarts',
+                  body:
+                      l10n?.moduleHelpRailcartCartsBody ??
+                      'Tap tiles to place or remove minecarts. Minecarts on the same rail segment can easily stack.',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -274,34 +304,42 @@ ModuleAliasInputField(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DropdownButtonFormField<String>(
-                      key: ValueKey(_data.railcartType),
-                      initialValue:
-                          _cartTypeOptions.contains(_data.railcartType)
-                          ? _data.railcartType
-                          : _cartTypeOptions.first,
+                    EditorResponsiveInputField(
+                      label: l10n?.railcartType ?? 'Railcart type',
                       decoration: InputDecoration(
-                        labelText: l10n?.railcartType ?? 'Railcart type',
                         border: const OutlineInputBorder(),
                       ),
-                      items: _cartTypeOptions
-                          .map(
-                            (e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(_railcartDisplayName(context, e)),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (v) {
-                        if (v != null) {
-                          _data = RailcartPropertiesData(
-                            railcartType: v,
-                            rails: _data.rails,
-                            railcarts: _data.railcarts,
-                          );
-                          _sync();
-                        }
-                      },
+                      builder: (context, decoration) =>
+                          DropdownButtonFormField<String>(
+                            itemHeight: null,
+                            isExpanded: true,
+                            key: ValueKey(_data.railcartType),
+                            initialValue:
+                                _cartTypeOptions.contains(_data.railcartType)
+                                ? _data.railcartType
+                                : _cartTypeOptions.first,
+                            decoration: decoration,
+                            items: _cartTypeOptions
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(
+                                      _railcartDisplayName(context, e),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (v) {
+                              if (v != null) {
+                                _data = RailcartPropertiesData(
+                                  railcartType: v,
+                                  rails: _data.rails,
+                                  railcarts: _data.railcarts,
+                                );
+                                _sync();
+                              }
+                            },
+                          ),
                     ),
                     const SizedBox(height: 16),
                     LayoutBuilder(
@@ -421,37 +459,33 @@ ModuleAliasInputField(
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${l10n?.railSegments ?? 'Rail segments'}: ${_data.rails.length}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        Text(
-                          '${l10n?.railcartCount ?? 'Railcart count'}: ${_data.railcarts.length}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                    Flexible(
-                      child: FilledButton.icon(
-                        onPressed: _clearAll,
-                        icon: const Icon(Icons.delete, size: 18),
-                        label: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(l10n?.clearAll ?? 'Clear all'),
-                        ),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: theme.colorScheme.error,
-                        ),
+                child: EditorResponsiveActionRow(
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${l10n?.railSegments ?? 'Rail segments'}: ${_data.rails.length}',
+                        style: theme.textTheme.bodyMedium,
                       ),
+                      Text(
+                        '${l10n?.railcartCount ?? 'Railcart count'}: ${_data.railcarts.length}',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  action: FilledButton.icon(
+                    onPressed: _clearAll,
+                    icon: const Icon(Icons.delete, size: 18),
+                    label: Text(
+                      l10n?.clearAll ?? 'Clear all',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.error,
+                    ),
+                  ),
                 ),
               ),
             ),

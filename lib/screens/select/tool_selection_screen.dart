@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/tool_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/asset_image.dart' show AssetImageWidget;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 /// Tool selection. Ported from Z-Editor-master ToolSelectionScreen.kt
 class ToolSelectionScreen extends StatefulWidget {
@@ -11,10 +13,12 @@ class ToolSelectionScreen extends StatefulWidget {
     super.key,
     required this.onToolSelected,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final void Function(String id) onToolSelected;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<ToolSelectionScreen> createState() => _ToolSelectionScreenState();
@@ -22,6 +26,47 @@ class ToolSelectionScreen extends StatefulWidget {
 
 class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
   String _searchQuery = '';
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    _memory = SelectionViewMemoryStore.forKey('$bucket:tool-selection');
+    _searchQuery = _memory.query;
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffset,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _memory
+      ..query = query
+      ..scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
+  }
 
   List<ToolCardInfo> _filteredTools(BuildContext context) {
     return ToolRepository.getAll().where((tool) {
@@ -44,6 +89,7 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
+          toolbarHeight: responsiveSelectionToolbarHeight(context),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: widget.onBack,
@@ -53,6 +99,8 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
           title: Text(
             l10n?.selectToolCard ?? 'Select tool card',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(64),
@@ -62,8 +110,8 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
                 hintText: l10n?.search ?? 'Search',
                 query: _searchQuery,
                 fillColor: theme.colorScheme.surface,
-                onChanged: (v) => setState(() => _searchQuery = v),
-                onClear: () => setState(() => _searchQuery = ''),
+                onChanged: _setSearchQuery,
+                onClear: () => _setSearchQuery(''),
               ),
             ),
           ),
@@ -98,10 +146,14 @@ class _ToolSelectionScreenState extends State<ToolSelectionScreen> {
                       constraints.maxWidth,
                     );
                     return GridView.builder(
+                      controller: _scrollController,
                       padding: const EdgeInsets.all(16),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
-                        childAspectRatio: 0.85,
+                        mainAxisExtent: responsiveSelectionGridTileExtent(
+                          context,
+                          baseExtent: 190,
+                        ),
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),

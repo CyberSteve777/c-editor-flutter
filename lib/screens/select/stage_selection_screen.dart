@@ -12,8 +12,29 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 enum _StagePickerTab { builtin, custom }
+
+class _StageSelectionViewState {
+  _StageSelectionViewState({
+    required this.tab,
+    required this.type,
+    required this.searchQuery,
+    required this.builtinScrollOffset,
+    required this.customScrollOffset,
+    required this.typeScrollOffset,
+  });
+
+  _StagePickerTab tab;
+  StageType type;
+  String searchQuery;
+  double builtinScrollOffset;
+  double customScrollOffset;
+  double typeScrollOffset;
+}
+
+final Map<String, _StageSelectionViewState> _stageSelectionViewStates = {};
 
 /// Full-screen lawn picker: built-in LevelModules stages or level-local custom lawns.
 class StageSelectionScreen extends StatefulWidget {
@@ -28,6 +49,7 @@ class StageSelectionScreen extends StatefulWidget {
     this.onOpenCustomStageEditor,
     this.onDeleteCustomStage,
     this.onSwitchFromCustomToBuiltin,
+    this.openCustomSection = false,
   });
 
   final String currentStageRtid;
@@ -40,6 +62,7 @@ class StageSelectionScreen extends StatefulWidget {
   final void Function(String alias)? onOpenCustomStageEditor;
   final Future<bool> Function(String alias)? onDeleteCustomStage;
   final Future<bool> Function(String customAlias)? onSwitchFromCustomToBuiltin;
+  final bool openCustomSection;
 
   @override
   State<StageSelectionScreen> createState() => _StageSelectionScreenState();
@@ -47,17 +70,142 @@ class StageSelectionScreen extends StatefulWidget {
 
 class _StageSelectionScreenState extends State<StageSelectionScreen> {
   late _StagePickerTab _tab;
-  StageType _selectedType = StageType.all;
+  late StageType _selectedType;
   String _searchQuery = '';
   String? _currentStageRtidOverride;
+  late final ScrollController _builtinScrollController;
+  late final ScrollController _customScrollController;
+
+  String get _viewStateKey =>
+      'level:${identityHashCode(widget.levelFile)}:stage';
 
   @override
   void initState() {
     super.initState();
     final info = RtidParser.parse(widget.currentStageRtid);
-    _tab = info?.source == CustomStageLevelUtils.currentLevel
+    final remembered = _stageSelectionViewStates[_viewStateKey];
+    _tab = widget.openCustomSection
         ? _StagePickerTab.custom
-        : _StagePickerTab.builtin;
+        : remembered?.tab ??
+              (info?.source == CustomStageLevelUtils.currentLevel
+                  ? _StagePickerTab.custom
+                  : _StagePickerTab.builtin);
+    _selectedType = remembered?.type ?? StageType.all;
+    _searchQuery = remembered?.searchQuery ?? '';
+    _builtinScrollController = ScrollController(
+      initialScrollOffset: remembered?.builtinScrollOffset ?? 0,
+    )..addListener(_rememberScrollOffsets);
+    _customScrollController = ScrollController(
+      initialScrollOffset: remembered?.customScrollOffset ?? 0,
+    )..addListener(_rememberScrollOffsets);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreCurrentTabScrollOffset();
+    });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffsets();
+    _builtinScrollController.dispose();
+    _customScrollController.dispose();
+    super.dispose();
+  }
+
+  void _setTab(_StagePickerTab tab) {
+    if (_tab == tab) return;
+    _rememberScrollOffsets();
+    setState(() => _tab = tab);
+    _rememberViewState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreCurrentTabScrollOffset();
+    });
+  }
+
+  void _setType(StageType type) {
+    if (_selectedType == type) return;
+    setState(() => _selectedType = type);
+    _resetBuiltinScrollOffset();
+    _rememberViewState(builtinScrollOffset: 0);
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetBuiltinScrollOffset();
+  }
+
+  void _rememberViewState({
+    double? builtinScrollOffset,
+    double? customScrollOffset,
+    double? typeScrollOffset,
+  }) {
+    final state = _stageSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _StageSelectionViewState(
+        tab: _tab,
+        type: _selectedType,
+        searchQuery: _searchQuery,
+        builtinScrollOffset: 0,
+        customScrollOffset: 0,
+        typeScrollOffset: 0,
+      ),
+    );
+    state.tab = _tab;
+    state.type = _selectedType;
+    state.searchQuery = _searchQuery;
+    if (builtinScrollOffset != null) {
+      state.builtinScrollOffset = builtinScrollOffset;
+    }
+    if (customScrollOffset != null) {
+      state.customScrollOffset = customScrollOffset;
+    }
+    if (typeScrollOffset != null) {
+      state.typeScrollOffset = typeScrollOffset;
+    }
+  }
+
+  void _rememberTypeScrollOffset(double offset) {
+    _rememberViewState(typeScrollOffset: offset);
+  }
+
+  void _rememberScrollOffsets() {
+    double? builtinOffset;
+    double? customOffset;
+    if (_builtinScrollController.hasClients) {
+      builtinOffset = _builtinScrollController.offset;
+    }
+    if (_customScrollController.hasClients) {
+      customOffset = _customScrollController.offset;
+    }
+    _rememberViewState(
+      builtinScrollOffset: builtinOffset,
+      customScrollOffset: customOffset,
+    );
+  }
+
+  void _resetBuiltinScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(builtinScrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_builtinScrollController.hasClients) return;
+      _builtinScrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreCurrentTabScrollOffset() {
+    if (!mounted) return;
+    final state = _stageSelectionViewStates[_viewStateKey];
+    final controller = _tab == _StagePickerTab.builtin
+        ? _builtinScrollController
+        : _customScrollController;
+    if (!controller.hasClients) return;
+    final offset = _tab == _StagePickerTab.builtin
+        ? state?.builtinScrollOffset ?? 0
+        : state?.customScrollOffset ?? 0;
+    final position = controller.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (controller.offset != target) controller.jumpTo(target);
   }
 
   String get _effectiveCurrentStageRtid =>
@@ -148,73 +296,88 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.selectStage ?? 'Select lawn'),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(
-            _tab == _StagePickerTab.builtin ? 148 : 72,
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: SegmentedButton<_StagePickerTab>(
-                  segments: [
-                    ButtonSegment(
-                      value: _StagePickerTab.builtin,
-                      label: Text(l10n?.stageSelectionTabBuiltin ?? 'Built-in'),
-                      icon: const Icon(Icons.grass),
-                    ),
-                    ButtonSegment(
-                      value: _StagePickerTab.custom,
-                      label: Text(l10n?.stageSelectionTabCustom ?? 'Custom'),
-                      icon: const Icon(Icons.edit_note),
-                    ),
-                  ],
-                  selected: {_tab},
-                  onSelectionChanged: (values) {
-                    setState(() => _tab = values.first);
-                  },
-                ),
-              ),
-              if (_tab == _StagePickerTab.builtin) ...[
+        title: Text(
+          l10n?.selectStage ?? 'Select lawn',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      body: Column(
+        children: [
+          Material(
+            color:
+                theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+            child: Column(
+              children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SelectionSearchField(
-                    hintText: l10n?.searchStage ?? 'Search stage',
-                    query: _searchQuery,
-                    onChanged: (v) => setState(() => _searchQuery = v),
-                    onClear: () => setState(() => _searchQuery = ''),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: SegmentedButton<_StagePickerTab>(
+                    segments: [
+                      ButtonSegment(
+                        value: _StagePickerTab.builtin,
+                        label: Text(
+                          l10n?.stageSelectionTabBuiltin ?? 'Built-in',
+                        ),
+                        icon: const Icon(Icons.grass),
+                      ),
+                      ButtonSegment(
+                        value: _StagePickerTab.custom,
+                        label: Text(l10n?.stageSelectionTabCustom ?? 'Custom'),
+                        icon: const Icon(Icons.edit_note),
+                      ),
+                    ],
+                    selected: {_tab},
+                    onSelectionChanged: (values) {
+                      _setTab(values.first);
+                    },
                   ),
                 ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
+                if (_tab == _StagePickerTab.builtin) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SelectionSearchField(
+                      hintText: l10n?.searchStage ?? 'Search stage',
+                      query: _searchQuery,
+                      onChanged: _setSearchQuery,
+                      onClear: () => _setSearchQuery(''),
+                    ),
                   ),
-                  child: Row(
+                  HorizontalTagScroller(
+                    onAccentBar: true,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    initialScrollOffset:
+                        _stageSelectionViewStates[_viewStateKey]
+                            ?.typeScrollOffset ??
+                        0,
+                    onScrollOffsetChanged: _rememberTypeScrollOffset,
                     children: StageType.values.map((t) {
                       return AccentBarChoiceChip(
                         label: _typeLabel(t, l10n),
                         selected: _selectedType == t,
-                        onSelected: (_) => setState(() => _selectedType = t),
+                        onSelected: (_) => _setType(t),
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                       );
                     }).toList(),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
+          Expanded(
+            child: _tab == _StagePickerTab.builtin
+                ? _buildBuiltinTab(context, l10n, theme)
+                : _buildCustomTab(context, l10n, theme),
+          ),
+        ],
       ),
-      body: _tab == _StagePickerTab.builtin
-          ? _buildBuiltinTab(context, l10n, theme)
-          : _buildCustomTab(context, l10n, theme),
     );
   }
 
@@ -253,12 +416,16 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
     }
 
     return GridView.builder(
+      controller: _builtinScrollController,
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.85,
+        mainAxisExtent: responsiveSelectionGridTileExtent(
+          context,
+          baseExtent: 242,
+        ),
       ),
       itemCount: items.length,
       itemBuilder: (_, i) {
@@ -303,6 +470,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
           ];
 
     return ListView(
+      controller: _customScrollController,
       padding: const EdgeInsets.all(16),
       children: [
         if (widget.onCreateCustomStage != null && customStages.isEmpty)
@@ -347,8 +515,9 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
           ...customStages.map((stageObj) {
             final alias = stageObj.aliases?.firstOrNull ?? '';
             final isSelected = _isCustomCurrent && alias == currentAlias;
-            final isPresetCopy =
-                CustomStagePresetRepository.isPresetCustomStageAlias(alias);
+            final origin = CustomStagePresetRepository.originForObject(
+              stageObj,
+            );
             final iconFile = _customIconFile(stageObj);
             final iconPath = iconFile == null
                 ? 'assets/images/others/unknown.webp'
@@ -388,9 +557,7 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
                             Positioned(
                               top: 4,
                               left: 4,
-                              child: _CurrentCustomStageBadge(
-                                fromPreset: isPresetCopy,
-                              ),
+                              child: _CurrentCustomStageBadge(origin: origin),
                             ),
                           ],
                         ),
@@ -492,36 +659,25 @@ class _StageSelectionScreenState extends State<StageSelectionScreen> {
 }
 
 class _CurrentCustomStageBadge extends StatelessWidget {
-  const _CurrentCustomStageBadge({required this.fromPreset});
+  const _CurrentCustomStageBadge({required this.origin});
 
-  final bool fromPreset;
+  final CustomStageOrigin origin;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: customStageBadgePadding(context),
-      decoration: BoxDecoration(
-        color: _badgeColor(context),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        'C',
-        style: TextStyle(
-          fontSize: customStageBadgeFontSize(context),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
+    return CustomResourceBadge(color: _badgeColor(context));
   }
 
   Color _badgeColor(BuildContext context) {
-    if (fromPreset) {
-      return Theme.of(context).brightness == Brightness.dark
-          ? const Color(0xFF1B5E20)
-          : const Color(0xFF2E7D32);
-    }
-    return customStageBadgeColor(context);
+    return switch (origin) {
+      CustomStageOrigin.presetTemplate => presetCustomResourceBadgeColor(
+        context,
+      ),
+      CustomStageOrigin.presetDerived => presetDerivedCustomResourceBadgeColor(
+        context,
+      ),
+      CustomStageOrigin.userCreated => userCustomResourceBadgeColor(context),
+    };
   }
 }
 
@@ -544,7 +700,6 @@ class _PresetCustomStageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final iconPath = 'assets/images/round_icons/${preset.iconName}';
     final effectiveOnTap = disabled || selected ? null : onTap;
@@ -559,67 +714,112 @@ class _PresetCustomStageCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Padding(
             padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                ClipOval(
-                  child: SizedBox(
-                    width: 96,
-                    height: 96,
-                    child: AssetImageWidget(
-                      assetPath: iconPath,
-                      altCandidates: imageAltCandidates(iconPath),
-                      width: 96,
-                      height: 96,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        displayName,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        source,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        preset.alias,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final textScale = MediaQuery.textScalerOf(
+                  context,
+                ).scale(1).clamp(1.0, 2.5);
+                final stackedBreakpoint = 400 + (textScale - 1) * 140;
+                final stacked = constraints.maxWidth < stackedBreakpoint;
+                final action = IconButton(
                   tooltip: selected
                       ? displayName
                       : l10n?.createCustomStage ?? 'Create custom lawn',
                   icon: Icon(selected ? Icons.check : Icons.add_circle_outline),
                   onPressed: effectiveOnTap,
-                ),
-              ],
+                );
+
+                if (stacked) {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 96,
+                        width: double.infinity,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            _buildIcon(iconPath),
+                            Positioned(right: 0, top: 0, child: action),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildDetails(context, stacked: true),
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    _buildIcon(iconPath),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildDetails(context, stacked: false)),
+                    action,
+                  ],
+                );
+              },
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildIcon(String iconPath) {
+    return ClipOval(
+      child: SizedBox(
+        width: 96,
+        height: 96,
+        child: AssetImageWidget(
+          assetPath: iconPath,
+          altCandidates: imageAltCandidates(iconPath),
+          width: 96,
+          height: 96,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetails(BuildContext context, {required bool stacked}) {
+    final theme = Theme.of(context);
+    final alignment = stacked
+        ? CrossAxisAlignment.center
+        : CrossAxisAlignment.start;
+    final textAlign = stacked ? TextAlign.center : TextAlign.start;
+    return Column(
+      crossAxisAlignment: alignment,
+      children: [
+        Text(
+          displayName,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: textAlign,
+          maxLines: stacked ? 4 : 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          source,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          textAlign: textAlign,
+          maxLines: stacked ? 6 : 4,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          preset.alias,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          textAlign: textAlign,
+          maxLines: stacked ? 2 : 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }
@@ -682,7 +882,7 @@ class _BuiltinStageGridItem extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               Text(

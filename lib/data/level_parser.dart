@@ -13,6 +13,16 @@ class LevelParser {
   };
 
   static const pirateStageObjclasses = {'PirateStageProperties'};
+  static const roofStageObjclasses = {'RoofStageProperties'};
+
+  static const underwaterWorldSixRowStageAliases = {
+    'DeepseaStage',
+    'DeepseaLandStage',
+  };
+
+  static const soudacheStageAlias = 'SouDaCheStage';
+  static const _soudacheBackgroundGroup = 'DelayLoad_Background_SouDaChe';
+  static const _soudacheBackgroundPrefix = 'IMAGE_BACKGROUNDS_SOUDACHE';
 
   static const levelJamMusicStageObjclasses = {
     'EightiesStageProperties',
@@ -140,6 +150,11 @@ class LevelParser {
     return pirateStageObjclasses.contains(objclass);
   }
 
+  static bool isRoofStageObjclass(String? objclass) {
+    if (objclass == null) return false;
+    return roofStageObjclasses.contains(objclass);
+  }
+
   /// Returns true if the stage is a Pirate Seas lawn.
   static bool isPirateLawn(
     LevelDefinitionData? levelDef,
@@ -158,6 +173,21 @@ class LevelParser {
     return isPirateLawn(parsed.levelDef, levelFile);
   }
 
+  /// Returns true if the stage uses the roof lawn implementation.
+  static bool isRoofLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    return isRoofStageObjclass(
+      resolveStagePropertiesObjclass(levelDef, levelFile),
+    );
+  }
+
+  static bool isRoofLawnFromFile(PvzLevelFile levelFile) {
+    final parsed = parseLevel(levelFile);
+    return isRoofLawn(parsed.levelDef, levelFile);
+  }
+
   /// Returns true if the lawn uses DeepSea or DeepSeaLand grid (6x10).
   static bool isDeepSeaLawn(
     LevelDefinitionData? levelDef, [
@@ -172,6 +202,34 @@ class LevelParser {
   static bool isDeepSeaLawnFromFile(PvzLevelFile levelFile) {
     final parsed = parseLevel(levelFile);
     return isDeepSeaLawn(parsed.levelDef, levelFile);
+  }
+
+  static bool isUnderwaterWorldSixRowLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final info = levelDef == null
+        ? null
+        : RtidParser.parse(levelDef.stageModule);
+    if (info != null &&
+        underwaterWorldSixRowStageAliases.contains(info.alias)) {
+      return true;
+    }
+    return isDeepSeaLawn(levelDef, levelFile);
+  }
+
+  static bool isSouDaCheLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final info = levelDef == null
+        ? null
+        : RtidParser.parse(levelDef.stageModule);
+    if (info != null && info.alias == soudacheStageAlias) return true;
+    final objdata = resolveStageObjdata(levelDef, levelFile);
+    if (objdata == null) return false;
+    return objdata['BackgroundResourceGroup'] == _soudacheBackgroundGroup ||
+        objdata['BackgroundImagePrefix'] == _soudacheBackgroundPrefix;
   }
 
   static bool isSubmarineEnabledOnLawn(
@@ -246,6 +304,47 @@ class LevelParser {
     PvzLevelFile? levelFile,
   ]) {
     return isDeepSeaLawn(levelDef, levelFile) ? (6, 10) : (5, 9);
+  }
+
+  static const deepSeaBoardType = 'submarine';
+
+  /// Keeps [LevelDefinitionData.boardType] as `"submarine"` iff [isDeepSeaLawn].
+  /// Independent of custom-lawn InitSubmarineInfo — otherwise planting on row 6 fails.
+  /// When [persist] is true, writes the updated definition back into [levelFile].
+  /// Returns true if BoardType changed.
+  static bool syncDeepSeaBoardType(
+    LevelDefinitionData levelDef,
+    PvzLevelFile levelFile, {
+    bool persist = true,
+  }) {
+    final want = isDeepSeaLawn(levelDef, levelFile) ? deepSeaBoardType : null;
+    final current = (levelDef.boardType == null || levelDef.boardType!.isEmpty)
+        ? null
+        : levelDef.boardType;
+    if (current == want) return false;
+    levelDef.boardType = want;
+    if (persist) writeLevelDefinition(levelDef, levelFile);
+    return true;
+  }
+
+  /// Writes [levelDef] into the level file's LevelDefinition object.
+  static void writeLevelDefinition(
+    LevelDefinitionData levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final obj = levelFile.objects.firstWhereOrNull(
+      (o) => o.objClass == 'LevelDefinition',
+    );
+    if (obj != null) obj.objData = levelDef.toJson();
+  }
+
+  /// Syncs DeepSea BoardType then persists the LevelDefinition.
+  static void syncAndWriteLevelDefinition(
+    LevelDefinitionData levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    syncDeepSeaBoardType(levelDef, levelFile, persist: false);
+    writeLevelDefinition(levelDef, levelFile);
   }
 
   static (int rows, int cols) getGridDimensionsFromFile(

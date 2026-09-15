@@ -20,15 +20,19 @@ abstract final class PvzAliasUtils {
     });
   }
 
-  static String uniqueAlias(PvzLevelFile levelFile, String baseAlias) {
+  static String uniqueAlias(
+    PvzLevelFile levelFile,
+    String baseAlias, {
+    String numberSeparator = '_',
+  }) {
     var candidate = baseAlias.trim();
     if (candidate.isEmpty) candidate = 'Object';
     if (isAliasAvailable(levelFile, candidate)) return candidate;
     var i = 1;
-    while (!isAliasAvailable(levelFile, '${candidate}_$i')) {
+    while (!isAliasAvailable(levelFile, '$candidate$numberSeparator$i')) {
       i++;
     }
-    return '${candidate}_$i';
+    return '$candidate$numberSeparator$i';
   }
 
   static void renameAlias({

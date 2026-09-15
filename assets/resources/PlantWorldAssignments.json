@@ -214,6 +214,16 @@
     "seashooter",
     "seaderris"
   ],
+  "World_Moon": [
+    "pineclone",
+    "cosmoss",
+    "cosmicpea",
+    "cosmicmushroom",
+    "cosmicnut",
+    "gravitree",
+    "darkmatter_dragonfruit",
+    "coming_soon"
+  ],
   "World_Fairytale": [
     "ents",
     "heathseeker",

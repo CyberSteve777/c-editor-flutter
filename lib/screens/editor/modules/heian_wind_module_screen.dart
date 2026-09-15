@@ -165,7 +165,6 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -180,7 +179,6 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.heianWindModuleTitle ?? 'Heian Wind';
     final helpTitle = l10n?.heianWindModuleHelpTitle ?? 'Heian Wind help';
     final selectedWave =
         _selectedWaveIndex >= 0 &&
@@ -207,6 +205,7 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -239,14 +238,14 @@ class _HeianWindModuleScreenState extends State<HeianWindModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 Text(
                   l10n?.heianWindModuleAppearances ?? 'Appearances',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -287,7 +286,7 @@ ModuleAliasInputField(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${l10n?.appearanceLabel ?? "Appearance"} ${idx + 1}',
+                                l10n?.groupN(idx + 1) ?? 'Group ${idx + 1}',
                                 style: theme.textTheme.labelLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -335,70 +334,84 @@ ModuleAliasInputField(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${l10n?.appearanceLabel ?? "Appearance"} ${_selectedWaveIndex + 1}',
+                            l10n?.groupN(_selectedWaveIndex + 1) ??
+                                'Group ${_selectedWaveIndex + 1}',
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Row(
+                          EditorResponsiveFieldRow(
                             children: [
                               Expanded(
                                 flex: 2,
-                                child: TextFormField(
-                                  initialValue: '${selectedWave.waveNumber}',
+                                child: EditorResponsiveInputField(
+                                  label: l10n?.heianWindModuleWaves ?? 'Wave',
                                   decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.heianWindModuleWaves ?? 'Wave',
                                     hintText:
                                         l10n?.heianWindModuleWavesHint ??
                                         '0-based',
                                     border: const OutlineInputBorder(),
                                   ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 0) {
-                                      _updateWave(
-                                        _selectedWaveIndex,
-                                        HeianWindWaveWindInfoData(
-                                          waveNumber: n,
-                                          windDelay: selectedWave.windDelay,
-                                          windInfos: selectedWave.windInfos,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue:
+                                            '${selectedWave.waveNumber}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 0) {
+                                            _updateWave(
+                                              _selectedWaveIndex,
+                                              HeianWindWaveWindInfoData(
+                                                waveNumber: n,
+                                                windDelay:
+                                                    selectedWave.windDelay,
+                                                windInfos:
+                                                    selectedWave.windInfos,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 flex: 2,
-                                child: TextFormField(
-                                  initialValue: '${selectedWave.windDelay}',
+                                child: EditorResponsiveInputField(
+                                  label:
+                                      l10n?.heianWindModuleWindDelay ??
+                                      'Wind delay',
                                   decoration: InputDecoration(
-                                    labelText:
-                                        l10n?.heianWindModuleWindDelay ??
-                                        'Wind delay',
                                     hintText:
                                         l10n?.heianWindModuleWindDelayHint ??
                                         'Unit: seconds',
                                     border: const OutlineInputBorder(),
                                   ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (v) {
-                                    final n = int.tryParse(v);
-                                    if (n != null && n >= 0) {
-                                      _updateWave(
-                                        _selectedWaveIndex,
-                                        HeianWindWaveWindInfoData(
-                                          waveNumber: selectedWave.waveNumber,
-                                          windDelay: n,
-                                          windInfos: selectedWave.windInfos,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                  builder: (context, decoration) =>
+                                      TextFormField(
+                                        initialValue:
+                                            '${selectedWave.windDelay}',
+                                        decoration: decoration,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (v) {
+                                          final n = int.tryParse(v);
+                                          if (n != null && n >= 0) {
+                                            _updateWave(
+                                              _selectedWaveIndex,
+                                              HeianWindWaveWindInfoData(
+                                                waveNumber:
+                                                    selectedWave.waveNumber,
+                                                windDelay: n,
+                                                windInfos:
+                                                    selectedWave.windInfos,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                 ),
                               ),
                             ],
@@ -496,56 +509,62 @@ ModuleAliasInputField(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  EditorResponsiveFieldRow(
                     children: [
-                      Expanded(
-                        child: DropdownButtonFormField<int>(
-                          initialValue: dropdownValue,
-                          decoration: InputDecoration(
-                            labelText: l10n?.heianWindModuleRow ?? 'Row',
-                            border: const OutlineInputBorder(),
-                            isDense: true,
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: -1,
-                              child: Text(
-                                l10n?.heianWindModuleAllRows ?? 'All rows',
-                              ),
-                            ),
-                            ...List.generate(
-                              _gridRows,
-                              (i) => DropdownMenuItem(
-                                value: i,
-                                child: Text('${l10n?.row ?? "Row"} ${i + 1}'),
-                              ),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v != null) {
-                              onUpdate(
-                                HeianWindInfoData(
-                                  row: v,
-                                  affectZombies: wind.affectZombies,
-                                  distance: wind.distance,
-                                  moveTime: wind.moveTime,
-                                ),
-                              );
-                            }
-                          },
+                      EditorResponsiveInputField(
+                        label: l10n?.heianWindModuleRow ?? 'Row',
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          isDense: true,
                         ),
+                        builder: (context, decoration) =>
+                            DropdownButtonFormField<int>(
+                              isExpanded: true,
+                              initialValue: dropdownValue,
+                              decoration: decoration,
+                              items: [
+                                DropdownMenuItem(
+                                  value: -1,
+                                  child: Text(
+                                    l10n?.heianWindModuleAllRows ?? 'All rows',
+                                  ),
+                                ),
+                                ...List.generate(
+                                  _gridRows,
+                                  (i) => DropdownMenuItem(
+                                    value: i,
+                                    child: Text(
+                                      l10n?.rowN(i + 1) ?? 'Row ${i + 1}',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (v) {
+                                if (v != null) {
+                                  onUpdate(
+                                    HeianWindInfoData(
+                                      row: v,
+                                      affectZombies: wind.affectZombies,
+                                      distance: wind.distance,
+                                      moveTime: wind.moveTime,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                       ),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.heianWindModuleAffectZombies ??
+                            'Affect zombies',
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        builder: (context, decoration) => TextFormField(
                           initialValue: '${wind.affectZombies}',
-                          decoration: InputDecoration(
-                            labelText:
-                                l10n?.heianWindModuleAffectZombies ??
-                                'Affect zombies',
-                            border: const OutlineInputBorder(),
-                            isDense: true,
-                          ),
+                          decoration: decoration,
                           keyboardType: TextInputType.number,
                           onChanged: (v) {
                             final n = int.tryParse(v);
@@ -565,20 +584,20 @@ ModuleAliasInputField(
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Row(
+                  EditorResponsiveFieldRow(
                     children: [
-                      Expanded(
-                        child: TextFormField(
+                      EditorResponsiveInputField(
+                        label: l10n?.heianWindModuleDistance ?? 'Distance',
+                        decoration: InputDecoration(
+                          hintText:
+                              l10n?.heianWindModuleDistanceHint ??
+                              '50 = 1 cell',
+                          border: const OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        builder: (context, decoration) => TextFormField(
                           initialValue: '${wind.distance}',
-                          decoration: InputDecoration(
-                            labelText:
-                                l10n?.heianWindModuleDistance ?? 'Distance',
-                            hintText:
-                                l10n?.heianWindModuleDistanceHint ??
-                                '50 = 1 cell',
-                            border: const OutlineInputBorder(),
-                            isDense: true,
-                          ),
+                          decoration: decoration,
                           keyboardType: const TextInputType.numberWithOptions(
                             signed: true,
                             decimal: true,
@@ -599,18 +618,18 @@ ModuleAliasInputField(
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
+                      EditorResponsiveInputField(
+                        label: l10n?.heianWindModuleMoveTime ?? 'Move time',
+                        decoration: InputDecoration(
+                          hintText:
+                              l10n?.heianWindModuleMoveTimeHint ??
+                              'Unit: seconds',
+                          border: const OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        builder: (context, decoration) => TextFormField(
                           initialValue: '${wind.moveTime}',
-                          decoration: InputDecoration(
-                            labelText:
-                                l10n?.heianWindModuleMoveTime ?? 'Move time',
-                            hintText:
-                                l10n?.heianWindModuleMoveTimeHint ??
-                                'Unit: seconds',
-                            border: const OutlineInputBorder(),
-                            isDense: true,
-                          ),
+                          decoration: decoration,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
@@ -658,7 +677,7 @@ ModuleAliasInputField(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
         (l10n?.removeItemConfirm(
-              '${l10n.appearanceLabel} ${_data.waveWindInfos.indexOf(wave) + 1}',
+              l10n.groupN(_data.waveWindInfos.indexOf(wave) + 1),
             )) ??
             'Remove appearance ${_data.waveWindInfos.indexOf(wave) + 1}?',
       ),

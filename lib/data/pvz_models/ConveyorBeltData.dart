@@ -9,11 +9,13 @@ class ConveyorBeltData extends PvzModel {
     this.initialPlantList = const [],
     this.dropDelayConditions = const [],
     this.speedConditions = const [],
+    this.manualPacketSpawning,
   });
 
   List<InitialPlantListData> initialPlantList;
   List<DropDelayConditionData> dropDelayConditions;
   List<SpeedConditionData> speedConditions;
+  bool? manualPacketSpawning;
 
   factory ConveyorBeltData.fromJson(Map<String, dynamic> json) {
     return ConveyorBeltData(
@@ -39,12 +41,16 @@ class ConveyorBeltData extends PvzModel {
               )
               .toList() ??
           [],
+      manualPacketSpawning: json['ManualPacketSpawning'] as bool?,
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
     'InitialPlantList': initialPlantList.map((e) => e.toJson()).toList(),
     'DropDelayConditions': dropDelayConditions.map((e) => e.toJson()).toList(),
     'SpeedConditions': speedConditions.map((e) => e.toJson()).toList(),
+    if (manualPacketSpawning != null)
+      'ManualPacketSpawning': manualPacketSpawning,
   };
 }

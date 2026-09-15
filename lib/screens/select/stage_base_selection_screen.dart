@@ -7,6 +7,24 @@ import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
+
+class _StageBaseSelectionViewState {
+  _StageBaseSelectionViewState({
+    required this.selectedType,
+    required this.searchQuery,
+    required this.scrollOffset,
+    required this.tagScrollOffset,
+  });
+
+  String selectedType;
+  String searchQuery;
+  double scrollOffset;
+  double tagScrollOffset;
+}
+
+final Map<String, _StageBaseSelectionViewState> _stageBaseSelectionViewStates =
+    {};
 
 /// Pick the source stage implementation for a level-local custom lawn.
 class StageBaseSelectionScreen extends StatefulWidget {
@@ -14,10 +32,12 @@ class StageBaseSelectionScreen extends StatefulWidget {
     super.key,
     required this.onStageBaseSelected,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final void Function(StageBaseOption option) onStageBaseSelected;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<StageBaseSelectionScreen> createState() =>
@@ -28,7 +48,94 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
   static const _typeTabs = ['all', 'main', 'extra', 'seasons', 'special'];
 
   String _searchQuery = '';
-  String _selectedType = 'all';
+  late String _selectedType;
+  late final ScrollController _scrollController;
+
+  String get _viewStateKey => widget.stateBucketId?.isNotEmpty == true
+      ? widget.stateBucketId!
+      : 'global';
+
+  @override
+  void initState() {
+    super.initState();
+    final remembered = _stageBaseSelectionViewStates[_viewStateKey];
+    _selectedType = _typeTabs.contains(remembered?.selectedType)
+        ? remembered!.selectedType
+        : 'all';
+    _searchQuery = remembered?.searchQuery ?? '';
+    _scrollController = ScrollController(
+      initialScrollOffset: remembered?.scrollOffset ?? 0,
+    )..addListener(_rememberScrollOffset);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _setType(String type) {
+    if (_selectedType == type) return;
+    setState(() => _selectedType = type);
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetRememberedScrollOffset();
+  }
+
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
+    final state = _stageBaseSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _StageBaseSelectionViewState(
+        selectedType: _selectedType,
+        searchQuery: _searchQuery,
+        scrollOffset: 0,
+        tagScrollOffset: 0,
+      ),
+    );
+    state.selectedType = _selectedType;
+    state.searchQuery = _searchQuery;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) state.tagScrollOffset = tagScrollOffset;
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
+  }
+
+  void _rememberScrollOffset() {
+    if (!_scrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _scrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final offset =
+        _stageBaseSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _scrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_scrollController.offset != target) {
+      _scrollController.jumpTo(target);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +166,16 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
         ),
-        title: Text(l10n?.selectCustomStageBase ?? 'Select base lawn'),
+        title: Text(
+          l10n?.selectCustomStageBase ?? 'Select base lawn',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: Column(
@@ -73,23 +185,26 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
                 child: SelectionSearchField(
                   hintText: l10n?.searchStage ?? 'Search stage',
                   query: _searchQuery,
-                  onChanged: (v) => setState(() => _searchQuery = v),
-                  onClear: () => setState(() => _searchQuery = ''),
+                  onChanged: _setSearchQuery,
+                  onClear: () => _setSearchQuery(''),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              HorizontalTagScroller(
+                onAccentBar: true,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  children: _typeTabs.map((type) {
-                    return AccentBarChoiceChip(
-                      label: _typeLabel(type, l10n),
-                      selected: _selectedType == type,
-                      onSelected: (_) => setState(() => _selectedType = type),
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                    );
-                  }).toList(),
-                ),
+                initialScrollOffset:
+                    _stageBaseSelectionViewStates[_viewStateKey]
+                        ?.tagScrollOffset ??
+                    0,
+                onScrollOffsetChanged: _rememberTagScrollOffset,
+                children: _typeTabs.map((type) {
+                  return AccentBarChoiceChip(
+                    label: _typeLabel(type, l10n),
+                    selected: _selectedType == type,
+                    onSelected: (_) => _setType(type),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  );
+                }).toList(),
               ),
             ],
           ),
@@ -111,12 +226,16 @@ class _StageBaseSelectionScreenState extends State<StageBaseSelectionScreen> {
               ),
             )
           : GridView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 180,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 0.72,
+                mainAxisExtent: responsiveSelectionGridTileExtent(
+                  context,
+                  baseExtent: 224,
+                ),
               ),
               itemCount: items.length,
               itemBuilder: (_, i) {

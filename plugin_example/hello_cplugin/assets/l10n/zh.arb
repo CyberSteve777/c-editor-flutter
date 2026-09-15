@@ -1,0 +1,11 @@
+{
+  "@@locale": "zh",
+  "pluginName": "Hello Plugin",
+  "pluginDescription": "示例插件：注册 Hello 屏幕、编辑器界面操作，以及基于宿主配置 API 的设置页。",
+  "helloSettingsTitle": "Hello 设置",
+  "configGreeting": "问候语",
+  "configGreetingDescription": "通过 host.readConfigJson / writeConfigJson 保存（支持 Unicode）。",
+  "configGreetingHint": "例如 Hello · Привет · 你好",
+  "helloSettingsSave": "保存",
+  "helloSettingsSaved": "设置已保存"
+}

@@ -1,14 +1,21 @@
+import 'dart:typed_data';
+
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:c_editor/utils/3rdParty/sen_popcap_zlib.dart';
-import 'package:c_editor/utils/3rdParty/sen_buffer.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_popcap_zlib.dart';
+import 'package:c_editor/utils/3rdParty/sen/sen_buffer.dart';
 import 'package:c_editor/utils/apple_folder_access.dart';
 
+import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'level_repository_base.dart';
+import 'web/web_transfer_progress.dart';
+import 'package:c_editor/plugins/plugin_constants.dart';
 
 LevelRepositoryBase createLevelRepository() => LevelRepositoryNativeImpl();
 
@@ -16,12 +23,16 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   static const _prefsFolderKey = 'folder_path';
   static const _prefsFolderBookmarkKey = 'folder_bookmark';
   static const _prefsLastLevelDirKey = 'last_level_directory';
+  static const _prefsLibrariesKey = 'libraries_json';
 
   @override
   Future<String> ensureIosLibraryPath() => AppleFolderAccess.defaultLibraryPath();
 
   @override
-  Future<List<FileItem>> getFavorites(String rootPath) async {
+  Future<List<FileItem>> getFavorites(
+    String rootPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) async {
     final favoritePaths = await readFavoriteLevelPaths();
     final list = <FileItem>[];
     for (final path in favoritePaths) {
@@ -33,30 +44,55 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
           path: path,
           isDirectory: false,
           lastModified: stat.modified.millisecondsSinceEpoch,
+          creationTime: stat.changed.millisecondsSinceEpoch,
           size: stat.size,
           isFavorite: true,
         ));
       }
     }
-    list.sort((a, b) => naturalCompare(a.name, b.name));
+    _sortItems(list, sortMode);
     return list;
   }
 
   @override
   Future<bool> ensureFolderAccess() async {
-    if (!Platform.isIOS) return true;
     final path = await getSavedFolderPath();
     if (path == null || path.isEmpty) return false;
-    if (await AppleFolderAccess.isAppSandboxPath(path)) return true;
-    return AppleFolderAccess.grantAccessForPath(path);
+
+    if (Platform.isIOS) {
+      if (await AppleFolderAccess.isAppSandboxPath(path)) return true;
+      if (!await AppleFolderAccess.grantAccessForPath(path)) return false;
+    }
+
+    return await _checkFolderReadWrite(path);
+  }
+
+  Future<bool> _checkFolderReadWrite(String path) async {
+    try {
+      final dir = Directory(path);
+      if (!await dir.exists()) return false;
+
+      // 1. Check Read access
+      // Try to list the directory to see if it's readable.
+      await dir.list().take(1).toList();
+
+      // 2. Check Write access
+      // Try to create and delete a temporary hidden file.
+      final testFile = File(p.join(path, '.c_editor_access_test.tmp'));
+      await testFile.writeAsString('test', flush: true);
+      await testFile.delete();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> _requireFolderAccess() async {
-    if (!Platform.isIOS) return;
     if (!await ensureFolderAccess()) {
       throw const FileSystemException(
         'Cannot access level library folder',
-        'apple_folder_access',
+        'folder_access',
       );
     }
   }
@@ -89,6 +125,38 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   }
 
   @override
+  Future<LevelLibraryStartupCache> preloadLibrarySettings(
+    SharedPreferences prefs,
+  ) async {
+    final savedFolderPath = !Platform.isIOS
+        ? prefs.getString(_prefsFolderKey)
+        : await _resolveIosFolderPath(prefs);
+
+    String? displayName;
+    if (savedFolderPath != null) {
+      final jsonString = prefs.getString(_prefsLibrariesKey);
+      if (jsonString != null && jsonString.isNotEmpty) {
+        try {
+          final List<dynamic> list = jsonDecode(jsonString);
+          final libs = list.map((e) => LibraryItem.fromJson(e)).toList();
+          for (final lib in libs) {
+            if (lib.path == savedFolderPath) {
+              displayName = lib.displayName;
+              break;
+            }
+          }
+        } catch (_) {}
+      }
+    }
+
+    return LevelLibraryStartupCache(
+      savedFolderPath: savedFolderPath,
+      lastOpenedLevelDirectory: prefs.getString(_prefsLastLevelDirKey),
+      webLibraryDisplayName: displayName,
+    );
+  }
+
+  @override
   Future<String?> getSavedFolderPath() async {
     final prefs = await SharedPreferences.getInstance();
     if (!Platform.isIOS) {
@@ -106,19 +174,80 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsFolderKey, path);
 
-    if (!Platform.isIOS) return;
-
-    if (await AppleFolderAccess.isAppSandboxPath(path)) {
-      await prefs.remove(_prefsFolderBookmarkKey);
-      return;
+    String? bookmark;
+    if (Platform.isIOS) {
+      if (await AppleFolderAccess.isAppSandboxPath(path)) {
+        await prefs.remove(_prefsFolderBookmarkKey);
+      } else {
+        bookmark = await AppleFolderAccess.createBookmark(path);
+        if (bookmark != null && bookmark.isNotEmpty) {
+          await prefs.setString(_prefsFolderBookmarkKey, bookmark);
+        } else {
+          await prefs.remove(_prefsFolderBookmarkKey);
+        }
+      }
     }
 
-    final bookmark = await AppleFolderAccess.createBookmark(path);
-    if (bookmark != null && bookmark.isNotEmpty) {
-      await prefs.setString(_prefsFolderBookmarkKey, bookmark);
+    // Update libraries list to ensure this path is present and has correct bookmark
+    final libraries = await getLibraries();
+    final index = libraries.indexWhere((lib) => lib.path == path);
+    final displayName = index != -1
+        ? libraries[index].displayName
+        : p.basename(path).isEmpty
+            ? 'Root'
+            : p.basename(path);
+
+    final newItem = LibraryItem(
+      path: path,
+      displayName: displayName,
+      bookmark: bookmark,
+    );
+
+    if (index != -1) {
+      libraries[index] = newItem;
     } else {
-      await prefs.remove(_prefsFolderBookmarkKey);
+      libraries.add(newItem);
     }
+    await setLibraries(libraries);
+  }
+
+  @override
+  Future<List<LibraryItem>> getLibraries() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_prefsLibrariesKey);
+    if (jsonString == null || jsonString.isEmpty) {
+      // Migration: if no libraries list exists, but a folder path exists, create initial list
+      final currentPath = await getSavedFolderPath();
+      if (currentPath != null && currentPath.isNotEmpty) {
+        String? bookmark;
+        if (Platform.isIOS) {
+          bookmark = prefs.getString(_prefsFolderBookmarkKey);
+        }
+        return [
+          LibraryItem(
+            path: currentPath,
+            displayName: p.basename(currentPath).isEmpty
+                ? 'Default Library'
+                : p.basename(currentPath),
+            bookmark: bookmark,
+          )
+        ];
+      }
+      return [];
+    }
+    try {
+      final List<dynamic> list = jsonDecode(jsonString);
+      return list.map((e) => LibraryItem.fromJson(e)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<void> setLibraries(List<LibraryItem> libraries) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = jsonEncode(libraries.map((e) => e.toJson()).toList());
+    await prefs.setString(_prefsLibrariesKey, jsonString);
   }
 
   @override
@@ -153,7 +282,10 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   }
 
   @override
-  Future<List<FileItem>> getDirectoryContents(String dirPath) async {
+  Future<List<FileItem>> getDirectoryContents(
+    String dirPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) async {
     await _requireFolderAccess();
     final dir = Directory(dirPath);
     if (!await dir.exists()) return [];
@@ -168,14 +300,17 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
       final stat = await entity.stat();
       final name = p.basename(entity.path);
       final isDir = stat.type == FileSystemEntityType.directory;
-      final isLevel = !isDir && isSupportedLevelFileName(name);
-      if (isDir || isLevel) {
+      // Hide the reserved plugin store folder from the level browser.
+      if (isDir && isReservedLibraryFolderName(name)) continue;
+      final isVisible = !isDir && isSupportedLibraryFileName(name);
+      if (isDir || isVisible) {
         list.add(
           FileItem(
             name: name,
             path: entity.path,
             isDirectory: isDir,
             lastModified: stat.modified.millisecondsSinceEpoch,
+            creationTime: stat.changed.millisecondsSinceEpoch,
             size: stat.size,
             isFavorite: !isDir && favoritePaths.contains(entity.path),
           ),
@@ -184,18 +319,49 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     }
 
     list.sort((a, b) {
+      // 1. Folders always on top, sorted by name
       if (a.isDirectory != b.isDirectory) return a.isDirectory ? -1 : 1;
-      if (!a.isDirectory && a.isFavorite != b.isFavorite) {
-        return a.isFavorite ? -1 : 1;
-      }
-      return naturalCompare(a.name, b.name);
+      if (a.isDirectory) return naturalCompare(a.name, b.name);
+
+      // 2. Favorites always on top of other files
+      if (a.isFavorite != b.isFavorite) return a.isFavorite ? -1 : 1;
+
+      // 3. File sorting based on mode
+      return _compareFiles(a, b, sortMode);
     });
+
     return list;
+  }
+
+  void _sortItems(List<FileItem> list, LevelSortMode mode) {
+    list.sort((a, b) => _compareFiles(a, b, mode));
+  }
+
+  int _compareFiles(FileItem a, FileItem b, LevelSortMode mode) {
+    switch (mode) {
+      case LevelSortMode.name:
+        return naturalCompare(a.name, b.name);
+      case LevelSortMode.modified:
+        // Newest first
+        return b.lastModified.compareTo(a.lastModified);
+      case LevelSortMode.created:
+        // Newest first
+        return (b.creationTime ?? 0).compareTo(a.creationTime ?? 0);
+      case LevelSortMode.size:
+        // Largest first
+        return b.size.compareTo(a.size);
+      case LevelSortMode.type:
+        // JSON -> RTON -> HUJSON rank
+        final rankCompare = a.extensionRank.compareTo(b.extensionRank);
+        if (rankCompare != 0) return rankCompare;
+        return naturalCompare(a.name, b.name);
+    }
   }
 
   @override
   Future<bool> createDirectory(String parentPath, String name) async {
     await _requireFolderAccess();
+    if (isReservedLibraryFolderName(name)) return false;
     final dir = Directory(p.join(parentPath, name));
     if (await dir.exists()) return false;
     await dir.create(recursive: true);
@@ -210,6 +376,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     bool isDirectory,
   ) async {
     await _requireFolderAccess();
+    if (isDirectory && isReservedLibraryFolderName(newName)) return false;
+    if (isDirectory && isReservedLibraryFolderName(oldName)) return false;
     final oldPath = p.join(currentDirPath, oldName);
     final newPath = p.join(currentDirPath, newName);
     if (await File(newPath).exists() || await Directory(newPath).exists()) {
@@ -403,6 +571,17 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   }
 
   @override
+  Future<Uint8List?> readLibraryFileBytes(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (!await file.exists()) return null;
+      return await file.readAsBytes();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
   Future<PvzLevelFile?> loadLevel(String fileName) async {
     final cacheDir = await getCacheDir();
     final file = File(p.join(cacheDir, fileName));
@@ -410,6 +589,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     try {
       final bytes = await file.readAsBytes();
       return decodeLevelBytes(fileName, bytes);
+    } on RtonFormatException {
+      rethrow;
     } catch (_) {
       return null;
     }
@@ -423,6 +604,8 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     try {
       final bytes = await file.readAsBytes();
       return decodeLevelBytes(p.basename(filePath), bytes);
+    } on RtonFormatException {
+      rethrow;
     } catch (_) {
       return null;
     }
@@ -432,7 +615,7 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   Future<void> downloadLevel(String fileName) async {}
 
   @override
-  Future<void> downloadAllLevelsAsZip() async {}
+  Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress}) async {}
 
   @override
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData) async {
@@ -493,7 +676,12 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
     }
 
     // existing level format conversion
-    final level = decodeLevelBytes(sourceName, await srcFile.readAsBytes());
+    PvzLevelFile? level;
+    try {
+      level = decodeLevelBytes(sourceName, await srcFile.readAsBytes());
+    } catch (_) {
+      return null;
+    }
     if (level == null) return null;
     final outBytes = encodeLevelBytes(target, level);
     await File(targetPath).writeAsBytes(outBytes, flush: true);
@@ -502,9 +690,17 @@ class LevelRepositoryNativeImpl extends LevelRepositoryBase {
   }
 
   @override
+  bool isSupportedLevelFileName(String name) {
+    final lower = name.toLowerCase();
+    if (lower.endsWith('.rsb.smf')) {
+      return !Platform.isIOS;
+    }
+    return super.isSupportedLevelFileName(name);
+  }
+
+  @override
   Future<bool> createLevelFromTemplate(
     String currentDirPath,
-    String templateName,
     String newFileName,
     String assetContent,
   ) async {

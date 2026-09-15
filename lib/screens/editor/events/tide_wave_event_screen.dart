@@ -115,6 +115,7 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventTideWave ?? 'Tide wave event',
               sections: [
                 HelpSectionData(
@@ -162,7 +163,9 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 8,
                         children: [
                           ChoiceChip(
                             label: Text(_typeLabel(_typeLeft, l10n)),
@@ -181,7 +184,6 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
                               _sync();
                             },
                           ),
-                          const SizedBox(width: 12),
                           ChoiceChip(
                             label: Text(_typeLabel(_typeRight, l10n)),
                             selected: _data.type == _typeRight,
@@ -342,14 +344,14 @@ class _TideWaveEventScreenState extends State<TideWaveEventScreen> {
   ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        initialValue: value,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
+      child: EditorResponsiveInputField(
+        label: label,
+        builder: (context, decoration) => TextFormField(
+          initialValue: value,
+          decoration: decoration,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          onChanged: onChanged,
         ),
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        onChanged: onChanged,
       ),
     );
   }

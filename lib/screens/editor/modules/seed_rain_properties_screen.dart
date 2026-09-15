@@ -11,6 +11,14 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/screens/select/plant_selection_screen.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show
+        EditorResponsiveInputField,
+        EditorFilledButton,
+        EditorChoiceDialogOption,
+        HelpSectionData,
+        showEditorChoiceDialog,
+        showEditorHelpDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Seed rain properties editor. Ported from Z-Editor-master SeedRainPropertiesEP.kt
@@ -147,28 +155,26 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
   }
 
   Future<void> _showAddDialog(AppLocalizations? l10n) async {
-    final choice = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.addItem ?? 'Add item'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(l10n?.plant ?? 'Plant'),
-              onTap: () => Navigator.pop(ctx, 'plant'),
-            ),
-            ListTile(
-              title: Text(l10n?.zombie ?? 'Zombie'),
-              onTap: () => Navigator.pop(ctx, 'zombie'),
-            ),
-            ListTile(
-              title: Text(l10n?.collectable ?? 'Collectable (Plant Food)'),
-              onTap: () => Navigator.pop(ctx, 'collectable'),
-            ),
-          ],
+    final choice = await showEditorChoiceDialog<String>(
+      context,
+      title: l10n?.seedRainAddContentTitle ?? 'Add seed-rain content',
+      options: [
+        EditorChoiceDialogOption(
+          value: 'plant',
+          icon: Icons.local_florist_outlined,
+          title: l10n?.plant ?? 'Plant',
         ),
-      ),
+        EditorChoiceDialogOption(
+          value: 'zombie',
+          icon: Icons.pest_control_outlined,
+          title: l10n?.zombie ?? 'Zombie',
+        ),
+        EditorChoiceDialogOption(
+          value: 'collectable',
+          icon: Icons.eco_outlined,
+          title: l10n?.collectable ?? 'Collectible (Plant Food)',
+        ),
+      ],
     );
     if (choice == null || !mounted) return;
     if (choice == 'plant') {
@@ -229,7 +235,7 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
           ZombieRepository().getName(typeName),
         );
       case 2:
-        return 'Plant Food';
+        return AppLocalizations.of(context)?.plantFood ?? 'Plant Food';
       default:
         return 'Unknown';
     }
@@ -244,39 +250,50 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
         return StatefulBuilder(
           builder: (ctx, setDialogState) {
             return AlertDialog(
+              constraints: const BoxConstraints.tightFor(width: 560),
+              scrollable: true,
               title: Text(
                 l10n?.editAlias(_getItemName(ctx, item)) ??
                     'Edit: ${_getItemName(ctx, item)}',
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: l10n?.weight ?? 'Weight',
-                      border: const OutlineInputBorder(),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    EditorResponsiveInputField(
+                      label: l10n?.weight ?? 'Weight',
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                      ),
+                      builder: (context, decoration) => TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        initialValue: '$tempWeight',
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null) tempWeight = n;
+                        },
+                      ),
                     ),
-                    initialValue: '$tempWeight',
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n != null) tempWeight = n;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: l10n?.maxCount ?? 'Max count',
-                      border: const OutlineInputBorder(),
+                    const SizedBox(height: 16),
+                    EditorResponsiveInputField(
+                      label: l10n?.maxCount ?? 'Max count',
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                      ),
+                      builder: (context, decoration) => TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        initialValue: '$tempMaxCount',
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null) tempMaxCount = n;
+                        },
+                      ),
                     ),
-                    initialValue: '$tempMaxCount',
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n != null) tempMaxCount = n;
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -337,7 +354,6 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
     );
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -365,13 +381,45 @@ class _SeedRainPropertiesScreenState extends State<SeedRainPropertiesScreen> {
           isEvent: false,
           objClass: _objClass,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title: l10n?.moduleTitle_SeedRainProperties ?? 'Seed Rain',
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpSeedRainBody ??
+                      'At fixed intervals, this module causes item cards to fall from the sky.',
+                ),
+                HelpSectionData(
+                  title:
+                      l10n?.moduleHelpSeedRainParameters ??
+                      'Parameter settings',
+                  body:
+                      l10n?.moduleHelpSeedRainParametersBody ??
+                      'Weight determines an item\'s chance of dropping, while Max count limits how many copies may be present at once. Most zombies do not have matching zombie card icons.',
+                ),
+                HelpSectionData(
+                  title: l10n?.moduleHelpSeedRainPlantLevels ?? 'Plant tiers',
+                  body:
+                      l10n?.plantLevelsFollowGlobal ??
+                      'Plant cards dropped by this module use the tiers from the player\'s account. The Tier Definition module can override them uniformly.',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -385,30 +433,35 @@ ModuleAliasInputField(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
-                      controller: _rainIntervalCtrl,
-                      keyboardType: TextInputType.number,
+                    EditorResponsiveInputField(
+                      label:
+                          l10n?.rainIntervalSeconds ??
+                          'Rain interval (seconds)',
                       decoration: InputDecoration(
-                        labelText:
-                            l10n?.rainIntervalSeconds ??
-                            'Rain interval (seconds)',
                         border: const OutlineInputBorder(),
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null) {
-                          _data = SeedRainPropertiesData(
-                            rainInterval: n,
-                            seedRains: _data.seedRains,
-                          );
-                          _sync();
-                        }
-                      },
+                      builder: (context, decoration) => TextField(
+                        key: const ValueKey('seedRainInterval'),
+                        controller: _rainIntervalCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null) {
+                            _data = SeedRainPropertiesData(
+                              rainInterval: n,
+                              seedRains: _data.seedRains,
+                            );
+                            _sync();
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
-                      child: FilledButton.icon(
+                      child: EditorFilledButton(
+                        key: const ValueKey('seedRainAddItem'),
                         onPressed: () => _showAddDialog(l10n),
                         icon: const Icon(Icons.add),
                         label: Text(l10n?.addDropItem ?? 'Add drop item'),
@@ -496,7 +549,7 @@ class _SeedRainRowCard extends StatelessWidget {
         if (info?.icon != null) return 'assets/images/zombies/${info!.icon}';
         return null;
       case 2:
-        return 'assets/images/others/plantfood.webp';
+        return 'assets/images/others/plantfood.png';
       default:
         return null;
     }

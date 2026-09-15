@@ -3,10 +3,12 @@ import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/moon_wave_preview_utils.dart';
 import 'package:c_editor/data/renai_wave_preview_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/drop_ship_area_preview_grid.dart';
 import 'package:c_editor/widgets/editor_preview_dialog.dart';
+import 'package:c_editor/widgets/grid_override_preview_grid.dart';
 import 'package:c_editor/widgets/heian_wind_preview_text.dart';
 import 'package:c_editor/widgets/renai_statue_preview_grid.dart';
 
@@ -240,6 +242,102 @@ Future<void> showRenaiWavePreviewDialog(
       '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.renaiModuleExpectationLabel ?? 'Renaissance event preview'}',
     ),
     content: content,
+    actions: _previewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
+    ),
+  );
+}
+
+Future<void> showLunarMineVeinWavePreviewDialog(
+  BuildContext context, {
+  required PvzLevelFile levelFile,
+  required int waveIndex,
+  required LunarMineVeinModulePropertiesData data,
+  VoidCallback? onOpenModuleSettings,
+}) {
+  final l10n = AppLocalizations.of(context);
+  final placements = lunarMineVeinEmergingPlacementsForWave(data, waveIndex);
+  final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(levelFile);
+  const asset = 'assets/images/griditems/lunar_mine_ore.webp';
+  final cells = placements
+      .map((placement) => '${placement.gridX},${placement.gridY}')
+      .toSet();
+
+  return showEditorPreviewDialog<void>(
+    context: context,
+    title: Text(
+      '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.lunarMineVeinModuleExpectationLabel ?? 'Lunar Veins'}',
+    ),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.lunarMineVeinModulePreviewEmerging ??
+              'Lunar Energy Crystals emerging this wave:',
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        GridOverridePreviewGrid(
+          gridRows: gridRows,
+          gridCols: gridCols,
+          cellImageAt: (col, row) =>
+              cells.contains('$col,$row') ? asset : null,
+          cellImageScaleAt: (_, _) => 0.92,
+        ),
+      ],
+    ),
+    actions: _previewDialogActions(
+      context,
+      l10n: l10n,
+      onOpenModuleSettings: onOpenModuleSettings,
+    ),
+  );
+}
+
+Future<void> showRadiationMeteorWavePreviewDialog(
+  BuildContext context, {
+  required PvzLevelFile levelFile,
+  required int waveIndex,
+  required RadiationMeteorModulePropertiesData data,
+  VoidCallback? onOpenModuleSettings,
+}) {
+  final l10n = AppLocalizations.of(context);
+  final spawns = radiationMeteorSpawnsForWave(data, waveIndex);
+  final (gridRows, gridCols) = LevelParser.getGridDimensionsFromFile(levelFile);
+  const asset = 'assets/images/griditems/radiation_meteor_ore.webp';
+  final cells = spawns.map((spawn) => '${spawn.gridX},${spawn.gridY}').toSet();
+
+  return showEditorPreviewDialog<void>(
+    context: context,
+    title: Text(
+      '${l10n?.waveLabel ?? 'Wave'} $waveIndex - ${l10n?.radiationMeteorModuleExpectationLabel ?? 'Radioactive Meteorite'}',
+    ),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.radiationMeteorModulePreviewLanding ??
+              'Meteorites landing this wave:',
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        GridOverridePreviewGrid(
+          gridRows: gridRows,
+          gridCols: gridCols,
+          cellImageAt: (col, row) =>
+              cells.contains('$col,$row') ? asset : null,
+          cellImageScaleAt: (_, _) => 0.92,
+        ),
+      ],
+    ),
     actions: _previewDialogActions(
       context,
       l10n: l10n,

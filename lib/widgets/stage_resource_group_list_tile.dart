@@ -22,9 +22,10 @@ class StageResourceGroupListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final label = ResourceNames.lookup(
+    final label = ResourceNames.lookupOrFallback(
       context,
       StageCatalogRepository.resourceGroupKey(group),
+      group,
     );
 
     return Padding(

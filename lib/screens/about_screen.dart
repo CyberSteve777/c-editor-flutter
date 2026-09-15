@@ -72,6 +72,18 @@ class _AboutScreenState extends State<AboutScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      'assets/meta/icon.png',
+                      width: 96,
+                      height: 96,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Text(
                   l10n.cEditor,
                   textAlign: TextAlign.center,
@@ -108,6 +120,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       _Bullet(l10n.feature2),
                       _Bullet(l10n.feature3),
                       _Bullet(l10n.feature4),
+                      _Bullet(l10n.feature5),
                     ],
                   ),
                 ),

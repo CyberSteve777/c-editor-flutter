@@ -2,6 +2,7 @@
 Type=Application
 Name=C-Editor
 Exec=C-Editor
-Icon=c_editor
+Icon=team.international2c.c_editor
 Categories=Game;Utility;
 Terminal=false
+StartupWMClass=team.international2c.c_editor

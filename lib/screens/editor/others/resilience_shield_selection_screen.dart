@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:c_editor/data/pvz_models.dart';
 
+import 'package:c_editor/data/resilience_weak_type.dart';
+
 import 'package:c_editor/data/resilience_shield_utils.dart';
 
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -11,6 +13,8 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/others/custom_resilience_shield_editor_screen.dart';
 
 import 'package:c_editor/widgets/animated_extended_fab.dart';
+
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 
 import 'package:c_editor/widgets/editor_components.dart';
 
@@ -20,6 +24,25 @@ enum _FilterAxis { bySource, byType }
 
 /// Sentinel values for type-axis sub-filters.
 const _typeAll = -1;
+
+class _ResilienceSelectionViewState {
+  _ResilienceSelectionViewState({
+    required this.axis,
+    required this.sourceChoice,
+    required this.typeChoice,
+    required this.query,
+    required this.scrollOffset,
+  });
+
+  _FilterAxis axis;
+  String sourceChoice;
+  int typeChoice;
+  String query;
+  double scrollOffset;
+}
+
+final Map<String, _ResilienceSelectionViewState>
+_resilienceSelectionViewStates = {};
 
 /// Picks a preset or level-local resilience shield; returns RTID string.
 
@@ -55,9 +78,12 @@ class _ResilienceShieldSelectionScreenState
 
   String _query = '';
 
-  final ScrollController _listScrollController = ScrollController();
+  late final ScrollController _listScrollController;
 
-  bool _listScrollAtTop = true;
+  late bool _listScrollAtTop;
+
+  String get _viewStateKey =>
+      'level:${identityHashCode(widget.levelFile)}:resilience';
 
   bool get _showCreateFab =>
       _axis == _FilterAxis.bySource &&
@@ -67,11 +93,18 @@ class _ResilienceShieldSelectionScreenState
   void initState() {
     super.initState();
 
-    _listScrollController.addListener(_onListScroll);
+    final remembered = _resilienceSelectionViewStates[_viewStateKey];
+
+    if (remembered != null) {
+      _axis = remembered.axis;
+      _sourceChoice = remembered.sourceChoice;
+      _typeChoice = remembered.typeChoice;
+      _query = remembered.query;
+    }
 
     final current = widget.currentRtid;
 
-    if (current != null) {
+    if (remembered == null && current != null) {
       final info = ResilienceShieldUtils.listItems(
         widget.levelFile,
       ).where((e) => e.rtid == current).firstOrNull;
@@ -88,10 +121,19 @@ class _ResilienceShieldSelectionScreenState
         }
       }
     }
+
+    final initialOffset = remembered?.scrollOffset ?? 0;
+    _listScrollAtTop = initialOffset <= 0;
+    _listScrollController = ScrollController(initialScrollOffset: initialOffset)
+      ..addListener(_onListScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
   }
 
   @override
   void dispose() {
+    _rememberScrollOffset();
     _listScrollController.removeListener(_onListScroll);
 
     _listScrollController.dispose();
@@ -102,9 +144,103 @@ class _ResilienceShieldSelectionScreenState
   void _onListScroll() {
     if (!_listScrollController.hasClients) return;
 
+    _rememberScrollOffset();
+
     final atTop = _listScrollController.offset <= 0;
 
     if (atTop != _listScrollAtTop && mounted) {
+      setState(() => _listScrollAtTop = atTop);
+    }
+  }
+
+  void _setAxis(_FilterAxis axis) {
+    if (_axis == axis) return;
+    setState(() {
+      _axis = axis;
+      if (axis == _FilterAxis.bySource) {
+        _sourceChoice = ResilienceShieldUtils.catalogSource;
+      } else {
+        _typeChoice = _typeAll;
+      }
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSourceChoice(String source) {
+    if (_sourceChoice == source) return;
+    setState(() {
+      _sourceChoice = source;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setTypeChoice(int type) {
+    if (_typeChoice == type) return;
+    setState(() {
+      _typeChoice = type;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setQuery(String query) {
+    if (_query == query) return;
+    setState(() {
+      _query = query;
+      _listScrollAtTop = true;
+    });
+    _resetRememberedScrollOffset();
+  }
+
+  void _rememberViewState({double? scrollOffset}) {
+    final state = _resilienceSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _ResilienceSelectionViewState(
+        axis: _axis,
+        sourceChoice: _sourceChoice,
+        typeChoice: _typeChoice,
+        query: _query,
+        scrollOffset: 0,
+      ),
+    );
+    state.axis = _axis;
+    state.sourceChoice = _sourceChoice;
+    state.typeChoice = _typeChoice;
+    state.query = _query;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+  }
+
+  void _rememberScrollOffset() {
+    if (!_listScrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _listScrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_listScrollController.hasClients) return;
+      _listScrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_listScrollController.hasClients) return;
+    final offset =
+        _resilienceSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _listScrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_listScrollController.offset != target) {
+      _listScrollController.jumpTo(target);
+    }
+    final atTop = target <= 0;
+    if (_listScrollAtTop != atTop) {
       setState(() => _listScrollAtTop = atTop);
     }
   }
@@ -244,133 +380,115 @@ class _ResilienceShieldSelectionScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.resilienceSelectShield ?? 'Select resilience shield'),
+        title: Text(
+          l10n?.resilienceSelectShield ?? 'Select resilience shield',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
 
       body: Stack(
         children: [
           Column(
             children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              HorizontalTagScroller(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
 
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                    child: ChoiceChip(
+                      label: Text(l10n?.selectionFilterBySource ?? 'By source'),
 
-                child: Row(
-                  children: [
+                      selected: _axis == _FilterAxis.bySource,
+
+                      onSelected: (_) => _setAxis(_FilterAxis.bySource),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+
+                    child: ChoiceChip(
+                      label: Text(l10n?.selectionFilterByType ?? 'By type'),
+
+                      selected: _axis == _FilterAxis.byType,
+
+                      onSelected: (_) => _setAxis(_FilterAxis.byType),
+                    ),
+                  ),
+                ],
+              ),
+
+              HorizontalTagScroller(
+                key: ValueKey(_axis),
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                children: [
+                  if (_axis == _FilterAxis.bySource) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+
+                      child: ChoiceChip(
+                        label: Text(l10n?.selectionPreMade ?? 'Pre-made'),
+
+                        selected:
+                            _sourceChoice ==
+                            ResilienceShieldUtils.catalogSource,
+
+                        onSelected: (_) => _setSourceChoice(
+                          ResilienceShieldUtils.catalogSource,
+                        ),
+                      ),
+                    ),
+
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
 
                       child: ChoiceChip(
                         label: Text(
-                          l10n?.selectionFilterBySource ?? 'By source',
+                          l10n?.selectionDefinedByUser ?? 'Defined by user',
                         ),
 
-                        selected: _axis == _FilterAxis.bySource,
+                        selected:
+                            _sourceChoice == ResilienceShieldUtils.customSource,
 
-                        onSelected: (_) => setState(() {
-                          _axis = _FilterAxis.bySource;
-
-                          _sourceChoice = ResilienceShieldUtils.catalogSource;
-                        }),
+                        onSelected: (_) => _setSourceChoice(
+                          ResilienceShieldUtils.customSource,
+                        ),
                       ),
                     ),
-
+                  ] else ...[
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
 
                       child: ChoiceChip(
-                        label: Text(l10n?.selectionFilterByType ?? 'By type'),
+                        label: Text(l10n?.resilienceTypeAll ?? 'All types'),
 
-                        selected: _axis == _FilterAxis.byType,
+                        selected: _typeChoice == _typeAll,
 
-                        onSelected: (_) => setState(() {
-                          _axis = _FilterAxis.byType;
-
-                          _typeChoice = _typeAll;
-                        }),
+                        onSelected: (_) => _setTypeChoice(_typeAll),
                       ),
                     ),
+
+                    for (final wt in resilienceWeakTypeJsonValues)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+
+                        child: ChoiceChip(
+                          label: ResilienceWeakTypeLabelRow(
+                            weakType: wt,
+                            label: resilienceWeakTypeLabel(l10n, wt),
+                            iconSize: 18,
+                            compact: true,
+                          ),
+
+                          selected: _typeChoice == wt,
+
+                          onSelected: (_) => _setTypeChoice(wt),
+                        ),
+                      ),
                   ],
-                ),
-              ),
-
-              SingleChildScrollView(
-                key: ValueKey(_axis),
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-                child: Row(
-                  children: [
-                    if (_axis == _FilterAxis.bySource) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-
-                        child: ChoiceChip(
-                          label: Text(l10n?.selectionPreMade ?? 'Pre-made'),
-
-                          selected:
-                              _sourceChoice ==
-                              ResilienceShieldUtils.catalogSource,
-
-                          onSelected: (_) => setState(
-                            () => _sourceChoice =
-                                ResilienceShieldUtils.catalogSource,
-                          ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-
-                        child: ChoiceChip(
-                          label: Text(
-                            l10n?.selectionDefinedByUser ?? 'Defined by user',
-                          ),
-
-                          selected:
-                              _sourceChoice ==
-                              ResilienceShieldUtils.customSource,
-
-                          onSelected: (_) => setState(
-                            () => _sourceChoice =
-                                ResilienceShieldUtils.customSource,
-                          ),
-                        ),
-                      ),
-                    ] else ...[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-
-                        child: ChoiceChip(
-                          label: Text(l10n?.resilienceTypeAll ?? 'All types'),
-
-                          selected: _typeChoice == _typeAll,
-
-                          onSelected: (_) =>
-                              setState(() => _typeChoice = _typeAll),
-                        ),
-                      ),
-
-                      for (var wt = 1; wt <= 6; wt++)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-
-                          child: ChoiceChip(
-                            label: ResilienceWeakTypeLabelRow(
-                              weakType: wt,
-                              label: resilienceWeakTypeLabel(l10n, wt),
-                              iconSize: 18,
-                              compact: true,
-                            ),
-
-                            selected: _typeChoice == wt,
-
-                            onSelected: (_) => setState(() => _typeChoice = wt),
-                          ),
-                        ),
-                    ],
-                  ],
-                ),
+                ],
               ),
 
               Padding(
@@ -383,9 +501,9 @@ class _ResilienceShieldSelectionScreenState
 
                   useOutlineBorder: true,
 
-                  onChanged: (v) => setState(() => _query = v),
+                  onChanged: _setQuery,
 
-                  onClear: () => setState(() => _query = ''),
+                  onClear: () => _setQuery(''),
                 ),
               ),
 
@@ -420,10 +538,30 @@ class _ResilienceShieldSelectionScreenState
                               size: 28,
                             ),
 
-                            title: Text(item.alias),
+                            title: Row(
+                              children: [
+                                if (item.isCustom) ...[
+                                  CustomResourceBadge(
+                                    color: userCustomResourceBadgeColor(
+                                      context,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                ],
+                                Expanded(
+                                  child: Text(
+                                    item.alias,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
 
                             subtitle: Text(
                               item.displayRtid,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
 
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,

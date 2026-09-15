@@ -143,6 +143,7 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventDinoRun ?? 'Dino run event',
               sections: [
                 HelpSectionData(
@@ -182,10 +183,14 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                         children: [
                           Icon(Icons.pets, color: dinoColor),
                           const SizedBox(width: 8),
-                          Text(
-                            l10n?.positionAndDuration ?? 'Position & timing',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              l10n?.positionAndDuration ?? 'Position & timing',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -193,10 +198,14 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          Text(
-                            l10n?.dinoRow(_data.dinoRow + 1) ??
-                                'Row (DinoRow): ${_data.dinoRow + 1}',
-                            style: theme.textTheme.bodyLarge,
+                          Expanded(
+                            child: Text(
+                              l10n?.dinoRow(_data.dinoRow + 1) ??
+                                  'Row (DinoRow): ${_data.dinoRow + 1}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           IconButton(
@@ -246,25 +255,31 @@ class _DinoRunEventScreenState extends State<DinoRunEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.timeInterval.toString(),
+                      EditorResponsiveInputField(
+                        label: localizedSecondsPropertyLabel(
+                          context,
+                          l10n?.timeInterval ?? 'Time interval',
+                          'TimeInterval',
+                        ),
                         decoration: InputDecoration(
-                          labelText:
-                              'TimeInterval (${l10n?.timeInterval ?? 'Time interval'})',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = DinoRunActionPropsData(
-                              dinoRow: _data.dinoRow,
-                              timeInterval: n,
-                              waveStartMessage: _data.waveStartMessage,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.timeInterval.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = DinoRunActionPropsData(
+                                dinoRow: _data.dinoRow,
+                                timeInterval: n,
+                                waveStartMessage: _data.waveStartMessage,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

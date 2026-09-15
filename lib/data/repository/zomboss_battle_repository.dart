@@ -113,64 +113,94 @@ class ZombossBattleRepository {
         '';
   }
 
-  static void ensureAutoModules({
+  static bool isUndergroundPalaceBase(String baseId) {
+    final base = getBase(baseId);
+    return base?.modules.any(_isTunnelDefendModule) ?? false;
+  }
+
+  static bool ensureAutoModules({
     required PvzLevelFile levelFile,
     required LevelDefinitionData levelDef,
     required String baseId,
   }) {
     final base = getBase(baseId);
     if (base == null || base.modules.isEmpty) {
-      return;
+      return false;
     }
+    var changed = false;
     for (final module in base.modules) {
-      _addAutoModule(
+      changed |= _addAutoModule(
         levelFile,
         levelDef,
         module,
         overwriteExistingObject: false,
       );
     }
-    _persistLevelDefinition(levelFile, levelDef);
+    if (changed) {
+      _persistLevelDefinition(levelFile, levelDef);
+    }
+    return changed;
   }
 
-  static void syncAutoModules({
+  static bool syncAutoModules({
     required PvzLevelFile levelFile,
     required LevelDefinitionData levelDef,
     required String? previousBaseId,
     required String newBaseId,
+    bool removePreviousTunnelDefend = true,
   }) {
+    final previous = previousBaseId == null ? null : getBase(previousBaseId);
+    final next = getBase(newBaseId);
+    final nextRtids = next?.modules.map((module) => module.rtid).toSet() ?? {};
+    var changed = false;
+
     if (previousBaseId != null && previousBaseId != newBaseId) {
-      final previous = getBase(previousBaseId);
       if (previous != null) {
         for (final module in previous.modules) {
-          _removeAutoModule(levelFile, levelDef, module);
+          if (nextRtids.contains(module.rtid)) continue;
+          if (!removePreviousTunnelDefend &&
+              _isTunnelDefendModule(module)) {
+            continue;
+          }
+          changed |= _removeAutoModule(levelFile, levelDef, module);
         }
       }
     }
 
-    final next = getBase(newBaseId);
     if (next != null) {
       for (final module in next.modules) {
-        _addAutoModule(levelFile, levelDef, module);
+        final isSharedModule =
+            previous?.modules.any((oldModule) => oldModule.rtid == module.rtid) ??
+            false;
+        if (isSharedModule && _isTunnelDefendModule(module)) {
+          changed |= _syncTunnelDefendTileStyle(levelFile, levelDef, module);
+        } else {
+          changed |= _addAutoModule(levelFile, levelDef, module);
+        }
       }
     }
 
-    _persistLevelDefinition(levelFile, levelDef);
+    if (changed) {
+      _persistLevelDefinition(levelFile, levelDef);
+    }
+    return changed;
   }
 
-  static void _addAutoModule(
+  static bool _addAutoModule(
     PvzLevelFile levelFile,
     LevelDefinitionData levelDef,
     ZombossAutoModule module, {
     bool overwriteExistingObject = true,
   }) {
     final rtid = module.rtid;
+    var changed = false;
     if (!levelDef.modules.contains(rtid)) {
       levelDef.modules.add(rtid);
+      changed = true;
     }
 
     if (module.source != 'CurrentLevel') {
-      return;
+      return changed;
     }
 
     final existing = levelFile.objects.firstWhereOrNull(
@@ -185,23 +215,62 @@ class ZombossBattleRepository {
           objData: objData,
         ),
       );
+      changed = true;
     } else if (overwriteExistingObject) {
-      existing.objData = objData;
+      if (!const DeepCollectionEquality().equals(existing.objData, objData)) {
+        existing.objData = objData;
+        changed = true;
+      }
     }
+    return changed;
   }
 
-  static void _removeAutoModule(
+  static bool _syncTunnelDefendTileStyle(
     PvzLevelFile levelFile,
     LevelDefinitionData levelDef,
     ZombossAutoModule module,
   ) {
-    levelDef.modules.remove(module.rtid);
+    var changed = _addAutoModule(
+      levelFile,
+      levelDef,
+      module,
+      overwriteExistingObject: false,
+    );
+    final brickMapIndex = module.objdata?['BrickMapIndex'];
+    if (module.source != 'CurrentLevel' || brickMapIndex == null) {
+      return changed;
+    }
+
+    final existing = levelFile.objects.firstWhereOrNull(
+      (object) => object.aliases?.contains(module.alias) == true,
+    );
+    if (existing?.objData is! Map) return changed;
+    final existingData = existing!.objData as Map;
+    if (existingData['BrickMapIndex'] != brickMapIndex) {
+      existingData['BrickMapIndex'] = brickMapIndex;
+      changed = true;
+    }
+    return changed;
+  }
+
+  static bool _removeAutoModule(
+    PvzLevelFile levelFile,
+    LevelDefinitionData levelDef,
+    ZombossAutoModule module,
+  ) {
+    var changed = levelDef.modules.remove(module.rtid);
     if (module.source == 'CurrentLevel') {
+      final previousLength = levelFile.objects.length;
       levelFile.objects.removeWhere(
         (o) => o.aliases?.contains(module.alias) == true,
       );
+      changed |= levelFile.objects.length != previousLength;
     }
+    return changed;
   }
+
+  static bool _isTunnelDefendModule(ZombossAutoModule module) =>
+      module.objclass == 'TunnelDefendModuleProperties';
 
   static void _persistLevelDefinition(
     PvzLevelFile levelFile,

@@ -7,6 +7,7 @@ import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -34,6 +35,7 @@ class SeedBankPropertiesScreen extends StatefulWidget {
     List<String>? excludeIds,
     List<String>? initialSelectedIds,
     bool blockRealmExclusiveInChooser,
+    bool blockHiddenPlantsInChooser,
     bool allowDuplicateSelection,
   })
   onRequestPlantSelection;
@@ -93,7 +95,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
     );
     _syncGridItemModeFromPreset();
     if (_data.selectionMethod == 'chooser' && _data.zombieMode != true) {
-      _stripRealmExclusiveFromPreset();
+      _stripChooserOnlyBlockedPlantsFromPreset();
     }
   }
 
@@ -113,8 +115,19 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
         plant.hasInternalTag('_internal_mausoleum');
   }
 
-  void _stripRealmExclusiveFromPreset() {
-    _data.presetPlantList.removeWhere(_isRealmExclusivePlantId);
+  bool _isHiddenPlantId(String id) {
+    if (kSeedBankGridItemIds.contains(id)) return false;
+    final plant = PlantRepository().getPlantInfoById(id);
+    if (plant == null) return false;
+    return plant.tags.contains(PlantTag.hidden);
+  }
+
+  bool _isChooserOnlyBlockedPlantId(String id) {
+    return _isRealmExclusivePlantId(id) || _isHiddenPlantId(id);
+  }
+
+  void _stripChooserOnlyBlockedPlantsFromPreset() {
+    _data.presetPlantList.removeWhere(_isChooserOnlyBlockedPlantId);
   }
 
   void _removeGridItemsFromPreset() {
@@ -143,6 +156,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
         });
       },
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
       allowDuplicateSelection: true,
     );
   }
@@ -158,6 +172,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       excludeIds: _data.plantBlackList,
       initialSelectedIds: _data.plantWhiteList,
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
     );
   }
 
@@ -172,6 +187,7 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       excludeIds: _data.plantWhiteList,
       initialSelectedIds: _data.plantBlackList,
       blockRealmExclusiveInChooser: _data.selectionMethod == 'chooser',
+      blockHiddenPlantsInChooser: _data.selectionMethod == 'chooser',
     );
   }
 
@@ -219,7 +235,6 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
     });
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -228,6 +243,47 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
       onChanged: widget.onChanged,
     );
     setState(() => _alias = newAlias);
+  }
+
+  Future<void> _switchToChooserMode() async {
+    if (_data.selectionMethod == 'chooser') return;
+
+    if (_data.gridItemMode == true) {
+      final l10n = AppLocalizations.of(context)!;
+      final shouldSwitch = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          content: Text(l10n.seedBankGridItemsPresetOnlySwitchWarning),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(
+                l10n.cancel,
+                style: TextStyle(
+                  color: Theme.of(dialogContext).colorScheme.error,
+                ),
+              ),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.continueAnyway),
+            ),
+          ],
+        ),
+      );
+      if (shouldSwitch != true || !mounted) return;
+    }
+
+    _data.selectionMethod = 'chooser';
+    _data.gridItemMode = false;
+    _removeGridItemsFromPreset();
+    _stripChooserOnlyBlockedPlantsFromPreset();
+    _sync();
   }
 
   @override
@@ -273,15 +329,15 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: isZombieMode ? izombieColor : null,
-            ),
-            const SizedBox(height: 16),
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+                accentColor: isZombieMode ? izombieColor : null,
+              ),
+              const SizedBox(height: 16),
               _buildBasicRulesCard(context, isZombieMode, l10n),
               const SizedBox(height: 16),
               if (isZombieMode)
@@ -335,8 +391,10 @@ ModuleAliasInputField(
                   onAdd: _addToBlackList,
                   onRemove: (i) => _removeFromList(_data.plantBlackList, i),
                 ),
-                const SizedBox(height: 16),
-                _buildGridItemsCard(context, l10n),
+                if (_data.selectionMethod == 'preset') ...[
+                  const SizedBox(height: 16),
+                  _buildGridItemsCard(context, l10n),
+                ],
               ],
               if (isZombieMode)
                 Card(
@@ -399,10 +457,14 @@ ModuleAliasInputField(
                       : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  l10n?.basicRules ?? 'Basic rules',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n?.basicRules ?? 'Basic rules',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -417,24 +479,19 @@ ModuleAliasInputField(
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
+              runSpacing: 8,
               children: [
-                FilterChip(
-                  label: Text(
-                    AppLocalizations.of(context)?.chooser ?? 'Chooser',
-                  ),
+                _buildSelectionModeChip(
+                  key: const ValueKey('seedBankChooserModeChip'),
+                  label: l10n?.chooser ?? 'Chooser',
                   selected: _data.selectionMethod == 'chooser' && !isZombieMode,
                   onSelected: isZombieMode
                       ? null
-                      : (v) {
-                          setState(() {
-                            _data.selectionMethod = 'chooser';
-                            _stripRealmExclusiveFromPreset();
-                            _sync();
-                          });
-                        },
+                      : (_) => _switchToChooserMode(),
                 ),
-                FilterChip(
-                  label: Text(AppLocalizations.of(context)?.preset ?? 'Preset'),
+                _buildSelectionModeChip(
+                  key: const ValueKey('seedBankPresetModeChip'),
+                  label: l10n?.preset ?? 'Preset',
                   selected: _data.selectionMethod == 'preset' || isZombieMode,
                   onSelected: isZombieMode
                       ? null
@@ -458,17 +515,16 @@ ModuleAliasInputField(
             const SizedBox(height: 12),
             Opacity(
               opacity: isZombieMode ? 0.5 : 1,
-              child: Row(
+              child: EditorResponsiveFieldRow(
                 children: [
-                  Expanded(
-                    child: TextFormField(
+                  EditorResponsiveInputField(
+                    label: l10n?.seedBankPlantLevelLabel ?? 'Plant level (0-5)',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                    ),
+                    builder: (context, decoration) => TextFormField(
                       initialValue: '${_data.globalLevel ?? 0}',
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.seedBankPlantLevelLabel ??
-                            'Plant level (0-5)',
-                        border: const OutlineInputBorder(),
-                      ),
+                      decoration: decoration,
                       keyboardType: TextInputType.number,
                       onChanged: (s) {
                         final v = int.tryParse(s) ?? 0;
@@ -478,15 +534,14 @@ ModuleAliasInputField(
                       },
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
+                  EditorResponsiveInputField(
+                    label: l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                    ),
+                    builder: (context, decoration) => TextFormField(
                       initialValue: '${_data.overrideSeedSlotsCount ?? 0}',
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.seedBankSlotCountLabel ?? 'Slot count (0-9)',
-                        border: const OutlineInputBorder(),
-                      ),
+                      decoration: decoration,
                       keyboardType: TextInputType.number,
                       onChanged: (s) {
                         final v = int.tryParse(s) ?? 0;
@@ -509,6 +564,60 @@ ModuleAliasInputField(
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSelectionModeChip({
+    required Key key,
+    required String label,
+    required bool selected,
+    required ValueChanged<bool>? onSelected,
+  }) {
+    const padding = EdgeInsets.all(8);
+    const labelPadding = EdgeInsets.symmetric(horizontal: 8);
+    return LayoutBuilder(
+      builder: (context, constraints) => FilterChip(
+        key: key,
+        selected: selected,
+        onSelected: onSelected,
+        padding: padding,
+        labelPadding: labelPadding,
+        showCheckmark: false,
+        // Chip measures label height before subtracting its padding and native
+        // checkmark width. Limit both label layouts to the same available width
+        // and include the checkmark in the label so wrapped lines set the height.
+        label: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: constraints.deflate(padding + labelPadding).maxWidth,
+          ),
+          child: _buildSelectionModeLabel(label, selected: selected),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectionModeLabel(String label, {required bool selected}) {
+    // Preserve the chip's resolved text and disabled colors for both children.
+    return Builder(
+      builder: (context) {
+        final style = DefaultTextStyle.of(context);
+        return DefaultTextStyle(
+          style: style.style,
+          textAlign: style.textAlign,
+          softWrap: true,
+          overflow: TextOverflow.visible,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (selected) ...[
+                Icon(Icons.check, size: 18, color: style.style.color),
+                const SizedBox(width: 8),
+              ],
+              Flexible(child: Text(label)),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -666,44 +775,48 @@ ModuleAliasInputField(
 
   void _showHelp(BuildContext context, bool isZombieMode) {
     final l10n = AppLocalizations.of(context);
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n?.seedBankHelp ?? 'Seed bank help'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n?.seedBankLetsPlayersChoose ??
-                    'Seed bank lets players choose plants. In courtyard mode you can set global level and all plants.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.whiteListBlackListHint ??
-                    'White list: empty = no limit. Black list overrides white list.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.iZombieModePresetHint ??
-                    'I, Zombie mode: preset zombies for player. Selection locked to preset.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n?.invalidIdsHint ??
-                    'Invalid IDs leave empty slots. Zombie IDs in plant mode and vice versa. Put zombie slots first.',
-              ),
-            ],
-          ),
+    final theme = Theme.of(context);
+    final helpColor = isZombieMode
+        ? (theme.brightness == Brightness.dark ? pvzPurpleDark : pvzPurpleLight)
+        : theme.colorScheme.primary;
+    showEditorHelpDialog(
+      context,
+      isEvent: false,
+      title: l10n?.seedBankHelp ?? 'Seed Bank',
+      themeColor: helpColor,
+      sections: [
+        HelpSectionData(
+          title: l10n?.overview ?? 'Overview',
+          body:
+              l10n?.seedBankLetsPlayersChoose ??
+              'Seed Bank lets players choose from available plants.',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.ok ?? 'OK'),
-          ),
-        ],
-      ),
+        HelpSectionData(
+          title:
+              l10n?.seedBankWhiteAndBlacklistTitle ?? 'Whitelist and blacklist',
+          body:
+              l10n?.whiteListBlackListHint ??
+              'An empty whitelist applies no restriction. The blacklist takes priority.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankIZombieHelpTitle ?? 'I, Zombie mode',
+          body:
+              l10n?.iZombieModePresetHint ??
+              'I, Zombie mode uses a preset list of available zombies.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankSlotOccupancyTitle ?? 'Slot occupancy',
+          body:
+              l10n?.invalidIdsHint ??
+              'Invalid IDs leave empty slots in the Seed Bank.',
+        ),
+        HelpSectionData(
+          title: l10n?.seedBankAdvancedGameplayTitle ?? 'Advanced gameplay',
+          body:
+              l10n?.seedBankAdvancedGameplayBody ??
+              'The relative order of Seed Bank and Conveyor Belt modules changes sun costs in Preset mode.',
+        ),
+      ],
     );
   }
 }
@@ -952,9 +1065,7 @@ class _ResourceListEditor extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        onReorder != null
-                            ? '$description $reorderHint'
-                            : description,
+                        description,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -970,6 +1081,16 @@ class _ResourceListEditor extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            if (items.isNotEmpty && onReorder != null) ...[
+              Text(
+                reorderHint,
+                key: const ValueKey('presetPlantListReorderHint'),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
             if (items.isEmpty)
               Container(
                 width: double.infinity,
@@ -986,33 +1107,26 @@ class _ResourceListEditor extends StatelessWidget {
                 ),
               )
             else if (onReorder != null)
-              SizedBox(
-                height: items.length * kPresetResourceRowHeight,
-                child: ReorderableListView.builder(
-                  clipBehavior: Clip.none,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  buildDefaultDragHandles: false,
-                  itemCount: items.length,
-                  onReorder: (oldIndex, newIndex) {
-                    if (newIndex > oldIndex) {
-                      newIndex--;
-                    }
-                    onReorder!(oldIndex, newIndex);
-                  },
-                  itemBuilder: (context, index) {
-                    final id = items[index];
-                    final iconPath = _entryIconPath(id, isZombie: isZombie);
-                    return PresetResourceListTile(
-                      key: ValueKey('preset-resource-$index-$id'),
-                      label: _entryDisplayName(context, id, isZombie: isZombie),
-                      iconAssetPath: iconPath,
-                      iconAltCandidates: imageAltCandidates(iconPath),
-                      reorderIndex: index,
-                      onRemove: () => onRemove(index),
-                    );
-                  },
-                ),
+              ReorderableListView.builder(
+                clipBehavior: Clip.none,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                buildDefaultDragHandles: false,
+                itemCount: items.length,
+                onReorderItem: (oldIndex, newIndex) =>
+                    onReorder!(oldIndex, newIndex),
+                itemBuilder: (context, index) {
+                  final id = items[index];
+                  final iconPath = _entryIconPath(id, isZombie: isZombie);
+                  return PresetResourceListTile(
+                    key: ValueKey('preset-resource-$index-$id'),
+                    label: _entryDisplayName(context, id, isZombie: isZombie),
+                    iconAssetPath: iconPath,
+                    iconAltCandidates: imageAltCandidates(iconPath),
+                    reorderIndex: index,
+                    onRemove: () => onRemove(index),
+                  );
+                },
               )
             else
               Wrap(

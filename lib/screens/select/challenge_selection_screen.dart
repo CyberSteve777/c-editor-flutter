@@ -3,6 +3,7 @@ import 'package:c_editor/data/repository/challenge_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 
 /// Challenge selection. Ported from Z-Editor-master ChallengeSelectionScreen.kt
 /// Uses PvzOrange colors in both light and dark themes for consistency.
@@ -11,10 +12,12 @@ class ChallengeSelectionScreen extends StatefulWidget {
     super.key,
     required this.onChallengeSelected,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final void Function(ChallengeTypeInfo info) onChallengeSelected;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<ChallengeSelectionScreen> createState() =>
@@ -23,6 +26,47 @@ class ChallengeSelectionScreen extends StatefulWidget {
 
 class _ChallengeSelectionScreenState extends State<ChallengeSelectionScreen> {
   String _searchQuery = '';
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    _memory = SelectionViewMemoryStore.forKey('$bucket:challenge-selection');
+    _searchQuery = _memory.query;
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffset,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _memory
+      ..query = query
+      ..scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +92,12 @@ class _ChallengeSelectionScreenState extends State<ChallengeSelectionScreen> {
               'Search challenge name or code',
           query: _searchQuery,
           fillColor: theme.colorScheme.surface,
-          onChanged: (v) => setState(() => _searchQuery = v),
-          onClear: () => setState(() => _searchQuery = ''),
+          onChanged: _setSearchQuery,
+          onClear: () => _setSearchQuery(''),
         ),
       ),
       body: ListView.builder(
+        controller: _scrollController,
         padding: const EdgeInsets.all(16),
         itemCount: challenges.length,
         itemBuilder: (context, index) {

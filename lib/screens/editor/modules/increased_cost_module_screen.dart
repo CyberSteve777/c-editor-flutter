@@ -2,9 +2,15 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/theme/app_theme.dart'
+    show pvzLightOrangeDark, pvzLightOrangeLight;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/editor_components.dart'
-    show editorInputDecoration;
+    show
+        EditorResponsiveInputField,
+        HelpSectionData,
+        editorInputDecoration,
+        showEditorHelpDialog;
 
 /// Increased cost module editor. Ported from Z-Editor-master IncreasedCostModulePropertiesEP.kt
 class IncreasedCostModuleScreen extends StatefulWidget {
@@ -88,7 +94,6 @@ class _IncreasedCostModuleScreenState extends State<IncreasedCostModuleScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -101,10 +106,16 @@ class _IncreasedCostModuleScreenState extends State<IncreasedCostModuleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final accentColor = isDark ? pvzLightOrangeDark : pvzLightOrangeLight;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: l10n?.back ?? 'Back',
           onPressed: widget.onBack,
         ),
         title: buildEditorObjectAppBarTitle(
@@ -112,75 +123,149 @@ class _IncreasedCostModuleScreenState extends State<IncreasedCostModuleScreen> {
           localizedName: resolveModuleTitleByObjClass(context, _objClass),
           isEvent: false,
           objClass: _objClass,
+          foregroundColor: Colors.white,
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
-                Text(
-                  AppLocalizations.of(context)?.inflationParams ??
-                      'Inflation params',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+        backgroundColor: accentColor,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: l10n?.tooltipAboutModule ?? 'About this module',
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title: l10n?.inflationHelpTitle ?? 'Inflation module',
+              themeColor: accentColor,
+              sections: [
+                HelpSectionData(
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.inflationHelpOverview ??
+                      'Each time a plant is planted, its sun cost increases.',
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  focusNode: _baseCostFocusNode,
-                  controller: _baseCostCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: editorInputDecoration(
-                    context,
-                    labelText:
-                        AppLocalizations.of(context)?.baseCostIncreaseLabel ??
-                        'Base cost increase (BaseCostIncreased)',
-                    focusColor: Theme.of(context).colorScheme.primary,
-                    isFocused: _baseCostFocusNode.hasFocus,
-                  ),
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.baseCostIncreased = n;
-                      _sync();
-                    }
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  focusNode: _maxCountFocusNode,
-                  controller: _maxCountCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: editorInputDecoration(
-                    context,
-                    labelText:
-                        AppLocalizations.of(context)?.maxIncreaseCountLabel ??
-                        'Max increase count (MaxIncreasedCount)',
-                    focusColor: Theme.of(context).colorScheme.primary,
-                    isFocused: _maxCountFocusNode.hasFocus,
-                  ),
-                  onChanged: (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.maxIncreasedCount = n;
-                      _sync();
-                    }
-                  },
+                HelpSectionData(
+                  title:
+                      l10n?.inflationHelpParametersTitle ??
+                      'Parameter description',
+                  body:
+                      l10n?.inflationHelpParametersBody ??
+                      'Configure the sun cost increase per planting and the maximum number of increases.',
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: _alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: _handleAliasChanged,
+                onChanged: widget.onChanged,
+                accentColor: accentColor,
+              ),
+              const SizedBox(height: 16),
+              Card(
+                key: const ValueKey('inflationParametersCard'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n?.inflationParams ?? 'Inflation parameters',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.baseCostIncreaseLabel ??
+                            'Cost increase per planting (BaseCostIncreased)',
+                        decoration: editorInputDecoration(
+                          context,
+                          focusColor: accentColor,
+                          isFocused: _baseCostFocusNode.hasFocus,
+                        ),
+                        builder: (context, decoration) => TextField(
+                          key: const ValueKey('inflationBaseCostField'),
+                          focusNode: _baseCostFocusNode,
+                          controller: _baseCostCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: decoration,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data.baseCostIncreased = n;
+                              _sync();
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.maxIncreaseCountLabel ??
+                            'Max increase count (MaxIncreasedCount)',
+                        decoration: editorInputDecoration(
+                          context,
+                          focusColor: accentColor,
+                          isFocused: _maxCountFocusNode.hasFocus,
+                        ),
+                        builder: (context, decoration) => TextField(
+                          key: const ValueKey('inflationMaxCountField'),
+                          focusNode: _maxCountFocusNode,
+                          controller: _maxCountCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: decoration,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data.maxIncreasedCount = n;
+                              _sync();
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                key: const ValueKey('inflationLimitationCard'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.info_outline, color: accentColor, size: 28),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          l10n?.inflationMaxIncreaseCountWarning ??
+                              'Changing the maximum increase count currently has no effect; the game only reads the default value of 10.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: accentColor,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
         ),
       ),

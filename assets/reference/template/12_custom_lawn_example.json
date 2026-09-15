@@ -1,0 +1,891 @@
+{
+	"objects": [
+		{
+			"objclass": "LevelDefinition",
+			"objdata": {
+				"Name": "自定义地图示例",
+				"LevelNumber": 12,
+				"Description": "本关为自定义地图示例关",
+				"StageModule": "RTID(SummerNightStage@CurrentLevel)",
+				"Loot": "RTID(DefaultLoot@LevelModules)",
+				"StartingSun": 200,
+				"VictoryModule": "RTID(VictoryOutro@LevelModules)",
+				"MusicType": "MainPath",
+				"DisablePeavine": true,
+				"Modules": [
+					"RTID(StandardIntro@LevelModules)",
+					"RTID(ZombiesDeadWinCon@LevelModules)",
+					"RTID(SeedBank@CurrentLevel)",
+					"RTID(NewWaves@CurrentLevel)",
+					"RTID(DefaultZombieWinCondition@LevelModules)",
+					"RTID(GridItemPlacement@CurrentLevel)",
+					"RTID(DefaultCustomLevel@LevelModules)"
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SummerNightStage"
+			],
+			"objclass": "EightiesStageProperties",
+			"objdata": {
+				"ResourceGroupNames": [
+					"DelayLoad_Background_Summer_Night",
+					"Dirt_Spawn_Eighties",
+					"AudioEighties",
+					"Eighties_Background_Effects"
+				],
+				"ResourceGroupNames-Need for fix": [
+					"DelayLoad_Background_Eighties_Compressed",
+					"Dirt_Spawn_Eighties",
+					"EightiesGroansAudio",
+					"Eighties_Background_Effects",
+					"EightiesLootPinatas"
+				],
+				"GroupsToUnloadForAds": [
+					"DelayLoad_Background_Eighties_Compressed"
+				],
+				"BelongsToWorld": "eighties",
+				"StagePrefix": "summer_night",
+				"BackgroundResourceGroup": "DelayLoad_Background_Summer_Night",
+				"BackgroundImagePrefix": "IMAGE_BACKGROUNDS_SUMMER_NIGHT",
+				"LevelPowerupSet": "LevelPowerupsDefault",
+				"BasicZombieTypeName": "summer_basic",
+				"FlagZombieTypeName": "future_flag",
+				"Armor1ZombieTypeName": "summer_armor1",
+				"Armor2ZombieTypeName": "summer_armor2",
+				"RailcartDefaultTypeName": "railcart_egypt",
+				"GravestoneDefaultTypeName": "gravestone_eighties",
+				"DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_EIGHTIES",
+				"MusicSuffix": "Eighties",
+				"DisabledStreetCells": []
+			}
+		},
+		{
+			"aliases": [
+				"GridItemPlacement"
+			],
+			"objclass": "InitialGridItemProperties",
+			"objdata": {
+				"InitialGridItemPlacements": [
+					{
+						"GridX": 7,
+						"GridY": 1,
+						"TypeName": "slider_up_modern"
+					},
+					{
+						"GridX": 7,
+						"GridY": 3,
+						"TypeName": "slider_down_modern"
+					},
+					{
+						"GridX": 5,
+						"GridY": 0,
+						"TypeName": "slider_down_modern"
+					},
+					{
+						"GridX": 5,
+						"GridY": 4,
+						"TypeName": "slider_up_modern"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SeedBank"
+			],
+			"objclass": "SeedBankProperties",
+			"objdata": {
+				"PresetPlantList": [
+					"mapleblade",
+					"pumpkin"
+				],
+				"PlantWhiteList": [
+					"peashooter",
+					"wallnut",
+					"potatomine",
+					"cabbagepult",
+					"repeater",
+					"tallnut",
+					"spikerock",
+					"threepeater",
+					"gravebuster",
+					"torchwood",
+					"kernelpult",
+					"melonpult",
+					"imitater",
+					"spikeweed",
+					"squash",
+					"splitpea",
+					"starfruit",
+					"hypnoshroom",
+					"puffshroom",
+					"fumeshroom",
+					"magnetshroom",
+					"streetlamp",
+					"chomper",
+					"pumpkin",
+					"cobcannon",
+					"coffeebean",
+					"sunflower",
+					"sunshroom",
+					"twinsunflower",
+					"cherry_bomb",
+					"jalapeno",
+					"blover",
+					"snapdragon",
+					"fireshroom",
+					"firepeashooter",
+					"pepperpult",
+					"roseswordman",
+					"anthurium",
+					"carrotlauncher",
+					"pamegranate",
+					"redstinger",
+					"dragonfruit",
+					"flamelady",
+					"matchflower",
+					"rafflesia",
+					"primalrafflesia",
+					"applemortar",
+					"electriccurrant",
+					"bloominghearts",
+					"mulberry",
+					"hollyknight",
+					"pomegranatejeweler",
+					"strawburst",
+					"ultomato",
+					"bromelblade",
+					"cypripedium",
+					"clawgloriosa",
+					"inferno",
+					"meteorflower",
+					"pyrevine",
+					"heliconiagunner",
+					"tristerixaphyllus",
+					"firecrackerflower",
+					"mapleblade"
+				],
+				"PlantBlackList": [
+					"wintermelon",
+					"snowpea",
+					"nekotail",
+					"gatlingpea",
+					"cactus",
+					"cobcannon"
+				],
+				"SelectionMethod": "chooser",
+				"GlobalLevel": 1,
+				"OverrideSeedSlotsCount": 8
+			}
+		},
+		{
+			"aliases": [
+				"NewWaves"
+			],
+			"objclass": "WaveManagerModuleProperties",
+			"objdata": {
+				"DynamicZombies": [
+					{
+						"PointIncrementPerWave": 60,
+						"StartingPoints": 400,
+						"StartingWave": 3,
+						"ZombiePool": [
+							"RTID(future@ZombieTypes)",
+							"RTID(future_armor1@ZombieTypes)",
+							"RTID(future_armor2@ZombieTypes)"
+						]
+					}
+				],
+				"WaveManagerProps": "RTID(WaveManagerProps@CurrentLevel)"
+			}
+		},
+		{
+			"aliases": [
+				"WaveManagerProps"
+			],
+			"objclass": "WaveManagerProperties",
+			"objdata": {
+				"FlagWaveInterval": 5,
+				"WaveCount": 15,
+				"WaveSpendingPointIncrement": 100,
+				"WaveSpendingPoints": 100,
+				"DescriptionName": "[PVZ1MODE_BASSIST]",
+				"Description": "[PVZ1MODE_BASSIST_NORMAL_DESC]",
+				"Waves": [
+					[
+						"RTID(Wave1@CurrentLevel)"
+					],
+					[
+						"RTID(Wave2@CurrentLevel)"
+					],
+					[
+						"RTID(Wave3@CurrentLevel)"
+					],
+					[
+						"RTID(Wave4@CurrentLevel)",
+						"RTID(Wave4BassRainEvent0@CurrentLevel)"
+					],
+					[
+						"RTID(Wave5@CurrentLevel)"
+					],
+					[
+						"RTID(Wave6@CurrentLevel)"
+					],
+					[
+						"RTID(Wave7@CurrentLevel)"
+					],
+					[
+						"RTID(Wave8@CurrentLevel)",
+						"RTID(Wave8BassRainEvent0@CurrentLevel)"
+					],
+					[
+						"RTID(Wave9@CurrentLevel)"
+					],
+					[
+						"RTID(Wave10@CurrentLevel)"
+					],
+					[
+						"RTID(Wave11@CurrentLevel)"
+					],
+					[
+						"RTID(Wave12@CurrentLevel)",
+						"RTID(Wave12BassRainEvent0@CurrentLevel)"
+					],
+					[
+						"RTID(Wave13@CurrentLevel)"
+					],
+					[
+						"RTID(Wave14@CurrentLevel)"
+					],
+					[
+						"RTID(Wave15@CurrentLevel)",
+						"RTID(Wave15BassRainEvent0@CurrentLevel)"
+					]
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave1"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"NotificationEvents": [
+					"jam_rap"
+				],
+				"Zombies": [
+					{
+						"Row": "3",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave2"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "2",
+						"Type": "RTID(future_armor1@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(future_armor1@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave3"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "3",
+						"Type": "RTID(future_armor2@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(future_armor1@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(future_armor1@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave4"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(future_armor2@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(future_armor2@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave5"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "2",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "1",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave6"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "2",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave7"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "1",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave8"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "2",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave9"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "1",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave10"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(beach_gargantuar@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(beach_gargantuar@ZombieTypes)"
+					},
+					{
+						"Row": "1",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave11"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave12"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "1",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(modern_balloon@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave13"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(beach_gargantuar@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(beach_gargantuar@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave14"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave15"
+			],
+			"objclass": "SpawnZombiesJitteredWaveActionProps",
+			"objdata": {
+				"AdditionalPlantfood": 0,
+				"Zombies": [
+					{
+						"Row": "1",
+						"Type": "RTID(beach_gargantuar@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(beach_gargantuar@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(beach_gargantuar@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(eighties_breakdancer@ZombieTypes)"
+					},
+					{
+						"Row": "1",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(football_mech@ZombieTypes)"
+					},
+					{
+						"Row": "1",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "2",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "3",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "4",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Row": "5",
+						"Type": "RTID(modern_allstar@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					},
+					{
+						"Type": "RTID(pvz1_bungee@ZombieTypes)"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"Wave4BassRainEvent0"
+			],
+			"objclass": "BassRainZombieSpawnerProps",
+			"objdata": {
+				"ColumnEnd": 7,
+				"ColumnStart": 6,
+				"GroupSize": 1,
+				"SpiderCount": 2,
+				"SpiderZombieName": "eighties_bass",
+				"TimeBeforeFullSpawn": 5,
+				"TimeBetweenGroups": 0.2,
+				"WaveStartMessage": "[WARNING_BASSRAIN]",
+				"ZombieFallTime": 4.5
+			}
+		},
+		{
+			"aliases": [
+				"Wave8BassRainEvent0"
+			],
+			"objclass": "BassRainZombieSpawnerProps",
+			"objdata": {
+				"ColumnEnd": 7,
+				"ColumnStart": 6,
+				"GroupSize": 1,
+				"SpiderCount": 2,
+				"SpiderZombieName": "eighties_bass",
+				"TimeBeforeFullSpawn": 5,
+				"TimeBetweenGroups": 0.2,
+				"WaveStartMessage": "[WARNING_BASSRAIN]",
+				"ZombieFallTime": 4.5
+			}
+		},
+		{
+			"aliases": [
+				"Wave12BassRainEvent0"
+			],
+			"objclass": "BassRainZombieSpawnerProps",
+			"objdata": {
+				"ColumnEnd": 7,
+				"ColumnStart": 6,
+				"GroupSize": 1,
+				"SpiderCount": 3,
+				"SpiderZombieName": "eighties_bass",
+				"TimeBeforeFullSpawn": 5,
+				"TimeBetweenGroups": 0.2,
+				"WaveStartMessage": "[WARNING_BASSRAIN]",
+				"ZombieFallTime": 4.5
+			}
+		},
+		{
+			"aliases": [
+				"Wave15BassRainEvent0"
+			],
+			"objclass": "BassRainZombieSpawnerProps",
+			"objdata": {
+				"ColumnEnd": 7,
+				"ColumnStart": 6,
+				"GroupSize": 1,
+				"SpiderCount": 3,
+				"SpiderZombieName": "eighties_bass",
+				"TimeBeforeFullSpawn": 5,
+				"TimeBetweenGroups": 0.2,
+				"WaveStartMessage": "[WARNING_BASSRAIN]",
+				"ZombieFallTime": 4.5
+			}
+		}
+	],
+	"version": 1
+}

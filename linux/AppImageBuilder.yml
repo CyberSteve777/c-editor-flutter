@@ -1,4 +1,4 @@
-# AppImage recipe for the Flutter Linux bundle.
+# Legacy AppImage recipe (no longer used in CI — Linux ships .deb and .rpm instead).
 # See: https://appimage-builder.readthedocs.io/en/stable/examples/flutter.html
 
 version: 1

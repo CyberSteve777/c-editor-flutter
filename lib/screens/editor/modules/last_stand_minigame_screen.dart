@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Last stand minigame. Ported from Z-Editor-master LastStandMinigamePropertiesEP.kt
@@ -24,6 +26,8 @@ class LastStandMinigameScreen extends StatefulWidget {
 
 class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
   static const _objClass = 'LastStandMinigameProperties';
+  static const _startingSunField = 'StartingSun';
+  static const _startingPlantfoodField = 'StartingPlantfood';
   late String _alias;
   late PvzObject _moduleObj;
   late LastStandMinigamePropertiesData _data;
@@ -72,7 +76,6 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -86,6 +89,7 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -97,15 +101,37 @@ class _LastStandMinigameScreenState extends State<LastStandMinigameScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: l10n.back,
           onPressed: widget.onBack,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: l10n.tooltipAboutModule,
+            onPressed: () => showEditorHelpDialog(
+              context,
+              isEvent: false,
+              title: l10n.lastStandHelpTitle,
+              sections: [
+                HelpSectionData(
+                  title: l10n.overview,
+                  body: l10n.lastStandHelpOverviewBody,
+                ),
+                HelpSectionData(
+                  title: l10n.lastStandHelpNotes,
+                  body: l10n.lastStandHelpNotesBody,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -120,42 +146,56 @@ ModuleAliasInputField(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Initial resources',
+                      l10n.lastStandInitialResourceSettings,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _sunController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Starting sun',
-                        border: OutlineInputBorder(),
+                    EditorResponsiveInputField(
+                      label: localizedPropertyLabel(
+                        context,
+                        l10n.startingSun,
+                        _startingSunField,
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          _data.startingSun = n;
-                          _save();
-                        }
-                      },
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                      ),
+                      builder: (context, decoration) => TextField(
+                        controller: _sunController,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            _data.startingSun = n;
+                            _save();
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _plantfoodController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Starting plant food',
-                        border: OutlineInputBorder(),
+                    EditorResponsiveInputField(
+                      label: localizedPropertyLabel(
+                        context,
+                        l10n.startingPlantfood,
+                        _startingPlantfoodField,
                       ),
-                      onChanged: (v) {
-                        final n = int.tryParse(v);
-                        if (n != null && n >= 0) {
-                          _data.startingPlantfood = n;
-                          _save();
-                        }
-                      },
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                      ),
+                      builder: (context, decoration) => TextField(
+                        controller: _plantfoodController,
+                        keyboardType: TextInputType.number,
+                        decoration: decoration,
+                        onChanged: (v) {
+                          final n = int.tryParse(v);
+                          if (n != null && n >= 0) {
+                            _data.startingPlantfood = n;
+                            _save();
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -171,7 +211,7 @@ ModuleAliasInputField(
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Adding Last Stand enables manual start in wave manager.',
+                        l10n.lastStandManualStartupHint,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.primary,
                         ),

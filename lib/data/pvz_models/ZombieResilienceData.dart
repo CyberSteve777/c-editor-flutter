@@ -53,12 +53,12 @@ class ZombieResilienceData extends PvzModel {
   /// Numeric fields only — used when embedding resilience inline on a property sheet.
   @override
   Map<String, dynamic> toJson() => {
-    'Amount': amount,
+    'Amount': amount.toDouble(),
     'WeakType': weakType,
     'RecoverSpeed': recoverSpeed,
     'DamageThresholdPerSecond': damageThresholdPerSecond,
-    'ResilienceBaseDamageThreshold': resilienceBaseDamageThreshold,
-    'ResilienceExtraDamageThreshold': resilienceExtraDamageThreshold,
+    'ResilienceBaseDamageThreshold': resilienceBaseDamageThreshold.toDouble(),
+    'ResilienceExtraDamageThreshold': resilienceExtraDamageThreshold.toDouble(),
   };
 
   /// Full level [ZombieResilience] object payload, including required [AnimLabels].

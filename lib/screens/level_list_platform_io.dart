@@ -3,7 +3,82 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+bool get isLevelFileShareSupported => !Platform.isLinux;
+
+Future<void> shareLevelFile({
+  required BuildContext context,
+  required String itemPath,
+  required String caption,
+  required String failureMessage,
+  required void Function(String message) onFailure,
+}) async {
+  final shareOrigin = _sharePositionOrigin(context);
+
+  try {
+    if (Platform.isIOS) {
+      if (!await LevelRepository.ensureFolderAccess()) {
+        onFailure(failureMessage);
+        return;
+      }
+    }
+
+    final source = File(itemPath);
+    if (!await source.exists()) {
+      onFailure(failureMessage);
+      return;
+    }
+
+    XFile shareFile;
+    File? tempCopy;
+    if (Platform.isIOS) {
+      final tempPath = p.join(
+        (await getTemporaryDirectory()).path,
+        p.basename(itemPath),
+      );
+      await source.copy(tempPath);
+      tempCopy = File(tempPath);
+      shareFile = XFile(tempPath);
+    } else {
+      shareFile = XFile(itemPath);
+    }
+
+    await Share.shareXFiles(
+      [shareFile],
+      text: caption,
+      sharePositionOrigin: shareOrigin,
+    );
+
+    if (tempCopy != null) {
+      try {
+        await tempCopy.delete();
+      } catch (_) {}
+    }
+  } catch (_) {
+    onFailure(failureMessage);
+  }
+}
+
+Rect? _sharePositionOrigin(BuildContext context) {
+  final box = context.findRenderObject() as RenderBox?;
+  if (box != null && box.hasSize) {
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  if (!Platform.isIOS) return null;
+
+  final size = MediaQuery.sizeOf(context);
+  return Rect.fromCenter(
+    center: Offset(size.width / 2, size.height / 2),
+    width: 1,
+    height: 1,
+  );
+}
 
 Future<void> ensureStoragePermission(BuildContext context) async {
   if (!Platform.isAndroid) return;

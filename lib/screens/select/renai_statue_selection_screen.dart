@@ -4,6 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Dedicated statue selection for Renai module. Shows all Renai statue types.
@@ -12,10 +13,12 @@ class RenaiStatueSelectionScreen extends StatefulWidget {
     super.key,
     required this.onStatueSelected,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final void Function(String typeName) onStatueSelected;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<RenaiStatueSelectionScreen> createState() =>
@@ -25,6 +28,47 @@ class RenaiStatueSelectionScreen extends StatefulWidget {
 class _RenaiStatueSelectionScreenState
     extends State<RenaiStatueSelectionScreen> {
   String _searchQuery = '';
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    _memory = SelectionViewMemoryStore.forKey('$bucket:renai-statue');
+    _searchQuery = _memory.query;
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffset,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _memory
+      ..query = query
+      ..scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
+  }
 
   List<GridItemInfo> get _displayList {
     return GridItemRepository.getRenaiStatueItems().where((item) {
@@ -58,8 +102,8 @@ class _RenaiStatueSelectionScreenState
           title: AppBarSearchField(
             hintText: l10n?.searchStatues ?? 'Search statues',
             query: _searchQuery,
-            onChanged: (v) => setState(() => _searchQuery = v),
-            onClear: () => setState(() => _searchQuery = ''),
+            onChanged: _setSearchQuery,
+            onClear: () => _setSearchQuery(''),
           ),
         ),
         body: displayList.isEmpty
@@ -102,6 +146,7 @@ class _RenaiStatueSelectionScreenState
                   );
 
                   return GridView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(padding),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,

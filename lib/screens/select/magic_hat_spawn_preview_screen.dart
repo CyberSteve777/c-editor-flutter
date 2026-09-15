@@ -44,8 +44,9 @@ PlantInfo? _resolvePlantFromWhitelistEntry(PlantRepository repo, String raw) {
 }
 
 /// Plants this hat can spawn: [SpawnPlantWhiteList] for the hat's property sheet,
-/// minus [PVZ1CopycatsModuleProperties] `PlantBlackList` when the module is present
-/// (otherwise default blacklist), intersected with the editor plant catalog.
+/// minus [PVZ1CopycatsModuleProperties] `PlantBlackList` when the module is present,
+/// intersected with the editor plant catalog.
+/// Remaining plants retain their property's whitelist order.
 List<PlantInfo> computeMagicHatSpawnablePlants({
   required String hatPlantId,
   PvzLevelFile? levelFile,
@@ -115,17 +116,10 @@ class _MagicHatSpawnPreviewScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final plants = List<PlantInfo>.from(
-      computeMagicHatSpawnablePlants(
-        hatPlantId: widget.hatPlantId,
-        levelFile: widget.levelFile,
-      ),
+    final plants = computeMagicHatSpawnablePlants(
+      hatPlantId: widget.hatPlantId,
+      levelFile: widget.levelFile,
     );
-    plants.sort((a, b) {
-      final na = ResourceNames.lookup(context, a.name);
-      final nb = ResourceNames.lookup(context, b.name);
-      return na.toLowerCase().compareTo(nb.toLowerCase());
-    });
 
     final hatInfo = PlantRepository().getPlantInfoById(widget.hatPlantId);
 

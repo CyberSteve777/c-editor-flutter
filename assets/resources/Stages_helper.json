@@ -151,6 +151,12 @@
       "nameKey": "stage_ModernStage"
     }
   },
+  "DelayLoad_Background_Moon_Compressed": {
+    "IMAGE_BACKGROUNDS_MOON": {
+      "image": "Stage_Moon.webp",
+      "nameKey": "stage_MoonStage"
+    }
+  },
   "DelayLoad_Background_NewYear_Daylight": {
     "IMAGE_BACKGROUNDS_NEWYEAR_DAYLIGHT": {
       "image": "Stage_NewYearDaylight.webp",
@@ -255,6 +261,12 @@
     "IMAGE_BACKGROUNDS_SOCCER": {
       "image": "unknown.webp",
       "nameKey": "stage_SoccerStage"
+    }
+  },
+  "DelayLoad_Background_SouDaChe": {
+    "IMAGE_BACKGROUNDS_SOUDACHE": {
+      "image": "Stage_SouDaChe.gif",
+      "nameKey": "stage_SouDaCheStage"
     }
   },
   "DelayLoad_Background_Spring_Daylight": {

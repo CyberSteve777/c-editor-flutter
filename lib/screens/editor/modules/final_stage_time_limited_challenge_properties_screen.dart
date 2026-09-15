@@ -124,7 +124,6 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -163,6 +162,7 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title:
                   l10n?.finalStageTimeLimitedChallengeHelpTitle ??
                   'Final stage time limit challenge',
@@ -276,25 +276,25 @@ class _FinalStageTimeLimitedChallengePropertiesScreenState
                               ),
                             ),
                             const SizedBox(height: 12),
-                            TextField(
-                              controller: _timeLimitCtrl,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                  ),
-                              decoration: InputDecoration(
-                                labelText:
-                                    l10n?.finalStageTimeLimitedChallengeTimeLimit ??
-                                    'Zomboss time limit (ZombossTimeLimit, seconds)',
-                                border: const OutlineInputBorder(),
+                            EditorResponsiveInputField(
+                              label:
+                                  l10n?.finalStageTimeLimitedChallengeTimeLimit ??
+                                  'Zomboss time limit (ZombossTimeLimit, seconds)',
+                              builder: (context, decoration) => TextField(
+                                controller: _timeLimitCtrl,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                decoration: decoration,
+                                onChanged: (value) {
+                                  final parsed = double.tryParse(value);
+                                  if (parsed != null && parsed >= 0) {
+                                    _data.zombossTimeLimit = parsed;
+                                    _sync();
+                                  }
+                                },
                               ),
-                              onChanged: (value) {
-                                final parsed = double.tryParse(value);
-                                if (parsed != null && parsed >= 0) {
-                                  _data.zombossTimeLimit = parsed;
-                                  _sync();
-                                }
-                              },
                             ),
                           ],
                         ),

@@ -7,6 +7,7 @@ import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzBrownDark, pvzBrownLight;
 import 'package:c_editor/widgets/editor_components.dart'
     show
+        EditorResponsiveInputField,
         editorInputDecoration,
         HelpSectionData,
         scaleTableForDesktop,
@@ -197,7 +198,6 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
     ];
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -240,6 +240,7 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
             onPressed: () {
               showEditorHelpDialog(
                 context,
+                isEvent: false,
                 title: l10n?.pvz1PassageModuleTitle ?? 'Portal combat',
                 themeColor: accentColor,
                 sections: [
@@ -278,15 +279,15 @@ class _PVZ1PassageModuleScreenState extends State<PVZ1PassageModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: accentColor,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                  accentColor: accentColor,
+                ),
+                const SizedBox(height: 16),
                 Text(
                   l10n?.pvz1PassageSectionParams ?? 'Portal parameters',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -297,23 +298,27 @@ ModuleAliasInputField(
                 const SizedBox(height: 16),
                 for (var i = 0; i < specs.length; i++) ...[
                   if (i > 0) const SizedBox(height: 12),
-                  TextField(
-                    focusNode: _focusNodes[i],
-                    controller: _controllers[i],
-                    keyboardType: TextInputType.number,
+                  EditorResponsiveInputField(
+                    label: specs[i].label,
                     decoration: editorInputDecoration(
                       context,
-                      labelText: specs[i].label,
+
                       focusColor: accentColor,
                       isFocused: _focusNodes[i].hasFocus,
                     ),
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n != null) {
-                        specs[i].setter(_data, n);
-                        _sync();
-                      }
-                    },
+                    builder: (context, decoration) => TextField(
+                      focusNode: _focusNodes[i],
+                      controller: _controllers[i],
+                      keyboardType: TextInputType.number,
+                      decoration: decoration,
+                      onChanged: (v) {
+                        final n = int.tryParse(v);
+                        if (n != null) {
+                          specs[i].setter(_data, n);
+                          _sync();
+                        }
+                      },
+                    ),
                   ),
                 ],
                 const SizedBox(height: 24),

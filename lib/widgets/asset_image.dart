@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Supported image extensions: png, jpg, gif (gif files play animation).
-const List<String> kImageExtensions = ['.gif', '.png', '.jpg', '.webp'];
+const List<String> kImageExtensions = [
+  '.gif',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.webp',
+  '.bmp',
+];
 
 /// Returns alternate asset paths for fallback when primary path fails.
 /// Prefers .gif first so animated icons display correctly.
@@ -45,6 +52,44 @@ class AssetImageWidget extends StatefulWidget {
   final int? cacheWidth;
   final int? cacheHeight;
 
+  static bool _preloadComplete = false;
+  static final Set<String> _manifestPaths = {};
+  static final Map<String, String?> _pathCache = {};
+
+  static bool get isPreloadComplete => _preloadComplete;
+
+  static void registerManifestPath(String path) {
+    _manifestPaths.add(path);
+  }
+
+  static void markPreloadComplete() {
+    _preloadComplete = true;
+  }
+
+  static String? resolvePath(
+    String assetPath, [
+    List<String>? altCandidates,
+  ]) {
+    final cacheKey = '$assetPath|${altCandidates?.join(",") ?? ""}';
+    if (_pathCache.containsKey(cacheKey)) {
+      return _pathCache[cacheKey];
+    }
+
+    final candidates = <String>[assetPath, ...?altCandidates];
+    if (_preloadComplete) {
+      for (final path in candidates) {
+        if (_manifestPaths.contains(path)) {
+          _pathCache[cacheKey] = path;
+          return path;
+        }
+      }
+      _pathCache[cacheKey] = null;
+      return null;
+    }
+
+    return null;
+  }
+
   @override
   State<AssetImageWidget> createState() => _AssetImageWidgetState();
 }
@@ -53,9 +98,6 @@ class _AssetImageWidgetState extends State<AssetImageWidget> {
   String? _resolvedPath;
   bool _resolving = false;
   int _requestId = 0;
-
-  // Cache resolved paths to avoid repeated file system checks
-  static final Map<String, String?> _pathCache = {};
 
   @override
   void initState() {
@@ -74,10 +116,24 @@ class _AssetImageWidgetState extends State<AssetImageWidget> {
 
   Future<void> _resolveAsset() async {
     final cacheKey = '${widget.assetPath}|${widget.altCandidates?.join(",")}';
-    if (_pathCache.containsKey(cacheKey)) {
+    final cached = AssetImageWidget.resolvePath(
+      widget.assetPath,
+      widget.altCandidates,
+    );
+    if (cached != null || AssetImageWidget._pathCache.containsKey(cacheKey)) {
       if (mounted) {
         setState(() {
-          _resolvedPath = _pathCache[cacheKey];
+          _resolvedPath = cached;
+          _resolving = false;
+        });
+      }
+      return;
+    }
+
+    if (AssetImageWidget.isPreloadComplete) {
+      if (mounted) {
+        setState(() {
+          _resolvedPath = null;
           _resolving = false;
         });
       }
@@ -97,7 +153,7 @@ class _AssetImageWidgetState extends State<AssetImageWidget> {
         await rootBundle.load(path);
         if (!mounted || currentId != _requestId) return;
 
-        _pathCache[cacheKey] = path;
+        AssetImageWidget._pathCache[cacheKey] = path;
         setState(() {
           _resolvedPath = path;
           _resolving = false;
@@ -110,7 +166,7 @@ class _AssetImageWidgetState extends State<AssetImageWidget> {
 
     if (!mounted || currentId != _requestId) return;
 
-    _pathCache[cacheKey] = null;
+    AssetImageWidget._pathCache[cacheKey] = null;
     setState(() {
       _resolving = false;
       _resolvedPath = null;

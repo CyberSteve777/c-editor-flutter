@@ -35,6 +35,27 @@ class ConflictRegistry {
       descriptionKey: 'conflictDesc_LastStandIntro',
     ),
     ModuleConflictRule(
+      conflictingClasses: {
+        'CowboyMinigameProperties',
+        'StandardLevelIntroProperties',
+      },
+      descriptionKey: 'conflictDesc_CowboyIntro',
+    ),
+    ModuleConflictRule(
+      conflictingClasses: {
+        'SingleHandedProperties',
+        'StandardLevelIntroProperties',
+      },
+      descriptionKey: 'conflictDesc_SingleHandedIntro',
+    ),
+    ModuleConflictRule(
+      conflictingClasses: {
+        'IntroSingleHandedProperties',
+        'StandardLevelIntroProperties',
+      },
+      descriptionKey: 'conflictDesc_SingleHandedTutorialIntro',
+    ),
+    ModuleConflictRule(
       conflictingClasses: {'EvilDaveProperties', 'ZombiesDeadWinConProperties'},
       descriptionKey: 'conflictDesc_EvilDaveZombieDrop',
     ),
@@ -51,13 +72,6 @@ class ConflictRegistry {
         'ZombiesDeadWinConProperties',
       },
       descriptionKey: 'conflictDesc_ZombossDeathDrop',
-    ),
-    ModuleConflictRule(
-      conflictingClasses: {
-        'ZombossLastStandMinigameProperties',
-        'ZombiesDeadWinConProperties',
-      },
-      descriptionKey: 'conflictDesc_ZombossBattleDeathDrop',
     ),
     ModuleConflictRule(
       conflictingClasses: {
@@ -90,6 +104,13 @@ class ConflictRegistry {
     ),
     ModuleConflictRule(
       conflictingClasses: {
+        'CustomLevelModuleProperties',
+        'MoonExpertProperties',
+      },
+      descriptionKey: 'conflictDesc_MoonExpertYard',
+    ),
+    ModuleConflictRule(
+      conflictingClasses: {
         'WaveGeneratorProperties',
         'WaveManagerModuleProperties',
       },
@@ -98,14 +119,6 @@ class ConflictRegistry {
     ModuleConflictRule(
       conflictingClasses: {'WaveGeneratorProperties', 'WaveManagerProperties'},
       descriptionKey: 'conflictDesc_WaveGeneratorWaveManager',
-    ),
-    ModuleConflictRule(
-      conflictingClasses: {'WaveGeneratorProperties', 'RenaiModuleProperties'},
-      descriptionKey: 'conflictDesc_WaveGeneratorRenai',
-    ),
-    ModuleConflictRule(
-      conflictingClasses: {'WaveGeneratorProperties', 'WitchModuleProperties'},
-      descriptionKey: 'conflictDesc_WaveGeneratorWitch',
     ),
   ];
 
@@ -153,6 +166,12 @@ class ConflictRegistry {
         return l10n.conflictDesc_VaseBreakerIntro;
       case 'conflictDesc_LastStandIntro':
         return l10n.conflictDesc_LastStandIntro;
+      case 'conflictDesc_CowboyIntro':
+        return l10n.conflictDesc_CowboyIntro;
+      case 'conflictDesc_SingleHandedIntro':
+        return l10n.conflictDesc_SingleHandedIntro;
+      case 'conflictDesc_SingleHandedTutorialIntro':
+        return l10n.conflictDesc_SingleHandedTutorialIntro;
       case 'conflictDesc_EvilDaveZombieDrop':
         return l10n.conflictDesc_EvilDaveZombieDrop;
       case 'conflictDesc_EvilDaveVictory':
@@ -171,14 +190,12 @@ class ConflictRegistry {
         return l10n.conflictDesc_ProtectPlantRoof;
       case 'conflictDesc_LawnMowerYard':
         return l10n.conflictDesc_LawnMowerYard;
+      case 'conflictDesc_MoonExpertYard':
+        return l10n.conflictDesc_MoonExpertYard;
       case 'conflictDesc_WaveGeneratorWaveManagerModule':
         return l10n.conflictDesc_WaveGeneratorWaveManagerModule;
       case 'conflictDesc_WaveGeneratorWaveManager':
         return l10n.conflictDesc_WaveGeneratorWaveManager;
-      case 'conflictDesc_WaveGeneratorRenai':
-        return l10n.conflictDesc_WaveGeneratorRenai;
-      case 'conflictDesc_WaveGeneratorWitch':
-        return l10n.conflictDesc_WaveGeneratorWitch;
       default:
         return key;
     }

@@ -192,6 +192,7 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventMagicMirror ?? 'Magic mirror event',
               sections: [
                 HelpSectionData(
@@ -221,34 +222,37 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
                 onChanged: widget.onChanged,
               ),
               const SizedBox(height: 16),
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _data.arrays.length + 1,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    if (index == _data.arrays.length) {
-                      return OutlinedButton.icon(
+              HorizontalTagScroller(
+                key: const ValueKey('magicMirrorGroupScroller'),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 14),
+                children: [
+                  for (
+                    var index = 0;
+                    index <= _data.arrays.length;
+                    index++
+                  ) ...[
+                    if (index > 0) const SizedBox(width: 8),
+                    if (index == _data.arrays.length)
+                      OutlinedButton.icon(
                         onPressed: _addArray,
                         icon: const Icon(Icons.add),
                         label: Text(l10n?.add ?? 'Add'),
-                      );
-                    }
-                    final selected = index == _selectedIndex;
-                    return FilterChip(
-                      label: Text(
-                        l10n?.groupN(index + 1) ?? 'Group ${index + 1}',
+                      )
+                    else
+                      FilterChip(
+                        label: Text(
+                          l10n?.groupN(index + 1) ?? 'Group ${index + 1}',
+                        ),
+                        selected: index == _selectedIndex,
+                        onSelected: (_) =>
+                            setState(() => _selectedIndex = index),
+                        deleteIcon: const Icon(Icons.close),
+                        onDeleted: _data.arrays.length > 1
+                            ? () => _removeArray(index)
+                            : null,
                       ),
-                      selected: selected,
-                      onSelected: (_) => setState(() => _selectedIndex = index),
-                      deleteIcon: const Icon(Icons.close),
-                      onDeleted: _data.arrays.length > 1
-                          ? () => _removeArray(index)
-                          : null,
-                    );
-                  },
-                ),
+                  ],
+                ],
               ),
               const SizedBox(height: 16),
               if (currentArray != null) ...[
@@ -266,69 +270,77 @@ class _MagicMirrorEventScreenState extends State<MagicMirrorEventScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        DropdownButtonFormField<int?>(
-                          initialValue:
-                              [null, 1, 2, 3].contains(currentArray.typeIndex)
-                              ? currentArray.typeIndex
-                              : null,
-                          decoration: InputDecoration(
-                            labelText: l10n?.typeIndex ?? 'Type index',
-                            border: const OutlineInputBorder(),
-                          ),
-                          items: [
-                            DropdownMenuItem<int?>(
-                              value: null,
-                              child: Text(l10n?.noStyle ?? 'No style'),
-                            ),
-                            ...([1, 2, 3].map(
-                              (i) => DropdownMenuItem<int?>(
-                                value: i,
-                                child: Text(l10n?.styleN(i) ?? 'Style $i'),
+                        EditorResponsiveInputField(
+                          label: l10n?.typeIndex ?? 'Type index',
+                          builder: (context, decoration) =>
+                              DropdownButtonFormField<int?>(
+                                isExpanded: true,
+                                initialValue:
+                                    [
+                                      null,
+                                      1,
+                                      2,
+                                      3,
+                                    ].contains(currentArray.typeIndex)
+                                    ? currentArray.typeIndex
+                                    : null,
+                                decoration: decoration,
+                                items: [
+                                  DropdownMenuItem<int?>(
+                                    value: null,
+                                    child: Text(l10n?.noStyle ?? 'No style'),
+                                  ),
+                                  ...([1, 2, 3].map(
+                                    (i) => DropdownMenuItem<int?>(
+                                      value: i,
+                                      child: Text(
+                                        l10n?.styleN(i) ?? 'Style $i',
+                                      ),
+                                    ),
+                                  )),
+                                ],
+                                onChanged: (v) {
+                                  _updateArray(
+                                    _selectedIndex,
+                                    MagicMirrorArrayData(
+                                      mirror1GridX: currentArray.mirror1GridX,
+                                      mirror1GridY: currentArray.mirror1GridY,
+                                      mirror2GridX: currentArray.mirror2GridX,
+                                      mirror2GridY: currentArray.mirror2GridY,
+                                      typeIndex: v,
+                                      mirrorExistDuration:
+                                          currentArray.mirrorExistDuration,
+                                    ),
+                                  );
+                                },
                               ),
-                            )),
-                          ],
-                          onChanged: (v) {
-                            _updateArray(
-                              _selectedIndex,
-                              MagicMirrorArrayData(
-                                mirror1GridX: currentArray.mirror1GridX,
-                                mirror1GridY: currentArray.mirror1GridY,
-                                mirror2GridX: currentArray.mirror2GridX,
-                                mirror2GridY: currentArray.mirror2GridY,
-                                typeIndex: v,
-                                mirrorExistDuration:
-                                    currentArray.mirrorExistDuration,
-                              ),
-                            );
-                          },
                         ),
                         const SizedBox(height: 12),
-                        TextFormField(
-                          initialValue: currentArray.mirrorExistDuration
-                              .toString(),
-                          decoration: InputDecoration(
-                            labelText:
-                                l10n?.existDurationSec ??
-                                'Exist duration (sec)',
-                            border: const OutlineInputBorder(),
+                        EditorResponsiveInputField(
+                          label:
+                              l10n?.existDurationSec ?? 'Exist duration (sec)',
+                          builder: (context, decoration) => TextFormField(
+                            initialValue: currentArray.mirrorExistDuration
+                                .toString(),
+                            decoration: decoration,
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              final n = int.tryParse(v);
+                              if (n != null) {
+                                _updateArray(
+                                  _selectedIndex,
+                                  MagicMirrorArrayData(
+                                    mirror1GridX: currentArray.mirror1GridX,
+                                    mirror1GridY: currentArray.mirror1GridY,
+                                    mirror2GridX: currentArray.mirror2GridX,
+                                    mirror2GridY: currentArray.mirror2GridY,
+                                    typeIndex: currentArray.typeIndex,
+                                    mirrorExistDuration: n,
+                                  ),
+                                );
+                              }
+                            },
                           ),
-                          keyboardType: TextInputType.number,
-                          onChanged: (v) {
-                            final n = int.tryParse(v);
-                            if (n != null) {
-                              _updateArray(
-                                _selectedIndex,
-                                MagicMirrorArrayData(
-                                  mirror1GridX: currentArray.mirror1GridX,
-                                  mirror1GridY: currentArray.mirror1GridY,
-                                  mirror2GridX: currentArray.mirror2GridX,
-                                  mirror2GridY: currentArray.mirror2GridY,
-                                  typeIndex: currentArray.typeIndex,
-                                  mirrorExistDuration: n,
-                                ),
-                              );
-                            }
-                          },
                         ),
                         const SizedBox(height: 12),
                         SegmentedButton<bool>(

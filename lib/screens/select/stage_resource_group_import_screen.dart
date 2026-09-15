@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_stage_level_utils.dart';
+import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/models/stage_catalog.dart';
+import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/stage_catalog_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/utils/selection_search.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 enum StageResourceGroupImportMode { global, fromStage }
+
+class _StageResourceGroupSelectionViewState {
+  _StageResourceGroupSelectionViewState({
+    required this.selectedType,
+    required this.searchQuery,
+    required this.scrollOffset,
+    required this.tagScrollOffset,
+  });
+
+  String selectedType;
+  String searchQuery;
+  double scrollOffset;
+  double tagScrollOffset;
+}
+
+final Map<String, _StageResourceGroupSelectionViewState>
+_stageResourceGroupSelectionViewStates = {};
 
 /// Import resource groups into custom stage lists.
 class StageResourceGroupImportScreen extends StatefulWidget {
@@ -19,6 +40,7 @@ class StageResourceGroupImportScreen extends StatefulWidget {
     required this.existingGroups,
     required this.onImport,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final StageResourceGroupImportMode mode;
@@ -26,10 +48,12 @@ class StageResourceGroupImportScreen extends StatefulWidget {
   final void Function({
     required List<String> groups,
     String? sourceStageAlias,
+    Map<String, dynamic>? sourceStageObjdata,
     bool applySourceLawnAppearance,
   })
   onImport;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<StageResourceGroupImportScreen> createState() =>
@@ -38,8 +62,109 @@ class StageResourceGroupImportScreen extends StatefulWidget {
 
 class _StageResourceGroupImportScreenState
     extends State<StageResourceGroupImportScreen> {
+  static const _typeTabs = [
+    'all',
+    'main',
+    'extra',
+    'seasons',
+    'special',
+    'customPresets',
+  ];
+
   String _searchQuery = '';
+  late String _selectedType;
   bool _applySourceLawnAppearance = false;
+  late final ScrollController _scrollController;
+
+  String get _viewStateKey {
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    return '$bucket:${widget.mode.name}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final remembered = _stageResourceGroupSelectionViewStates[_viewStateKey];
+    _selectedType = _typeTabs.contains(remembered?.selectedType)
+        ? remembered!.selectedType
+        : 'all';
+    _searchQuery = remembered?.searchQuery ?? '';
+    _scrollController = ScrollController(
+      initialScrollOffset: remembered?.scrollOffset ?? 0,
+    )..addListener(_rememberScrollOffset);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _setType(String type) {
+    if (_selectedType == type) return;
+    setState(() => _selectedType = type);
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetRememberedScrollOffset();
+  }
+
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
+    final state = _stageResourceGroupSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _StageResourceGroupSelectionViewState(
+        selectedType: _selectedType,
+        searchQuery: _searchQuery,
+        scrollOffset: 0,
+        tagScrollOffset: 0,
+      ),
+    );
+    state.selectedType = _selectedType;
+    state.searchQuery = _searchQuery;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) state.tagScrollOffset = tagScrollOffset;
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
+  }
+
+  void _rememberScrollOffset() {
+    if (!_scrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _scrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final offset =
+        _stageResourceGroupSelectionViewStates[_viewStateKey]?.scrollOffset ??
+        0;
+    final position = _scrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_scrollController.offset != target) {
+      _scrollController.jumpTo(target);
+    }
+  }
 
   Iterable<String> _globalGroups() {
     return StageCatalogRepository.knownResourceGroups.where(
@@ -47,24 +172,24 @@ class _StageResourceGroupImportScreenState
     );
   }
 
-  Set<String> _allGroupsForStage(String alias) {
-    final impl = StageCatalogRepository.catalogImplementation(alias);
-    if (impl == null) return const {};
+  Set<String> _allGroupsForStage(_StageImportOption option) {
     return {
-      ...CustomStageLevelUtils.stringList(impl.objdata['ResourceGroupNames']),
-      ...CustomStageLevelUtils.stringList(impl.objdata['GroupsToUnloadForAds']),
+      ...CustomStageLevelUtils.stringList(option.objdata['ResourceGroupNames']),
+      ...CustomStageLevelUtils.stringList(
+        option.objdata['GroupsToUnloadForAds'],
+      ),
     };
   }
 
-  List<String> _groupsToAddForStage(String alias) {
+  List<String> _groupsToAddForStage(_StageImportOption option) {
     return _allGroupsForStage(
-      alias,
+      option,
     ).where((g) => !widget.existingGroups.contains(g)).toList()..sort();
   }
 
-  int _skippedGroupCountForStage(String alias) {
+  int _skippedGroupCountForStage(_StageImportOption option) {
     return _allGroupsForStage(
-      alias,
+      option,
     ).where(widget.existingGroups.contains).length;
   }
 
@@ -76,47 +201,70 @@ class _StageResourceGroupImportScreenState
         return matchesSelectionSearch(_searchQuery, [
           group,
           key,
-          ResourceNames.lookup(context, key),
+          ResourceNames.lookupOrFallback(context, key, group),
         ]);
       }).toList();
     }
     return items;
   }
 
-  List<StageBaseOption> _filteredStages() {
-    var items = StageCatalogRepository.stageBaseOptions();
+  List<_StageImportOption> _filteredStages() {
+    var items = <_StageImportOption>[
+      ...StageCatalogRepository.stageBaseOptions().map(
+        _StageImportOption.fromCatalog,
+      ),
+      ...CustomStagePresetRepository.presets.map(
+        _StageImportOption.fromCustomPreset,
+      ),
+    ];
+    if (_selectedType != 'all') {
+      items = items.where((option) => option.type == _selectedType).toList();
+    }
     if (normalizeSelectionSearchQuery(_searchQuery).isNotEmpty) {
       items = items.where((option) {
-        final nameKey = _stageNameKey(option.alias);
-        final name = ResourceNames.lookup(context, nameKey);
+        final name = ResourceNames.lookup(context, option.nameKey);
         return matchesSelectionSearch(_searchQuery, [
           name,
-          nameKey,
+          option.nameKey,
           option.alias,
           option.objclass,
-          option.backgroundImagePrefix ?? '',
-          option.backgroundResourceGroup ?? '',
+          option.objdata['BackgroundImagePrefix']?.toString() ?? '',
+          option.objdata['BackgroundResourceGroup']?.toString() ?? '',
         ]);
       }).toList();
     }
     return items;
   }
 
-  String _groupLabel(String group) => ResourceNames.lookup(
+  String _groupLabel(String group) => ResourceNames.lookupOrFallback(
     context,
     StageCatalogRepository.resourceGroupKey(group),
+    group,
   );
 
-  String _stageNameKey(String alias) => 'stage_$alias';
+  String _typeLabel(String type, AppLocalizations? l10n) {
+    switch (type) {
+      case 'all':
+        return l10n?.stageTypeAll ?? 'All';
+      case 'main':
+        return l10n?.stageTypeMain ?? 'Main';
+      case 'extra':
+        return l10n?.stageTypeExtra ?? 'Extra';
+      case 'seasons':
+        return l10n?.stageTypeSeasons ?? 'Seasons';
+      case 'special':
+        return l10n?.stageTypeSpecial ?? 'Special';
+      case 'customPresets':
+        return l10n?.stageTypeCustomPresets ?? 'Custom Presets';
+    }
+    return type;
+  }
 
-  Future<void> _confirmImportFromStage(StageBaseOption option) async {
+  Future<void> _confirmImportFromStage(_StageImportOption option) async {
     final l10n = AppLocalizations.of(context);
-    final stageName = ResourceNames.lookup(
-      context,
-      _stageNameKey(option.alias),
-    );
-    final toAdd = _groupsToAddForStage(option.alias);
-    final skipped = _skippedGroupCountForStage(option.alias);
+    final stageName = ResourceNames.lookup(context, option.nameKey);
+    final toAdd = _groupsToAddForStage(option);
+    final skipped = _skippedGroupCountForStage(option);
 
     if (toAdd.isEmpty) {
       await showDialog<void>(
@@ -244,6 +392,7 @@ class _StageResourceGroupImportScreenState
     widget.onImport(
       groups: toAdd,
       sourceStageAlias: option.alias,
+      sourceStageObjdata: Map<String, dynamic>.from(option.objdata),
       applySourceLawnAppearance: _applySourceLawnAppearance,
     );
   }
@@ -256,6 +405,7 @@ class _StageResourceGroupImportScreenState
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: responsiveSelectionToolbarHeight(context),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
@@ -264,6 +414,8 @@ class _StageResourceGroupImportScreenState
           isFromStage
               ? (l10n?.importResourceGroupFromStage ?? 'Import from stage')
               : (l10n?.importResourceGroupGlobal ?? 'Import resource group'),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       body: Column(
@@ -275,10 +427,27 @@ class _StageResourceGroupImportScreenState
                   ? (l10n?.searchStage ?? 'Search stage')
                   : (l10n?.searchResourceGroup ?? 'Search resource group'),
               query: _searchQuery,
-              onChanged: (v) => setState(() => _searchQuery = v),
-              onClear: () => setState(() => _searchQuery = ''),
+              onChanged: _setSearchQuery,
+              onClear: () => _setSearchQuery(''),
             ),
           ),
+          if (isFromStage)
+            HorizontalTagScroller(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              initialScrollOffset:
+                  _stageResourceGroupSelectionViewStates[_viewStateKey]
+                      ?.tagScrollOffset ??
+                  0,
+              onScrollOffsetChanged: _rememberTagScrollOffset,
+              children: _typeTabs.map((type) {
+                return AccentBarChoiceChip(
+                  label: _typeLabel(type, l10n),
+                  selected: _selectedType == type,
+                  onSelected: (_) => _setType(type),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                );
+              }).toList(),
+            ),
           Expanded(
             child: isFromStage
                 ? _buildStagePicker(context, l10n, theme)
@@ -305,6 +474,7 @@ class _StageResourceGroupImportScreenState
     }
 
     return ListView.separated(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
       itemCount: groups.length,
       separatorBuilder: (context, index) => const SizedBox(height: 8),
@@ -349,24 +519,26 @@ class _StageResourceGroupImportScreenState
     }
 
     return GridView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 180,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.72,
+        mainAxisExtent: responsiveSelectionGridTileExtent(
+          context,
+          baseExtent: 224,
+        ),
       ),
       itemCount: stages.length,
       itemBuilder: (_, i) {
         final option = stages[i];
-        final stageName = ResourceNames.lookup(
-          context,
-          _stageNameKey(option.alias),
-        );
+        final stageName = ResourceNames.lookup(context, option.nameKey);
         return _CatalogStageGridItem(
           stageName: stageName,
           alias: option.alias,
-          iconFileName: option.iconName,
+          iconFileName: option.iconFileName,
+          showPresetBadge: option.isCustomPreset,
           onTap: () => _confirmImportFromStage(option),
         );
       },
@@ -374,17 +546,63 @@ class _StageResourceGroupImportScreenState
   }
 }
 
+class _StageImportOption {
+  const _StageImportOption({
+    required this.alias,
+    required this.nameKey,
+    required this.iconFileName,
+    required this.objclass,
+    required this.type,
+    required this.objdata,
+    required this.isCustomPreset,
+  });
+
+  factory _StageImportOption.fromCatalog(StageBaseOption option) {
+    return _StageImportOption(
+      alias: option.alias,
+      nameKey: 'stage_${option.alias}',
+      iconFileName: option.iconName,
+      objclass: option.objclass,
+      type: option.type,
+      objdata: option.objdata,
+      isCustomPreset: false,
+    );
+  }
+
+  factory _StageImportOption.fromCustomPreset(CustomStagePreset preset) {
+    return _StageImportOption(
+      alias: preset.alias,
+      nameKey: preset.nameKey,
+      iconFileName: preset.iconName,
+      objclass: preset.objclass,
+      type: 'customPresets',
+      objdata: preset.objdata,
+      isCustomPreset: true,
+    );
+  }
+
+  final String alias;
+  final String nameKey;
+  final String iconFileName;
+  final String objclass;
+  final String type;
+  final Map<String, dynamic> objdata;
+  final bool isCustomPreset;
+}
+
 class _CatalogStageGridItem extends StatelessWidget {
   const _CatalogStageGridItem({
     required this.stageName,
     required this.alias,
     required this.iconFileName,
+    required this.showPresetBadge,
     required this.onTap,
   });
 
   final String stageName;
   final String alias;
   final String iconFileName;
+  final bool showPresetBadge;
   final VoidCallback onTap;
 
   @override
@@ -392,52 +610,66 @@ class _CatalogStageGridItem extends StatelessWidget {
     final theme = Theme.of(context);
     final iconPath = 'assets/images/round_icons/$iconFileName';
 
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ClipOval(
-                child: SizedBox(
-                  width: 96,
-                  height: 96,
-                  child: AssetImageWidget(
-                    assetPath: iconPath,
-                    altCandidates: imageAltCandidates(iconPath),
-                    width: 96,
-                    height: 96,
-                    fit: BoxFit.cover,
-                  ),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Card(
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ClipOval(
+                      child: SizedBox(
+                        width: 96,
+                        height: 96,
+                        child: AssetImageWidget(
+                          assetPath: iconPath,
+                          altCandidates: imageAltCandidates(iconPath),
+                          width: 96,
+                          height: 96,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      stageName,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      alias,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                stageName,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                alias,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+            ),
           ),
         ),
-      ),
+        if (showPresetBadge)
+          Positioned(
+            top: 8,
+            left: 8,
+            child: CustomResourceBadge(
+              color: presetCustomResourceBadgeColor(context),
+            ),
+          ),
+      ],
     );
   }
 }

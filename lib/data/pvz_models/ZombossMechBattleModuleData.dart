@@ -27,9 +27,11 @@ class ZombossMechBattleModuleData extends PvzModel {
       zombossStageCount: json['ZombossStageCount'] as int? ?? 3,
       zombossDeathRow: json['ZombossDeathRow'] as int? ?? 3,
       zombossDeathColumn: json['ZombossDeathColumn'] as int? ?? 5,
-      zombossSpawnGridPosition: json['ZombossSpawnGridPosition'] != null
+      zombossSpawnGridPosition: json['ZombossSpawnGridPosition'] is Map
           ? LocationData.fromJson(
-              json['ZombossSpawnGridPosition'] as Map<String, dynamic>,
+              Map<String, dynamic>.from(
+                json['ZombossSpawnGridPosition'] as Map,
+              ),
             )
           : null,
     );

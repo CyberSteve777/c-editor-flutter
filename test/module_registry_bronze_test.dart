@@ -18,4 +18,32 @@ void main() {
       expect(bronze.category, renai!.category);
     });
   });
+
+  group('SouDaCheDamageTextModule module metadata', () {
+    test('is registered as a basic CurrentLevel parameter module', () {
+      final meta = ModuleRegistry.getMetadata(
+        'SouDaCheDamageTextModuleProperties',
+      );
+
+      expect(meta.defaultAlias, 'SouDaCheDamageTextModule');
+      expect(meta.defaultSource, 'CurrentLevel');
+      expect(meta.category, ModuleCategory.base);
+      expect(meta.isCore, isFalse);
+      expect(meta.allowMultiple, isFalse);
+      expect(meta.initialData, isEmpty);
+    });
+
+    test('appears between scoring and lawn mowers in registry order', () {
+      final keys = ModuleRegistry.registry.keys.toList();
+
+      expect(
+        keys.indexOf('LevelScoringModuleProperties'),
+        lessThan(keys.indexOf('SouDaCheDamageTextModuleProperties')),
+      );
+      expect(
+        keys.indexOf('SouDaCheDamageTextModuleProperties'),
+        lessThan(keys.indexOf('LawnMowerProperties')),
+      );
+    });
+  });
 }

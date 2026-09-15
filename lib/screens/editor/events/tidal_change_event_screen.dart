@@ -115,6 +115,7 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title:
                   l10n?.eventTitle_TidalChangeWaveActionProps ??
                   'Tidal change event',
@@ -201,27 +202,31 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.tidalChange.changeAmount.toString(),
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.waterBoundaryColumn ??
+                            'Water boundary column',
                         decoration: InputDecoration(
-                          labelText:
-                              l10n?.waterBoundaryColumn ??
-                              'Water boundary column',
                           border: const OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = TidalChangeWaveActionData(
-                              tidalChange: TidalChangeInternalData(
-                                changeAmount: n,
-                                changeType: _data.tidalChange.changeType,
-                              ),
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.tidalChange.changeAmount
+                              .toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = TidalChangeWaveActionData(
+                                tidalChange: TidalChangeInternalData(
+                                  changeAmount: n,
+                                  changeType: _data.tidalChange.changeType,
+                                ),
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -286,8 +291,11 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Container(
                             width: 20,
@@ -301,12 +309,10 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           Text(
                             l10n?.water ?? 'Water',
                             style: theme.textTheme.bodySmall,
                           ),
-                          const SizedBox(width: 24),
                           Container(
                             width: 20,
                             height: 20,
@@ -319,7 +325,6 @@ class _TidalChangeEventScreenState extends State<TidalChangeEventScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
                           Text(
                             l10n?.land ?? 'Land',
                             style: theme.textTheme.bodySmall,

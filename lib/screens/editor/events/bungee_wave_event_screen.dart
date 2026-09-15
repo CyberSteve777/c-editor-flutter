@@ -170,6 +170,7 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.bungeeWaveEventHelpTitle ?? 'Bungee drop event',
               themeColor: appBarColor,
               sections: [
@@ -211,7 +212,7 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      EditorResponsiveFieldRow(
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,9 +233,10 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
                               ),
                             ],
                           ),
-                          const Spacer(),
                           Text(
                             '(X: ${_data.target.mX}, Y: ${_data.target.mY})',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -264,29 +266,33 @@ class _BungeeWaveEventScreenState extends State<BungeeWaveEventScreen> {
                       const SizedBox(height: 8),
                       _buildZombieSelector(theme, appBarColor, l10n),
                       const SizedBox(height: 12),
-                      TextField(
-                        focusNode: _levelFocusNode,
-                        controller: _levelController,
+                      EditorResponsiveInputField(
+                        label:
+                            l10n?.bungeeWaveZombieLevel ??
+                            'Zombie level (Level)',
                         decoration: editorInputDecoration(
                           context,
-                          labelText:
-                              l10n?.bungeeWaveZombieLevel ??
-                              'Zombie level (Level)',
+
                           focusColor: appBarColor,
                           isFocused: _levelFocusNode.hasFocus,
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null && n >= 1 && n <= 10) {
-                            _data = BungeeWaveActionData(
-                              target: _data.target,
-                              zombieName: _data.zombieName,
-                              level: n,
-                            );
-                            _sync();
-                          }
-                        },
+                        builder: (context, decoration) => TextField(
+                          focusNode: _levelFocusNode,
+                          controller: _levelController,
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null && n >= 1 && n <= 10) {
+                              _data = BungeeWaveActionData(
+                                target: _data.target,
+                                zombieName: _data.zombieName,
+                                level: n,
+                              );
+                              _sync();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

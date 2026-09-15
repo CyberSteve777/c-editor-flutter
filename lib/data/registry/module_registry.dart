@@ -8,12 +8,15 @@ class ModuleMetadata {
   final String titleKey;
   final String descriptionKey;
   final IconData icon;
+  final String? assetIconPath;
   final bool isCore;
   final ModuleCategory category;
   final String defaultAlias;
   final String defaultSource;
   final bool allowMultiple;
+  final String duplicateAliasNumberSeparator;
   final dynamic Function()? initialDataFactory;
+  final String? uniqueKey;
   // In Flutter, we might use a route name or a widget builder
   // For now, we'll just store the route name or ID
   final String routeId;
@@ -23,17 +26,21 @@ class ModuleMetadata {
     required this.titleKey,
     required this.descriptionKey,
     required this.icon,
+    this.assetIconPath,
     required this.isCore,
     required this.category,
     required this.defaultAlias,
     this.defaultSource = 'CurrentLevel',
     this.allowMultiple = false,
+    this.duplicateAliasNumberSeparator = '_',
     this.initialDataFactory,
+    this.uniqueKey,
     required this.routeId,
     this.objClass = '',
   });
 
   String get effectiveAlias => defaultAlias;
+  String get selectionKey => uniqueKey ?? objClass;
 
   Map<String, dynamic>? get initialData {
     final obj = initialDataFactory?.call();
@@ -70,6 +77,22 @@ class ModuleRegistry {
     );
   }
 
+  static ModuleMetadata getMetadataForAlias(String alias, String objClass) {
+    if (objClass == 'TunnelDefendModuleProperties' &&
+        (alias == 'SouDaCheTunnelDefendDefault' ||
+            alias.startsWith('SoudacheTunnelDefendStage'))) {
+      return registry['SouDaCheTunnelDefendDefault']!.copyWith(
+        objClass: objClass,
+      );
+    }
+    for (final meta in registry.values) {
+      if (meta.defaultAlias == alias && meta.objClass == objClass) {
+        return meta.copyWith(objClass: objClass);
+      }
+    }
+    return getMetadata(objClass);
+  }
+
   static List<ModuleMetadata> getAllModules() => all;
 
   static String getTitle(BuildContext context, String key) {
@@ -99,6 +122,16 @@ class ModuleRegistry {
         return l10n.moduleTitle_ConveyorSeedBankProperties;
       case 'moduleTitle_SunDropperProperties':
         return l10n.moduleTitle_SunDropperProperties;
+      case 'moduleTitle_MoonExpertProperties':
+        return l10n.moduleTitle_MoonExpertProperties;
+      case 'moduleTitle_MoonLifeSupportSystemProperties':
+        return l10n.moduleTitle_MoonLifeSupportSystemProperties;
+      case 'moduleTitle_LunarTerminalModuleProperties':
+        return l10n.moduleTitle_LunarTerminalModuleProperties;
+      case 'moduleTitle_LunarMineVeinModuleProperties':
+        return l10n.moduleTitle_LunarMineVeinModuleProperties;
+      case 'moduleTitle_RadiationMeteorModuleProperties':
+        return l10n.moduleTitle_RadiationMeteorModuleProperties;
       case 'moduleTitle_LevelMutatorMaxSunProps':
         return l10n.moduleTitle_LevelMutatorMaxSunProps;
       case 'moduleTitle_LevelMutatorStartingPlantfoodProps':
@@ -111,6 +144,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_StarChallengeModuleProperties;
       case 'moduleTitle_LevelScoringModuleProperties':
         return l10n.moduleTitle_LevelScoringModuleProperties;
+      case 'moduleTitle_SouDaCheDamageTextModuleProperties':
+        return l10n.moduleTitle_SouDaCheDamageTextModuleProperties;
       case 'moduleTitle_BowlingMinigameProperties':
         return l10n.moduleTitle_BowlingMinigameProperties;
       case 'moduleTitle_NewBowlingMinigameProperties':
@@ -133,6 +168,12 @@ class ModuleRegistry {
         return l10n.moduleTitle_SeedRainProperties;
       case 'moduleTitle_LastStandMinigameProperties':
         return l10n.moduleTitle_LastStandMinigameProperties;
+      case 'moduleTitle_CowboyMinigameProperties':
+        return l10n.moduleTitle_CowboyMinigameProperties;
+      case 'moduleTitle_SingleHandedProperties':
+        return l10n.moduleTitle_SingleHandedProperties;
+      case 'moduleTitle_IntroSingleHandedProperties':
+        return l10n.moduleTitle_IntroSingleHandedProperties;
       case 'moduleTitle_PVZ1OverwhelmModuleProperties':
         return l10n.moduleTitle_PVZ1OverwhelmModuleProperties;
       case 'moduleTitle_SunBombChallengeProperties':
@@ -155,6 +196,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_ProtectThePlantChallengeProperties;
       case 'moduleTitle_ProtectTheGridItemChallengeProperties':
         return l10n.moduleTitle_ProtectTheGridItemChallengeProperties;
+      case 'moduleTitle_MoldColonyChallengeProps':
+        return l10n.moduleTitle_MoldColonyChallengeProps;
       case 'moduleTitle_ZombiePotionModuleProperties':
         return l10n.moduleTitle_ZombiePotionModuleProperties;
       case 'moduleTitle_PiratePlankProperties':
@@ -187,6 +230,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_LawnMowerProperties;
       case 'moduleTitle_TunnelDefendModuleProperties':
         return l10n.moduleTitle_TunnelDefendModuleProperties;
+      case 'moduleTitle_SouDaCheTunnelDefendDefault':
+        return l10n.moduleTitle_SouDaCheTunnelDefendDefault;
       case 'moduleTitle_ZombieRushModuleProperties':
         return l10n.moduleTitle_ZombieRushModuleProperties;
       case 'moduleTitle_RenaiModuleProperties':
@@ -207,6 +252,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_RiftThemeDemoModuleProperties;
       case 'moduleTitle_InitialGridItemGulliverTunnelProperties':
         return l10n.moduleTitle_InitialGridItemGulliverTunnelProperties;
+      case 'moduleTitle_LevelPowerupModuleProperties':
+        return l10n.moduleTitle_LevelPowerupModuleProperties;
       case 'moduleTitle_RocketZombieFlickModuleProperties':
         return l10n.moduleTitle_RocketZombieFlickModuleProperties;
       case 'moduleTitle_PVZ1PassageModuleProperties':
@@ -245,6 +292,16 @@ class ModuleRegistry {
         return l10n.moduleDesc_ConveyorSeedBankProperties;
       case 'moduleDesc_SunDropperProperties':
         return l10n.moduleDesc_SunDropperProperties;
+      case 'moduleDesc_MoonExpertProperties':
+        return l10n.moduleDesc_MoonExpertProperties;
+      case 'moduleDesc_MoonLifeSupportSystemProperties':
+        return l10n.moduleDesc_MoonLifeSupportSystemProperties;
+      case 'moduleDesc_LunarTerminalModuleProperties':
+        return l10n.moduleDesc_LunarTerminalModuleProperties;
+      case 'moduleDesc_LunarMineVeinModuleProperties':
+        return l10n.moduleDesc_LunarMineVeinModuleProperties;
+      case 'moduleDesc_RadiationMeteorModuleProperties':
+        return l10n.moduleDesc_RadiationMeteorModuleProperties;
       case 'moduleDesc_LevelMutatorMaxSunProps':
         return l10n.moduleDesc_LevelMutatorMaxSunProps;
       case 'moduleDesc_LevelMutatorStartingPlantfoodProps':
@@ -257,6 +314,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_StarChallengeModuleProperties;
       case 'moduleDesc_LevelScoringModuleProperties':
         return l10n.moduleDesc_LevelScoringModuleProperties;
+      case 'moduleDesc_SouDaCheDamageTextModuleProperties':
+        return l10n.moduleDesc_SouDaCheDamageTextModuleProperties;
       case 'moduleDesc_BowlingMinigameProperties':
         return l10n.moduleDesc_BowlingMinigameProperties;
       case 'moduleDesc_NewBowlingMinigameProperties':
@@ -279,6 +338,12 @@ class ModuleRegistry {
         return l10n.moduleDesc_SeedRainProperties;
       case 'moduleDesc_LastStandMinigameProperties':
         return l10n.moduleDesc_LastStandMinigameProperties;
+      case 'moduleDesc_CowboyMinigameProperties':
+        return l10n.moduleDesc_CowboyMinigameProperties;
+      case 'moduleDesc_SingleHandedProperties':
+        return l10n.moduleDesc_SingleHandedProperties;
+      case 'moduleDesc_IntroSingleHandedProperties':
+        return l10n.moduleDesc_IntroSingleHandedProperties;
       case 'moduleDesc_PVZ1OverwhelmModuleProperties':
         return l10n.moduleDesc_PVZ1OverwhelmModuleProperties;
       case 'moduleDesc_SunBombChallengeProperties':
@@ -301,6 +366,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_ProtectThePlantChallengeProperties;
       case 'moduleDesc_ProtectTheGridItemChallengeProperties':
         return l10n.moduleDesc_ProtectTheGridItemChallengeProperties;
+      case 'moduleDesc_MoldColonyChallengeProps':
+        return l10n.moduleDesc_MoldColonyChallengeProps;
       case 'moduleDesc_ZombiePotionModuleProperties':
         return l10n.moduleDesc_ZombiePotionModuleProperties;
       case 'moduleDesc_PiratePlankProperties':
@@ -333,6 +400,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_LawnMowerProperties;
       case 'moduleDesc_TunnelDefendModuleProperties':
         return l10n.moduleDesc_TunnelDefendModuleProperties;
+      case 'moduleDesc_SouDaCheTunnelDefendDefault':
+        return l10n.moduleDesc_SouDaCheTunnelDefendDefault;
       case 'moduleDesc_ZombieRushModuleProperties':
         return l10n.moduleDesc_ZombieRushModuleProperties;
       case 'moduleDesc_RenaiModuleProperties':
@@ -353,6 +422,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_RiftThemeDemoModuleProperties;
       case 'moduleDesc_InitialGridItemGulliverTunnelProperties':
         return l10n.moduleDesc_InitialGridItemGulliverTunnelProperties;
+      case 'moduleDesc_LevelPowerupModuleProperties':
+        return l10n.moduleDesc_LevelPowerupModuleProperties;
       case 'moduleDesc_RocketZombieFlickModuleProperties':
         return l10n.moduleDesc_RocketZombieFlickModuleProperties;
       case 'moduleDesc_PVZ1PassageModuleProperties':
@@ -456,7 +527,7 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_SeedBankProperties',
       icon: Icons.yard,
       isCore: true,
-      allowMultiple: false,
+      allowMultiple: true,
       category: ModuleCategory.base,
       defaultAlias: 'SeedBank',
       initialDataFactory: () => SeedBankData(),
@@ -532,6 +603,16 @@ class ModuleRegistry {
       initialDataFactory: () => LevelScoringData(),
       routeId: 'UnknownDetail',
     ),
+    'SouDaCheDamageTextModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_SouDaCheDamageTextModuleProperties',
+      descriptionKey: 'moduleDesc_SouDaCheDamageTextModuleProperties',
+      icon: Icons.numbers,
+      isCore: false,
+      category: ModuleCategory.base,
+      defaultAlias: 'SouDaCheDamageTextModule',
+      initialDataFactory: () => <String, dynamic>{},
+      routeId: 'UnknownDetail',
+    ),
     'LawnMowerProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_LawnMowerProperties',
       descriptionKey: 'moduleDesc_LawnMowerProperties',
@@ -542,6 +623,16 @@ class ModuleRegistry {
       defaultSource: 'LevelModules',
       routeId: 'LawnMower',
     ),
+    'MoonExpertProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_MoonExpertProperties',
+      descriptionKey: 'moduleDesc_MoonExpertProperties',
+      icon: Icons.nightlight_round,
+      isCore: true,
+      category: ModuleCategory.base,
+      defaultAlias: 'MoonExpertProps',
+      initialDataFactory: () => MoonExpertPropertiesData(),
+      routeId: 'MoonExpertModule',
+    ),
     'LastStandMinigameProperties': ModuleMetadata(
       titleKey: 'moduleTitle_LastStandMinigameProperties',
       descriptionKey: 'moduleDesc_LastStandMinigameProperties',
@@ -551,6 +642,16 @@ class ModuleRegistry {
       defaultAlias: 'LastStand',
       initialDataFactory: () => LastStandMinigamePropertiesData(),
       routeId: 'LastStandMinigame',
+    ),
+    'CowboyMinigameProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_CowboyMinigameProperties',
+      descriptionKey: 'moduleDesc_CowboyMinigameProperties',
+      icon: Icons.fence,
+      isCore: true,
+      category: ModuleCategory.mode,
+      defaultAlias: 'CowboyMinigame',
+      initialDataFactory: () => CowboyMinigamePropertiesData(),
+      routeId: 'CowboyMinigame',
     ),
     'BombProperties': ModuleMetadata(
       titleKey: 'moduleTitle_BombProperties',
@@ -566,10 +667,12 @@ class ModuleRegistry {
     'ZombossBattleModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_ZombossBattleModuleProperties',
       descriptionKey: 'moduleDesc_ZombossBattleModuleProperties',
-      icon: Icons.dangerous,
+      icon: Icons.smart_toy_outlined,
       isCore: false,
       category: ModuleCategory.mode,
       defaultAlias: 'ZombossBattle',
+      allowMultiple: true,
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ZombossMechBattleModuleData(),
       routeId: 'ZombossMechBattle',
     ),
@@ -590,6 +693,8 @@ class ModuleRegistry {
       isCore: false,
       category: ModuleCategory.mode,
       defaultAlias: 'ZombossLastStand',
+      allowMultiple: true,
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ZombossLastStandMinigameData(),
       routeId: 'ZombossBattle',
     ),
@@ -602,6 +707,26 @@ class ModuleRegistry {
       defaultAlias: 'SunBombs',
       initialDataFactory: () => SunBombChallengeData(),
       routeId: 'SunBombChallenge',
+    ),
+    'SingleHandedProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_SingleHandedProperties',
+      descriptionKey: 'moduleDesc_SingleHandedProperties',
+      icon: Icons.sledding,
+      isCore: true,
+      category: ModuleCategory.mode,
+      defaultAlias: 'SingleHanded',
+      initialDataFactory: () => SingleHandedPropertiesData(),
+      routeId: 'SingleHanded',
+    ),
+    'IntroSingleHandedProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_IntroSingleHandedProperties',
+      descriptionKey: 'moduleDesc_IntroSingleHandedProperties',
+      icon: Icons.sledding,
+      isCore: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'SingleHandedTutorial',
+      initialDataFactory: () => IntroSingleHandedPropertiesData(),
+      routeId: 'SingleHandedTutorial',
     ),
     'EvilDaveProperties': ModuleMetadata(
       titleKey: 'moduleTitle_EvilDaveProperties',
@@ -837,11 +962,23 @@ class ModuleRegistry {
       descriptionKey: 'moduleDesc_ProtectTheGridItemChallengeProperties',
       icon: Icons.security,
       isCore: true,
-      allowMultiple: false,
+      allowMultiple: true,
       category: ModuleCategory.scene,
       defaultAlias: 'ProtectTheGridItem',
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => ProtectTheGridItemChallengePropertiesData(),
       routeId: 'ProtectTheGridItem',
+    ),
+    'MoldColonyChallengeProps': ModuleMetadata(
+      titleKey: 'moduleTitle_MoldColonyChallengeProps',
+      descriptionKey: 'moduleDesc_MoldColonyChallengeProps',
+      icon: Icons.grid_3x3,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.scene,
+      defaultAlias: 'DoNotPlantBeforeLine',
+      initialDataFactory: () => MoldColonyChallengePropsData(),
+      routeId: 'MoldColony',
     ),
     'PiratePlankProperties': ModuleMetadata(
       titleKey: 'moduleTitle_PiratePlankProperties',
@@ -871,6 +1008,7 @@ class ModuleRegistry {
       allowMultiple: true,
       category: ModuleCategory.scene,
       defaultAlias: 'MechanismPlank',
+      duplicateAliasNumberSeparator: '',
       initialDataFactory: () => {
         'MechanismGearsRect': {'mHeight': 5, 'mWidth': 4, 'mX': 0, 'mY': 0},
         'MechanismPlankRows': ['0', '4'],
@@ -993,6 +1131,17 @@ class ModuleRegistry {
       initialDataFactory: () => RenaiModulePropertiesData(),
       routeId: 'RenaiModule',
     ),
+    'LunarMineVeinModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LunarMineVeinModuleProperties',
+      descriptionKey: 'moduleDesc_LunarMineVeinModuleProperties',
+      icon: Icons.diamond_outlined,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.scene,
+      defaultAlias: 'ExampleLunarMineVeins',
+      initialDataFactory: () => LunarMineVeinModulePropertiesData(),
+      routeId: 'LunarMineVeinModule',
+    ),
     'RoofProperties': ModuleMetadata(
       titleKey: 'moduleTitle_RoofProperties',
       descriptionKey: 'moduleDesc_RoofProperties',
@@ -1010,7 +1159,22 @@ class ModuleRegistry {
       isCore: true,
       category: ModuleCategory.scene,
       defaultAlias: 'TunnelDefend',
-      initialDataFactory: () => TunnelDefendModuleData(),
+      initialDataFactory: () => TunnelDefendModuleData(reportError: true),
+      routeId: 'TunnelDefendModule',
+    ),
+    'SouDaCheTunnelDefendDefault': ModuleMetadata(
+      titleKey: 'moduleTitle_SouDaCheTunnelDefendDefault',
+      descriptionKey: 'moduleDesc_SouDaCheTunnelDefendDefault',
+      icon: Icons.grid_view,
+      isCore: true,
+      category: ModuleCategory.scene,
+      defaultAlias: 'SouDaCheTunnelDefendDefault',
+      uniqueKey: 'SouDaCheTunnelDefendDefault',
+      objClass: 'TunnelDefendModuleProperties',
+      initialDataFactory: () => TunnelDefendModuleData(
+        brickMapIndex: 3,
+        reportError: false,
+      ).toJson(includeTunnelSequenceInterval: false),
       routeId: 'TunnelDefendModule',
     ),
     'InitialGridItemGulliverTunnelProperties': ModuleMetadata(
@@ -1023,6 +1187,17 @@ class ModuleRegistry {
       defaultAlias: 'TunnelPlacement',
       initialDataFactory: () => InitialGridItemGulliverTunnelPropertiesData(),
       routeId: 'GulliverTunnelModule',
+    ),
+    'LevelPowerupModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LevelPowerupModuleProperties',
+      descriptionKey: 'moduleDesc_LevelPowerupModuleProperties',
+      icon: Icons.touch_app,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'LevelPowerups',
+      initialDataFactory: () => LevelPowerupModulePropertiesData(),
+      routeId: 'LevelPowerups',
     ),
     'RocketZombieFlickModuleProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_RocketZombieFlickModuleProperties',
@@ -1067,6 +1242,38 @@ class ModuleRegistry {
       initialDataFactory: () => SpermWhaleModulePropertiesData(),
       routeId: 'SpermWhaleModule',
     ),
+    'MoonLifeSupportSystemProperties': const ModuleMetadata(
+      titleKey: 'moduleTitle_MoonLifeSupportSystemProperties',
+      descriptionKey: 'moduleDesc_MoonLifeSupportSystemProperties',
+      icon: Icons.battery_charging_full,
+      isCore: true,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'MoonLifeSupportSystemModule',
+      defaultSource: 'LevelModules',
+      routeId: 'MoonLifeSupportSystem',
+    ),
+    'LunarTerminalModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LunarTerminalModuleProperties',
+      descriptionKey: 'moduleDesc_LunarTerminalModuleProperties',
+      icon: Icons.precision_manufacturing,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'LunarTerminalModule',
+      initialDataFactory: () => LunarTerminalModulePropertiesData(),
+      routeId: 'LunarTerminalModule',
+    ),
+    'RadiationMeteorModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_RadiationMeteorModuleProperties',
+      descriptionKey: 'moduleDesc_RadiationMeteorModuleProperties',
+      icon: Icons.crisis_alert_rounded,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'RadiationMeteorModule',
+      initialDataFactory: () => RadiationMeteorModulePropertiesData(),
+      routeId: 'RadiationMeteorModule',
+    ),
     'WitchModuleProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_WitchModuleProperties',
       descriptionKey: 'moduleDesc_WitchModuleProperties',
@@ -1105,7 +1312,11 @@ class ModuleRegistry {
 
   static List<ModuleMetadata> get all {
     return registry.entries
-        .map((e) => e.value.copyWith(objClass: e.key))
+        .map(
+          (e) => e.value.copyWith(
+            objClass: e.value.objClass.isEmpty ? e.key : e.value.objClass,
+          ),
+        )
         .toList();
   }
 }
@@ -1115,12 +1326,15 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
     String? titleKey,
     String? descriptionKey,
     IconData? icon,
+    String? assetIconPath,
     bool? isCore,
     ModuleCategory? category,
     String? defaultAlias,
     String? defaultSource,
     bool? allowMultiple,
+    String? duplicateAliasNumberSeparator,
     dynamic Function()? initialDataFactory,
+    String? uniqueKey,
     String? routeId,
     String? objClass,
   }) {
@@ -1128,12 +1342,16 @@ extension ModuleMetadataCopyWith on ModuleMetadata {
       titleKey: titleKey ?? this.titleKey,
       descriptionKey: descriptionKey ?? this.descriptionKey,
       icon: icon ?? this.icon,
+      assetIconPath: assetIconPath ?? this.assetIconPath,
       isCore: isCore ?? this.isCore,
       category: category ?? this.category,
       defaultAlias: defaultAlias ?? this.defaultAlias,
       defaultSource: defaultSource ?? this.defaultSource,
       allowMultiple: allowMultiple ?? this.allowMultiple,
+      duplicateAliasNumberSeparator:
+          duplicateAliasNumberSeparator ?? this.duplicateAliasNumberSeparator,
       initialDataFactory: initialDataFactory ?? this.initialDataFactory,
+      uniqueKey: uniqueKey ?? this.uniqueKey,
       routeId: routeId ?? this.routeId,
       objClass: objClass ?? this.objClass,
     );

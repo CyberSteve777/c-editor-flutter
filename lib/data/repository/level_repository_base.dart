@@ -2,11 +2,55 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:c_editor/utils/hujson_codec.dart';
-import 'package:c_editor/utils/3rdParty/pyvz2_rton_codec.dart';
+import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/utils/pvz2c_crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pvz_models.dart';
+import '../level_library_startup_cache.dart';
+import 'web/web_transfer_progress.dart';
+
+/// One folder picked for web import (recursive level files, relative paths).
+class WebFolderImport {
+  const WebFolderImport({required this.name, required this.paths});
+
+  final String name;
+
+  /// Relative paths inside the picked folder (bytes loaded lazily on web).
+  final List<String> paths;
+}
+
+enum LevelSortMode {
+  name,
+  created,
+  modified,
+  size,
+  type,
+}
+
+class LibraryItem {
+  LibraryItem({
+    required this.path,
+    required this.displayName,
+    this.bookmark,
+  });
+
+  final String path;
+  final String displayName;
+  final String? bookmark;
+
+  Map<String, dynamic> toJson() => {
+        'path': path,
+        'displayName': displayName,
+        if (bookmark != null) 'bookmark': bookmark,
+      };
+
+  factory LibraryItem.fromJson(Map<String, dynamic> json) => LibraryItem(
+        path: json['path'] as String,
+        displayName: json['displayName'] as String,
+        bookmark: json['bookmark'] as String?,
+      );
+}
 
 class FileItem {
   FileItem({
@@ -14,6 +58,7 @@ class FileItem {
     required this.path,
     required this.isDirectory,
     required this.lastModified,
+    this.creationTime,
     required this.size,
     this.isFavorite = false,
   });
@@ -22,8 +67,22 @@ class FileItem {
   final String path;
   final bool isDirectory;
   final int lastModified;
+  final int? creationTime;
   final int size;
   final bool isFavorite;
+
+  /// Rank for file type sorting: SMF (0) -> JSON (1) -> RTON (2) -> HUJSON (3) -> image (4) -> Other (5)
+  int get extensionRank {
+    if (isDirectory) return -1;
+    final lower = name.toLowerCase();
+    if (lower.endsWith('.smf')) return 0;
+    if (lower.endsWith('.json')) return 1;
+    if (lower.endsWith('.rton')) return 2;
+    if (lower.endsWith('.hujson')) return 3;
+    if (LevelRepositoryBase.imageExtensions.any(lower.endsWith)) return 4;
+    if (LevelRepositoryBase.pluginExtensions.any(lower.endsWith)) return 5;
+    return 6;
+  }
 }
 
 abstract class LevelRepositoryBase {
@@ -35,31 +94,45 @@ abstract class LevelRepositoryBase {
     '.rton',
     '.zlib',
     '.bin',
+    '.smf',
   };
 
-  static const List<String> defaultTemplateList = [
-    '1_blank_level.json',
-    '2_card_pick_example.json',
-    '3_conveyor_example.json',
-    '4_last_stand_example.json',
-    '5_i_zombie_example.json',
-    '6_vase_breaker_example.json',
-    '7_zombossmech_battle_example.json',
-    '8_zomboss_battle_example.json',
-    '9_custom_zombie_example.json',
-    '10_i_plant_example.json',
-  ];
+  static const Set<String> imageExtensions = {
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.webp',
+    '.gif',
+    '.bmp',
+  };
+
+  /// Plugin packages shown in the level library (installable archives).
+  static const Set<String> pluginExtensions = {'.cplugin'};
+
 
   Future<String?> getSavedFolderPath();
   Future<void> setSavedFolderPath(String path);
+
+  Future<List<LibraryItem>> getLibraries();
+  Future<void> setLibraries(List<LibraryItem> libraries);
+
+  Future<LevelLibraryStartupCache> preloadLibrarySettings(
+    SharedPreferences prefs,
+  );
   Future<String> ensureIosLibraryPath();
   Future<bool> ensureFolderAccess() async => true;
   Future<void> setLastOpenedLevelDirectory(String path);
   Future<String?> getLastOpenedLevelDirectory();
   Future<String> getCacheDir();
   Future<bool> fileExistsInDirectory(String dirPath, String fileName);
-  Future<List<FileItem>> getDirectoryContents(String dirPath);
-  Future<List<FileItem>> getFavorites(String rootPath);
+  Future<List<FileItem>> getDirectoryContents(
+    String dirPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  });
+  Future<List<FileItem>> getFavorites(
+    String rootPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  });
   Future<bool> createDirectory(String parentPath, String name);
   Future<bool> renameItem(
     String currentDirPath,
@@ -93,14 +166,50 @@ abstract class LevelRepositoryBase {
   Future<bool> prepareInternalCache(String sourcePath, String fileName);
   Future<bool> prepareInternalCacheFromBytes(String fileName, List<int> bytes);
   Future<bool> prepareInternalCacheFromString(String fileName, String content);
+  Future<Uint8List?> readLibraryFileBytes(String filePath);
   Future<PvzLevelFile?> loadLevel(String fileName);
   Future<PvzLevelFile?> loadLevelFromPath(String filePath);
   Future<void> saveAndExport(String filePath, PvzLevelFile levelData);
   Future<void> downloadLevel(String fileName);
-  Future<void> downloadAllLevelsAsZip();
+  Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress});
+  Future<void> downloadFolderAsZip(
+    String folderVirtualPath, {
+    WebTransferProgress? onProgress,
+  }) async {}
+  Future<void> ensureWebStorageReady() async {}
+  void releaseWebFolderImport() {}
+  Future<String?> getWebLibraryDisplayName() async => null;
+  bool get isWebFolderImportSupported => false;
+  Future<WebFolderImport?> pickWebFolderForImport() async => null;
+  Future<int> importWebFilesBatched(
+    List<({String storageKey, Uint8List bytes})> files, {
+    WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
+  }) async {
+    var imported = 0;
+    for (var i = 0; i < files.length; i++) {
+      if (isCancelled?.call() == true) {
+        break;
+      }
+      await prepareInternalCacheFromBytes(
+        files[i].storageKey,
+        files[i].bytes,
+      );
+      imported++;
+      onProgress?.call(i + 1, files.length, null);
+    }
+    return imported;
+  }
+
+  Future<int> importWebFolderPathsBatched(
+    List<({String storageKey, String relativePath})> entries, {
+    WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
+  }) async {
+    return 0;
+  }
   Future<bool> createLevelFromTemplate(
     String currentDirPath,
-    String templateName,
     String newFileName,
     String assetContent,
   );
@@ -195,8 +304,28 @@ abstract class LevelRepositoryBase {
 
   bool isSupportedLevelFileName(String name) {
     final lower = name.toLowerCase();
+    if (lower.endsWith('.smf')) {
+      // .rsb.smf is supported (checked in subclasses for platform visibility),
+      // but plain .smf is not to be shown.
+      return lower.endsWith('.rsb.smf');
+    }
     return levelExtensions.any(lower.endsWith);
   }
+
+  bool isSupportedImageFileName(String name) {
+    final lower = name.toLowerCase();
+    return imageExtensions.any(lower.endsWith);
+  }
+
+  bool isSupportedPluginFileName(String name) {
+    final lower = name.toLowerCase();
+    return pluginExtensions.any(lower.endsWith);
+  }
+
+  bool isSupportedLibraryFileName(String name) =>
+      isSupportedLevelFileName(name) ||
+      isSupportedImageFileName(name) ||
+      isSupportedPluginFileName(name);
 
   String baseNameWithoutLevelExtension(String name) {
     final lower = name.toLowerCase();
@@ -256,27 +385,16 @@ abstract class LevelRepositoryBase {
     final lower = fileName.toLowerCase();
     final ext = levelExtensions.firstWhere(
       lower.endsWith,
-      orElse: () => '.json',
+      orElse: () => pluginExtensions.firstWhere(
+        lower.endsWith,
+        orElse: () => imageExtensions.firstWhere(
+          lower.endsWith,
+          orElse: () => '.json',
+        ),
+      ),
     );
     final newFileName = '$suggested$ext';
     return moveFileWithName(srcDirPath, fileName, destDirPath, newFileName);
-  }
-
-  Future<List<String>> getTemplateList() async {
-    return List.from(defaultTemplateList);
-  }
-
-  List<String> parseTemplateManifest(String jsonString) {
-    try {
-      final list = jsonDecode(jsonString) as List<dynamic>?;
-      if (list == null) return [];
-      return list
-          .map((e) => e.toString())
-          .where((s) => s.endsWith('.json'))
-          .toList();
-    } catch (_) {
-      return [];
-    }
   }
 
   Future<String> getFirstAvailableIndexedName(
@@ -340,9 +458,14 @@ abstract class LevelRepositoryBase {
             rijndael: RijndaelC.defaultValue(),
           );
         } catch (_) {
+          // The encrypted parse failed (e.g. the file is not encrypted). Retry
+          // as a plain RTON; a structural RtonFormatException here is the
+          // meaningful one and is allowed to propagate so the UI can surface it.
           return rtonCodec.decode(bytes);
         }
       }
+    } on RtonFormatException {
+      rethrow;
     } catch (_) {
       return null;
     }

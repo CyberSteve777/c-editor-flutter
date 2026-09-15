@@ -8,6 +8,39 @@
     {
       "objclass": "GridItemType",
       "aliases": [
+        "soudache_resource_point"
+      ],
+      "objdata": {
+        "TypeName": "soudache_resource_point",
+        "GridItemClass": "SoudacheResourcePoint",
+        "Properties": "RTID(SoudacheResourcePointDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "soudache_resource"
+      ],
+      "objdata": {
+        "TypeName": "soudache_resource",
+        "GridItemClass": "SoudacheResource",
+        "Properties": "RTID(SoudacheResourceDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "soudache_gravestone"
+      ],
+      "objdata": {
+        "TypeName": "soudache_gravestone",
+        "GridItemClass": "SouDaCheGravestone",
+        "Properties": "RTID(SouDaCheGravestoneDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
         "gravestone"
       ],
       "objdata": {
@@ -45,6 +78,20 @@
           "Egypt_Gravestone"
         ],
         "Properties": "RTID(GridItemGravestoneThemeDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "rocket_landing"
+      ],
+      "objdata": {
+        "TypeName": "rocket_landing",
+        "GridItemClass": "GridItemRocketLanding",
+        "ResourceGroups": [
+          "Moon_Rocket"
+        ],
+        "Properties": "RTID(GridItemRocketLandingDefault@PropertySheets)"
       }
     },
     {
@@ -980,6 +1027,20 @@
         "Properties": "RTID(GridItemFlowerPotDefault@PropertySheets)",
         "ResourceGroups": [
           "PlantFlowerPot"
+        ]
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "cosmoss"
+      ],
+      "objdata": {
+        "TypeName": "cosmoss",
+        "GridItemClass": "GridItemCosmoss",
+        "Properties": "RTID(GridItemCosmossDefault@PropertySheets)",
+        "ResourceGroups": [
+          "PlantCosmoss"
         ]
       }
     },
@@ -3538,6 +3599,53 @@
     {
       "objclass": "GridItemType",
       "aliases": [
+        "gingle_cake_tank"
+      ],
+      "objdata": {
+        "TypeName": "gingle_cake_tank",
+        "GridItemClass": "PVZ2GingleCakeTankGridItem",
+        "Properties": "RTID(PVZ2GingleCakeTankGridItemDefault@PropertySheets)",
+        "ResourceGroups": [
+          "ZombieCakeTankGroup",
+          "ZombieEgyptPharaohBirthdayGroup",
+          "ZombieEgyptPharaohGroup",
+          "ZombieNeuropathyGroup"
+        ]
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "gingle_cake_zombie"
+      ],
+      "objdata": {
+        "TypeName": "gingle_cake_zombie",
+        "GridItemClass": "PVZ2GingleZombieGridItem",
+        "Properties": "RTID(PVZ2GingleCakeZombieGridItemDefault@PropertySheets)",
+        "ResourceGroups": [
+          "ZombieEgyptPharaohBirthdayGroup",
+          "ZombieEgyptPharaohGroup"
+        ]
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "gingle_jack_box_zombie"
+      ],
+      "objdata": {
+        "TypeName": "gingle_jack_box_zombie",
+        "GridItemClass": "PVZ2GingleJackBoxZombieGridItem",
+        "Properties": "RTID(PVZ2GingleJackBoxZombieGridItemDefault@PropertySheets)",
+        "ResourceGroups": [
+          "ZombieNeuropathyGroup",
+          "ZombieNeuropathyAudio"
+        ]
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
         "zombieportal_dino"
       ],
       "objdata": {
@@ -4596,6 +4704,20 @@
     {
       "objclass": "GridItemType",
       "aliases": [
+        "cosmicnut_blackhole"
+      ],
+      "objdata": {
+        "TypeName": "cosmicnut_blackhole",
+        "GridItemClass": "GridItemCosmicNutBlackHole",
+        "ResourceGroups": [
+          "PlantCosmicNut"
+        ],
+        "Properties": "RTID(GridItemCosmicNutBlackHoleDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
         "curlingitem_small"
       ],
       "objdata": {
@@ -4633,6 +4755,119 @@
           "PlantEleocurling"
         ],
         "Properties": "RTID(CurlingIceLaneDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "lunar_mine_collector_line"
+      ],
+      "objdata": {
+        "TypeName": "lunar_mine_collector_line",
+        "GridItemClass": "LunarMineCollector",
+        "ResourceGroups": [
+          "LunarMine"
+        ],
+        "Properties": "RTID(LunarMineCollectorLine@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "lunar_mine_collector_ring"
+      ],
+      "objdata": {
+        "TypeName": "lunar_mine_collector_ring",
+        "GridItemClass": "LunarMineCollector",
+        "ResourceGroups": [
+          "LunarMine"
+        ],
+        "Properties": "RTID(LunarMineCollectorRing@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "lunar_mine_collector_cross"
+      ],
+      "objdata": {
+        "TypeName": "lunar_mine_collector_cross",
+        "GridItemClass": "LunarMineCollector",
+        "ResourceGroups": [
+          "LunarMine"
+        ],
+        "Properties": "RTID(LunarMineCollectorCross@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "lunar_mine_ore"
+      ],
+      "objdata": {
+        "TypeName": "lunar_mine_ore",
+        "GridItemClass": "LunarMineOre",
+        "ResourceGroups": [
+          "LunarMine"
+        ],
+        "Properties": "RTID(LunarMineOreDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "lunar_mine_vein"
+      ],
+      "objdata": {
+        "TypeName": "lunar_mine_vein",
+        "GridItemClass": "LunarMineVein",
+        "ResourceGroups": [
+          "LunarMine"
+        ],
+        "Properties": "RTID(LunarMineVeinDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "radiation_warning"
+      ],
+      "objdata": {
+        "TypeName": "radiation_warning",
+        "GridItemClass": "RadiationWarning",
+        "ResourceGroups": [
+          "Radiation_meteorite_group"
+        ],
+        "Properties": "RTID(RadiationWarningDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "radiation_meteor_ore"
+      ],
+      "objdata": {
+        "TypeName": "radiation_meteor_ore",
+        "GridItemClass": "RadiationMeteorOre",
+        "ResourceGroups": [
+          "LunarMine",
+          "Radiation_meteorite_group"
+        ],
+        "Properties": "RTID(RadiationMeteorOreDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "radiation_polluted_tile"
+      ],
+      "objdata": {
+        "TypeName": "radiation_polluted_tile",
+        "GridItemClass": "RadiationPollutedTile",
+        "ResourceGroups": [
+          "Radiation_meteorite_group"
+        ],
+        "Properties": "RTID(RadiationPollutedTileDefault@PropertySheets)"
       }
     },
     {
@@ -6531,6 +6766,17 @@
     {
       "objclass": "GridItemType",
       "aliases": [
+        "soudache_spore"
+      ],
+      "objdata": {
+        "TypeName": "soudache_spore",
+        "GridItemClass": "SouDaCheSpore",
+        "Properties": "RTID(SouDaCheSporeDefault@PropertySheets)"
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
         "sunflower_plushie"
       ],
       "objdata": {
@@ -6581,6 +6827,34 @@
         "Properties": "RTID(GridItemSportzballDefault@PropertySheets)",
         "ResourceGroups": [
           "ZombieSportzballImpGroup"
+        ]
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "electric_field"
+      ],
+      "objdata": {
+        "TypeName": "electric_field",
+        "GridItemClass": "ElectricFieldGridItem",
+        "Properties": "RTID(ElectricFieldDefault@PropertySheets)",
+        "ResourceGroups": [
+          "UI_Soudache"
+        ]
+      }
+    },
+    {
+      "objclass": "GridItemType",
+      "aliases": [
+        "teleport_beacon"
+      ],
+      "objdata": {
+        "TypeName": "teleport_beacon",
+        "GridItemClass": "GridItemTeleportBeacon",
+        "Properties": "RTID(GridItemTeleportBeaconDefault@PropertySheets)",
+        "ResourceGroups": [
+          "Teleport_Beacon"
         ]
       }
     }

@@ -7,7 +7,9 @@ import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/pvz_models/LocationData.dart';
+import 'package:c_editor/data/pvz_models/ZombieTypeData.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
+import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/zomboss_mech_action_utils.dart';
 
 /// Dropdown value for the custom (memo) zombossmech variation in the battle tab.
@@ -116,7 +118,11 @@ class ZombossMechRepository {
 
   static ZombossMechInfo? findBaseForVariation(String variation) {
     return allZombossMechs
-        .where((b) => b.variations.contains(variation))
+        .where(
+          (b) =>
+              b.variations.contains(variation) ||
+              (b.hasCustomInstance && b.editableInstance == variation),
+        )
         .firstOrNull;
   }
 
@@ -136,7 +142,9 @@ class ZombossMechRepository {
   static String resolveBaseId(String? preferredBaseId, String variation) {
     if (preferredBaseId != null) {
       final base = getBase(preferredBaseId);
-      if (base != null && base.variations.contains(variation)) {
+      if (base != null &&
+          (base.variations.contains(variation) ||
+              (base.hasCustomInstance && base.editableInstance == variation))) {
         return preferredBaseId;
       }
     }
@@ -157,6 +165,7 @@ class ZombossMechRepository {
   static PvzObject ensureCustomPropertiesInLevel({
     required ZombossMechCatalogEntry catalog,
     required PvzLevelFile levelFile,
+    String? sourceVariation,
   }) {
     final alias = catalog.editableInstancePropsName;
     final existing = levelFile.objects.firstWhereOrNull(
@@ -165,10 +174,24 @@ class ZombossMechRepository {
     if (existing != null) {
       return existing;
     }
+    final initialData = catalog.templatePropsData();
+    if (sourceVariation != null && sourceVariation.isNotEmpty) {
+      final sourceData = propertiesDataForVariation(
+        sourceVariation,
+        catalog: catalog,
+      );
+      for (final key in const ['SquashZombies', 'SquashGridItems']) {
+        initialData[key] = boolPropertyWithTemplateFallback(
+          data: sourceData,
+          catalog: catalog,
+          key: key,
+        );
+      }
+    }
     final obj = PvzObject(
       aliases: [alias],
       objClass: catalog.propsObjclass,
-      objData: catalog.templatePropsData(),
+      objData: initialData,
     );
     levelFile.objects.add(obj);
     return obj;
@@ -256,5 +279,54 @@ class ZombossMechRepository {
     final propsRtid = (typeObj!.objData as Map)['Properties'] as String?;
     if (propsRtid == null || propsRtid.isEmpty) return null;
     return ZombossMechActionUtils.displayLabel(propsRtid);
+  }
+
+  static String? propertiesAliasForVariation(String mechType) {
+    if (!ZombiePropertiesRepository.isInitialized) return null;
+    final typeName = ZombiePropertiesRepository.getTypeNameByAlias(mechType);
+    final template = ZombiePropertiesRepository.getTemplateJson(typeName);
+    final typeObj = template?['type'];
+    if (typeObj?.objData is! Map) return null;
+    final typeData = ZombieTypeData.fromJson(
+      Map<String, dynamic>.from(typeObj!.objData as Map),
+    );
+    return RtidParser.parse(typeData.properties)?.alias;
+  }
+
+  static Map<String, dynamic>? propertiesDataForVariation(
+    String mechType, {
+    ZombossMechCatalogEntry? catalog,
+  }) {
+    final effectiveCatalog = catalog ?? findCatalogForVariation(mechType);
+    if (effectiveCatalog == null) return null;
+    final alias = propertiesAliasForVariation(mechType);
+    if (alias == null || alias.isEmpty) return null;
+    for (final group in effectiveCatalog.properties) {
+      final data = group.implementations[alias];
+      if (data != null) return ZombossMechActionUtils.cloneMap(data);
+    }
+    return null;
+  }
+
+  /// Reads a bool from a mech property object and falls back to the default
+  /// declared by that mech's property template when older data omits it.
+  static bool boolPropertyWithTemplateFallback({
+    required Map<String, dynamic>? data,
+    required ZombossMechCatalogEntry catalog,
+    required String key,
+  }) {
+    final value = data?[key];
+    if (value is bool) return value;
+
+    for (final group in catalog.properties) {
+      for (final field in group.fields) {
+        if (field.name == key && field.defaultValue is bool) {
+          return field.defaultValue as bool;
+        }
+      }
+    }
+
+    final templateValue = catalog.templatePropsData()[key];
+    return templateValue is bool ? templateValue : false;
   }
 }

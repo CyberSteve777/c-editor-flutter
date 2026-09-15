@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 
@@ -90,6 +91,9 @@ Set<String> levelModuleKeys(PvzLevelFile levelFile) {
     if (info.source == 'CurrentLevel') {
       final obj = objectMap[info.alias];
       if (obj != null) keys.add(obj.objClass);
+    } else {
+      final objClass = ReferenceRepository.instance.getObjClass(info.alias);
+      if (objClass != null) keys.add(objClass);
     }
   }
   return keys;
@@ -108,6 +112,15 @@ bool levelHasKongfuGridOverrideModules(PvzLevelFile levelFile) {
       levelHasModule(levelFile, 'EnergyGridProperties');
 }
 
+bool levelUsesWaveGenerator(PvzLevelFile levelFile) {
+  return levelHasModule(levelFile, 'WaveGeneratorProperties');
+}
+
+bool levelUsesWaveManager(PvzLevelFile levelFile) {
+  return levelHasModule(levelFile, 'WaveManagerModuleProperties') ||
+      levelHasModule(levelFile, 'WaveManagerProperties');
+}
+
 String? moduleRtidForClass(PvzLevelFile levelFile, String objClass) {
   final obj = levelFile.objects.firstWhereOrNull((o) => o.objClass == objClass);
   final alias = obj?.aliases?.firstOrNull;
@@ -124,7 +137,7 @@ PvzObject? _moduleObject(PvzLevelFile levelFile, String objClass) {
 
 ArmrackPropertiesData? readArmrackModuleData(PvzLevelFile levelFile) {
   final obj = _moduleObject(levelFile, 'ArmrackProperties');
-  if (obj?.objData is! Map<String, dynamic>) return null;
+  if (obj?.objData is! Map) return null;
   try {
     return ArmrackPropertiesData.fromJson(
       Map<String, dynamic>.from(obj!.objData as Map),
@@ -136,7 +149,7 @@ ArmrackPropertiesData? readArmrackModuleData(PvzLevelFile levelFile) {
 
 EnergyGridPropertiesData? readEnergyGridModuleData(PvzLevelFile levelFile) {
   final obj = _moduleObject(levelFile, 'EnergyGridProperties');
-  if (obj?.objData is! Map<String, dynamic>) return null;
+  if (obj?.objData is! Map) return null;
   try {
     return EnergyGridPropertiesData.fromJson(
       Map<String, dynamic>.from(obj!.objData as Map),

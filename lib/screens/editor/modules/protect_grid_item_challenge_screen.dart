@@ -7,6 +7,7 @@ import 'package:c_editor/screens/select/grid_item_selection_screen.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/custom_stage_editor_widgets.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Protect-the-grid-item challenge. Ported from ProtectTheGridItemChallengePropertiesEP.kt
@@ -17,12 +18,16 @@ class ProtectGridItemChallengeScreen extends StatefulWidget {
     required this.levelFile,
     required this.onChanged,
     required this.onBack,
+    this.onAddModule,
+    this.onOpenCustomStageSelection,
   });
 
   final String rtid;
   final PvzLevelFile levelFile;
   final VoidCallback onChanged;
   final VoidCallback onBack;
+  final void Function(String objClass)? onAddModule;
+  final Future<void> Function()? onOpenCustomStageSelection;
 
   @override
   State<ProtectGridItemChallengeScreen> createState() =>
@@ -82,6 +87,9 @@ class _ProtectGridItemChallengeScreenState
       MaterialPageRoute(
         builder: (_) => GridItemSelectionScreen(
           filterMode: GridItemFilterMode.restricted,
+          levelFile: widget.levelFile,
+          onAddModule: widget.onAddModule,
+          onOpenCustomStageSelection: widget.onOpenCustomStageSelection,
           onGridItemSelected: (id) {
             Navigator.pop(context);
             final list = List<ProtectGridItemData>.from(_data.gridItems)
@@ -132,7 +140,6 @@ class _ProtectGridItemChallengeScreenState
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -172,6 +179,7 @@ class _ProtectGridItemChallengeScreenState
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title:
                   l10n?.protectGridItemChallengeHelpTitle ??
                   'Protect Item Challenge Guide',
@@ -204,7 +212,7 @@ class _ProtectGridItemChallengeScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -258,33 +266,30 @@ ModuleAliasInputField(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n?.selectedPosition ?? 'Target Position',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
+                    EditorResponsiveActionRow(
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n?.selectedPosition ?? 'Target Position',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
-                            Text(
-                              'R${_selectedY + 1} : C${_selectedX + 1}',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary,
-                              ),
+                          ),
+                          Text(
+                            'R${_selectedY + 1} : C${_selectedX + 1}',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
                             ),
-                          ],
-                        ),
-                        const Spacer(),
-                        FilledButton.icon(
-                          onPressed: _addItem,
-                          icon: const Icon(Icons.add, size: 18),
-                          label: Text(l10n?.addItem ?? 'Add Target'),
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
+                      action: EditorFilledButton(
+                        onPressed: _addItem,
+                        icon: const Icon(Icons.add, size: 18),
+                        label: Text(l10n?.addItem ?? 'Add Target'),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     _buildGrid(theme),
@@ -448,7 +453,7 @@ class _GridItemTile extends StatelessWidget {
                   size: 24,
                 ),
               ),
-            GridItemIcon(
+            PresetAwareGridItemIcon(
               typeName: item.gridItemType,
               size: 40,
               fit: BoxFit.contain,

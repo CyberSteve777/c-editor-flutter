@@ -101,6 +101,7 @@ class _BlackHoleEventScreenState extends State<BlackHoleEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventBlackHole ?? 'Black hole event',
               sections: [
                 HelpSectionData(
@@ -143,20 +144,22 @@ class _BlackHoleEventScreenState extends State<BlackHoleEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: _data.colNumPlantIsDragged.toString(),
-                        decoration: InputDecoration(
-                          labelText: l10n?.columnsDragged ?? 'Columns dragged',
-                          border: const OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label: l10n?.columnsDragged ?? 'Columns dragged',
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.colNumPlantIsDragged.toString(),
+                          decoration: decoration,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            final n = int.tryParse(v);
+                            if (n != null) {
+                              _data = BlackHoleEventData(
+                                colNumPlantIsDragged: n,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (v) {
-                          final n = int.tryParse(v);
-                          if (n != null) {
-                            _data = BlackHoleEventData(colNumPlantIsDragged: n);
-                            _sync();
-                          }
-                        },
                       ),
                     ],
                   ),

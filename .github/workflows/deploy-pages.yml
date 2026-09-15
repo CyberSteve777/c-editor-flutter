@@ -1,0 +1,102 @@
+name: Deploy web (GitHub Pages)
+
+# Secondary web deployment alongside Vercel. Gives users a fallback host when
+# the Vercel edge is slow/unreachable (e.g. some networks in China), which shows
+# up as the app not loading or zombie names falling back to raw codenames when
+# the localized resource_*.json assets fail to fetch.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow only one concurrent Pages deployment; let running ones finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  FLUTTER_VERSION: "3.44.0"
+
+jobs:
+  build:
+    name: Build web (JS target)
+    runs-on: ubuntu-latest
+    env:
+      PVZ2C_ENCRYPTION_KEY: ${{ secrets.PVZ2C_ENCRYPTION_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Cache Pub
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter config --enable-web
+      - run: flutter pub get
+
+      - name: Resolve base href
+        id: basehref
+        run: |
+          # Project pages are served at https://<owner>.github.io/<repo>/.
+          # A repo variable PAGES_BASE_HREF overrides this (e.g. "/" for a
+          # user/org page or a custom domain). Must start and end with "/".
+          BASE_HREF="${{ vars.PAGES_BASE_HREF }}"
+          if [ -z "${BASE_HREF}" ]; then
+            BASE_HREF="/${{ github.event.repository.name }}/"
+          fi
+          echo "value=${BASE_HREF}" >> "$GITHUB_OUTPUT"
+          echo "Using base href: ${BASE_HREF}"
+
+      - name: Compile RSB export Web Worker
+        # flutter build web does not compile this separate entrypoint; it runs
+        # the CPU-heavy sen pack/unpack off the UI thread. Must run after pub get.
+        run: dart compile js web/rsb_worker.dart -o web/rsb_worker.dart.js -O2
+
+      - name: Build Flutter web
+        # JS (dart2js) target on purpose — no --wasm. GitHub Pages cannot set
+        # COOP/COEP headers, so wasm threads would not work there anyway.
+        # --no-tree-shake-icons: plugins construct IconData at runtime.
+        run: |
+          flutter build web --release --no-tree-shake-icons --no-wasm-dry-run \
+            --base-href "${{ steps.basehref.outputs.value }}" \
+            $(bash .github/scripts/flutter-dart-defines.sh)
+
+      - name: Add SPA + Pages fallbacks
+        run: |
+          # Deep links / reloads fall back to index.html on GitHub Pages.
+          cp build/web/index.html build/web/404.html
+          # Belt-and-suspenders: never run Jekyll over the Flutter output.
+          touch build/web/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/web
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

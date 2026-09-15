@@ -10,6 +10,7 @@ class ZombiePropertiesRepository {
 
   final Map<String, ZombieStats> _statsCache = {};
   final Map<String, String> _aliasToTypeCache = {};
+  final Map<String, String> _aliasToZombieClassCache = {};
   final Map<String, PvzObject> _originalTypeJson = {};
   final Map<String, PvzObject> _originalPropsJson = {};
   bool _isInitialized = false;
@@ -34,6 +35,26 @@ class ZombiePropertiesRepository {
           );
           final typeName = typeData.typeName;
           if (typeName.isEmpty) continue;
+          final zombieClass =
+              (obj.objData as Map<String, dynamic>)['ZombieClass']
+                  ?.toString()
+                  .trim() ??
+              '';
+          if (zombieClass.isNotEmpty) {
+            for (final candidate in <String>{
+              alias,
+              typeName,
+              ...?obj.aliases,
+            }) {
+              final normalized = candidate.trim();
+              if (normalized.isNotEmpty) {
+                instance._aliasToZombieClassCache.putIfAbsent(
+                  normalized,
+                  () => zombieClass,
+                );
+              }
+            }
+          }
           if (instance._aliasToTypeCache.containsKey(alias) ||
               instance._aliasToTypeCache.containsKey(typeName)) {
             continue;
@@ -91,6 +112,17 @@ class ZombiePropertiesRepository {
     return instance._aliasToTypeCache[alias] ?? alias;
   }
 
+  /// Returns the exact ZombieClass declared by the matching ZombieType.
+  ///
+  /// The mapping comes from the same bundled ZombieTypes reference already
+  /// used for zombie templates and follows that repository's source priority.
+  static String? getZombieClassByAlias(String alias) {
+    final normalized = alias.trim();
+    if (normalized.isEmpty) return null;
+    return instance._aliasToZombieClassCache[normalized] ??
+        instance._aliasToZombieClassCache[getTypeNameByAlias(normalized)];
+  }
+
   static ZombieStats getStats(String typeName) {
     return instance._statsCache[typeName] ??
         ZombieStats(
@@ -113,6 +145,32 @@ class ZombiePropertiesRepository {
     final p = instance._originalPropsJson[typeName];
     if (t == null || p == null) return null;
     return {'type': t, 'props': p};
+  }
+
+  static PvzObject? getOriginalTypeObject(String typeName) {
+    return instance._originalTypeJson[typeName];
+  }
+
+  static PvzObject? getOriginalPropertyObject(String typeName) {
+    return instance._originalPropsJson[typeName];
+  }
+
+  static Map<String, dynamic>? cloneOriginalTypeData(String typeName) {
+    final data = instance._originalTypeJson[typeName]?.objData;
+    if (data is! Map) return null;
+    return _cloneMap(data);
+  }
+
+  static Map<String, dynamic>? cloneOriginalPropertyData(String typeName) {
+    final data = instance._originalPropsJson[typeName]?.objData;
+    if (data is! Map) return null;
+    return _cloneMap(data);
+  }
+
+  static Map<String, dynamic> _cloneMap(Map data) {
+    return Map<String, dynamic>.from(
+      jsonDecode(jsonEncode(data)) as Map<String, dynamic>,
+    );
   }
 
   /// Whether the base zombie's default property sheet defines a [Resilience]

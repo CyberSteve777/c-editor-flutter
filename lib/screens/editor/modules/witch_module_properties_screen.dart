@@ -121,7 +121,6 @@ class _WitchModulePropertiesScreenState
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -160,6 +159,7 @@ class _WitchModulePropertiesScreenState
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.witchModuleHelpTitle ?? 'Witch module',
               themeColor: themeColor,
               sections: [
@@ -270,25 +270,25 @@ class _WitchModulePropertiesScreenState
                               ),
                             ),
                             const SizedBox(height: 16),
-                            TextField(
-                              controller: _spawnIntervalCtrl,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                  ),
-                              decoration: InputDecoration(
-                                labelText:
-                                    l10n?.witchModuleSpawnInterval ??
-                                    'Witch spawn interval (WitchSpawnInterval)',
-                                border: const OutlineInputBorder(),
+                            EditorResponsiveInputField(
+                              label:
+                                  l10n?.witchModuleSpawnInterval ??
+                                  'Witch spawn interval (WitchSpawnInterval)',
+                              builder: (context, decoration) => TextField(
+                                controller: _spawnIntervalCtrl,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                decoration: decoration,
+                                onChanged: (v) {
+                                  final n = double.tryParse(v);
+                                  if (n != null && n >= 0) {
+                                    _data.witchSpawnInterval = n;
+                                    _sync();
+                                  }
+                                },
                               ),
-                              onChanged: (v) {
-                                final n = double.tryParse(v);
-                                if (n != null && n >= 0) {
-                                  _data.witchSpawnInterval = n;
-                                  _sync();
-                                }
-                              },
                             ),
                           ],
                         ),

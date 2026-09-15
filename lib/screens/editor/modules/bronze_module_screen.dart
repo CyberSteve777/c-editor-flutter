@@ -13,7 +13,7 @@ import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Kongfu World bronze statue (铜人阵) placement editor. Revival uses spawn time, not waves.
 
-/// Shared height so [AddItemCard] aligns with [_BronzeStatueCard] in the wrap.
+/// Minimum height shared by the add card and content-sized statue cards.
 const double _kBronzeStatueCardHeight = 175;
 
 class BronzeModuleScreen extends StatefulWidget {
@@ -43,6 +43,12 @@ String _zombieIdForBronzeKind(BronzeStatueKind kind) {
     case BronzeStatueKind.agile:
       return 'kongfu_agile_bronze';
   }
+}
+
+String _bronzeZombieDisplayName(BuildContext context, BronzeStatueKind kind) {
+  final zid = _zombieIdForBronzeKind(kind);
+  final displayName = ResourceNames.lookup(context, 'zombie_$zid');
+  return displayName != 'zombie_$zid' ? displayName : zid;
 }
 
 class _BronzeItemRef {
@@ -180,7 +186,6 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
     _sync();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -195,7 +200,6 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final title = l10n?.bronzeModuleTitle ?? 'Bronze Properties';
     final helpTitle = l10n?.bronzeModuleHelpTitle ?? 'Bronze Properties';
 
     return Scaffold(
@@ -217,6 +221,7 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
             tooltip: l10n?.tooltipAboutModule ?? 'About this module',
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: helpTitle,
               sections: [
                 HelpSectionData(
@@ -243,14 +248,14 @@ class _BronzeModuleScreenState extends State<BronzeModuleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                ),
+                const SizedBox(height: 16),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -267,28 +272,29 @@ ModuleAliasInputField(
                         ),
                         const SizedBox(height: 8),
                         SizedBox(
-                          width: 160,
-                          child: TextFormField(
-                            initialValue: _data.shakeOffset.toString(),
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
+                          width: 240,
+                          child: EditorResponsiveInputField(
+                            label:
+                                l10n?.bronzeModuleShakeOffsetLabel ??
+                                'Shake offset',
+                            builder: (context, decoration) => TextFormField(
+                              initialValue: _data.shakeOffset.toString(),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              decoration: decoration,
+                              onChanged: (v) {
+                                final n = double.tryParse(v);
+                                if (n != null) {
+                                  _data = BronzePropertiesData(
+                                    data: _data.data,
+                                    shakeOffset: n,
+                                  );
+                                  _sync();
+                                }
+                              },
                             ),
-                            decoration: InputDecoration(
-                              labelText:
-                                  l10n?.bronzeModuleShakeOffsetLabel ??
-                                  'Shake offset',
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (v) {
-                              final n = double.tryParse(v);
-                              if (n != null) {
-                                _data = BronzePropertiesData(
-                                  data: _data.data,
-                                  shakeOffset: n,
-                                );
-                                _sync();
-                              }
-                            },
                           ),
                         ),
                       ],
@@ -304,23 +310,26 @@ ModuleAliasInputField(
                       children: [
                         Row(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n?.selectedPosition ?? 'Selected position',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n?.selectedPosition ??
+                                        'Selected position',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
+                                  Text(
+                                    'R${_selectedY + 1} : C${_selectedX + 1}',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -401,12 +410,10 @@ ModuleAliasInputField(
                                                     count > 0 &&
                                                         firstItem != null
                                                     ? LayoutBuilder(
-                                                        builder: (
-                                                          context,
-                                                          constraints,
-                                                        ) {
+                                                        builder: (context, constraints) {
                                                           return Stack(
-                                                            fit: StackFit.expand,
+                                                            fit:
+                                                                StackFit.expand,
                                                             children: [
                                                               Positioned.fill(
                                                                 child: Padding(
@@ -418,10 +425,9 @@ ModuleAliasInputField(
                                                                     fit: BoxFit
                                                                         .contain,
                                                                     child: _BronzeZombieIcon(
-                                                                      kind:
-                                                                          firstItem
-                                                                              .item
-                                                                              .kind,
+                                                                      kind: firstItem
+                                                                          .item
+                                                                          .kind,
                                                                       size: 38,
                                                                     ),
                                                                   ),
@@ -576,16 +582,27 @@ ModuleAliasInputField(
     await showDialog<void>(
       context: context,
       builder: (ctx) {
+        final compact = MediaQuery.sizeOf(ctx).width < 400;
         return AlertDialog(
+          scrollable: true,
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: compact ? 16 : 40,
+            vertical: 24,
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: compact ? 12 : 24),
           title: Text(l10n?.bronzeModuleAddTitle ?? 'Add bronze type'),
-          content: SingleChildScrollView(
+          content: SizedBox(
+            width: double.maxFinite,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _AddBronzeKindRow(
                   kind: BronzeStatueKind.strength,
-                  label: l10n?.bronzeKindStrength ?? 'Han (strong)',
+                  label: _bronzeZombieDisplayName(
+                    ctx,
+                    BronzeStatueKind.strength,
+                  ),
                   onTap: () {
                     Navigator.pop(ctx);
                     _addBronze(BronzeStatueKind.strength);
@@ -594,7 +611,7 @@ ModuleAliasInputField(
                 const SizedBox(height: 16),
                 _AddBronzeKindRow(
                   kind: BronzeStatueKind.mage,
-                  label: l10n?.bronzeKindMage ?? 'Qigong (mage)',
+                  label: _bronzeZombieDisplayName(ctx, BronzeStatueKind.mage),
                   onTap: () {
                     Navigator.pop(ctx);
                     _addBronze(BronzeStatueKind.mage);
@@ -603,7 +620,7 @@ ModuleAliasInputField(
                 const SizedBox(height: 16),
                 _AddBronzeKindRow(
                   kind: BronzeStatueKind.agile,
-                  label: l10n?.bronzeKindAgile ?? 'Knight (agile)',
+                  label: _bronzeZombieDisplayName(ctx, BronzeStatueKind.agile),
                   onTap: () {
                     Navigator.pop(ctx);
                     _addBronze(BronzeStatueKind.agile);
@@ -640,9 +657,7 @@ ModuleAliasInputField(
       });
       return const SizedBox.shrink();
     }
-    final zid = _zombieIdForBronzeKind(item.kind);
-    final displayName = ResourceNames.lookup(context, 'zombie_$zid');
-    final name = displayName != 'zombie_$zid' ? displayName : zid;
+    final name = _bronzeZombieDisplayName(context, item.kind);
     return AlertDialog(
       title: Text(l10n?.removeItem ?? 'Remove item'),
       content: Text(
@@ -717,22 +732,11 @@ class _AddBronzeKindRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          child: Row(
-            children: [
-              _BronzeZombieIcon(kind: kind, size: 48),
-              const SizedBox(width: 16),
-              Expanded(child: Text(label)),
-            ],
-          ),
-        ),
-      ),
+    return EditorOptionTile(
+      leading: _BronzeZombieIcon(kind: kind, size: 48),
+      title: Text(label),
+      onTap: onTap,
+      contentPadding: const EdgeInsets.all(4),
     );
   }
 }
@@ -784,16 +788,15 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final item = widget.item;
-    final zid = _zombieIdForBronzeKind(item.kind);
-    final displayName = ResourceNames.lookup(context, 'zombie_$zid');
-    final name = displayName != 'zombie_$zid' ? displayName : zid;
+    final name = _bronzeZombieDisplayName(context, item.kind);
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
+      child: Container(
         width: EditorItemCardLayout.cardWidth(context, base: 140),
-        height: _kBronzeStatueCardHeight,
+        constraints: const BoxConstraints(minHeight: _kBronzeStatueCardHeight),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             EditorDeletableIconHeader(
@@ -803,59 +806,60 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
               height: 88,
               icon: _BronzeZombieIcon(kind: item.kind, size: 77),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      name,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize:
-                            (theme.textTheme.titleSmall?.fontSize ?? 14) * 1.08,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize:
+                          (theme.textTheme.titleSmall?.fontSize ?? 14) * 1.08,
                     ),
-                    if (widget.showCoordinates)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              editorWarningIcon,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                  if (widget.showCoordinates)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            editorWarningIcon,
+                            color: editorWarningBannerForeground(
+                              theme.brightness,
+                            ),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'R${widget.item.mY + 1}:C${widget.item.mX + 1}',
+                            style: theme.textTheme.bodySmall?.copyWith(
                               color: editorWarningBannerForeground(
                                 theme.brightness,
                               ),
-                              size: 16,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'R${widget.item.mY + 1}:C${widget.item.mX + 1}',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: editorWarningBannerForeground(
-                                  theme.brightness,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    const Spacer(),
-                    TextField(
+                    ),
+                  const SizedBox(height: 8),
+                  EditorResponsiveInputField(
+                    label:
+                        l10n?.bronzeModuleSpawnTimeLabel ?? 'Revival time (s)',
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    builder: (context, decoration) => TextField(
                       controller: _spawnCtrl,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText:
-                            l10n?.bronzeModuleSpawnTimeLabel ??
-                            'Revival time (s)',
-                        border: const OutlineInputBorder(),
-                        isDense: true,
-                      ),
+                      decoration: decoration,
                       onChanged: (v) {
                         final n = int.tryParse(v);
                         if (n != null && n >= 0) {
@@ -863,8 +867,8 @@ class _BronzeStatueCardState extends State<_BronzeStatueCard> {
                         }
                       },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],

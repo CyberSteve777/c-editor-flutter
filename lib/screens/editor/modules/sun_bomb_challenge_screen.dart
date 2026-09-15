@@ -85,7 +85,6 @@ class _SunBombChallengeScreenState extends State<SunBombChallengeScreen> {
     super.dispose();
   }
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -119,6 +118,7 @@ class _SunBombChallengeScreenState extends State<SunBombChallengeScreen> {
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.sunBomb,
               sections: [
                 HelpSectionData(
@@ -135,7 +135,7 @@ class _SunBombChallengeScreenState extends State<SunBombChallengeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -250,14 +250,14 @@ ModuleAliasInputField(
     required String label,
     required ValueChanged<String> onChanged,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        decoration: decoration,
+        onChanged: onChanged,
       ),
-      onChanged: onChanged,
     );
   }
 }

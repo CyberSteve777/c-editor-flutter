@@ -1212,6 +1212,36 @@
                 "ArmorLayerHealth": [],
                 "DropSoundEvent": ""
             }
+        },
+        {
+            "objclass": "ZombieEnergyShieldArmorProps",
+            "aliases": [
+                "CosmicEnergyShield"
+            ],
+            "objdata": {
+                "ClassName": "ZombieEnergyShieldArmor",
+                "ArmorType": "CosmicEnergyShield",
+                "BaseHealth": 0.0,
+                "ArmorFlags": [
+                    "damageable"
+                ],
+                "ArmorLayers": [],
+                "ArmorLayerHealth": [],
+                "ParticleLayerOverride": [],
+                "ImpactSoundEvent": "",
+                "DropSoundEvent": "",
+                "NormalEffectPAM": "POPANIM_EFFECTS_ZOMBIE_MOON_SHIP5000_SHIELD",
+                "ShieldOnAnim": "shield_on_02",
+                "ShieldLoopAnim": "shield_loop_02",
+                "ShieldDamageAnim": "shield_hit_02",
+                "ShieldEndAnim": "shield_end_02",
+                "EffectOffset": {
+                    "x": 7.0,
+                    "y": 0.0,
+                    "z": 20.0
+                },
+                "EffectRenderLayerOffset": 1
+            }
         }
     ]
 }

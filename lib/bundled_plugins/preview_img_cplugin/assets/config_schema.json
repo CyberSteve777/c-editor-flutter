@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "options": [
+    {
+      "key": "exportFolder",
+      "type": "string",
+      "titleKey": "configExportFolder",
+      "descriptionKey": "configExportFolderDescription"
+    },
+    {
+      "key": "toolbarStyle",
+      "type": "enum",
+      "titleKey": "configToolbarStyle",
+      "descriptionKey": "configToolbarStyleDescription",
+      "values": [
+        {
+          "value": "compact",
+          "titleKey": "configToolbarStyleCompact",
+          "descriptionKey": "configToolbarStyleCompactDescription"
+        },
+        {
+          "value": "full",
+          "titleKey": "configToolbarStyleFull",
+          "descriptionKey": "configToolbarStyleFullDescription"
+        }
+      ]
+    }
+  ]
+}

@@ -8,7 +8,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.1.0
 
 environment:
-  sdk: ^3.9.2
+  sdk: ^3.12.0
+  # Floor from pubspec.lock / current deps (Dart 3.12 ⇒ Flutter 3.44).
+  # itemExtentBuilder is older; keep CI/docs in sync when raising this.
+  flutter: ">=3.44.0"
 
 dependencies:
   flutter:
@@ -33,10 +36,23 @@ dependencies:
   rijndael: ^1.0.1
   accessing_security_scoped_resource: ^3.5.0
   flutter_layout_grid: ^2.0.8
-  flutter_slidable: ^4.0.3
   country_flags: ^4.1.2
-
+  idb_shim: ^2.9.2
+  web: ^1.1.1
+  drag_and_drop_lists: ^0.4.2
+  flutter_eval:
+    path: third_party/flutter_eval
+  dart_eval: ^0.8.5
+  eval_annotation: ^0.8.1
+  http: ^1.6.0
+  pub_semver: ^2.2.0
+  intl: ^0.20.2
+  nice_downloader: ^1.3.1
+  fs_shim: ^2.5.5
+  google_fonts: ^8.2.1
+  flutter_colorpicker: ^1.1.0
 dev_dependencies:
+  image: ^4.8.0
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
@@ -67,10 +83,30 @@ flutter:
     - assets/images/griditems/
     - assets/images/tools/
     - assets/images/others/
+    - assets/images/rift_themes/
     - assets/images/dinos/
     - assets/images/ztalemate_perks/
     - assets/images/fishes/
     - assets/images/tunnels/
+    - lib/bundled_plugins/preview_img_cplugin/manifest.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/icon.png
+    - lib/bundled_plugins/preview_img_cplugin/assets/stage_banners.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/feature_groups.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/config_schema.json
+    - lib/bundled_plugins/preview_img_cplugin/assets/banners/
+    - lib/bundled_plugins/preview_img_cplugin/assets/l10n/en.arb
+    - lib/bundled_plugins/preview_img_cplugin/assets/l10n/ru.arb
+    - lib/bundled_plugins/preview_img_cplugin/assets/l10n/zh.arb
+    - lib/bundled_plugins/level_test_cplugin/manifest.json
+    - lib/bundled_plugins/level_test_cplugin/assets/icon.png
+    - lib/bundled_plugins/level_test_cplugin/assets/l10n/en.arb
+    - lib/bundled_plugins/level_test_cplugin/assets/l10n/ru.arb
+    - lib/bundled_plugins/level_test_cplugin/assets/l10n/zh.arb
+
+  fonts:
+    - family: PvZPreview
+      fonts:
+        - asset: lib/bundled_plugins/preview_img_cplugin/assets/fonts/FBUSV8C5EI.ttf
 
 flutter_launcher_icons:
   android: true

@@ -8,6 +8,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/select/magic_hat_spawn_preview_screen.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/widgets/selection_grid_confirmation.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart'
@@ -19,6 +20,7 @@ import 'package:c_editor/widgets/editor_components.dart'
 
 /// Placeholder when a plant has no icon or icon fails to load.
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
+const String _kComingSoonPlantId = 'coming_soon';
 
 /// Internal tag → module objClass required to enable those plants.
 const Map<String, String> _moduleGatedPlantTags = {
@@ -28,6 +30,32 @@ const Map<String, String> _moduleGatedPlantTags = {
 bool _isRealmExclusivePlant(PlantInfo plant) =>
     plant.hasInternalTag('_internal_no42') ||
     plant.hasInternalTag('_internal_mausoleum');
+
+bool _isHiddenPlant(PlantInfo plant) => plant.tags.contains(PlantTag.hidden);
+
+bool _isComingSoonPlantId(String id) => id == _kComingSoonPlantId;
+
+enum _PlantBlockedReason {
+  comingSoon,
+  realmExclusiveChooser,
+  hiddenChooser,
+  missingModule,
+}
+
+class _PlantSelectionViewState {
+  _PlantSelectionViewState({required this.category, required this.tag})
+    : searchQuery = '',
+      scrollOffset = 0,
+      tagScrollOffset = 0;
+
+  PlantCategory category;
+  PlantTag tag;
+  String searchQuery;
+  double scrollOffset;
+  double tagScrollOffset;
+}
+
+final Map<String, _PlantSelectionViewState> _plantSelectionViewStates = {};
 
 /// Plant selection. Ported from Z-Editor-master PlantSelectionScreen.kt
 class PlantSelectionScreen extends StatefulWidget {
@@ -42,7 +70,9 @@ class PlantSelectionScreen extends StatefulWidget {
     this.levelFile,
     this.onAddModule,
     this.blockRealmExclusiveInChooser = false,
+    this.blockHiddenPlantsInChooser = false,
     this.allowDuplicateSelection = false,
+    this.stateBucketId,
   });
 
   final bool isMultiSelect;
@@ -65,8 +95,14 @@ class PlantSelectionScreen extends StatefulWidget {
   /// When true, realm-exclusive plants cannot be picked (seed bank chooser white/black lists).
   final bool blockRealmExclusiveInChooser;
 
+  /// When true, Hidden plants cannot be picked (seed bank chooser mode only).
+  final bool blockHiddenPlantsInChooser;
+
   /// When true, each tap in multi-select adds another entry (preset seed bank list).
   final bool allowDuplicateSelection;
+
+  /// Keeps chooser tab and scroll state local to the current editing context.
+  final String? stateBucketId;
 
   @override
   State<PlantSelectionScreen> createState() => _PlantSelectionScreenState();
@@ -77,20 +113,52 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   final Set<String> _selectedIds = {};
   final List<String> _selectedIdsWithDuplicates = [];
   bool _isLoaded = false;
-  PlantCategory _selectedCategory = PlantCategory.quality;
-  PlantTag _selectedTag = PlantTag.all;
+  late PlantCategory _selectedCategory;
+  late PlantTag _selectedTag;
+  late final ScrollController _scrollController;
+
+  String get _viewStateKey {
+    final explicit = widget.stateBucketId;
+    if (explicit != null && explicit.isNotEmpty) return explicit;
+    final levelFile = widget.levelFile;
+    if (levelFile != null) return 'level:${identityHashCode(levelFile)}';
+    return 'global';
+  }
 
   @override
   void initState() {
     super.initState();
+    final rememberedState = _plantSelectionViewStates[_viewStateKey];
+    _selectedCategory = rememberedState?.category ?? PlantCategory.quality;
+    _selectedTag = rememberedState?.tag ?? PlantTag.all;
+    _searchQuery = rememberedState?.searchQuery ?? '';
+    _normalizeSelectedTag();
+    _scrollController = ScrollController(
+      initialScrollOffset: rememberedState?.scrollOffset ?? 0,
+    )..addListener(_rememberScrollOffset);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _restoreRememberedScrollOffset();
+    });
     if (widget.isMultiSelect &&
         !widget.allowDuplicateSelection &&
         widget.initialSelectedIds.isNotEmpty) {
       _selectedIds.addAll(widget.initialSelectedIds);
     }
     PlantRepository().init().then((_) {
-      if (mounted) setState(() => _isLoaded = true);
+      if (mounted) {
+        setState(() {
+          _removeChooserBlockedSelections();
+          _isLoaded = true;
+        });
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   List<PlantTag> _visibleTagsFor(PlantCategory category) {
@@ -110,6 +178,78 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
       final tags = _visibleTagsFor(category);
       _selectedTag = tags.isNotEmpty ? tags.first : PlantTag.all;
     });
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0, tagScrollOffset: 0);
+  }
+
+  void _setTag(PlantTag tag) {
+    if (_selectedTag == tag) return;
+    setState(() => _selectedTag = tag);
+    _resetRememberedScrollOffset();
+    _rememberViewState(scrollOffset: 0);
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _resetRememberedScrollOffset();
+  }
+
+  void _normalizeSelectedTag() {
+    if (_selectedCategory == PlantCategory.collection) {
+      _selectedTag = PlantTag.all;
+      return;
+    }
+    final tags = _visibleTagsFor(_selectedCategory);
+    if (!tags.contains(_selectedTag)) {
+      _selectedTag = tags.first;
+    }
+  }
+
+  void _rememberViewState({double? scrollOffset, double? tagScrollOffset}) {
+    final state = _plantSelectionViewStates.putIfAbsent(
+      _viewStateKey,
+      () => _PlantSelectionViewState(
+        category: _selectedCategory,
+        tag: _selectedTag,
+      ),
+    );
+    state.category = _selectedCategory;
+    state.tag = _selectedTag;
+    state.searchQuery = _searchQuery;
+    if (scrollOffset != null) state.scrollOffset = scrollOffset;
+    if (tagScrollOffset != null) {
+      state.tagScrollOffset = tagScrollOffset;
+    }
+  }
+
+  void _rememberTagScrollOffset(double offset) {
+    _rememberViewState(tagScrollOffset: offset);
+  }
+
+  void _rememberScrollOffset() {
+    if (!_scrollController.hasClients) return;
+    _rememberViewState(scrollOffset: _scrollController.offset);
+  }
+
+  void _resetRememberedScrollOffset({bool persist = true}) {
+    if (persist) _rememberViewState(scrollOffset: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.jumpTo(0);
+    });
+  }
+
+  void _restoreRememberedScrollOffset() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final offset = _plantSelectionViewStates[_viewStateKey]?.scrollOffset ?? 0;
+    final position = _scrollController.position;
+    final target = offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+    if (_scrollController.offset != target) {
+      _scrollController.jumpTo(target);
+    }
   }
 
   void _toggleFavorite(BuildContext context, String id) async {
@@ -151,16 +291,50 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     return set;
   }
 
-  bool _isPlantEnabled(PlantInfo plant, Set<String> levelModules) {
+  _PlantBlockedReason? _chooserBlockedReasonForPlant(PlantInfo plant) {
+    if (_isComingSoonPlantId(plant.id)) return _PlantBlockedReason.comingSoon;
     if (widget.blockRealmExclusiveInChooser && _isRealmExclusivePlant(plant)) {
-      return false;
+      return _PlantBlockedReason.realmExclusiveChooser;
     }
+    if (widget.blockHiddenPlantsInChooser && _isHiddenPlant(plant)) {
+      return _PlantBlockedReason.hiddenChooser;
+    }
+    return null;
+  }
+
+  _PlantBlockedReason? _chooserBlockedReasonForPlantId(String id) {
+    if (_isComingSoonPlantId(id)) return _PlantBlockedReason.comingSoon;
+    final plant = PlantRepository().getPlantInfoById(id);
+    if (plant == null) return null;
+    return _chooserBlockedReasonForPlant(plant);
+  }
+
+  _PlantBlockedReason? _plantBlockedReason(
+    PlantInfo plant,
+    Set<String> levelModules,
+  ) {
+    final chooserReason = _chooserBlockedReasonForPlant(plant);
+    if (chooserReason != null) return chooserReason;
     for (final entry in _moduleGatedPlantTags.entries) {
       if (plant.hasInternalTag(entry.key)) {
-        if (!levelModules.contains(entry.value)) return false;
+        if (!levelModules.contains(entry.value)) {
+          return _PlantBlockedReason.missingModule;
+        }
       }
     }
-    return true;
+    return null;
+  }
+
+  void _removeChooserBlockedSelections() {
+    bool isBlocked(String id) => _chooserBlockedReasonForPlantId(id) != null;
+    _selectedIds.removeWhere(isBlocked);
+    _selectedIdsWithDuplicates.removeWhere(isBlocked);
+  }
+
+  List<String> _filterChooserSelectablePlantIds(List<String> ids) {
+    return ids
+        .where((id) => _chooserBlockedReasonForPlantId(id) == null)
+        .toList();
   }
 
   String? _requiredModuleForPlant(PlantInfo plant) {
@@ -177,6 +351,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: Text(
           l10n?.realmExclusivePlantChooserBlockedTitle ?? 'Cannot select plant',
         ),
@@ -196,17 +371,93 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     );
   }
 
+  Future<void> _showHiddenPlantChooserBlockedDialog(
+    BuildContext context,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        scrollable: true,
+        title: Text(
+          l10n?.hiddenPlantChooserBlockedTitle ?? 'Cannot select plant',
+        ),
+        content: Text(
+          l10n?.hiddenPlantChooserBlockedMessage ??
+              'Hidden plants cannot be selected in Chooser Mode. Use Preset '
+                  'Mode, Conveyor Belt, Packet Drops, or other methods instead.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n?.ok ?? 'OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showComingSoonPlantBlockedDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final isMoonTag = _selectedTag == PlantTag.worldMoon;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        scrollable: true,
+        title: Text(
+          isMoonTag
+              ? (l10n?.stayTunedMoonPlantBlockedTitle ?? 'A Message from Space')
+              : (l10n?.comingSoonPlantBlockedTitle ?? 'To Be Continued'),
+        ),
+        content: Text(
+          isMoonTag
+              ? (l10n?.stayTunedMoonPlantBlockedMessage ??
+                    'Moon BaseZ Part 2 is coming soon. Keep a lookout!')
+              : (l10n?.comingSoonPlantBlockedMessage ??
+                    'The plants are still growing strong. Stay tuned for '
+                        'future updates!'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n?.ok ?? 'OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showChooserBlockedDialog(
+    BuildContext context,
+    _PlantBlockedReason reason,
+  ) async {
+    switch (reason) {
+      case _PlantBlockedReason.comingSoon:
+        await _showComingSoonPlantBlockedDialog(context);
+        return;
+      case _PlantBlockedReason.realmExclusiveChooser:
+        await _showRealmExclusiveChooserBlockedDialog(context);
+        return;
+      case _PlantBlockedReason.hiddenChooser:
+        await _showHiddenPlantChooserBlockedDialog(context);
+        return;
+      case _PlantBlockedReason.missingModule:
+        return;
+    }
+  }
+
   Future<void> _onPlantTap(
     BuildContext context,
     PlantInfo plant,
-    bool isEnabled,
-    Set<String> levelModules,
+    _PlantBlockedReason? blockedReason,
   ) async {
-    if (widget.blockRealmExclusiveInChooser && _isRealmExclusivePlant(plant)) {
-      await _showRealmExclusiveChooserBlockedDialog(context);
+    if (blockedReason == _PlantBlockedReason.comingSoon ||
+        blockedReason == _PlantBlockedReason.realmExclusiveChooser ||
+        blockedReason == _PlantBlockedReason.hiddenChooser) {
+      await _showChooserBlockedDialog(context, blockedReason!);
       return;
     }
-    if (isEnabled) {
+    if (blockedReason == null) {
       if (widget.isMultiSelect) {
         setState(() {
           if (widget.allowDuplicateSelection) {
@@ -222,6 +473,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
       }
       return;
     }
+    if (blockedReason != _PlantBlockedReason.missingModule) return;
     final requiredObjClass = _requiredModuleForPlant(plant);
     if (requiredObjClass == null || widget.onAddModule == null) return;
     final l10n = AppLocalizations.of(context)!;
@@ -260,6 +512,13 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
       }
       setState(() {});
     }
+  }
+
+  void _deselectPlant(String plantId) {
+    setState(() {
+      _selectedIds.remove(plantId);
+      _selectedIdsWithDuplicates.removeWhere((id) => id == plantId);
+    });
   }
 
   bool _isMagicHatPlant(PlantInfo plant) =>
@@ -313,16 +572,34 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
     final plants = excludeSet.isEmpty
         ? allPlants
         : allPlants.where((p) => !excludeSet.contains(p.id)).toList();
+    _normalizeSelectedTag();
     final visibleTags = _visibleTagsFor(_selectedCategory);
     final tagIndex = visibleTags.indexOf(_selectedTag);
     final safeTagIndex = tagIndex < 0 ? 0 : tagIndex;
-    if (_selectedCategory != PlantCategory.collection &&
-        !visibleTags.contains(_selectedTag)) {
-      _selectedTag = visibleTags.first;
-    }
     final themeColor = theme.colorScheme.primary;
     final filterMaxHeight = MediaQuery.sizeOf(context).height * 0.42;
     final tabColors = AccentBarTabBarStyle.colors(context);
+    const gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
+      maxCrossAxisExtent: 72,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 8,
+      childAspectRatio: 0.65,
+    );
+    final confirmation = widget.isMultiSelect
+        ? FloatingActionButton(
+            onPressed: _isLoaded
+                ? () {
+                    final ids = _filterChooserSelectablePlantIds(
+                      widget.allowDuplicateSelection
+                          ? List<String>.from(_selectedIdsWithDuplicates)
+                          : _selectedIds.toList(),
+                    );
+                    widget.onMultiPlantSelected?.call(ids);
+                  }
+                : null,
+            child: const Icon(Icons.check),
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -336,17 +613,6 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
         ),
         title: Text(l10n?.selectPlant ?? 'Select plant'),
       ),
-      floatingActionButton: widget.isMultiSelect
-          ? FloatingActionButton(
-              onPressed: () {
-                final ids = widget.allowDuplicateSelection
-                    ? List<String>.from(_selectedIdsWithDuplicates)
-                    : _selectedIds.toList();
-                widget.onMultiPlantSelected?.call(ids);
-              },
-              child: const Icon(Icons.check),
-            )
-          : null,
       body: Column(
         children: [
           Container(
@@ -373,59 +639,57 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                               : (l10n?.searchPlant ?? 'Search plant'),
                           query: _searchQuery,
                           fillColor: theme.colorScheme.surface,
-                          onChanged: (v) => setState(() => _searchQuery = v),
-                          onClear: () => setState(() => _searchQuery = ''),
+                          focusedBorderColor: themeColor,
+                          onChanged: _setSearchQuery,
+                          onClear: () => _setSearchQuery(''),
                         ),
                       ),
-                      DefaultTabController(
-                        key: ValueKey(_selectedCategory),
-                        length: PlantCategory.values.length,
-                        initialIndex: PlantCategory.values.indexOf(
+                      AccentBarFilterTabRow(
+                        key: ValueKey(
+                          'plantCategory_${_selectedCategory.name}',
+                        ),
+                        selectedIndex: PlantCategory.values.indexOf(
                           _selectedCategory,
                         ),
-                        child: TabBar(
-                          isScrollable: true,
-                          indicatorColor: tabColors.indicator,
-                          labelColor: tabColors.label,
-                          unselectedLabelColor: tabColors.unselectedLabel,
-                          onTap: (index) =>
-                              _setCategory(PlantCategory.values[index]),
-                          tabs: PlantCategory.values.map((category) {
-                            final isSelected = _selectedCategory == category;
-                            return Tab(
-                              child: Row(
-                                children: [
-                                  if (category == PlantCategory.collection) ...[
-                                    Icon(
-                                      Icons.star,
-                                      size: 16,
-                                      color: isSelected
-                                          ? tabColors.label
-                                          : tabColors.unselectedLabel,
-                                    ),
-                                    const SizedBox(width: 4),
-                                  ],
-                                  Text(
-                                    category.getLabel(context),
-                                    style: TextStyle(
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                ],
+                        onSelected: (index) =>
+                            _setCategory(PlantCategory.values[index]),
+                        tabs: PlantCategory.values.map((category) {
+                          final isSelected = _selectedCategory == category;
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (category == PlantCategory.collection) ...[
+                                Icon(
+                                  Icons.star,
+                                  size: 16,
+                                  color: isSelected
+                                      ? tabColors.label
+                                      : tabColors.unselectedLabel,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                              Text(
+                                category.getLabel(context),
+                                style: TextStyle(
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                            ],
+                          );
+                        }).toList(),
                       ),
                       if (_selectedCategory != PlantCategory.collection)
                         AccentBarFilterTabRow(
                           key: ValueKey('${_selectedCategory.name}_tags'),
+                          initialScrollOffset:
+                              _plantSelectionViewStates[_viewStateKey]
+                                  ?.tagScrollOffset ??
+                              0,
+                          onScrollOffsetChanged: _rememberTagScrollOffset,
                           selectedIndex: safeTagIndex,
-                          onSelected: (index) => setState(
-                            () => _selectedTag = visibleTags[index],
-                          ),
+                          onSelected: (index) => _setTag(visibleTags[index]),
                           tabs: visibleTags.map((tag) {
                             final iconPath = tag.iconAssetPath;
                             return Row(
@@ -436,9 +700,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
                                     assetPath: iconPath,
                                     width: 18,
                                     height: 18,
-                                    altCandidates: imageAltCandidates(
-                                      iconPath,
-                                    ),
+                                    altCandidates: imageAltCandidates(iconPath),
                                     cacheWidth: 36,
                                     cacheHeight: 36,
                                   ),
@@ -458,75 +720,75 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
             ),
           ),
           Expanded(
-            child: !_isLoaded
-                ? const Center(child: CircularProgressIndicator())
-                : plants.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 64,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _selectedCategory == PlantCategory.collection
-                              ? (l10n?.noFavoritesLongPress ??
-                                    'No favorites. Long-press to favorite.')
-                              : (l10n?.noPlantFound ?? 'No plant found'),
-                          style: theme.textTheme.bodyMedium?.copyWith(
+            child: SelectionGridConfirmation(
+              itemCount: plants.length,
+              gridDelegate: gridDelegate,
+              confirmation: confirmation,
+              builder: (context, gridPadding) => !_isLoaded
+                  ? const Center(child: CircularProgressIndicator())
+                  : plants.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search,
+                            size: 64,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : GridView.builder(
-                    padding: const EdgeInsets.all(12),
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 72,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 8,
-                          childAspectRatio: 0.65,
-                        ),
-                    itemCount: plants.length,
-                    itemBuilder: (_, i) {
-                      final plant = plants[i];
-                      final selectionCount = widget.allowDuplicateSelection
-                          ? _selectedIdsWithDuplicates
-                                .where((id) => id == plant.id)
-                                .length
-                          : (_selectedIds.contains(plant.id) ? 1 : 0);
-                      final isSelected = selectionCount > 0;
-                      final isFavorite = repo.isFavorite(plant.id);
-                      final isEnabled = _isPlantEnabled(
-                        plant,
-                        levelModuleObjClasses,
-                      );
-                      final isHat = _isMagicHatPlant(plant);
-                      return _PlantGridItem(
-                        plant: plant,
-                        isSelected: isSelected,
-                        isFavorite: isFavorite,
-                        isEnabled: isEnabled,
-                        onTap: () => _onPlantTap(
-                          context,
+                          const SizedBox(height: 16),
+                          Text(
+                            _selectedCategory == PlantCategory.collection
+                                ? (l10n?.noFavoritesLongPress ??
+                                      'No favorites. Long-press to favorite.')
+                                : (l10n?.noPlantFound ?? 'No plant found'),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      controller: _scrollController,
+                      padding: gridPadding,
+                      gridDelegate: gridDelegate,
+                      itemCount: plants.length,
+                      itemBuilder: (_, i) {
+                        final plant = plants[i];
+                        final selectionCount = widget.allowDuplicateSelection
+                            ? _selectedIdsWithDuplicates
+                                  .where((id) => id == plant.id)
+                                  .length
+                            : (_selectedIds.contains(plant.id) ? 1 : 0);
+                        final isSelected = selectionCount > 0;
+                        final isFavorite = repo.isFavorite(plant.id);
+                        final blockedReason = _plantBlockedReason(
                           plant,
-                          isEnabled,
                           levelModuleObjClasses,
-                        ),
-                        onSecondaryTap: isHat
-                            ? () => _openMagicHatPreview(context, plant.id)
-                            : null,
-                        onLongPress: isHat
-                            ? () => _openMagicHatPreview(context, plant.id)
-                            : () => _toggleFavorite(context, plant.id),
-                      );
-                    },
-                  ),
+                        );
+                        final isEnabled = blockedReason == null;
+                        final isHat = _isMagicHatPlant(plant);
+                        return _PlantGridItem(
+                          plant: plant,
+                          isSelected: isSelected,
+                          isFavorite: isFavorite,
+                          isEnabled: isEnabled,
+                          onTap: () =>
+                              _onPlantTap(context, plant, blockedReason),
+                          onSelectedIconTap: widget.isMultiSelect && isSelected
+                              ? () => _deselectPlant(plant.id)
+                              : null,
+                          onSecondaryTap: isHat
+                              ? () => _openMagicHatPreview(context, plant.id)
+                              : null,
+                          onLongPress: isHat
+                              ? () => _openMagicHatPreview(context, plant.id)
+                              : () => _toggleFavorite(context, plant.id),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),
@@ -541,6 +803,7 @@ class _PlantGridItem extends StatelessWidget {
     required this.isFavorite,
     required this.isEnabled,
     required this.onTap,
+    this.onSelectedIconTap,
     this.onSecondaryTap,
     required this.onLongPress,
   });
@@ -550,6 +813,7 @@ class _PlantGridItem extends StatelessWidget {
   final bool isFavorite;
   final bool isEnabled;
   final VoidCallback onTap;
+  final VoidCallback? onSelectedIconTap;
   final VoidCallback? onSecondaryTap;
   final VoidCallback onLongPress;
 
@@ -557,6 +821,7 @@ class _PlantGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final iconPath = plant.iconAssetPath;
+    final name = ResourceNames.lookup(context, plant.name);
     final hasIcon = iconPath != null && iconPath.isNotEmpty;
 
     final borderColor = isSelected
@@ -583,32 +848,37 @@ class _PlantGridItem extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  ClipOval(
-                    child: SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: hasIcon
-                          ? AssetImageWidget(
-                              assetPath: iconPath,
-                              altCandidates: imageAltCandidates(iconPath),
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                              cacheWidth: 88,
-                              cacheHeight: 88,
-                              errorWidget: Image.asset(
+                  GestureDetector(
+                    key: ValueKey('plantSelectionIcon-${plant.id}'),
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onSelectedIconTap,
+                    child: ClipOval(
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: hasIcon
+                            ? AssetImageWidget(
+                                assetPath: iconPath,
+                                altCandidates: imageAltCandidates(iconPath),
+                                width: 44,
+                                height: 44,
+                                fit: BoxFit.cover,
+                                cacheWidth: 88,
+                                cacheHeight: 88,
+                                errorWidget: Image.asset(
+                                  _kUnknownIconPath,
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.asset(
                                 _kUnknownIconPath,
                                 width: 44,
                                 height: 44,
                                 fit: BoxFit.cover,
                               ),
-                            )
-                          : Image.asset(
-                              _kUnknownIconPath,
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                            ),
+                      ),
                     ),
                   ),
                   if (isFavorite)
@@ -635,25 +905,31 @@ class _PlantGridItem extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
-              Text(
-                ResourceNames.lookup(context, plant.name),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 9,
+              Tooltip(
+                message: name,
+                child: Text(
+                  name,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 9,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-              Text(
-                plant.id,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 8,
+              Tooltip(
+                message: plant.id,
+                child: Text(
+                  plant.id,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 8,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

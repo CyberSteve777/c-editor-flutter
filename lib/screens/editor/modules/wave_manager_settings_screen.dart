@@ -148,6 +148,7 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n?.waveManagerHelpTitle ?? 'Wave manager',
               themeColor: themeColor,
               sections: [
@@ -165,9 +166,12 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
                 ),
                 HelpSectionData(
                   title: l10n?.waveManagerHelpTimeTitle ?? 'Time control',
-                  body:
-                      l10n?.waveManagerHelpTimeBody ??
-                      'First wave delay changes when a conveyor is present.',
+                  body: [
+                    l10n?.waveManagerHelpTimeBody ??
+                        'First wave delay changes when a conveyor is present.',
+                    l10n?.waveManagerFirstWaveDelayConveyorOnlyHelp ??
+                        'Editing the current first-wave delay only affects conveyor levels. Regular levels use the default value.',
+                  ].join('\n\n'),
                 ),
                 HelpSectionData(
                   title: l10n?.waveManagerHelpMusicTitle ?? 'Music type',
@@ -193,31 +197,28 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _flagIntervalController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText:
-                    l10n?.flagInterval ?? 'Flag interval (FlagWaveInterval)',
-                border: const OutlineInputBorder(),
+            EditorResponsiveInputField(
+              label: l10n?.flagInterval ?? 'Flag interval (FlagWaveInterval)',
+              builder: (context, decoration) => TextField(
+                controller: _flagIntervalController,
+                keyboardType: TextInputType.number,
+                decoration: decoration,
+                onChanged: _updateFlagInterval,
               ),
-              onChanged: _updateFlagInterval,
             ),
             const SizedBox(height: 16),
-            Row(
+            EditorResponsiveFieldRow(
               children: [
-                Expanded(
-                  child: TextField(
+                EditorResponsiveInputField(
+                  label:
+                      l10n?.waveManagerMaxHealthThreshold ??
+                      'Max health threshold',
+                  builder: (context, decoration) => TextField(
                     controller: _maxHealthController,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.waveManagerMaxHealthThreshold ??
-                          'Max health threshold',
-                      border: const OutlineInputBorder(),
-                    ),
+                    decoration: decoration,
                     onChanged: (v) {
                       final n = double.tryParse(v);
                       if (n != null && n >= 0 && n <= 1) {
@@ -227,19 +228,16 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
+                EditorResponsiveInputField(
+                  label:
+                      l10n?.waveManagerMinHealthThreshold ??
+                      'Min health threshold',
+                  builder: (context, decoration) => TextField(
                     controller: _minHealthController,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.waveManagerMinHealthThreshold ??
-                          'Min health threshold',
-                      border: const OutlineInputBorder(),
-                    ),
+                    decoration: decoration,
                     onChanged: (v) {
                       final n = double.tryParse(v);
                       if (n != null && n >= 0 && n <= 1) {
@@ -270,33 +268,27 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
+            EditorResponsiveFieldRow(
               children: [
-                Expanded(
-                  child: TextField(
+                EditorResponsiveInputField(
+                  label: widget.hasConveyor
+                      ? (l10n?.waveManagerFirstWaveDelayConveyor ??
+                            'First wave delay (conveyor)')
+                      : (l10n?.waveManagerFirstWaveDelayNormal ??
+                            'First wave delay (normal)'),
+                  builder: (context, decoration) => TextField(
                     controller: _firstWaveController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: widget.hasConveyor
-                          ? (l10n?.waveManagerFirstWaveDelayConveyor ??
-                                'First wave delay (conveyor)')
-                          : (l10n?.waveManagerFirstWaveDelayNormal ??
-                                'First wave delay (normal)'),
-                      border: const OutlineInputBorder(),
-                    ),
+                    decoration: decoration,
                     onChanged: (_) => _updateTimeSettings(),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
+                EditorResponsiveInputField(
+                  label: l10n?.waveManagerFlagWaveDelay ?? 'Flag wave delay',
+                  builder: (context, decoration) => TextField(
                     controller: _hugeWaveController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText:
-                          l10n?.waveManagerFlagWaveDelay ?? 'Flag wave delay',
-                      border: const OutlineInputBorder(),
-                    ),
+                    decoration: decoration,
                     onChanged: (_) => _updateTimeSettings(),
                   ),
                 ),
@@ -309,6 +301,15 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
                         'Conveyor module detected; conveyor delay applied.')
                   : (l10n?.waveManagerConveyorNotDetected ??
                         'No conveyor module; normal delay applied.'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n?.waveManagerFirstWaveDelayConveyorOnlyHint ??
+                  'Editing the current first-wave delay only affects conveyor levels; regular levels use the default value',
+              softWrap: true,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -370,25 +371,30 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String?>(
-              initialValue: _wm.levelJam,
+            EditorResponsiveInputField(
+              label: l10n?.waveManagerLevelJam ?? 'Level Jam',
               decoration: InputDecoration(
-                labelText: l10n?.waveManagerLevelJam ?? 'Level Jam',
                 prefixIcon: const Icon(Icons.music_note),
                 border: const OutlineInputBorder(),
               ),
-              items: jamOptions.map((e) {
-                return DropdownMenuItem<String?>(
-                  value: e.$1,
-                  child: Text(e.$2),
-                );
-              }).toList(),
-              onChanged: (v) {
-                setState(() {
-                  _wm.levelJam = v;
-                  _save();
-                });
-              },
+              builder: (context, decoration) =>
+                  DropdownButtonFormField<String?>(
+                    isExpanded: true,
+                    initialValue: _wm.levelJam,
+                    decoration: decoration,
+                    items: jamOptions.map((e) {
+                      return DropdownMenuItem<String?>(
+                        value: e.$1,
+                        child: Text(e.$2),
+                      );
+                    }).toList(),
+                    onChanged: (v) {
+                      setState(() {
+                        _wm.levelJam = v;
+                        _save();
+                      });
+                    },
+                  ),
             ),
             const SizedBox(height: 6),
             Text(

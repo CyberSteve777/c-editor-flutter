@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:c_editor/data/pvz_models.dart';
+
+import 'package:c_editor/data/resilience_weak_type.dart';
 
 import 'package:c_editor/data/resilience_shield_utils.dart';
 
@@ -9,6 +13,8 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 
 import 'package:c_editor/widgets/alias_rename_dialog.dart';
+
+import 'package:c_editor/widgets/editor_components.dart';
 
 import 'package:c_editor/widgets/resilience_shield_widgets.dart';
 
@@ -56,11 +62,21 @@ class _CustomResilienceShieldEditorScreenState
 
   late TextEditingController _extraThresholdCtrl;
 
+  late final PvzLevelFile _initialLevelSnapshot;
+
+  bool _canPop = false;
+
+  bool _exitDialogOpen = false;
+
+  bool _levelMutatedDuringEditing = false;
+
   bool get _isNew => widget.existingRtid == null;
 
   @override
   void initState() {
     super.initState();
+
+    _initialLevelSnapshot = _cloneLevel(widget.levelFile);
 
     if (widget.existingRtid != null) {
       _loadExisting(widget.existingRtid!);
@@ -88,6 +104,10 @@ class _CustomResilienceShieldEditorScreenState
       text: '${_data.resilienceExtraDamageThreshold}',
     );
   }
+
+  PvzLevelFile _cloneLevel(PvzLevelFile levelFile) => PvzLevelFile.fromJson(
+    jsonDecode(jsonEncode(levelFile.toJson())) as Map<String, dynamic>,
+  );
 
   void _loadExisting(String rtid) {
     _obj = ResilienceShieldUtils.findLevelObject(widget.levelFile, rtid);
@@ -168,6 +188,8 @@ class _CustomResilienceShieldEditorScreenState
         obj: _obj,
       );
 
+      _levelMutatedDuringEditing = true;
+
       widget.onChanged?.call();
     }
 
@@ -176,15 +198,15 @@ class _CustomResilienceShieldEditorScreenState
     return true;
   }
 
-  Future<void> _saveAndPop() async {
+  Future<String?> _saveShield() async {
     final codename = _codenameCtrl.text.trim();
 
-    if (codename.isEmpty) return;
+    if (codename.isEmpty) return null;
 
     if (!_isNew) {
       final aliasOk = await _tryApplyAlias(codename);
 
-      if (!aliasOk || !mounted) return;
+      if (!aliasOk || !mounted) return null;
     } else if (!ResilienceShieldUtils.isCodenameAvailable(
       widget.levelFile,
 
@@ -192,7 +214,7 @@ class _CustomResilienceShieldEditorScreenState
     )) {
       await showAliasAlreadyTakenDialog(context);
 
-      return;
+      return null;
     } else {
       _alias = codename;
     }
@@ -241,198 +263,275 @@ class _CustomResilienceShieldEditorScreenState
 
     widget.onChanged?.call();
 
+    return RtidParser.build(_alias, ResilienceShieldUtils.customSource);
+  }
+
+  void _exitWithResult(String? result) {
     if (!mounted) return;
 
-    Navigator.pop(
-      context,
+    setState(() => _canPop = true);
 
-      RtidParser.build(_alias, ResilienceShieldUtils.customSource),
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.pop(context, result);
+    });
+  }
+
+  Future<void> _saveAndExit() async {
+    final result = await _saveShield();
+
+    if (result != null && mounted) _exitWithResult(result);
+  }
+
+  void _restoreInitialState() {
+    if (!_levelMutatedDuringEditing) return;
+
+    final restored = _cloneLevel(_initialLevelSnapshot);
+
+    widget.levelFile
+      ..objects.clear()
+      ..objects.addAll(restored.objects)
+      ..version = restored.version;
+
+    widget.onChanged?.call();
+  }
+
+  Future<void> _confirmExit() async {
+    if (_exitDialogOpen || !mounted) return;
+
+    _exitDialogOpen = true;
+
+    final l10n = AppLocalizations.of(context);
+
+    final choice = await showDialog<_CustomShieldExitChoice>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n?.unsavedChanges ?? 'Unsaved changes'),
+        content: Text(l10n?.saveBeforeLeaving ?? 'Save before leaving?'),
+        actions: [
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+              foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+            ),
+            onPressed: () =>
+                Navigator.pop(dialogContext, _CustomShieldExitChoice.discard),
+            child: Text(l10n?.discard ?? 'Discard'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n?.stayInEditor ?? 'Stay'),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(dialogContext, _CustomShieldExitChoice.save),
+            child: Text(l10n?.save ?? 'Save'),
+          ),
+        ],
+      ),
     );
+
+    _exitDialogOpen = false;
+
+    if (!mounted) return;
+
+    switch (choice) {
+      case _CustomShieldExitChoice.discard:
+        _restoreInitialState();
+        _exitWithResult(null);
+        return;
+      case _CustomShieldExitChoice.save:
+        await _saveAndExit();
+        return;
+      case null:
+        return;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _isNew
-              ? (l10n?.resilienceCreateCustom ?? 'New custom shield')
-              : (l10n?.resilienceEditCustom ?? 'Edit custom shield'),
+    return PopScope(
+      canPop: _canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _confirmExit();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _confirmExit,
+          ),
+          title: Text(
+            _isNew
+                ? (l10n?.resilienceCreateCustom ?? 'New custom shield')
+                : (l10n?.resilienceEditCustom ?? 'Edit custom shield'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          actions: [
+            IconButton(
+              onPressed: _saveAndExit,
+              tooltip: l10n?.save ?? 'Save',
+              icon: Icon(
+                Icons.save,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
         ),
 
-        actions: [
-          TextButton(onPressed: _saveAndPop, child: Text(l10n?.save ?? 'Save')),
-        ],
-      ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
 
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-
-        children: [
-          TextFormField(
-            controller: _codenameCtrl,
-
-            decoration: InputDecoration(
-              labelText:
+          children: [
+            EditorResponsiveInputField(
+              label:
                   l10n?.resilienceCodename ?? 'Resilience codename (aliases)',
-
-              hintText:
-                  l10n?.resilienceCodenameHint ?? 'e.g. CustomResilience0',
-
-              border: const OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText:
+                    l10n?.resilienceCodenameHint ?? 'e.g. CustomResilience0',
+                border: const OutlineInputBorder(),
+              ),
+              builder: (context, decoration) => TextFormField(
+                controller: _codenameCtrl,
+                decoration: decoration,
+                onFieldSubmitted: _tryApplyAlias,
+                onEditingComplete: () => _tryApplyAlias(_codenameCtrl.text),
+              ),
             ),
 
-            onFieldSubmitted: _tryApplyAlias,
+            const SizedBox(height: 12),
 
-            onEditingComplete: () => _tryApplyAlias(_codenameCtrl.text),
-          ),
-
-          const SizedBox(height: 12),
-
-          TextFormField(
-            controller: _amountCtrl,
-
-            keyboardType: TextInputType.number,
-
-            decoration: InputDecoration(
-              labelText: l10n?.resilienceAmount ?? 'Resilience value (Amount)',
-
-              border: const OutlineInputBorder(),
+            EditorResponsiveInputField(
+              label: l10n?.resilienceAmount ?? 'Resilience value (Amount)',
+              builder: (context, decoration) => TextFormField(
+                controller: _amountCtrl,
+                keyboardType: TextInputType.number,
+                decoration: decoration,
+                onChanged: (v) {
+                  final n = int.tryParse(v);
+                  if (n != null) setState(() => _data.amount = n);
+                },
+              ),
             ),
 
-            onChanged: (v) {
-              final n = int.tryParse(v);
+            const SizedBox(height: 12),
 
-              if (n != null) setState(() => _data.amount = n);
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          DropdownButtonFormField<int>(
-            isExpanded: true,
-
-            initialValue: _data.weakType.clamp(1, 6),
-
-            decoration: InputDecoration(
-              labelText:
-                  l10n?.resilienceWeakType ?? 'Resilience type (WeakType)',
-
-              border: const OutlineInputBorder(),
+            EditorResponsiveInputField(
+              label: l10n?.resilienceWeakType ?? 'Resilience type (WeakType)',
+              builder: (context, decoration) => DropdownButtonFormField<int>(
+                isExpanded: true,
+                initialValue:
+                    resilienceWeakTypeJsonValues.contains(_data.weakType)
+                    ? _data.weakType
+                    : null,
+                decoration: decoration,
+                hint: resilienceWeakTypeJsonValues.contains(_data.weakType)
+                    ? null
+                    : Text(
+                        resilienceWeakTypeLabel(l10n, _data.weakType),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                items: resilienceWeakTypeJsonValues.map((wt) {
+                  return DropdownMenuItem(
+                    value: wt,
+                    child: ResilienceWeakTypeLabelRow(
+                      weakType: wt,
+                      label: resilienceWeakTypeLabel(l10n, wt),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (v) {
+                  if (v != null) setState(() => _data.weakType = v);
+                },
+              ),
             ),
 
-            items: [1, 2, 3, 4, 5, 6].map((wt) {
-              return DropdownMenuItem(
-                value: wt,
+            const SizedBox(height: 12),
 
-                child: ResilienceWeakTypeLabelRow(
-                  weakType: wt,
-
-                  label: resilienceWeakTypeLabel(l10n, wt),
-                ),
-              );
-            }).toList(),
-
-            onChanged: (v) {
-              if (v != null) setState(() => _data.weakType = v);
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          TextFormField(
-            controller: _recoverSpeedCtrl,
-
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-
-            decoration: InputDecoration(
-              labelText:
+            EditorResponsiveInputField(
+              label:
                   l10n?.resilienceRecoverSpeed ??
                   'Resilience bar recovery speed (RecoverSpeed)',
-
-              border: const OutlineInputBorder(),
+              builder: (context, decoration) => TextFormField(
+                controller: _recoverSpeedCtrl,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: decoration,
+                onChanged: (v) {
+                  final n = double.tryParse(v);
+                  if (n != null) setState(() => _data.recoverSpeed = n);
+                },
+              ),
             ),
 
-            onChanged: (v) {
-              final n = double.tryParse(v);
+            const SizedBox(height: 12),
 
-              if (n != null) setState(() => _data.recoverSpeed = n);
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          TextFormField(
-            controller: _damageThresholdCtrl,
-
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-
-            decoration: InputDecoration(
-              labelText:
+            EditorResponsiveInputField(
+              label:
                   l10n?.resilienceDamageThresholdPerSecond ??
                   'Zombie damage threshold per second (DamageThresholdPerSecond)',
-
-              border: const OutlineInputBorder(),
+              builder: (context, decoration) => TextFormField(
+                controller: _damageThresholdCtrl,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: decoration,
+                onChanged: (v) {
+                  final n = double.tryParse(v);
+                  if (n != null) {
+                    setState(() => _data.damageThresholdPerSecond = n);
+                  }
+                },
+              ),
             ),
 
-            onChanged: (v) {
-              final n = double.tryParse(v);
+            const SizedBox(height: 12),
 
-              if (n != null) setState(() => _data.damageThresholdPerSecond = n);
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          TextFormField(
-            controller: _baseThresholdCtrl,
-
-            keyboardType: TextInputType.number,
-
-            decoration: InputDecoration(
-              labelText:
+            EditorResponsiveInputField(
+              label:
                   l10n?.resilienceBaseDamageThreshold ??
                   'Resilience base damage threshold (ResilienceBaseDamageThreshold)',
-
-              border: const OutlineInputBorder(),
+              builder: (context, decoration) => TextFormField(
+                controller: _baseThresholdCtrl,
+                keyboardType: TextInputType.number,
+                decoration: decoration,
+                onChanged: (v) {
+                  final n = int.tryParse(v);
+                  if (n != null) {
+                    setState(() => _data.resilienceBaseDamageThreshold = n);
+                  }
+                },
+              ),
             ),
 
-            onChanged: (v) {
-              final n = int.tryParse(v);
+            const SizedBox(height: 12),
 
-              if (n != null) {
-                setState(() => _data.resilienceBaseDamageThreshold = n);
-              }
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          TextFormField(
-            controller: _extraThresholdCtrl,
-
-            keyboardType: TextInputType.number,
-
-            decoration: InputDecoration(
-              labelText:
+            EditorResponsiveInputField(
+              label:
                   l10n?.resilienceExtraDamageThreshold ??
                   'Resilience extra damage threshold (ResilienceExtraDamageThreshold)',
-
-              border: const OutlineInputBorder(),
+              builder: (context, decoration) => TextFormField(
+                controller: _extraThresholdCtrl,
+                keyboardType: TextInputType.number,
+                decoration: decoration,
+                onChanged: (v) {
+                  final n = int.tryParse(v);
+                  if (n != null) {
+                    setState(() => _data.resilienceExtraDamageThreshold = n);
+                  }
+                },
+              ),
             ),
-
-            onChanged: (v) {
-              final n = int.tryParse(v);
-
-              if (n != null) {
-                setState(() => _data.resilienceExtraDamageThreshold = n);
-              }
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+
+enum _CustomShieldExitChoice { discard, save }

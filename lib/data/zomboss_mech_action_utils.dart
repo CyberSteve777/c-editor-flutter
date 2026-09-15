@@ -3,6 +3,7 @@ import 'package:c_editor/data/level_rtid_utils.dart';
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
+import 'package:c_editor/data/repository/zomboss_custom_action_preset_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 
 /// Binding for a spawn-related zombie type field on an action.
@@ -49,6 +50,11 @@ abstract class ZombossMechActionUtils {
   static const catalogSource = 'ZombieActions';
   static const customSource = 'CurrentLevel';
 
+  static const jumpActionObjclasses = zombossJumpActionObjclasses;
+
+  static bool isJumpActionObjclass(String objclass) =>
+      isZombossJumpActionObjclass(objclass);
+
   /// Legacy helper; prefer [ZombossMechL10n.labelForStageRtid] when context is available.
   static String displayLabel(String rtid) {
     final info = RtidParser.parse(rtid);
@@ -76,6 +82,84 @@ abstract class ZombossMechActionUtils {
     return defaultsFromFields(action.fields);
   }
 
+  /// Finds the catalog implementation a user-created action was based on.
+  ///
+  /// Custom actions intentionally carry no editor metadata in level JSON, so
+  /// the nearest original implementation is recovered from its data. The
+  /// custom alias is only used as a stable tie-breaker.
+  ///
+  /// When [matchAnyObjclass] is true (default for healing stale level objects),
+  /// candidates are not restricted to [objclass]. Prefer the same-objclass
+  /// match when scores are equal.
+  static ZombossMechCatalogAction? inferBaseCatalogAction({
+    required ZombossMechCatalogEntry catalog,
+    required String customAlias,
+    required String objclass,
+    required Map<String, dynamic> data,
+    bool retreatOnly = false,
+    bool jumpOnly = false,
+    bool matchAnyObjclass = false,
+  }) {
+    final candidates = catalog.catalogActions.where((action) {
+      if (!matchAnyObjclass && action.objclass != objclass) return false;
+      if (jumpOnly) return isZombossJumpActionObjclass(action.objclass);
+      return retreatOnly
+          ? isRetreatPhaseCatalogAction(action)
+          : isRegularPhaseCatalogAction(action);
+    }).toList();
+    if (candidates.isEmpty) return null;
+
+    const equality = DeepCollectionEquality();
+    for (final candidate in candidates) {
+      if (equality.equals(candidate.defaultData, data)) return candidate;
+    }
+
+    ZombossMechCatalogAction? best;
+    var bestScore = -0x7fffffff;
+    for (final candidate in candidates) {
+      var score = 0;
+      for (final entry in candidate.defaultData.entries) {
+        if (!data.containsKey(entry.key)) {
+          score -= 1;
+        } else if (equality.equals(data[entry.key], entry.value)) {
+          score += 3;
+        } else {
+          score -= 1;
+        }
+      }
+      // Prefer the declared objclass when scores otherwise match (healing path).
+      if (candidate.objclass == objclass) {
+        score += 2;
+      }
+      if (customAlias == candidate.alias ||
+          customAlias.startsWith('${candidate.alias}_') ||
+          customAlias.startsWith('${candidate.alias}Custom')) {
+        score += 1;
+      }
+      if (score > bestScore) {
+        best = candidate;
+        bestScore = score;
+      }
+    }
+    return best;
+  }
+
+  /// Resolves the field schema for an action objclass (catalog or preset).
+  static List<ZombossMechFieldSpec> fieldsForObjclass({
+    required ZombossMechCatalogEntry catalog,
+    required String objclass,
+    String? editableInstance,
+  }) {
+    final group = catalog.actions
+            .where((g) => g.objclass == objclass)
+            .firstOrNull ??
+        ZombossCustomActionPresetRepository.groupForObjclass(
+          editableInstance ?? catalog.editableInstance,
+          objclass,
+        );
+    return group?.fields ?? const [];
+  }
+
   static Map<String, dynamic> defaultsFromFields(
     List<ZombossMechFieldSpec> fields,
   ) {
@@ -91,8 +175,24 @@ abstract class ZombossMechActionUtils {
     return data;
   }
 
+  static bool isZombieTypeListField(ZombossMechFieldSpec field) =>
+      field.type == 'List<zombieType>';
+
+  static bool isSingleZombieTypeField(ZombossMechFieldSpec field) {
+    if (field.type == 'zombieType') return true;
+    if (field.type != 'string') return false;
+    const names = {
+      'ZombieName',
+      'ZombieType',
+      'ZombieTypeName',
+      'SpawnZombieName',
+      'SpiderZombieName',
+    };
+    return names.contains(field.name);
+  }
+
   static bool isZombieTypeField(ZombossMechFieldSpec field) =>
-      field.type == 'List<zombieType>' || field.type == 'zombieType';
+      isZombieTypeListField(field) || isSingleZombieTypeField(field);
 
   static List<String> parseZombieTypeList(dynamic raw) {
     if (raw is! List) return [];
@@ -111,9 +211,14 @@ abstract class ZombossMechActionUtils {
     if (info.source == customSource) {
       final obj = findLevelObject(levelFile, rtid);
       if (obj == null) return null;
-      final group = catalog.actions
-          .where((g) => g.objclass == obj.objClass)
-          .firstOrNull;
+      final group =
+          catalog.actions
+              .where((g) => g.objclass == obj.objClass)
+              .firstOrNull ??
+          ZombossCustomActionPresetRepository.groupForObjclass(
+            catalog.editableInstance,
+            obj.objClass,
+          );
       final raw = obj.objData;
       final data = raw is Map<String, dynamic>
           ? Map<String, dynamic>.from(raw)
@@ -138,7 +243,7 @@ abstract class ZombossMechActionUtils {
       alias: info.alias,
       tag: action.tag,
       fields: action.fields,
-      data: Map<String, dynamic>.from(action.defaultData),
+      data: dataFromCatalogAction(action),
       editable: false,
       levelObject: null,
     );
@@ -150,7 +255,7 @@ abstract class ZombossMechActionUtils {
   ) {
     final bindings = <ZombossZombieListBinding>[];
     for (final field in fields) {
-      if (field.type == 'List<zombieType>') {
+      if (isZombieTypeListField(field)) {
         bindings.add(
           ZombossZombieListBinding(
             fieldName: field.name,
@@ -158,7 +263,7 @@ abstract class ZombossMechActionUtils {
             zombieIds: parseZombieTypeList(data[field.name]),
           ),
         );
-      } else if (field.type == 'zombieType') {
+      } else if (isSingleZombieTypeField(field)) {
         final raw = data[field.name];
         if (raw == null || raw.toString().isEmpty) continue;
         bindings.add(
@@ -207,13 +312,40 @@ abstract class ZombossMechActionUtils {
     return keys.any(name.contains);
   }
 
-  static String uniqueCustomAlias(PvzLevelFile levelFile, String baseAlias) {
-    if (!levelFile.objects.any((o) => o.aliases?.contains(baseAlias) == true)) {
+  static bool usesSecondsUnit(ZombossMechFieldSpec field) {
+    final name = field.name.toLowerCase();
+    if (name.endsWith('times')) return false;
+    return name.contains('time') ||
+        name.contains('duration') ||
+        name.contains('delay') ||
+        name.contains('interval') ||
+        name.contains('cooldown');
+  }
+
+  static bool usesDecimalInput(ZombossMechFieldSpec field) {
+    if (field.type == 'float') return true;
+    if (field.type != 'int') return false;
+    if (usesSecondsUnit(field)) return true;
+    return const {
+      'EffectOffsetX',
+      'EffectOffsetY',
+      'SpawnGridZDelta',
+    }.contains(field.name);
+  }
+
+  static String uniqueCustomAlias(
+    PvzLevelFile levelFile,
+    String baseAlias, {
+    PvzObject? except,
+  }) {
+    if (!levelFile.objects.any(
+      (o) => o != except && o.aliases?.contains(baseAlias) == true,
+    )) {
       return baseAlias;
     }
     var i = 2;
     while (levelFile.objects.any(
-      (o) => o.aliases?.contains('${baseAlias}_$i') == true,
+      (o) => o != except && o.aliases?.contains('${baseAlias}_$i') == true,
     )) {
       i++;
     }
@@ -232,6 +364,7 @@ abstract class ZombossMechActionUtils {
       objData: _deepClone(data),
     );
     levelFile.objects.add(obj);
+    ZombossCustomActionPresetRepository.markUserCreated(obj);
     return obj;
   }
 
@@ -271,7 +404,10 @@ abstract class ZombossMechActionUtils {
     final newRtid = RtidParser.build(newAlias, customSource);
     LevelRtidUtils.replaceReferences(levelFile, oldRtid, newRtid);
     if (obj != null) {
-      obj.aliases = [newAlias];
+      obj.aliases = ZombossCustomActionPresetRepository.aliasesWithPrimaryAlias(
+        newAlias,
+        obj.aliases,
+      );
     }
   }
 

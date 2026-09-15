@@ -102,6 +102,7 @@ class _FairyTaleWindEventScreenState extends State<FairyTaleWindEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventFairyWind ?? 'Fairy wind event',
               sections: [
                 HelpSectionData(
@@ -144,46 +145,49 @@ class _FairyTaleWindEventScreenState extends State<FairyTaleWindEventScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: _data.duration.toString(),
+                      EditorResponsiveInputField(
+                        label: 'Duration',
                         decoration: const InputDecoration(
-                          labelText: 'Duration',
                           border: OutlineInputBorder(),
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.duration.toString(),
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final n = double.tryParse(v);
+                            if (n != null) {
+                              _data = FairyTaleWindWaveActionData(
+                                duration: n,
+                                velocityScale: _data.velocityScale,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        onChanged: (v) {
-                          final n = double.tryParse(v);
-                          if (n != null) {
-                            _data = FairyTaleWindWaveActionData(
-                              duration: n,
-                              velocityScale: _data.velocityScale,
-                            );
-                            _sync();
-                          }
-                        },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        initialValue: _data.velocityScale.toString(),
-                        decoration: const InputDecoration(
-                          labelText: 'Velocity scale (VelocityScale)',
-                          border: OutlineInputBorder(),
+                      EditorResponsiveInputField(
+                        label: 'Velocity scale (VelocityScale)',
+                        builder: (context, decoration) => TextFormField(
+                          initialValue: _data.velocityScale.toString(),
+                          decoration: decoration,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (v) {
+                            final n = double.tryParse(v);
+                            if (n != null) {
+                              _data = FairyTaleWindWaveActionData(
+                                duration: _data.duration,
+                                velocityScale: n,
+                              );
+                              _sync();
+                            }
+                          },
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        onChanged: (v) {
-                          final n = double.tryParse(v);
-                          if (n != null) {
-                            _data = FairyTaleWindWaveActionData(
-                              duration: _data.duration,
-                              velocityScale: n,
-                            );
-                            _sync();
-                          }
-                        },
                       ),
                     ],
                   ),

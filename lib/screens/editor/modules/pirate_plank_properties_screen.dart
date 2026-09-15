@@ -34,6 +34,7 @@ class _PiratePlankPropertiesScreenState
   static const _objClass = 'PiratePlankProperties';
   static const _plankAsset = 'assets/images/others/Pirate_Seas_Planks.png';
   static const _plankColSpan = 4;
+  static const _stackedLayoutBreakpoint = 760.0;
 
   late String _alias;
   late PvzObject _moduleObj;
@@ -130,15 +131,12 @@ class _PiratePlankPropertiesScreenState
         ),
       ),
       child: showPlank
-          ? AssetImageWidget(
-              assetPath: _plankAsset,
-              fit: BoxFit.fill,
-            )
+          ? AssetImageWidget(assetPath: _plankAsset, fit: BoxFit.fill)
           : null,
     );
   }
 
-  Widget _buildPreviewGrid(ThemeData theme) {
+  Widget _buildPreviewGrid(ThemeData theme, {double desktopScale = 0.6}) {
     final isDark = theme.brightness == Brightness.dark;
     final lawnColor = isDark
         ? const Color(0xFF2A2A2A)
@@ -146,7 +144,9 @@ class _PiratePlankPropertiesScreenState
 
     return scaleTableForDesktop(
       context: context,
+      desktopScale: desktopScale,
       child: AspectRatio(
+        key: const ValueKey('piratePlankPreviewGrid'),
         aspectRatio: _gridCols / _gridRows,
         child: Container(
           decoration: BoxDecoration(
@@ -237,39 +237,61 @@ class _PiratePlankPropertiesScreenState
     );
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            IntrinsicWidth(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(rowsTitle, style: titleStyle),
-                  const SizedBox(height: 12),
-                  _buildPlankRowSelector(theme, l10n),
-                ],
-              ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final useStackedLayout =
+              constraints.maxWidth < _stackedLayoutBreakpoint;
+          final rowSelector = IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(rowsTitle, style: titleStyle),
+                const SizedBox(height: 12),
+                _buildPlankRowSelector(theme, l10n),
+              ],
             ),
-            const SizedBox(width: 24),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    l10n?.plankPreview ?? 'Plank preview',
-                    style: previewTitleStyle,
-                    textAlign: TextAlign.center,
+          );
+          final preview = Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                l10n?.plankPreview ?? 'Plank preview',
+                style: previewTitleStyle,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              _buildPreviewGrid(
+                theme,
+                desktopScale: useStackedLayout ? 1 : 0.6,
+              ),
+            ],
+          );
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: useStackedLayout
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: rowSelector,
+                      ),
+                      const SizedBox(height: 24),
+                      preview,
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      rowSelector,
+                      const SizedBox(width: 24),
+                      Expanded(child: preview),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  _buildPreviewGrid(theme),
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

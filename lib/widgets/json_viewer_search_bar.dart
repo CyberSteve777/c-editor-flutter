@@ -206,49 +206,62 @@ class _SearchRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        _InsertNewlineButton(
-          controller: controller,
-          onChanged: onChanged,
-          tooltip: l10n?.jsonViewerInsertNewline ?? 'Insert newline',
-        ),
-        _SearchToggleButton(
-          label: 'Aa',
-          tooltip: l10n?.jsonViewerMatchCase ?? 'Match case',
-          selected: matchCase,
-          onPressed: () => onMatchCaseChanged(!matchCase),
-        ),
-        _SearchToggleButton(
-          label: 'W',
-          tooltip: l10n?.jsonViewerWholeWords ?? 'Words',
-          selected: wholeWords,
-          onPressed: () => onWholeWordsChanged(!wholeWords),
-        ),
-        _SearchToggleButton(
-          label: '.*',
-          tooltip: l10n?.jsonViewerRegex ?? 'Regex',
-          selected: useRegex,
-          onPressed: () => onRegexChanged(!useRegex),
-        ),
-        if (matchCount > 0)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Text(
-              l10n?.jsonViewerMatchCounter(currentMatchIndex + 1, matchCount) ??
-                  '${currentMatchIndex + 1}/$matchCount',
-              style: theme.textTheme.labelSmall,
+        Flexible(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _InsertNewlineButton(
+                  controller: controller,
+                  onChanged: onChanged,
+                  tooltip: l10n?.jsonViewerInsertNewline ?? 'Insert newline',
+                ),
+                _SearchToggleButton(
+                  label: 'Aa',
+                  tooltip: l10n?.jsonViewerMatchCase ?? 'Match case',
+                  selected: matchCase,
+                  onPressed: () => onMatchCaseChanged(!matchCase),
+                ),
+                _SearchToggleButton(
+                  label: 'W',
+                  tooltip: l10n?.jsonViewerWholeWords ?? 'Words',
+                  selected: wholeWords,
+                  onPressed: () => onWholeWordsChanged(!wholeWords),
+                ),
+                _SearchToggleButton(
+                  label: '.*',
+                  tooltip: l10n?.jsonViewerRegex ?? 'Regex',
+                  selected: useRegex,
+                  onPressed: () => onRegexChanged(!useRegex),
+                ),
+                if (matchCount > 0)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: Text(
+                      l10n?.jsonViewerMatchCounter(
+                            currentMatchIndex + 1,
+                            matchCount,
+                          ) ??
+                          '${currentMatchIndex + 1}/$matchCount',
+                      style: theme.textTheme.labelSmall,
+                    ),
+                  ),
+                IconButton(
+                  icon: const Icon(Icons.keyboard_arrow_up),
+                  tooltip: l10n?.jsonViewerPreviousMatch ?? 'Previous match',
+                  onPressed: matchCount > 0 ? onPreviousMatch : null,
+                  visualDensity: VisualDensity.compact,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  tooltip: l10n?.jsonViewerNextMatch ?? 'Next match',
+                  onPressed: matchCount > 0 ? onNextMatch : null,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
             ),
           ),
-        IconButton(
-          icon: const Icon(Icons.keyboard_arrow_up),
-          tooltip: l10n?.jsonViewerPreviousMatch ?? 'Previous match',
-          onPressed: matchCount > 0 ? onPreviousMatch : null,
-          visualDensity: VisualDensity.compact,
-        ),
-        IconButton(
-          icon: const Icon(Icons.keyboard_arrow_down),
-          tooltip: l10n?.jsonViewerNextMatch ?? 'Next match',
-          onPressed: matchCount > 0 ? onNextMatch : null,
-          visualDensity: VisualDensity.compact,
         ),
       ],
     );
@@ -317,24 +330,34 @@ class _ReplaceRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        _InsertNewlineButton(
-          controller: controller,
-          onChanged: onChanged,
-          tooltip:
-              AppLocalizations.of(context)?.jsonViewerInsertNewline ??
-              'Insert newline',
-        ),
-        IconButton(
-          icon: const Icon(Icons.find_replace),
-          tooltip: replaceOneTooltip,
-          onPressed: onReplaceOne,
-          visualDensity: VisualDensity.compact,
-        ),
-        IconButton(
-          icon: const Icon(Icons.layers),
-          tooltip: replaceAllTooltip,
-          onPressed: onReplaceAll,
-          visualDensity: VisualDensity.compact,
+        Flexible(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _InsertNewlineButton(
+                  controller: controller,
+                  onChanged: onChanged,
+                  tooltip:
+                      AppLocalizations.of(context)?.jsonViewerInsertNewline ??
+                      'Insert newline',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.find_replace),
+                  tooltip: replaceOneTooltip,
+                  onPressed: onReplaceOne,
+                  visualDensity: VisualDensity.compact,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.layers),
+                  tooltip: replaceAllTooltip,
+                  onPressed: onReplaceAll,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

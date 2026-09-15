@@ -122,7 +122,6 @@ class _ProtectPlantChallengeScreenState
   int get _gridRows => _isDeepSeaLawn ? 6 : 5;
   int get _gridCols => _isDeepSeaLawn ? 10 : 9;
 
-
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
       levelFile: widget.levelFile,
@@ -162,6 +161,7 @@ class _ProtectPlantChallengeScreenState
             tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: false,
               title: l10n.protectPlants,
               sections: [
                 HelpSectionData(
@@ -182,7 +182,7 @@ class _ProtectPlantChallengeScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-ModuleAliasInputField(
+            ModuleAliasInputField(
               rtid: widget.rtid,
               alias: _alias,
               levelFile: widget.levelFile,
@@ -214,33 +214,30 @@ ModuleAliasInputField(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.selectedPosition,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
+                    EditorResponsiveActionRow(
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.selectedPosition,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
-                            Text(
-                              'R${_selectedY + 1} : C${_selectedX + 1}',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary,
-                              ),
+                          ),
+                          Text(
+                            'R${_selectedY + 1} : C${_selectedX + 1}',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
                             ),
-                          ],
-                        ),
-                        const Spacer(),
-                        FilledButton.icon(
-                          onPressed: _addPlant,
-                          icon: const Icon(Icons.add, size: 18),
-                          label: Text(l10n.addPlant),
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
+                      action: EditorFilledButton(
+                        onPressed: _addPlant,
+                        icon: const Icon(Icons.add, size: 18),
+                        label: Text(l10n.addPlant),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     _buildGrid(theme),

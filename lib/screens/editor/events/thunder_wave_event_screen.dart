@@ -146,6 +146,7 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title: l10n?.eventThunderWave ?? 'Thunder event',
               sections: [
                 HelpSectionData(
@@ -277,6 +278,7 @@ class _ThunderWaveEventScreenState extends State<ThunderWaveEventScreen> {
             ),
             Expanded(
               child: DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue:
                     entry.type == _typePositive || entry.type == _typeNegative
                     ? entry.type

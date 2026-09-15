@@ -4,6 +4,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/theme/app_theme.dart' show pvzFishDark, pvzFishLight;
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
@@ -18,10 +19,12 @@ class FishSelectionScreen extends StatefulWidget {
     super.key,
     required this.onFishSelected,
     required this.onBack,
+    this.stateBucketId,
   });
 
   final void Function(String fishAlias) onFishSelected;
   final VoidCallback onBack;
+  final String? stateBucketId;
 
   @override
   State<FishSelectionScreen> createState() => _FishSelectionScreenState();
@@ -29,6 +32,47 @@ class FishSelectionScreen extends StatefulWidget {
 
 class _FishSelectionScreenState extends State<FishSelectionScreen> {
   String _searchQuery = '';
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    final bucket = widget.stateBucketId?.isNotEmpty == true
+        ? widget.stateBucketId!
+        : 'global';
+    _memory = SelectionViewMemoryStore.forKey('$bucket:fish-selection');
+    _searchQuery = _memory.query;
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffset,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    setState(() => _searchQuery = query);
+    _memory
+      ..query = query
+      ..scrollOffset = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
+  }
 
   List<FishInfo> get _displayList {
     final repo = FishTypeRepository();
@@ -76,8 +120,8 @@ class _FishSelectionScreenState extends State<FishSelectionScreen> {
           title: AppBarSearchField(
             hintText: l10n?.searchFish ?? 'Search fish',
             query: _searchQuery,
-            onChanged: (v) => setState(() => _searchQuery = v),
-            onClear: () => setState(() => _searchQuery = ''),
+            onChanged: _setSearchQuery,
+            onClear: () => _setSearchQuery(''),
           ),
         ),
         body: displayList.isEmpty
@@ -88,6 +132,7 @@ class _FishSelectionScreenState extends State<FishSelectionScreen> {
                 ),
               )
             : ListView.builder(
+                controller: _scrollController,
                 padding: const EdgeInsets.all(16),
                 itemCount: displayList.length,
                 itemBuilder: (_, i) {

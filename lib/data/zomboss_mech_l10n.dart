@@ -16,11 +16,17 @@ abstract class ZombossMechL10n {
   static String actionKey(String mechId, String objclass) =>
       '${mechId}_action_$objclass';
 
+  static String genericActionKey(String objclass) =>
+      'zombossMech_action_$objclass';
+
   static String actionImplementationKey(String mechId, String alias) =>
       '${mechId}_action_impl_$alias';
 
   static String fieldKey(String mechId, String objclass, String fieldName) =>
       '${mechId}_action_${objclass}_field_$fieldName';
+
+  static String genericFieldKey(String objclass, String fieldName) =>
+      'zombossMech_action_${objclass}_field_$fieldName';
 
   static String? _lookup(BuildContext context, String key, String fallback) {
     final localized = ResourceNames.lookup(context, key);
@@ -44,7 +50,19 @@ abstract class ZombossMechL10n {
     String? fallback,
   }) {
     final fb = fallback ?? objclass;
-    return _lookup(context, actionKey(mechId, objclass), fb) ?? fb;
+    final localized = _lookup(context, actionKey(mechId, objclass), fb);
+    if (localized != null && localized != fb) return localized;
+    return _lookup(context, genericActionKey(objclass), fb) ?? fb;
+  }
+
+  /// Display label for objclass fields: localized class name plus raw objclass.
+  static String objclassLabel(BuildContext context, String objclass) {
+    final key = genericActionKey(objclass);
+    final localized = ResourceNames.lookup(context, key);
+    if (localized == key || localized.isEmpty || localized == objclass) {
+      return objclass;
+    }
+    return '$localized ($objclass)';
   }
 
   /// Per-implementation alias label (picker rows). Falls back to [alias].
@@ -61,6 +79,23 @@ abstract class ZombossMechL10n {
     return fb;
   }
 
+  /// Per-implementation picker label with the raw action alias kept visible.
+  static String implementationDisplayLabel(
+    BuildContext context,
+    String mechId,
+    String alias, {
+    String? fallback,
+  }) {
+    final localized = implementationLabel(
+      context,
+      mechId,
+      alias,
+      fallback: fallback,
+    );
+    if (localized.isEmpty || localized == alias) return alias;
+    return '$localized ($alias)';
+  }
+
   static String fieldLabel(
     BuildContext context,
     String mechId,
@@ -69,7 +104,13 @@ abstract class ZombossMechL10n {
     String? fallback,
   }) {
     final fb = fallback ?? fieldName;
-    return _lookup(context, fieldKey(mechId, objclass, fieldName), fb) ?? fb;
+    final localized = _lookup(
+      context,
+      fieldKey(mechId, objclass, fieldName),
+      fb,
+    );
+    if (localized != null && localized != fb) return localized;
+    return _lookup(context, genericFieldKey(objclass, fieldName), fb) ?? fb;
   }
 
   /// Category chip / tag label from ARB (movement, attack, spawn, …).
@@ -78,7 +119,7 @@ abstract class ZombossMechL10n {
     return switch (tag) {
       'movement' => l10n?.zombossMechActionCategoryMovement ?? 'Movement',
       'attack' => l10n?.zombossMechActionCategoryAttack ?? 'Attack',
-      'spawn' => l10n?.zombossMechActionCategorySpawn ?? 'Spawn',
+      'spawn' => l10n?.zombossMechActionCategorySpawn ?? 'Summon',
       'special' => l10n?.zombossMechActionCategorySpecial ?? 'Special',
       'retreat' => l10n?.zombossMechActionCategoryRetreat ?? 'Retreat',
       _ => tag,

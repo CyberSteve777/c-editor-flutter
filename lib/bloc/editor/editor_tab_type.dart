@@ -4,6 +4,7 @@ enum EditorTabType {
   waveGenerator,
   iZombie,
   vaseBreaker,
+  singleHanded,
   zombossMech,
   zombossBattle,
 }

@@ -159,6 +159,7 @@ class _InitialPlantPropertiesScreenState
   void _showHelp(AppLocalizations l10n) {
     showEditorHelpDialog(
       context,
+      isEvent: false,
       title: l10n.frozenPlantPlacementHelpTitle,
       themeColor: Theme.of(context).brightness == Brightness.dark
           ? pvzGreenDark
@@ -179,7 +180,6 @@ class _InitialPlantPropertiesScreenState
       ],
     );
   }
-
 
   void _handleAliasChanged(String newAlias) {
     renameLevelObjectAlias(
@@ -247,15 +247,15 @@ class _InitialPlantPropertiesScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-ModuleAliasInputField(
-              rtid: widget.rtid,
-              alias: _alias,
-              levelFile: widget.levelFile,
-              onAliasChanged: _handleAliasChanged,
-              onChanged: widget.onChanged,
-              accentColor: barColor,
-            ),
-            const SizedBox(height: 16),
+                ModuleAliasInputField(
+                  rtid: widget.rtid,
+                  alias: _alias,
+                  levelFile: widget.levelFile,
+                  onAliasChanged: _handleAliasChanged,
+                  onChanged: widget.onChanged,
+                  accentColor: barColor,
+                ),
+                const SizedBox(height: 16),
                 Card(
                   child: SwitchListTile(
                     title: Text(
@@ -279,39 +279,32 @@ ModuleAliasInputField(
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                EditorPlacementGridCard(
+                  header: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.frozenPlantPlacementSelectedPosition,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                Text(
-                                  'R${_selectedY + 1} : C${_selectedX + 1}',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              l10n.frozenPlantPlacementSelectedPosition,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'R${_selectedY + 1} : C${_selectedX + 1}',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildGrid(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  grid: _buildGrid(),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -392,7 +385,9 @@ ModuleAliasInputField(
     return scaleTableForDesktop(
       context: context,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: const BoxConstraints(
+          maxWidth: EditorItemCardLayout.placementGridMaxWidth,
+        ),
         child: AspectRatio(
           aspectRatio: cols / rows,
           child: Container(
@@ -679,43 +674,51 @@ class _PlacementEditDialogState extends State<_PlacementEditDialog> {
       PlantRepository().getName(widget.placement.typeName),
     );
     return AlertDialog(
+      scrollable: true,
+      constraints: const BoxConstraints.tightFor(width: 560),
       title: Text(l10n.frozenPlantPlacementEditPlant(name)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '${l10n.frozenPlantPlacementLevel}: $_level',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Slider(
-            value: _level.toDouble(),
-            min: 1,
-            max: 5,
-            divisions: 4,
-            onChanged: (v) => setState(() => _level = v.round()),
-          ),
-          const Divider(),
-          DropdownButtonFormField<String?>(
-            initialValue: _condition,
-            decoration: InputDecoration(
-              labelText: l10n.frozenPlantPlacementCondition,
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${l10n.frozenPlantPlacementLevel}: $_level',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            items: [
-              DropdownMenuItem<String?>(
-                value: null,
-                child: Text(l10n.frozenPlantPlacementConditionNull),
-              ),
-              for (final id in PlantConditions.ids)
-                DropdownMenuItem<String?>(
-                  value: id,
-                  child: Text(
-                    ConditionL10n.plantLabel(context, id),
+            Slider(
+              value: _level.toDouble(),
+              min: 1,
+              max: 5,
+              divisions: 4,
+              onChanged: (v) => setState(() => _level = v.round()),
+            ),
+            const Divider(),
+            EditorResponsiveInputField(
+              label: l10n.frozenPlantPlacementCondition,
+              decoration: InputDecoration(),
+              builder: (context, decoration) =>
+                  DropdownButtonFormField<String?>(
+                    itemHeight: null,
+                    isExpanded: true,
+                    initialValue: _condition,
+                    decoration: decoration,
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(l10n.frozenPlantPlacementConditionNull),
+                      ),
+                      for (final id in PlantConditions.ids)
+                        DropdownMenuItem<String?>(
+                          value: id,
+                          child: Text(ConditionL10n.plantLabel(context, id)),
+                        ),
+                    ],
+                    onChanged: (v) => setState(() => _condition = v),
                   ),
-                ),
-            ],
-            onChanged: (v) => setState(() => _condition = v),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

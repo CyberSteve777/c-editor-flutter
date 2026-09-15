@@ -124,6 +124,7 @@ class _AddGroupChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      key: const ValueKey('addGridOverrideWaveGroup'),
       height: kGridOverrideGroupChipHeight,
       width: kGridOverrideGroupChipHeight,
       child: Material(

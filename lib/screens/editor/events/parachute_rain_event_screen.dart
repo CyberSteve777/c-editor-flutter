@@ -151,6 +151,7 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => showEditorHelpDialog(
               context,
+              isEvent: true,
               title:
                   l10n?.eventParachuteRain ??
                   'Parachute/Bass/Spider rain event',
@@ -234,11 +235,15 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
                     size: 24,
                   ),
                   const SizedBox(width: 12),
-                  Text(
-                    l10n?.zombieTypeSpiderZombieName ??
-                        'Zombie type (SpiderZombieName)',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      l10n?.zombieTypeSpiderZombieName ??
+                          'Zombie type (SpiderZombieName)',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -323,11 +328,15 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
               children: [
                 Icon(Icons.groups, color: theme.colorScheme.primary, size: 24),
                 const SizedBox(width: 12),
-                Text(
-                  l10n?.zombieTypeSpiderZombieName ??
-                      'Zombie type (SpiderZombieName)',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n?.zombieTypeSpiderZombieName ??
+                        'Zombie type (SpiderZombieName)',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -530,6 +539,8 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
               ],
             ),
             const SizedBox(height: 12),
+            const EventColumnRangeHint(),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -698,17 +709,17 @@ class _NumberField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        decoration: decoration,
+        initialValue: value.toString(),
+        keyboardType: TextInputType.number,
+        onChanged: (v) {
+          final n = int.tryParse(v);
+          if (n != null) onChanged(n);
+        },
       ),
-      initialValue: value.toString(),
-      keyboardType: TextInputType.number,
-      onChanged: (v) {
-        final n = int.tryParse(v);
-        if (n != null) onChanged(n);
-      },
     );
   }
 }
@@ -726,17 +737,17 @@ class _DoubleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextFormField(
+        decoration: decoration,
+        initialValue: value.toString(),
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: (v) {
+          final n = double.tryParse(v);
+          if (n != null) onChanged(n);
+        },
       ),
-      initialValue: value.toString(),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      onChanged: (v) {
-        final n = double.tryParse(v);
-        if (n != null) onChanged(n);
-      },
     );
   }
 }

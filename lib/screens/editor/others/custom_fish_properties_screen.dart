@@ -225,12 +225,12 @@ class _CustomFishPropertiesScreenState
     TextEditingController controller, {
     required String label,
   }) {
-    return TextField(
-      controller: controller,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: label,
+      builder: (context, decoration) => TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
       ),
     );
   }
@@ -624,18 +624,18 @@ class _DoubleInputFieldState extends State<_DoubleInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      focusNode: _focusNode,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: widget.label,
-        border: const OutlineInputBorder(),
+    return EditorResponsiveInputField(
+      label: widget.label,
+      builder: (context, decoration) => TextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: decoration,
+        onChanged: (v) {
+          final n = double.tryParse(v);
+          if (n != null) widget.onChanged(n);
+        },
       ),
-      onChanged: (v) {
-        final n = double.tryParse(v);
-        if (n != null) widget.onChanged(n);
-      },
     );
   }
 }

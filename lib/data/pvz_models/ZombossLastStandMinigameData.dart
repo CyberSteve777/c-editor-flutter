@@ -9,11 +9,14 @@ class ZombossLastStandMinigameData extends PvzModel {
     this.zombossInitialGridRow = 2,
     this.zombossStartStageIndex = 0,
     this.reservedColumnCount = 3,
-    this.zombossTypeName = 'zomboss_qinshihuang',
+    this.zombossTypeName = 'kongfu_zomboss_qigong',
     this.skipPlanting = true,
   }) : resourceGroupNames = List<String>.from(
          resourceGroupNames ??
-             const ['ZombossQinShiHuangGroup', 'ZombossQinShiHuangAudio'],
+             const [
+               'ZombieKongFuZombossQigongGroup',
+               'ZombossQigongAudio',
+             ],
        );
 
   List<String> resourceGroupNames;
@@ -40,7 +43,7 @@ class ZombossLastStandMinigameData extends PvzModel {
       zombossStartStageIndex: json['ZombossStartStageIndex'] as int? ?? 0,
       reservedColumnCount: json['ReservedColumnCount'] as int? ?? 3,
       zombossTypeName:
-          json['ZombossTypeName'] as String? ?? 'zomboss_qinshihuang',
+          json['ZombossTypeName'] as String? ?? 'kongfu_zomboss_qigong',
       skipPlanting: json['SkipPlanting'] as bool? ?? true,
     );
   }

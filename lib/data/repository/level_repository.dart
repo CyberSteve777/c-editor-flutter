@@ -1,23 +1,53 @@
+import 'dart:typed_data';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../level_library_startup_cache.dart';
 import '../pvz_models.dart';
 import 'level_repository_base.dart';
+import 'web/web_transfer_progress.dart';
 import 'level_repository_web.dart'
     if (dart.library.io) 'level_repository_native.dart'
     as impl;
 
 export '../pvz_models.dart' show PvzLevelFile;
-export 'level_repository_base.dart' show FileItem, LevelRepositoryBase;
+export 'level_repository_base.dart'
+    show FileItem, LevelRepositoryBase, WebFolderImport, LibraryItem;
 
 class LevelRepository {
   static final LevelRepositoryBase _impl = impl.createLevelRepository();
+  static LevelLibraryStartupCache? _startupCache;
+
+  static LevelLibraryStartupCache? get startupCache => _startupCache;
+
+  static Future<void> preloadLibrarySettings(SharedPreferences prefs) async {
+    _startupCache = await _impl.preloadLibrarySettings(prefs);
+  }
 
   static Future<String?> getSavedFolderPath() => _impl.getSavedFolderPath();
 
   static Future<void> setSavedFolderPath(String path) =>
       _impl.setSavedFolderPath(path);
 
+  static Future<List<LibraryItem>> getLibraries() => _impl.getLibraries();
+
+  static Future<void> setLibraries(List<LibraryItem> libraries) =>
+      _impl.setLibraries(libraries);
+
+  static Future<String?> getLibraryDisplayName(String path) async {
+    final libs = await getLibraries();
+    for (final lib in libs) {
+      if (lib.path == path) return lib.displayName;
+    }
+    return null;
+  }
+
   static Future<String> ensureIosLibraryPath() => _impl.ensureIosLibraryPath();
 
-  static Future<List<FileItem>> getFavorites(String rootPath) => _impl.getFavorites(rootPath);
+  static Future<List<FileItem>> getFavorites(
+    String rootPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) => _impl.getFavorites(rootPath, sortMode: sortMode);
 
   static Future<bool> ensureFolderAccess() => _impl.ensureFolderAccess();
 
@@ -35,11 +65,25 @@ class LevelRepository {
   static bool isSupportedLevelFileName(String name) =>
       _impl.isSupportedLevelFileName(name);
 
+  static bool isSupportedImageFileName(String name) =>
+      _impl.isSupportedImageFileName(name);
+
+  static bool isSupportedPluginFileName(String name) =>
+      _impl.isSupportedPluginFileName(name);
+
+  static bool isSupportedLibraryFileName(String name) =>
+      _impl.isSupportedLibraryFileName(name);
+
   static String baseNameWithoutLevelExtension(String name) =>
       _impl.baseNameWithoutLevelExtension(name);
 
-  static Future<List<FileItem>> getDirectoryContents(String dirPath) =>
-      _impl.getDirectoryContents(dirPath);
+  static Future<Uint8List?> readLibraryFileBytes(String filePath) =>
+      _impl.readLibraryFileBytes(filePath);
+
+  static Future<List<FileItem>> getDirectoryContents(
+    String dirPath, {
+    LevelSortMode sortMode = LevelSortMode.name,
+  }) => _impl.getDirectoryContents(dirPath, sortMode: sortMode);
 
   static Future<void> setFavoriteLevelPath(String path, bool isFavorite) =>
       _impl.setFavoriteLevelPath(path, isFavorite);
@@ -130,22 +174,57 @@ class LevelRepository {
   static Future<void> downloadLevel(String fileName) =>
       _impl.downloadLevel(fileName);
 
-  static Future<void> downloadAllLevelsAsZip() =>
-      _impl.downloadAllLevelsAsZip();
+  static Future<void> downloadAllLevelsAsZip({WebTransferProgress? onProgress}) =>
+      _impl.downloadAllLevelsAsZip(onProgress: onProgress);
 
-  static Future<List<String>> getTemplateList() => _impl.getTemplateList();
+  static Future<void> downloadFolderAsZip(
+    String folderVirtualPath, {
+    WebTransferProgress? onProgress,
+  }) =>
+      _impl.downloadFolderAsZip(folderVirtualPath, onProgress: onProgress);
 
-  static List<String> parseTemplateManifest(String jsonString) =>
-      _impl.parseTemplateManifest(jsonString);
+  static Future<void> ensureWebStorageReady() =>
+      _impl.ensureWebStorageReady();
+
+  static void releaseWebFolderImport() => _impl.releaseWebFolderImport();
+
+  static Future<String?> getWebLibraryDisplayName() =>
+      _impl.getWebLibraryDisplayName();
+
+  static Future<WebFolderImport?> pickWebFolderForImport() =>
+      _impl.pickWebFolderForImport();
+
+  static bool get isWebFolderImportSupported =>
+      _impl.isWebFolderImportSupported;
+
+  static Future<int> importWebFilesBatched(
+    List<({String storageKey, Uint8List bytes})> files, {
+    WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
+  }) =>
+      _impl.importWebFilesBatched(
+        files,
+        onProgress: onProgress,
+        isCancelled: isCancelled,
+      );
+
+  static Future<int> importWebFolderPathsBatched(
+    List<({String storageKey, String relativePath})> entries, {
+    WebTransferProgress? onProgress,
+    bool Function()? isCancelled,
+  }) =>
+      _impl.importWebFolderPathsBatched(
+        entries,
+        onProgress: onProgress,
+        isCancelled: isCancelled,
+      );
 
   static Future<bool> createLevelFromTemplate(
     String currentDirPath,
-    String templateName,
     String newFileName,
     String assetContent,
   ) => _impl.createLevelFromTemplate(
     currentDirPath,
-    templateName,
     newFileName,
     assetContent,
   );
