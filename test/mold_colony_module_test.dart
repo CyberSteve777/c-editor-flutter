@@ -172,6 +172,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('引用源为 LevelModules'), findsOneWidget);
+    final repairButton = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, '一键修复关联至：Mold'),
+    );
+    final repairButtonSide = repairButton.style?.side?.resolve(
+      const <WidgetState>{},
+    );
+    expect(repairButtonSide?.style, BorderStyle.solid);
+    expect(repairButtonSide?.width, 1.5);
     await tester.tap(find.text('一键修复关联至：Mold'));
     await tester.pumpAndSettle();
 
@@ -191,5 +199,53 @@ void main() {
     final values = (layout.objData as Map<String, dynamic>)['Values'] as List;
     expect((values.first as List).first, 1);
     expect(changeCount, 2);
+  });
+
+  testWidgets('mold legend wraps within a narrow large-text layout', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final module = PvzObject(
+      aliases: const ['DoNotPlantBeforeLine'],
+      objClass: MoldColonyModuleUtils.moduleObjClass,
+      objData: {'Description': '', 'Locations': 'RTID(Mold@CurrentLevel)'},
+    );
+    final layout = PvzObject(
+      aliases: const ['Mold'],
+      objClass: MoldColonyModuleUtils.layoutObjClass,
+      objData: BoardGridMapPropsData.empty().toJson(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        builder: (context, child) {
+          final media = MediaQuery.of(context);
+          return MediaQuery(
+            data: media.copyWith(textScaler: const TextScaler.linear(1.6)),
+            child: child!,
+          );
+        },
+        home: MoldColonyChallengeScreen(
+          rtid: 'RTID(DoNotPlantBeforeLine@CurrentLevel)',
+          levelFile: PvzLevelFile(objects: [module, layout]),
+          onChanged: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    final emptyRect = tester.getRect(find.text('Empty'));
+    final coloniesRect = tester.getRect(find.text('Mold colonies'));
+    expect(coloniesRect.top, greaterThan(emptyRect.top));
+    expect(coloniesRect.right, lessThanOrEqualTo(360));
   });
 }

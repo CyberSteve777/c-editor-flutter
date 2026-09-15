@@ -318,6 +318,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: Text(title),
         content: Text(message),
         actions: [
