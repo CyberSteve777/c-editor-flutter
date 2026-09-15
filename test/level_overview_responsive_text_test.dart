@@ -12,7 +12,7 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/screens/level_overview/level_overview_dialog.dart';
-import 'package:c_editor/widgets/app_ui_scale.dart';
+import 'package:c_editor/widgets/app_ui_scaler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,8 +39,8 @@ PvzLevelFile _level() => PvzLevelFile(
   ],
 );
 
-/// Matches the app's root scaling: smaller logical allocation, scaled system
-/// insets and a FittedBox around the navigator, rather than only larger fonts.
+/// Matches the app's root scaling ([AppUiScaler]): smaller logical allocation,
+/// scaled system insets, then Transform.scale (never FittedBox).
 Widget _app({
   required Size physicalSize,
   required double uiScale,
@@ -49,55 +49,39 @@ Widget _app({
   double? localWidth,
 }) {
   final level = _level();
-  return MaterialApp(
-    locale: const Locale('en'),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    theme: ThemeData(platform: platform),
-    builder: (context, child) {
-      final mediaQuery = MediaQuery.of(context);
-      final scale = uiScale * (physicalSize.shortestSide < 600 ? 0.85 : 1);
-      final scaledSize = mediaQuery.size / scale;
-      EdgeInsets scaleInsets(EdgeInsets value) => EdgeInsets.fromLTRB(
-        value.left / scale,
-        value.top / scale,
-        value.right / scale,
-        value.bottom / scale,
-      );
-      return MediaQuery(
-        data: mediaQuery.copyWith(
-          size: scaledSize,
-          padding: scaleInsets(mediaQuery.padding),
-          viewPadding: scaleInsets(mediaQuery.viewPadding),
-          viewInsets: scaleInsets(mediaQuery.viewInsets),
-          textScaler: TextScaler.linear(textScale),
-        ),
-        child: FittedBox(
-          fit: BoxFit.contain,
-          alignment: Alignment.topLeft,
-          child: SizedBox(
-            width: scaledSize.width,
-            height: scaledSize.height,
-            child: AppUiScale(scale: scale, child: child!),
-          ),
-        ),
-      );
-    },
-    home: Scaffold(
-      body: Builder(
-        builder: (context) => TextButton(
-          onPressed: () => showDialog<void>(
-            context: context,
-            builder: (dialogContext) {
-              final dialog = LevelOverviewDialog(
-                levelFile: level,
-                parsed: LevelParser.parseLevel(level),
-                fileName: _fileName,
-                onClose: () => Navigator.of(dialogContext).pop(),
-              );
-              return localWidth == null
-                  ? dialog
-                  : Align(
+  return MediaQuery(
+    data: MediaQueryData(
+      size: physicalSize,
+      textScaler: TextScaler.linear(textScale),
+    ),
+    child: MaterialApp(
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(platform: platform),
+      builder: (context, child) {
+        final scale = uiScale * (physicalSize.shortestSide < 600 ? 0.85 : 1);
+        return AppUiScaler(
+          scale: scale,
+          wrapMessenger: false,
+          child: child!,
+        );
+      },
+      home: Scaffold(
+        body: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showDialog<void>(
+              context: context,
+              builder: (dialogContext) {
+                final dialog = LevelOverviewDialog(
+                  levelFile: level,
+                  parsed: LevelParser.parseLevel(level),
+                  fileName: _fileName,
+                  onClose: () => Navigator.of(dialogContext).pop(),
+                );
+                return localWidth == null
+                    ? dialog
+                    : Align(
                       child: SizedBox(width: localWidth, child: dialog),
                     );
             },
@@ -105,6 +89,7 @@ Widget _app({
           child: const Text('Open overview'),
         ),
       ),
+    ),
     ),
   );
 }

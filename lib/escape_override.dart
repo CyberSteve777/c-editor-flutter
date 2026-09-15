@@ -96,6 +96,9 @@ class _EscapeClosesModalState extends State<EscapeClosesModal> {
     _handler = () {
       if (!context.mounted) return false;
       if (_dismissed) return true; // closing — absorb duplicate Escape
+      // Nested dialogs/sheets sit above this modal — pop those first
+      // without marking this EscapeClosesModal as dismissed.
+      if (popRouteAbove(context)) return true;
       if (safeNavPop(context)) {
         _dismissed = true;
         return true;

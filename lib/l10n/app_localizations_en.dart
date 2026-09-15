@@ -3040,24 +3040,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bronzeModuleAddTitle => 'Add bronze statue';
 
   @override
-  String get bronzeKindStrength => 'Han Bronze (strength)';
-
-  @override
-  String get bronzeKindMage => 'Qigong Bronze (mage)';
-
-  @override
-  String get bronzeKindAgile => 'Xiake Bronze (agile)';
-
-  @override
-  String get bronzeKindStrengthShort => 'Han Bronze';
-
-  @override
-  String get bronzeKindMageShort => 'Qigong Bronze';
-
-  @override
-  String get bronzeKindAgileShort => 'Xiake Bronze';
-
-  @override
   String get bronzeModuleTypeLabel => 'Type';
 
   @override
@@ -6409,9 +6391,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String lvN(int n) {
     return 'Level $n';
   }
-
-  @override
-  String get pennyClassroom => 'Penny Classroom module';
 
   @override
   String get protectGridItems => 'Event: Save Our Items';

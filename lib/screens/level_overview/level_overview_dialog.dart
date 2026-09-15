@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:c_editor/widgets/editor_components.dart'
     show HorizontalTagScroller, isDesktopPlatform;
 import 'package:c_editor/data/zombie_conditions.dart';
@@ -12,6 +14,7 @@ import 'package:c_editor/data/repository/grid_item_repository.dart';
 import 'package:c_editor/data/repository/stage_repository.dart';
 import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:c_editor/data/repository/zomboss_battle_repository.dart';
+import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/armrack_type_catalog.dart';
@@ -335,22 +338,44 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     final isDesktop = isDesktopPlatform(context);
 
     if (_isLoadingRepos) {
-      return const AlertDialog(
-        content: SizedBox(
-          height: 100,
+      // Prefer Dialog over AlertDialog: AlertDialog wraps content in
+      // IntrinsicWidth + Flexible, which can end up with size MISSING.
+      return const Dialog(
+        constraints: BoxConstraints(minWidth: 0),
+        child: SizedBox(
+          width: 120,
+          height: 120,
           child: Center(child: CircularProgressIndicator()),
         ),
       );
     }
 
     if (levelDef == null) {
-      return AlertDialog(
-        scrollable: true,
-        title: Text(widget.fileName),
-        content: Text(l10n.noLevelDefinitionHint),
-        actions: [
-          TextButton(onPressed: widget.onClose, child: Text(l10n.close)),
-        ],
+      return Dialog(
+        constraints: const BoxConstraints(minWidth: 0, maxWidth: 400),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                widget.fileName,
+                style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              Text(l10n.noLevelDefinitionHint),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: widget.onClose,
+                  child: Text(l10n.close),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
@@ -398,6 +423,10 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           0.0,
           isDesktop ? 40.0 : 12.0,
         );
+        // Keep a non-zero tight height so Expanded children always get a size
+        // (loose/zero maxHeight under UI scale / keyboard can break hit-testing).
+        final contentMaxHeight = (usableHeight - verticalInset * 2)
+            .clamp(1.0, math.max(1.0, usableHeight * 0.9));
         return Dialog(
           backgroundColor: theme.colorScheme.surface,
           constraints: const BoxConstraints(minWidth: 0),
@@ -405,103 +434,99 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             horizontal: horizontalInset,
             vertical: verticalInset,
           ),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isDesktop ? 900 : double.infinity,
-              maxHeight: (usableHeight - verticalInset * 2).clamp(
-                0.0,
-                usableHeight * 0.9,
-              ),
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final hPad = (constraints.maxWidth * 0.04).clamp(0.0, 20.0);
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: Scrollbar(
-                          key: const ValueKey('levelOverviewScrollbar'),
-                          controller: _contentScrollController,
-                          thumbVisibility: true,
-                          interactive: true,
-                          scrollbarOrientation: ScrollbarOrientation.right,
-                          child: ScrollConfiguration(
-                            behavior: ScrollConfiguration.of(
-                              context,
-                            ).copyWith(scrollbars: false),
-                            child: SingleChildScrollView(
-                              key: const ValueKey('levelOverviewScroll'),
-                              controller: _contentScrollController,
-                              primary: false,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                      hPad,
-                                      16,
-                                      hPad,
-                                      8,
-                                    ),
-                                    child: _buildOverviewHeader(
-                                      context,
-                                      theme,
-                                      l10n,
-                                    ),
+          child: SizedBox(
+            width: isDesktop
+                ? math
+                      .min(900.0, availableWidth - horizontalInset * 2)
+                      .toDouble()
+                : double.infinity,
+            height: contentMaxHeight.toDouble(),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final hPad = (constraints.maxWidth * 0.04).clamp(0.0, 20.0);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Scrollbar(
+                        key: const ValueKey('levelOverviewScrollbar'),
+                        controller: _contentScrollController,
+                        thumbVisibility: true,
+                        interactive: true,
+                        scrollbarOrientation: ScrollbarOrientation.right,
+                        child: ScrollConfiguration(
+                          behavior: ScrollConfiguration.of(
+                            context,
+                          ).copyWith(scrollbars: false),
+                          child: SingleChildScrollView(
+                            key: const ValueKey('levelOverviewScroll'),
+                            controller: _contentScrollController,
+                            primary: false,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                    hPad,
+                                    16,
+                                    hPad,
+                                    8,
                                   ),
-                                  const Divider(height: 1),
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                      hPad,
-                                      12,
-                                      hPad,
-                                      12,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: bodyCards,
-                                    ),
+                                  child: _buildOverviewHeader(
+                                    context,
+                                    theme,
+                                    l10n,
                                   ),
-                                ],
-                              ),
+                                ),
+                                const Divider(height: 1),
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                    hPad,
+                                    12,
+                                    hPad,
+                                    12,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: bodyCards,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                      const Divider(height: 1),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 12),
-                        child: Wrap(
-                          alignment: WrapAlignment.end,
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: [
-                            TextButton(
-                              onPressed: widget.onClose,
-                              style: TextButton.styleFrom(
-                                foregroundColor: theme.colorScheme.primary,
-                              ),
-                              child: Text(l10n.close),
+                    ),
+                    const Divider(height: 1),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 12),
+                      child: Wrap(
+                        alignment: WrapAlignment.end,
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          TextButton(
+                            onPressed: widget.onClose,
+                            style: TextButton.styleFrom(
+                              foregroundColor: theme.colorScheme.primary,
                             ),
-                            if (widget.showOpenLevel &&
-                                widget.filePath != null &&
-                                widget.filePath!.isNotEmpty) ...[
-                              FilledButton(
-                                onPressed: _openLevel,
-                                child: Text(l10n.levelOverviewOpenLevel),
-                              ),
-                            ],
+                            child: Text(l10n.close),
+                          ),
+                          if (widget.showOpenLevel &&
+                              widget.filePath != null &&
+                              widget.filePath!.isNotEmpty) ...[
+                            FilledButton(
+                              onPressed: _openLevel,
+                              child: Text(l10n.levelOverviewOpenLevel),
+                            ),
                           ],
-                        ),
+                        ],
                       ),
-                    ],
-                  );
-                },
-              ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         );
@@ -4742,43 +4767,59 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: theme.colorScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+      builder: (dialogContext) {
+        final maxW = math.min(500.0, MediaQuery.sizeOf(dialogContext).width - 48);
+        final maxH = MediaQuery.sizeOf(dialogContext).height * 0.75;
+        // Avoid AlertDialog: its IntrinsicWidth + Flexible layout can leave
+        // ConstrainedBoxes with size MISSING under the app UI scaler.
+        return EscapeClosesModal(
+          child: Dialog(
+            backgroundColor: theme.colorScheme.surface,
+            constraints: const BoxConstraints(minWidth: 0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ),
-          content: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 500, minWidth: 280),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _buildChallengeDetailContent(
-                  context,
-                  objClass,
-                  data,
-                  theme,
-                  l10n,
+            child: SizedBox(
+              width: maxW.clamp(1.0, 500.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: maxH.clamp(1.0, double.infinity)),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ..._buildChallengeDetailContent(
+                        dialogContext,
+                        objClass,
+                        data,
+                        theme,
+                        l10n,
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => safeNavPop(dialogContext),
+                          child: Text(l10n.ok),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n.ok),
-            ),
-          ],
         );
       },
     );

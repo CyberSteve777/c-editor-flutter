@@ -1,6 +1,7 @@
 import 'package:c_editor/data/models/zomboss_mech_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/events/fish_properties_entry_screen.dart';
 import 'package:c_editor/screens/editor/modules/bronze_module_screen.dart';
 import 'package:c_editor/screens/editor/others/custom_zombie_properties_screen.dart';
@@ -45,6 +46,8 @@ Finder _dialogText(String text) =>
     find.descendant(of: find.byType(AlertDialog), matching: find.text(text));
 
 void main() {
+  setUpAll(ResourceNames.ensureLoaded);
+
   for (final size in [const Size(320, 700), const Size(900, 280)]) {
     testWidgets('bronze choices remain readable and selectable at $size', (
       tester,
@@ -66,7 +69,6 @@ void main() {
         ),
         width: size.width,
       );
-      final strings = _strings(tester, BronzeModuleScreen);
       await tester.ensureVisible(find.byType(AddItemCard));
       await tester.tap(find.byType(AddItemCard));
       await tester.pumpAndSettle();
@@ -83,7 +85,12 @@ void main() {
         ),
         findsNWidgets(3),
       );
-      final lastChoice = _dialogText(strings.bronzeKindAgile);
+      final lastChoice = _dialogText(
+        ResourceNames.lookup(
+          tester.element(find.byType(AlertDialog)),
+          'zombie_kongfu_agile_bronze',
+        ),
+      );
       await tester.ensureVisible(lastChoice);
       await tester.pumpAndSettle();
       if (size.width < 400) {

@@ -13,8 +13,7 @@ import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/screens/level_list_screen.dart';
 import 'package:c_editor/screens/plugins_screen.dart';
 import 'package:c_editor/theme/app_theme.dart';
-import 'package:c_editor/widgets/app_message.dart';
-import 'package:c_editor/widgets/app_ui_scale.dart';
+import 'package:c_editor/widgets/app_ui_scaler.dart';
 import 'package:c_editor/widgets/locale_flag_icon.dart';
 import 'package:c_editor/widgets/editor_components.dart' show EditorOptionTile;
 
@@ -124,42 +123,11 @@ class _ZEditorAppState extends State<ZEditorApp> {
           ],
           builder: (context, child) {
             var scale = settings.uiScale;
-            final mediaQuery = MediaQuery.of(context);
-            final viewportSize = mediaQuery.size;
-            if (mediaQuery.size.shortestSide < 600) {
+            final shortest = MediaQuery.sizeOf(context).shortestSide;
+            if (shortest < 600) {
               scale *= 0.85;
             }
-            final scaledSize = Size(
-              viewportSize.width / scale,
-              viewportSize.height / scale,
-            );
-            EdgeInsets scaleInsets(EdgeInsets e) => EdgeInsets.fromLTRB(
-              e.left / scale,
-              e.top / scale,
-              e.right / scale,
-              e.bottom / scale,
-            );
-            return MediaQuery(
-              data: mediaQuery.copyWith(
-                size: scaledSize,
-                padding: scaleInsets(mediaQuery.padding),
-                viewPadding: scaleInsets(mediaQuery.viewPadding),
-                viewInsets: scaleInsets(mediaQuery.viewInsets),
-                textScaler: TextScaler.linear(1.0),
-              ),
-              child: FittedBox(
-                fit: BoxFit.contain,
-                alignment: Alignment.topLeft,
-                child: SizedBox(
-                  width: scaledSize.width,
-                  height: scaledSize.height,
-                  child: AppUiScale(
-                    scale: scale,
-                    child: AppMessageMessenger(child: child!),
-                  ),
-                ),
-              ),
-            );
+            return AppUiScaler(scale: scale, child: child!);
           },
           home: BlocBuilder<AppNavigationCubit, AppNavigationState>(
             builder: (context, nav) {
